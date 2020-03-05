@@ -441,7 +441,6 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getCreatedTime(module));
         fields.add(getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.STATE, "STATE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
         fields.add(getWritableField(module));
         fields.add(getField(AgentConstants.PROCESSOR_VERSION, "PROCESSOR_VERSION", module, FieldType.NUMBER));

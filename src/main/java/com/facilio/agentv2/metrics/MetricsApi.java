@@ -4,7 +4,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -13,6 +15,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
@@ -30,6 +33,7 @@ public class MetricsApi {
 
     private static final FacilioModule MODULE = ModuleFactory.getAgentMetricsV2Module();
     private static final List<FacilioField> FIELDS = FieldFactory.getAgentMetricV2Fields();
+    public static final String MODULE_NAME = FacilioConstants.ContextNames.AGENT_METRICS_MODULE;
 
     public static boolean logMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
         LOGGER.info(" marking metrics ");
@@ -44,9 +48,9 @@ public class MetricsApi {
     }
 
 
-   /* private static List<Map<String, Object>> getMetrics(long agentId) throws Exception {
-        Map<String, FacilioField>  fieldMap = FieldFactory.getAsMap(FIELDS);
-        if(fieldMap.containsKey(AgentConstants.AGENT_ID)){
+    private static List<Map<String, Object>> getMetrics(long agentId) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
+        if (fieldMap.containsKey(AgentConstants.AGENT_ID)) {
             fieldMap.remove(AgentConstants.AGENT_ID);
         }
         if (fieldMap.containsKey(AgentConstants.ID)) {
@@ -61,25 +65,22 @@ public class MetricsApi {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(fieldMap.values())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS))
-                .orderBy(AgentConstants.CREATED_TIME+" DESC");
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
+                .orderBy(AgentConstants.CREATED_TIME + " DESC");
         return selectRecordBuilder.get();
     }
 
-    private static List<Map<String, Object>> getMetrics() throws Exception {
-        Map<String, FacilioField>  fieldMap = FieldFactory.getAsMap(FIELDS);
-
-        if (fieldMap.containsKey(AgentConstants.ID)) {
-
-            fieldMap.remove(AgentConstants.ID);
-        }
-
+    public static List<AgentMetrics> getMetrics() throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(MODULE_NAME);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
-                .select(fieldMap.values())
-                .orderBy(AgentConstants.CREATED_TIME+" DESC");
-        return selectRecordBuilder.get();
-    }*/
+                .table(module.getTableName())
+                .select(allFields)
+                .orderBy(AgentConstants.CREATED_TIME + " DESC");
+        return FieldUtil.getAsBeanListFromMapList(selectRecordBuilder.get(), AgentMetrics.class);
+    }
 
     private static Map<String, Object> getMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
         LOGGER.info(" getting metrics for agent->" + agent.getId());
@@ -131,7 +132,7 @@ public class MetricsApi {
             timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
         }*/
         long baseTime = getBaseTime(timeStamp, dataInterval);
-        LOGGER.info(timeStamp+" - - "+baseTime);
+        LOGGER.info(timeStamp + " - - " + baseTime);
         return baseTime;
     }
 
@@ -148,7 +149,7 @@ public class MetricsApi {
                         toUpdate.put(AgentConstants.NUMBER_OF_MSGS, numberOfMsgs + 1);
                         long size = (long) metrics.get(AgentConstants.SIZE);
                         toUpdate.put(AgentConstants.SIZE, size + payload.toString().length());
-                        toUpdate.put(AgentConstants.LAST_MODIFIED_TIME,System.currentTimeMillis());
+                        toUpdate.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
                         return bean.updateMetrics(toUpdate, (Long) metrics.get(AgentConstants.ID));
 
                     } else {

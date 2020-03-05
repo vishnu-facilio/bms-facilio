@@ -1,34 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.EncodeException;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.ServletActionContext;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -63,6 +34,28 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.ServletActionContext;
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AdminAction extends ActionSupport {
 	/**
@@ -395,6 +388,14 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public static JSONArray getAlertsPointsData() throws  Exception{
+		String domain = AccountUtil.getCurrentOrg().getDomain();
+		if(( domain != null ) && ( ! domain.isEmpty() )){
+			return getAlertsPointsData(domain);
+		}else {
+			throw new Exception(" org domain not valid "+domain);
+		}
+	}
 	public static JSONArray getAlertsPointsData(String domain) throws Exception {
 
 		String orgDomain = domain;

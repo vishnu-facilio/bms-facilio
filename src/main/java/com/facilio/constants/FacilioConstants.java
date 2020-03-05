@@ -4,6 +4,7 @@ import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.metrics.AgentMetrics;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
@@ -634,6 +635,7 @@ public class FacilioConstants {
         public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
         public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";
         public static final String CONTROLLER_MODULE_NAME = "controller";
+        public static final String AGENT_METRICS_MODULE = "agentMetrics";
 
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
@@ -1563,6 +1565,7 @@ public class FacilioConstants {
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraControllerContext.class);
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
 			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
+			classMap.put(AGENT_METRICS_MODULE, AgentMetrics.class);
 			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
 			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 
