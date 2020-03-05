@@ -527,7 +527,7 @@ public class WorkflowRuleContext implements Serializable {
 		WORKORDER_REQUESTER_NOTIFICATION_RULE, //3
 		
 		ALARM_NOTIFICATION_RULE,
-		SLA_RULE (true),
+		SLA_RULE (true),	// Not in use
 		ASSIGNMENT_RULE (true), //6
 		
 		PM_READING_RULE,
@@ -548,20 +548,20 @@ public class WorkflowRuleContext implements Serializable {
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
-		BUSSINESS_LOGIC_ALARM_RULE,    //21		// Do not use
+		APPROVAL_STATEFLOW_RULE,    //21
 
-		BUSSINESS_LOGIC_WORKORDER_RULE,		// Do not use
+		BUSSINESS_LOGIC_WORKORDER_RULE,		// Not in use
 		PM_NOTIFICATION_RULE,
 		READING_ALARM_RULE,			//24
 		
 		ALARM_RCA_RULES(false,true,true),
-		ASSET_NOTIFICATION_RULE,		// Do not use
+		ASSET_NOTIFICATION_RULE,		// Not in use
 		PM_READING_TRIGGER,			// 27
 		
 		STATE_RULE(true),
 		STATE_FLOW(true),
 		
-		BUSSINESS_LOGIC_ASSET_RULE, //30		// Do not use
+		BUSSINESS_LOGIC_ASSET_RULE, //30		// Not in use
 		REPORT_DOWNTIME_RULE, //31
 		CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE, //32
 		CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE, //33

@@ -265,7 +265,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+//			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteSLAWorkFlowsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -370,7 +370,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATEFLOW_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -3717,7 +3717,7 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new AssetMovementPropsSetCommand());
 			chain.addCommand(new GenericAddModuleDataCommand());
-			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteStateFlowCommand());
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			chain.addCommand(new AddDefaultChangeSetForCompleteMoveCommand());
 			chain.addCommand(new CompleteAssetMoveCommand());
@@ -3731,7 +3731,6 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new GenericUpdateModuleDataCommand());
 			chain.addCommand(new UpdateStateForModuleDataCommand());
-			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			chain.addCommand(new CompleteAssetMoveCommand());
 			chain.addCommand(new AddActivitiesCommand());
@@ -3966,7 +3965,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 
@@ -3981,14 +3980,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new LoadInviteIdAfterAdditionCommand());
 			c.addCommand(new AddInviteVisitorRelCommand());
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 
@@ -4003,7 +4001,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 
@@ -4096,7 +4094,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericAddModuleDataListCommand()); 
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new LoadInviteIdAfterAdditionCommand());
@@ -4104,7 +4102,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());

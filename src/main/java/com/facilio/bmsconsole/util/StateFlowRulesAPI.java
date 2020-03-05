@@ -122,7 +122,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	
 	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
 		if (facilioStatus == null) {
-//			throw new IllegalArgumentException("Status cannot be empty");
 			LOGGER.error("Status cannot be empty");
 			if (record != null) {
 				LOGGER.error(FieldUtil.getAsJSON(record));
@@ -293,7 +292,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			return subModules.get(0);
 		}
-//		throw new Exception("Module " + module.getName() + " doesn't have time log module");
 		return null;
 	}
 
@@ -467,7 +465,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			stateCriteria.andCriteria(c);
 		}
 		
-		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
+//		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
 //		fields.addAll(FieldFactory.getStateRuleTransitionFields());
 		return getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), stateCriteria);
 	}
@@ -521,75 +519,22 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		
 		return stateFlowMap;
 	}
-
-//	public static void addOrUpdateStateFlow(StateFlowRuleContext stateFlow, boolean add) throws Exception {
-//		if (stateFlow == null) {
-//			return;
-//		}
-//
-//		long moduleId = stateFlow.getModuleId();
-//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//		FacilioModule facilioModule = modBean.getModule(moduleId);
-//		if (facilioModule == null) {
-//			throw new Exception("Invalid module");
-//		}
-//
-//		FacilioStatus stateContext = getStateContext(stateFlow.getDefaultStateId());
-//		if (stateContext == null) {
-//			throw new Exception("Invalid state");
-//		}
-//
-//		if (stateFlow.getCriteria() != null && !stateFlow.getCriteria().isEmpty()) {
-//			stateFlow.getCriteria().validatePattern();
-//			long criteriaId = CriteriaAPI.addCriteria(stateFlow.getCriteria(), AccountUtil.getCurrentOrg().getId());
-//			stateFlow.setCriteriaId(criteriaId);
-//		}
-//
-//		FacilioModule module = ModuleFactory.getStateFlowModule();
-//
-//		Map<String, Object> props = FieldUtil.getAsProperties(stateFlow);
-//		if (add) {
-//			stateFlow.setId(addRecord(module, FieldFactory.getStateFlowFields(), props));
-//		}
-//		else {
-//			updateRecord(module, FieldFactory.getStateFlowFields(), stateFlow.getId(), props);
-//		}
-//	}
 	
 	public static StateFlowRuleContext getStateFlowContext(long id) throws Exception {
 		return (StateFlowRuleContext) WorkflowRuleAPI.getWorkflowRule(id);
 	}
-	
-//	private static long addRecord(FacilioModule module, List<FacilioField> fields, Map<String, Object> props) throws Exception {
-//		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-//				.table(module.getTableName())
-//				.fields(fields);
-//		builder.addRecord(props);
-//		builder.save();
-//		return ((long) props.get("id"));
-//	}
-	
-//	private static void updateRecord(FacilioModule module, List<FacilioField> fields, long id, Map<String, Object> props) throws Exception {
-//		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-//				.table(module.getTableName())
-//				.fields(fields)
-//				.andCondition(CriteriaAPI.getIdCondition(id, module));
-//		builder.update(props);
-//	}
 
 	public static List<? extends WorkflowRuleContext> getAllStateFlow(FacilioModule module) throws Exception {
 		List<FacilioField> fields = FieldFactory.getStateFlowFields();
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
-				.select(fields)
-				.innerJoin(ModuleFactory.getStateFlowModule().getTableName())
-					.on(ModuleFactory.getWorkflowRuleModule().getTableName() + ".ID = " + ModuleFactory.getStateFlowModule().getTableName() + ".ID")
-				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("DRAFT_PARENT_ID", "draftParentId", "", CommonOperators.IS_EMPTY))
-				.orderBy("EXECUTION_ORDER");
-		List<Map<String, Object>> list = builder.get();
-		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getWorkFlowsFromMapList(list, true, true);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("DRAFT_PARENT_ID", "draftParentId", "", CommonOperators.IS_EMPTY));
+		criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(WorkflowRuleContext.RuleType.STATE_FLOW.getIntVal()), NumberOperators.EQUALS));
+
+		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(),
+				criteria, null, null, StateFlowRuleContext.class);
 		return stateFlowList;
 	}
 

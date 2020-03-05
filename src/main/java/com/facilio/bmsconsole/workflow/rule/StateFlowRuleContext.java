@@ -20,38 +20,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
-public class StateFlowRuleContext extends WorkflowRuleContext {
+public class StateFlowRuleContext extends AbstractStateFlowRuleContext {
 	private static final long serialVersionUID = 1L;
-	
-	private long defaultStateId;
-	public long getDefaultStateId() {
-		return defaultStateId;
-	}
-	public void setDefaultStateId(long defaultStateId) {
-		this.defaultStateId = defaultStateId;
-	}
-	
-	private Boolean defaltStateFlow;
-	public Boolean getDefaltStateFlow() {
-		return defaltStateFlow;
-	}
-	public void setDefaltStateFlow(Boolean defaltStateFlow) {
-		this.defaltStateFlow = defaltStateFlow;
-	}
-	public Boolean isDefaltStateFlow() {
-		if (defaltStateFlow == null) {
-			return false;
-		}
-		return defaltStateFlow;
-	}
-
-	private String diagramJson;
-	public String getDiagramJson() {
-		return diagramJson;
-	}
-	public void setDiagramJson(String diagramJson) {
-		this.diagramJson = diagramJson;
-	}
 
 	private long draftParentId = -1;
 	public long getDraftParentId() {

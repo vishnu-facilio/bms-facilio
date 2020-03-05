@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -590,5 +591,21 @@ public class WorkOrderContext extends TicketContext {
 	public void setClient(ClientContext client) {
 		this.client = client;
 	}
-	
+
+
+	private long assignmentFlowId;
+	public long getAssignmentFlowId() {
+		return assignmentFlowId;
+	}
+	public void setAssignmentFlowId(long assignmentFlowId) {
+		this.assignmentFlowId = assignmentFlowId;
+	}
+
+	private FacilioStatus assignmentStatus;
+	public FacilioStatus getAssignmentStatus() {
+		return assignmentStatus;
+	}
+	public void setAssignmentStatus(FacilioStatus assignmentStatus) {
+		this.assignmentStatus = assignmentStatus;
+	}
 }

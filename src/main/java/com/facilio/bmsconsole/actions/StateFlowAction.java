@@ -136,10 +136,10 @@ public class StateFlowAction extends FacilioAction {
 	}
 
 	public String getStateFlowList() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		FacilioChain chain = ReadOnlyChainFactory.getStateFlowList();
-		chain.execute(context);
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
 		
 		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
 		return SUCCESS;
