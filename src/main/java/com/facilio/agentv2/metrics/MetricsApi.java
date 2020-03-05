@@ -89,8 +89,7 @@ public class MetricsApi {
                     if (containsValueCheck(AgentConstants.PUBLISH_TYPE, payload)) {
 
                         int payloadInt = getPublishType(payload).asInt();
-                        long createdTime = getCreatedTime(agent, payload);
-                        LOGGER.info(" created time " + createdTime);
+                        long createdTime = getCreatedTime(agent);
                         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                                 .table(MODULE.getTableName())
                                 .select(FieldFactory.getAgentMetricV2Fields())
@@ -122,16 +121,18 @@ public class MetricsApi {
         }
     }
 
-    private static long getCreatedTime(FacilioAgent agent, JSONObject payload) {
+    private static long getCreatedTime(FacilioAgent agent) {
         long dataInterval = agent.getInterval() * 60000;
         if (dataInterval < 5) {
             dataInterval = 15;
         }
         long timeStamp = System.currentTimeMillis();
-        if (containsValueCheck(AgentConstants.TIMESTAMP, payload)) {
+       /* if (containsValueCheck(AgentConstants.TIMESTAMP, payload)) {
             timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
-        }
-        return getBaseTime(timeStamp, dataInterval);
+        }*/
+        long baseTime = getBaseTime(timeStamp, dataInterval);
+        LOGGER.info(timeStamp+" - - "+baseTime);
+        return baseTime;
     }
 
     private static boolean updateMetrics(FacilioAgent agent, JSONObject payload, Map<String, Object> metrics) throws Exception {
@@ -176,7 +177,7 @@ public class MetricsApi {
                         toInsertMap.put(AgentConstants.AGENT_ID, agent.getId());
                         toInsertMap.put(AgentConstants.PUBLISH_TYPE, getPublishType(payload).asInt());
                         toInsertMap.put(AgentConstants.NUMBER_OF_MSGS, 1);
-                        toInsertMap.put(AgentConstants.CREATED_TIME, getCreatedTime(agent, payload));
+                        toInsertMap.put(AgentConstants.CREATED_TIME, getCreatedTime(agent));
                         toInsertMap.put(AgentConstants.SIZE, payload.toString().length());
                         toInsertMap.put(AgentConstants.SITE_ID, agent.getSiteId());
                         toInsertMap.put(AgentConstants.LAST_MODIFIED_TIME, toInsertMap.get(AgentConstants.CREATED_TIME));
