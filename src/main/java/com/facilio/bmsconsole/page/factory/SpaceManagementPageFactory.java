@@ -76,11 +76,12 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		addSecondaryDetailsWidget(tab1Sec1);
 		addFloorMapWidget(tab1Sec1);
-		addRelatedCountWidget(tab1Sec1, 0,Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
-		int energyCardHeight = 4;
-		addEnergyWidget(tab1Sec1, energyCardHeight);
+		addSecondaryDetailsWidget(tab1Sec1);
+		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
+		cardWidget.addToLayoutParams(tab1Sec1, 16, 4);
+		tab1Sec1.addWidget(cardWidget);
+		addEnergyWidget(tab1Sec1, 4);
 
 		Section tab1Sec2 = page.new Section();
 		addFloorRelatedListWidget(tab1Sec2);
@@ -143,7 +144,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		pageWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(pageWidget);
 	}
-	private static void addFloorRelatedListWidget(Section section) throws Exception {
+	private static void addFloorRelatedListWidget(Section section) {
 
 		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "floorSpaces");
 		JSONObject relatedList = new JSONObject();
@@ -152,7 +153,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		section.addWidget(pageWidget);
 	}
 
-	private static void addFloorMapWidget(Section section) throws Exception {
+	private static void addFloorMapWidget(Section section) {
 
 		PageWidget pageWidget = new PageWidget(WidgetType.FLOOR_MAP);
 		pageWidget.addToLayoutParams(section, 24, 10);

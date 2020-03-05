@@ -1243,6 +1243,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("name", "Floor Name"));
+		columns.add(new ViewField("maxOccupancy", "Max Occupancy"));
 		columns.add(new ViewField("area", "Area"));
 
 		return columns;

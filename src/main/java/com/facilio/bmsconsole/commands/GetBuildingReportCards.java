@@ -19,6 +19,8 @@ public class GetBuildingReportCards extends FacilioCommand {
 			
 			JSONObject reports = new JSONObject();
 			reports.put("spaces", SpaceAPI.getSpacesCountForBuilding(buildingId));
+			reports.put("independent_spaces", SpaceAPI.getIndependentSpaces(buildingId));
+			reports.put("floors", SpaceAPI.getBuildingsFloorsCount(buildingId));
 			
 			JSONObject woCount = new JSONObject();
 			woCount.put("type", "count");

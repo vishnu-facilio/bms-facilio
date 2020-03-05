@@ -1,30 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -33,25 +13,20 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class SpaceAPI {
 	
@@ -756,6 +731,22 @@ public class SpaceAPI {
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
+
+	public static long getBuildingsFloorsCount(long buildingId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+				.module(module)
+				.beanClass(FloorContext.class)
+				.andCondition(CriteriaAPI.getCondition("BUILDING_ID","building",String.valueOf(buildingId),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS));
+		selectBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+
+		List<FloorContext> floors = selectBuilder.get();
+
+		return floors.get(0).getId();
+	}
 	
 	public static List<BaseSpaceContext> getSiteBuildingsWithFloors(long sitedId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1345,7 +1336,7 @@ public static long getSitesCount() throws Exception {
 			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
-	
+
 	public static List<Long> getSpaceIdListForBuilding(long buildingId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();
@@ -1363,7 +1354,6 @@ public static long getSitesCount() throws Exception {
 				.andCustomWhere(" BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, buildingId);
 		
 		List<Map<String, Object>> rs = builder.get();
-		System.out.println("builder -- "+builder);
 		List<Long> spaceIds = new ArrayList<>();
 		if (rs != null && !rs.isEmpty()) {
 			for(Map<String, Object> prop:rs) {
@@ -1621,6 +1611,43 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.andCustomWhere("ORGID=?", orgId)
 				.andCondition(CriteriaAPI.getCondition("ID","ID", buildingList,NumberOperators.EQUALS));
 		return builder.get();
+	}
+
+	public static long getIndependentSpaces(long baseSpaceId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder builder = new SelectRecordsBuilder()
+				.select(new HashSet<>())
+				.module(module)
+				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(SpaceType.SPACE.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space1"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space2"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space3"), CommonOperators.IS_EMPTY));
+		;
+		BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
+
+		if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.SITE.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(baseSpaceId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), CommonOperators.IS_EMPTY))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY));
+		} else if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.BUILDING.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), String.valueOf(baseSpaceId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY));
+		} else if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.FLOOR.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), String.valueOf(baseSpaceId), NumberOperators.EQUALS));
+		}
+
+
+		List<Map<String, Object>> props = builder.getAsProps();
+		long count = 0;
+		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(props)) {
+			count = ((Number) props.get(0).get("id")).longValue();
+		}
+		return count;
 	}
 	
 }
