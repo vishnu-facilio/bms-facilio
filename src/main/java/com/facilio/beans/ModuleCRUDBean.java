@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -122,4 +123,8 @@ public interface ModuleCRUDBean {
 			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
 
 	public void demoOneTimeJob(long orgId, ZonedDateTime currentZdt) throws Exception;
+
+	public boolean addMetrics(Map<String, Object> toInsertMap) throws Exception;
+
+	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws SQLException;
 }

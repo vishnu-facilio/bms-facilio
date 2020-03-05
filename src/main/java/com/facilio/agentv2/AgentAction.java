@@ -44,14 +44,19 @@ public class AgentAction extends AgentActionV2 {
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
+                LOGGER.info(" agent datum "+agentListDatum);
                 if(agentListDatum.containsKey(AgentConstants.CONNECTED)){
                     if(agentListDatum.get(AgentConstants.CONNECTED) == null){
+                        LOGGER.info(" agent offline null");
                         offLineAgents++;
                         continue;
                     }
                     if( ! (boolean)agentListDatum.get(AgentConstants.CONNECTED)){
+                        LOGGER.info(" agent offline 0");
                         offLineAgents++;
                     }
+                }else {
+                    offLineAgents++;
                 }
             }
            /* for (FacilioAgent agent : agents) {

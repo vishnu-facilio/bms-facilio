@@ -7,8 +7,8 @@ import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -16,7 +16,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -82,9 +81,12 @@ public class DataProcessorV2
                 return false;
             }
             PublishType publishType = PublishType.valueOf(JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE)))); // change it to Type
+            if(publishType == null){
+                throw new Exception(" publish type cant be null "+JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
+            }
             LOGGER.info(" publish type for this record is " + publishType.name());
 
-            // markMetrices(agent.getId(), publishType, payload);
+            markMetrices(agent,payload);
             switch (publishType) {
             	case CUSTOM:
             		Controller customController = getCachedControllerUsingPayload(payload,agent.getId());
@@ -150,6 +152,15 @@ public class DataProcessorV2
         return processStatus;
     }
 
+    private void markMetrices(FacilioAgent agent, JSONObject payload) {
+        LOGGER.info(" marking metrics "+agent.getName());
+        try {
+            MetricsApi.logMetrics(agent,payload);
+        } catch (Exception e) {
+            LOGGER.info("Exception while logging metrics for ",e);
+        }
+    }
+
     private Controller getCachedControllerUsingPayload(JSONObject payload, long agentId) throws Exception {
             if(containsCheck(AgentConstants.CONTROLLER,payload)) {
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
@@ -205,13 +216,6 @@ public class DataProcessorV2
         }
     }
 
-    private void markMetrices(long id, com.facilio.agent.fw.constants.PublishType publishType, JSONObject payload) {
-        try {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while marking metrices");
-        }
-    }
 
     private boolean processDevices(FacilioAgent agent, JSONObject payload) {
         try {

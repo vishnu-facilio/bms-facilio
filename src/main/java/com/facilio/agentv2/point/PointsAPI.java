@@ -17,7 +17,6 @@ import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -365,7 +364,7 @@ public class PointsAPI {
     }
 
     public static boolean addPoint(Point point) {
-        FacilioChain addPointChain = FacilioChainFactory.getAddPointChain();
+        FacilioChain addPointChain = TransactionChainFactory.getAddPointChain();
         if (point != null) {
             addPointChain.getContext().put(FacilioConstants.ContextNames.RECORD, point);
             try {

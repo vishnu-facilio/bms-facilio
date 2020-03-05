@@ -3266,14 +3266,13 @@ public class ModuleFactory {
 		vendorDocumentsModule.setTableName("Vendor_Documents");
 		return vendorDocumentsModule;
 	}
-/*
 	public static FacilioModule getAgentMetricsV2Module() {
 		FacilioModule module = new FacilioModule();
 		module.setName(AgentConstants.AGENT_METRICS_MODULE);
 		module.setDisplayName(" agent metrics v2 module");
-		module.setTableName("AgentMetrics");
+		module.setTableName("Agent_V2_Metrics");
 		return module;
-	}*/
+	}
 
 	public static FacilioModule getAgentV2LogModule() {
 		FacilioModule module = new FacilioModule();

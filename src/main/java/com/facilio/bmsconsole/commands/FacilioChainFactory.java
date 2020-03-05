@@ -1,17 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -2069,11 +2067,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getAddPointChain() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddPointCommand());
-		return c;
-	}
+
 	
 	public static FacilioChain deleteVisitorChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

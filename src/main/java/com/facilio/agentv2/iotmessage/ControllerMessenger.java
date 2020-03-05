@@ -7,6 +7,8 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.chain.FacilioContext;
@@ -16,6 +18,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,6 +75,9 @@ public class ControllerMessenger {
         LOGGER.info(" agentId  " + agentId);
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if (agent != null) {
+            if( ! agent.getConnected()){
+                throw new Exception("Agent is not connected");
+            }
             iotData.setAgentId(agentId);
             iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
@@ -215,6 +221,16 @@ public static boolean discoverPoints(long controllerId){
     public static void subscribeUnscbscribePoints(List<Point> points, FacilioCommand command) throws Exception {
         LOGGER.info(" iot message to "+command.toString());
         IotData iotData = constructNewIotMessage(points,command);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void sendConfigureModbusTcpPoint(ModbusTcpPointContext tcpPointContext) throws Exception {
+        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)),FacilioCommand.CONFIGURE);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void sendConfigureModbusRtuPoint(ModbusRtuPointContext tcpPointContext) throws Exception {
+        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)),FacilioCommand.CONFIGURE);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 }
