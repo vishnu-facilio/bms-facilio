@@ -182,12 +182,10 @@ public class DBAudit implements FacilioAudit {
 					getAuditInfoData(module, "module");
 					if(!AUDIT_INFO.containsKey(module)) {
 						moduleId = addModule(module);
-						actionId = addAction(moduleId, action, module);
-						methodId = addMethod(actionId, method, module, action);
 					}
 					LOGGER.info("Audit entry add & check module,action,method timetaken:::: "+(System.currentTimeMillis()-addStartModule));
 				 }
-				else if(!AUDIT_INFO.get(module).containsKey(action)) {
+				 if(!AUDIT_INFO.get(module).containsKey(action)) {
 					long addStartAction = System.currentTimeMillis();
 					getAuditInfoData(action, "action");
 					if(!AUDIT_INFO.get(module).containsKey(action)) {
@@ -198,7 +196,7 @@ public class DBAudit implements FacilioAudit {
 					}
 					LOGGER.info("Audit entry add & check Action,method timetaken:::: "+(System.currentTimeMillis()-addStartAction));
 				}
-				else if(!AUDIT_INFO.get(module).get(action).containsKey(method)) {
+				if(!AUDIT_INFO.get(module).get(action).containsKey(method)) {
 					long addStartMethod = System.currentTimeMillis();
 					getAuditInfoData(method, "method");
 					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
@@ -216,6 +214,7 @@ public class DBAudit implements FacilioAudit {
 			id = insertBuilder(getValueMap(data), TABLE_NAME, FIELDS);
 			data.setId(id);
 		} catch (Exception e) {
+			System.out.println("Exception while adding : "+ e);
 			LOGGER.info("Exception while adding : ", e);
 		}
 		LOGGER.info("Audit entry add full time timetaken:::: "+(System.currentTimeMillis()-addStart));
