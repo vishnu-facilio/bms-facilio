@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -21,10 +22,12 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		FacilioChain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
-		
-		ControllerContext controller = updateCheckPointAndControllerActivity(context);
-		executeWorkflowsRules(context);
-		
+		ControllerContext controller = null;
+		if (!context.containsKey(AgentConstants.IS_NEW_AGENT)){
+			controller = updateCheckPointAndControllerActivity(context);
+			executeWorkflowsRules(context);
+		}
+
 		Boolean adjustTime = (Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
 		if (adjustTime == null) {
 			adjustTime = true;
