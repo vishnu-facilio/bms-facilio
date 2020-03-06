@@ -413,12 +413,18 @@
                 resultWorkflowContext :
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
+                   
+                                         db = {
+								             criteria : [id != null],
+								             field : "subject",
+								             aggregation : "count",
+							             };
     
-                                         wos = WorkOrder().fetch([id != null]);
+                                         wos = WorkOrder().fetch(db);
                                          
                                          count = 0;
                                          if(wos != null) {
-                                            count = wos.size();
+                                            count = wos;
                                          }
                                          resMap = {};
                                          resMap.label = "My Open Workorder";
