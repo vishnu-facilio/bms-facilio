@@ -6,20 +6,21 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -48,7 +49,7 @@ public class MetricsApi {
     }
 
 
-    private static List<Map<String, Object>> getMetrics(long agentId) throws Exception {
+    public static List<Map<String, Object>> getMetrics(long agentId,FacilioContext context) throws Exception {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
         if (fieldMap.containsKey(AgentConstants.AGENT_ID)) {
             fieldMap.remove(AgentConstants.AGENT_ID);
@@ -67,6 +68,19 @@ public class MetricsApi {
                 .select(fieldMap.values())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
                 .orderBy(AgentConstants.CREATED_TIME + " DESC");
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        if (pagination != null) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page-1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
+            selectRecordBuilder.offset(offset);
+            selectRecordBuilder.limit(perPage);
+        }
         return selectRecordBuilder.get();
     }
 
@@ -256,28 +270,45 @@ public class MetricsApi {
         return genericUpdateRecordBuilder.update(toUpdate) > 0;
     }
 
-    public static JSONObject getMetricsGraphData() {
+    public static JSONObject getMetricsGraphData(Long agentId) {
         JSONObject obj = new JSONObject();
-        /*obj.put("chartType", "line");
+        obj.put("chartType", "line");
 
         JSONObject xField = new JSONObject();
-        xField.put("aggr", BmsAggregateOperators.DateAggregateOperator.HOURSOFDAY);
+        xField.put("aggr", 0);
         xField.put("fieldName", AgentConstants.CREATED_TIME);
         obj.put("xField", xField);
 
+        org.json.simple.JSONArray yFields = new JSONArray();
         JSONObject yField = new JSONObject();
-        yField.put("aggr", BmsAggregateOperators.NumberAggregateOperator.);
-        yField.put("fieldName", yFieldName);
-        obj.put("yField", yField);
+        yField.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
+        yField.put("fieldName", AgentConstants.NUMBER_OF_MSGS);
+        yFields.add(yField);
+        JSONObject yField1 = new JSONObject();
+        yField1.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
+        yField1.put("fieldName", AgentConstants.SIZE);
+        yFields.add(yField1);
+
+        obj.put("yField", yFields);
+        obj.put("isMultipleMetric",true);
 
         JSONObject groupBy = new JSONObject();
-        groupBy.put("fieldName", groupByFieldName);
+        groupBy.put("fieldName", null);
         obj.put("groupBy", groupBy);
 
-        obj.put("dateOperator", dateOperator.getOperatorId());
-        obj.put("dateOperatorValue", dateOperatorValue);
-        obj.put("criteria", criteria);
-        return null;*/
+        obj.put("dateOperator", DateOperators.TODAY.getOperatorId());
+        obj.put("dateOperatorValue", null);
+        if(agentId != null){
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
+            obj.put("criteria",criteria);
+        }
+        else {
+            obj.put("criteria", null);
+        }
         return obj;
     }
-}
+
+
+    }
+

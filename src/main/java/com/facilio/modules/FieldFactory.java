@@ -7662,10 +7662,10 @@ public class FieldFactory {
 		fields.add(getSiteIdField(module));
 		fields.add(getNewAgentIdField(module));
 		fields.add(getCreatedTime(module));
-		fields.add(getLastModifiedTimeField(module));
 		fields.add(getField(AgentConstants.SIZE, "DATA_SIZE", module, FieldType.NUMBER));
-		fields.add(getAgentPublishTypeField(module));
-		fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
+        fields.add(getAgentPublishTypeField(module));
+        fields.add(getLastModifiedTimeField(module));
+        fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
 		return fields;
 }
 

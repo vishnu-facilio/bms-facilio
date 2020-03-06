@@ -35,7 +35,7 @@ public class AgentUtilV2
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting pointsCountData",e);
         }
-        overiewData.putAll(MetricsApi.getMetricsGraphData());
+        overiewData.put("chartParams",MetricsApi.getMetricsGraphData(null));
         overiewData.put(AgentConstants.INTEGRATIONS,2);
         return overiewData;
     }
@@ -57,6 +57,7 @@ public class AgentUtilV2
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting pointsCountData",e);
         }
+        overiewData.put("chartParams",MetricsApi.getMetricsGraphData(agentId));
         return overiewData;
     }
 
