@@ -36,6 +36,9 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
@@ -54,16 +57,13 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AdminAction extends ActionSupport {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
-	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(AdminAction.class.getName());
 	private org.json.simple.JSONArray secretFilesList = new org.json.simple.JSONArray();
 	public String show() {
 		return SUCCESS;
@@ -77,7 +77,7 @@ public class AdminAction extends ActionSupport {
 			context.put("JOBS", AdminAPI.getSystemJobs());
 			stack.push(context);
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Exception while showing admin job details" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception while showing admin job details" + e.getMessage(), e);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -193,7 +193,7 @@ public class AdminAction extends ActionSupport {
 			FacilioTimer.schedulePeriodicJob(1, name, 15, period, "facilio");
 			AdminAPI.addSystemJob(1l);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception while adding job" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception while adding job" + e.getMessage(), e);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class AdminAction extends ActionSupport {
 		try {
 			AdminAPI.deleteSystemJob(jobId);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception while adding job" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception while adding job" + e.getMessage(), e);
 		}
 	}
 
@@ -232,12 +232,9 @@ public class AdminAction extends ActionSupport {
 		// WmsApi.sendChatMessage(to, message);
 		try {
 			WmsApi.broadCastMessage(message);
-		} catch (IOException e) {
+		} catch (IOException | EncodeException e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-		} catch (EncodeException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 
 		return SUCCESS;
@@ -255,7 +252,7 @@ public class AdminAction extends ActionSupport {
 			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
 			demoRollupChain.execute();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception while executing Demojob" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception while executing Demojob" + e.getMessage(), e);
 		}
 
 		return SUCCESS;
@@ -276,7 +273,7 @@ public class AdminAction extends ActionSupport {
 			bean.demoOneTimeJob(orgId, currentZdt);
 
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception while executing Demojob" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception while executing Demojob" + e.getMessage(), e);
 		}
 
 		return SUCCESS;
@@ -301,7 +298,7 @@ public class AdminAction extends ActionSupport {
 			deleteMessageChain.getContext().put("TABLE_NAME", tableName);
 			deleteMessageChain.execute();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception occurred in Delelt Message queue" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Exception occurred in Delelt Message queue" + e.getMessage(), e);
 		}
 
 		return SUCCESS;
@@ -409,22 +406,22 @@ public class AdminAction extends ActionSupport {
 		conn.setRequestMethod("GET");
 		try {
 			conn.connect();
-			int responsecode = conn.getResponseCode();
-			if (responsecode != 200) {
-				throw new RuntimeException("HttpResponseCode:" + responsecode);
+			int responseCode = conn.getResponseCode();
+			if (responseCode != 200) {
+				throw new RuntimeException("HttpResponseCode:" + responseCode);
 			} else {
 				Scanner sc = new Scanner(url.openStream());
-				String inline = "";
+				StringBuilder inline = new StringBuilder();
 				while (sc.hasNext()) {
-					inline = inline + sc.nextLine();
+					inline.append(sc.nextLine());
 				}
 				sc.close();
-				jsonArray = new JSONArray(inline);
+				jsonArray = new JSONArray(inline.toString());
 
 			}
 
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Alters points Exception" + e.getMessage(), e);
+			LOGGER.log(Level.INFO, "Alters points Exception" + e.getMessage(), e);
 
 		} finally {
 			conn.disconnect();
@@ -614,13 +611,13 @@ public class AdminAction extends ActionSupport {
 		this.secretFilesList = secretFilesList;
 	}
 	public String addSecretFile() throws Exception {
-		logger.info("Add Secret file called .. ");
-		logger.info(getFileName() + " : " + getFile() + " : "+ getContentType());
+		LOGGER.info("Add Secret file called .. ");
+		LOGGER.info(getFileName() + " : " + getFile() + " : "+ getContentType());
 		if (getFileName()!=null && getFile()!=null && getContentType() !=null){
 
 			FileStore fs = FacilioFactory.getFileStore() ;
 			if(!fs.isSecretFileExists(getFileName())){
-				logger.info("adding secretFile");
+				LOGGER.info("adding secretFile");
 				FacilioService.runAsService(() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
 			}
 			getSecretFiles();
@@ -629,7 +626,7 @@ public class AdminAction extends ActionSupport {
 		else return "error";
 	}
 	public String deleteSecretFile() throws Exception {
-		logger.info("delete secret file called");
+		LOGGER.info("delete secret file called");
 		if(getFileName()!=null){
 			FacilioService.runAsService(() ->FacilioFactory.getFileStore().removeSecretFile(getFileName()));
 		}
