@@ -397,6 +397,8 @@ public class ChatBotUtil {
 	
 	public static void updateChatBotSession(ChatBotSession chatBotSession) throws Exception {
 		
+		chatBotSession.setEndTime(DateTimeUtil.getCurrenTime());
+		
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getCBSessionModule().getTableName())
 				.fields(FieldFactory.getCBSessionFields())
@@ -408,6 +410,8 @@ public class ChatBotUtil {
 	}
 	
 	public static void addChatBotSession(ChatBotSession chatBotSession) throws Exception {
+		
+		chatBotSession.setEndTime(DateTimeUtil.getCurrenTime());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getCBSessionModule().getTableName())

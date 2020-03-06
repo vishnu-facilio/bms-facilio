@@ -17,6 +17,7 @@ public class ChatBotSession {
 	int requiredParamCount = 0;
 	int recievedParamCount = 0;
 	long startTime = -1;
+	long endTime = -1;
 	long parentSessionId = -1;
 	
 	List<ChatBotSessionConversation> chatBotSessionConversations;
@@ -117,6 +118,14 @@ public class ChatBotSession {
 
 	public void setResponse(String response) {
 		this.response = response;
+	}
+	
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 
 	public int getState() {

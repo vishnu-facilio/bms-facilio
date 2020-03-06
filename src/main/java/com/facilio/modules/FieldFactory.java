@@ -7856,6 +7856,7 @@ public class FieldFactory {
         fields.add(getField("requiredParamCount", "REQUIRED_PARAM_COUNT", module, FieldType.NUMBER));
         fields.add(getField("recievedParamCount", "RECIEVED_PARAM_COUNT", module, FieldType.NUMBER));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+        fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         fields.add(getField("parentSessionId", "PARENT_SESSION_ID", module, FieldType.NUMBER));
 
         return fields;
