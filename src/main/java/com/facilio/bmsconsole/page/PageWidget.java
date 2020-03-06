@@ -241,7 +241,8 @@ public class PageWidget {
 		SITE_LIST_WIDGET("siteListWidget"),
 		FIXED_DETAILS_WIDGET("fixedDetailsWidget"),
 		AGENT_DETAILS_WIDGET("agentDetailsWidget"),
-		FLOOR_MAP("floorMap")
+		FLOOR_MAP("floorMap"),
+		SPACE_PRIMARY_READINGS("spacePrimaryReadings")
  		;
 		
 		private String name;
@@ -328,6 +329,7 @@ public class PageWidget {
  		OPERATING_HOURS("operatingHours"),
  		BUILDING("building"),
  		SPACE("space"),
+		OCCUPANCY("occupancy")
  		;
 		private String name;
 		

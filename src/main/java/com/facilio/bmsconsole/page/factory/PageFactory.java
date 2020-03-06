@@ -68,6 +68,8 @@ public class PageFactory {
 				return SpaceManagementPageFactory.getBuildingPage((BuildingContext) record);
 			case ContextNames.FLOOR:
 				return SpaceManagementPageFactory.getFloorPage((FloorContext) record);
+			case ContextNames.SPACE:
+				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);

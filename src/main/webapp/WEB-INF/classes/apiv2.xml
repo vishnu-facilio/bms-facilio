@@ -5400,5 +5400,7 @@
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
 	</package>
-	
+	<package name="spaceApiv2" namespace="/api/v2/space" extends="v2Api">
+		<action name="details" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2SpaceDetails" />
+	</package>
 </struts>

@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
@@ -70,6 +71,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 	public static Page getFloorPage(FloorContext floor) throws Exception {
 		Page page = new Page();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
@@ -82,13 +84,33 @@ public class SpaceManagementPageFactory extends PageFactory {
 		cardWidget.addToLayoutParams(tab1Sec1, 16, 4);
 		tab1Sec1.addWidget(cardWidget);
 		addEnergyWidget(tab1Sec1, 4);
-
 		Section tab1Sec2 = page.new Section();
-		addFloorRelatedListWidget(tab1Sec2);
+		addSpaceRelatedListWidget(tab1Sec2, "floorSpaces",modBean);
 		tab1.addSection(tab1Sec2);
 		return page;
 	}
-	
+
+	public static Page getSpacePage(SpaceContext space) throws Exception {
+		Page page = new Page();
+
+		Tab tab1 = page.new Tab("summary");
+		page.addTab(tab1);
+
+		Section tab1Sec1 = page.new Section();
+		tab1.addSection(tab1Sec1);
+		addSpacePrimaryReadingsWidget(tab1Sec1);
+		addSecondaryDetailsWidget(tab1Sec1);
+		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
+		cardWidget.addToLayoutParams(tab1Sec1, 16, 4);
+		tab1Sec1.addWidget(cardWidget);
+		addSpaceOccupancyWidget(tab1Sec1, 4);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Section tab1Sec2 = page.new Section();
+		addSpaceRelatedListWidget(tab1Sec2, "relatedSubSpaces",modBean);
+		tab1.addSection(tab1Sec2);
+		return page;
+	}
+
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 4);
@@ -128,26 +150,26 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 
 	private static void addSpacesWidget(Section section, ModuleBean modBean) throws Exception {
-		FacilioModule buildingModule = modBean.getModule(ContextNames.SPACE);
+		FacilioModule module = modBean.getModule(ContextNames.SPACE);
 		JSONObject relatedList = new JSONObject();
-		relatedList.put("module", buildingModule);
+		relatedList.put("module", module);
 		PageWidget widget = new PageWidget(WidgetType.LIST, "siteSpaces");
 		widget.setRelatedList(relatedList);
 		widget.addToLayoutParams(section, 24, 8);
 		section.addWidget(widget);
 	}
 	private static void addBuildingRelatedListWidget(Section section) throws Exception {
-
 		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "buildingSpaces");
 		JSONObject relatedList = new JSONObject();
 		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(pageWidget);
 	}
-	private static void addFloorRelatedListWidget(Section section) {
-
-		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "floorSpaces");
+	private static void addSpaceRelatedListWidget(Section section,String widgetName , ModuleBean modBean) throws Exception {
+		FacilioModule module = modBean.getModule(ContextNames.SPACE);
 		JSONObject relatedList = new JSONObject();
+		relatedList.put("module", module);
+		PageWidget pageWidget = new PageWidget(WidgetType.LIST, widgetName);
 		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(pageWidget);
@@ -159,4 +181,17 @@ public class SpaceManagementPageFactory extends PageFactory {
 		pageWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(pageWidget);
 	}
-}
+
+	private static void addSpacePrimaryReadingsWidget(Section section){
+		PageWidget pageWidget = new PageWidget(WidgetType.SPACE_PRIMARY_READINGS);
+		pageWidget.addToLayoutParams(section,24,4);
+		section.addWidget(pageWidget);
+
+	}
+	private static void addSpaceOccupancyWidget(Section section, int height) {
+		PageWidget widget = new PageWidget(WidgetType.CARD);
+		widget.addToLayoutParams(section, 8, height);
+		widget.addToWidgetParams("type", CardType.OCCUPANCY.getName());
+		section.addWidget(widget);
+	}
+ }
