@@ -548,9 +548,9 @@ public class WorkflowRuleContext implements Serializable {
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
-		APPROVAL_STATEFLOW_RULE,    //21
+		APPROVAL_STATE_FLOW,    //21
 
-		BUSSINESS_LOGIC_WORKORDER_RULE,		// Not in use
+		APPROVAL_STATE_TRANSITION,
 		PM_NOTIFICATION_RULE,
 		READING_ALARM_RULE,			//24
 		

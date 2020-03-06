@@ -59,7 +59,7 @@ enums:
     enumClassName: com.facilio.bmsconsole.context.WorkPermitContext$PermitType
 
   - name: DialogType
-    enumClassName: com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext$DialogType
+    enumClassName: com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext$DialogType
 
   - name: SourceType
     enumClassName: com.facilio.bmsconsole.enums.SourceType

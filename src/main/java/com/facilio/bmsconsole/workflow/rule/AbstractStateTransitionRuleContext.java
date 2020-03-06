@@ -1,0 +1,251 @@
+package com.facilio.bmsconsole.workflow.rule;
+
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.chain.Context;
+
+import java.util.Map;
+
+public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflowRuleContext implements FormInterface {
+    private static final long serialVersionUID = 1L;
+
+    private long fromStateId = -1;
+    public long getFromStateId() {
+        return fromStateId;
+    }
+    public void setFromStateId(long fromStateId) {
+        this.fromStateId = fromStateId;
+    }
+
+    private long toStateId = -1;
+    public long getToStateId() {
+        return toStateId;
+    }
+    public void setToStateId(long toStateId) {
+        this.toStateId = toStateId;
+    }
+
+    private long stateFlowId = -1;
+    public long getStateFlowId() {
+        return stateFlowId;
+    }
+    public void setStateFlowId(long stateFlowId) {
+        this.stateFlowId = stateFlowId;
+    }
+
+    private FacilioForm form;
+    public FacilioForm getForm() {
+        return form;
+    }
+    public void setForm(FacilioForm form) {
+        this.form = form;
+    }
+
+    private long formId = -1; // check whether it is good to have
+    public long getFormId() {
+        return formId;
+    }
+    public void setFormId(long formId) {
+        this.formId = formId;
+    }
+
+    private String formModuleName;
+    public String getFormModuleName() {
+        return formModuleName;
+    }
+    public void setFormModuleName(String formModuleName) {
+        this.formModuleName = formModuleName;
+    }
+
+    private DialogType dialogType;
+    public int getDialogType() {
+        if (dialogType != null) {
+            return dialogType.getIndex();
+        }
+        return -1;
+    }
+    public void setDialogType(int dialogType) {
+        this.dialogType = DialogType.valueOf(dialogType);
+    }
+    public DialogType getDialogTypeEnum() {
+        return dialogType;
+    }
+    public void setDialogType(DialogType dialogType) {
+        this.dialogType = dialogType;
+    }
+
+    private int buttonType = -1;
+    public int getButtonType() {
+        return buttonType;
+    }
+    public void setButtonType(int buttonType) {
+        this.buttonType = buttonType;
+    }
+
+    private TransitionType type;
+    public int getType() {
+        if (type != null) {
+            return type.getValue();
+        }
+        return -1;
+    }
+    public TransitionType getTypeEnum() {
+        return type;
+    }
+    public void setType(TransitionType type) {
+        this.type = type;
+    }
+    public void setType(int type) {
+        this.type = TransitionType.valueOf(type);
+    }
+
+    private int scheduleTime = -1;
+    public int getScheduleTime() {
+        return scheduleTime;
+    }
+    public void setScheduleTime(int scheduleTime) {
+        this.scheduleTime = scheduleTime;
+    }
+
+    private Boolean shouldExecuteFromPermalink;
+    public Boolean getShouldExecuteFromPermalink() {
+        return shouldExecuteFromPermalink;
+    }
+    public void setShouldExecuteFromPermalink(Boolean shouldExecuteFromPermalink) {
+        this.shouldExecuteFromPermalink = shouldExecuteFromPermalink;
+    }
+    public Boolean isShouldExecuteFromPermalink() {
+        if (shouldExecuteFromPermalink == null) {
+            return false;
+        }
+        return shouldExecuteFromPermalink;
+    }
+
+    // temporary fix
+    private Boolean showInVendorPortal;
+    public Boolean getShowInVendorPortal() {
+        return showInVendorPortal;
+    }
+    public void setShowInVendorPortal(Boolean showInVendorPortal) {
+        this.showInVendorPortal = showInVendorPortal;
+    }
+    public Boolean isShowInVendorPortal() {
+        if (this.showInVendorPortal == null) {
+            return false;
+        }
+        return showInVendorPortal;
+    }
+
+    private Boolean showInTenantPortal;
+    public Boolean getShowInTenantPortal() {
+        return showInTenantPortal;
+    }
+    public void setShowInTenantPortal(Boolean showInTenantPortal) {
+        this.showInTenantPortal = showInTenantPortal;
+    }
+    public Boolean isShowInTenantPortal() {
+        if (this.showInTenantPortal == null) {
+            return false;
+        }
+        return showInTenantPortal;
+    }
+
+    protected abstract void executeTrue(Object record, Context context, Map<String, Object> placeHolders) throws Exception;
+
+    @Override
+    public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+        boolean shouldExecuteTrueActions = super.validateApproversForTrueAction(record);
+
+        if (shouldExecuteTrueActions) {
+            boolean isValid = super.validationCheck(moduleRecord);
+
+            if (isValid) {
+                executeTrue(record, context, placeHolders);
+
+                super.executeTrueActions(record, context, placeHolders);
+            }
+        }
+    }
+
+    protected final boolean evaluateStateFlow(long stateFlowId, FacilioStatus moduleState, String moduleName, Object record,
+                                              Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+        Boolean shouldCheckOnlyConditioned = (Boolean) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK);
+        if (shouldCheckOnlyConditioned == null) {
+            shouldCheckOnlyConditioned = false;
+        }
+
+        if (shouldCheckOnlyConditioned && getTypeEnum() != TransitionType.CONDITIONED) {
+            return false;
+        }
+
+        // this is old records
+        if (moduleState == null || stateFlowId <= 0) {
+            return false;
+        }
+
+        if (moduleState != null && stateFlowId > 0) {
+            // don't execute if it different stateflow
+            if (stateFlowId != getStateFlowId()) {
+                return false;
+            }
+
+            // don't execute if fromStateId is different from record module state
+            if (getFromStateId() != moduleState.getId()) {
+                return false;
+            }
+        }
+
+        return super.evaluateMisc(moduleName, record, placeHolders, context);
+    }
+
+    public enum DialogType implements FacilioEnum {
+        MODULE ("Module"),
+        SUB_MODULE ("Sub Module")
+        ;
+
+        private String name;
+
+        DialogType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        public String getValue() {
+            return name;
+        }
+
+        public static DialogType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    public enum TransitionType {
+        NORMAL,
+        SCHEDULED,
+        CONDITIONED,
+        ;
+
+        public int getValue() {
+            return ordinal() + 1;
+        }
+
+        public static TransitionType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+}

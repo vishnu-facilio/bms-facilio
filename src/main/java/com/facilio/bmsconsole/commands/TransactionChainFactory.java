@@ -370,7 +370,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATEFLOW_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -4763,13 +4763,13 @@ public class TransactionChainFactory {
 	public static FacilioChain addFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddFloorPlanCommand());
-		
+
 		return c;
 	}
 	public static FacilioChain getFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new getFloorPlanCommand());
-		
+
 		return c;
 	}
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
@@ -4790,7 +4790,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new updateFloorPlanCommand());
-		
+
 		return c;
 	}
 
@@ -4837,7 +4837,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new UpdateControllableTypeForSpace());
 		return chain;
 	}
-	
+
 	public static FacilioChain updateControllableTypeForFloor() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetIncludedSpaceListCommand());
@@ -4846,13 +4846,13 @@ public class TransactionChainFactory {
 	}
 
 	public static FacilioChain getExecuteControlActionCommandForSpaceChain() {
-		
+
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetControlActionCommandsForSpaceCommand());
 		chain.addCommand(TransactionChainFactory.getExecuteControlActionCommandChain());
 		return chain;
 	}
-	
+
 	public static FacilioChain getExecuteControlActionCommandForFloorChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetIncludedSpaceListCommand());
@@ -4866,6 +4866,13 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+
+	public static FacilioChain getNextApprovalStateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+		return chain;
+	}
 }
 
 

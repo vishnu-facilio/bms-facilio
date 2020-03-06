@@ -243,6 +243,12 @@ public enum EventType {
 			return "added a comment";
 		}
 	},
+	APPROVAL (1 << 27) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
 	;
 
     private int eventType;

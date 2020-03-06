@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
@@ -39,6 +40,11 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				return false;
 			}
 			for (ModuleBaseWithCustomFields wo : wos) {
+				if (wo instanceof WorkOrderContext) {
+					if (((WorkOrderContext) wo).getApprovalFlowId() > 0) {
+						throw new IllegalArgumentException("Cannot change state as it is in approval");
+					}
+ 				}
 				wo.setSubForm(null); // temp fix
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
 				/*if (wo.getModuleState().getId() != stateflowTransition.getFromStateId()) {

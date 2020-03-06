@@ -591,21 +591,4 @@ public class WorkOrderContext extends TicketContext {
 	public void setClient(ClientContext client) {
 		this.client = client;
 	}
-
-
-	private long assignmentFlowId;
-	public long getAssignmentFlowId() {
-		return assignmentFlowId;
-	}
-	public void setAssignmentFlowId(long assignmentFlowId) {
-		this.assignmentFlowId = assignmentFlowId;
-	}
-
-	private FacilioStatus assignmentStatus;
-	public FacilioStatus getAssignmentStatus() {
-		return assignmentStatus;
-	}
-	public void setAssignmentStatus(FacilioStatus assignmentStatus) {
-		this.assignmentStatus = assignmentStatus;
-	}
 }

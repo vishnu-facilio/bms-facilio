@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -13,7 +14,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
@@ -50,7 +50,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 		Iterator<WorkflowRuleContext> iterator = states.iterator();
 		while (iterator.hasNext()) {
 			StateflowTransitionContext transition = (StateflowTransitionContext) iterator.next();
-			if (transition.getTypeEnum() != TransitionType.NORMAL) {
+			if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
 				iterator.remove();
 				continue;
 			}

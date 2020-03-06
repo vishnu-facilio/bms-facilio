@@ -30,6 +30,9 @@ public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 		if (!eventTypes.contains(EventType.STATE_TRANSITION)) {
 			eventTypes.add(EventType.STATE_TRANSITION);
 		}
+		if (!eventTypes.contains(EventType.APPROVAL)) {
+			eventTypes.add(EventType.APPROVAL);
+		}
 	}
 
 }

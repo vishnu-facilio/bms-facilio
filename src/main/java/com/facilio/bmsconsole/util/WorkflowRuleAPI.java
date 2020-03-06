@@ -122,15 +122,16 @@ public class WorkflowRuleAPI {
 				ApprovalRulesAPI.addApprover(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
 				break;
 			case STATE_RULE:
+			case APPROVAL_STATE_TRANSITION:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) rule;
-				if (stateflowTransition.getDialogTypeEnum() != null && stateflowTransition.getDialogTypeEnum() == StateflowTransitionContext.DialogType.MODULE) {
+				AbstractStateTransitionRuleContext stateflowTransition = (AbstractStateTransitionRuleContext) rule;
+				if (stateflowTransition.getDialogTypeEnum() != null && stateflowTransition.getDialogTypeEnum() == AbstractStateTransitionRuleContext.DialogType.MODULE) {
 					StateFlowRulesAPI.addOrUpdateFormDetails(stateflowTransition);
 				}
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				break;
 			case STATE_FLOW:
-			case APPROVAL_STATEFLOW_RULE:
+			case APPROVAL_STATE_FLOW:
 				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
 				break;
 			case CUSTOM_BUTTON:
@@ -600,10 +601,11 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
 					break;
 				case STATE_RULE:
+				case APPROVAL_STATE_TRANSITION:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), entry.getValue()));
 					break;
 				case STATE_FLOW:
-				case APPROVAL_STATEFLOW_RULE:
+				case APPROVAL_STATE_FLOW:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), entry.getValue()));
 					break;
 				case CUSTOM_BUTTON:
@@ -738,11 +740,15 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, StateflowTransitionContext.class);
 							break;
+						case APPROVAL_STATE_TRANSITION:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, ApprovalStateTransitionRuleContext.class);
+							break;
 						case STATE_FLOW:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, StateFlowRuleContext.class);
 							break;
-						case APPROVAL_STATEFLOW_RULE:
+						case APPROVAL_STATE_FLOW:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, ApprovalStateFlowRuleContext.class);
 							break;
@@ -838,6 +844,7 @@ public class WorkflowRuleAPI {
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
 						case STATE_RULE:
+						case APPROVAL_STATE_TRANSITION:
 						case CUSTOM_BUTTON:
 							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 							StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
