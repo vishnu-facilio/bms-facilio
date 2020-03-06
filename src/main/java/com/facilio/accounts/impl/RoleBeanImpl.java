@@ -103,6 +103,7 @@ public class RoleBeanImpl implements RoleBean {
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		
 		deletePermission(roleId);
+		deleteNewPermsisions(roleId);
 		Map<String, Object> props = FieldUtil.getAsProperties(role);
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
@@ -353,6 +354,13 @@ public class RoleBeanImpl implements RoleBean {
 	private void deletePermission(long roleId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(AccountConstants.getPermissionModule().getTableName())
+				.andCustomWhere("ROLE_ID = ?", roleId);
+		builder.delete();
+	}
+
+	private void deleteNewPermsisions(long roleId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		builder.delete();
 	}
