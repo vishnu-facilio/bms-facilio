@@ -214,7 +214,6 @@ public class AdminAction extends ActionSupport {
 		LRUCache.getFieldNameCache().purgeCache();
 		LRUCache.getModuleFieldsCache().purgeCache();
 		LRUCache.getUserSessionCache().purgeCache();
-		System.out.println("Clear cache called");
 
 		return SUCCESS;
 	}
@@ -367,7 +366,6 @@ public class AdminAction extends ActionSupport {
 
 		LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 		long millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		System.out.println("###ttime" + millis);
 		return millis;
 	}
 
@@ -383,8 +381,6 @@ public class AdminAction extends ActionSupport {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("####loggerlevel  :" + statusLevel);
-
 		return SUCCESS;
 	}
 
@@ -422,15 +418,12 @@ public class AdminAction extends ActionSupport {
 				while (sc.hasNext()) {
 					inline = inline + sc.nextLine();
 				}
-				System.out.println("JSON data in string format");
-				System.out.println(inline);
 				sc.close();
 				jsonArray = new JSONArray(inline);
 
 			}
 
 		} catch (Exception e) {
-			System.out.println("#Alters points Exception " + e);
 			logger.log(Level.SEVERE, "Alters points Exception" + e.getMessage(), e);
 
 		} finally {
