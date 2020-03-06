@@ -356,6 +356,7 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
@@ -380,6 +381,7 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
@@ -403,6 +405,7 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
@@ -426,6 +429,7 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);

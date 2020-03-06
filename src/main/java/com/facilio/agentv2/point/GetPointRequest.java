@@ -123,14 +123,13 @@ public class GetPointRequest {
         List<Map<String, Object>> data = new ArrayList<>();
         if(selectRecordBuilder == null){
             for (FacilioControllerType controllerType : FacilioControllerType.values()) {
-                LOGGER.info(" getting points for "+controllerType.asString());
                 try{
                     selectRecordBuilder = loadBuilder(controllerType);
                     if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                         selectRecordBuilder.andCriteria(criteria);
                     }
                     data.addAll(selectRecordBuilder.get());
-                    LOGGER.info("Query "+selectRecordBuilder.toString());
+                    LOGGER.info(controllerType.asString()+" Query "+selectRecordBuilder.toString());
                 }catch (Exception e){
                     LOGGER.info("Exceptio  while getting points for type "+controllerType.asString()+" "+e);
                 }
