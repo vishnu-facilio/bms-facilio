@@ -123,7 +123,7 @@ public class MetricsApi {
     }
 
     private static long getCreatedTime(FacilioAgent agent) {
-        long dataInterval = agent.getInterval() * 60000;
+        long dataInterval = agent.getInterval() ;
         if (dataInterval < 5) {
             dataInterval = 15;
         }
@@ -131,7 +131,7 @@ public class MetricsApi {
        /* if (containsValueCheck(AgentConstants.TIMESTAMP, payload)) {
             timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
         }*/
-        long baseTime = getBaseTime(timeStamp, dataInterval);
+        long baseTime = getBaseTime(timeStamp, (dataInterval* 60000));
         LOGGER.info(timeStamp + " - - " + baseTime);
         return baseTime;
     }
