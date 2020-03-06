@@ -889,7 +889,88 @@ public class CommonCommandUtil {
 		return eventTypes;
 	}
 
-	
+	public static void migrateFieldAccessType() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String, Long> calculatedVals = new HashMap<>();
+		calculatedVals.put("subject", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("description", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("priority", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("category", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("type", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("sourceType", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("assignmentGroup", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("assignedTo", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("createdBy", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("assignedBy", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("resource", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("dueDate", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("serialNumber", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("noOfNotes", calculateAccessType(FacilioField.AccessType.READ));
+		calculatedVals.put("noOfAttachments", calculateAccessType(FacilioField.AccessType.READ));
+		calculatedVals.put("noOfTasks", calculateAccessType(FacilioField.AccessType.READ));
+		calculatedVals.put("noOfClosedTasks", calculateAccessType(FacilioField.AccessType.READ));
+		calculatedVals.put("scheduledStart", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("estimatedStart", calculateAccessType());
+		calculatedVals.put("estimatedEnd", calculateAccessType());
+		calculatedVals.put("actualWorkStart", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("actualWorkEnd", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("actualWorkDuration", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("estimatedWorkDuration", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("resumedWorkStart", calculateAccessType());
+		calculatedVals.put("moduleState", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("stateFlowId", calculateAccessType());
+		calculatedVals.put("serviceRequest", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.READ));
+		calculatedVals.put("slaPolicyId", calculateAccessType());
+		calculatedVals.put("requester", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.READ));
+		calculatedVals.put("createdTime", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("modifiedTime", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("pm", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.READ));
+		calculatedVals.put("isWorkDurationChangeAllowed", calculateAccessType());
+		calculatedVals.put("approvalState", calculateAccessType());
+		calculatedVals.put("approvalRuleId", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.READ));
+		calculatedVals.put("requestedBy", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.READ));
+		calculatedVals.put("sendForApproval", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.READ));
+		calculatedVals.put("qrEnabled", calculateAccessType());
+		calculatedVals.put("urgency", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("isSignatureRequired", calculateAccessType());
+		calculatedVals.put("signature", calculateAccessType(FacilioField.AccessType.READ));
+		calculatedVals.put("totalCost", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.READ));
+		calculatedVals.put("trigger", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("sysCreatedTime", calculateAccessType());
+		calculatedVals.put("jobStatus", calculateAccessType());
+		calculatedVals.put("preRequestStatus", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("photoMandatory", calculateAccessType());
+		calculatedVals.put("prerequisiteEnabled", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("allowNegativePreRequisite", calculateAccessType());
+		calculatedVals.put("preRequisiteApproved", calculateAccessType());
+		calculatedVals.put("parentWO", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("woCreationOffset", calculateAccessType());
+		calculatedVals.put("responseDueDate", calculateAccessType(FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.SORT, FacilioField.AccessType.READ));
+		calculatedVals.put("safetyPlan", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.READ));
+		calculatedVals.put("workPermitIssued", calculateAccessType(FacilioField.AccessType.CRITERIA));
+		calculatedVals.put("workPermitNeeded", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.READ));
+		calculatedVals.put("tenant", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.READ));
+		calculatedVals.put("vendor", calculateAccessType(FacilioField.AccessType.CREATE, FacilioField.AccessType.EDIT, FacilioField.AccessType.CRITERIA, FacilioField.AccessType.REPORT, FacilioField.AccessType.READ));
+
+		List<FacilioField> selectFieldFields = FieldFactory.getSelectFieldFields();
+		Map<String, FacilioField> fieldFieldMap = FieldFactory.getAsMap(selectFieldFields);
+
+		for (Map.Entry<String, Long> entry: calculatedVals.entrySet()) {
+			String key = entry.getKey();
+			FacilioField facilioField = fieldMap.get(key);
+			if (facilioField == null) {
+				continue;
+			}
+			facilioField.setAccessType(entry.getValue());
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table("Fields")
+					.fields(Arrays.asList(fieldFieldMap.get("accessType")))
+					.andCustomWhere("ORGID = ? AND FIELDID = ?", AccountUtil.getCurrentOrg().getOrgId(), facilioField.getFieldId());
+			updateBuilder.update(FieldUtil.getAsProperties(facilioField));
+		}
+	}
 
 	private static long calculateAccessType(FacilioField.AccessType... accessTypes) {
 		long result = 0;
