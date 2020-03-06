@@ -42,22 +42,22 @@ public class AgentAction extends AgentActionV2 {
             FacilioContext context = new FacilioContext();
             constructListContext(context);
             List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData(false);
-                   // AgentApiV2.listFacilioAgents(context);
+            // AgentApiV2.listFacilioAgents(context);
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
-                LOGGER.info(" agent datum "+agentListDatum);
-                if(agentListDatum.containsKey(AgentConstants.CONNECTED)){
-                    if(agentListDatum.get(AgentConstants.CONNECTED) == null){
+                LOGGER.info(" agent datum " + agentListDatum);
+                if (agentListDatum.containsKey(AgentConstants.CONNECTED)) {
+                    if (agentListDatum.get(AgentConstants.CONNECTED) == null) {
                         LOGGER.info(" agent offline null");
                         offLineAgents++;
                         continue;
                     }
-                    if( ! (boolean)agentListDatum.get(AgentConstants.CONNECTED)){
+                    if (!(boolean) agentListDatum.get(AgentConstants.CONNECTED)) {
                         LOGGER.info(" agent offline 0");
                         offLineAgents++;
                     }
-                }else {
+                } else {
                     offLineAgents++;
                 }
             }
@@ -68,17 +68,17 @@ public class AgentAction extends AgentActionV2 {
                     siteCount.add(agent.getSiteId());
                 }
             }*/
-            setResult(AgentConstants.SITE_COUNT,siteCount.size());
-            setResult(AgentConstants.TOTAL_COUNT,agentListData.size());
-            setResult(AgentConstants.ACTIVE_COUNT,agentListData.size()-offLineAgents);
+            setResult(AgentConstants.SITE_COUNT, siteCount.size());
+            setResult(AgentConstants.TOTAL_COUNT, agentListData.size());
+            setResult(AgentConstants.ACTIVE_COUNT, agentListData.size() - offLineAgents);
             setResult(AgentConstants.DATA, agentListData);
             setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
-        }catch (Exception e){
-            LOGGER.info("Exception while getting agent list",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agent list", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            setResult(AgentConstants.RESULT,ERROR);
+            setResult(AgentConstants.RESULT, ERROR);
         }
         return SUCCESS;
     }
@@ -94,12 +94,12 @@ public class AgentAction extends AgentActionV2 {
         try {
             setResult(AgentConstants.DATA, AgentApiV2.getAgentCount());
             setResponseCode(HttpURLConnection.HTTP_OK);
-            setResult(AgentConstants.RESULT,SUCCESS);
-        }catch (Exception e){
-            LOGGER.info("Exception while getting agentCount->",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.RESULT, SUCCESS);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agentCount->", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            setResult(AgentConstants.RESULT,ERROR);
+            setResult(AgentConstants.RESULT, ERROR);
         }
         return SUCCESS;
     }
@@ -151,23 +151,22 @@ public class AgentAction extends AgentActionV2 {
             //List<Point> points = new ArrayList<>();
             List<Point> pointsData = new ArrayList<>();
             FacilioContext context = constructListContext(new FacilioContext());
-            if((controllerId != null) && (controllerId > 0) && (controllerType != null) && (controllerType > 0) && (deviceId == null)){
+            if ((controllerId != null) && (controllerId > 0) && (controllerType != null) && (controllerType > 0) && (deviceId == null)) {
                 GetPointRequest getPointRequest = new GetPointRequest()
                         .withControllerId(controllerId)
                         .ofType(FacilioControllerType.valueOf(controllerType))
                         .pagination(context);
                 pointsData = getPointRequest.getPoints();
                 LOGGER.info(" getting controller points");
-            }
-            else if((deviceId != null) && (deviceId>0) && (controllerType != null) && (controllerType > 0)){
+            } else if ((deviceId != null) && (deviceId > 0) && (controllerType != null) && (controllerType > 0)) {
                 LOGGER.info(" getting device points");
                 GetPointRequest getPointRequest = new GetPointRequest()
                         .withDeviceId(deviceId)
                         .ofType(FacilioControllerType.valueOf(controllerType))
                         .pagination(context);
                 pointsData = getPointRequest.getPoints();
-            }else {
-                if((controllerId == null)&&(deviceId == null)){
+            } else {
+                if ((controllerId == null) && (deviceId == null)) {
                     LOGGER.info(" getting all points");
                     GetPointRequest getPointRequest = new GetPointRequest()
                             .pagination(context);
@@ -183,25 +182,15 @@ public class AgentAction extends AgentActionV2 {
                 }
             }
             setResult(AgentConstants.DATA, pointData);
+            setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting points", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
-
-    public String deleteController(){
-        try{
-
-        }catch (Exception e){
-            LOGGER.info("Exception while deleting controller",e);
-            setResult(AgentConstants.RESULT,ERROR);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-        }
-        return SUCCESS;
-    }
-
 
 
     public String countDevices() {
@@ -224,37 +213,41 @@ public class AgentAction extends AgentActionV2 {
             else {
                 setResult(AgentConstants.DATA, FieldDeviceApi.getDeviceCount());
             }
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting agentDevices count", e);
             setResult(AgentConstants.RESULT, ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
 
-    public String PointsCount(){
+    public String PointsCount() {
         LOGGER.info(" getting points ");
-        try{
+        try {
             long count = 0;
-            if((controllerId != null) && (controllerId > 0) && (deviceId == null)){
+            if ((controllerId != null) && (controllerId > 0) && (deviceId == null)) {
                 LOGGER.info(" contid ");
-                count = PointsAPI.getPointsCount( getControllerId(), -1);
-            }else if((deviceId != null) && (deviceId > 0) && (controllerId != null)){
-                    LOGGER.info(" device id  ");
-                    count = PointsAPI.getPointsCount(-1, deviceId);
-            }else {
+                count = PointsAPI.getPointsCount(getControllerId(), -1);
+            } else if ((deviceId != null) && (deviceId > 0) && (controllerId != null)) {
+                LOGGER.info(" device id  ");
+                count = PointsAPI.getPointsCount(-1, deviceId);
+            } else {
                 LOGGER.info(" no point id");
-                count = PointsAPI.getPointsCount(-1,-1);
+                count = PointsAPI.getPointsCount(-1, -1);
             }
 
-            setResult(AgentConstants.DATA,count);
-            setResult(AgentConstants.RESULT,SUCCESS);
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting all point for agent->"+controllerId+" -",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResult(AgentConstants.RESULT,ERROR);
+            setResult(AgentConstants.DATA, count);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+            setResult(AgentConstants.RESULT, SUCCESS);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting all point for agent->" + controllerId + " -", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResult(AgentConstants.RESULT, ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -268,11 +261,12 @@ public class AgentAction extends AgentActionV2 {
     }
 
     private JSONObject childJson;
-    public String getControllerUsingIdentifier(){
+
+    public String getControllerUsingIdentifier() {
         try {
             GetControllerRequest getControllerRequest = new GetControllerRequest()
                     .withAgentId(agentId)
-                    .withControllerProperties(childJson,FacilioControllerType.valueOf(getControllerType()));
+                    .withControllerProperties(childJson, FacilioControllerType.valueOf(getControllerType()));
             Controller controller = getControllerRequest.getController();
             JSONObject jsonObject = new JSONObject();
             if (controller != null) {
@@ -280,20 +274,24 @@ public class AgentAction extends AgentActionV2 {
                 jsonObject.put(AgentConstants.CHILDJSON, controller.getChildJSON());
             }
             setResult(AgentConstants.DATA, jsonObject);
-        }catch (Exception e){
-            LOGGER.info("Exception while getting controller",e);
-            setResult(AgentConstants.RESULT,new JSONObject());
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting controller", e);
+            setResult(AgentConstants.RESULT, new JSONObject());
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getControllerUsingId(){
-        try{
+    public String getControllerUsingId() {
+        try {
             Controller controllers = ControllerApiV2.getControllerFromDb(getControllerId());
-                  setResult(AgentConstants.DATA,controllers.toJSON());
-                    } catch (Exception e) {
-            LOGGER.info(" Exception occurred while getting controller data",e);
+            setResult(AgentConstants.DATA, controllers.toJSON());
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            LOGGER.info(" Exception occurred while getting controller data", e);
         }
         return SUCCESS;
     }
@@ -307,128 +305,133 @@ public class AgentAction extends AgentActionV2 {
     }
 
     private String name;
-    public String createPolicy(){
-        try{
-            LOGGER.info(" calling create policy ");
-            setResult(AgentConstants.DATA,AwsUtil.createIotPolicy(getName(), AccountUtil.getCurrentOrg().getDomain(),"facilio"));
-            //AwsUtil.addAwsIotClient();
-        }catch (Exception e){
-            LOGGER.info(" Exception while creating policy for "+getName()+" ",e);
-        }
-        return SUCCESS;
-    }
 
-    public String getAgentFilter(){
-        try{
-            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilter();
-            setResult(AgentConstants.DATA,agentFilter);
+    public String createPolicy() {
+        try {
+            LOGGER.info(" calling create policy ");
+            setResult(AgentConstants.DATA, AwsUtil.createIotPolicy(getName(), AccountUtil.getCurrentOrg().getDomain(), "facilio"));
+            //AwsUtil.addAwsIotClient();
             setResponseCode(HttpURLConnection.HTTP_OK);
-        }catch (Exception e){
-            LOGGER.info("Exception while getting agent filter ",e);
+        } catch (Exception e) {
+            LOGGER.info(" Exception while creating policy for " + getName() + " ", e);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getOverview(){
-        try{
-            setResult(AgentConstants.DATA,AgentUtilV2.getOverview());
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting overview");
-            setResult(AgentConstants.RESULT,new JSONObject());
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+    public String getAgentFilter() {
+        try {
+            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilter();
+            setResult(AgentConstants.DATA, agentFilter);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agent filter ", e);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getConfiguredPoints(){
+    public String getOverview() {
+        try {
+            setResult(AgentConstants.DATA, AgentUtilV2.getOverview());
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting overview");
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getConfiguredPoints() {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterConfigurePoints();
 
         try {
-            if(controllerType > -1){
+            if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
             }
-            if(deviceId > 0){
+            if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
-            }else if(controllerId > 0){
+            } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getSubscribedPoints(){
+    public String getSubscribedPoints() {
+        LOGGER.info(" get subscribed points ");
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterSubsctibedPoints();
         try {
-            if(controllerType > -1){
+            if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
             }
-            if(deviceId > 0){
+            if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
-            }else if(controllerId > 0){
+            } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getUnconfiguredPoints(){
+    public String getUnconfiguredPoints() {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterUnConfigurePoints();
         try {
-            if(controllerType > -1){
+            if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
             }
-            if(deviceId > 0){
+            if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
-            }else if(controllerId > 0){
+            } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
 
-    public String getCommissionedPoints(){
+    public String getCommissionedPoints() {
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterCommissionedPoints();
         try {
-            if(controllerType > -1){
+            if ((controllerType != null) && (controllerType > -1)) {
                 getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
             }
-            if(deviceId > 0){
+            if ((deviceId != null)&&(deviceId > 0)) {
                 getPointRequest.withDeviceId(deviceId);
-            }else if(controllerId > 0){
+            } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
             List<Map<String, Object>> points = getPointRequest.getPointsData();
-            setResult(AgentConstants.DATA,points);
+            setResult(AgentConstants.DATA, points);
             setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
-            LOGGER.info("Exception  occurred while getting points ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception  occurred while getting points ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
@@ -442,14 +445,13 @@ public class AgentAction extends AgentActionV2 {
                 setResponseCode(HttpURLConnection.HTTP_OK);
             }
         } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting alert points ",e);
+            LOGGER.info("Exception occurred while getting alert points ", e);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
     //__________________________________________________
     // general utilities
-
 
 
 }
