@@ -34,6 +34,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
+
 public class WorkflowRuleAction extends FacilioAction {
 	
 	/**
@@ -582,6 +583,27 @@ public class WorkflowRuleAction extends FacilioAction {
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 
+	}
+
+	private long categoryId;
+
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+
+	public String categoryRules () throws  Exception {
+		FacilioContext facilioContext = new FacilioContext();
+		facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.READING_RULE_MODULE);
+		facilioContext.put(FacilioConstants.ContextNames.CATEGORY_ID, categoryId);
+		setResult(FacilioConstants.ContextNames.RULES, ReadingRuleAPI.getRuleForRca(categoryId));
+
+
+		return  SUCCESS;
 	}
 	
 	public String v2rulesCount () throws Exception {

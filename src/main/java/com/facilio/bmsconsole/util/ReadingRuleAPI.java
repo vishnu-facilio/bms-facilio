@@ -855,4 +855,31 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return readingRuleContexts;
 	}
+
+	public static Map<Long, String> getRuleForRca(Long categoryId) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
+		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
+			fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingRuleFields());
+
+
+
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.table(readingRuleModule.getTableName())
+				.innerJoin(workflowRuleModule.getTableName())
+				.on(readingRuleModule.getTableName()+".ID = "+ workflowRuleModule.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", WorkflowRuleContext.RuleType.READING_RULE.getIntVal()+"", NumberOperators.EQUALS ))
+				.andCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", StringUtils.join(Collections.singleton(categoryId), ","), NumberOperators.EQUALS));
+		ruleBuilder.select(fields);
+		List<Map<String, Object>> props = ruleBuilder.get();
+		Map<Long, String> rcaMap = new HashMap<>();
+		if(props != null && props.size() > 0) {
+			for(Map<String, Object> record : props) {
+				rcaMap.put((Long) record.get("id"), (String) record.get("name"));
+			}
+		}
+		return rcaMap;
+	}
 }

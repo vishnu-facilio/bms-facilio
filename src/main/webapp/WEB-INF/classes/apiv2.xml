@@ -1253,6 +1253,9 @@
 		<action name="updateRuleActions"
 				class="com.facilio.bmsconsole.actions.RuleAction"
 				method="updateRuleAction" />
+		<action name="rcaRules"
+				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
+				method="categoryRules"></action>
 	</package>
 
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view"
