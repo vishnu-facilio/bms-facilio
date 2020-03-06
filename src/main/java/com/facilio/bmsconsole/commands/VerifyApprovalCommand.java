@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.util.TicketAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -47,6 +48,13 @@ public class VerifyApprovalCommand extends FacilioCommand {
 						}
 						if (cannotEdit) {
 							throw new IllegalArgumentException("Workorder with lock cannot be updated");
+						}
+					}
+
+					if (wo.getApprovalFlowId() > 0 && wo.getApprovalStatus() != null) {
+						FacilioStatus status = TicketAPI.getStatus(wo.getApprovalStatus().getId());
+						if (status.isRequestedState()) {
+							throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
 						}
 					}
 				}

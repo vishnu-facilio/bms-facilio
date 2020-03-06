@@ -40,11 +40,10 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				return false;
 			}
 			for (ModuleBaseWithCustomFields wo : wos) {
-				if (wo instanceof WorkOrderContext) {
-					if (((WorkOrderContext) wo).getApprovalFlowId() > 0) {
-						throw new IllegalArgumentException("Cannot change state as it is in approval");
-					}
- 				}
+				if (wo.getApprovalFlowId() > 0) {
+					throw new IllegalArgumentException("Cannot change state as it is in approval");
+				}
+
 				wo.setSubForm(null); // temp fix
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
 				/*if (wo.getModuleState().getId() != stateflowTransition.getFromStateId()) {

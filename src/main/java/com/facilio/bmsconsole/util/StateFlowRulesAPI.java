@@ -517,7 +517,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(),
 				criteria, null, null, StateFlowRuleContext.class);
-		return stateFlowList;
+		return WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(stateFlowList, StateFlowRuleContext.class), true, true);
 	}
 
 	public static List<WorkflowRuleContext> getAllStateTransitionList(long stateFlowId) throws Exception {

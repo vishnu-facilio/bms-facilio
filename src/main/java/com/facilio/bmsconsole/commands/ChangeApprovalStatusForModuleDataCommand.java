@@ -47,6 +47,9 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
                         }
                         approvalTransition.executeTrueActions(record, context, recordPlaceHolders);
                     }
+                    else {
+                        throw new IllegalArgumentException("Invalid permission to approve");
+                    }
                 }
             }
         }
