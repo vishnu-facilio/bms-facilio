@@ -40,8 +40,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
@@ -381,23 +382,13 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public static JSONArray getAlertsPoints() throws  Exception{
-		String domain = AccountUtil.getCurrentOrg().getDomain();
-		if(( domain != null ) && ( ! domain.isEmpty() )){
-			return getAlertsPointsData(domain);
-		}else {
-			throw new Exception(" org domain not valid "+domain);
-		}
-	}
-
 	public static JSONArray getAlertsPointsData(String domain) throws Exception {
 
-		String orgDomain = domain;
 		String bridgeUrl = FacilioProperties.getBridgeUrl();
-		if (bridgeUrl == null) {
+		if (bridgeUrl == null || domain == null || domain.isEmpty() ) {
 			throw new IllegalArgumentException("Facilio ALerts URL is null  ");
 		}
-		bridgeUrl = bridgeUrl + "=" + orgDomain;
+		bridgeUrl = bridgeUrl + "=" + domain;
 		URL url = new URL(bridgeUrl);
 		JSONArray jsonArray = new JSONArray();
 
@@ -416,19 +407,16 @@ public class AdminAction extends ActionSupport {
 					inline.append(sc.nextLine());
 				}
 				sc.close();
-				jsonArray = new JSONArray(inline.toString());
-
+				JSONParser parser = new JSONParser();
+				jsonArray = (JSONArray) parser.parse(inline.toString());
 			}
 
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Alters points Exception" + e.getMessage(), e);
-
 		} finally {
 			conn.disconnect();
 		}
-
 		return jsonArray;
-
 	}
 
 	public static List<Map<String, Object>> getOrgsList() throws Exception {

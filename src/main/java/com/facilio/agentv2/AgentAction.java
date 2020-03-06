@@ -436,9 +436,11 @@ public class AgentAction extends AgentActionV2 {
 
     public String getAlertsPoints(){
         try{
-            org.json.JSONArray alertsPoints = AdminAction.getAlertsPoints();
-            setResult(AgentConstants.DATA,alertsPoints);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            if( AccountUtil.getCurrentOrg()!= null ) {
+                JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
+                setResult(AgentConstants.DATA, alertsPoints);
+                setResponseCode(HttpURLConnection.HTTP_OK);
+            }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting alert points ",e);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
