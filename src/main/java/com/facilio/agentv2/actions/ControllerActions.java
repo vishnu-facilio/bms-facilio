@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
@@ -36,19 +35,18 @@ public class ControllerActions extends AgentActionV2 {
             List<Map<String, Object>> controller = ControllerApiV2.getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
             if (controller != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
-                setResponseCode(HttpURLConnection.HTTP_OK);
+                ok();
                 setResult(AgentConstants.DATA, controller);
                 return SUCCESS;
             } else {
-                setResult(AgentConstants.RESULT, NONE);
+                noContent();
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting controller using orgId", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResult(AgentConstants.RESULT, ERROR);
+            internalError();
         }
         setResult(AgentConstants.DATA, new JSONObject());
-        setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         return SUCCESS;
     }
 
@@ -57,16 +55,14 @@ public class ControllerActions extends AgentActionV2 {
         try {
             if (ControllerUtilV2.discoverPoints(getControllerId())) {
                 setResult(AgentConstants.RESULT, SUCCESS);
-            } else {
-                setResult(AgentConstants.RESULT, ERROR);
             }
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
             return SUCCESS;
         } catch (Exception e) {
             LOGGER.info("Exception while discoverPoints", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -75,11 +71,11 @@ public class ControllerActions extends AgentActionV2 {
         try {
             ControllerApiV2.resetController(getControllerId());
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
             return SUCCESS;
         } catch (Exception e) {
             LOGGER.info("Exception occurred while reset controller");
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
             setResult(AgentConstants.EXCEPTION, e.getMessage());
         }
         setResult(AgentConstants.RESULT, ERROR);
@@ -93,11 +89,11 @@ public class ControllerActions extends AgentActionV2 {
                 getPointRequest.withControllerId(getControllerId());
                 List<Map<String, Object>> points = getPointRequest.getPointsData();
                 setResult(AgentConstants.DATA,points);
-                setResponseCode(HttpURLConnection.HTTP_OK);
+                ok();
             } catch (Exception e) {
                 LOGGER.info("Exception  occurred while getting points ",e);
                 setResult(AgentConstants.EXCEPTION,e.getMessage());
-                setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                internalError();
             }
         return SUCCESS;
     }
@@ -109,11 +105,11 @@ public class ControllerActions extends AgentActionV2 {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA,points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -125,11 +121,11 @@ public class ControllerActions extends AgentActionV2 {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA,points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -141,11 +137,11 @@ public class ControllerActions extends AgentActionV2 {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA,points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }

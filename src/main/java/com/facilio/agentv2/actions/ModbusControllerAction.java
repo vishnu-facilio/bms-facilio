@@ -62,6 +62,16 @@ public class ModbusControllerAction extends AgentIdAction {
         this.netwokId = netwokId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
+
 
     public String addModbusController() {
         try {
@@ -71,6 +81,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setNetworkId(getNetwokId());
                 controllerContext.setSlaveId(getSlaveId().intValue());
+                controllerContext.setName(name);
                 if (AgentMessenger.sendConfigureModbusRtuControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);

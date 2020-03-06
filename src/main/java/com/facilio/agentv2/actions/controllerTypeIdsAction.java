@@ -38,7 +38,7 @@ public class controllerTypeIdsAction extends IdsAction {
                 PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()));
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
-                setResponseCode(HttpURLConnection.HTTP_OK);
+                ok();
             } else {
                 throw new Exception(" ids can't be empty");
             }
@@ -47,7 +47,7 @@ public class controllerTypeIdsAction extends IdsAction {
             setResult(AgentConstants.RESULT, ERROR);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         }
         return SUCCESS;
     }
@@ -56,7 +56,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             List<Long> pointIds = getRecordIds();
             if (PointsAPI.deletePointsChain(pointIds, FacilioControllerType.valueOf(getControllerType()))) {
-                setResponseCode(HttpURLConnection.HTTP_OK);
+                ok();
                 setResult(AgentConstants.RESULT, SUCCESS);
                 return SUCCESS;
             } else {
@@ -77,7 +77,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             setResult(AgentConstants.RESULT, PointsAPI.unConfigurePointsChain(getRecordIds(), FacilioControllerType.valueOf(getControllerType())));
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
@@ -91,7 +91,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getRecordIds(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.SUBSCRIBE));
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
@@ -105,7 +105,7 @@ public class controllerTypeIdsAction extends IdsAction {
         try {
             setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getRecordIds(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.UNSUBSCRIBE));
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());

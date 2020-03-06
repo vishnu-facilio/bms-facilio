@@ -5,6 +5,8 @@ import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,6 +17,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -104,18 +107,27 @@ public class LogsApi
         return -1;
     }
 
-    public static List<Map<String,Object>> getMetrics(long agentId, int limit, int offset) throws Exception {
+    public static List<Map<String,Object>> getMetrics(long agentId, FacilioContext context) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FIELDS)
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
-                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName()+" DESC,"+FieldFactory.getCreatedTime(MODULE).getColumnName()+" DESC");
-        if (limit > 0) {
-            selectRecordBuilder.limit(limit);
-        }
-        if(offset > 0){
+                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName()+" DESC,"+FieldFactory.getCreatedTime(MODULE).getColumnName()+" DESC")
+                .limit(150);
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        if (pagination != null ) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page-1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
             selectRecordBuilder.offset(offset);
+            selectRecordBuilder.limit(perPage);
         }
+
         return selectRecordBuilder.get();
     }
 

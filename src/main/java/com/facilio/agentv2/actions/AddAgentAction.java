@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.net.HttpURLConnection;
 
 public class AddAgentAction extends AgentActionV2
 {
@@ -83,12 +82,12 @@ public class AddAgentAction extends AgentActionV2
             jsonObject.put("files",files);
             setResult(AgentConstants.DATA, jsonObject);
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResponseCode(HttpURLConnection.HTTP_CREATED);
+            ok();
         }catch (Exception e){
             LOGGER.info("Exception while adding agent",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }

@@ -32,7 +32,7 @@ public class ControllerUtilV2 {
         loadControllerListMap();
     }
 
-    public static boolean discoverPoints(Long controllerId) {
+    public static boolean discoverPoints(Long controllerId) throws Exception {
         return ControllerMessenger.discoverPoints(controllerId);
     }
 

@@ -90,7 +90,7 @@ public class ModbusTcpControllerContext extends Controller {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(AgentConstants.ID, getId());
         jsonObject.put(AgentConstants.SLAVE_ID, getSlaveId());
-        jsonObject.put(AgentConstants.IP_ADDRESS, "getIpAddress()");
+        jsonObject.put(AgentConstants.IP_ADDRESS, ipAddress);
         jsonObject.put(AgentConstants.NETWORK_ID, 0);
         return jsonObject;
     }

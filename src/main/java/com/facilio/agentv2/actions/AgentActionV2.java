@@ -3,6 +3,8 @@ package com.facilio.agentv2.actions;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import org.json.simple.JSONObject;
 
+import java.net.HttpURLConnection;
+
 public class AgentActionV2 extends FacilioAction
 {
     public boolean notNull(Object object) {
@@ -18,6 +20,18 @@ public class AgentActionV2 extends FacilioAction
             return true;
         }
         return false;
+    }
+
+    public void ok(){
+        setResponseCode(HttpURLConnection.HTTP_OK);
+    }
+
+    public void internalError(){
+        setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+    }
+
+    public void noContent(){
+        setResponseCode(HttpURLConnection.HTTP_NO_CONTENT);
     }
 
 }

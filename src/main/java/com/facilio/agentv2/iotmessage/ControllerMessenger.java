@@ -167,16 +167,11 @@ public class ControllerMessenger {
         return iotData;
     }
 
-public static boolean discoverPoints(long controllerId){
-        try {
+public static boolean discoverPoints(long controllerId) throws Exception {
             IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
             LOGGER.info(" iot data "+iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
-        }catch (Exception e){
-            LOGGER.info("Exception occurred ",e);
-        }
-        return false;
 }
 
     public static boolean discoverPoints(Controller controller){
