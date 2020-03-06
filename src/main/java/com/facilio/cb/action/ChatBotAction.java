@@ -21,6 +21,16 @@ public class ChatBotAction extends FacilioAction {
 	
 	String chatMessage;
 	
+	long startTime = -1;
+	
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
 	public String getChatMessage() {
 		return chatMessage;
 	}
@@ -103,6 +113,8 @@ public class ChatBotAction extends FacilioAction {
 		FacilioChain rdmChain = ReadOnlyChainFactory.getChatBotConversationChain();
 		FacilioContext constructListContext = rdmChain.getContext();
 		constructListContext(constructListContext);
+		
+		constructListContext.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		
 		rdmChain.execute();
 		

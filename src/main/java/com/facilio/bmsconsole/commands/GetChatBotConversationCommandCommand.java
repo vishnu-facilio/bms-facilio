@@ -40,6 +40,8 @@ public class GetChatBotConversationCommandCommand extends FacilioCommand {
 		
 		String moduleName = ModuleFactory.getCBSessionModule().getName();
 		
+		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
+		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getCBSessionFields());
 		
 		Boolean fetchCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
@@ -55,13 +57,17 @@ public class GetChatBotConversationCommandCommand extends FacilioCommand {
 			fields = FieldFactory.getCBSessionFields();
 		}
 		
-		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(ModuleFactory.getCBSessionModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), AccountUtil.getCurrentUser().getId()+"", NumberOperators.EQUALS))
 				.orderBy("START_TIME desc")
 				;
+		
+		if(startTime > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"), startTime+"", NumberOperators.LESS_THAN));
+		}
+		
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
