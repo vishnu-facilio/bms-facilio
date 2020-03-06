@@ -649,11 +649,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static void addOrUpdateFormDetails(FormInterface rule) throws Exception {
 		FacilioForm form = rule.getForm();
 
+		String formName = "Enter Details" + "_" + rule.getId();
+		formName = formName.toLowerCase().replaceAll("[^a-zA-Z0-9_]+", "");
+		FacilioForm formFromDB = FormsAPI.getFormFromDB(formName, form.getModule());
+		if (formFromDB != null) {
+			FormsAPI.deleteForms(Collections.singletonList(formFromDB.getId()));
+		}
+
 		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
 			if (rule.getFormId() > 0) {
 				rule.setFormId(-99);
-//				FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
-//				rule.setFormId(-1);
 			}
 		}
 		else {
@@ -663,23 +668,11 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			FacilioModule module = modBean.getModule(rule.getModuleId());
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 
-			if (form.getId() > 0) {
-				form.setName(null);
-				context.put(FacilioConstants.ContextNames.FORM, form);
+			form.setName(formName);
+			context.put(FacilioConstants.ContextNames.FORM, form);
 
-				FacilioChain chain = TransactionChainFactory.getUpdateFormChain();
-				chain.execute(context);
-			}
-			else {
-				if (StringUtils.isEmpty(form.getName())) {
-					form.setName("Enter Details");
-				}
-				form.setName(form.getName() + "_" + rule.getId());
-				context.put(FacilioConstants.ContextNames.FORM, form);
-
-				FacilioChain chain = TransactionChainFactory.getAddFormCommand();
-				chain.execute(context);
-			}
+			FacilioChain chain = TransactionChainFactory.getAddFormCommand();
+			chain.execute(context);
 
 			rule.setFormId(form.getId());
 		}
