@@ -651,7 +651,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 		String formName = "Enter Details" + "_" + rule.getId();
 		formName = formName.toLowerCase().replaceAll("[^a-zA-Z0-9_]+", "");
-		FacilioForm formFromDB = FormsAPI.getFormFromDB(formName, form.getModule());
+		long ruleModuleId = rule.getModuleId();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule ruleModule = modBean.getModule(ruleModuleId);
+		if (ruleModule == null) {
+			throw new IllegalArgumentException("Invalid module");
+		}
+		FacilioForm formFromDB = FormsAPI.getFormFromDB(formName, ruleModule);
 		if (formFromDB != null) {
 			FormsAPI.deleteForms(Collections.singletonList(formFromDB.getId()));
 		}
@@ -662,10 +668,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		else {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Context context = new FacilioContext();
 
-			FacilioModule module = modBean.getModule(rule.getModuleId());
+			FacilioModule module = modBean.getModule(ruleModuleId);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 
 			form.setName(formName);
