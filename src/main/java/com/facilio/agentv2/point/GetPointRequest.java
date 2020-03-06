@@ -129,7 +129,6 @@ public class GetPointRequest {
                     if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                         selectRecordBuilder.andCriteria(criteria);
                     }
-                    selectRecordBuilder.limit(limit).offset(offset);
                     data.addAll(selectRecordBuilder.get());
                     LOGGER.info("Query "+selectRecordBuilder.toString());
                 }catch (Exception e){
@@ -139,7 +138,8 @@ public class GetPointRequest {
         }
         else {
             if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
-                selectRecordBuilder.andCriteria(criteria);
+                selectRecordBuilder.andCriteria(criteria)
+                        .limit(limit).offset(offset);
             }
             data = selectRecordBuilder.get();
         }
