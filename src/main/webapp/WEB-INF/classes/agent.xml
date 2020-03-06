@@ -243,7 +243,7 @@
                 method="getSubscribedPoints"> <!--DONE-->
         </action>
 
-        <action name="getUnonfPoints" class="com.facilio.agentv2.AgentAction"
+        <action name="getUnconfPoints" class="com.facilio.agentv2.AgentAction"
                 method="getUnconfiguredPoints"> <!--DONE-->
         </action>
 
