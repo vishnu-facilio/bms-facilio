@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.db.criteria.Condition;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
@@ -130,6 +130,7 @@ public enum LookupOperator implements Operator<Criteria> {
 		Map<String, Operator> operatorMap = new HashMap<>();
 		operatorMap.putAll(PickListOperators.getAllOperators());
 		operatorMap.putAll(BuildingOperator.getAllOperators());
+		operatorMap.putAll(UserOperators.getAllOperators());
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}

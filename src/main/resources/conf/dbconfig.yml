@@ -25,3 +25,5 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.BuildingOperator
   - types: [STRING, NUMBER, DECIMAL, BOOLEAN, DATE, DATE_TIME, LOOKUP, ENUM, FILE, COUNTER ,ID]
     enumClassName: com.facilio.db.criteria.operators.FieldOperator
+  - types: [LOOKUP]
+    enumClassName: com.facilio.db.criteria.operators.UserOperators

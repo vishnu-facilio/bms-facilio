@@ -134,7 +134,7 @@ public class ValidateNewTasksCommand extends FacilioCommand {
 											throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
 										case TASK:
 											if (!pmExecution && !updatePM) {//Temp fix
-												throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
+												throw new IllegalArgumentException(readingField.getDisplayName()+" cannot be used as it is already used in another task.");
 											}
 										default:
 											metaList.add(meta);

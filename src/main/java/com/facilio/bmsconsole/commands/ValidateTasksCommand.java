@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -138,7 +138,7 @@ public class ValidateTasksCommand extends FacilioCommand {
 										throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
 									case TASK:
 										if (!pmExecution && !updatePM) {//Temp fix
-											throw new IllegalArgumentException(readingField.getName() + " cannot be used as it is already used in another task.");
+											throw new IllegalArgumentException(readingField.getDisplayName() + " cannot be used as it is already used in another task.");
 										}
 									default:
 										metaList.add(meta);

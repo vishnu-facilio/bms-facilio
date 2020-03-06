@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -24,6 +23,7 @@ import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -63,7 +63,6 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)
 				|| FacilioConstants.ModuleNames.PRINTERS.equals(specialType)
-				|| ContextNames.FORMULA_FIELD.equals(specialType)
 				|| ContextNames.SLA_RULE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
@@ -640,9 +639,6 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)) {
 			return ModuleFactory.getConnectedAppsModule();
-		}
-		else if(ContextNames.FORMULA_FIELD.equals(specialType)) {
-			return ModuleFactory.getFormulaFieldModule();
 		}
 		else if(ContextNames.PRINTERS.equals(specialType)) {
 			return ModuleFactory.getPrinterModule();
