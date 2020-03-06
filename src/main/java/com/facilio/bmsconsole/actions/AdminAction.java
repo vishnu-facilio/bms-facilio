@@ -388,7 +388,7 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public static JSONArray getAlertsPointsData() throws  Exception{
+	public static JSONArray getAlertsPoints() throws  Exception{
 		String domain = AccountUtil.getCurrentOrg().getDomain();
 		if(( domain != null ) && ( ! domain.isEmpty() )){
 			return getAlertsPointsData(domain);
@@ -396,6 +396,7 @@ public class AdminAction extends ActionSupport {
 			throw new Exception(" org domain not valid "+domain);
 		}
 	}
+
 	public static JSONArray getAlertsPointsData(String domain) throws Exception {
 
 		String orgDomain = domain;

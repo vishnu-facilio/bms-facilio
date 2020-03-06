@@ -142,6 +142,9 @@
 
         <action name="getFilter" class="com.facilio.agentv2.AgentAction" method="getAgentFilter">
         </action>
+
+        <action name="data" class="com.facilio.agentv2.AgentAction" method="getAlertsPoints">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">

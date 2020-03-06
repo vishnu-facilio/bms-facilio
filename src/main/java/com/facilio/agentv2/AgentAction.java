@@ -11,6 +11,7 @@ import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -433,6 +434,17 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getAlertsPoints(){
+        try{
+            org.json.JSONArray alertsPoints = AdminAction.getAlertsPoints();
+            setResult(AgentConstants.DATA,alertsPoints);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting alert points ",e);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
     //__________________________________________________
     // general utilities
 
