@@ -412,7 +412,7 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'Number test(Map data){
+                   workflowV2String : 'Map test(Map data){
     
                                          wos = WorkOrder().fetch([id != null]);
                                          
@@ -420,8 +420,11 @@
                                          if(wos != null) {
                                             count = wos.size();
                                          }
-                                         
-                                         return count;
+                                         resMap = {};
+                                         resMap.label = "My Open Workorder";
+                                         resMap.value = count;
+                                         resMap.subLabel = "This Year";
+                                         return resMap;
                                        }'  
    invokeSamples:
     -
