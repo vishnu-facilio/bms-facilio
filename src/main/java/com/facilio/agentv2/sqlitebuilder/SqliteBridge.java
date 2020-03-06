@@ -12,6 +12,8 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
+import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
@@ -28,6 +30,7 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,6 +135,7 @@ public class SqliteBridge {
                         newController.setAgentId(newAgent.getId());
                         newController.setSiteId(newAgent.getSiteId());
                         try {
+                            addFieldDevice(newController);
                             long newControllerId = ControllerApiV2.addController(newController, newAgent);
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId+" json "+newController.toJSON());
                             if (newControllerId > 0) {
@@ -145,6 +149,9 @@ public class SqliteBridge {
                                         .withAgentId(newAgent.getId())
                                         .withControllerProperties(newController.getChildJSON(), FacilioControllerType.valueOf(controllerType.getKey()));
                                 Controller existingController = getControllerRequest.getController();
+                                if(existingController != null){
+                                    throw new Exception(" controller not present and cant be added ");
+                                }
                                 controller.setAgentId(existingController.getId());
                             }catch (Exception e1){
                                 LOGGER.info(" wxception while fetching existing controller ",e1);
@@ -162,6 +169,21 @@ public class SqliteBridge {
 
         }
         return controllers;
+    }
+
+    private static void addFieldDevice(Controller newController) throws Exception {
+        Device fieldDevice = new Device();
+        fieldDevice.setControllerType(newController.getControllerType());
+        fieldDevice.setSiteId(newController.getSiteId());
+        fieldDevice.setAgentId(newController.getAgentId());
+        fieldDevice.setName(newController.getName());
+        fieldDevice.setIdentifier(newController.getIdentifier());
+        JSONObject controllerProps = new JSONObject();
+        controllerProps.putAll(newController.toJSON());
+        controllerProps.put(AgentConstants.CONTROLLER,newController.getChildJSON());
+        fieldDevice.setControllerProps(controllerProps);
+        FieldDeviceApi.addFieldDevice(fieldDevice);
+        newController.setDeviceId(fieldDevice.getId());
     }
 
     private static void migratePoints(ControllerContext controller, long newControllerId) {

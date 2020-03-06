@@ -30,7 +30,7 @@ public class GetPointRequest {
     private GenericSelectRecordBuilder selectRecordBuilder = null;
     private Criteria criteria = new Criteria();
     private FacilioControllerType controllerType = null;
-    private int limit = 1000 ;
+    private int limit = 150 ;
     private int offset = 0;
 
     public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {

@@ -51,15 +51,25 @@ public class FieldDeviceApi
         } catch (Exception e) {
             LOGGER.info(" Bulk insert failed ");
             for (Device device : devices) {
-                GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                        .table(MODULE.getTableName())
-                        .fields(FieldFactory.getFieldDeviceFields());
-                if (builder.insert(FieldUtil.getAsProperties(device)) < 0) {
-                    LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
-                }
+                addFieldDevice(device);
             }
         }
         //try multiple insert if bulk fails
+    }
+
+    public static void addFieldDevice(Device device) throws Exception {
+        device.setCreatedTime(System.currentTimeMillis());
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(MODULE.getTableName())
+                .fields(FieldFactory.getFieldDeviceFields());
+        long deviceId = builder.insert(FieldUtil.getAsProperties(device));
+        if ( deviceId > 0) {
+            LOGGER.info(" field device added "+deviceId);
+            device.setId(deviceId);
+        }else {
+            LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
+
+        }
     }
 
     public static Device getDevice(long agentId, String identifier) throws Exception {
