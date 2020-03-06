@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.cb.context.ChatBotConfirmContext;
 import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotParamContext;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface {
@@ -26,7 +27,13 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 			params.setParamName(objects[0].toString());
 			params.setMessage(objects[1].toString());
 			if(objects.length > 2) {
-				params.setOptions((List<JSONObject>) objects[2]);
+				if(objects[2] instanceof List) {
+					params.setOptions((List<JSONObject>) objects[2]);
+				}
+				else if (objects[2] instanceof Criteria) {
+					params.setCriteria((Criteria)objects[2]);
+					params.setModuleName((String)objects[3]);
+				}
 			}
 			return params;
 		};

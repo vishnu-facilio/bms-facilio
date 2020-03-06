@@ -4,4 +4,5 @@
 	 <module displayname = 'BaseSpace' name='basespace' classname='com.facilio.workflowv2.modulefunctions.FacilioBaseSpaceModuleFunctions'/>
 	 <module displayname = 'Contact' name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
 	 <module displayname = 'User' name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
+	 <module displayname = 'VisitorLogging' name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
 </workflow>

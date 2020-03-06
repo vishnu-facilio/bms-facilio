@@ -4,9 +4,14 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.db.criteria.Criteria;
+
 public class ChatBotParamContext {
 	
+	String message;
 	String paramName;
+	String moduleName;		// for criteria Type
+	Criteria criteria;
 	List<JSONObject> options;
 	
 	public String getParamName() {
@@ -27,5 +32,17 @@ public class ChatBotParamContext {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	String message;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 }

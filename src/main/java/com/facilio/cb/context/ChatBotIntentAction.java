@@ -75,7 +75,8 @@ public class ChatBotIntentAction {
 		LIST_CARD(3,"List Card"),
 		SINGLE_SELECT(4,"Single Select"),
 		GRAPH(5,"Graph"),
-		SUMMARY_CARD(6,"Summary Card"),
+		CONFIRMATION_CARD(6,"Confirmation Card"),
+		LOOKUP(7,"Lookup"),
 		;
 
 		int intVal;

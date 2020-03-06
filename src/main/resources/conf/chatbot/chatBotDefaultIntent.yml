@@ -430,3 +430,128 @@
     -
        sampleLocalId : 2
        sample: "give me open wo count"
+       
+- 
+   name: "system_add_invite_intent"
+   displayName: "System Add Invite Intent"
+   type: 1
+   localId : 15
+   withParams : true
+   params:
+   -
+      name : 'visitorType'
+      askAs : "Select visitor type"
+      dataType : 2
+      mlType : 1
+      localId : 1
+   -
+      name : 'name'
+      askAs : "Enter name"
+      dataType : 1
+      mlType : 1
+      localId : 2
+   -
+      name : 'phone'
+      askAs : "Enter phone number"
+      dataType : 1
+      mlType : 1
+      localId : 3
+   -
+      name : 'email'
+      askAs : "Enter email"
+      dataType : 1
+      mlType : 1
+      localId : 4
+   -
+      name : 'host'
+      askAs : "Select host"
+      dataType : 2
+      mlType : 1
+      localId : 5
+   -
+      name : 'purpose'
+      askAs : "Select purpose"
+      dataType : 2
+      mlType : 1
+      localId : 6
+      
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.visitorType == null) {
+                             
+                                db = {
+								    criteria : [id > 0]
+							    };
+                                
+                              	types = Module("visitorType").fetch(db);
+                                
+                                typeList = [];
+                                
+                                for each index,type in types {
+                                    typeMap = {};
+                                    typeMap.id = type.id;
+                                    typeMap.label = type.name;
+                                    
+                                    typeList.add(typeMap);
+                                }
+                                
+                                return chatBot().param("visitorType","Select visitor type",typeList);
+                             }
+                             else if(data.name == null) {
+                                return chatBot().param("name","Enter name");
+                             }
+                             else if(data.phone == null) {
+                                return chatBot().param("phone","Enter phone number");
+                             }
+                             else if(data.email == null) {
+                                return chatBot().param("email","Enter email");
+                             }
+                             else if(data.host == null) {
+                                
+								criteria1 = [id > 0];
+                                
+                                return chatBot().param("host","Select host",criteria1,"contact");
+                             }
+                             else{
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'String test(Map data){
+    
+                                         invite = {};
+                                         invite.visitorType.id = data.visitorType;
+                                         invite.visitorPhone = data.phone;
+                                         invite.visitorName = data.name;
+                                         invite.visitorEmail = data.email;
+                                         invite.host.id= data.host;		
+                                         invite.purposeOfVisit = 3;	
+                                         invite.isPreregistered = true;
+                                         
+                                         VisitorLogging().add(invite);
+                                         
+                                         return "Invited successfully.";
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "add invite"
+    -
+       sampleLocalId : 2
+       sample: "create invite"
+    -
+       sampleLocalId : 3
+       sample: "invite user"
+    -
+       sampleLocalId : 4
+       sample: "invite people"

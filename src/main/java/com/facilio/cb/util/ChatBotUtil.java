@@ -29,6 +29,7 @@ import com.facilio.cb.context.ChatBotSessionParam;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -192,6 +193,8 @@ public class ChatBotUtil {
 			
 			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParam(intent.getId(), params.getParamName());
 			intentParam.setOptions(params.getOptions());
+			intentParam.setModuleName(params.getModuleName());
+			intentParam.setCriteria(params.getCriteria());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
@@ -482,6 +485,11 @@ public class ChatBotUtil {
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.SINGLE_SELECT.getIntVal());
 				
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_OPTIONS, param.getOptions());
+			}
+			else if(param.getCriteria() != null) {
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.LOOKUP.getIntVal());
+				result.put(FacilioConstants.ContextNames.CRITERIA, FieldUtil.getAsJSON(param.getCriteria()));
+				result.put(FacilioConstants.ContextNames.MODULE_NAME, param.getModuleName());
 			}
 			else {
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());

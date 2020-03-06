@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.cb.context.ChatBotIntentAction.ResponseType;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldType;
 
 public class ChatBotIntentParam {
@@ -23,6 +24,9 @@ public class ChatBotIntentParam {
 	
 	List<JSONObject> options;
 	
+	String moduleName;		// for criteria Type
+	Criteria criteria;
+	
 
 	public List<JSONObject> getOptions() {
 		return options;
@@ -30,6 +34,20 @@ public class ChatBotIntentParam {
 
 	public void setOptions(List<JSONObject> options) {
 		this.options = options;
+	}
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 	
 	public int getLocalId() {
