@@ -87,7 +87,7 @@ public class MetricsApi {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(MODULE_NAME);
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> allFields = modBean.getModuleFields(module.getName());
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
                 .select(allFields)
@@ -258,7 +258,10 @@ public class MetricsApi {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         LOGGER.info(" metrics "+FieldUtil.getAsJSON(metrics));
         FacilioModule module = modBean.getModule(MODULE_NAME);
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> allFields = modBean.getModuleFields(module.getName());
+        for (FacilioField allField : allFields) {
+            System.out.println(allField.getName());
+        }
         InsertRecordBuilder<AgentMetrics> insertRecordBuilder = new InsertRecordBuilder<AgentMetrics>()
                 .fields(allFields)
                 .module(module);
@@ -268,7 +271,7 @@ public class MetricsApi {
     public static boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(MODULE_NAME);
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> allFields = modBean.getModuleFields(module.getName());
         UpdateRecordBuilder<AgentMetrics> updateRecordBuilder = new UpdateRecordBuilder<AgentMetrics>()
                 .fields(allFields)
                 .module(module)

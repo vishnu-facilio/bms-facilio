@@ -255,7 +255,7 @@ public class DataProcessorV2
             }
 
         } catch (Exception e) {
-            LOGGER.info("Exception while processing  points->" + payload);
+            LOGGER.info("Exception while processing  points->" + payload+" ",e);
         }
         return false;
     }

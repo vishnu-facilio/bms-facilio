@@ -360,9 +360,11 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE,
 										FacilioConstants.ContextNames.WORKPERMIT,
 										FacilioConstants.ContextNames.SAFETY_PLAN,
-										FacilioConstants.ContextNames.SERVICE_REQUEST
-										
-										)));
+										FacilioConstants.ContextNames.SERVICE_REQUEST,
+										FacilioConstants.ContextNames.AGENT_METRICS_MODULE
+
+
+			)));
 
 
 
@@ -407,9 +409,7 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.SAFETY_PLAN,
 					FacilioConstants.ContextNames.HAZARD,
 					FacilioConstants.ContextNames.PRECAUTION,
-					FacilioConstants.ContextNames.SERVICE_REQUEST,
-					FacilioConstants.ContextNames.AGENT_METRICS_MODULE
-					
+					FacilioConstants.ContextNames.SERVICE_REQUEST
 			))
 			);
 
