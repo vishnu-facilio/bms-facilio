@@ -137,7 +137,7 @@ public class FieldDeviceApi
         for (Map<String, Object> deviceMap : getDevices(null, ids)) {
             try{
                 device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
-                controller = ControllerUtilV2.getControllerFromJSON( device.getControllerProps());
+                controller = ControllerUtilV2.makeControllerFromFieldDevice(device);
                 if (controller == null) {
                     throw new Exception(" controller cant be created ");
                 }

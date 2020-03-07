@@ -45,7 +45,8 @@ public class ControllerUtilV2 {
         }
     }
 
-    public static Map<Long, Controller> fieldDeviceToController(long agentId, Device device) throws Exception {
+
+    public static Map<Long, Controller> fieldDeviceToController(Device device) throws Exception {
         Controller controller;
         Map<Long, Controller> deviceIdControllerMap = new HashMap<>();
         LOGGER.info("device are " + device);
@@ -55,16 +56,15 @@ public class ControllerUtilV2 {
         if ((controllerProps != null) && (!controllerProps.isEmpty())) {
             controllerProps.put(AgentConstants.DEVICE_ID, device.getId());
             controllerProps.putAll((JSONObject)device.getControllerProps().get(AgentConstants.CONTROLLER));
-            controllerProps.put(AgentConstants.CONTROLLER_TYPE,controllerProps.get(AgentConstants.CONTROLLER_TYPE));
             if(controllerProps.containsKey(AgentConstants.AGENT_TYPE)){
                 controllerProps.remove(AgentConstants.AGENT_TYPE);
             }
-            controller = getControllerFromJSON( controllerProps);
+            controller = makeControllerFromFieldDevice(device);
             if (controller != null) {
-                controller.setAgentId(agentId);
+                controller.setAgentId(device.getAgentId());
                 Controller controllerFromDb = null;//ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
                 GetControllerRequest getControllerRequest = new GetControllerRequest()
-                        .withAgentId(agentId)
+                        .withAgentId(device.getAgentId())
                         .withControllerProperties(controller.getChildJSON(),FacilioControllerType.valueOf(controller.getControllerType()));
                 controllerFromDb = getControllerRequest.getController();
                 if (controllerFromDb != null) {
@@ -94,34 +94,24 @@ public class ControllerUtilV2 {
         return deviceIdControllerMap;
     }
 
-    public static Controller getControllerFromJSON(Map<String, Object> controllerJSON) {
+    public static Controller makeControllerFromFieldDevice(Device fieldDevice) {
         Controller controller = null;
         try {
-            if (controllerJSON != null && (!controllerJSON.isEmpty())) {
-                if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, controllerJSON)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.CONTROLLER_TYPE)));
-                    controllerJSON.put(AgentConstants.CONTROLLER_TYPE,controllerType.asInt());
-                    if(controllerJSON.containsKey(AgentConstants.AGENT_TYPE)){
-                        controllerJSON.remove(AgentConstants.AGENT_TYPE);
-                    }
-                    JSONObject controllerPropJSON = new JSONObject();
-                    if(containsValueCheck(AgentConstants.CONTROLLER,controllerJSON)){
-                        Object object = controllerJSON.get(AgentConstants.CONTROLLER);
-                        if(object instanceof String){
-                            controllerPropJSON = (JSONObject) new JSONParser().parse(String.valueOf(object));
-                            controllerJSON.putAll(controllerPropJSON);
-                        }else {
-                            controllerJSON.putAll((JSONObject)object);
-                        }
-                        controller = ControllerApiV2.makeControllerFromMap(controllerJSON,controllerType);
-                    }else {
-                        throw new Exception("controllerJSON missing controller specific props "+controllerJSON);
-                    }
-                } else {
-                    LOGGER.info(" Controller Type missing ");
+            if(fieldDevice != null){
+                FacilioControllerType controllerType = FacilioControllerType.valueOf(fieldDevice.getControllerType());
+
+                JSONObject controllerPropJSON;
+                JSONObject controllerJSON = fieldDevice.getControllerProps();
+                Object object = controllerJSON.get(AgentConstants.CONTROLLER);
+                if(object instanceof String){
+                    controllerPropJSON = (JSONObject) new JSONParser().parse(String.valueOf(object));
+                    controllerJSON.putAll(controllerPropJSON);
+                }else {
+                    controllerJSON.putAll((JSONObject)object);
                 }
-            } else {
-                LOGGER.info("Exception occurred, controllerJSON can't be null or empty " + controllerJSON);
+                controller = ControllerApiV2.makeControllerFromMap(controllerJSON,controllerType);
+            }else {
+                LOGGER.info("fieldDevice cant be null");
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);

@@ -27,7 +27,7 @@ public class FieldDevicesToControllerCommand extends FacilioCommand {
                 context.put(AgentConstants.CONTROLLER,ControllerApiV2.getCon);
                 return false;
             }*/
-            Map<Long, Controller> deviceIdControllerMap = ControllerUtilV2.fieldDeviceToController(agentId, device);
+            Map<Long, Controller> deviceIdControllerMap = ControllerUtilV2.fieldDeviceToController(device);
             if (deviceIdControllerMap.isEmpty()) {
                 throw new Exception(" No controllers for devices->"+device.getId());
             }

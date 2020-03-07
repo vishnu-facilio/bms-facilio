@@ -128,7 +128,7 @@ public class GetPointRequest {
                     if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                         selectRecordBuilder.andCriteria(criteria);
                     }
-                    selectRecordBuilder.limit(150);
+                    selectRecordBuilder.limit(30);
                     data.addAll(selectRecordBuilder.get());
                     LOGGER.info(controllerType.asString()+" Query "+selectRecordBuilder.toString());
                 }catch (Exception e){
@@ -136,6 +136,7 @@ public class GetPointRequest {
                 }
             }
         }
+
         else {
             if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                 selectRecordBuilder.andCriteria(criteria)
