@@ -22,6 +22,17 @@ public class OpcDaControllerAction extends AgentIdAction {
 
     private String password;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @NotNull
+    private String name;
+
     public String getUrl() {
         return url;
     }
@@ -53,6 +64,7 @@ public class OpcDaControllerAction extends AgentIdAction {
             controllerContext.setPassword(getPassword());
             controllerContext.setUserName(getUserName());
             controllerContext.setAgentId(getAgentId());
+            controllerContext.setName(name);
             AgentMessenger.sendConfigureOpcXmlDaController(controllerContext);
             setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);

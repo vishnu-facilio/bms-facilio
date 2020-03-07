@@ -8,9 +8,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -23,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -189,16 +186,16 @@ public class MetricsApi {
                 if (payload != null) {
                     if (containsValueCheck(AgentConstants.PUBLISH_TYPE, payload)) {
 
-                        Map<String, Object> toInsertMap = new HashMap<>();
                         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentAccount().getOrg().getOrgId());
-                        toInsertMap.put(AgentConstants.AGENT_ID, agent.getId());
-                        toInsertMap.put(AgentConstants.PUBLISH_TYPE, getPublishType(payload).asInt());
-                        toInsertMap.put(AgentConstants.NUMBER_OF_MSGS, 1);
-                        toInsertMap.put(AgentConstants.CREATED_TIME, getCreatedTime(agent));
-                        toInsertMap.put(AgentConstants.SIZE, payload.toString().length());
-                        toInsertMap.put(AgentConstants.SITE_ID, agent.getSiteId());
-                        toInsertMap.put(AgentConstants.LAST_UPDATED_TIME, toInsertMap.get(AgentConstants.CREATED_TIME));
-                        return bean.addMetrics(toInsertMap);
+                        AgentMetrics metrics = new AgentMetrics();
+                        metrics.setAgentId(agent.getId());
+                        metrics.setPublishType(getPublishType(payload).asInt());
+                        metrics.setNumberOfMessages(1);
+                        metrics.setCreatedTime(getCreatedTime(agent));
+                        metrics.setSize(payload.toString().length());
+                        metrics.setSiteId(agent.getSiteId());
+                        metrics.setLastUpdatedTime(System.currentTimeMillis());
+                        return bean.addMetrics(metrics);
                     } else {
                         throw new Exception(" payload is missing key publishtype ");
                     }
@@ -257,19 +254,25 @@ public class MetricsApi {
         return false;
     }
 
-    public static boolean insertMetrics(Map<String, Object> toInsertMap) throws Exception {
-        GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                .table(MODULE.getTableName())
-                .fields(FIELDS);
-        return insertRecordBuilder.insert(toInsertMap) > 0;
+    public static boolean insertMetrics(AgentMetrics metrics) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(MODULE_NAME);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        InsertRecordBuilder<AgentMetrics> insertRecordBuilder = new InsertRecordBuilder<AgentMetrics>()
+                .fields(allFields)
+                .module(module);
+        return insertRecordBuilder.insert(metrics) > 0;
     }
 
-    public static boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws SQLException {
-        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                .table(MODULE.getTableName())
-                .fields(FieldFactory.getAgentMetricV2Fields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(MODULE), String.valueOf(metricsId), NumberOperators.EQUALS));
-        return genericUpdateRecordBuilder.update(toUpdate) > 0;
+    public static boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(MODULE_NAME);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        UpdateRecordBuilder<AgentMetrics> updateRecordBuilder = new UpdateRecordBuilder<AgentMetrics>()
+                .fields(allFields)
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(metricsId), NumberOperators.EQUALS));
+        return updateRecordBuilder.updateViaMap(toUpdate) > 0;
     }
 
     public static JSONObject getMetricsGraphData(Long agentId) {

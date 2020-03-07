@@ -1,13 +1,15 @@
 package com.facilio.agentv2.metrics;
 
-public class AgentMetrics {
+import com.facilio.modules.ModuleBaseWithCustomFields;
+
+public class AgentMetrics extends ModuleBaseWithCustomFields {
     private long siteId;
     private long agentId;
     private long createdTime;
     private long lastUpdatedTime;
-    private long dataSize;
+    private long size;
     private int publishType = -1;
-    private long numberOfMsgs;
+    private long numberOfMessages;
 
     public long getLastUpdatedTime() { return lastUpdatedTime; }
 
@@ -38,12 +40,12 @@ public class AgentMetrics {
     }
 
 
-    public long getDataSize() {
-        return dataSize;
+    public long getSize() {
+        return size;
     }
 
-    public void setDataSize(long dataSize) {
-        this.dataSize = dataSize;
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public int getPublishType() {
@@ -54,12 +56,12 @@ public class AgentMetrics {
         this.publishType = publishType;
     }
 
-    public long getNumberOfMsgs() {
-        return numberOfMsgs;
+    public long getNumberOfMessages() {
+        return numberOfMessages;
     }
 
-    public void setNumberOfMsgs(long numberOfMsgs) {
-        this.numberOfMsgs = numberOfMsgs;
+    public void setNumberOfMessages(long numberOfMessages) {
+        this.numberOfMessages = numberOfMessages;
     }
 
 

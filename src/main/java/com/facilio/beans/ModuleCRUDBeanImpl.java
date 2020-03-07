@@ -10,6 +10,7 @@ import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
+import com.facilio.agentv2.metrics.AgentMetrics;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.actions.ReadingAction;
@@ -56,7 +57,6 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.sql.BatchUpdateException;
-import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1279,12 +1279,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 
-	public boolean addMetrics(Map<String, Object> toInsertMap)throws Exception{
-		return MetricsApi.insertMetrics(toInsertMap);
+	public boolean addMetrics(AgentMetrics metrics)throws Exception{
+		return MetricsApi.insertMetrics(metrics);
 	}
 
 	@Override
-	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws SQLException {
+	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception {
 		MetricsApi.updateMetrics(toUpdate,metricsId);
 		return false;
 	}
