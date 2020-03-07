@@ -137,6 +137,7 @@ public class SqliteBridge {
                         try {
                             addFieldDevice(newController);
                             long newControllerId = ControllerApiV2.addController(newController, newAgent);
+                            controller.setLastModifiedTime(newController.getDeviceId());
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId+" json "+newController.toJSON());
                             if (newControllerId > 0) {
                                 controller.setAgentId(newControllerId); // SET NEW CONTROLLER ID TO CONTROLLER'S AGENT ID
@@ -212,6 +213,7 @@ public class SqliteBridge {
                                 }
                                 if (newPoint != null) {
                                     newPoint.setControllerId(newControllerId);
+                                    newPoint.setDeviceId(controller.getLastModifiedTime());
                                     LOGGER.info(newPoint.getControllerId()+" point json " + newPoint.toJSON());
                                     if (PointsAPI.addPoint(newPoint)) {
                                         if (point.containsKey(AgentConstants.ID)) {

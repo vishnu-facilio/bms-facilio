@@ -238,17 +238,29 @@
 
         <action name="getConfPoints" class="com.facilio.agentv2.AgentAction" method="getConfiguredPoints"> <!--DONE-->
         </action>
+        <action name="configuredCount" class="com.facilio.agentv2.actions.TypeDevices" method="getConfiguredPointsCount"> <!--DONE-->
+        </action>
 
         <action name="getSubPoints" class="com.facilio.agentv2.AgentAction"
                 method="getSubscribedPoints"> <!--DONE-->
+        </action>
+
+        <action name="subscribedCount" class="com.facilio.agentv2.actions.TypeDevices" method="getSubscribedPointsCount"> <!--DONE-->
         </action>
 
         <action name="getUnconfPoints" class="com.facilio.agentv2.AgentAction"
                 method="getUnconfiguredPoints"> <!--DONE-->
         </action>
 
+        <action name="unconfiguredCount" class="com.facilio.agentv2.actions.TypeDevices" method="getUnConfiguredPointsCount"> <!--DONE-->
+        </action>
+
         <action name="getCommPoints" class="com.facilio.agentv2.AgentAction"
                 method="getCommissionedPoints"> <!--DONE-->
+        </action>
+
+
+        <action name="commissionedCount" class="com.facilio.agentv2.actions.TypeDevices" method="getCommissionedPointsCount"> <!--DONE-->
         </action>
 
         <!--.. list points using controllerId..-->
