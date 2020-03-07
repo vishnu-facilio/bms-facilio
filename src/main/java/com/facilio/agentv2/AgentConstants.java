@@ -169,4 +169,5 @@ public class AgentConstants
     public static final String SUBSCRIPTION_COUNT = "subsInProgress";
     public static final String INTEGRATIONS = "integrations";
     public static final String POINT = "point";
+    public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
 }
