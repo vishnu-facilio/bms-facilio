@@ -3268,7 +3268,7 @@ public class ModuleFactory {
 	}
 	public static FacilioModule getAgentMetricsV2Module() {
 		FacilioModule module = new FacilioModule();
-		module.setName(AgentConstants.AGENT_METRICS_MODULE);
+		module.setName(FacilioConstants.ContextNames.AGENT_METRICS_MODULE);
 		module.setDisplayName(" agent metrics v2 module");
 		module.setTableName("Agent_V2_Metrics");
 		return module;

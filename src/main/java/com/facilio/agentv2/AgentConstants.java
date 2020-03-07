@@ -134,7 +134,7 @@ public class AgentConstants
     public static final String POINT_IDS = "pointIds";
     public static final String UPDATE_CHILD = "updateChild";
 
-    public static final String AGENT_METRICS_MODULE = "agentMetricsV2";
+
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";
     public static final String CHILDJSON = "childJson";

@@ -407,10 +407,12 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.SAFETY_PLAN,
 					FacilioConstants.ContextNames.HAZARD,
 					FacilioConstants.ContextNames.PRECAUTION,
-					FacilioConstants.ContextNames.SERVICE_REQUEST
+					FacilioConstants.ContextNames.SERVICE_REQUEST,
+					FacilioConstants.ContextNames.AGENT_METRICS_MODULE
 					
 			))
 			);
+
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		// custom modules will have system fields by default
