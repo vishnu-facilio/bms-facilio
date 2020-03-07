@@ -184,7 +184,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 	private static void addSpacePrimaryReadingsWidget(Section section){
 		PageWidget pageWidget = new PageWidget(WidgetType.SPACE_PRIMARY_READINGS);
-		pageWidget.addToLayoutParams(section,24,4);
+		pageWidget.addToLayoutParams(section,24,3);
 		section.addWidget(pageWidget);
 
 	}
