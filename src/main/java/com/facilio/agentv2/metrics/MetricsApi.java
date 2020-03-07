@@ -256,6 +256,7 @@ public class MetricsApi {
 
     public static boolean insertMetrics(AgentMetrics metrics) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        LOGGER.info(" metrics "+FieldUtil.getAsJSON(metrics));
         FacilioModule module = modBean.getModule(MODULE_NAME);
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
         InsertRecordBuilder<AgentMetrics> insertRecordBuilder = new InsertRecordBuilder<AgentMetrics>()

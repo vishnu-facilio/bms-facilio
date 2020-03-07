@@ -145,6 +145,11 @@
 
         <action name="data" class="com.facilio.agentv2.AgentAction" method="getAlertsPoints">
         </action>
+
+        <action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
+        </action>
+
+
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">

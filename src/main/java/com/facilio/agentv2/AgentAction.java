@@ -1,7 +1,9 @@
 package com.facilio.agentv2;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -451,6 +453,24 @@ public class AgentAction extends AgentActionV2 {
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting alert points ", e);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String downloadCertificate(){
+        try{
+            Organization currentOrg = AccountUtil.getCurrentOrg();
+            if(currentOrg != null){
+                String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
+                setResult(AgentConstants.DATA,downloadCertificateLink);
+                ok();
+            }else {
+                LOGGER.info("Exception occurred, account cant be null");
+                internalError();
+            }
+        }catch (Exception e){
+            internalError();
+            LOGGER.info("Exception while getting download cert link",e);
         }
         return SUCCESS;
     }
