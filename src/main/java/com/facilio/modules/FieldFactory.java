@@ -7664,7 +7664,7 @@ public class FieldFactory {
 		fields.add(getCreatedTime(module));
 		fields.add(getField(AgentConstants.SIZE, "DATA_SIZE", module, FieldType.NUMBER));
         fields.add(getAgentPublishTypeField(module));
-        fields.add(getLastModifiedTimeField(module));
+        fields.add((getLastUpdatesTimeField(module)));
         fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
 		return fields;
 }
@@ -7675,6 +7675,9 @@ public class FieldFactory {
 
     public static FacilioField getLastModifiedTimeField(FacilioModule module) {
         return getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER);
+    }
+    public static FacilioField getLastUpdatesTimeField(FacilioModule module) {
+        return getField(AgentConstants.LAST_UPDATED_TIME, "LAST_UPDATED_TIME", module, FieldType.NUMBER);
     }
 
     public static List<FacilioField> getApplicationFields() {

@@ -4,10 +4,14 @@ public class AgentMetrics {
     private long siteId;
     private long agentId;
     private long createdTime;
-    private long lastModifiedTime;
+    private long lastUpdatedTime;
     private long dataSize;
     private int publishType = -1;
     private long numberOfMsgs;
+
+    public long getLastUpdatedTime() { return lastUpdatedTime; }
+
+    public void setLastUpdatedTime(long lastUpdatedTime) { this.lastUpdatedTime = lastUpdatedTime; }
 
     public long getSiteId() {
         return siteId;
@@ -33,13 +37,6 @@ public class AgentMetrics {
         this.createdTime = createdTime;
     }
 
-    public long getLastModifiedTime() {
-        return lastModifiedTime;
-    }
-
-    public void setLastModifiedTime(long lastModifiedTime) {
-        this.lastModifiedTime = lastModifiedTime;
-    }
 
     public long getDataSize() {
         return dataSize;

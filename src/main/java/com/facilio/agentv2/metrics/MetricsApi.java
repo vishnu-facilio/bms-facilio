@@ -81,7 +81,9 @@ public class MetricsApi {
             selectRecordBuilder.offset(offset);
             selectRecordBuilder.limit(perPage);
         }
-        return selectRecordBuilder.get();
+        List<Map<String, Object>> data = selectRecordBuilder.get();
+        LOGGER.info(" query "+selectRecordBuilder.toString());
+        return data;
     }
 
     public static List<AgentMetrics> getMetrics() throws Exception {
@@ -163,7 +165,7 @@ public class MetricsApi {
                         toUpdate.put(AgentConstants.NUMBER_OF_MSGS, numberOfMsgs + 1);
                         long size = (long) metrics.get(AgentConstants.SIZE);
                         toUpdate.put(AgentConstants.SIZE, size + payload.toString().length());
-                        toUpdate.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
+                        toUpdate.put(AgentConstants.LAST_UPDATED_TIME, System.currentTimeMillis());
                         return bean.updateMetrics(toUpdate, (Long) metrics.get(AgentConstants.ID));
 
                     } else {
@@ -195,7 +197,7 @@ public class MetricsApi {
                         toInsertMap.put(AgentConstants.CREATED_TIME, getCreatedTime(agent));
                         toInsertMap.put(AgentConstants.SIZE, payload.toString().length());
                         toInsertMap.put(AgentConstants.SITE_ID, agent.getSiteId());
-                        toInsertMap.put(AgentConstants.LAST_MODIFIED_TIME, toInsertMap.get(AgentConstants.CREATED_TIME));
+                        toInsertMap.put(AgentConstants.LAST_UPDATED_TIME, toInsertMap.get(AgentConstants.CREATED_TIME));
                         return bean.addMetrics(toInsertMap);
                     } else {
                         throw new Exception(" payload is missing key publishtype ");
