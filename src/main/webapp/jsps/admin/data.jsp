@@ -18,6 +18,7 @@
 <%@page import="com.facilio.accounts.dto.Organization"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="java.util.Iterator" %>
 <%@page import="com.facilio.service.FacilioService" %>
 <%
 long receivedTime =0l;
@@ -96,16 +97,16 @@ function changeThePage(){
     Organization domain = orgBean.getOrg(orgId);
     JSONArray jsonArray = new JSONArray();
     jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
-    
-    for(int j = 0; j <  jsonArray.length();j++) {
-		 org.json.JSONObject jsonObj = jsonArray.getJSONObject(j);
+    Iterator<JSONObject> iterator = jsonArray.iterator();
+   while(iterator.hasNext()) {
+		 JSONObject jsonObj = iterator.next();
 		 
 		
 		 String arrival=  jsonObj.get("arrivalTime").toString() ;
 		 long time =Long.parseLong(arrival);
 		 long t1 = time;
 		
-		 if( j==jsonArray.length()-1 ){
+		 if( !iterator.hasNext()){
 			 receiveddate= DateTimeUtil.getFormattedTime(time);
 			 receivedTime = time;
 		 }
@@ -140,22 +141,21 @@ function changeThePage(){
 
 		</tr>
 		<%
-		
-		 for(int i = 0; i <  jsonArray.length();i++) {
-			 org.json.JSONObject jsonObj = jsonArray.getJSONObject(i);
-			 
-			
+		Iterator<JSONObject> itr = jsonArray.iterator();
+		int i=1;
+		while(itr.hasNext()) {
+			 JSONObject jsonObj = itr.next();
 			 String arrival=  jsonObj.get("arrivalTime").toString() ;
 			 long time =Long.parseLong(arrival);
 			 String date = DateTimeUtil.getFormattedTime(time);
 			
 			 System.out.println("Formated time is "+date);
-	         
+	         i+=1;
 	       
 		%>
 
 		<tr>
-			<td align="center"><%=i+1 %></td>
+			<td align="center"><%=i%></td>
 			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(time) %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
