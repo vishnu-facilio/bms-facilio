@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -60,15 +61,20 @@ public class FilterUtil {
 		return criteria;
 	}
 	public static Condition getTimeFieldCondition(FacilioField timeField, JSONObject conditionObj){
+		Operator operator = Operator.getOperator((int)(long)conditionObj.get("operatorId"));
 		String value = "";
 		Object valueObj = conditionObj.get("value");
 		if(valueObj!=null && valueObj instanceof JSONArray) {
-			value = StringUtils.join((JSONArray)valueObj, ",");
+			JSONArray valueArray = (JSONArray) valueObj;
+			if(operator.equals(DateOperators.DAY)) {
+				valueArray = changeAsSQLDays(valueArray);
+			}
+			value = StringUtils.join(valueArray, ",");
 		}
 		else {
 			value = (String)valueObj;
 		}
-		Operator operator = Operator.getOperator((int)(long)conditionObj.get("operatorId"));
+
 		return CriteriaAPI.getCondition(timeField, value, operator);
 	}
 	
@@ -113,6 +119,7 @@ public class FilterUtil {
 		FacilioField orgIdField = AccountConstants.getOrgIdField(selectField.getModule());
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(selectField.getModule());
 		
+		ReadingsAPI.getDataInterval(parentId, conditionField, selectField.getModule());
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(tableName)
 				.select(Collections.singletonList(selectField))
@@ -196,16 +203,16 @@ public class FilterUtil {
 		
 	}
 	
-	public static List<ReportDataPointContext> getTFDataPoints(String moduleName, JSONObject criteriaObj) throws Exception {
-		List<ReportDataPointContext> dataPoints = new ArrayList<>();
+	public static ReportDataPointContext getTFDataPoints(String moduleName, JSONObject criteriaObj) throws Exception {
+		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
 		if(conditions != null && !conditions.isEmpty()) {
 				String key = "TimeFilter";
 				
-				ReportDataPointContext dataPoint = new ReportDataPointContext();
-				
+
+
 				FacilioField timeField = modBean.getField("ttime", moduleName);
 				
 				FacilioModule module = timeField.getModule();
@@ -231,9 +238,9 @@ public class FilterUtil {
 				aliases.put("actual", key);
 				dataPoint.setAliases(aliases);
 				
-				dataPoints.add(dataPoint);
+
 			}
-		return dataPoints;
+		return dataPoint;
 		
 	}
 	
@@ -366,5 +373,13 @@ public class FilterUtil {
 			return true;
 		}
 		return false;
+	}
+	private static JSONArray changeAsSQLDays(JSONArray days){
+		JSONArray sqlDays = new JSONArray();
+		for(int i = 0; i < days.size(); i++) {
+			Long day = (Long)days.get(i)+1;
+			sqlDays.add(day == 8 ? 1 : day);
+		}
+		return sqlDays;
 	}
 }

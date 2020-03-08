@@ -49,7 +49,8 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		boolean needCriteriaReport =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, false);
 		if(needCriteriaReport) {
-			List<ReportDataPointContext> dataPoints = new ArrayList<>();
+			List<ReportDataPointContext> dFDataPoints = new ArrayList<>();
+			ReportDataPointContext tfDataPoint = null, cfDataPoint = null;
 			
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
@@ -70,7 +71,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 					}
 				}
 				
-				dataPoints.addAll(FilterUtil.getDFDataPoints(dataFilter));
+				dFDataPoints = FilterUtil.getDFDataPoints(dataFilter);
 			}
 			
 			
@@ -78,7 +79,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			if(timeFilter != null && !timeFilter.isEmpty()) {
 				filters.put("TimeFilter.timeline", getTFTimeLine(report.getDateRange(), timeFilter));
 				
-				dataPoints.addAll(FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), timeFilter));
+				tfDataPoint = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), timeFilter);
 			}
 			
 			if(CollectionUtils.isNotEmpty(combinedList)) {
@@ -86,11 +87,19 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				if(MapUtils.isNotEmpty(combinedMap)) {
 					filters.put("Combine.timeline", getCombinedTimeLine());
 					
-					dataPoints.add(FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine"));
+					cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine");
 				}
 			}
-			dataPoints.addAll(reportDataPoints);
-			report.setDataPoints(dataPoints);
+			if(cfDataPoint != null) {
+				reportDataPoints.add(cfDataPoint);
+			}
+			if(tfDataPoint != null) {
+				reportDataPoints.add(tfDataPoint);
+			}
+			if(!dFDataPoints.isEmpty()){
+				reportDataPoints.addAll(dFDataPoints);
+			}
+			report.setDataPoints(reportDataPoints);
 			reportAggrData.putAll(filters);
 		}
 		return false;
