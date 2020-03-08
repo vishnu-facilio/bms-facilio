@@ -52,7 +52,7 @@ public class DownloadCertFile {
         try {
             return downloadCertificateCommand(policyName, type);
         } catch (Exception e) {
-            LOGGER.info("Exception while downloadCertificate for poilcy name ->" + policyName + " for type->" + type);
+            LOGGER.info("Exception while downloadCertificate for poilcy name ->" + policyName + " for type->" + type+" ",e);
         }
         return null;
     }
