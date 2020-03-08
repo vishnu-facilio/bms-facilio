@@ -35,4 +35,8 @@ public class FacilioQueueException {
 	public static boolean changeVisibilityTimeout(String receiptHandle, int visibilityTimeout) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() ->getInstance().changeVisibilityTimeout(receiptHandle, visibilityTimeout));
 	}
+	
+	public static void deleteExceptionQueue(long deleteTime) throws Exception {
+		getInstance().deleteQueue(deleteTime);
+	}
 }

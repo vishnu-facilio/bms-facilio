@@ -64,4 +64,12 @@ public class FacilioObjectQueue {
 		return FacilioService.runAsServiceWihReturn(
 				() -> queueInstance.changeVisibilityTimeout( receiptHandle, visibilityTimeout));
 	}
+
+	public void delete(long ttime)throws Exception{
+		try {
+			queueInstance.deleteQueue(ttime);
+		}catch(Exception e) {
+			throw e;
+		}
+	}
 }

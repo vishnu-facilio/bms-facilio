@@ -142,7 +142,7 @@ function changeThePage(){
 		</tr>
 		<%
 		Iterator<JSONObject> itr = jsonArray.iterator();
-		int i=1;
+		int i=0;
 		while(itr.hasNext()) {
 			 JSONObject jsonObj = itr.next();
 			 String arrival=  jsonObj.get("arrivalTime").toString() ;

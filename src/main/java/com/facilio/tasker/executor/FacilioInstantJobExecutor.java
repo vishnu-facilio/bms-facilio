@@ -21,6 +21,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.queue.FacilioObjectQueue;
+import com.facilio.queue.FacilioQueueException;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.InstantJob;
@@ -183,14 +184,7 @@ public class FacilioInstantJobExecutor implements Runnable {
 		long deletionTillDate = (System.currentTimeMillis() - (dataRetention * 24 * 60 * 60 * 1000)); 
 
 		try{
-            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                    .table(tableName)
-                    .andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "", CommonOperators.IS_NOT_EMPTY))
-                    .andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", ""+ deletionTillDate, DateOperators.IS_BEFORE));
-            
-            int deletionCount = builder.delete();
-            LOGGER.info(tableName+ " deleted queue count is : "+deletionCount); 
-            
+            objectQueue.delete(deletionTillDate);
         }catch(Exception e){
         	CommonCommandUtil.emailException("FacilioExecutorInstantJobDeletion", "ExecutorDeletionJob Failed  -- "+tableName+ " with tillDate --" +deletionTillDate, e);
         	LOGGER.info("Exception occurred in FacilioExecutorInstantJobDeletion :  "+tableName+ " with tillDate --" +deletionTillDate,e);
