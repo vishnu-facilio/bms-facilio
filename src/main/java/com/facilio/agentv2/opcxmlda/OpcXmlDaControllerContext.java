@@ -6,6 +6,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -87,9 +88,17 @@ public class OpcXmlDaControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),getUserName(), StringOperators.IS));
+        if(userName == null){
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),"NULL", CommonOperators.IS_EMPTY));
+        }else {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),getUserName(), StringOperators.IS));
+        }
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(),StringOperators.IS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),getPassword(),StringOperators.IS));
+        if(password == null){
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),"NULL", CommonOperators.IS_EMPTY));
+        }else {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),getPassword(),StringOperators.IS));
+        }
         return conditions;
     }
 

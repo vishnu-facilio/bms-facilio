@@ -110,10 +110,12 @@ public class DataProcessorV2
                     break;
                 case ACK:
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
-                    if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload),controller,payload)) {
-                       processStatus = true;
-                       break;
+                    if(containsCheck(AgentConstants.CONTROLLER,payload)){
+                        Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
+                        if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload),controller,payload)) {
+                            processStatus = true;
+                            break;
+                        }
                     }
                     processStatus = AckUtil.processAgentAck(payload, agent.getId(), orgId);
                     break;
@@ -132,7 +134,7 @@ public class DataProcessorV2
 
                     break;
                 case COV:
-                    controller = getCachedControllerUsingPayload(payload,agent.getId());
+                    Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
                     timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
