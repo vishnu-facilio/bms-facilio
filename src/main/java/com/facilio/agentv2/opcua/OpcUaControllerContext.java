@@ -100,10 +100,18 @@ public class OpcUaControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        if (fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL)) {
+        if (fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && (securityMode > -1)) {
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL), getUrl(), StringOperators.IS));
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_MODE), String.valueOf(getSecurityMode()), NumberOperators.EQUALS));
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_POLICY), String.valueOf(getSecurityPolicy()), NumberOperators.EQUALS));
+            if((fieldsMap.containsKey(AgentConstants.SECURITY_MODE) && (fieldsMap.get(AgentConstants.SECURITY_MODE) != null) && (securityPolicy > -1) )){
+                conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_MODE), String.valueOf(getSecurityMode()), NumberOperators.EQUALS));
+            }else {
+                LOGGER.info(securityMode+" fieldsmap is missing sm "+fieldsMap);
+            }
+            if((fieldsMap.containsKey(AgentConstants.SECURITY_POLICY) && (fieldsMap.get(AgentConstants.SECURITY_POLICY) != null))){
+                conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_POLICY), String.valueOf(getSecurityPolicy()), NumberOperators.EQUALS));
+            }else {
+                LOGGER.info(securityPolicy+" fieldsmap is missing sp "+fieldsMap);
+            }
         } else {
             LOGGER.info("Error while getting conditions");
             LOGGER.info(fieldsMap);
@@ -112,8 +120,9 @@ public class OpcUaControllerContext extends Controller {
         return conditions;
     }
 
+
     @Override
     public String getIdentifier() {
-        return url+IDENTIFIER_SEPERATER+certPath+securityMode+IDENTIFIER_SEPERATER+securityPolicy;
+        return url+IDENTIFIER_SEPERATER+certPath+IDENTIFIER_SEPERATER+securityMode+IDENTIFIER_SEPERATER+securityPolicy;
     }
 }
