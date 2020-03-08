@@ -1,7 +1,7 @@
 <%@page import="com.facilio.logging.SysOutLogger"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@page import="org.json.JSONArray"%>
+<%@page import="org.json.simple.JSONArray"%>
 <%@page import="org.json.simple.JSONObject"%>
 <%@page import="java.net.HttpURLConnection"%>
 <%@page import="java.net.URL"%>
@@ -94,7 +94,7 @@ function changeThePage(){
     long orgId = Long.parseLong(orgDomain);
     OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
     Organization domain = orgBean.getOrg(orgId);
-    JSONArray jsonArray= new JSONArray();
+    JSONArray jsonArray = new JSONArray();
     jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
     
     for(int j = 0; j <  jsonArray.length();j++) {
