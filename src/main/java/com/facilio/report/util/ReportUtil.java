@@ -239,6 +239,15 @@ public class ReportUtil {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
 		}
 		
+		FacilioModule reportModule = ModuleFactory.getReportModule();
+        List<FacilioField> reportSelectFields = new ArrayList<>();
+
+        reportSelectFields.add(FieldFactory.getIdField(reportModule));
+        reportSelectFields.add(FieldFactory.getSiteIdField(reportModule));
+        reportSelectFields.add(FieldFactory.getField("reportFolderId", "REPORT_FOLDER_ID", reportModule, FieldType.LOOKUP));
+        reportSelectFields.add(FieldFactory.getField("name", "NAME", reportModule, FieldType.STRING));
+        reportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
+		
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
@@ -247,7 +256,7 @@ public class ReportUtil {
 				
 				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
 				if(isWithReports) {
-					List<ReportContext> reports = getReportsFromFolderId(folder.getId());
+					List<ReportContext> reports = getReportsFromFolderId(folder.getId(), reportSelectFields);
 					folder.setReports(reports);
 				}
 				reportFolders.add(folder);
@@ -311,6 +320,36 @@ public class ReportUtil {
 		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getReport1Fields())
+													.table(module.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
+													;
+		
+		List<Map<String, Object>> props = select.get();
+		List<ReportContext> reports = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			int i = 0;
+			for(Map<String, Object> prop :props) {
+				try {
+					ReportContext report = getReportContextFromProps(prop);
+					reports.add(report);
+				}
+				catch (Exception e) {
+					LOGGER.info("Error in report conversion, folderId:" + folderId +", index: " + i, e);
+					throw e;
+				}
+				i++;
+			}
+		}
+		return reports;
+	}
+	
+	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getReportModule();
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+													.select(selectFields)
 													.table(module.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
