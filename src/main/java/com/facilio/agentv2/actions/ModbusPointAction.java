@@ -75,17 +75,17 @@ public class ModbusPointAction extends AgentIdAction {
         try{
         if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
             ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(getAgentId(), getControllerId());
-            tcpPointContext.setFunctionCode(functionCode.intValue());
-            tcpPointContext.setModbusDataType(modbusDataType.intValue());
-            tcpPointContext.setRegisterNumber(registerNumber.intValue());
+            tcpPointContext.setFunctionCode(functionCode);
+            tcpPointContext.setModbusDataType(modbusDataType);
+            tcpPointContext.setRegisterNumber(registerNumber);
             ControllerMessenger.sendConfigureModbusTcpPoint(tcpPointContext);
             setResponseCode(HttpURLConnection.HTTP_OK);
             return SUCCESS;
         }else {
             ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(getAgentId(),getControllerId());
-            rtuPointContext.setFunctionCode(functionCode.intValue());
-            rtuPointContext.setModbusDataType(modbusDataType.intValue());
-            rtuPointContext.setRegisterNumber(registerNumber.intValue());
+            rtuPointContext.setFunctionCode(functionCode);
+            rtuPointContext.setModbusDataType(modbusDataType);
+            rtuPointContext.setRegisterNumber(registerNumber);
             ControllerMessenger.sendConfigureModbusRtuPoint(rtuPointContext);
             setResponseCode(HttpURLConnection.HTTP_OK);
             return SUCCESS;

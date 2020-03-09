@@ -20,18 +20,18 @@ public class ModbusTcpPointContext extends Point {
     @Deprecated
     private ModbusTcpPointContext() { }
 
-    private int registerNumber = -1;
-    private int functionCode = -1;
-    private int modbusDataType = -1;
+    private long registerNumber = -1;
+    private long functionCode = -1;
+    private Long modbusDataType ;
 
-    public int getRegisterNumber() { return registerNumber; }
-    public void setRegisterNumber(int registerNumber) { this.registerNumber = registerNumber; }
+    public long getRegisterNumber() { return registerNumber; }
+    public void setRegisterNumber(long registerNumber) { this.registerNumber = registerNumber; }
 
-    public int getFunctionCode() { return functionCode; }
-    public void setFunctionCode(int functionCode) { this.functionCode = functionCode; }
+    public long getFunctionCode() { return functionCode; }
+    public void setFunctionCode(long functionCode) { this.functionCode = functionCode; }
 
-    public int getModbusDataType() { return modbusDataType; }
-    public void setModbusDataType(int modbusDataType) { this.modbusDataType = modbusDataType; }
+    public Long getModbusDataType() { return modbusDataType; }
+    public void setModbusDataType(Long modbusDataType) { this.modbusDataType = modbusDataType; }
 
     @Override
     public FacilioControllerType getControllerType() {

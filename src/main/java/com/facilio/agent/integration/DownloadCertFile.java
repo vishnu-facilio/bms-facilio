@@ -95,6 +95,7 @@ public class DownloadCertFile {
         return url;
     }
 
+
     public static String downloadAgentCertificate(String policyName, String agentName, String type) throws Exception {
         String url = downloadCertificate(policyName,type);
         AwsUtil.addClientToPolicy(agentName,policyName,type);

@@ -15,9 +15,9 @@ public class ModbusRtuPointContext extends Point {
     private static final Logger LOGGER = LogManager.getLogger(ModbusRtuPointContext.class.getName());
 
 
-    private int registerNumber = -1;
-    private int functionCode = -1;
-    private int modbusDataType = -1;
+    private long registerNumber = -1;
+    private long functionCode = -1;
+    private Long modbusDataType ;
 
     public ModbusRtuPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
@@ -26,18 +26,18 @@ public class ModbusRtuPointContext extends Point {
     private ModbusRtuPointContext() { }
 
 
-    public int getRegisterNumber() { return registerNumber; }
-    public void setRegisterNumber(int registerNumber) {
+    public long getRegisterNumber() { return registerNumber; }
+    public void setRegisterNumber(long registerNumber) {
         System.out.println("setting rn");
         this.registerNumber = registerNumber; }
 
-    public int getFunctionCode() { return functionCode; }
-    public void setFunctionCode(int functionCode) {
+    public long getFunctionCode() { return functionCode; }
+    public void setFunctionCode(long functionCode) {
         System.out.println("setting fc");
         this.functionCode = functionCode; }
 
-    public int getModbusDataType() { return modbusDataType; }
-    public void setModbusDataType(int modbusDatatype) {
+    public Long getModbusDataType() { return modbusDataType; }
+    public void setModbusDataType(Long modbusDatatype) {
         System.out.println("setting mdt");
         this.modbusDataType = modbusDatatype; }
 
