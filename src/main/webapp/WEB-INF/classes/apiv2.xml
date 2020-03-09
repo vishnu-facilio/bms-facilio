@@ -754,6 +754,9 @@
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
 		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteView">
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="viewName">{1}</param>

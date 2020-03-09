@@ -264,6 +264,15 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 		
 	}
+	
+	public String v2DeleteView() throws Exception {		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, id);
+		FacilioChain deleteView = TransactionChainFactory.deleteViewChain();
+		deleteView.execute(context);
+		return SUCCESS;	
+		
+	}
 		
 	public String customizeView() throws Exception {
 		
