@@ -99,7 +99,7 @@ public class NewPermissionUtil {
 		return customTabType;
 	}
 
-	static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap();
+	static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
 
 	static {
 		Map<String, List<Permission>> permissionMap = new HashMap<>();
