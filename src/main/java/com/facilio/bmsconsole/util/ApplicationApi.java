@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
@@ -15,6 +16,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -129,18 +131,21 @@ public class ApplicationApi {
 				.table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
 				.andCondition(CriteriaAPI.getIdCondition(tabId, ModuleFactory.getWebTabModule()));
 		List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
-		if(webTabs!=null && !webTabs.isEmpty()) {
+		if (webTabs != null && !webTabs.isEmpty()) {
 			return webTabs.get(0);
 		}
 		return null;
 	}
-	
-	private List<NewPermission> getPermissionsForRole(long roleId) throws Exception {
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getNewPermissionModule().getTableName())
-				.select(FieldFactory.getNewPermissionFields())
-				.andCondition(CriteriaAPI.getCondition("NewPermission.ROLE_ID", "roleId", String.valueOf(roleId), NumberOperators.EQUALS));
-		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
-		return permissions;
+
+	public static List<String> getModulesForTab(long tabId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> moduleIds = getModuleIdsForTab(tabId);
+		List<String> moduleNames = new ArrayList<>();
+		if(!moduleIds.isEmpty()) {
+			for(long moduleId : moduleIds) {
+				moduleNames.add(modBean.getModule(moduleId).getName());
+			}
+		}
+		return moduleNames;
 	}
 }

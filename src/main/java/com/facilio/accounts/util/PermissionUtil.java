@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.beans.ModuleBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -426,14 +427,17 @@ public class PermissionUtil {
 		return false;
 	}
 	
-	public static boolean currentUserHasPermission(long tabId, String action) {
+	public static boolean currentUserHasPermission(long tabId, String moduleName, String action) {
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
 		try {
 			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-			return hasPermission(rolePermissionVal, action, tabId);
+			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
+			if(moduleNames.contains(moduleName)) {
+				return hasPermission(rolePermissionVal, action, tabId);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

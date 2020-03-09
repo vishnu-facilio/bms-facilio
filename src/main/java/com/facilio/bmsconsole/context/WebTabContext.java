@@ -97,8 +97,6 @@ public class WebTabContext implements Serializable {
 
         switch (type) {
             case MODULE:
-            case WORKORDER_MODULE:
-            case INENTORY_MODULE:
                 break;
 
             default:
@@ -116,8 +114,7 @@ public class WebTabContext implements Serializable {
         DASHBOARD ("Dashboard"),
         CUSTOM ("Custom"),
         APPS ("Apps"),
-        WORKORDER_MODULE ("Workorder Module"),
-        INENTORY_MODULE ("Inventory Module")
+        SETTINGS("Settings")
         ;
 
         private String name;

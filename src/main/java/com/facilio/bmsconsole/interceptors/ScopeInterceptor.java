@@ -323,8 +323,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String currentTab = request.getHeader("X-Tab-Id");
 			if (currentTab != null && !currentTab.isEmpty()) {
-				long tabId = Long.valueOf(currentTab);
-				return PermissionUtil.currentUserHasPermission(tabId, action);
+				long tabId = Long.parseLong(currentTab);
+				return PermissionUtil.currentUserHasPermission(tabId, moduleName, action);
 			}
 		} else {
 			return PermissionUtil.currentUserHasPermission(moduleName, action);
