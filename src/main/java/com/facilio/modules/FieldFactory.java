@@ -2615,6 +2615,8 @@ public class FieldFactory {
     private static List<FacilioField> getPushNotificationTemplateFields(boolean isIdNeeded) {
         FacilioModule module = ModuleFactory.getPushNotificationTemplateModule();
 
+        List<FacilioField> fields = new ArrayList<>();
+
         if (isIdNeeded) {
             fields.add(getIdField(module));
         }
