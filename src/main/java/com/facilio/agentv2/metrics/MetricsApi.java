@@ -77,6 +77,8 @@ public class MetricsApi {
 
             selectRecordBuilder.offset(offset);
             selectRecordBuilder.limit(perPage);
+        }else {
+            selectRecordBuilder.limit(50);
         }
         List<Map<String, Object>> data = selectRecordBuilder.get();
         LOGGER.info(" query "+selectRecordBuilder.toString());
