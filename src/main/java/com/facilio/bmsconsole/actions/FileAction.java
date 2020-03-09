@@ -73,6 +73,8 @@ public class FileAction extends FacilioAction {
 	public void setIsDownload(Boolean isDownload) {
 		this.isDownload = isDownload;
 	}
+	
+	private int width;
 	public int getWidth() {
 		return width;
 	}
@@ -81,16 +83,17 @@ public class FileAction extends FacilioAction {
 		this.width = width;
 	}
 
-	private int width;
 	private int height;
-	public int getHeigth() {
+	
+	
+	public int getHeight() {
 		return height;
 	}
 
-	public void setHeigth(int height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
-	
+
 	String publicFileKey;
 	
 	public String getPublicFileKey() {

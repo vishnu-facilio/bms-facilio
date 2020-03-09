@@ -1,43 +1,45 @@
 package com.facilio.services.filestore;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FieldType;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public abstract class FileStore {
 	
 	
-	private static final Logger LOGGER = Logger.getLogger(FileStore.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
 
 	private long orgId;
 	private long userId;
@@ -215,7 +217,7 @@ public abstract class FileStore {
 			String encodedfile = Base64.encodeBase64String(bytes);
 			return encodedfile;
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, e.getMessage());
+			LOGGER.error(e.getMessage());
 		}
 		finally {
 			if(inputStream != null) {
@@ -292,6 +294,8 @@ public abstract class FileStore {
 	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
 	
 	public abstract long addFile(String fileName, File file, String contentType, int[] resize) throws Exception;
+
+//	public abstract long addFile(String fileName, File file, String contentType, int[] resize, long fileId) throws Exception;
 	
 	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
 	
@@ -339,8 +343,10 @@ public abstract class FileStore {
 				FileInfo fileInfo = getFileInfoFromRS(rs);
 				return fileInfo;
 			}
+			LOGGER.debug(pstmt);
 		}
 		catch(SQLException e) {
+			LOGGER.error(e);
 			throw e;
 		}
 		finally {

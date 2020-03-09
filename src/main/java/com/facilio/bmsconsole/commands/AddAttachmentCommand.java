@@ -33,10 +33,10 @@ public class AddAttachmentCommand extends FacilioCommand {
 				File file = attachmentList.get(i);
 				String fileName = attachmentName.get(i);
 				String contentType = attachmentContentType.get(i);
-				long fileId = fs.addFile(fileName, file, contentType);
+//				long fileId = fs.addFile(fileName, file, contentType);
 //				if (file.getPath() != null && ImageIO.read(new FileInputStream(file.getPath())) != null) {
-//					int[] resize = {120, 80};
-//					long fileId = fs.addFile(fileName, file, contentType, resize);
+					int[] resize = {120, 80};
+					long fileId = fs.addFile(fileName, file, contentType, resize);
 //				}
 				attachmentIds.add(fileId);
 			}
