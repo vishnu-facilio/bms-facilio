@@ -57,7 +57,11 @@ public class MiscController extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
+        if (getName() != null) {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
+        }else {
+            throw new Exception(" name cant be null for misc controller");
+        }
         return conditions;
     }
 

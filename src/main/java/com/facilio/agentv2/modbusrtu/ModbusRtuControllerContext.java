@@ -44,7 +44,7 @@ public class ModbusRtuControllerContext extends Controller {
         setControllerType(FacilioControllerType.MODBUS_RTU.asInt());
     }
 
-    public Long getNetworkId() {
+    public long getNetworkId() {
         return networkId;
     }
 

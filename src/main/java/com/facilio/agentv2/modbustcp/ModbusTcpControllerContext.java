@@ -100,7 +100,11 @@ public class ModbusTcpControllerContext extends Controller {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
+        if (ipAddress != null) {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
+        }else {
+            throw new Exception(" ip address for Modbus TCP controller cant be null");
+        }
         return conditions;
     }
 

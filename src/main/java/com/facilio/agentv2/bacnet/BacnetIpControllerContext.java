@@ -102,7 +102,11 @@ public class BacnetIpControllerContext extends Controller {
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName()); // change it to static final
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_NUMBER), String.valueOf(getNetworkNumber()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.INSTANCE_NUMBER), String.valueOf(getInstanceNumber()),NumberOperators.EQUALS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
+        if(getIpAddress() != null){
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
+        }else {
+            throw new Exception(" ip address can't be null for bacnerIpController ");
+        }
         return conditions;
     }
 

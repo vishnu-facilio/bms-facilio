@@ -47,7 +47,11 @@ public class CustomController extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
+        if (getName() != null) {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
+        }else {
+            throw new Exception(" name can't be null for custom controller ");
+        }
         return conditions;
     }
 
