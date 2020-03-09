@@ -176,6 +176,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
 		c.addCommand(new FetchSourceTypeDetailsForWorkorderCommand());
+		c.addCommand(new FetchStateflowAndSlaCommand());
 		c.addCommand(new FacilioCommand() {
 			@Override
 			public boolean executeCommand(Context context) throws Exception {

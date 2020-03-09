@@ -12,6 +12,8 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -125,6 +127,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 	}
 	
+	
 	private ApprovalState approvalState;
 	public ApprovalState getApprovalStateEnum() {
 		return approvalState;
@@ -141,7 +144,23 @@ public class WorkOrderContext extends TicketContext {
 	public void setApprovalState(int approvalState) {
 		this.approvalState = ApprovalState.valueOf(approvalState);
 	}
+	private StateFlowRuleContext stateFlowRule;
+	public StateFlowRuleContext getStateFlowRule() {
+		return stateFlowRule;
+	}
+	public void setStateFlowRule(StateFlowRuleContext stateFlowRule) {
+		this.stateFlowRule = stateFlowRule;
+	}
+
+	private WorkflowRuleContext slaRule;
 	
+	public WorkflowRuleContext getSlaRule() {
+		return slaRule;
+	}
+	public void setSlaRule(WorkflowRuleContext slaRule) {
+		this.slaRule = slaRule;
+	}
+
 	private long approvalRuleId = -1;
 	public long getApprovalRuleId() {
 		return approvalRuleId;
