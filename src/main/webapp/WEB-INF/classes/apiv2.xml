@@ -5397,17 +5397,20 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	<package name="spaceManagement" namespace="/api/v2/space" extends="v2Api">
+	<package name="spaceApiv2" namespace="/api/v2/space" extends="v2Api">
 		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction" method="v2DeleteCampus" />
+		<action name="details" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2SpaceDetails" />
+
 	</package>
-	<package name="buildingsApi" namespace="/api/v2/building" extends="v2Api">
+	<package name="buildingsApiv2" namespace="/api/v2/building" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2buildingList" />
 		<action name="details" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2BuildingDetails" />
 	</package>
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
 	</package>
-	<package name="spaceApiv2" namespace="/api/v2/space" extends="v2Api">
-		<action name="details" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2SpaceDetails" />
+	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
+		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />
 	</package>
 </struts>

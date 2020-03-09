@@ -224,7 +224,6 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Site Name"));
-		columns.add(new ViewField("managedBy", "Type"));
 		columns.add(new ViewField("managedBy", "Mananged By"));
 		columns.add(new ViewField("grossFloorArea", "Floor Area"));
 		columns.add(new ViewField("area", "Total Area"));

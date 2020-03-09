@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -166,6 +167,32 @@ public class CampusAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String v2SitesList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.fetchModuleDataListChain();
+		FacilioContext constructListContext = chain.getContext();
+		constructListContext(constructListContext);
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
+
+		chain.execute();
+
+		if (isFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,
+					chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		} else {
+			sites = (List<SiteContext>) chain.getContext()
+					.get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.SITE_LIST, sites);
+		}
+		return SUCCESS;
+	}
+
+	public String getSitesTotalArea() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getSiteTotalAreaChain();
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.TOTAL_AREA, chain.getContext().get(FacilioConstants.ContextNames.TOTAL_AREA));
+		return SUCCESS;
+	}
 	
 	public List getFormlayout()
 	{
@@ -269,6 +296,16 @@ public class CampusAction extends FacilioAction {
 	public JSONObject getError() {
 		return error;
 	}
+
+	public List<SiteContext> getSites() {
+		return sites;
+	}
+
+	public void setSites(List<SiteContext> sites) {
+		this.sites = sites;
+	}
+
+	private List<SiteContext> sites;
 	
 	@SuppressWarnings("unchecked")
 	public void setError(String key, Object error) {

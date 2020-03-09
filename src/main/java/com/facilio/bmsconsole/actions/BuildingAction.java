@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -44,10 +45,23 @@ public class BuildingAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String v2buildingList() {
-		setResult(FacilioConstants.ContextNames.BUILDING_LIST,buildings);
-		return  SUCCESS;
+	public String v2buildingList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.fetchModuleDataListChain();
+		FacilioContext constructListContext = chain.getContext();
+		constructListContext(constructListContext);
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, "building");
+		chain.execute();
+		if (isFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,
+					chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		} else {
+			buildings = (List<BuildingContext>) chain.getContext()
+					.get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
+		}
+		return SUCCESS;
 	}
+
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String newBuilding() throws Exception 

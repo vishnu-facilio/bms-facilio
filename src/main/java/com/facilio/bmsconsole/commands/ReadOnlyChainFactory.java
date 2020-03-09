@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
@@ -15,10 +9,17 @@ import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.controlaction.commands.*;
+import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceCommand;
+import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCommand;
+import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -2195,6 +2196,12 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();		
 		chain.addCommand(new GetIncludedSpaceListCommand());
 		chain.addCommand(new GetControllableCategoryFromSpaceListCommand());
+		return chain;
+	}
+
+	public static FacilioChain getSiteTotalAreaChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSiteTotalAreaCommand());
 		return chain;
 	}
 }
