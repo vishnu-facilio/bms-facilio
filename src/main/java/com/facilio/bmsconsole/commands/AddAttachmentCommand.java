@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
 
@@ -29,8 +33,11 @@ public class AddAttachmentCommand extends FacilioCommand {
 				File file = attachmentList.get(i);
 				String fileName = attachmentName.get(i);
 				String contentType = attachmentContentType.get(i);
-
-				long fileId = fs.addFile(fileName, file, contentType);
+//				long fileId = fs.addFile(fileName, file, contentType);
+//				if (file.getPath() != null && ImageIO.read(new FileInputStream(file.getPath())) != null) {
+					int[] resize = {120, 80};
+					long fileId = fs.addFile(fileName, file, contentType, resize);
+//				}
 				attachmentIds.add(fileId);
 			}
 
