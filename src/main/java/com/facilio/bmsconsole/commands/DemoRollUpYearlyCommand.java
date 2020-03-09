@@ -22,6 +22,7 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(DemoRollUpYearlyCommand.class.getName());
 	private static final String DEFAULT_DB_CONF_PATH = "conf/demorolluptables.yml"; 
+	private static final String DEFAULT_DB_ALARM_TABLE_CONF_PATH = "conf/demoRollUpAlarmTables.yml";
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
@@ -39,43 +40,32 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 
 		ClassLoader classLoader = DemoRollUpYearlyCommand.class.getClassLoader();
         Yaml yaml = new Yaml();
-        Map<String ,List<Map<String,Object>>> json = null;
+        Map<String ,List<Map<String,Object>>> readingTableList = null;
+        Map<String ,List<Map<String,Object>>> alarmsTableList = null;
         try(InputStream inputStream = classLoader.getResourceAsStream(DEFAULT_DB_CONF_PATH)) {
-            json = yaml.load(inputStream);
+        	readingTableList = yaml.load(inputStream);
         }
         catch (Exception e) {
             LOGGER.error("Error occurred while reading demoRollUptables conf file. "+e.getMessage(), e);
             throw new RuntimeException("Error occurred while reading demoRollUptables conf file. "+e.getMessage());
         }
-		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			for (Entry<String, List<Map<String, Object>>> tableList : json.entrySet()) {
-				for (Map<String, Object> itr : tableList.getValue()) {
-					String tableNamekey = (String) itr.get("tableName");
-					String primaryColumn = (String) itr.get("primaryColumn");
-					List<String> valueList = (List<String>) itr.get("columns");
-					StringBuilder sql = new StringBuilder();
-					sql.append("UPDATE  ").append(tableNamekey).append("  SET  ");
-					for (String columnName : valueList) {
-						sql.append(columnName).append(" = ");
-						sql.append("(");
-						sql.append(columnName).append(" + ").append(weekDiff).append(")");
-						sql.append(",");
-					}
-					sql.replace(sql.length() - 1, sql.length(), " ");
-					sql.append(" WHERE ORGID = ").append(orgId).append(" AND ").append(primaryColumn)
-					.append("  BETWEEN ").append(lastYearWeekStart).append(" AND ").append(lastYearWeekEnd);
-					try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
-						int count = pstmt.executeUpdate();
-						System.out.println("###DemoRollUpYearlyJob " + count + " of rows updated in  " + tableNamekey + "  successfully");
-						LOGGER.info("###DemoRollUpYearlyJob " + count + " of rows updated in  " + tableNamekey + "  successfully");
-					} catch (Exception e) {
-						LOGGER.error("###Exception occurred in  DemoRollUpYearlyJob. TableName is:  " + tableNamekey);
-						throw e;
-					}
-				}
-			}
-
-		}
+        try(InputStream inputStream = classLoader.getResourceAsStream(DEFAULT_DB_ALARM_TABLE_CONF_PATH)) {
+        	alarmsTableList = yaml.load(inputStream);
+        }
+        catch (Exception e) {
+            LOGGER.error("Error occurred while reading demoRollUptables conf file. "+e.getMessage(), e);
+            throw new RuntimeException("Error occurred while reading demoRollUptables conf file. "+e.getMessage());
+        }
+        try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			
+        	updateTtimeColumns(readingTableList,weekDiff,lastYearWeekStart,lastYearWeekEnd,orgId,conn);
+        	System.out.println("laststart :"+lastYearWeekStart + " latend : "+lastYearWeekEnd);
+        	lastYearWeekStart = DateTimeUtil.addWeeks(lastYearWeekStart, -1);
+        	lastYearWeekEnd = DateTimeUtil.addWeeks(lastYearWeekEnd, -1);
+        	System.out.println("laststart :"+lastYearWeekStart + " latend : "+lastYearWeekEnd);
+        	weekDiff = (thisYearWeekStart - lastYearWeekStart);
+        	updateTtimeColumns(alarmsTableList,weekDiff,lastYearWeekStart,lastYearWeekEnd,orgId,conn);
+        }
 		catch(Exception e) {
 			throw e;
 		}
@@ -83,4 +73,31 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 		return false;
 	}
 
+	private void updateTtimeColumns(Map<String, List<Map<String, Object>>> tableListToUpdate, long weekDiff, long lastYearWeekStart, long lastYearWeekEnd, long orgId, Connection conn) throws Exception {
+		for (Entry<String, List<Map<String, Object>>> tableList : tableListToUpdate.entrySet()) {
+			for (Map<String, Object> itr : tableList.getValue()) {
+				String tableNamekey = (String) itr.get("tableName");
+				String primaryColumn = (String) itr.get("primaryColumn");
+				List<String> valueList = (List<String>) itr.get("columns");
+				StringBuilder sql = new StringBuilder();
+				sql.append("UPDATE  ").append(tableNamekey).append("  SET  ");
+				for (String columnName : valueList) {
+					sql.append(columnName).append(" = ");
+					sql.append("(");
+					sql.append(columnName).append(" + ").append(weekDiff).append(")");
+					sql.append(",");
+				}
+				sql.replace(sql.length() - 1, sql.length(), " ");
+				sql.append(" WHERE ORGID = ").append(orgId).append(" AND ").append(primaryColumn)
+				.append("  BETWEEN ").append(lastYearWeekStart).append(" AND ").append(lastYearWeekEnd);
+				try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
+					int count = pstmt.executeUpdate();
+					LOGGER.info("###DemoRollUpYearlyJob " + count + " of rows updated in  " + tableNamekey + "  successfully");
+				} catch (Exception e) {
+					LOGGER.error("###Exception occurred in  DemoRollUpYearlyJob. TableName is:  " + tableNamekey);
+					throw e;
+				}
+			}
+		}
+	}
 }

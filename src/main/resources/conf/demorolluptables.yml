@@ -1,7 +1,7 @@
 demoRollUpTableList : 
    
        
-   - tableName: Energy_Data
+   - tableName: Energy_Data_2
      columns: [ACTUAL_TTIME , TTIME , CREATED_TIME]
      primaryColumn: TTIME
       
@@ -153,50 +153,4 @@ demoRollUpTableList :
      columns: [ACTUAL_TTIME , TTIME]    
      primaryColumn: TTIME      
  
-#   - tableName: Reading_Alarms 
-#    columns: [START_TIME , END_TIME]   
-#     primaryColumn: START_TIME
-
-#   - tableName: Alarms 
-#     columns: [CREATED_TIME , MODIFIED_TIME , CLEARED_TIME , DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4]   
-#     primaryColumn: CREATED_TIME
-     
-#   - tableName: ML_Alarm_Occurrences 
-#     columns: [TTIME]   
-#     primaryColumn: TTIME 
-     
-#   - tableName: AlarmOccurrence 
-#     columns: [CREATED_TIME , CLEARED_TIME , ACKNOWLEDGED_TIME]   
-#     primaryColumn: CREATED_TIME 
-     
-#   - tableName: BaseEvent 
-#     columns: [CREATED_TIME]   
-#     primaryColumn: CREATED_TIME 
-     
-#   - tableName: BaseAlarm 
-#     columns: [ACKNOWLEDGED_TIME , LAST_OCCURRED_TIME , LAST_CLEARED_TIME , LAST_CREATED_TIME]   
-#     primaryColumn: LAST_CREATED_TIME 
-     
-#   - tableName: BaseAlarm_Notes 
-#     columns: [CREATED_TIME]   
-#     primaryColumn: CREATED_TIME 
-     
-#   - tableName: ML_Anomaly_Alarm 
-#     columns: [READING_TIME]   
-#     primaryColumn: READING_TIME       
- 
-#   - tableName: ReadingAlarmOccurrence    
-#     columns: [DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4 , DATETIME_CF5, DATETIME_CF6, DATETIME_CF7, DATETIME_CF8, DATETIME_CF9, DATETIME_CF10]  
-#     primaryColumn: DATETIME_CF1
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
+    
