@@ -330,6 +330,10 @@
         <action name="addController" class="com.facilio.agentv2.actions.ModbusControllerAction"
                 method="addModbusController">
         </action>
+        <action name="addPoint" class="com.facilio.agentv2.actions.ModbusPointAction"
+                method="createModbusPoint">
+        </action>
+
     </package>
 
     <package name="opcDa" namespace="/api/v2/opcda" extends="agent">

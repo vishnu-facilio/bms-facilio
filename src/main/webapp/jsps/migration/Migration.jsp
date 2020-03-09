@@ -85,6 +85,7 @@
                 }
             }catch (Exception e){
                 LOGGER.info("Exception while migrating AgentMetrics fields ");
+                throw e;
             }
 
             // Have migration commands for each org
