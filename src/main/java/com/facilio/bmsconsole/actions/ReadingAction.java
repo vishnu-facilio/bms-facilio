@@ -1468,7 +1468,7 @@ public class ReadingAction extends FacilioAction {
 		return this.perPage;
 	}
 	
-	// connected, nonconnected, writable, readable, unused, formula or nonformula
+	// connected, logged, writable, readable, available, formula or nonformula
 	private String readingType;
 	public String getReadingType() {
 		return readingType;

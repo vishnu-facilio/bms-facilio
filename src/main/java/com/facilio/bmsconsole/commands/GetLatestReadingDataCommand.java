@@ -52,26 +52,29 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			if (StringUtils.isNotEmpty(inputType)) {
 				if (inputType.equals("connected")) {
 					readingInputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
+					excludeEmptyFields = true;
 				}
 				else if (inputType.equals("formula")) {
 					readingInputTypes.add(ReadingInputType.FORMULA_FIELD);
 				}
-				else if (inputType.equals("nonformula")) {
+				else if (inputType.equals("nonformula") || inputType.equals("available")) {
 					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD)
 							.collect(Collectors.toList());
+					if (inputType.equals("available")) {
+						unused = true;
+					}
+					excludeEmptyFields = false;
 				}
-				else if (inputType.equals("nonconnected")) {
+				else if (inputType.equals("logged")) {
 					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.CONTROLLER_MAPPED && type != ReadingInputType.FORMULA_FIELD)
 							.collect(Collectors.toList());
+					excludeEmptyFields = true;
 				}
 				else if (inputType.equals("writable")) {
 					readingType = ReadingType.WRITE;
 				}
 				else if (inputType.equals("readable")) {
 					readingType = ReadingType.READ;
-				}
-				else if (inputType.equals("unused")) {
-					unused = true;
 				}
 			}
 			
