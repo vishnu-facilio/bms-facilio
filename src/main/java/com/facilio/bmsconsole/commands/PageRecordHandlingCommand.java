@@ -3,7 +3,10 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -55,6 +58,12 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				FacilioChain VendorChain = ReadOnlyChainFactory.fetchVendorDetails();
 				VendorChain.execute(context);
 				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
+				break;
+			case ContextNames.READING_TEMPLATE_MODULE:
+				System.out.println("HELLOOO");
+				DefaultTemplate templatejson=TemplateAPI.getDefaultTemplate(DefaultTemplate.DefaultTemplateType.RULE,(int) recordId);
+				System.out.println(templatejson);
+				context.put(ContextNames.RECORD,templatejson);
 				break;
 				
 		}

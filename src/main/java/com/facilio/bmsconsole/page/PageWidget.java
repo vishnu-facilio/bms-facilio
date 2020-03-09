@@ -242,7 +242,10 @@ public class PageWidget {
 		FIXED_DETAILS_WIDGET("fixedDetailsWidget"),
 		AGENT_DETAILS_WIDGET("agentDetailsWidget"),
 		FLOOR_MAP("floorMap"),
-		SPACE_PRIMARY_READINGS("spacePrimaryReadings")
+		SPACE_PRIMARY_READINGS("spacePrimaryReadings"),
+		TEMPLATE_SUMMARY_DETAILS("templateSummaryDetails"),
+		TEMPALTE_CONDITIONS("templateConditions"),
+		TEMPLATE_ALARM_DETAILS("templateAlarmDetails"),
  		;
 		
 		private String name;

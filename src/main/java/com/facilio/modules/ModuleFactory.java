@@ -3428,4 +3428,11 @@ public class ModuleFactory {
 		module.setExtendModule(getResourceModule());
 		return module;
 	}
+	public static FacilioModule getTemplateModule () {
+		FacilioModule module = new FacilioModule();
+		module.setName("readingtemplate");
+		module.setDisplayName("templateRuleModule");
+		
+		return module;
+	}
 }

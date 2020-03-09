@@ -100,6 +100,8 @@ public class FacilioConstants {
 		public static final String FEEDBACK_KIOSK = "feedbackKiosk";
 		public static final String FEEDBACK_TYPE = "feedbackType";
 		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
+		public static final String RULE_TEMPLATE_MODULE ="ruletemplate";
+
 		
 
 	}
@@ -166,7 +168,7 @@ public class FacilioConstants {
 		
 		public static final String KINESIS_RECORD = "kinesisRecord";
 		public static final String KINESIS_CHECK_POINTER = "kinesisCheckPointer";
-		
+		public static final String READING_TEMPLATE_MODULE ="readingtemplate";
 		public static final String SIGNUP_INFO = "signupinfo";
 		public static final String WITH_CHANGE_SET = "withChangeSet";
 		public static final String CHANGE_SET = "changeSet";

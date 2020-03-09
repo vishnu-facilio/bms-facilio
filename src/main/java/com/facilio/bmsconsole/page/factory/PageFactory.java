@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -70,6 +71,8 @@ public class PageFactory {
 				return SpaceManagementPageFactory.getFloorPage((FloorContext) record);
 			case ContextNames.SPACE:
 				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record);
+			case ContextNames.READING_TEMPLATE_MODULE:
+				return TemplatePageFactory.getTemplatePage((DefaultTemplate) record);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
