@@ -40,7 +40,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
-	
+
+	private static final int DEFAULT_LIMIT = 5000;
 	private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
@@ -57,6 +58,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private StringBuilder joinBuilder = new StringBuilder();
 	private boolean isAggregation = false;
 	private Collection<LookupField> lookupFields;
+	private int limit = -1;
 
 	private boolean skipPermission;
 
@@ -219,7 +221,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 	@Override
 	public SelectRecordsBuilder<E> limit(int limit) {
-		builder.limit(limit);
+		this.limit = limit;
+		builder.limit(this.limit);
 		return this;
 	}
 	
@@ -564,6 +567,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			builder.groupBy(groupBy);
 
 			builder.table(module.getTableName());
+
+			if (limit == -1 && !module.getTypeEnum().isReadingType()) {
+				builder.limit(DEFAULT_LIMIT);
+			}
 
 			WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField, isDeletedField);
 			builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
