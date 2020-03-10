@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -50,6 +52,11 @@ public class GenericImportDataLogJob extends InstantJob{
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
 				importProcessContext = ImportAPI.updateTotalRows(importProcessContext);
 				ImportAPI.updateImportProcess(importProcessContext);
+			}
+			
+			boolean isBim = (Boolean)context.get(FacilioConstants.ContextNames.IS_BIM);
+			if(isBim){
+				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), "importData" , 10 , "priority");	
 			}
 			
 			LOGGER.info("GENERIC IMPORT DATA LOG JOB COMPLETED -- " + importProcessContext.getId());

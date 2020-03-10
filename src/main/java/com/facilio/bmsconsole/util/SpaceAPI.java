@@ -675,7 +675,7 @@ public class SpaceAPI {
 		return null;
 	}
 	
-	private static List<BaseSpaceContext> getBuildingChildren(long buildingId) throws Exception {
+	public static List<BaseSpaceContext> getBuildingChildren(long buildingId) throws Exception {
 		List<Long> buildingIds = new ArrayList<>();
 		buildingIds.add(buildingId);
 		return getBuildingChildren(buildingIds);

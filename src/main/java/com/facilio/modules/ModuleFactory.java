@@ -3503,4 +3503,29 @@ public class ModuleFactory {
 		module.setTableName("CommissioningLogController");
 		return module;
 	}
+	
+	public static FacilioModule getBimIntegrationLogsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("bimIntegrationLogs");
+		module.setDisplayName("Bim Integration Logs");
+		module.setTableName("Bim_Integration_Logs");
+		return module;
+	}
+	
+	public static FacilioModule getBimImportProcessMappingModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("bimImportProcessMapping");
+		module.setDisplayName("Bim Import Process Mapping");
+		module.setTableName("Bim_Import_Process_Mapping");
+		return module;
+	}
+	
+	public static FacilioModule getBimDefaultValuesModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("bimDefaultValues");
+		module.setDisplayName("Bim Default Values");
+		module.setTableName("Bim_Default_Values");
+		return module;
+	}
+
 }

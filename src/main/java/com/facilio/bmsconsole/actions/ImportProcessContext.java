@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class ImportProcessContext implements Serializable
+public class ImportProcessContext implements Serializable,Cloneable
 {
 	/**
 	 * 
@@ -571,5 +571,9 @@ public class ImportProcessContext implements Serializable
 			}
 			return typeMap;
 		}
+	}
+	
+	public Object clone() throws CloneNotSupportedException { 
+		return super.clone(); 
 	}
 }

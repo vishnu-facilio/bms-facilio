@@ -8112,4 +8112,45 @@ public class FieldFactory {
 		fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
+	public static List<FacilioField> getBimIntegrationLogsFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
+ 		fields.add(getIdField());
+ 		fields.add(getField("fileId","File Id","FILEID",module,FieldType.NUMBER));
+ 		fields.add(getField("noOfModules","No of Modules","NO_OF_MODULES",module,FieldType.NUMBER));
+ 		fields.add(getField("status","Status","STATUS",module,FieldType.NUMBER));
+ 		fields.add(getField("uploadedBy","Uploaded By","UPLOADED_BY",module,FieldType.NUMBER));
+
+ 		return fields;
+	}
+	
+	public static List<FacilioField> getBimImportProcessMappingFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getBimImportProcessMappingModule();
+ 		fields.add(getIdField());
+ 		fields.add(getField("bimId","Bim Id","BIM_ID",module,FieldType.NUMBER));
+		fields.add(getField("importProcessId","Import Process Id","IMPORT_PROCESS_ID",module,FieldType.NUMBER));
+		fields.add(getField("sheetName","Sheet Name","SHEET_NAME",module,FieldType.STRING));
+		fields.add(getField("moduleName","Module Name","MODULE_NAME",module,FieldType.STRING));
+ 		fields.add(getField("status","Status","STATUS",module,FieldType.NUMBER));
+
+ 		return fields;
+	}
+	
+	public static List<FacilioField> getBimDefaultValuesFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getBimDefaultValuesModule();
+ 		fields.add(getIdField());
+ 		fields.add(getField("bimId","Bim Id","BIM_ID",module,FieldType.NUMBER));
+		fields.add(getField("moduleId","Module Id","MODULE_ID",module,FieldType.STRING));
+		fields.add(getField("fieldId","Field Id","FIELD_ID",module,FieldType.STRING));
+ 		fields.add(getField("defaultValue","Default Value","DEFAULT_VALUE",module,FieldType.STRING));
+
+ 		return fields;
+	}
+	
+	
 }

@@ -50,6 +50,17 @@ public class ProcessImportCommand extends FacilioCommand {
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
+
+		FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+		List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+		
+		BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+		HashMap<String, Object> bimDefaultValuesMap = new LinkedHashMap();
+		boolean isBim = (bimImport!=null);
+		if(isBim){
+			bimDefaultValuesMap = BimAPI.getBimDefaultValues(bimImport.getBimId(),importProcessContext.getModule().getName());
+		}
+
 		fieldMapParsing(fieldMapping);
 		Map<String, Long> lookupHolder;
 		String module = importProcessContext.getModule().getName();
@@ -80,6 +91,10 @@ public class ProcessImportCommand extends FacilioCommand {
 
 					HashMap<String, Object> props = new LinkedHashMap<String, Object>();
 
+					if(!bimDefaultValuesMap.isEmpty()){
+						props.putAll(bimDefaultValuesMap);
+					}
+					
 					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 						if(ImportAPI.canUpdateAssetBaseSpace(importProcessContext)) {
 							Long spaceId = getSpaceID(importProcessContext, colVal, fieldMapping);
@@ -96,7 +111,12 @@ public class ProcessImportCommand extends FacilioCommand {
 						Long siteId = importProcessContext.getSiteId();
 						
 						if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
-							props.put("siteId", siteId);
+							if(!isBim){
+								props.put("siteId", siteId);
+							}else{
+								props.put("siteId", Long.parseLong(props.get("site").toString()));
+								props.remove("site");
+							}
 						}
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__building"));
@@ -156,6 +176,22 @@ public class ProcessImportCommand extends FacilioCommand {
 
 							}
 							
+							if(isBim){
+								Long siteId = Long.parseLong(props.get("site").toString());
+								ResourceContext site = SpaceAPI.getSiteSpace(siteId);
+								fieldMapping.put("space__site", "SiteName");
+								colVal.put("SiteName", site.getName());
+								
+								Long buildingId = Long.parseLong(props.get("building").toString());
+								ResourceContext building = SpaceAPI.getBuildingSpace(buildingId);
+								fieldMapping.put("space__building", "BuildingName");
+								colVal.put("BuildingName", building.getName());
+								
+								Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
+								props.put("floor", floorId);
+								props.put("siteId", Long.parseLong(props.get("site").toString()));
+							}
+							
 							props.put("spaceType",BaseSpaceContext.SpaceType.SPACE.getIntVal());
 							props.put("resourceType", ResourceType.SPACE.getValue());
 				
@@ -184,11 +220,24 @@ public class ProcessImportCommand extends FacilioCommand {
 						Long siteId = getSpaceID(importProcessContext, col, fieldMapping);
 						props.put("siteId", siteId);
 						
-						Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
-						lookupHolder = new HashMap<>();
-						lookupHolder.put("id", floorId);
-						props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
-						props.put("buildingId", floorId);
+						if(!isBim){
+							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
+							lookupHolder = new HashMap<>();
+							lookupHolder.put("id", floorId);
+							props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
+							props.put("buildingId", floorId);
+						}else{
+							props.put("siteId", Long.parseLong(props.get("site").toString()));
+							lookupHolder = new HashMap<>();
+							lookupHolder.put("id", Long.parseLong(props.get("siteId").toString()));
+							props.put("site",lookupHolder);
+							
+							props.put("buildingId", Long.parseLong(props.get("building").toString()));
+							lookupHolder = new HashMap<>();
+							lookupHolder.put("id", Long.parseLong(props.get("building").toString()));
+							props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
+						}
+						
 						props.put("resourceType", ResourceType.SPACE.getValue());
 						props.put("spaceType", BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 					
@@ -199,6 +248,21 @@ public class ProcessImportCommand extends FacilioCommand {
 						props.put("resourceType", ResourceType.SPACE.getValue());
 						props.put("spaceType",BaseSpaceContext.SpaceType.SITE.getIntVal());
 					
+					}
+					else if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ZONE)){
+						
+						long buildingId = Long.parseLong(props.get("building").toString());
+						if(colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")) != null && colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString()!="" && !colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString().equals("n/a"))
+						{
+							String spaceName = colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString();
+						
+							List<BaseSpaceContext> baseSpaces = SpaceAPI.getBuildingChildren(buildingId);
+							BaseSpaceContext space = baseSpaces.stream().filter(s->s.getName().equals(spaceName)).findFirst().get();
+							props.put("floor", space.getFloorId());
+							props.put("space1", space.getId());
+						}
+						props.put("resourceType", ResourceType.SPACE.getValue());
+						props.put("spaceType",BaseSpaceContext.SpaceType.ZONE.getIntVal());
 					}
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 
@@ -299,8 +363,8 @@ public class ProcessImportCommand extends FacilioCommand {
 							String key = facilioField.getModule().getName() + "__" + facilioField.getName();
 							Object cellValue = colVal.get(fieldMapping.get(key));
 							boolean isfilledByLookup = false;
-
-							if(cellValue != null && !cellValue.toString().equals("")) {
+							
+							if(cellValue != null && !cellValue.toString().equals("") && (!isBim || !cellValue.toString().equals("n/a"))) {
 								if (facilioField.getDataType() != FieldType.LOOKUP.getTypeAsInt()) {
 									try {
 										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
@@ -349,7 +413,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							}	
 							}
 							
-							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
+							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField && (!isBim || (cellValue!=null && !cellValue.toString().equals("n/a")))) {
 								LookupField lookupField = (LookupField) facilioField;
 								
 								if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY) && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) == null) {
@@ -445,7 +509,7 @@ public class ProcessImportCommand extends FacilioCommand {
 								}
 							}	
 								
-								if (!isfilledByLookup) {
+								if (!isfilledByLookup && (!isBim || (cellValue!=null && !cellValue.toString().equals("n/a")))) {
 									if (!props.containsKey(facilioField.getName())) {
 										props.put(facilioField.getName(), cellValue);
 									}

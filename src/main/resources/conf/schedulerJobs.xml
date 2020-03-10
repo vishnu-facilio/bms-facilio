@@ -34,6 +34,8 @@
 	<!--	Import Jobs-->
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='3600000'/>
 	 <job name='importReading' classname='com.facilio.bmsconsole.jobs.ImportReadingJob' transactionTimeout= '3600000' />
+	 
+	 <job name='PMImportData' classname = 'com.facilio.bmsconsole.jobs.PMImportDataJob' transactionTimeout='3600000'/>
 
 	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' transactionTimeout='300000'/>
 	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>

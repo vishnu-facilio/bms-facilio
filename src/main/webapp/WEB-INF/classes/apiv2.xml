@@ -5489,4 +5489,16 @@
 		<action name="migrate" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="migrateField" />
 		<action name="fieldDependency" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="fieldDependency" />
 	</package>
+	
+	
+	<package name="bimIntegration" namespace="/api/v2/bimIntegration" extends="v2Api">
+		<action name="uploadBim" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="uploadBim"
+		/>
+		
+		<action name="importBim" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="importBim"
+		/>
+	</package>
+	
 </struts>

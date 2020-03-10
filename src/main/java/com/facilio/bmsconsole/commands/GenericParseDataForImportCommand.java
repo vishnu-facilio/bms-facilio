@@ -16,6 +16,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.ss.usermodel.*;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,162 +80,165 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				throw new ImportMandatoryFieldsException(null, missingColumns, new Exception());
 			}
 		}
-			
+		
+		String sheetName = (String) context.get(FacilioConstants.ContextNames.SHEET_NAME);
 		
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			Sheet datatypeSheet = workbook.getSheetAt(i);
-
-			Iterator<Row> rowItr = datatypeSheet.iterator();
-			boolean heading = true;
 			
-			while (rowItr.hasNext()) {
-				StringBuilder uniqueString = new StringBuilder();
-				ImportRowContext rowContext = new ImportRowContext();
-				row_no++;
-				LOGGER.info("row_no -- " + row_no);
-				Row row = rowItr.next();
+			if(sheetName == null || datatypeSheet.getSheetName().equalsIgnoreCase(sheetName)){
+				Iterator<Row> rowItr = datatypeSheet.iterator();
+				boolean heading = true;
+				
+				while (rowItr.hasNext()) {
+					StringBuilder uniqueString = new StringBuilder();
+					ImportRowContext rowContext = new ImportRowContext();
+					row_no++;
+					LOGGER.info("row_no -- " + row_no);
+					Row row = rowItr.next();
 
-				if (row.getPhysicalNumberOfCells() <= 0) {
-					break;
-				}
-				if (heading) {
-					Iterator<Cell> cellItr = row.cellIterator();
-					int cellIndex = 0;
-					while (cellItr.hasNext()) {
-						Cell cell = cellItr.next();
-						String cellValue = cell.getStringCellValue();
-						headerIndex.put(cellIndex, cellValue);
-						cellIndex++;
+					if (row.getPhysicalNumberOfCells() <= 0) {
+						break;
 					}
-					heading = false;
-					continue;
-				}
-
-				HashMap<String, Object> colVal = new HashMap<>();
-				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-				Iterator<Cell> cellItr = row.cellIterator();
-				while (cellItr.hasNext()) {
-					Cell cell = cellItr.next();
-
-					String cellName = headerIndex.get(cell.getColumnIndex());
-					if (cellName == null || cellName == "") {
+					if (heading) {
+						Iterator<Cell> cellItr = row.cellIterator();
+						int cellIndex = 0;
+						while (cellItr.hasNext()) {
+							Cell cell = cellItr.next();
+							String cellValue = cell.getStringCellValue();
+							headerIndex.put(cellIndex, cellValue);
+							cellIndex++;
+						}
+						heading = false;
 						continue;
 					}
-					Object val = 0.0;
-					try {
-						CellValue cellValue = evaluator.evaluate(cell);
-						val = ImportAPI.getValueFromCell(cell, cellValue);
-					} catch(Exception e) {
-						throw new ImportParseException(row_no, cellName, e);
+
+					HashMap<String, Object> colVal = new HashMap<>();
+					FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+					Iterator<Cell> cellItr = row.cellIterator();
+					while (cellItr.hasNext()) {
+						Cell cell = cellItr.next();
+
+						String cellName = headerIndex.get(cell.getColumnIndex());
+						if (cellName == null || cellName == "") {
+							continue;
+						}
+						Object val = 0.0;
+						try {
+							CellValue cellValue = evaluator.evaluate(cell);
+							val = ImportAPI.getValueFromCell(cell, cellValue);
+						} catch(Exception e) {
+							throw new ImportParseException(row_no, cellName, e);
+						}
+						
+						colVal.put(cellName, val);
 					}
 					
-					colVal.put(cellName, val);
-				}
-				
-				if (colVal.values() == null || colVal.values().isEmpty()) {
-					break;
-				} else {
-					boolean isAllNull = true;
-					for (Object value : colVal.values()) {
-						if (value != null) {
-							isAllNull = false;
+					if (colVal.values() == null || colVal.values().isEmpty()) {
+						break;
+					} else {
+						boolean isAllNull = true;
+						for (Object value : colVal.values()) {
+							if (value != null) {
+								isAllNull = false;
+								break;
+							}
+						}
+						if (isAllNull) {
 							break;
 						}
 					}
-					if (isAllNull) {
-						break;
-					}
-				}
-				
-				rowContext.setRowNumber(row_no);
-				rowContext.setColVal(colVal);
-				rowContext.setSheetNumber(i);
-				
-				
-				
-				
-				if(ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
-						(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-					String name = fieldMapping.get("resource__name");
-					String category = fieldMapping.get("asset__category");
-					ArrayList<String> columns = new ArrayList<>();
-					if(!colVal.containsKey(name) || colVal.get(name) == null) {
-						columns.add("Name");
-					}
-					if(ImportAPI.isInsertImport(importProcessContext) && (!colVal.containsKey(category) || colVal.get(category) == null)) {
-						columns.add("Category");
-					}
-					if (CollectionUtils.isNotEmpty(columns)) {
-						throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
-					}
-					else {
-						uniqueString.append(colVal.get(name));
-					}
-				}
-				else if (ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-					String name = fieldMapping.get("ticket__subject");
-					ArrayList<String> columns = new ArrayList<>();
-					if (!colVal.containsKey(name) || (colVal.get(name) == null)) {
-						columns.add("Subject");
-					}
-					if (CollectionUtils.isNotEmpty(columns)) {
-						throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
-					}
-					else {
-						uniqueString = getUniqueString(groupedContext, uniqueString);
-					}
-				}
-				else if(requiredFields.size() != 0) {
-					for(String field : requiredFields) {
-						if(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)) == null) {
-							throw new ImportFieldValueMissingException(row_no, fieldMapping.get(importProcessContext.getModule().getName() + "__" + field), new Exception());
+					
+					rowContext.setRowNumber(row_no);
+					rowContext.setColVal(colVal);
+					rowContext.setSheetNumber(i);
+					
+					
+					
+					
+					if(ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
+							(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+						String name = fieldMapping.get("resource__name");
+						String category = fieldMapping.get("asset__category");
+						ArrayList<String> columns = new ArrayList<>();
+						if(!colVal.containsKey(name) || colVal.get(name) == null) {
+							columns.add("Name");
+						}
+						if(ImportAPI.isInsertImport(importProcessContext) && (!colVal.containsKey(category) || colVal.get(category) == null)) {
+							columns.add("Category");
+						}
+						if (CollectionUtils.isNotEmpty(columns)) {
+							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
 						}
 						else {
-							if(requiredFields.indexOf(field) != requiredFields.size() - 1) {
-								uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
-								uniqueString.append("__");
+							uniqueString.append(colVal.get(name));
+						}
+					}
+					else if (ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+						String name = fieldMapping.get("ticket__subject");
+						ArrayList<String> columns = new ArrayList<>();
+						if (!colVal.containsKey(name) || (colVal.get(name) == null)) {
+							columns.add("Subject");
+						}
+						if (CollectionUtils.isNotEmpty(columns)) {
+							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
+						}
+						else {
+							uniqueString = getUniqueString(groupedContext, uniqueString);
+						}
+					}
+					else if(requiredFields.size() != 0) {
+						for(String field : requiredFields) {
+							if(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)) == null) {
+								throw new ImportFieldValueMissingException(row_no, fieldMapping.get(importProcessContext.getModule().getName() + "__" + field), new Exception());
 							}
 							else {
-								uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
+								if(requiredFields.indexOf(field) != requiredFields.size() - 1) {
+									uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
+									uniqueString.append("__");
+								}
+								else {
+									uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
+								}
+								
 							}
-							
 						}
 					}
-				}
-				else {
-					
-					if(requiredFields.size() == 0) {
-						uniqueString = getUniqueString(groupedContext, uniqueString);
-					}
-				}
-					
-				if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
-					String settingArrayName = getSettingString(importProcessContext);
-					ArrayList<String> fieldList = new ArrayList<String>();
-					if(importProcessContext.getImportJobMetaJson() != null && 
-							 !importProcessContext.getImportJobMetaJson().isEmpty() &&
-							importProcessContext.getImportJobMetaJson().containsKey(settingArrayName)) {
+					else {
 						
-						fieldList = (ArrayList<String>)importProcessContext.getImportJobMetaJson().get(settingArrayName);
-					}
-					
-
-					for(String field : fieldList) {
-						if(colVal.get(fieldMapping.get(field)) == null) {
-							throw new ImportFieldValueMissingException(row_no, fieldMapping.get(field), new Exception());
+						if(requiredFields.size() == 0) {
+							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
 					}
-					
-				}
+						
+					if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
+						String settingArrayName = getSettingString(importProcessContext);
+						ArrayList<String> fieldList = new ArrayList<String>();
+						if(importProcessContext.getImportJobMetaJson() != null && 
+								 !importProcessContext.getImportJobMetaJson().isEmpty() &&
+								importProcessContext.getImportJobMetaJson().containsKey(settingArrayName)) {
+							
+							fieldList = (ArrayList<String>)importProcessContext.getImportJobMetaJson().get(settingArrayName);
+						}
+						
 
-				LOGGER.info("UNIQUE STRING -- " + uniqueString.toString());
-				if(!groupedContext.containsKey(uniqueString.toString())) {
-					List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
-					rowContexts.add(rowContext);
-					groupedContext.put(uniqueString.toString(), rowContexts);
-				}
-				else {
-					groupedContext.get(uniqueString.toString()).add(rowContext);
+						for(String field : fieldList) {
+							if(colVal.get(fieldMapping.get(field)) == null) {
+								throw new ImportFieldValueMissingException(row_no, fieldMapping.get(field), new Exception());
+							}
+						}
+						
+					}
+
+					LOGGER.info("UNIQUE STRING -- " + uniqueString.toString());
+					if(!groupedContext.containsKey(uniqueString.toString())) {
+						List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
+						rowContexts.add(rowContext);
+						groupedContext.put(uniqueString.toString(), rowContexts);
+					}
+					else {
+						groupedContext.get(uniqueString.toString()).add(rowContext);
+					}
 				}
 			}
 		}
