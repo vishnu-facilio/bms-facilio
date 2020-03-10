@@ -11,15 +11,15 @@ import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
  */
 public class Message 
 {
-	private LiveSessionType sessionType = LiveSessionType.APP;
+	private LiveSessionType sessionType = null;
 	private MessageType messageType;
-	private long from;
-	private long to;
+	private Long from;
+	private Long to;
 	private String namespace;
 	private String action;
 	private JSONObject content = new JSONObject();
-	private long timestamp;
-	private long orgId = -1;
+	private Long timestamp;
+	private Long orgId;
 
 	private static final Logger LOGGER = LogManager.getLogger(Message.class.getName());
 	private static final String SESSION_TYPE = "sessionType";
@@ -37,9 +37,8 @@ public class Message
 	public Message() {
 	}
 	@Override
-	public String toString() 
-	{
-		return super.toString();
+	public String toString() {
+		return toJson().toString();
 	}
 
 	public MessageType getMessageType() {
@@ -65,25 +64,25 @@ public class Message
 		return this;
 	}
 	
-	public long getFrom() {
+	public Long getFrom() {
 		return this.from;
 	}
 
-	public Message setFrom(long from) {
+	public Message setFrom(Long from) {
 		this.from = from;
 		return this;
 	}
 	
-	public long getOrgId() {
+	public Long getOrgId() {
 		return this.orgId;
 	}
 
-	public Message setOrgId(long orgId) {
+	public Message setOrgId(Long orgId) {
 		this.orgId = orgId;
 		return this;
 	}
 	
-	public long getTimestamp() {
+	public Long getTimestamp() {
 		return this.timestamp;
 	}
 
@@ -92,11 +91,11 @@ public class Message
 		return this;
 	}
 	
-	public long getTo() {
+	public Long getTo() {
 		return this.to;
 	}
 
-	public Message setTo(long to) {
+	public Message setTo(Long to) {
 		this.to = to;
 		return this;
 	}
@@ -138,17 +137,31 @@ public class Message
 	}
 
 	public JSONObject toJson() {
-		this.timestamp = System.currentTimeMillis();
-		
 		JSONObject object = new JSONObject();
-		object.put(SESSION_TYPE, getSessionType().toString());
-		object.put(MESSAGE_TYPE, getMessageType().toString());
-		object.put(FROM, getFrom());
-		object.put(TO, getTo());
-		object.put(NAMESPACE, getNamespace());
-		object.put(ACTION, getAction());
-		object.put(CONTENT, getContent());
-		object.put(TIMESTAMP, getTimestamp());
+		if(getSessionType() != null) {
+			object.put(SESSION_TYPE, getSessionType().toString());
+		}
+		if(getMessageType() != null) {
+			object.put(MESSAGE_TYPE, getMessageType().toString());
+		}
+		if(getFrom() != null) {
+			object.put(FROM, getFrom());
+		}
+		if(getTo() != null) {
+			object.put(TO, getTo());
+		}
+		if(getNamespace() != null) {
+			object.put(NAMESPACE, getNamespace());
+		}
+		if(getAction() != null) {
+			object.put(ACTION, getAction());
+		}
+		if(getContent() != null) {
+			object.put(CONTENT, getContent());
+		}
+		if(getTimestamp() != null) {
+			object.put(TIMESTAMP, System.currentTimeMillis());
+		}
 		return object;
 	}
 
