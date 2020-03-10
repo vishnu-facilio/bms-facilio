@@ -1,6 +1,7 @@
 package com.facilio.wms.endpoints;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +21,8 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.bmsconsole.context.ConnectedDeviceContext;
-import com.facilio.bmsconsole.util.DevicesUtil;
+
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -44,7 +45,7 @@ import com.facilio.wms.message.MessageEncoder;
 )
 public class FacilioServerEndpoint 
 {
-    private final Logger log = Logger.getLogger(getClass().getName());
+    private static final Logger log = Logger.getLogger(FacilioServerEndpoint.class.getName());
     
     private static final String HANDSHAKE_REQUEST = "handshakereq";
     private static final String SESSION_TYPE = "type";
@@ -186,9 +187,12 @@ public class FacilioServerEndpoint
     		PubSubManager.getInstance().unsubscribe(message);
     	}
     	else if (message.getContent() != null && message.getContent().get("ping") != null) {
-    		message.getContent().put("ping", "pong");
-    		session.getBasicRemote().sendObject(message);
-    		
+    		if(FacilioProperties.isProduction()) {
+				message.getContent().put("ping", "pong");
+				session.getBasicRemote().sendObject(message);
+			} else {
+				session.getBasicRemote().sendPong(ByteBuffer.wrap(message.toString().getBytes()));
+			}
     		SessionManager.getInstance().getLiveSession(session.getId()).setLastMsgTime(System.currentTimeMillis());
     	}
     }
@@ -196,7 +200,7 @@ public class FacilioServerEndpoint
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
-    	System.out.println("Session started closed" +session.getId());
+    	log.info("Session started closed" +session.getId());
     	endpoints.remove(this);
     	SessionManager.getInstance().removeLiveSession(session.getId());
     	session.close();
@@ -205,7 +209,7 @@ public class FacilioServerEndpoint
     @OnError
     public void onError(Session session, Throwable throwable) 
     {
-    	System.out.println("Session started Error" +throwable.getMessage());
+    	log.info("Session started Error" +throwable.getMessage());
     }
 
     public static void broadcast(Message message) throws IOException, EncodeException 
