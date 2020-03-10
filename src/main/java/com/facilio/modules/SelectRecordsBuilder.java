@@ -496,7 +496,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
-		Set<FacilioField> selectFields = constructQuery();
+		Set<FacilioField> selectFields = constructQuery(false);
 
 		List<Map<String, Object>> props = builder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
@@ -530,7 +530,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	public String constructQueryString() {
-		constructQuery();
+		constructQuery(true);
 		return builder.constructSelectStatement();
 	}
 
@@ -540,7 +540,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 	private boolean queryConstructed = false;
 
-	private Set<FacilioField> constructQuery() {
+	private Set<FacilioField> constructQuery(boolean isJustQueryConstruction) {
 		if (!queryConstructed) {
 			queryConstructed = true;
 			FacilioField orgIdField = AccountConstants.getOrgIdField(module);
@@ -568,7 +568,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 			builder.table(module.getTableName());
 
-			if (limit == -1 && !module.getTypeEnum().isReadingType()) {
+			if (!isJustQueryConstruction && limit == -1 && !module.getTypeEnum().isReadingType()) {
 				builder.limit(DEFAULT_LIMIT);
 			}
 
