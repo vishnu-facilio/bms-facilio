@@ -267,6 +267,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 //			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteSLAWorkFlowsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
