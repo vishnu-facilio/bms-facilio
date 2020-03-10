@@ -53,8 +53,10 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                 GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                         .table(ModuleFactory.getWebTabGroupModule().getTableName())
                         .fields(FieldFactory.getWebTabGroupFields());
-                builder.insert(FieldUtil.getAsProperties(tabGroup));
+                long id = builder.insert(FieldUtil.getAsProperties(tabGroup));
+                context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, id);
             }
+
         }
         return false;
     }

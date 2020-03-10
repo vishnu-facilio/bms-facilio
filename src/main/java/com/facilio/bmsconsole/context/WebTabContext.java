@@ -105,25 +105,27 @@ public class WebTabContext implements Serializable {
     }
 
     public enum Type implements FacilioEnum {
-        MODULE ("Module"),
-        APPROVAL ("Approval"),
-        CALENDAR ("Calendar"),
-        REPORT ("Report"),
-        ANALYTICS ("Analytics"),
-        KPI ("Kpi"),
-        DASHBOARD ("Dashboard"),
-        CUSTOM ("Custom"),
-        APPS ("Apps"),
-        SETTINGS("Settings")
+        MODULE ("Module", false),
+        APPROVAL ("Approval", false),
+        CALENDAR ("Calendar", false),
+        REPORT ("Report", false),
+        ANALYTICS ("Analytics", true),
+        KPI ("Kpi", false),
+        DASHBOARD ("Dashboard", false),
+        CUSTOM ("Custom",false),
+        APPS ("Apps",false),
+        SETTINGS("Settings",true)
         ;
 
         private String name;
+        private boolean isGroupedType;
         public String getName() {
             return name;
         }
 
-        Type(String name) {
+        Type(String name, boolean isGroupedType) {
             this.name = name;
+            this.isGroupedType = isGroupedType;
         }
 
         @Override
@@ -141,6 +143,14 @@ public class WebTabContext implements Serializable {
         @Override
         public String getValue() {
             return getName();
+        }
+
+        public boolean isGroupedType() {
+            return isGroupedType;
+        }
+
+        public void setGroupedType(boolean groupedType) {
+            isGroupedType = groupedType;
         }
     }
     
@@ -191,4 +201,18 @@ public class WebTabContext implements Serializable {
     public void setPermission(List<Permission> permission) {
 		this.permission = permission;
 	}
+
+
+    public WebTabContext(String name, String route, Type type, int order, List<Long> moduleIds, long appId, JSONObject config) {
+        this.name = name;
+        this.route = route;
+        this.type = type;
+        this.order = order;
+        this.moduleIds = moduleIds;
+        this.appId = appId;
+        this.config = config;
+    }
+
+    public WebTabContext() {
+    }
 }

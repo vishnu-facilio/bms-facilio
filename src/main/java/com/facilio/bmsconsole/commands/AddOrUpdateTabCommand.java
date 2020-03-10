@@ -40,12 +40,12 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 				throw new IllegalArgumentException("Group cannot empty");
 			}
 
-			if (tab.getTypeEnum() == null || tab.getConfig() == null) {
-				throw new IllegalArgumentException("Type or config cannot be empty");
-			}
-
-			// Validate configuration of tab
-			tab.validateConfig();
+//			if (tab.getTypeEnum() == null || tab.getConfig() == null) {
+//				throw new IllegalArgumentException("Type or config cannot be empty");
+//			}
+//
+//			// Validate configuration of tab
+//			tab.validateConfig();
 
 			if (checkRouteAlreadyFound(tab)) {
 				throw new IllegalArgumentException("Route is already found for this app");
@@ -123,11 +123,11 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 			List<Map<String, Object>> tabIdAppIdProps = new ArrayList<>();
 			List<TabIdAppIdMappingContext> tabIdAppIdMapping = new ArrayList<TabIdAppIdMappingContext>();
 			for (Long moduleId : webTab.getModuleIds()) {
-				if (webTab.getTypeEnum() == Type.MODULE) {
+				/*if (webTab.getTypeEnum() == Type.MODULE) {
 					if (isModuleIdForModuleTabForAppIdAlreadyAdded(webTab.getId(), moduleId, webTab.getAppId())) {
 						throw new IllegalStateException("Module of the tab type is already added.");
 					}
-				}
+				}*/
 				TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(),
 						moduleId, webTab.getAppId());
 				tabIdAppIdMapping.add(tabIdAppIdMappingContext);

@@ -60,4 +60,15 @@ public class WebTabGroupContext implements Serializable {
     public void setWebTabs(List<WebTabContext> webTabs) {
 		this.webTabs = webTabs;
 	}
+
+    public WebTabGroupContext() {
+    }
+
+    public WebTabGroupContext(String name, String route, long appId, int iconType, int order) {
+        this.name = name;
+        this.route = route;
+        this.appId = appId;
+        this.iconType = iconType;
+        this.order = order;
+    }
 }
