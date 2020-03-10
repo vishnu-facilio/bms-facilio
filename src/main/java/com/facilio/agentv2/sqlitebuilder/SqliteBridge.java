@@ -88,14 +88,14 @@ public class SqliteBridge {
 
     public static boolean executeCommand(long agentId) throws Exception {
         com.facilio.agentv2.FacilioAgent newAgent = migrateAgentToV2(agentId);
-        List<ControllerContext> controllerContexts = migrateControllersAndPointsToV2(agentId, newAgent);
+        List<ControllerContext> controllerContexts = migrateControllerToV2(agentId, newAgent);
         for (ControllerContext controllerContext : controllerContexts) {
             migratePoints(controllerContext,controllerContext.getAgentId());
         }
         return true;
     }
 
-    private static List<ControllerContext> migrateControllersAndPointsToV2(long agentId, com.facilio.agentv2.FacilioAgent newAgent) throws Exception {
+    private static List<ControllerContext> migrateControllerToV2(long agentId, com.facilio.agentv2.FacilioAgent newAgent) throws Exception {
         List<ControllerContext> controllers = ControllerAPI.getControllers(agentId);
         return migrateAndAddControllers(newAgent, controllers);
     }
@@ -179,6 +179,7 @@ public class SqliteBridge {
         fieldDevice.setAgentId(newController.getAgentId());
         fieldDevice.setName(newController.getName());
         fieldDevice.setIdentifier(newController.getIdentifier());
+        fieldDevice.setCreatedTime(newController.getCreatedTime());
         JSONObject controllerProps = new JSONObject();
         controllerProps.putAll(newController.toJSON());
         controllerProps.put(AgentConstants.CONTROLLER,newController.getChildJSON());

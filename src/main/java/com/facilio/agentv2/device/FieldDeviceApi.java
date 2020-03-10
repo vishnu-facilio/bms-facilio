@@ -58,7 +58,9 @@ public class FieldDeviceApi
     }
 
     public static void addFieldDevice(Device device) throws Exception {
-        device.setCreatedTime(System.currentTimeMillis());
+        if(device.getCreatedTime() < 100){
+            device.setCreatedTime(System.currentTimeMillis());
+        }
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getFieldDeviceFields());

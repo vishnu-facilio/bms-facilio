@@ -79,7 +79,9 @@ public class ControllerApiV2 {
                 LOGGER.info(" controller " + FieldUtil.getAsJSON(controller));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);
-                controller.setCreatedTime(System.currentTimeMillis());
+                if(controller.getCreatedTime() < 100){
+                    controller.setCreatedTime(System.currentTimeMillis());
+                }
                 controller.setId(-1);
                 controller.setActive(true);
                 controller.setLastModifiedTime(System.currentTimeMillis());

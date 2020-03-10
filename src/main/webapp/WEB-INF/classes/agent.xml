@@ -334,6 +334,8 @@
                 method="createModbusPoint">
         </action>
 
+        <action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
+        </action>
     </package>
 
     <package name="opcDa" namespace="/api/v2/opcda" extends="agent">
@@ -344,11 +346,6 @@
 
     <package name="opcUa" namespace="/api/v2/opcUa" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.OpcUaControllerAction" method="addController">
-        </action>
-    </package>
-
-    <package name="rtuNetwork" namespace="/api/v2/rtuNetwork" extends="agent">
-        <action name="add" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
         </action>
     </package>
 

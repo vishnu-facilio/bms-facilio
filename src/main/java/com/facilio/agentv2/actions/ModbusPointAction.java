@@ -30,6 +30,18 @@ public class ModbusPointAction extends AgentIdAction {
     @Min(0)
     private Integer controllerType;
 
+    @NotNull
+    @Min(1)
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getControllerType() {
         return controllerType;
     }
@@ -71,6 +83,8 @@ public class ModbusPointAction extends AgentIdAction {
         this.modbusDataType = modbusDataType;
     }
 
+
+
     public String createModbusPoint() {
         try {
             if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
@@ -78,6 +92,7 @@ public class ModbusPointAction extends AgentIdAction {
                 tcpPointContext.setFunctionCode(functionCode);
                 tcpPointContext.setModbusDataType(modbusDataType);
                 tcpPointContext.setRegisterNumber(registerNumber);
+                tcpPointContext.setName(name);
                 ControllerMessenger.sendConfigureModbusTcpPoint(tcpPointContext);
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
@@ -86,6 +101,7 @@ public class ModbusPointAction extends AgentIdAction {
                 rtuPointContext.setFunctionCode(functionCode);
                 rtuPointContext.setModbusDataType(modbusDataType);
                 rtuPointContext.setRegisterNumber(registerNumber);
+                rtuPointContext.setName(name);
                 ControllerMessenger.sendConfigureModbusRtuPoint(rtuPointContext);
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
