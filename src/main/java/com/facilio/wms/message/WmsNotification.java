@@ -15,7 +15,7 @@ public class WmsNotification extends Message {
 		return this;
 	}
 	
-	public long getFrom() {
+	public Long getFrom() {
 		return (Long) super.getData("from");
 	}
 	
