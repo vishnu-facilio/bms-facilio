@@ -1454,6 +1454,7 @@ public static long getSitesCount() throws Exception {
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getBaseAlarmModule().getTableName())
+				.andCondition(ViewFactory.getReadingAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
 				.select(fields)
 				.andCondition(spaceCond);
 
