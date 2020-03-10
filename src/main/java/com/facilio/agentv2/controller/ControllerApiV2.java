@@ -76,7 +76,6 @@ public class ControllerApiV2 {
                 FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
                 FacilioContext context = addControllerChain.getContext();
                 String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
-                LOGGER.info(" controller " + FieldUtil.getAsJSON(controller));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);
                 if(controller.getCreatedTime() < 100){

@@ -235,6 +235,7 @@ public abstract class Controller extends AssetContext {
      *
      * @return {@link JSONObject}
      */
+    @JsonIgnore
     public abstract JSONObject getChildJSON();
 
     /**
@@ -244,6 +245,7 @@ public abstract class Controller extends AssetContext {
      *
      * @return
      */
+    @JsonIgnore
     public JSONObject getParentJSON() {
         JSONObject object = new JSONObject();
         object.put(AgentConstants.NAME, getName());
@@ -273,6 +275,7 @@ public abstract class Controller extends AssetContext {
      * @param row can be {@link Map<String, Object>} from database or {@link JSONObject} from agent.
      * @return {@link Controller} which will be an instance of corresponding child controller's Class.
      */
+    @JsonIgnore
     public Controller getControllerFromJSON(Map<String, Object> row) {
         if (containsValueCheck(AgentConstants.ID, row)) {
             setId((Long) row.get(AgentConstants.ID));
@@ -362,7 +365,9 @@ public abstract class Controller extends AssetContext {
         }
     }
 
+    @JsonIgnore
     public abstract List<Condition> getControllerConditions() throws Exception;
 
+    @JsonIgnore
     public abstract String getIdentifier() throws IOException;
 }
