@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,11 +19,18 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TaskErrorContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -655,29 +664,6 @@ public class TaskAction extends FacilioAction {
 				setPreRequestSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));	
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
-			}
-		}
-		else {
-//			if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_ANY)) {
-//				this.viewName = null;
-//			}
-//			else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_OWN)) {
-//				this.viewName = "mytasks";
-//			}
-
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-
-			FacilioChain taskListChain = FacilioChainFactory.getTaskListChain();
-			taskListChain.execute(context);
-
-			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-			setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
-			setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
-
-			FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-			if(cv != null) {
-				setViewDisplayName(cv.getDisplayName());
 			}
 		}
 		}

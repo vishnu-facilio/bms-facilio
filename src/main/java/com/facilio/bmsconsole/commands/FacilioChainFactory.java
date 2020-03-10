@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
@@ -7,9 +11,6 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -406,18 +407,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskCommand());
 		c.addCommand(new GetTaskInputDataCommand());
-		return c;
-	}
-	
-	public static FacilioChain getTaskListChain() {
-		FacilioChain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForTask());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetTaskListCommand());
-		c.addCommand(new GetTaskInputDataCommand());
-		c.addCommand(new SiUnitConversionToSelectedReadingUnit());
 		return c;
 	}
 	
