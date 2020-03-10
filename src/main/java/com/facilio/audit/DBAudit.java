@@ -177,16 +177,13 @@ public class DBAudit implements FacilioAudit {
 				getModuleInfoList();
 			}
 			if(StringUtils.isNotEmpty(module) && StringUtils.isNotEmpty(action) && StringUtils.isNotEmpty(method) ) {
-				long addStartModule = System.currentTimeMillis();
 				if(!AUDIT_INFO.containsKey(module)) {
 					getAuditInfoData(module, "module");
 					if(!AUDIT_INFO.containsKey(module)) {
 						moduleId = addModule(module);
 					}
-					LOGGER.info("Audit entry add & check module,action,method timetaken:::: "+(System.currentTimeMillis()-addStartModule));
 				 }
 				 if(!AUDIT_INFO.get(module).containsKey(action)) {
-					long addStartAction = System.currentTimeMillis();
 					getAuditInfoData(action, "action");
 					if(!AUDIT_INFO.get(module).containsKey(action)) {
 						getModuleInfoList();
@@ -194,19 +191,16 @@ public class DBAudit implements FacilioAudit {
 						actionId = addAction(moduleId, action, module);
 						methodId = addMethod(actionId, method, module, action);
 					}
-					LOGGER.info("Audit entry add & check Action,method timetaken:::: "+(System.currentTimeMillis()-addStartAction));
 				}
 				if(!AUDIT_INFO.get(module).get(action).containsKey(method)) {
-					long addStartMethod = System.currentTimeMillis();
 					getAuditInfoData(method, "method");
 					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
-					LOGGER.info("Audit entry  check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
 				}
 				else {
 					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
 				}
 			}
-			LOGGER.info("Size of the Map ---> "+AUDIT_INFO.size());
+			LOGGER.debug("Size of the Map ---> "+AUDIT_INFO.size());
 			if(SERVERID != -1) {
 				data.setServerId(SERVERID);
 			}
@@ -214,7 +208,6 @@ public class DBAudit implements FacilioAudit {
 			id = insertBuilder(getValueMap(data), TABLE_NAME, FIELDS);
 			data.setId(id);
 		} catch (Exception e) {
-			System.out.println("Exception while adding : "+ e);
 			LOGGER.info("Exception while adding : ", e);
 		}
 		LOGGER.info("Audit entry add full time timetaken:::: "+(System.currentTimeMillis()-addStart));
