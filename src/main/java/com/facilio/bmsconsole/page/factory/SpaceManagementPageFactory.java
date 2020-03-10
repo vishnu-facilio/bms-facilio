@@ -44,6 +44,8 @@ public class SpaceManagementPageFactory extends PageFactory {
         Section tab1Sec3 = page.new Section();
         addSpacesWidget(tab1Sec3,modBean);
         tab1.addSection(tab1Sec3);
+		addCommonSubModuleGroup(tab1Sec3);
+
         return page;
     }
 
@@ -66,6 +68,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec2 = page.new Section("buildingRelatedList");
 		tab1.addSection(tab1Sec2);
 		addBuildingRelatedListWidget(tab1Sec2);
+		addCommonSubModuleGroup(tab1Sec2);
 		return page;
 	}
 
@@ -87,6 +90,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec2 = page.new Section();
 		addSpaceRelatedListWidget(tab1Sec2, "floorSpaces",modBean);
 		tab1.addSection(tab1Sec2);
+		addCommonSubModuleGroup(tab1Sec2);
 		return page;
 	}
 
@@ -108,6 +112,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec2 = page.new Section();
 		addSpaceRelatedListWidget(tab1Sec2, "relatedSubSpaces",modBean);
 		tab1.addSection(tab1Sec2);
+		addCommonSubModuleGroup(tab1Sec2);
 		return page;
 	}
 

@@ -46,7 +46,7 @@ public class BuildingAction extends FacilioAction {
 	}
 
 	public String v2buildingList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.fetchModuleDataListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getSpaceModuleListChain();
 		FacilioContext constructListContext = chain.getContext();
 		constructListContext(constructListContext);
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, "building");

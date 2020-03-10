@@ -169,7 +169,7 @@ public class CampusAction extends FacilioAction {
 	}
 
 	public String v2SitesList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.fetchModuleDataListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getSpaceModuleListChain();
 		FacilioContext constructListContext = chain.getContext();
 		constructListContext(constructListContext);
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, "site");

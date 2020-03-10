@@ -2204,4 +2204,15 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSiteTotalAreaCommand());
 		return chain;
 	}
+
+	public static FacilioChain getSpaceModuleListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new LoadSpaceManagementLookupFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
 }
