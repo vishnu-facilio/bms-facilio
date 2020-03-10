@@ -20,6 +20,7 @@ import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -230,6 +231,67 @@ public class ControlActionUtil {
 			prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
 		}
 		return props;
+	}
+	
+	public static ControlActionCommandContext getLastExecutedCommand(long resourceId,long fieldId) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule controlActionModule = modbean.getModule(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		List<FacilioField> controlActionFields = modbean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(controlActionFields);
+		
+		SelectRecordsBuilder<ControlActionCommandContext> selectProject = new SelectRecordsBuilder<ControlActionCommandContext>()
+				.module(controlActionModule)
+				.select(controlActionFields)
+				.beanClass(ControlActionCommandContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), fieldId+"", NumberOperators.EQUALS))
+				.orderBy("EXECUTED_TIME desc")
+				.limit(1);
+		
+		List<ControlActionCommandContext> props = selectProject.get();
+		
+		if(props != null && !props.isEmpty()) {
+			ControlActionCommandContext prop = props.get(0);
+			FacilioField field = modbean.getField(prop.getFieldId());
+			prop.setField(field);
+//			prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
+			return prop;
+		}
+		return null;
+	}
+	
+	public static ControlActionCommandContext getLastExecutedCommandGreaterThanSpecificTime(long resourceId,long fieldId,long ttime) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule controlActionModule = modbean.getModule(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		List<FacilioField> controlActionFields = modbean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(controlActionFields);
+		
+		SelectRecordsBuilder<ControlActionCommandContext> selectProject = new SelectRecordsBuilder<ControlActionCommandContext>()
+				.module(controlActionModule)
+				.select(controlActionFields)
+				.beanClass(ControlActionCommandContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), fieldId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("executedTime"), ttime+"", DateOperators.IS_AFTER))
+				.orderBy("EXECUTED_TIME desc")
+				.limit(1);
+		
+		List<ControlActionCommandContext> props = selectProject.get();
+		
+		if(props != null && !props.isEmpty()) {
+			ControlActionCommandContext prop = props.get(0);
+			FacilioField field = modbean.getField(prop.getFieldId());
+			prop.setField(field);
+//			prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
+			return prop;
+		}
+		return null;
 	}
 
 	public static void deleteDependenciesForControlGroup(ControlGroupContext controlGroup) throws Exception {

@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.controlaction.context.ControllableResourceContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext.ControllableCategory;
@@ -108,6 +109,13 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 				}
 				
 				ReadingDataMeta rdm = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
+				
+				ControlActionCommandContext lastExecutedCommand = ControlActionUtil.getLastExecutedCommandGreaterThanSpecificTime(rdm.getResourceId(), rdm.getFieldId(), rdm.getTtime());
+				
+				if(lastExecutedCommand != null) {
+					rdm.setValue(lastExecutedCommand.getValue());
+					rdm.setTtime(lastExecutedCommand.getExecutedTime());
+				}
 				
 				ControllablePointContext controllablePoint = FieldUtil.getAsBeanFromMap(prop, ControllablePointContext.class);
 				
