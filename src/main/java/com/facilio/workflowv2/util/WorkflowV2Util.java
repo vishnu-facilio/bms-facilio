@@ -50,6 +50,8 @@ public class WorkflowV2Util {
 	
 	public static final String CRUD_MODULE_KEY = "default_module";
 	
+	public static final Integer SELECT_DEFAULT_LIMIT = 5000;
+	
 	private static JSONObject defaultWorkflows = new JSONObject();
 	
 	private static JSONObject workflowTemplates = new JSONObject();

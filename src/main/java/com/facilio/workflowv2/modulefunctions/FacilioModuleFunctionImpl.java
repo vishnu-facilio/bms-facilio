@@ -53,6 +53,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
@@ -272,6 +273,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}
 			
+			boolean isLimitApplied = false;
+			
 			
 			if(dbParamContext.getFieldName() != null && dbParamContext.getFieldCriteria() == null) {
 				List<FacilioField> selectFields = new ArrayList<>();
@@ -301,6 +304,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					
 					if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
+						isLimitApplied = true;
 					}
 					else if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
@@ -317,6 +321,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 						if(isLastValueWithTimeRange) {
 							
 							selectBuilder.limit(1);
+							isLimitApplied = true;
 							selectBuilder.orderBy("TTIME desc");
 							
 						}
@@ -406,6 +411,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			
 			if(dbParamContext.getLimit() > 0) {
 				selectBuilder.limit(dbParamContext.getLimit());
+				isLimitApplied = true;
+			}
+			if(!isLimitApplied) {
+				selectBuilder.limit(WorkflowV2Util.SELECT_DEFAULT_LIMIT);
 			}
 			if(dbParamContext.getGroupBy() != null) {
 				FacilioField groupByField = modBean.getField(dbParamContext.getGroupBy(), module.getName());
@@ -430,7 +439,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		
+		System.out.println(selectBuilder);
 		LOGGER.fine("selectBuilder -- "+selectBuilder);
 		LOGGER.fine("selectBuilder result -- "+props);
 		
