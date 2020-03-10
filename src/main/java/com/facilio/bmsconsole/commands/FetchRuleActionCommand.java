@@ -19,8 +19,10 @@ public class FetchRuleActionCommand extends FacilioCommand {
         long ruleId = (long) context.get(FacilioConstants.ContextNames.RULE_ID);
         if (ruleId > 0) {
             List<WorkflowRuleContext> alarmWorkflowRules = ReadingRuleAPI.getAlarmWorkflowRules(ruleId);
-            for (WorkflowRuleContext alarmWorkflowRule : alarmWorkflowRules ) {
-                alarmWorkflowRule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmWorkflowRule.getId()));
+            if (alarmWorkflowRules != null) {
+                for (WorkflowRuleContext alarmWorkflowRule : alarmWorkflowRules ) {
+                    alarmWorkflowRule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmWorkflowRule.getId()));
+                }
             }
 
             context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, alarmWorkflowRules);

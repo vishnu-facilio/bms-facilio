@@ -1038,7 +1038,7 @@ public class WorkflowRuleAPI {
 
 			if(props!= null && !props.isEmpty()) {
 
-				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, false);
+				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true);
 				List<ReadingAlarmRuleContext> readingAlarmRuleContexts = new ArrayList<>();
 				for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
 					readingAlarmRuleContexts.add((ReadingAlarmRuleContext) workflowRuleContext);
