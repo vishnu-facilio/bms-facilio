@@ -227,7 +227,7 @@ public class AgentIdAction extends AgentActionV2 {
         } catch (Exception e) {
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
-            LOGGER.info("Exception occurred while migrating to new Agent " + getAgentId()+" "+e);
+            LOGGER.info("Exception occurred while migrating to new Agent " + getAgentId()+"  ",e);
         }
         return SUCCESS;
     }
