@@ -290,7 +290,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			info.put("newValue", workOrder.getSiteId());
 			wolist.add(info);
 		    woupdate.put("woupdate", wolist);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
+			CommonCommandUtil.addActivityToContext(recordIds.get(0), workOrder.getCurrentTime(), WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
 		}
 		if ( (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1) ) {
 			for (WorkOrderContext oldWo: oldWos) {
@@ -343,9 +343,9 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			}	
 	        woupdate.put("woupdate", wolist);
 			if (updatingPrereqApproved) {
-				CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.PREREQUISITE_APPROVE, woupdate,(FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordIds.get(0),  workOrder.getCurrentTime(), WorkOrderActivityType.PREREQUISITE_APPROVE, woupdate,(FacilioContext) context);
 			} else {
-				CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, woupdate,(FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordIds.get(0),  workOrder.getCurrentTime(), WorkOrderActivityType.UPDATE, woupdate,(FacilioContext) context);
 			}
 		}
 	}
@@ -367,7 +367,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		}
 		JSONObject newinfo = new JSONObject();
         newinfo.put("assigned", info);
-		CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
+		CommonCommandUtil.addActivityToContext(parentId,  workOrder.getCurrentTime(), WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
 	}
 	
 	private void addVendorAssignmentActivity(WorkOrderContext workOrder, long parentId, WorkOrderContext oldWo, Context context) throws Exception{
@@ -377,7 +377,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			info.put("vendor", vendor.getName());
 			JSONObject newinfo = new JSONObject();
 	        newinfo.put("vendor", info);
-			CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.VENDOR_ASSIGNED, newinfo, (FacilioContext) context);
+			CommonCommandUtil.addActivityToContext(parentId,  workOrder.getCurrentTime(), WorkOrderActivityType.VENDOR_ASSIGNED, newinfo, (FacilioContext) context);
 		}
 	}
 	

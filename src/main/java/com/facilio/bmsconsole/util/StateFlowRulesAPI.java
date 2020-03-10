@@ -7,9 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -26,16 +24,24 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
+import com.facilio.bmsconsole.workflow.rule.FormInterface;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
+import com.facilio.bmsconsole.workflow.rule.ValidationContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -196,29 +202,25 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		changeSetMap.put(module.getName(), changeSet);
 		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSetMap);
 		
-		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
+		if (oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
 			info.put("status", facilioStatus.getDisplayName());
 			info.put("oldValue", oldState.getDisplayName());
 			info.put("newValue", facilioStatus.getDisplayName());
-			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
+			ActivityType activityType = null;
+			if ((module.getName().contains("workorder"))) {
+				activityType = WorkOrderActivityType.UPDATE_STATUS;
+			}
+			else if ((module.getName().contains("asset"))) {
+				activityType = AssetActivityType.UPDATE_STATUS;
+			}
+			else if ((module.getName().contains("assetmovement"))) {
+				activityType = AssetActivityType.LOCATION;
+			}
+			if (activityType != null) {
+				CommonCommandUtil.addActivityToContext(record.getId(), record.getCurrentTime(), activityType, info, (FacilioContext) context);
+			}
 		}	
-		if ((module.getName().contains("asset")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
-			JSONObject info = new JSONObject();
-			info.put("status", facilioStatus.getDisplayName());
-			info.put("oldValue", oldState.getDisplayName());
-			info.put("newValue", facilioStatus.getDisplayName());
-			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.UPDATE_STATUS, info, (FacilioContext) context);
-		}
-		
-		if ((module.getName().contains("assetmovement")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
-			JSONObject info = new JSONObject();
-			info.put("status", facilioStatus.getDisplayName());
-			info.put("oldValue", oldState.getDisplayName());
-			info.put("newValue", facilioStatus.getDisplayName());
-			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
-		}
-		
 		
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
