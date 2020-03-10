@@ -439,7 +439,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		System.out.println(selectBuilder);
 		LOGGER.fine("selectBuilder -- "+selectBuilder);
 		LOGGER.fine("selectBuilder result -- "+props);
 		
