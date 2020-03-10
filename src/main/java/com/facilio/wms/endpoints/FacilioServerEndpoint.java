@@ -158,7 +158,18 @@ public class FacilioServerEndpoint
     	System.out.println("Session started message to ::" +session.getPathParameters()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
     	
     	LiveSession ls = SessionManager.getInstance().getLiveSession(session.getId());
-    	
+
+		if (message.getContent() != null && message.getContent().get("ping") != null) {
+			if(FacilioProperties.isProduction()) {
+				message.getContent().put("ping", "pong");
+				session.getBasicRemote().sendObject(message);
+			} else {
+				session.getBasicRemote().sendPong(ByteBuffer.wrap(message.toString().getBytes()));
+			}
+			SessionManager.getInstance().getLiveSession(session.getId()).setLastMsgTime(System.currentTimeMillis());
+			return;
+		}
+
     	long id = Long.parseLong(session.getPathParameters().get("id"));
     	message.setTo(id);
     	message.setSessionType(ls.getLiveSessionType());
@@ -185,15 +196,6 @@ public class FacilioServerEndpoint
     	}
     	else if ("unsubscribe".equalsIgnoreCase(message.getAction())) {
     		PubSubManager.getInstance().unsubscribe(message);
-    	}
-    	else if (message.getContent() != null && message.getContent().get("ping") != null) {
-    		if(FacilioProperties.isProduction()) {
-				message.getContent().put("ping", "pong");
-				session.getBasicRemote().sendObject(message);
-			} else {
-				session.getBasicRemote().sendPong(ByteBuffer.wrap(message.toString().getBytes()));
-			}
-    		SessionManager.getInstance().getLiveSession(session.getId()).setLastMsgTime(System.currentTimeMillis());
     	}
     }
 
