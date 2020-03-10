@@ -29,7 +29,7 @@ public class GetSpaceReportCards extends FacilioCommand {
 			faCount.put("type", "count");
 			faCount.put("name", "fire_alarms");
 			faCount.put("label", "Alarms");
-			faCount.put("data", SpaceAPI.getFireAlarmsCount(spaceId));
+			faCount.put("data", SpaceAPI.getV2AlarmCount(spaceId));
 			
 			JSONObject assetCount = new JSONObject();
 			assetCount.put("type", "count");

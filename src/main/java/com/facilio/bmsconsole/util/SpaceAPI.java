@@ -1430,7 +1430,41 @@ public static long getSitesCount() throws Exception {
 			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
-	
+	public static long getV2AlarmCount (long spaceId) throws  Exception {
+
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(ID)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getBaseAlarmModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(resourceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getBaseAlarmModule().getTableName())
+				.select(fields)
+				.andCondition(spaceCond);
+
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return ((Number) rs.get(0).get("count")).longValue();
+		}
+	}
 	public static long getFireAlarmsCount(long spaceId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();
@@ -1470,6 +1504,7 @@ public static long getSitesCount() throws Exception {
 			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
+
 	
 	public static long getAssetsCount(long spaceId) throws Exception {
 		
