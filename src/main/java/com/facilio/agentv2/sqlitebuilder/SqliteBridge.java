@@ -111,6 +111,7 @@ public class SqliteBridge {
     }
 
     private static List<ControllerContext> migrateAndAddControllers(com.facilio.agentv2.FacilioAgent newAgent, List<ControllerContext> controllers) {
+        List<ControllerContext> controllersToMigrate = new ArrayList<>();
         if ((controllers != null) && (!controllers.isEmpty())) {
             LOGGER.info(" migrating controller "+controllers.size()+" for new-agent "+newAgent);
             for (ControllerContext controller : controllers) {
@@ -150,26 +151,25 @@ public class SqliteBridge {
                                         .withAgentId(newAgent.getId())
                                         .withControllerProperties(newController.getChildJSON(), FacilioControllerType.valueOf(controllerType.getKey()));
                                 Controller existingController = getControllerRequest.getController();
-                                if(existingController != null){
+                                if(existingController == null){
                                     throw new Exception(" controller not present and cant be added ");
                                 }
                                 controller.setAgentId(existingController.getId());
                             }catch (Exception e1){
-                                LOGGER.info(" wxception while fetching existing controller ",e1);
-                                controllers.remove(controller);
+                                LOGGER.info(" exception while fetching existing controller ",e1);
                                 continue;
                             }
                             LOGGER.info("Controller already migrated "+controller.getId());
                     }
-
+                        controllersToMigrate.add(controller);
                     }
                 } catch (Exception e) {
-                    LOGGER.info(" Exception while migrating controller ");
+                    LOGGER.info(" Exception while migrating controller ",e);
                 }
             }
 
         }
-        return controllers;
+        return controllersToMigrate;
     }
 
     private static void addFieldDevice(Controller newController) throws Exception {
