@@ -76,6 +76,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		this.fetchDeleted = selectBuilder.fetchDeleted;
 		this.groupBy = selectBuilder.groupBy;
 		this.isAggregation = selectBuilder.isAggregation;
+		this.limit = selectBuilder.limit;
 		
 		if (selectBuilder.builder != null) {
 			this.builder = new GenericSelectRecordBuilder(selectBuilder.builder);
