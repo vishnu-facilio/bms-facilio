@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ConnectionContext;
@@ -39,6 +40,7 @@ import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
+import com.facilio.workflowv2.util.WorkflowV2TypeUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class WorkflowFunctionVisitor extends CommonParser<Value> {
@@ -603,40 +605,50 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
+
+        Double numericalLeftValue = 0d, numericalRightValue = 0d;
+        
+        if((ctx.op.getType() == WorkflowV2Parser.LT || ctx.op.getType() == WorkflowV2Parser.LTEQ || ctx.op.getType() == WorkflowV2Parser.GT || ctx.op.getType() == WorkflowV2Parser.GTEQ)) 
+        {
+        	if(left.asObject() != null && right.asObject() != null && left.asObject() instanceof String && right.asObject() instanceof String) {
+				int result = left.asString().compareTo(right.asString());
+				if(result > 0) {
+					numericalLeftValue = 1d;
+				} else if (result < 0) {
+					numericalRightValue = 1d;
+				}
+        	}
+        	else {
+        		WorkflowV2TypeUtil.assignBothNumericValuesForComparison(left, numericalLeftValue, right, numericalRightValue);
+        	}
+        }
+        
+        boolean comparisonResult, equalityResult;
         
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.LT:
-            	if(left.asObject() == null || right.asObject() == null) {
-            		return Value.VOID;
-            	}
-                return new Value(left.asDouble() < right.asDouble());
-            case WorkflowV2Parser.LTEQ:
-            	if(left.asObject() == null || right.asObject() == null) {
-            		return Value.VOID;
-            	}
-                return new Value(left.asDouble() <= right.asDouble());
-            case WorkflowV2Parser.GT:
-            	if(left.asObject() == null || right.asObject() == null) {
-            		return Value.VOID;
-            	}
-                return new Value(left.asDouble() > right.asDouble());
-            case WorkflowV2Parser.GTEQ:
-            	if(left.asObject() == null || right.asObject() == null) {
-            		return Value.VOID;
-            	}
-                return new Value(left.asDouble() >= right.asDouble());
-            case WorkflowV2Parser.EQ:
-            	if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
-            		return  new Value(left.asDouble().equals(right.asDouble()));
-            	}
-            	return new Value(left.equals(right));
+            	return new Value((numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue < numericalRightValue) : false);
+                
+            case WorkflowV2Parser.LTEQ:	            	
+            	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue < numericalRightValue) : false;
+            	equalityResult = WorkflowV2TypeUtil.evaluateEquality(left, right);
+            	return new Value(comparisonResult || equalityResult);
+            	
+            case WorkflowV2Parser.GT:	
+            	return new Value((numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue > numericalRightValue) : false);
+            	
+            case WorkflowV2Parser.GTEQ:    	
+            	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue > numericalRightValue) : false;
+            	equalityResult = WorkflowV2TypeUtil.evaluateEquality(left, right);
+            	return new Value(comparisonResult || equalityResult);
+            	
+            case WorkflowV2Parser.EQ:           	
+            	return new Value(WorkflowV2TypeUtil.evaluateEquality(left, right));
             case WorkflowV2Parser.NEQ:
-            	if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
-            		return  new Value(!left.asDouble().equals(right.asDouble()));
-            	}
-            	return new Value(!left.equals(right));
+            	return new Value(!(WorkflowV2TypeUtil.evaluateEquality(left, right)));
+            	
             default:
-                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+                throw new RuntimeException("Unknown relational operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
         }
     }
     
