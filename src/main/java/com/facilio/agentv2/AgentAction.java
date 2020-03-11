@@ -462,9 +462,20 @@ public class AgentAction extends AgentActionV2 {
         try{
             Organization currentOrg = AccountUtil.getCurrentOrg();
             if(currentOrg != null){
-                String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
-                setResult(AgentConstants.DATA,downloadCertificateLink);
-                ok();
+                String agentName = getName();
+                if(name != null){
+                    FacilioAgent agent = AgentApiV2.getAgent(agentName);
+                    if (agent != null) {
+                        String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
+                        addClientToPolicy();
+                        setResult(AgentConstants.DATA,downloadCertificateLink);
+                        ok();
+                    }else {
+                        throw new Exception("No such agent");
+                    }
+                }else {
+                    throw new Exception("agent name can't be null");
+                }
             }else {
                 LOGGER.info("Exception occurred, account cant be null");
                 internalError();

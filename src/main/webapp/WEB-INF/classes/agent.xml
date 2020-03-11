@@ -148,7 +148,7 @@
 
         <action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
         </action>
-        <action name="certificate" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
+        <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
 
 
