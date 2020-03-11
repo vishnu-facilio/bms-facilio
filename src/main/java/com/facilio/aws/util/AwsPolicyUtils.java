@@ -2,9 +2,6 @@ package com.facilio.aws.util;
 
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.model.*;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.PublishType;
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -74,46 +71,54 @@ public class AwsPolicyUtils
         updateClientPolicyVersion(client,policyName,policy,0);
     }
 
-    public static IotPolicy getIotRule(String topic,String type){
-        LOGGER.info(" creating IotRule for "+topic+"   and type "+type);
+    public static IotPolicy getIotPolicyWithTopics(String topic, String type) {
+        LOGGER.info(" creating IotRule for " + topic + "   and type " + type);
         IotPolicy policy = new IotPolicy();
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
-            policy.setToModify(true);
-            policy.setPublishtopics(new ArrayList<>(
-                    Arrays.asList((topic + AgentIntegrationKeys.TOPIC_WT_EVENTS) , ( topic+ AgentIntegrationKeys.TOPIC_WT_ALARMS ), ( topic+ AgentIntegrationKeys.TOPIC_WT_VALUES ))));
-            policy.setClientIds(new ArrayList<>(Arrays.asList(getIotArnClientId(topic))));
-            policy.setReceiveTopics(new ArrayList<>(Arrays.asList(topic+AgentIntegrationKeys.TOPIC_WT_CMD)));
-            policy.setSubscribeTopics(new ArrayList<>(Arrays.asList(getIotArnTopicFilter(topic)+AgentIntegrationKeys.TOPIC_WT_CMD)));
-            policy.setPublishTypes(new ArrayList<>(Arrays.asList(PublishType.event.getValue(),PublishType.event.getValue(),PublishType.timeseries.getValue())));
-            LOGGER.info("topic and pubtype "+policy.getMappedTopicAndPublished());
-            return policy;
-        }
-        else {
-            policy.setClientIds(new ArrayList<>(Arrays.asList( getIotArnClientId(topic))));
-            policy.setPublishtopics(new ArrayList<>(Arrays.asList(getIotArnTopic(topic))));
-            policy.setSubscribeTopics(new ArrayList<>(Arrays.asList(getIotArnTopicFilter(topic)+"/msgs")));
-            policy.setReceiveTopics(new ArrayList<>(Arrays.asList(getIotArnTopic(topic+"/msgs"))));
-            policy.setType(type);
-            return policy;
-        }
+        policy.setPublishtopics(new ArrayList<>(Arrays.asList(topic)));
+        policy.setArnPublishtopics(new ArrayList<>(Arrays.asList(getIotArnTopic(topic))));
+        policy.setSubscribeTopics(new ArrayList<>(Arrays.asList(topic + "/msgs")));
+        policy.setArnSubscribeTopics(new ArrayList<>(Arrays.asList(getIotArnTopicFilter(topic) + "/msgs")));
+        policy.setReceiveTopics(new ArrayList<>(Arrays.asList(topic + "/msgs")));
+        policy.setArnReceiveTopics(new ArrayList<>(Arrays.asList(getIotArnTopic(topic + "/msgs"))));
+        policy.setType(type);
+        return policy;
     }
 
-    public static IotPolicy createIotPolicy(String clientName, String policyName, String type, AWSIot iotClient) {
+/*
+    public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        IotPolicy iotRule = AwsPolicyUtils.getIotRule("topic", "facilio");
+        System.out.println(iotRule.getClientIds());
+        System.out.println(iotRule.getArnClientIds());
+        System.out.println(iotRule.getPublishtopics());
+        System.out.println(iotRule.getArnPublishtopics());
+        System.out.println(iotRule.getSubscribeTopics());
+        System.out.println(iotRule.getArnSubscribeTopics());
+        System.out.println(iotRule.getReceiveTopics());
+        System.out.println(iotRule.getArnReceiveTopics());
+        //System.out.println(iotRule.getPolicyDocument());
+    }
+*/
+
+    public static IotPolicy createOrUpdateIotPolicy(String clientName, String policyName, String type, AWSIot iotClient) {
         LOGGER.info(" creating iot policy "+policyName);
-        IotPolicy policy;
-        policy = AwsPolicyUtils.getIotRule(policyName,type);
+        IotPolicy policy = new IotPolicy();
+        policy = AwsPolicyUtils.getIotPolicyWithTopics(policyName,type);
+        if(clientName != null){
+            policy.getClientIds().add(clientName);
+            policy.getArnClientIds().add(getIotArnClientId(clientName));
+        }
         policy.setName(policyName);
-        policy.getClientIds().add(getIotArnClientId(clientName));
         LOGGER.info("p topics "+policy.getPublishtopics());
         LOGGER.info("s topics "+policy.getSubscribeTopics());
         LOGGER.info("r topics "+policy.getReceiveTopics());
-        createIotPolicy(iotClient, policy); // check topic or policy name
+        createIotPolicyAtAws(iotClient, policy); // check topic or policy name
+        LOGGER.info(" created iot policy at AWS ");
         return policy;
     }
 
 
 
-    private static void createIotPolicy(AWSIot iotClient , IotPolicy rule) {
+    private static void createIotPolicyAtAws(AWSIot iotClient , IotPolicy rule) {
         LOGGER.info(" creating Iot policy for "+rule.getName());
 
        /* for(int i=0;i<rule.getPublishtopics().size();i++){
@@ -125,14 +130,19 @@ public class AwsPolicyUtils
 		}*/
 
         try {
-            JSONObject policyDocumentJSON = getPolicyDoc(rule.getClientIds(), rule.getPublishtopics(), rule.getSubscribeTopics(), rule.getReceiveTopics());
+            JSONObject policyDocumentJSON = getPolicyDoc(rule.getArnClientIds(), rule.getArnPublishtopics(), rule.getArnSubscribeTopics(), rule.getArnReceiveTopics());
             LOGGER.info(" policy document "+policyDocumentJSON);
             rule.setPolicyDocument(policyDocumentJSON);
-            CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest()
-                    .withPolicyName(rule.getName())
-                    .withPolicyDocument(rule.getPolicyDocument().toString());
-            CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
-            createPolicyResult.getPolicyVersionId();
+            if(FacilioProperties.isProduction()){
+                CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest()
+                        .withPolicyName(rule.getName())
+                        .withPolicyDocument(rule.getPolicyDocument().toString());
+                CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
+                String policyVersionId = createPolicyResult.getPolicyVersionId();
+                LOGGER.info("policy created anf version is "+policyVersionId);
+            }else {
+                LOGGER.info(" not production so can't create policy ");
+            }
         } catch (ResourceAlreadyExistsException resourceExists){
             LOGGER.info("Policy already exists for name : " + rule.getName());
             try {

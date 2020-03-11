@@ -109,7 +109,7 @@ public class AckUtil
     }
 
     private static void ackAndLogAgentAck(long agentId, long orgId, long msgId, int status, long timeStamp) throws Exception {
-        LogsApi.logAgentMessages(agentId,msgId,null, Status.valueOf(status),timeStamp);
+        LogsApi.logAgentMessages(agentId,msgId, Status.valueOf(status),timeStamp);
         FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.ID, msgId);

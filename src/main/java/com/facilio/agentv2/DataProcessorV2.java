@@ -70,6 +70,8 @@ public class DataProcessorV2
             Long timeStamp = System.currentTimeMillis();
             if(payload.containsKey(AgentConstants.TIMESTAMP)){
                 timeStamp = (Long) payload.get(AgentConstants.TIMESTAMP);
+            }else {
+                payload.put(AgentConstants.TIMESTAMP,timeStamp);
             }
 
             agent.setLastDataReceivedTime(timeStamp);

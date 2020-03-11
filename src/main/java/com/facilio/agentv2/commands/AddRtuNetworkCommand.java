@@ -4,14 +4,26 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class AddRtuNetworkCommand extends AgentV2Command {
+
+    private static final Logger LOGGER = LogManager.getLogger(AddRtuNetworkCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         if (containsCheck(AgentConstants.RTU_NETWORK, context)) {
             RtuNetworkContext rtuNetwork = (RtuNetworkContext) context.get(AgentConstants.RTU_NETWORK);
-            RtuNetworkContext.addRtuNetworkCommand(rtuNetwork);
+            try {
+                RtuNetworkContext.addRtuNetworkCommand(rtuNetwork);
+            }catch (java.sql.BatchUpdateException e){
+                if(e.getMessage().contains("Duplicate entry")){
+                    LOGGER.info(" duplicate enrty for network and sending command to agent ");
+                }else {
+                    throw e;
+                }
+            }
             AgentMessenger.sendConfigureModbusRtuNetworkCommand(rtuNetwork);
         } else {
             throw new Exception(" context is missinf rtu network key ->" + context);

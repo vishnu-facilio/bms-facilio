@@ -27,7 +27,6 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentType;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.db.builder.DBUtil;
@@ -664,7 +663,7 @@ public class AwsUtil
 */
 
 	public static String createIotPolicy(String clientName, String domain, String type) {
-		IotPolicy policy = AwsPolicyUtils.createIotPolicy(clientName, domain, type, getIotClient());
+		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, domain, type, getIotClient());
 		return policy.getPolicyDocument().toString();
 	}
 
@@ -729,60 +728,27 @@ public class AwsUtil
 	}
 
 
-	private static void createIotTopicRule(IotPolicy policy, AWSIot iotClient,String type) {
-	    LOGGER.info(" creating iot rule ");
-		if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
-			Map<String,String> publishTypeMap = policy.getMappedTopicAndPublished();
-            LOGGER.info(" pubtype map "+publishTypeMap);
-            for(String topic : policy.getPublishtopics()){
-				try {
-					KinesisAction kinesisAction = new KinesisAction().withStreamName(policy.getStreamName())
-							.withPartitionKey(KINESIS_PARTITION_KEY)
-							.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
-					Action action = new Action().withKinesis(kinesisAction);
-					TopicRulePayload rulePayload = new TopicRulePayload();
-					rulePayload.withActions(action);
-					// if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)) { // future fix
-                        String publishType = publishTypeMap.get(topic);
-                        rulePayload.withSql(policy.getSql(topic,publishType));
-                    /*}else {
-                        rulePayload.withSql(policy.getSql(topic,null));   // future fix
-                    }*/
-					rulePayload.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
-					LOGGER.info(" rulepayload sql  "+rulePayload.getSql());
-					CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName( (topic.replaceAll("/","_")) ).withTopicRulePayload(rulePayload);
+	private static void createIotTopicRule(AWSIot iotClient, String policyAndOrgDomainName) {
+		LOGGER.info(" creating iot rule ");
+		try {
+			KinesisAction kinesisAction = new KinesisAction().withStreamName(policyAndOrgDomainName)
+					.withPartitionKey(KINESIS_PARTITION_KEY)
+					.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
 
-					CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
+			Action action = new Action().withKinesis(kinesisAction);
 
-					LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
-				} catch (ResourceAlreadyExistsException resourceExists ){
-					LOGGER.info("Topic Rule already exists for name : "+topic);
-				}
-			}
-		}
-		else {
-			for (String topic : policy.getPublishtopics()) {
-					try {
-					KinesisAction kinesisAction = new KinesisAction().withStreamName(topic)
-							.withPartitionKey(KINESIS_PARTITION_KEY)
-							.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
+			TopicRulePayload rulePayload = new TopicRulePayload()
+					.withActions(action)
+					.withSql("SELECT * FROM '" + policyAndOrgDomainName + "'")
+					.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
 
-					Action action = new Action().withKinesis(kinesisAction);
+			CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(policyAndOrgDomainName).withTopicRulePayload(rulePayload);
 
-					TopicRulePayload rulePayload = new TopicRulePayload()
-							.withActions(action)
-							.withSql("SELECT * FROM '" + topic + "'")
-							.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
+			CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
 
-					CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topic).withTopicRulePayload(rulePayload);
-
-					CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
-
-					LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
-				} catch(ResourceAlreadyExistsException resourceExists ){
-						LOGGER.info("Topic Rule already exists for name : " + topic);
-					}
-			}
+			LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+		} catch (ResourceAlreadyExistsException resourceExists) {
+			LOGGER.info("Topic Rule already exists for name : " + policyAndOrgDomainName);
 		}
 
 
@@ -790,27 +756,27 @@ public class AwsUtil
 
 
 
-	private static CreateKeysAndCertificateResult createIotToKinesis(String topic, String policyName, String type){
-		LOGGER.info(" create Iot Kenesis "+policyName);
-		AWSIot iotClient = getIotClient();
+	private static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type){
+		LOGGER.info(" create Iot Kenesis "+policyAndOrgDomainName);
+		AWSIot iotClient = null;
+		iotClient = getIotClient();
 		IotPolicy policy;
-		policy = AwsPolicyUtils.createIotPolicy(topic, policyName, type, iotClient);
-		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
-    	attachPolicy(iotClient, certificateResult, policyName);
-    	createKinesisStream(getKinesisClient(), topic);
+		policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
+		CreateKeysAndCertificateResult certificateResult = 	createCertificate(iotClient);
+    	attachPolicy(iotClient, certificateResult, policyAndOrgDomainName);
+    	createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
     	// Creating topic in kafka
-		MessageQueueFactory.getMessageQueue().createQueue(topic);
-    	policy.setStreamName(topic);
-    	createIotTopicRule(policy,iotClient,type);
+		MessageQueueFactory.getMessageQueue().createQueue(policyAndOrgDomainName);
+    	policy.setStreamName(policyAndOrgDomainName);
+    	createIotTopicRule(iotClient,policyAndOrgDomainName);
     	return certificateResult;
 	}
 
 
 
-	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String policyName, String type){
-		LOGGER.info(" signing up to kinesis policyname "+policyName);
-		String topic = getIotKinesisTopic(orgDomainName);
-		return AwsUtil.createIotToKinesis(topic, policyName, type);
+	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String clientName, String type){
+		LOGGER.info(" signing up to kinesis policyname "+orgDomainName);
+		return AwsUtil.createIotToKinesis(clientName, orgDomainName, type);
 	}
 
 	public static String getIotKinesisTopic(String orgDomainName){
@@ -854,6 +820,6 @@ public class AwsUtil
 	}
 
 	public static void addClientToPolicy(String agentName,String policyName,String type) {
-		AwsPolicyUtils.createIotPolicy(agentName,policyName,type,getIotClient());
+		AwsPolicyUtils.createOrUpdateIotPolicy(agentName,policyName,type,getIotClient());
 	}
 }

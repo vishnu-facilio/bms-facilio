@@ -92,7 +92,7 @@ public class RtuNetworkAction extends AgentIdAction {
 
     public String addRtuNetwork() {
         try {
-            LOGGER.info(" adding network id ");
+            LOGGER.info(" adding network  ");
             RtuNetworkContext rtuNetwork = new RtuNetworkContext();
             rtuNetwork.setAgentId(getAgentId());
             rtuNetwork.setBaudRate(getBaudRate());

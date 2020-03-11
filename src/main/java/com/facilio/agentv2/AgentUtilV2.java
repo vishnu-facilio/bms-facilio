@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.modules.FieldUtil;
@@ -97,12 +98,21 @@ public class AgentUtilV2
      */
     public boolean processAgent(JSONObject payload, FacilioAgent agent) throws Exception {
         if (agent != null) {
+            long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
+
+                    LogsApi.logAgentConnection(agent.getId(),status,0,timeStamp);
                     return AgentApiV2.updateAgent(agent);
+                }else if (containsValueCheck(AgentConstants.COUNT,payload)){
+                    LOGGER.info(" CONNECTED ");
+                    LogsApi.logAgentConnection(agent.getId(),status,(long)payload.get(AgentConstants.COUNT),timeStamp);
+                }else {
+                    LOGGER.info("SUBSCRIBED");
+                    LogsApi.logAgentConnection(agent.getId(),status,0,timeStamp);
                 }
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING

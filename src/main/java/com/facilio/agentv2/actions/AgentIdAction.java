@@ -236,7 +236,7 @@ public class AgentIdAction extends AgentActionV2 {
         try {
             FacilioContext context = constructListContext(new FacilioContext());
 
-            List<Map<String, Object>> data = LogsApi.getMetrics(agentId, context);
+            List<Map<String, Object>> data = LogsApi.getLogs(agentId, context);
             setResult(AgentConstants.DATA, data);
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();

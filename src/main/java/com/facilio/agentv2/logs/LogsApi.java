@@ -54,14 +54,19 @@ public class LogsApi
         return false;
     }
 
-    public static boolean logAgentMessages(long agentId,long msgId,FacilioCommand command,Status status,long actualTime){
+    public static boolean logAgentConnection(long agentId,Status status,long connectionCount,long time) throws Exception {
+                return addLog(agentId,connectionCount,null,status,time,System.currentTimeMillis()) > 0;
+    }
+
+    public static boolean logAgentMessages(long agentId,long msgId,Status status,long actualTime){
         if((agentId > 0)){
             if(msgId > 0){
                /* if(command != null){*/
                     long currTime = System.currentTimeMillis();
                     if(actualTime <= currTime){
                         try{
-                            return addLog(agentId,msgId,command,status,actualTime,currTime) > 0;
+                            IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId);
+                            return addLog(agentId,msgId,FacilioCommand.valueOf(iotMessage.getCommand()),status,actualTime,currTime) > 0;
                         } catch (Exception e) {
                             LOGGER.info("Exception while adding agent message log ",e);
                             return false;
@@ -87,9 +92,6 @@ public class LogsApi
         toInsert.put(AgentConstants.MESSAGE_ID,msgId);
         if(command != null){
             toInsert.put(AgentConstants.COMMAND,command.asInt());
-        }else {
-            IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId); // add if only iot message is present -> in case of agent message
-            toInsert.put(AgentConstants.COMMAND,iotMessage.getCommand());
         }
         if(status != null){
             toInsert.put(AgentConstants.STATUS,status.asInt());
@@ -97,6 +99,7 @@ public class LogsApi
         toInsert.put(AgentConstants.ACTUAL_TIME,timestamp);
         toInsert.put(AgentConstants.CREATED_TIME,createdTime);
         try {
+            LOGGER.info("table name"+MODULE.getTableName());
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(MODULE.getTableName())
                     .fields(FIELDS);
@@ -107,7 +110,7 @@ public class LogsApi
         return -1;
     }
 
-    public static List<Map<String,Object>> getMetrics(long agentId, FacilioContext context) throws Exception {
+    public static List<Map<String,Object>> getLogs(long agentId, FacilioContext context) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FIELDS)

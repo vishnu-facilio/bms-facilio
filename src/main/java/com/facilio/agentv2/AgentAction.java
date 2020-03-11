@@ -495,6 +495,24 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String addClientToPolicy(){
+        try{
+            Organization currentOrg = AccountUtil.getCurrentOrg();
+            if(currentOrg != null){
+                AwsUtil.addClientToPolicy(getName(),currentOrg.getDomain(),"facilio");
+                setResult(AgentConstants.RESULT,SUCCESS);
+                ok();
+            }else {
+                throw new Exception("current org can't be null");
+            }
+        }catch (Exception e){
+            internalError();
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception while adding client to policy ");
+        }
+        return SUCCESS;
+    }
+
     //__________________________________________________
     // general utilities
 

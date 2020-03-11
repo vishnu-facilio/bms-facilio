@@ -2,6 +2,7 @@ package com.facilio.aws.util;
 
 import com.facilio.agent.AgentType;
 import com.facilio.events.tasker.tasks.EventUtil;
+import com.google.api.client.util.ArrayMap;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -20,9 +21,22 @@ public class IotPolicy
     public List<String> getPublishtopics() { return publishtopics; }
     public void setPublishtopics(List<String> publishtopics) { this.publishtopics = publishtopics; }
 
+    private List<String> arnPublishtopics = new ArrayList<>();
+    public List<String> getArnPublishtopics() { return arnPublishtopics; }
+    public void setArnPublishtopics(List<String> arnPublishtopics) { this.arnPublishtopics = arnPublishtopics; }
+
     private List<String> publishTypes = new ArrayList<>();
     public List<String> getPublishTypes() { return publishTypes; }
     public void setPublishTypes(List<String> publishTypes) { this.publishTypes = publishTypes; }
+
+    private List<String> arnPublishTypes = new ArrayList<>();
+    public List<String> getArnPublishTypes() {
+        return arnPublishTypes;
+    }
+    public void setArnPublishTypes(List<String> arnPublishTypes) {
+        this.arnPublishTypes = arnPublishTypes;
+    }
+
 
     private boolean toModify;
     public boolean isToModify() { return toModify; }
@@ -36,22 +50,48 @@ public class IotPolicy
     public List<String> getSubscribeTopics() { return subscribeTopics; }
     public void setSubscribeTopics(List<String> subscribeTopics) { this.subscribeTopics = subscribeTopics; }
 
+    private List<String> arnSubscribeTopics = new ArrayList<>();
+    public List<String> getArnSubscribeTopics() {
+        return arnSubscribeTopics;
+    }
+    public void setArnSubscribeTopics(List<String> arnSubscribeTopics) {
+        this.arnSubscribeTopics = arnSubscribeTopics;
+    }
+
     private List<String> receiveTopics = new ArrayList<>();
     public List<String> getReceiveTopics() { return receiveTopics; }
     public void setReceiveTopics(List<String> receiveTopics) { this.receiveTopics = receiveTopics; }
 
-    public List<String> getClientIds() { return clientIds; }
-    public void setClientIds(List<String> clientIds) { this.clientIds = clientIds; }
-    private List<String> clientIds = new ArrayList<>();
+    private List<String> arnReceiveTopics = new ArrayList<>();
+    public List<String> getArnReceiveTopics() {
+        return arnReceiveTopics;
+    }
+    public void setArnReceiveTopics(List<String> arnReceiveTopics) {
+        this.arnReceiveTopics = arnReceiveTopics;
+    }
 
+
+    private List<String> clientIds = new ArrayList<>();
+    public List<String> getClientIds() { return clientIds; }
+    public void setClientIds(List<String> clientIds) {
+        this.clientIds = clientIds;
+    }
+
+    private List<String> arnClientIds = new ArrayList<>();
+    public List<String> getArnClientIds() {
+        return arnClientIds;
+    }
+    public void setArnClientIds(List<String> arnClientIds) {
+        this.arnClientIds = arnClientIds;
+    }
 
     private String name;
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    private Map<String,String> publishTypeAndTopicMap = new ArrayMap<>();
     public Map<String, String> getPublishTypeAndTopicMap() { return publishTypeAndTopicMap; }
     public void setPublishTypeAndTopicMap(Map<String, String> publishTypeAndTopicMap) { this.publishTypeAndTopicMap = publishTypeAndTopicMap; }
-    private Map<String,String> publishTypeAndTopicMap;
 
     public Map<String,String> getMappedTopicAndPublished(){
             Map<String, String> topicAndPublishTypeMap = new HashMap<>();
