@@ -157,7 +157,7 @@ public class FileAction extends FacilioAction {
 		if (request.getHeader("If-Modified-Since") == null) {
 			if (fileID > 0) {
 				FileStore fs = FacilioFactory.getFileStore();
-				FileInfo fileInfo = new FileInfo();
+				FileInfo fileInfo = null;
 				if (width > 0 || height > 0) {
 					if (height <= 0) {
 						fileInfo = fs.getResizedFileInfo(fileID, width, width);
