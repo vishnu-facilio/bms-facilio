@@ -1,7 +1,10 @@
 package com.facilio.accounts.dto;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,6 +47,23 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long redisPutTime = 0L;
 	private long redisDeleteTime = 0L;
 	private long userSessionId = 0L;
+	private int publicSelectQueries = 0;
+	private int publicInsertQueries = 0;
+	private int publicUpdateQueries = 0;
+	private int publicDeleteQueries = 0;
+	private int publicRedisQueries = 0;
+	private int publicRedisGetCount = 0;
+	private int publicRedisPutCount = 0;
+	private int publicRedisDeleteCount = 0;
+	private long publicSelectQueriesTime = 0L;
+	private long publicInsertQueriesTime = 0L;
+	private long publicUpdateQueriesTime = 0L;
+	private long publicDeleteQueriesTime = 0L;
+	private long publicRedisTime = 0L;
+	private long publicRedisGetTime = 0L;
+	private long publicRedisPutTime = 0L;
+	private long publicRedisDeleteTime = 0L;
+	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	
 
 	private RemoteScreenContext remoteScreen;
@@ -138,80 +158,170 @@ public class Account implements AccountsInterface<User>, Serializable{
 		return selectQueries;
 	}
 
+	public int getPublicSelectQueries() {
+		return publicSelectQueries;
+	}
+
 	public void incrementSelectQueryCount(int selectQueries) {
-		this.selectQueries = this.selectQueries + selectQueries;
+		if (publicAccess.isEmpty()) {
+			this.selectQueries += selectQueries;
+		}
+		else {
+			this.publicSelectQueries += selectQueries;
+		}
 	}
 
 	public int getInsertQueries() {
 		return insertQueries;
 	}
 
+	public int getPublicInsertQueries() {
+		return publicInsertQueries;
+	}
+
 	public void incrementInsertQueryCount(int insertQueries) {
-		this.insertQueries = this.insertQueries + insertQueries;
+		if (publicAccess.isEmpty()) {
+			this.insertQueries += insertQueries;
+		}
+		else {
+			this.publicInsertQueries += insertQueries;
+		}
 	}
 
 	public int getUpdateQueries() {
 		return updateQueries;
 	}
 
+	public int getPublicUpdateQueries() {
+		return publicUpdateQueries;
+	}
+
 	public void incrementUpdateQueryCount(int updateQueries) {
-		this.updateQueries = this.updateQueries + updateQueries;
+		if (publicAccess.isEmpty()) {
+			this.updateQueries += updateQueries;
+		}
+		else {
+			this.publicUpdateQueries += updateQueries;
+		}
 	}
 
 	public int getDeleteQueries() {
 		return deleteQueries;
 	}
 
+	public int getPublicDeleteQueries() {
+		return publicDeleteQueries;
+	}
+
 	public void incrementDeleteQueryCount(int deleteQueries) {
-		this.deleteQueries = this.deleteQueries + deleteQueries;
+		if (publicAccess.isEmpty()) {
+			this.deleteQueries += deleteQueries;
+		}
+		else {
+			this.publicDeleteQueries += deleteQueries;
+		}
 	}
 
 	public int getRedisQueries() {
 		return redisQueries;
 	}
 
+	public int getPublicRedisQueries() {
+		return publicRedisQueries;
+	}
+
 	public void incrementRedisQueryCount(int redisQueries) {
-		this.redisQueries = this.redisQueries + redisQueries;
+		if (publicAccess.isEmpty()) {
+			this.redisQueries += redisQueries;
+		}
+		else {
+			this.publicRedisQueries += redisQueries;
+		}
 	}
 
 	public long getSelectQueriesTime() {
 		return selectQueriesTime;
 	}
 
+	public long getPublicSelectQueriesTime() {
+		return publicSelectQueriesTime;
+	}
+
 	public void incrementSelectQueryTime(long selectQueriesTime) {
-		this.selectQueriesTime = this.selectQueriesTime + selectQueriesTime;
+		if (publicAccess.isEmpty()) {
+			this.selectQueriesTime += selectQueriesTime;
+		}
+		else {
+			this.publicSelectQueriesTime += selectQueriesTime;
+		}
 	}
 
 	public long getInsertQueriesTime() {
 		return insertQueriesTime;
 	}
 
+	public long getPublicInsertQueriesTime() {
+		return publicInsertQueriesTime;
+	}
+
 	public void incrementInsertQueryTime(long insertQueriesTime) {
-		this.insertQueriesTime = this.insertQueriesTime + insertQueriesTime;
+		if (publicAccess.isEmpty()) {
+			this.insertQueriesTime += insertQueriesTime;
+		}
+		else {
+			this.publicInsertQueriesTime += insertQueriesTime;
+		}
 	}
 
 	public long getUpdateQueriesTime() {
 		return updateQueriesTime;
 	}
 
+	public long getPublicUpdateQueriesTime() {
+		return publicUpdateQueriesTime;
+	}
+
 	public void incrementUpdateQueryTime(long updateQueriesTime) {
-		this.updateQueriesTime = this.updateQueriesTime + updateQueriesTime;
+		if (publicAccess.isEmpty()) {
+			this.updateQueriesTime += updateQueriesTime;
+		}
+		else {
+			this.publicUpdateQueriesTime += updateQueriesTime;
+		}
 	}
 
 	public long getDeleteQueriesTime() {
 		return deleteQueriesTime;
 	}
 
+	public long getPublicDeleteQueriesTime() {
+		return publicDeleteQueriesTime;
+	}
+
 	public void incrementDeleteQueryTime(long deleteQueriesTime) {
-		this.deleteQueriesTime = this.deleteQueriesTime + deleteQueriesTime;
+		if (publicAccess.isEmpty()) {
+			this.deleteQueriesTime += deleteQueriesTime;
+		}
+		else {
+			this.publicDeleteQueriesTime += deleteQueriesTime;
+		}
 	}
 
 	public long getRedisTime() {
 		return redisTime;
 	}
 
+	public long getPublicRedisTime() {
+		return publicRedisTime;
+	}
+
 	public void incrementRedisTime(long redisTime) {
-		this.redisTime = this.redisTime + redisTime;
+		if (publicAccess.isEmpty()) {
+			this.redisTime += redisTime;
+		}
+		else {
+			this.publicRedisTime += redisTime;
+		}
 	}
 
 	public int getRedisGetCount() {
@@ -238,36 +348,94 @@ public class Account implements AccountsInterface<User>, Serializable{
 		return redisDeleteTime;
 	}
 
+	public int getPublicRedisGetCount() {
+		return publicRedisGetCount;
+	}
+
+	public int getPublicRedisPutCount() {
+		return publicRedisPutCount;
+	}
+
+	public int getPublicRedisDeleteCount() {
+		return publicRedisDeleteCount;
+	}
+
+	public long getPublicRedisGetTime() {
+		return publicRedisGetTime;
+	}
+
+	public long getPublicRedisPutTime() {
+		return publicRedisPutTime;
+	}
+
+	public long getPublicRedisDeleteTime() {
+		return publicRedisDeleteTime;
+	}
+
 	public void incrementRedisGetTime(long redisTime) {
-		this.redisGetTime = this.redisGetTime + redisTime;
+		if (publicAccess.isEmpty()) {
+			this.redisGetTime += redisTime;
+		}
+		else {
+			this.publicRedisGetTime += redisTime;
+		}
 	}
 
 	public void incrementRedisPutTime(long redisTime) {
-		this.redisPutTime = this.redisPutTime + redisTime;
+		if (publicAccess.isEmpty()) {
+			this.redisPutTime += redisTime;
+		}
+		else {
+			this.publicRedisPutTime += redisTime;
+		}
 	}
 
 	public void incrementRedisDeleteTime(long redisTime) {
-		this.redisDeleteTime = this.redisDeleteTime + redisTime;
+		if (publicAccess.isEmpty()) {
+			this.redisDeleteTime += redisTime;
+		}
+		else {
+			this.publicRedisDeleteTime += redisTime;
+		}
 	}
 
 	public void incrementRedisGetCount(int redisQueries) {
-		this.redisGetCount = this.redisGetCount + redisQueries;
+		if (publicAccess.isEmpty()) {
+			this.redisGetCount += redisQueries;
+		}
+		else {
+			this.publicRedisGetCount += redisQueries;
+		}
 	}
 
 	public void incrementRedisPutCount(int redisQueries) {
-		this.redisPutCount = this.redisPutCount + redisQueries;
+		if (publicAccess.isEmpty()) {
+			this.redisPutCount += redisQueries;
+		}
+		else {
+			this.publicRedisPutCount += redisQueries;
+		}
 	}
 
 	public void incrementRedisDeleteCount(int redisQueries) {
-		this.redisDeleteCount = this.redisDeleteCount + redisQueries;
+		if (publicAccess.isEmpty()) {
+			this.redisDeleteCount += redisQueries;
+		}
+		else {
+			this.publicRedisDeleteCount += redisQueries;
+		}
 	}
 
 	public long getTotalQueries() {
-		return getSelectQueries() + getDeleteQueries()+ getInsertQueries()+ getUpdateQueries();
+		return getSelectQueries() + getDeleteQueries() + getInsertQueries() + getUpdateQueries() +
+				getPublicSelectQueries() + getPublicDeleteQueries() + getPublicInsertQueries() + getPublicUpdateQueries()
+				;
 	}
 
 	public long getTotalQueryTime() {
-		return getSelectQueriesTime() + getDeleteQueriesTime()+ getInsertQueriesTime()+ getUpdateQueriesTime();
+		return getSelectQueriesTime() + getDeleteQueriesTime() + getInsertQueriesTime() + getUpdateQueriesTime() +
+				getPublicSelectQueriesTime() + getPublicDeleteQueriesTime() + getPublicInsertQueriesTime() + getPublicUpdateQueriesTime()
+				;
 	}
 
 	private String requestUri;
@@ -315,6 +483,23 @@ public class Account implements AccountsInterface<User>, Serializable{
 		redisGetTime = 0L;
 		redisPutTime = 0L;
 		redisDeleteTime = 0L;
+
+		publicSelectQueries = 0;
+		publicInsertQueries = 0;
+		publicUpdateQueries = 0;
+		publicDeleteQueries = 0;
+		publicRedisQueries = 0;
+		publicRedisGetCount = 0;
+		publicRedisPutCount = 0;
+		publicRedisDeleteCount = 0;
+		publicSelectQueriesTime = 0L;
+		publicInsertQueriesTime = 0L;
+		publicUpdateQueriesTime = 0L;
+		publicDeleteQueriesTime = 0L;
+		publicRedisTime = 0L;
+		publicRedisGetTime = 0L;
+		publicRedisPutTime = 0L;
+		publicRedisDeleteTime = 0L;
 
 		if (redisLocalCache != null) {//Better for gc I guess
 			redisLocalCache.clear();
@@ -390,7 +575,31 @@ public class Account implements AccountsInterface<User>, Serializable{
 		// TODO Auto-generated method stub
 		return this.userSessionId;
 	}
-	
+
+	@Override
+	public void addPublicAccess() {
+		publicAccess.push(Boolean.TRUE);
+	}
+
+	@Override
+	public void removePublicAccess() {
+		publicAccess.pop();
+	}
+
+	public String getCurrentDataSource() {
+    	if (getOrg() != null && publicAccess.isEmpty()) {
+    		return getOrg().getDataSource();
+		}
+    	return null;
+	}
+
+	public String getCurrentDBName() {
+		if (getOrg() != null && publicAccess.isEmpty()) {
+			return getOrg().getDbName();
+		}
+		return null;
+	}
+
 	public void setUserSessionId(long userSessionId) {
 		this.userSessionId = userSessionId;
 	}

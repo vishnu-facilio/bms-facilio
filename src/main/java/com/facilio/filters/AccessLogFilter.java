@@ -78,13 +78,22 @@ public class AccessLogFilter implements Filter {
         int responseSize = 0;
         if(AccountUtil.getCurrentAccount() != null) {
             Account account = AccountUtil.getCurrentAccount();
-            message = "select: " + account.getSelectQueries() + " time: " + account.getSelectQueriesTime() +
-                    " update: " + account.getUpdateQueries() + " time: " + account.getUpdateQueriesTime() +
-                    " insert: " + account.getInsertQueries() + " time: " + account.getInsertQueriesTime() +
-                    " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
-                    " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
-                    " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
-                    " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
+            message = new StringBuilder()
+                    .append("select : ").append(account.getSelectQueries()).append(" time : ").append(account.getSelectQueriesTime())
+                    .append(", update : ").append(account.getUpdateQueries()).append(" time : ").append(account.getUpdateQueriesTime())
+                    .append(", insert : ").append(account.getInsertQueries()).append(" time : ").append(account.getInsertQueriesTime())
+                    .append(", delete : ").append(account.getDeleteQueries()).append(" time : ").append(account.getDeleteQueriesTime())
+                    .append(", rget : ").append(account.getRedisGetCount()).append(" time : ").append(account.getRedisGetTime())
+                    .append(", rput : ").append(account.getRedisPutCount()).append(" time : ").append(account.getRedisPutTime())
+                    .append(", rdel : ").append(account.getRedisDeleteCount()).append(" time : ").append(account.getRedisDeleteTime())
+                    .append(", publicSelect : ").append(account.getPublicSelectQueries()).append(" time : ").append(account.getPublicSelectQueriesTime())
+                    .append(", publicUpdate : ").append(account.getPublicUpdateQueries()).append(" time : ").append(account.getPublicUpdateQueriesTime())
+                    .append(", publicInsert : ").append(account.getPublicInsertQueries()).append(" time : ").append(account.getPublicInsertQueriesTime())
+                    .append(", publicDelete : ").append(account.getPublicDeleteQueries()).append(" time : ").append(account.getPublicDeleteQueriesTime())
+                    .append(", publicRget : ").append(account.getPublicRedisGetCount()).append(" time : ").append(account.getPublicRedisGetTime())
+                    .append(", publicRput : ").append(account.getPublicRedisPutCount()).append(" time : ").append(account.getPublicRedisPutTime())
+                    .append(", publicRdel : ").append(account.getPublicRedisDeleteCount()).append(" time : ").append(account.getPublicRedisDeleteTime())
+                    .toString();
         }
 
         if(ENABLE_FHR) {
