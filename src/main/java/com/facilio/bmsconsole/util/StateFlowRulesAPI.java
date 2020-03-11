@@ -101,7 +101,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 		return stateFlowRule;
 	}
-	
+
 	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
 		if (facilioStatus == null) {
 			LOGGER.error("Status cannot be empty");
@@ -110,15 +110,15 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			return;
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
+
 		FacilioStatus oldState = record.getModuleState();
 		if (oldState != null) {
 			oldState = getStateContext(oldState.getId());
 		}
 		record.setModuleState(facilioStatus);
-		
+
 		Map<String, Object> prop = FieldUtil.getAsProperties(record);
 
 		boolean shouldChangeTimer = facilioStatus.shouldChangeTimer(oldState);
@@ -126,7 +126,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (shouldChangeTimer) {
 			handleTimerUpdation(prop, facilioStatus, timerField, module, record);
 		}
-		
+
 		// Update start and end time of the record
 		if (facilioStatus.getType() == StatusType.CLOSED) {
 			if (timerField != null && prop.get(timerField.getEndTimeFieldName()) == null) {
@@ -149,10 +149,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
-		
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField("moduleState", module.getName()));
-		
+
 		// backward compatibility for workorder, to update existing status field
 		if (module.getName().equals("workorder")) {
 			fields.add(modBean.getField("status", module.getName()));
@@ -165,13 +165,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
-		
+
 		if (timerField != null && timerField.isTimerEnabled()) {
 			fields.addAll(timerField.getAllFields(modBean, module.getName()));
 		}
 		if (includeStateFlowChange) {
 			fields.add(modBean.getField("stateFlowId", module.getName()));
-		} 
+		}
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
@@ -182,7 +182,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = new HashMap<>();
 		changeSetMap.put(module.getName(), changeSet);
 		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSetMap);
-		
+
 		if (oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
 			info.put("status", facilioStatus.getDisplayName());
@@ -201,12 +201,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			if (activityType != null) {
 				CommonCommandUtil.addActivityToContext(record.getId(), record.getCurrentTime(), activityType, info, (FacilioContext) context);
 			}
-		}	
-		
+		}
+
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}
-	
+
 	private static void checkAutomatedCondition(FacilioStatus facilioStatus, FacilioModule module, ModuleBaseWithCustomFields record, Context context) throws Exception {
 		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), facilioStatus.getId(), module.getName(), record, (FacilioContext) context, TransitionType.CONDITIONED);
 		if (CollectionUtils.isNotEmpty(availableState)) {
@@ -216,7 +216,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 	}
-	
+
 	private static void addScheduledJobIfAny(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
 		// remove scheduled jobs if any
 		FacilioModule stateFlowScheduleModule = ModuleFactory.getStateFlowScheduleModule();
@@ -225,7 +225,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.select(FieldFactory.getStateFlowScheduleFields())
 				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS))
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
-		;
+				;
 		List<Map<String, Object>> list = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<Long> jobIds = new ArrayList<>();
@@ -238,7 +238,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					.andCondition(CriteriaAPI.getIdCondition(jobIds, stateFlowScheduleModule));
 			deleteBuilder.delete();
 		}
-		
+
 		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), fromStateId, moduleName, record, context, TransitionType.SCHEDULED);
 		if (CollectionUtils.isNotEmpty(availableState)) {
 			for (WorkflowRuleContext rule : availableState) {
@@ -249,7 +249,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 	}
-	
+
 	private static void scheduleJob(long recordId, WorkflowRuleContext ruleContext) throws Exception {
 		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
@@ -260,7 +260,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		prop.put("transitionId", ruleContext.getId());
 		builder.addRecord(prop);
 		builder.save();
-		
+
 		StateflowTransitionContext stateFlow = (StateflowTransitionContext) ruleContext;
 		FacilioTimer.scheduleOneTimeJobWithDelay((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
@@ -281,9 +281,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (timerField == null || !timerField.isTimerEnabled()) {
 			return;
 		}
-		
+
 		long currentTime = record.getCurrentTime();
-		
+
 		if (ticketStatus.isTimerEnabled()) {
 			prop.put(timerField.getResumeTimeFieldName(), currentTime);
 		} else {
@@ -297,18 +297,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			prop.put(timerField.getTotalTimeFieldName(), totalTime);
 		}
-		
+
 		// Add or Update Time Log Entries
 		FacilioModule timeLogModule = getTimeLogModule(module);
 		if (timeLogModule != null) {
 			long parentId = (long) prop.get("id");
-			
+
 			Map<String, Object> timeLogProp = new HashMap<>();
-			
+
 			long id = -1;
 			long startTime = -1;
 			long endTime = -1;
-			
+
 			if (!ticketStatus.isTimerEnabled()) {
 				endTime = currentTime;
 				Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId);
@@ -326,15 +326,15 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			timeLogProp.put("parentId", parentId);
 			timeLogProp.put("startTime", startTime);
 			timeLogProp.put("endTime", endTime);
-			
+
 			long duration = -1;
 			if (startTime > 0 && endTime > 0) {
 				duration = (endTime - startTime) / 1000;
 			}
 			timeLogProp.put("duration", duration);
-			
+
 			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
-			
+
 			timeLogProp.clear();
 		}
 	}
@@ -343,19 +343,19 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (stateId < 0) {
 			return null;
 		}
-		
+
 		FacilioStatus stateContext = TicketAPI.getStatus(stateId);
 		return stateContext;
 	}
-	
+
 	public static List<UpdateChangeSet> getDefaultFieldChangeSet(String moduleName, long recordId) throws Exception {
 		if (StringUtils.isEmpty(moduleName) || recordId == -1) {
 			return null;
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField("moduleState", moduleName);
-		
+
 		List<UpdateChangeSet> changeSet = new ArrayList<>();
 		UpdateChangeSet updateChangeSet = new UpdateChangeSet();
 		updateChangeSet.setFieldId(field.getFieldId());
@@ -363,47 +363,47 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		changeSet.add(updateChangeSet);
 		return changeSet;
 	}
-	
+
 	public static Map<String, Object> getStateTransitionScheduleInfo(long id) throws Exception {
 		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getStateFlowScheduleFields())
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
+
 		return builder.fetchFirst();
 	}
 
 	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context, TransitionType... types) throws Exception {
 		return getAvailableState(stateFlowId, fromStateId, -1, moduleName, record, context, types);
 	}
-	
+
 	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, long toStateId, String moduleName, ModuleBaseWithCustomFields record,
-			Context context, TransitionType... types) throws Exception {
-		
+															  Context context, TransitionType... types) throws Exception {
+
 		Map<String, Long> stateIds = new HashMap<>();
 		stateIds.put("stateFlowId", stateFlowId);
 		stateIds.put("fromStateId", fromStateId);
 		stateIds.put("toStateId", toStateId);
 		List<Map<String, Long>> ids = Collections.singletonList(stateIds);
-		
+
 		List<WorkflowRuleContext> stateFlows = getStateTransitions(ids, types);
 		evaluateStateFlowAndExecuteActions(stateFlows, moduleName, record, context);
-		
+
 		return stateFlows;
 	}
-	
+
 	private static List<WorkflowRuleContext> getStateTransitions(FacilioModule stateModule, List<FacilioField> fields, Criteria criteria) throws Exception {
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
 				.innerJoin(stateModule.getTableName()).on("Workflow_Rule.ID = " + stateModule.getTableName() + ".ID")
 				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
 				;
-		
+
 		if (criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
@@ -412,18 +412,24 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, true);
 		return stateFlows;
 	}
-	
+
 	public static List<WorkflowRuleContext> getStateTransitions(List<Map<String, Long>> stateIds, TransitionType... types) throws Exception {
+		return getStateTransitions(stateIds, null, types);
+	}
+
+	public static List<WorkflowRuleContext> getStateTransitions(List<Map<String, Long>> stateIds, Criteria criteria, TransitionType... types) throws Exception {
 		if (CollectionUtils.isEmpty(stateIds)) {
 			return null;
 		}
-		
+
 		Criteria stateCriteria = new Criteria();
 		for(Map<String, Long> ids: stateIds) {
 			Long fromStateId = ids.get("fromStateId");
 			long stateFlowId = ids.get("stateFlowId");
 			Long toStateId = ids.get("toStateId");
-			Criteria criteria = new Criteria();
+			if (criteria == null) {
+				criteria = new Criteria();
+			}
 			criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
 			if (fromStateId != null && fromStateId > 0) {
 				criteria.addAndCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
@@ -433,7 +439,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			stateCriteria.orCriteria(criteria);
 		}
-		
+
 		if (types != null && types.length > 0) {
 			Criteria c = new Criteria();
 			StringBuilder criteriaValue = new StringBuilder();
@@ -446,18 +452,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			c.addOrCondition(CriteriaAPI.getCondition("TYPE", "type", criteriaValue.toString(), EnumOperators.IS));
 			stateCriteria.andCriteria(c);
 		}
-		
+
 //		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
 //		fields.addAll(FieldFactory.getStateRuleTransitionFields());
 		return getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), stateCriteria);
 	}
-	
+
 	public static List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions(List<WorkflowRuleContext> stateFlows, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
-			
+
 			Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
 			List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
-			
+
 			Iterator<WorkflowRuleContext> iterator = stateFlows.iterator();
 			while (iterator.hasNext()) {
 				WorkflowRuleContext stateFlow = iterator.next();
@@ -469,7 +475,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 		return stateFlows;
 	}
-	
+
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		List<Map<String, Long>> stateIds = new ArrayList<>();
 		for(ModuleBaseWithCustomFields record: records) {
@@ -483,7 +489,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		List<WorkflowRuleContext> stateFlows = getStateTransitions(stateIds);
 		return getStateTransitionMap(stateFlows);
 	}
-	
+
 	private static Map<String, List<WorkflowRuleContext>> getStateTransitionMap(List<WorkflowRuleContext> stateFlows) {
 		Map<String, List<WorkflowRuleContext>> stateFlowMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
@@ -498,10 +504,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				transitions.add(stateFlowTransition);
 			}
 		}
-		
+
 		return stateFlowMap;
 	}
-	
+
 	public static StateFlowRuleContext getStateFlowContext(long id) throws Exception {
 		return (StateFlowRuleContext) WorkflowRuleAPI.getWorkflowRule(id);
 	}
@@ -531,7 +537,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (stateFlowContext == null) {
 			return null;
 		}
-		
+
 		Map<String, Long> stateIds = new HashMap<>();
 		stateIds.put("stateFlowId", stateFlowContext.getId());
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(Collections.singletonList(stateIds));
@@ -542,7 +548,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getIdCondition(stateTransitionId, ModuleFactory.getStateRuleTransitionModule()));
 		criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowID), NumberOperators.EQUALS));
-		
+
 		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), fields, criteria);
 		if (CollectionUtils.isNotEmpty(stateTransitions)) {
@@ -567,7 +573,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		moduleIdField.setColumnName("MODULEID");
 		moduleIdField.setModule(ModuleFactory.getWorkflowRuleModule());
 		criteria.addAndCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		
+
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), criteria);
 		if (CollectionUtils.isNotEmpty(stateTransitions)) {
 			return (StateFlowRuleContext) stateTransitions.get(0);
@@ -611,13 +617,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			rule.setFormId(form.getId());
 		}
 	}
-	
+
 	public static void getStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
 		if (rule.getFormId() > 0) {
 			rule.setForm(FormsAPI.getFormFromDB(rule.getFormId()));
 		}
 	}
-	
+
 	public static void deleteFormRuleContext(FormInterface rule) throws Exception {
 		if (rule.getFormId() > 0) {
 			FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));

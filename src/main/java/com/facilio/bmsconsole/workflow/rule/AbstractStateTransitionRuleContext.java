@@ -1,14 +1,25 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflowRuleContext implements FormInterface {
     private static final long serialVersionUID = 1L;
@@ -125,6 +136,20 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         return shouldExecuteFromPermalink;
     }
 
+    private Boolean parallelTransition;
+    public Boolean isParallelTransition() {
+        if (parallelTransition == null) {
+            return false;
+        }
+        return parallelTransition;
+    }
+    public Boolean getParallelTransition() {
+        return parallelTransition;
+    }
+    public void setParallelTransition(Boolean parallelTransition) {
+        this.parallelTransition = parallelTransition;
+    }
+
     // temporary fix
     private Boolean showInVendorPortal;
     public Boolean getShowInVendorPortal() {
@@ -165,11 +190,83 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
             boolean isValid = super.validationCheck(moduleRecord);
 
             if (isValid) {
-                executeTrue(record, context, placeHolders);
+                boolean shouldExecute = true;
+                if (isParallelTransition()) {
+                    shouldExecute = addCurrentAndCheckParallelTransitionStatus(moduleRecord.getId());
+                }
 
-                super.executeTrueActions(record, context, placeHolders);
+                if (shouldExecute) {
+                    if (isParallelTransition()) {
+                        clearStatusTable(moduleRecord.getId());
+                    }
+                    executeTrue(record, context, placeHolders);
+                    super.executeTrueActions(record, context, placeHolders);
+                }
             }
         }
+    }
+
+    private void clearStatusTable(long parentId) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getParallelStateTransitionsStatusModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
+        builder.delete();
+    }
+
+    private List<Long> getAlreadyDoneParallelExecution(long parentId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getParallelStateTransitionsStatusModule().getTableName())
+                .select(FieldFactory.getParallelStateTransitionsStatusFields())
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(getFromStateId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(getToStateId()), NumberOperators.EQUALS));
+        List<Map<String, Object>> maps = builder.get();
+        if (CollectionUtils.isNotEmpty(maps)) {
+            List<Long> completedIds = new ArrayList<>();
+            for (Map<String, Object> m : maps) {
+                completedIds.add((Long) m.get("stateTransitionId"));
+            }
+
+            return completedIds;
+        }
+        return null;
+    }
+
+    private boolean addCurrentAndCheckParallelTransitionStatus(long parentId) throws Exception {
+        List<Map<String, Long>> stateIds = new ArrayList<>();
+        Map<String, Long> map = new HashMap<>();
+        map.put("fromStateId", getFromStateId());
+        map.put("toStateId", getToStateId());
+        map.put("stateFlowId", getStateFlowId());
+        stateIds.add(map);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PARALLEL_TRANSITION", "parallelTransition", String.valueOf(true), BooleanOperators.IS));
+        List<WorkflowRuleContext> stateTransitions = StateFlowRulesAPI.getStateTransitions(stateIds, criteria, TransitionType.NORMAL);
+        List<Long> parallelTransitionIds = null;
+        if (CollectionUtils.isNotEmpty(stateTransitions)) {
+            parallelTransitionIds = stateTransitions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList());
+        }
+        if (CollectionUtils.isEmpty(parallelTransitionIds)) {
+            return true;
+        }
+
+        GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getParallelStateTransitionsStatusModule().getTableName())
+                .fields(FieldFactory.getParallelStateTransitionsStatusFields());
+        Map<String, Object> value = new HashMap<>();
+        value.put("parentId", parentId);
+        value.put("fromStateId", getFromStateId());
+        value.put("toStateId", getToStateId());
+        value.put("stateTransitionId", getId());
+        insertRecordBuilder.insert(value);
+
+        List<Long> completedIds = getAlreadyDoneParallelExecution(parentId);
+        if (CollectionUtils.isNotEmpty(completedIds)) {
+            return completedIds.containsAll(parallelTransitionIds);
+        }
+
+        return false;
     }
 
     protected final boolean evaluateStateFlow(long stateFlowId, FacilioStatus moduleState, String moduleName, Object record,
@@ -197,6 +294,17 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
             // don't execute if fromStateId is different from record module state
             if (getFromStateId() != moduleState.getId()) {
                 return false;
+            }
+        }
+
+        if (isParallelTransition()) {
+            ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+            List<Long> alreadyDoneParallelExecution = getAlreadyDoneParallelExecution(moduleRecord.getId());
+            if (CollectionUtils.isNotEmpty(alreadyDoneParallelExecution)) {
+                if (alreadyDoneParallelExecution.contains(getId())) {
+                    // return false, if this stateflow is already done
+                    return false;
+                }
             }
         }
 

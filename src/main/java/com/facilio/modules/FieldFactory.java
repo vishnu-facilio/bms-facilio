@@ -7204,6 +7204,7 @@ public class FieldFactory {
         dialogTypeField.setValues(FacilioEnum.getEnumValues("DialogType"));
         list.add(dialogTypeField);
         list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", stageRuleModule, FieldType.BOOLEAN));
+        list.add(getField("parallelTransition", "PARALLEL_TRANSITION", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
         list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
         list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
@@ -7212,6 +7213,19 @@ public class FieldFactory {
 
         list.add(getField("showInTenantPortal", "SHOW_IN_TENANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
+        return list;
+    }
+
+    public static List<FacilioField> getParallelStateTransitionsStatusFields() {
+        FacilioModule module = ModuleFactory.getParallelStateTransitionsStatusModule();
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField(module));
+        list.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        list.add(getField("fromStateId", "FROM_STATE_ID", module, FieldType.NUMBER));
+        list.add(getField("toStateId", "TO_STATE_ID", module, FieldType.NUMBER));
+        list.add(getField("stateTransitionId", "STATE_TRANSITION_ID", module, FieldType.NUMBER));
+
         return list;
     }
 
@@ -7229,12 +7243,6 @@ public class FieldFactory {
         List<FacilioField> list = new ArrayList<>();
 
         list.add(getField("id", "ID", stateFlowModule, FieldType.NUMBER));
-//		list.add(getField("moduleId", "MODULEID", FieldType.NUMBER));
-//		list.add(getField("name", "NAME", stateFlowModule, FieldType.STRING));
-//		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
-//		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
-//		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
-//		list.add(getField("moduleId", "MODULEID", stateFlowModule, FieldType.NUMBER));
         list.add(getField("defaultStateId", "DEFAULT_STATE_ID", stateFlowModule, FieldType.NUMBER));
         list.add(getField("defaltStateFlow", "DEFAULT_STATE_FLOW", stateFlowModule, FieldType.BOOLEAN));
         list.add(getField("diagramJson", "DIAGRAM_JSON", stateFlowModule, FieldType.STRING));
