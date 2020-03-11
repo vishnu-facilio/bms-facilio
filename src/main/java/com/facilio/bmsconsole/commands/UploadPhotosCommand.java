@@ -34,7 +34,7 @@ public class UploadPhotosCommand extends FacilioCommand {
 				String fileName = attachmentName.get(i);
 				String contentType = attachmentContentType.get(i);
 
-				int[] resize = {120};
+				int[] resize = {80, 120};
 				long fileId = fs.addFile(fileName, file, contentType, resize);
 				if	(!(fileId > 0) ){
 					throw new Exception("File not added");

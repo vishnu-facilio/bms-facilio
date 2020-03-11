@@ -256,8 +256,8 @@ public class BmsDBConf extends DBConf {
 					value.put("fileName", fileName);
 					value.put("contentType", fileType);
 					files.add(value);*/
-
-                    long fileId = fs.addFile(fileName, file, fileType);
+                    int[] resize = {80, 120, 360};
+                    long fileId = fs.addFile(fileName, file, fileType, resize);
                     value.put(field.getName(), fileId);
                 }
             }
