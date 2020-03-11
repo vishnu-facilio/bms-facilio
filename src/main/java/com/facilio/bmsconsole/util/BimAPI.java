@@ -22,12 +22,17 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BimDefaultValuesContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ImportAPI.ImportProcessConstants;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -156,7 +161,7 @@ public class BimAPI {
         return columnheadings;
 	}
 
-	public static List<ImportProcessContext> uploadSheet(Workbook workbook,Sheet sheet,long fileId,Set<String> importedModules) throws Exception {
+	public static List<ImportProcessContext> uploadSheet(Workbook workbook,Sheet sheet,long fileId,Set<String> importedModules,SiteContext site) throws Exception {
 		
 		List<ImportProcessContext> importProcessList = new LinkedList<ImportProcessContext>();
 
@@ -206,6 +211,11 @@ public class BimAPI {
 			importNew.setFieldMappingJSON(getFieldMappingJSON(moduleName));
 			importNew.setFieldMappingString(importNew.getFieldMappingJSON().toString());
 			
+			if(moduleName.equals("site") && site !=null && site.getName()!=null && !site.getName().equals("")){
+				long siteId = addSite(site);
+				importNew.setSiteId(siteId);
+			}
+			
 	        ImportAPI.addImportProcess(importNew);
 	        
 	    	importProcessList.add(importNew);
@@ -215,10 +225,33 @@ public class BimAPI {
         return importProcessList;
 	}
 	
+	public static Long addSite(SiteContext site) throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		
+		LocationContext location = site.getLocation();
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
+		{
+			location.setName(site.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
+		context.put(FacilioConstants.ContextNames.SITE, site);
+		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
+		addCampus.execute(context);
+		
+		return site.getId();
+		
+	}
+	
+	
 	public static String getModuleNameBySheetName(String sheetName) {
 		// TODO Auto-generated method stub
 		if(sheetName.equalsIgnoreCase("Contact")){
-			return "contact";
+			return FacilioConstants.ContextNames.CONTACT;
 		}else if(sheetName.equalsIgnoreCase("Component")){
 			return FacilioConstants.ContextNames.ASSET;
 		}else if(sheetName.equalsIgnoreCase("Type")){
@@ -230,7 +263,7 @@ public class BimAPI {
 		}else if(sheetName.equalsIgnoreCase("Space")){
 			return "space";
 		}else if(sheetName.equalsIgnoreCase("Zone")){
-			return "zone";
+			return "zone&&zonespacerel";
 		}else if(sheetName.equalsIgnoreCase("Job")){
 			return "preventivemaintenance";
 		}
@@ -239,9 +272,10 @@ public class BimAPI {
 
 	public static JSONObject getFieldMappingJSON(String moduleName) throws Exception{
 		JSONObject fieldMapping = new JSONObject();
-		if(moduleName.equalsIgnoreCase("contact")){
+		if(moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.CONTACT)){
 			fieldMapping.put(moduleName+"__"+"email", "Email");
 			fieldMapping.put(moduleName+"__"+"phone", "Phone");
+			fieldMapping.put(moduleName+"__"+"name", "GivenName&&FamilyName");
 		}else if(moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.ASSET)){
 			fieldMapping.put("resource"+"__"+"name", "Name");
 			fieldMapping.put(moduleName+"__"+"category", "TypeName");
@@ -253,17 +287,27 @@ public class BimAPI {
 			fieldMapping.put(moduleName+"__"+"displayName", "Name");
 		}else if(moduleName.equalsIgnoreCase("site")){
 			fieldMapping.put("resource"+"__"+"name", "Name");
+			fieldMapping.put("resource"+"__"+"description", "Description");
 		}else if(moduleName.equalsIgnoreCase("building")){
 			fieldMapping.put("resource"+"__"+"name", "ProjectName");
+			fieldMapping.put("resource"+"__"+"description", "ProjectDescription");
 			fieldMapping.put(moduleName+"__"+"site", "Name");
 		}else if(moduleName.equalsIgnoreCase("floor")){
 			fieldMapping.put("resource"+"__"+"name", "Name");
+			fieldMapping.put("resource"+"__"+"description", "Description");
 		}else if(moduleName.equalsIgnoreCase("space")){
 			fieldMapping.put("resource"+"__"+"name", "Name");
+			fieldMapping.put("resource"+"__"+"description", "Description");
 			fieldMapping.put(moduleName+"__"+"floor", "FloorName");
 		}else if(moduleName.equalsIgnoreCase("zone")){
 			fieldMapping.put("resource"+"__"+"name", "Name");
+		}else if(moduleName.equalsIgnoreCase("zonespacerel")){
+			fieldMapping.put("resource"+"__"+"name", "Name");
 			fieldMapping.put(moduleName+"__"+"space", "SpaceNames");
+		}else if(moduleName.equalsIgnoreCase("preventivemaintenance")){
+			fieldMapping.put(moduleName+"__"+"title", "Name");
+			fieldMapping.put(moduleName+"__"+"secName", "Description");
+			
 		}
 		return fieldMapping;
 	}
@@ -511,8 +555,22 @@ public class BimAPI {
 		FacilioTimer.scheduleInstantJob("GenericImportDataLogJob", context1);
 	}
 
-	public static void SchedulePMImportJob(ImportProcessContext importProcessContext, String sheetName) throws Exception {
+	public static void SchedulePMImportJob(ImportProcessContext importProcessContext) throws Exception {
 		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), "PMImportData" , 10 , "priority");
 	}
+	
+	
+	public static void ScheduleBimGenericImportJob(String moduleName,String sheetName,ImportProcessContext importProcess) throws Exception{
+		if("preventivemaintenance".equals(moduleName)){
+			SchedulePMImportJob(importProcess);
+		}else if("site".equals(moduleName) && importProcess.getSiteId()>0){
+			FacilioChain importDataChain = TransactionChainFactory.getbimImportUpdateChain();
+			importDataChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcess);
+			importDataChain.execute();	
+		}else{
+			ScheduleGenericImportJob(importProcess,sheetName);
+		}
+	}
+	
 	
 }

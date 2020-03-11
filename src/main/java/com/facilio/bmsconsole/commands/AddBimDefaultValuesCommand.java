@@ -60,7 +60,9 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 				
 				Workbook workbook = WorkbookFactory.create(inputStream);
 				
-				addBimDefaultValues(workbook, importProcessContext.getModule().getName(), bimImportId);
+				String moduleName = bimImport.getModuleName();
+				
+				addBimDefaultValues(workbook, moduleName, bimImportId,importProcessContext);
 				
 			}
 			
@@ -69,16 +71,22 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 		return false;
 	}
 	
-	public void addBimDefaultValues(Workbook workbook,String moduleName,long bimImportId) throws Exception
+	public void addBimDefaultValues(Workbook workbook,String moduleName,long bimImportId,ImportProcessContext importProcessContext) throws Exception
 	{
 		List<BimDefaultValuesContext> bimDefaultValues = new ArrayList<>();
 		if(moduleName.equals("site")){
-			JSONObject firstRow = BimAPI.getFirstRow(workbook, workbook.getSheet("Facility"));
-			String siteName = firstRow.get("Name").toString();
-			long siteId=-1;
+			long siteId = -1;
 			
-			ResourceContext resource = BimAPI.getResource(siteName);
-			siteId = resource.getId();
+			if(importProcessContext.getSiteId()>0){
+				siteId = importProcessContext.getSiteId();
+			}else{
+				JSONObject firstRow = BimAPI.getFirstRow(workbook, workbook.getSheet("Facility"));
+				String siteName = firstRow.get("Name").toString();
+				
+				ResourceContext resource = BimAPI.getResource(siteName);
+				siteId = resource.getId();
+			}
+			
 			BimDefaultValuesContext bimDefaultValue = new BimDefaultValuesContext();
 			
 			bimDefaultValue.setBimId(bimImportId);
@@ -133,11 +141,6 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 			BimDefaultValuesContext bimDefaultValue1 = (BimDefaultValuesContext) bimDefaultValue.clone();
 			FacilioModule spaceModule = modBean.getModule("space");
 			bimDefaultValue1.setModuleId(spaceModule.getModuleId());
-			bimDefaultValues.add(bimDefaultValue1);
-			
-			bimDefaultValue1 = (BimDefaultValuesContext) bimDefaultValue.clone();
-			FacilioModule zoneModule = modBean.getModule("zone");
-			bimDefaultValue1.setModuleId(zoneModule.getModuleId());
 			bimDefaultValues.add(bimDefaultValue1);
 			
 		}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -41,6 +42,7 @@ public class BIMIntegrationAction extends FacilioAction{
 		FacilioChain importSheetsChain = TransactionChainFactory.importBimFileSheetsChain();
 		
 		FacilioContext context = importSheetsChain.getContext();
+		context.put(FacilioConstants.ContextNames.SITE, site);
 		context.put(FacilioConstants.ContextNames.BIM_IMPORT_ID, bimImportId);
 		context.put(FacilioConstants.ContextNames.SELECTED_SHEET_NAMES, selectedSheetNames);
 		
@@ -49,6 +51,16 @@ public class BIMIntegrationAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	private SiteContext site;
+
+	public SiteContext getSite() {
+		return site;
+	}
+
+	public void setSite(SiteContext site) {
+		this.site = site;
+	}
+
 	private Long bimImportId;
 	private File fileUpload;
 	private String fileUploadContentType;

@@ -31,6 +31,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.time.Instant;
 import java.util.*;
@@ -53,17 +54,24 @@ public class ProcessImportCommand extends FacilioCommand {
 
 		FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
 		List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
-		
+		String module = "";
 		BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
 		HashMap<String, Object> bimDefaultValuesMap = new LinkedHashMap();
 		boolean isBim = (bimImport!=null);
 		if(isBim){
+			if(importProcessContext.getModule() == null){
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(importProcessContext.getImportJobMeta());
+				module = ((JSONObject)json.get("moduleInfo")).get("module").toString();
+			}
 			bimDefaultValuesMap = BimAPI.getBimDefaultValues(bimImport.getBimId(),importProcessContext.getModule().getName());
 		}
 
 		fieldMapParsing(fieldMapping);
 		Map<String, Long> lookupHolder;
-		String module = importProcessContext.getModule().getName();
+		if(importProcessContext.getModule()!=null){
+			module = importProcessContext.getModule().getName();
+		}
 		
 		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
@@ -207,8 +215,6 @@ public class ProcessImportCommand extends FacilioCommand {
 						props.put("resourceType", ResourceType.SPACE.getValue());
 						props.put("spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 						
-						importProcessContext.getModule().getName();
-					
 					}
 
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.FLOOR)) {
@@ -250,19 +256,34 @@ public class ProcessImportCommand extends FacilioCommand {
 					
 					}
 					else if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ZONE)){
-						
-						long buildingId = Long.parseLong(props.get("building").toString());
-						if(colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")) != null && colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString()!="" && !colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString().equals("n/a"))
-						{
-							String spaceName = colVal.get(fieldMapping.get(FacilioConstants.ContextNames.ZONE+"__"+"space")).toString();
-						
-							List<BaseSpaceContext> baseSpaces = SpaceAPI.getBuildingChildren(buildingId);
-							BaseSpaceContext space = baseSpaces.stream().filter(s->s.getName().equals(spaceName)).findFirst().get();
-							props.put("floor", space.getFloorId());
-							props.put("space1", space.getId());
-						}
 						props.put("resourceType", ResourceType.SPACE.getValue());
 						props.put("spaceType",BaseSpaceContext.SpaceType.ZONE.getIntVal());
+					}else if(isBim && module.equals("zonespacerel")){
+						
+						if(colVal!=null &&  colVal.get(fieldMapping.get("resource"+"__"+"name")) !=null && !colVal.get(fieldMapping.get("resource"+"__"+"name")).toString().equals("n/a")){
+							String zoneName= colVal.get(fieldMapping.get("resource"+"__"+"name")).toString();
+							ZoneContext zone = SpaceAPI.getZone(zoneName);
+							props.put("zoneId", zone.getId());
+							
+							String spaceName= colVal.get(fieldMapping.get(module+"__"+"space")).toString();
+							HashMap<String, Object> defaultValueMap =BimAPI.getBimDefaultValues(bimImport.getBimId(),FacilioConstants.ContextNames.ZONE);
+							Long siteId = Long.parseLong(defaultValueMap.get("site").toString());
+							List<BaseSpaceContext> baseSpaces = SpaceAPI.getSiteChildren(siteId);
+							BaseSpaceContext space = baseSpaces.stream().filter(s->s.getName().equals(spaceName)).findFirst().get();
+							
+							props.put("basespaceId", space.getId());
+						}
+						
+					}else if(isBim && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.CONTACT)){
+						String nameStr = fieldMapping.get(FacilioConstants.ContextNames.CONTACT+"__"+"name");
+						String[] colNames= nameStr.split("&&");
+						StringBuffer name = new StringBuffer();
+						for(int i=0;i<colNames.length;i++){
+							if(colVal !=null && colVal.get(colNames[i])!=null && !colVal.get(colNames[i]).toString().equals("n/a")){
+								name.append(colVal.get(colNames[i])).append(" ");
+							}
+						}
+						props.put("name", name.toString());
 					}
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 

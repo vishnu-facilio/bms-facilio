@@ -54,7 +54,11 @@ public class UpdateBimIntegrationLogCommand extends FacilioCommand {
 				}else{
 					BimImportProcessMappingContext bimImportNew = bimImports.stream().filter(b->b.getStatus() == BimImportProcessMappingContext.Status.INPROGRESS.getValue()).findFirst().get();
 					ImportProcessContext importProcess = ImportAPI.getImportProcessContext(bimImportNew.getImportProcessId());
-					BimAPI.ScheduleGenericImportJob(importProcess,bimImportNew.getSheetName());
+					
+					String moduleName = bimImportNew.getModuleName();
+					
+					BimAPI.ScheduleBimGenericImportJob(moduleName, bimImportNew.getSheetName(), importProcess);
+					
 				}
 			}
 			

@@ -850,8 +850,7 @@ public class TransactionChainFactory {
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());
-			c.addCommand(new AddBimDefaultValuesCommand());
-			c.addCommand(new UpdateBimIntegrationLogCommand());
+			c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
 			c.addCommand(new SendEmailCommand());
 			return c;
 		}
@@ -865,8 +864,7 @@ public class TransactionChainFactory {
 			c.addCommand(new BulkPushAssetCommands());
 			c.addCommand(new UpdateBaseAndResourceCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());
-			c.addCommand(new AddBimDefaultValuesCommand());
-			c.addCommand(new UpdateBimIntegrationLogCommand());
+			c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
 			c.addCommand(new SendEmailCommand());
 			return c;
 		}
@@ -4909,6 +4907,20 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new UpdateModulesNoInBimIntegrationLogCommand());
 		c.addCommand(new ImportBimFileSheetsCommand());
+		return c;
+	}
+	
+	public static FacilioChain getbimImportUpdateChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddBimDefaultValuesCommand());
+		c.addCommand(new UpdateBimIntegrationLogCommand());
+		return c;
+	}
+
+	public static FacilioChain getPMImportDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PMImportDataCommand());
+//		c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
 		return c;
 	}
 

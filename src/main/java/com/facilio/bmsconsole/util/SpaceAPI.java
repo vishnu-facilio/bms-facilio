@@ -635,7 +635,7 @@ public class SpaceAPI {
 		return null;
 	}
 	
-	private static List<BaseSpaceContext> getSiteChildren(long siteId) throws Exception {
+	public static List<BaseSpaceContext> getSiteChildren(long siteId) throws Exception {
 		List<Long> siteIds = new ArrayList<>();
 		siteIds.add(siteId);
 		return getSiteChildren(siteIds);
@@ -675,7 +675,7 @@ public class SpaceAPI {
 		return null;
 	}
 	
-	public static List<BaseSpaceContext> getBuildingChildren(long buildingId) throws Exception {
+	private static List<BaseSpaceContext> getBuildingChildren(long buildingId) throws Exception {
 		List<Long> buildingIds = new ArrayList<>();
 		buildingIds.add(buildingId);
 		return getBuildingChildren(buildingIds);
@@ -888,6 +888,21 @@ public class SpaceAPI {
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.ZONE.getIntVal());
 		List<ZoneContext> zones = selectBuilder.get();
 		return zones;
+	}
+	
+	public static ZoneContext getZone(String zoneName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ZONE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ZONE);
+		
+		SelectRecordsBuilder<ZoneContext> selectBuilder = new SelectRecordsBuilder<ZoneContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(ZoneContext.class)
+																	.andCustomWhere("SPACE_TYPE=? AND NAME=?",BaseSpaceContext.SpaceType.ZONE.getIntVal(),zoneName);
+		
+		return selectBuilder.fetchFirst();
 	}
 	
 	public static List<SpaceContext> getAllSpaces() throws Exception {
