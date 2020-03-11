@@ -54,8 +54,13 @@ public class LogsApi
         return false;
     }
 
-    public static boolean logAgentConnection(long agentId,Status status,long connectionCount,long time) throws Exception {
-                return addLog(agentId,connectionCount,null,status,time,System.currentTimeMillis()) > 0;
+    public static boolean logAgentConnection(long agentId,Status status,long connectionCount,long time) {
+        try {
+            return addLog(agentId,connectionCount,null,status,time,System.currentTimeMillis()) > 0;
+        } catch (Exception e) {
+            LOGGER.info("Exception while loggint agent connection ",e);
+        }
+        return false;
     }
 
     public static boolean logAgentMessages(long agentId,long msgId,Status status,long actualTime){
@@ -99,7 +104,6 @@ public class LogsApi
         toInsert.put(AgentConstants.ACTUAL_TIME,timestamp);
         toInsert.put(AgentConstants.CREATED_TIME,createdTime);
         try {
-            LOGGER.info("table name"+MODULE.getTableName());
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(MODULE.getTableName())
                     .fields(FIELDS);

@@ -101,24 +101,24 @@ public class AgentUtilV2
             long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
+                long connectionCount = 0;
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
-
-                    LogsApi.logAgentConnection(agent.getId(),status,0,timeStamp);
-                    return AgentApiV2.updateAgent(agent);
                 }else if (containsValueCheck(AgentConstants.COUNT,payload)){
                     LOGGER.info(" CONNECTED ");
-                    LogsApi.logAgentConnection(agent.getId(),status,(long)payload.get(AgentConstants.COUNT),timeStamp);
+                    agent.setConnected(true);
+                    connectionCount = (long) payload.get(AgentConstants.COUNT);
                 }else {
                     LOGGER.info("SUBSCRIBED");
-                    LogsApi.logAgentConnection(agent.getId(),status,0,timeStamp);
+                    agent.setConnected(true);
                 }
+                    LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
-                AckUtil.ackPing(agent.getId(),orgId,payload);
+                AckUtil.ackPing(agent.getId(), orgId, payload);
+                agent.setConnected(true);
             }
-            agent.setConnected(true);
             return updateAgent(agent, payload);
         } else {
             throw new Exception("Agent can't be null");
