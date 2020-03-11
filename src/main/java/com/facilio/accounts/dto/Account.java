@@ -18,16 +18,16 @@ import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 
 public class Account implements AccountsInterface<User>, Serializable{
-	
+
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	private Organization org;
 	private static final long serialVersionUID = 1L;
 	private User user;
-	private long siteId = -1; 
-	
+	private long siteId = -1;
+
 	private String deviceType;
 	private String appVersion;
 	private int selectQueries = 0;
@@ -64,22 +64,25 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long publicRedisPutTime = 0L;
 	private long publicRedisDeleteTime = 0L;
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
-	
+
 
 	private RemoteScreenContext remoteScreen;
-	
+
 	@Override
 	public Organization getOrg() {
-		return this.org;
+		if (publicAccess.isEmpty()) {
+			return this.org;
+		}
+		return null;
 	}
-	
+
 	public void setOrg(Organization org) {
 		this.org = org;
 		if (org != null && org.getLoggerLevel() >= 0) {
 			this.setLoggerLevel(org.getLoggerLevel());
 		}
 	}
-	
+
 	public Account(Organization org, User user) {
 		setOrg(org);
 		setUser(user);
@@ -94,21 +97,27 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public User getUser() {
-		return this.user;
+		if (publicAccess.isEmpty()) {
+			return this.user;
+		}
+		return null;
 	}
-	
+
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
 	public long getCurrentSiteId() {
-		return this.siteId;
+		if (publicAccess.isEmpty()) {
+			return this.siteId;
+		}
+		return -1;
 	}
-	
+
 	public void setCurrentSiteId(long siteId) {
 		this.siteId = siteId;
 	}
-	
+
 	public Boolean isFromMobile() {
 		return isFromAndroid() || isFromIos();
 	}
@@ -120,7 +129,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	public Boolean isFromAndroid() {
 		return deviceType != null && deviceType.equalsIgnoreCase("android");
 	}
-	
+
 	public String getDeviceType() {
 		return deviceType;
 	}
@@ -136,7 +145,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
 	}
-	
+
 	public RemoteScreenContext getRemoteScreen() {
 		return this.remoteScreen;
 	}
@@ -439,12 +448,12 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	private String requestUri;
-    public void setRequestUri(String requestUri) {
-    	this.requestUri = requestUri;
-    }
+	public void setRequestUri(String requestUri) {
+		this.requestUri = requestUri;
+	}
 
 	public String getRequestUri() {
-    	return requestUri;
+		return requestUri;
 	}
 
 	private String requestParams;
@@ -457,13 +466,13 @@ public class Account implements AccountsInterface<User>, Serializable{
 
 	private String timeZone;
 	public void setTimeZone(String timeZone) {
-		this.timeZone = timeZone;	
+		this.timeZone = timeZone;
 	}
 	public String getTimeZone() {
 		if(StringUtils.isEmpty(timeZone) && getOrg() != null) {
 			return getOrg().getTimezone();
 		}
-    	return timeZone;
+		return timeZone;
 	}
 
 	public void clearStateVariables() {
@@ -524,14 +533,14 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	private Level level = null;
-    public Level getLevel() {
-    	if (level == null) {
-    		return Level.INFO;
+	public Level getLevel() {
+		if (level == null) {
+			return Level.INFO;
 		}
 		return level;
-    }
+	}
 	public void setLevel(Level level) {
-    	if (this.level == null || level.toInt() < this.level.toInt()) { //Setting only if incoming level is greater. Useful when we enable logger level org/ user wise and all
+		if (this.level == null || level.toInt() < this.level.toInt()) { //Setting only if incoming level is greater. Useful when we enable logger level org/ user wise and all
 			this.level = level;
 		}
 	}
@@ -587,10 +596,10 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public String getCurrentDataSource() {
-    	if (getOrg() != null && publicAccess.isEmpty()) {
-    		return getOrg().getDataSource();
+		if (getOrg() != null && publicAccess.isEmpty()) {
+			return getOrg().getDataSource();
 		}
-    	return null;
+		return null;
 	}
 
 	public String getCurrentDBName() {
