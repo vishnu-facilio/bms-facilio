@@ -70,27 +70,19 @@ public class PubSubLRUCache<V> implements FacilioCache<String, V>  {
     }
 
     private void updateRedisDeleteCount() {
-        if (AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
-        }
+        AccountUtil.incrementRedisDeleteCount(1);
     }
 
     private void updateRedisDeleteTime(long time) {
-        if (AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementRedisDeleteTime(time);
-        }
+        AccountUtil.incrementRedisDeleteTime(time);
     }
 
     private void updateRedisGetCount() {
-        if (AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
-        }
+        AccountUtil.incrementRedisGetCount(1);
     }
 
     private void updateRedisGetTime(long time) {
-        if (AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementRedisGetTime(time);
-        }
+        AccountUtil.incrementRedisGetTime(time);
     }
 
     @Override

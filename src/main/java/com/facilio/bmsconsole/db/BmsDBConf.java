@@ -362,61 +362,45 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public void incrementInsertQueryCount(int count) {
-        if(AccountUtil.getCurrentAccount() != null ) {
-            AccountUtil.getCurrentAccount().incrementInsertQueryCount(count);
-        }
+        AccountUtil.incrementInsertQueryCount(count);
     }
 
     @Override
     public void incrementInsertQueryTime(long duration) {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementInsertQueryTime(duration);
-        }
+        AccountUtil.incrementInsertQueryTime(duration);
     }
 
     @Override
     public void incrementSelectQueryCount(int count) {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementSelectQueryCount(count);
-        }
+        AccountUtil.incrementSelectQueryCount(count);
     }
 
     @Override
     public void incrementSelectQueryTime(long duration) {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementSelectQueryTime(duration);
-        }
+        AccountUtil.incrementSelectQueryTime(duration);
     }
 
     @Override
     public void incrementUpdateQueryCount(int count) {
-        if (AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementUpdateQueryCount(1);
-        }
+        AccountUtil.incrementUpdateQueryCount(count);
     }
 
     @Override
     public void incrementUpdateQueryTime(long duration) {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementUpdateQueryTime(duration);
-        }
+        AccountUtil.incrementUpdateQueryTime(duration);
     }
 
     @Override
     public void incrementDeleteQueryCount() {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementDeleteQueryCount(1);
-        }
+        AccountUtil.incrementDeleteQueryCount(1);
     }
 
     @Override
     public void incrementDeleteQueryTime(long duration) {
-        if(AccountUtil.getCurrentAccount() != null) {
-            AccountUtil.getCurrentAccount().incrementDeleteQueryTime(duration);
-        }
-    } 
-    
-    
+        AccountUtil.incrementDeleteQueryTime(duration);
+    }
+
+
 
     private class SelectQueryCache {
 

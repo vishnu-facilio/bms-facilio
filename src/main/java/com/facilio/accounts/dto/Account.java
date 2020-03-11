@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -68,9 +67,13 @@ public class Account implements AccountsInterface<User>, Serializable{
 
 	private RemoteScreenContext remoteScreen;
 
+	public boolean isScoped() {
+		return publicAccess.isEmpty();
+	}
+
 	@Override
 	public Organization getOrg() {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			return this.org;
 		}
 		return null;
@@ -97,7 +100,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public User getUser() {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			return this.user;
 		}
 		return null;
@@ -108,7 +111,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public long getCurrentSiteId() {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			return this.siteId;
 		}
 		return -1;
@@ -172,7 +175,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementSelectQueryCount(int selectQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.selectQueries += selectQueries;
 		}
 		else {
@@ -189,7 +192,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementInsertQueryCount(int insertQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.insertQueries += insertQueries;
 		}
 		else {
@@ -206,7 +209,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementUpdateQueryCount(int updateQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.updateQueries += updateQueries;
 		}
 		else {
@@ -223,7 +226,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementDeleteQueryCount(int deleteQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.deleteQueries += deleteQueries;
 		}
 		else {
@@ -240,7 +243,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisQueryCount(int redisQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisQueries += redisQueries;
 		}
 		else {
@@ -257,7 +260,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementSelectQueryTime(long selectQueriesTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.selectQueriesTime += selectQueriesTime;
 		}
 		else {
@@ -274,7 +277,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementInsertQueryTime(long insertQueriesTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.insertQueriesTime += insertQueriesTime;
 		}
 		else {
@@ -291,7 +294,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementUpdateQueryTime(long updateQueriesTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.updateQueriesTime += updateQueriesTime;
 		}
 		else {
@@ -308,7 +311,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementDeleteQueryTime(long deleteQueriesTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.deleteQueriesTime += deleteQueriesTime;
 		}
 		else {
@@ -325,7 +328,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisTime(long redisTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisTime += redisTime;
 		}
 		else {
@@ -382,7 +385,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisGetTime(long redisTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisGetTime += redisTime;
 		}
 		else {
@@ -391,7 +394,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisPutTime(long redisTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisPutTime += redisTime;
 		}
 		else {
@@ -400,7 +403,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisDeleteTime(long redisTime) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisDeleteTime += redisTime;
 		}
 		else {
@@ -409,7 +412,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisGetCount(int redisQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisGetCount += redisQueries;
 		}
 		else {
@@ -418,7 +421,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisPutCount(int redisQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisPutCount += redisQueries;
 		}
 		else {
@@ -427,7 +430,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public void incrementRedisDeleteCount(int redisQueries) {
-		if (publicAccess.isEmpty()) {
+		if (isScoped()) {
 			this.redisDeleteCount += redisQueries;
 		}
 		else {
@@ -596,14 +599,14 @@ public class Account implements AccountsInterface<User>, Serializable{
 	}
 
 	public String getCurrentDataSource() {
-		if (getOrg() != null && publicAccess.isEmpty()) {
+		if (getOrg() != null && isScoped()) {
 			return getOrg().getDataSource();
 		}
 		return null;
 	}
 
 	public String getCurrentDBName() {
-		if (getOrg() != null && publicAccess.isEmpty()) {
+		if (getOrg() != null && isScoped()) {
 			return getOrg().getDbName();
 		}
 		return null;

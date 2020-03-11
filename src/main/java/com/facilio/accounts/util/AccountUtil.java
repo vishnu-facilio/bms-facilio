@@ -16,7 +16,6 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -37,7 +36,6 @@ public class AccountUtil {
 	public static final String JWT_DELIMITER = "#";
 	
 	public static void setCurrentAccount(Account account) throws Exception {
-
 		currentAccount.set(account);
 	}
 	
@@ -71,6 +69,9 @@ public class AccountUtil {
 	}
 
 	public static Account getCurrentAccount() {
+		if (currentAccount.get() != null && !currentAccount.get().isScoped()) {
+			return null;
+		}
 		return currentAccount.get();
 	}
 	
@@ -104,6 +105,90 @@ public class AccountUtil {
 			return currentAccount.get().getUserSessionId();
 		}
 		return -1;
+	}
+
+	public static void incrementInsertQueryCount(int count) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementInsertQueryCount(count);
+		}
+	}
+
+	public static void incrementInsertQueryTime(long duration) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementInsertQueryTime(duration);
+		}
+	}
+
+	public static void incrementSelectQueryCount(int count) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementSelectQueryCount(count);
+		}
+	}
+
+	public static void incrementSelectQueryTime(long duration) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementSelectQueryTime(duration);
+		}
+	}
+
+	public static void incrementUpdateQueryCount(int count) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().incrementUpdateQueryCount(count);
+		}
+	}
+
+	public static void incrementUpdateQueryTime(long duration) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementUpdateQueryTime(duration);
+		}
+	}
+
+	public static void incrementDeleteQueryCount(int count) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementDeleteQueryCount(count);
+		}
+	}
+
+	public static void incrementDeleteQueryTime(long duration) {
+		if(currentAccount.get() != null) {
+				currentAccount.get().incrementDeleteQueryTime(duration);
+		}
+	}
+
+	public static void incrementRedisGetTime(long redisTime) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisGetTime(redisTime);
+		}
+	}
+
+	public static void incrementRedisPutTime(long redisTime) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisPutTime(redisTime);
+		}
+	}
+
+	public static void incrementRedisDeleteTime(long redisTime) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisDeleteTime(redisTime);
+		}
+	}
+
+	public static void incrementRedisGetCount(int redisQueries) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisGetCount(redisQueries);
+		}
+	}
+
+	public static void incrementRedisPutCount(int redisQueries) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisPutCount(redisQueries);
+		}
+	}
+
+	public static void incrementRedisDeleteCount(int redisQueries) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementRedisDeleteCount(redisQueries);
+		}
 	}
 	
 	public static UserBean getUserBean() throws Exception {

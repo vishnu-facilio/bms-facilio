@@ -278,9 +278,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 			Long redisTimestamp = getFromLocalRedis(redisKey);
 			if (redisTimestamp == null) {
 				long startTime = System.currentTimeMillis();
-				if (AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
-				}
+				AccountUtil.incrementRedisGetCount(1);
 				try (Jedis jedis = redis.getJedis()) {
 					String value = jedis.get(redisKey);
 					if (value == null) {
@@ -295,9 +293,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 				} catch (Exception e) {
 					LOGGER.debug("Exception while getting key from Redis");
 				} finally {
-					if (AccountUtil.getCurrentAccount() != null) {
-						AccountUtil.getCurrentAccount().incrementRedisGetTime((System.currentTimeMillis() - startTime));
-					}
+					AccountUtil.incrementRedisGetTime((System.currentTimeMillis() - startTime));
 				}
 			}
 			return redisTimestamp;
@@ -339,9 +335,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
     private void deleteInRedis(K key) {
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
-			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
-			}
+			AccountUtil.incrementRedisDeleteCount(1);
 			try (Jedis jedis = redis.getJedis()) {
 				String redisKey = key.toString();
 				jedis.del(redisKey);
@@ -349,9 +343,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 			} catch (Exception e) {
 				LOGGER.debug("Exception while removing key in Redis. ");
 			} finally {
-				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisDeleteTime((System.currentTimeMillis()-startTime));
-				}
+				AccountUtil.incrementRedisDeleteTime((System.currentTimeMillis()-startTime));
 			}
 		}
     }
@@ -359,9 +351,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
     private void putInRedis(K key, Node<K, V> node) {
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
-			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisPutCount(1);
-			}
+			AccountUtil.incrementRedisPutCount(1);
 			try (Jedis jedis = redis.getJedis()) {
 				String redisKey = key.toString();
 				jedis.setnx(redisKey, String.valueOf(node.addedTime));
@@ -369,9 +359,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 			} catch (Exception e) {
 				LOGGER.debug("Exception while putting key in Redis. ");
 			} finally {
-				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisPutTime((System.currentTimeMillis()-startTime));
-				}
+				AccountUtil.incrementRedisPutTime((System.currentTimeMillis()-startTime));
 			}
 		}
     }
