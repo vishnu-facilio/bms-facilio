@@ -126,6 +126,7 @@ public class FacilioConstants {
 		public static final String OFFSET = "offset";
 		public static final String TABLE_NAME = "tableName";
 		public static final String CRITERIA = "criteria";
+		public static final String CLIENT_FILTER_CRITERIA = "clientFilterCriteria";
 		public static final String WEB_TAB_GROUP = "webTabGroup";
 		public static final String WEB_TAB_GROUPS = "webTabGroups";
 		public static final String WEB_TAB_GROUP_ID = "webTabGroupId";

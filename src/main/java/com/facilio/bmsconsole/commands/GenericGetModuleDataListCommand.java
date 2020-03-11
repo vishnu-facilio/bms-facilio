@@ -106,6 +106,12 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		{
 			builder.andCriteria(scopeCriteria);
 		}
+		
+		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
+		
+		if(clientFilterCriteria != null) {
+			builder.andCriteria(clientFilterCriteria);
+		}
 
 		if (!fetchCount && module.isCustom()) {
 			List<LookupField> lookupFields = new ArrayList<>();

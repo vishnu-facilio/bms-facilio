@@ -25,6 +25,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -585,12 +586,23 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
+	Criteria criteria;
+	
 	public String getModuleDataList() throws Exception {
 		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
 		FacilioContext context = dataList.getContext();
 		constructListContext(context);
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+ 		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		dataList.execute();
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
