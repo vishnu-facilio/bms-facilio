@@ -16,7 +16,7 @@ public class ControllableResourceContext {
 		this.resource = resource;
 	}
 
-	Map<Integer,ReadingDataMeta> controllablePointMap;
+	Map<Integer,ControlPointContext> controllablePointMap;
 	
 	List<ControllablePoints> controllablePoints;
 	
@@ -30,16 +30,16 @@ public class ControllableResourceContext {
 		this.resource = resource;
 	}
 	
-	public Map<Integer, ReadingDataMeta> getControllablePointMap() {
+	public Map<Integer, ControlPointContext> getControllablePointMap() {
 		return controllablePointMap;
 	}
 
-	public void setControllablePointMap(Map<Integer, ReadingDataMeta> controllablePointMap) {
+	public void setControllablePointMap(Map<Integer, ControlPointContext> controllablePointMap) {
 		this.controllablePointMap = controllablePointMap;
 	}
 	
-	public void addControllablePointMap(Integer controllablePointId, ReadingDataMeta readingDataMeta) {
-		this.controllablePointMap = controllablePointMap == null ? new HashMap<Integer, ReadingDataMeta>() : controllablePointMap;
+	public void addControllablePointMap(Integer controllablePointId, ControlPointContext readingDataMeta) {
+		this.controllablePointMap = controllablePointMap == null ? new HashMap<Integer, ControlPointContext>() : controllablePointMap;
 		this.controllablePointMap.put(controllablePointId, readingDataMeta);
 	}
 

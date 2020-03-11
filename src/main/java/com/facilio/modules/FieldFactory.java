@@ -7429,6 +7429,18 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getControlPointFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getControlPointModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("childRDMId", "CHILD_RDM_ID", module, FieldType.NUMBER));
+        fields.add(getField("minValue", "MIN_VALUE", module, FieldType.NUMBER));
+        fields.add(getField("maxValue", "MAX_VALUE", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
 
     public static List<FacilioField> getControllablePointFields() {

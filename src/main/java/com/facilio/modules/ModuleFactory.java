@@ -133,6 +133,16 @@ public class ModuleFactory {
 		
 		return module;
 	}
+	
+	private static FacilioModule constructModule (String name, String displayName, String tableName,FacilioModule extendedModule) {
+		FacilioModule module = new FacilioModule();
+		module.setName(name);
+		module.setDisplayName(displayName);
+		module.setTableName(tableName);
+		module.setExtendModule(extendedModule);
+		
+		return module;
+	}
 
 	public static FacilioModule getFormModule() {
 		FacilioModule formModule = new FacilioModule();
@@ -2944,6 +2954,10 @@ public class ModuleFactory {
 	
 	public static FacilioModule getControllablePointModule() {
 		return constructModule("contollablepoint", "Controllable Point", "Controllable_Point");
+	}
+	
+	public static FacilioModule getControlPointModule() {
+		return constructModule("controlpoint", "Control Point", "Control_Point",getReadingDataMetaModule());
 	}
 	
 	public static FacilioModule getControlGroupSpaceModule() {

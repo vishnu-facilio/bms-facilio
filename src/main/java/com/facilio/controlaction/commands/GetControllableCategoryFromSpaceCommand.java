@@ -12,8 +12,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.controlaction.context.ControlPointContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.controlaction.context.ControllableResourceContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext.ControllableCategory;
@@ -51,6 +53,7 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 		fields.addAll(modbean.getAllFields(assetModule.getName()));
 		
 		fields.addAll(FieldFactory.getReadingDataMetaFields());
+		fields.addAll(FieldFactory.getControlPointFields());
 		fields.addAll(FieldFactory.getControllablePointFields());
 		
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -65,9 +68,11 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 				
 				.innerJoin(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.on(ModuleFactory.getReadingDataMetaModule().getTableName()+".RESOURCE_ID = "+assetModule.getTableName()+".ID")
+				.leftJoin(ModuleFactory.getControlPointModule().getTableName())
+				.on(ModuleFactory.getReadingDataMetaModule().getTableName()+".ID = "+ModuleFactory.getControlPointModule().getTableName()+".ID")
 				.innerJoin(ModuleFactory.getControllablePointModule().getTableName())
 				.on(ModuleFactory.getReadingDataMetaModule().getTableName()+".FIELD_ID = "+ModuleFactory.getControllablePointModule().getTableName()+".FIELD_ID")
-
+				
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("space"), spaceId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				;
@@ -138,18 +143,22 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 					
 				}
 				
-				ReadingDataMeta rdm = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
+				ControlPointContext controlPointcontext = FieldUtil.getAsBeanFromMap(prop, ControlPointContext.class);
 				
-				ControlActionCommandContext lastExecutedCommand = ControlActionUtil.getLastExecutedCommandGreaterThanSpecificTime(rdm.getResourceId(), rdm.getFieldId(), rdm.getTtime());
+				if(controlPointcontext.getChildRDMId() > 0) {
+					controlPointcontext.setChildRDM(ReadingsAPI.getReadingDataMeta(controlPointcontext.getChildRDMId()));
+				}
+				
+				ControlActionCommandContext lastExecutedCommand = ControlActionUtil.getLastExecutedCommandGreaterThanSpecificTime(controlPointcontext.getResourceId(), controlPointcontext.getFieldId(), controlPointcontext.getTtime());
 				
 				if(lastExecutedCommand != null) {
-					rdm.setValue(lastExecutedCommand.getValue());
-					rdm.setTtime(lastExecutedCommand.getExecutedTime());
+					controlPointcontext.setValue(lastExecutedCommand.getValue());
+					controlPointcontext.setTtime(lastExecutedCommand.getExecutedTime());
 				}
 				
 				ControllablePointContext controllablePoint = FieldUtil.getAsBeanFromMap(prop, ControllablePointContext.class);
 				
-				controllableResourceContext.addControllablePointMap(controllablePoint.getControllablePoint(), rdm);
+				controllableResourceContext.addControllablePointMap(controllablePoint.getControllablePoint(), controlPointcontext);
 				
 				controllableResourceContext.addControllablePoints(controllablePoint.getControllableEnum());
 				

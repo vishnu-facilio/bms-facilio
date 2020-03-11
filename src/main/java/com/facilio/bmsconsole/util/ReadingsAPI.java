@@ -242,6 +242,22 @@ public class ReadingsAPI {
 		return getReadingDataFromProps(builder.get(), fieldIdMap);
 	}
 	
+	public static ReadingDataMeta getReadingDataMeta(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getIdCondition(id, module));
+		List<Map<String, Object>> props = builder.get();
+		if(props != null && !props.isEmpty()) {
+			return getRDMFromProp(props.get(0), null);
+		}
+		return null;
+	}
+	
 	public static Map<String, ReadingDataMeta> getReadingDataMetaMap(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
 		
 		if (rdmPairs == null || rdmPairs.isEmpty()) {
