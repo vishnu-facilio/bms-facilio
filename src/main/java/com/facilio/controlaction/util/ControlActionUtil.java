@@ -57,6 +57,8 @@ public class ControlActionUtil {
 	public static final String CONTROLLABLE_POINT = "controllablePoint";
 	public static final String SPACE_INCLUDE_LIST = "spaceIncludeList";
 	public static final String SPACE_EXCLUDE_LIST = "spaceExcludeList";
+	public static final String CATEGORY_INCLUDE_LIST = "categoryIncludeList";
+	public static final String CATEGORY_EXCLUDE_LIST = "categoryExcludeList";
 	
 	public static final String CONTROL_MODE = "controlMode";
 	

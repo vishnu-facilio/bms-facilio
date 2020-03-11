@@ -23,6 +23,9 @@ public class GetControllableCategoryFromSpaceListCommand extends FacilioCommand 
 		
 		List<Long> spaceIncludeIds = (List<Long>) context.get(ControlActionUtil.SPACE_INCLUDE_LIST);
 		
+		List<Integer> categoryIncludeIds = (List<Integer>) context.get(ControlActionUtil.CATEGORY_INCLUDE_LIST);
+		List<Integer> categoryExcludeIds = (List<Integer>) context.get(ControlActionUtil.CATEGORY_EXCLUDE_LIST);
+		
 		Map<Long,Map<Long,ControllableAssetCategoryContext>> result = new HashMap<Long, Map<Long,ControllableAssetCategoryContext>>();
 		
 		if(spaceIncludeIds != null  && !spaceIncludeIds.isEmpty()) {
@@ -34,6 +37,9 @@ public class GetControllableCategoryFromSpaceListCommand extends FacilioCommand 
 				FacilioContext context1 = getControllableCategoryChain.getContext();
 				
 				context1.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+				
+				context1.put(ControlActionUtil.CATEGORY_INCLUDE_LIST, categoryIncludeIds);
+				context1.put(ControlActionUtil.CATEGORY_EXCLUDE_LIST, categoryExcludeIds);
 				
 				getControllableCategoryChain.execute();
 				

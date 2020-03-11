@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -17,6 +18,7 @@ import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.controlaction.context.ControllableResourceContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext.ControllableCategory;
 import com.facilio.controlaction.context.ControllablePointContext;
+import com.facilio.controlaction.context.ControllablePointContext.ControllablePoints;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.mssql.SelectRecordBuilder;
@@ -53,7 +55,8 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 		
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		
-		
+		List<Integer> categoryIncludeIds = (List<Integer>) context.get(ControlActionUtil.CATEGORY_INCLUDE_LIST);
+		List<Integer> categoryExcludeIds = (List<Integer>) context.get(ControlActionUtil.CATEGORY_EXCLUDE_LIST);
 				
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 			.module(assetModule)
@@ -69,6 +72,33 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				;
 		
+		if(categoryIncludeIds != null && !categoryIncludeIds.isEmpty()) {
+			
+			List<Integer> controllablePoints = new ArrayList<>(); 
+			for(Integer categoryIncludeId : categoryIncludeIds) {
+				
+				ControllableCategory category = ControllableCategory.getControllableCategoryMap().get(categoryIncludeId);
+				
+				for(ControllablePoints point : category.getPoints()) {
+					controllablePoints.add(point.getPointId());
+				}
+			}
+			select.andCondition(CriteriaAPI.getCondition(fieldsMap.get("controllablePoint"), StringUtils.join(controllablePoints, ","), NumberOperators.EQUALS));
+		}
+		if(categoryExcludeIds != null  && !categoryExcludeIds.isEmpty()) {
+			
+			List<Integer> controllablePoints = new ArrayList<>(); 
+			for(Integer categoryExcludeId : categoryExcludeIds) {
+				
+				ControllableCategory category = ControllableCategory.getControllableCategoryMap().get(categoryExcludeId);
+				
+				for(ControllablePoints point : category.getPoints()) {
+					controllablePoints.add(point.getPointId());
+				}
+			}
+			
+			select.andCondition(CriteriaAPI.getCondition(fieldsMap.get("controllablePoint"), StringUtils.join(controllablePoints, ","), NumberOperators.NOT_EQUALS));
+		}
 		
 		List<Map<String, Object>> props = select.getAsProps();
 		

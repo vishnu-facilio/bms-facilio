@@ -47,11 +47,28 @@ public class ControlActionAction extends FacilioAction {
 	List<Long> spaceExcludeIds;
 	
 	ControlActionMode controlActionMode;
-	
 	ControllableCategory controllableCategory;
 	ControllablePoints controllablePoint;
 	
+	List<Integer> categoryIncludeIds;
+	List<Integer> categoryExcludeIds;
 	
+	public List<Integer> getCategoryIncludeIds() {
+		return categoryIncludeIds;
+	}
+
+	public void setCategoryIncludeIds(List<Integer> categoryIncludeIds) {
+		this.categoryIncludeIds = categoryIncludeIds;
+	}
+
+	public List<Integer> getCategoryExcludeIds() {
+		return categoryExcludeIds;
+	}
+
+	public void setCategoryExcludeIds(List<Integer> categoryExcludeIds) {
+		this.categoryExcludeIds = categoryExcludeIds;
+	}
+
 	public ControllablePoints getControllablePoint() {
 		return controllablePoint;
 	}
@@ -559,6 +576,9 @@ public class ControlActionAction extends FacilioAction {
 			
 			context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
 			
+			context.put(ControlActionUtil.CATEGORY_INCLUDE_LIST, categoryIncludeIds);
+			context.put(ControlActionUtil.CATEGORY_EXCLUDE_LIST, categoryExcludeIds);
+			
 			getControllableCategoryChain.execute();
 			
 			setResult(ControlActionUtil.CONTROLLABLE_CATEGORIES, context.get(ControlActionUtil.CONTROLLABLE_CATEGORIES));
@@ -572,6 +592,9 @@ public class ControlActionAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FLOOR_ID, floorId);
 			context.put(ControlActionUtil.SPACE_INCLUDE_LIST, spaceIncludeIds);
 			context.put(ControlActionUtil.SPACE_EXCLUDE_LIST, spaceExcludeIds);
+			
+			context.put(ControlActionUtil.CATEGORY_INCLUDE_LIST, categoryIncludeIds);
+			context.put(ControlActionUtil.CATEGORY_EXCLUDE_LIST, categoryExcludeIds);
 			
 			getControllableCategoryChain.execute();
 			
