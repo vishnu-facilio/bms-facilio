@@ -3,16 +3,14 @@ package com.facilio.fw.cache;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.LinkedHashMap;
-
-public class FacilioRedisPubSub<K, V> extends JedisPubSub {
+public class FacilioRedisPubSub<V> extends JedisPubSub {
 
     private static final Logger LOGGER = Logger.getLogger(FacilioRedisPubSub.class.getName());
 
-    private LinkedHashMap<K, V> cache;
+    private PubSubLRUCache<V> cache;
 
-    public FacilioRedisPubSub(LinkedHashMap<K, V> map) {
-        cache = map;
+    public FacilioRedisPubSub(PubSubLRUCache<V> cache) {
+        this.cache = cache;
     }
 
     public void onMessage(String channel, String message) {
@@ -21,7 +19,7 @@ public class FacilioRedisPubSub<K, V> extends JedisPubSub {
             if (message.equals("all")) {
                 cache.clear();
             } else {
-                cache.remove(message);
+                cache.onlyRemove(message);
             }
         }
     }

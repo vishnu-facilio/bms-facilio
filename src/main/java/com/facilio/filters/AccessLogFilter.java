@@ -86,13 +86,13 @@ public class AccessLogFilter implements Filter {
                     .append(", rget : ").append(account.getRedisGetCount()).append(" time : ").append(account.getRedisGetTime())
                     .append(", rput : ").append(account.getRedisPutCount()).append(" time : ").append(account.getRedisPutTime())
                     .append(", rdel : ").append(account.getRedisDeleteCount()).append(" time : ").append(account.getRedisDeleteTime())
-                    .append(", publicSelect : ").append(account.getPublicSelectQueries()).append(" time : ").append(account.getPublicSelectQueriesTime())
-                    .append(", publicUpdate : ").append(account.getPublicUpdateQueries()).append(" time : ").append(account.getPublicUpdateQueriesTime())
-                    .append(", publicInsert : ").append(account.getPublicInsertQueries()).append(" time : ").append(account.getPublicInsertQueriesTime())
-                    .append(", publicDelete : ").append(account.getPublicDeleteQueries()).append(" time : ").append(account.getPublicDeleteQueriesTime())
-                    .append(", publicRget : ").append(account.getPublicRedisGetCount()).append(" time : ").append(account.getPublicRedisGetTime())
-                    .append(", publicRput : ").append(account.getPublicRedisPutCount()).append(" time : ").append(account.getPublicRedisPutTime())
-                    .append(", publicRdel : ").append(account.getPublicRedisDeleteCount()).append(" time : ").append(account.getPublicRedisDeleteTime())
+                    .append(", pSelect : ").append(account.getPublicSelectQueries()).append(" time : ").append(account.getPublicSelectQueriesTime())
+                    .append(", pUpdate : ").append(account.getPublicUpdateQueries()).append(" time : ").append(account.getPublicUpdateQueriesTime())
+                    .append(", pInsert : ").append(account.getPublicInsertQueries()).append(" time : ").append(account.getPublicInsertQueriesTime())
+                    .append(", pDelete : ").append(account.getPublicDeleteQueries()).append(" time : ").append(account.getPublicDeleteQueriesTime())
+                    .append(", pRget : ").append(account.getPublicRedisGetCount()).append(" time : ").append(account.getPublicRedisGetTime())
+                    .append(", pRput : ").append(account.getPublicRedisPutCount()).append(" time : ").append(account.getPublicRedisPutTime())
+                    .append(", pRdel : ").append(account.getPublicRedisDeleteCount()).append(" time : ").append(account.getPublicRedisDeleteTime())
                     .toString();
         }
 

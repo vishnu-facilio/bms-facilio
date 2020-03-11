@@ -1,7 +1,6 @@
 package com.facilio.fw.cache;
 
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
@@ -12,27 +11,27 @@ import com.facilio.cache.RedisManager;
 
 import redis.clients.jedis.Jedis;
 
-public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
+public class PubSubLRUCache<V> implements FacilioCache<String, V>  {
     
     private static final Logger LOGGER = LogManager.getLogger(PubSubLRUCache.class.getName());
 
     private String name;
     private RedisManager redis;
-    private final LinkedHashMap<K, V> cache;
+    private final Map<String, V> cache;
     private long hit = 0;
     private long miss = 0;
 
     public PubSubLRUCache(String name, int maxSize){
         this.name = FacilioProperties.getEnvironment()+"-"+name;
-        cache = new LRUCacheLinkedHashMap<>(maxSize, 0.9f, true);
+        cache = Collections.synchronizedMap(new LRUCacheLinkedHashMap<>(maxSize, 0.9f, true));
         redis = RedisManager.getInstance();
         subscribe();
     }
 
     public static void main(String[] args) {
         RedisManager.getInstance().connect();
-        PubSubLRUCache<String, Object> cache = new PubSubLRUCache<>("test", 20);
-        PubSubLRUCache<String, Object> cache1 = new PubSubLRUCache<>("notify", 20);
+        PubSubLRUCache<Object> cache = new PubSubLRUCache<>("test", 20);
+        PubSubLRUCache<Object> cache1 = new PubSubLRUCache<>("notify", 20);
 
         try {
             Thread.sleep(5000);
@@ -61,7 +60,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
 
     private void subscribe() {
         if(redis != null) {
-            redis.subscribe(new FacilioRedisPubSub<>(cache), name);
+            redis.subscribe(new FacilioRedisPubSub<>(this), name);
         }
     }
     
@@ -82,8 +81,20 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
         }
     }
 
+    private void updateRedisGetCount() {
+        if (AccountUtil.getCurrentAccount() != null) {
+            AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
+        }
+    }
+
+    private void updateRedisGetTime(long time) {
+        if (AccountUtil.getCurrentAccount() != null) {
+            AccountUtil.getCurrentAccount().incrementRedisGetTime(time);
+        }
+    }
+
     @Override
-    public boolean contains(K key) {
+    public boolean contains(String key) {
         return cache.containsKey(key);
     }
 
@@ -93,12 +104,14 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     }
 
     @Override
-    public Set<K> keys() {
-        return ((LRUCacheLinkedHashMap) cache).cloneKeys();
+    public Set<String> keys() {
+        return new HashSet<>(cache.keySet());
     }
 
-    public V get(K key){
+    public V get(String key){
+        long startTime = System.currentTimeMillis();
         try {
+            updateRedisGetCount();
             V value = cache.get(key);
             if (value != null) {
                 hit++;
@@ -109,22 +122,33 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        finally {
+            updateRedisGetTime((System.currentTimeMillis()-startTime));
+        }
         miss++;
         return null;
     }
 
-    public void put(K key, V value) {
+    public void put(String key, V value) {
         if (cache.containsKey(key)) {
             return;
         }
         cache.put(key, value);
     }
 
-    public void remove(K key) {
-        if(cache.containsKey(key)) {
-            cache.remove(key);
-            deleteInRedis(key.toString());
-        }
+    public void remove(String key) {
+//        if(cache.containsKey(key)) {
+            onlyRemove(key);
+            deleteInRedis(key);
+//        }
+    }
+
+    void onlyRemove(String key) {
+        cache.remove(key);
+    }
+
+    void clear() {
+        cache.clear();
     }
 
     private void deleteInRedis(String redisKey) {
