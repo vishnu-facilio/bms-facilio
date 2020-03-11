@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +87,12 @@ public class SqliteBridge {
 
     public static boolean executeCommand(long agentId) throws Exception {
         com.facilio.agentv2.FacilioAgent newAgent = migrateAgentToV2(agentId);
+        StringBuilder controllerMigrated = new StringBuilder();
         List<ControllerContext> controllerContexts = migrateControllerToV2(agentId, newAgent);
+        for (ControllerContext controllerContext : controllerContexts) {
+            controllerMigrated.append(controllerContext.getId()+"-");
+        }
+        LOGGER.info(" controllers migrated are "+controllerMigrated.toString());
         for (ControllerContext controllerContext : controllerContexts) {
             migratePoints(controllerContext,controllerContext.getAgentId());
         }
@@ -100,10 +104,22 @@ public class SqliteBridge {
         return migrateAndAddControllers(newAgent, controllers);
     }
 
-    public static boolean migrateAndAddControllers(long newAgentId, long controllerId) throws Exception {
+    public static boolean migrateAndAddControllers(long newAgentId, List<Long> controllerIds) throws Exception {
         com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(newAgentId);
-        ControllerContext controller = ControllerAPI.getController(controllerId);
-        List<ControllerContext> controllerContexts = migrateAndAddControllers(agent, new ArrayList<>(Arrays.asList(controller)));
+        Map<Long, ControllerContext> controllersMap = ControllerAPI.getControllersMap(controllerIds);
+//        ControllerContext controller = ControllerAPI.getController(controllerIds);
+        if(controllersMap == null){
+            throw new Exception(" controller null for agent "+newAgentId);
+        }
+        if(agent == null){
+            throw new Exception("Agent can't be null");
+        }
+        List<ControllerContext> controllerContexts = migrateAndAddControllers(agent, new ArrayList<>(controllersMap.values()));
+        StringBuilder controllerMigrated = new StringBuilder();
+        for (ControllerContext controllerContext : controllerContexts) {
+            controllerMigrated.append(controllerContext.getId()+"-");
+        }
+        LOGGER.info(" controllers migrated are "+controllerMigrated.toString());
         for (ControllerContext controllerContext : controllerContexts) {
             migratePoints(controllerContext,controllerContext.getAgentId());
         }
@@ -139,7 +155,7 @@ public class SqliteBridge {
                             addFieldDevice(newController);
                             long newControllerId = ControllerApiV2.addController(newController, newAgent);
                             controller.setLastModifiedTime(newController.getDeviceId());
-                            LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId+" json "+newController.toJSON());
+                            LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId);
                             if (newControllerId > 0) {
                                 controller.setAgentId(newControllerId); // SET NEW CONTROLLER ID TO CONTROLLER'S AGENT ID
                                 //migratePoints(controller, newControllerId);
@@ -194,10 +210,10 @@ public class SqliteBridge {
                 try {
                     LOGGER.info(" controller Id for points is " + controller.getId());
                     List<Map<String, Object>> points = TimeSeriesAPI.getPointsForController(controller.getId());
-                    LOGGER.info(" old points "+points);
                     if (!points.isEmpty()) {
-                        LOGGER.info(" points size "+points.size());
+                        LOGGER.info("old points size "+points.size());
                         Point newPoint;
+                        StringBuilder pointsFailed = new StringBuilder();
                         for (Map<String, Object> point : points) {
                             try {
                                 newPoint = null;
@@ -215,21 +231,25 @@ public class SqliteBridge {
                                 if (newPoint != null) {
                                     newPoint.setControllerId(newControllerId);
                                     newPoint.setDeviceId(controller.getLastModifiedTime());
-                                    LOGGER.info(newPoint.getControllerId()+" point json " + newPoint.toJSON());
                                     if (PointsAPI.addPoint(newPoint)) {
                                         if (point.containsKey(AgentConstants.ID)) {
                                             LOGGER.info(" -- migrated point " + point.get(AgentConstants.ID));
                                         } else {
-                                            LOGGER.info(" migrated point " + point);
+                                            LOGGER.info(" migrated point ");
                                         }
                                     } else {
-                                        LOGGER.info(" failed to migrate point -> " + point);
+                                        if(point.containsKey(AgentConstants.ID)){
+                                            pointsFailed.append("-"+point.get(AgentConstants.ID));
+                                        }
+                                        LOGGER.info(" failed to migrate point");
                                     }
                                 }
                             } catch (Exception e) {
+                                pointsFailed.append(point.get("-"+AgentConstants.ID));
                                 LOGGER.info(" Exception while migrating point to v2 ", e);
                             }
                         }
+                        LOGGER.info(controller.getId()+" failed migrating points "+pointsFailed.toString());
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception occurred while migrating points", e);
