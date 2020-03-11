@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -109,6 +110,18 @@ public class FloorAction extends FacilioAction {
 		viewFloor();
 		setResult(FacilioConstants.ContextNames.FLOOR, floor);
 		return SUCCESS;
+	}
+	
+	public String runRollUpFieldMig() throws Exception {
+		RollUpFieldUtil.addRollUpForBaseSpaceFields();
+		setResult("Migration","Success");	
+		return SUCCESS;
+	}
+	
+	public String addRollUpFieldMig() throws Exception {
+		RollUpFieldUtil.addRollUpMigFields();
+		setResult("Migration","Success");	
+		return SUCCESS;	
 	}
 	
 	private File floorPlanImage;

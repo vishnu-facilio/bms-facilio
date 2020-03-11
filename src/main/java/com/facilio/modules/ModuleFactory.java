@@ -282,6 +282,15 @@ public class ModuleFactory {
 
 		return fieldModule;
 	}
+	
+	public static FacilioModule getRollUpFieldsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("rollUpField");
+		fieldModule.setDisplayName("RollUp Fields");
+		fieldModule.setTableName("RollUpFields");
+		 fieldModule.setExtendModule(getFieldsModule());
+		return fieldModule;
+	}
 
 	public static FacilioModule getLookupFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();

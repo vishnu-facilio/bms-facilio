@@ -561,6 +561,13 @@ public class FacilioConstants {
 		public static final String FETCH_LOOKUPS = "fetchLookups";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
+		public static final String CHILD_FIELD_ID = "childFieldId";
+		public static final String CHILD_MODULE_ID = "childModuleId";
+		public static final String CHILD_CRITERIA_ID = "childCriteriaId";
+		public static final String AGGREGATE_FUNCTION_ID = "aggregateFunctionId";
+		public static final String AGGREGATE_FIELD_ID = "aggregateFieldId";	
+		public static final String PARENT_MODULE_ID = "parentModuleId";		
+		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";		
 
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";

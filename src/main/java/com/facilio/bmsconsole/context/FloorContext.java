@@ -40,4 +40,14 @@ public class FloorContext extends BaseSpaceContext {
 	public void setFloorPlanInfo(String floorPlanInfo) {
 		this.floorPlanInfo = floorPlanInfo;
 	}
+	
+	private long noOfIndependentSpaces = -1;
+	
+	public long getNoOfIndependentSpaces() {
+		return noOfIndependentSpaces;
+	}
+
+	public void setNoOfIndependentSpaces(long noOfIndependentSpaces) {
+		this.noOfIndependentSpaces = noOfIndependentSpaces;
+	}
 }

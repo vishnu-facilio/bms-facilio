@@ -32,6 +32,16 @@ public class BuildingContext extends BaseSpaceContext {
 		this.noOfFloors = noOfFloors;
 	}
 
+	private long noOfIndependentSpaces = -1;
+	
+	public long getNoOfIndependentSpaces() {
+		return noOfIndependentSpaces;
+	}
+
+	public void setNoOfIndependentSpaces(long noOfIndependentSpaces) {
+		this.noOfIndependentSpaces = noOfIndependentSpaces;
+	}
+	
 	private double grossFloorArea = -1;
 	public double getGrossFloorArea() {
 		return grossFloorArea;

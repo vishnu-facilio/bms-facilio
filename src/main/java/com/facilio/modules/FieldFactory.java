@@ -856,6 +856,21 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getRollUpFieldFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getRollUpFieldsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("childFieldId", "CHILD_FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("childCriteriaId", "CHILD_CRITERIA_ID", module, FieldType.LOOKUP));
+        fields.add(getField("aggregateFunctionId", "AGGREGATE_FUNCTION", module, FieldType.LOOKUP));
+        fields.add(getField("aggregateFieldId", "AGGREGATE_FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("parentRollUpFieldId", "PARENT_ROLLUP_FIELD_ID", module, FieldType.LOOKUP));
+        return fields;
+    }
+    
     public static List<FacilioField> getNumberFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNumberFieldModule();

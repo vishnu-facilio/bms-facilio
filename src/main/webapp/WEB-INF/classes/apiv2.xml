@@ -5430,6 +5430,8 @@
 	</package>
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
+		<action name="runRollUpFieldMig" class="com.facilio.bmsconsole.actions.FloorAction" method="runRollUpFieldMig" />	
+		<action name="addRollUpFieldMig" class="com.facilio.bmsconsole.actions.FloorAction" method="addRollUpFieldMig" />	
 	</package>
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
