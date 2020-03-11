@@ -79,6 +79,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			return;
 		}
 
+		
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
 		Iterator<Map<String, Object>> itr = csvData.iterator();
 		Map<String, Object> currentData = itr.next();

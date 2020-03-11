@@ -203,43 +203,37 @@ public class FilterUtil {
 		
 	}
 	
-	public static ReportDataPointContext getTFDataPoints(String moduleName, JSONObject criteriaObj) throws Exception {
+	public static ReportDataPointContext getTFDataPoints(String moduleName, String name) throws Exception {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
-		if(conditions != null && !conditions.isEmpty()) {
-				String key = "TimeFilter";
-				
-
-
-				FacilioField timeField = modBean.getField("ttime", moduleName);
-				
-				FacilioModule module = timeField.getModule();
-				
-				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "ttime", FieldType.BOOLEAN);
-				ReportYAxisContext yAxis = new ReportYAxisContext();
-				yAxis.setField(module, yField);
-				Map<Integer, Object> enumMap = new HashMap<>();
-				enumMap.put(0, "False");
-				enumMap.put(1, "True");
-				yAxis.setEnumMap(enumMap);
-				dataPoint.setyAxis(yAxis);
-				
-				dataPoint.setModuleName(moduleName);
-				
-				ReportFieldContext xAxis = new ReportFieldContext();
-				xAxis.setField(module, timeField);
-				dataPoint.setxAxis(xAxis);
-				
-				dataPoint.setName(key);
-				
-				Map<String, String> aliases = new HashMap<>();
-				aliases.put("actual", key);
-				dataPoint.setAliases(aliases);
-				
-
-			}
+		String key = "TimeFilter";
+		
+		FacilioField timeField = modBean.getField("ttime", moduleName);
+		
+		FacilioModule module = timeField.getModule();
+		
+		ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "ttime", FieldType.BOOLEAN);
+		ReportYAxisContext yAxis = new ReportYAxisContext();
+		yAxis.setField(module, yField);
+		Map<Integer, Object> enumMap = new HashMap<>();
+		enumMap.put(0, "False");
+		enumMap.put(1, "True");
+		yAxis.setEnumMap(enumMap);
+		dataPoint.setyAxis(yAxis);
+		
+		dataPoint.setModuleName(moduleName);
+		
+		ReportFieldContext xAxis = new ReportFieldContext();
+		xAxis.setField(module, timeField);
+		dataPoint.setxAxis(xAxis);
+		
+		dataPoint.setName(name);
+		
+		Map<String, String> aliases = new HashMap<>();
+		aliases.put("actual", key);
+		dataPoint.setAliases(aliases);
+		
 		return dataPoint;
 		
 	}
