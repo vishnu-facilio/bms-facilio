@@ -332,7 +332,8 @@ public class PageWidget {
  		OPERATING_HOURS("operatingHours"),
  		BUILDING("building"),
  		SPACE("space"),
-		OCCUPANCY("occupancy")
+		OCCUPANCY("occupancy"),
+		ASSET_READING_WIDGET("assetReadingWidget"),
  		;
 		private String name;
 		

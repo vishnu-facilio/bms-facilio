@@ -67,7 +67,25 @@ public class AssetPageFactory extends PageFactory {
 		addFailureMetricWidget(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
 		addCommonSubModuleGroup(tab1Sec1);
-
+		
+		
+		if (AccountUtil.getCurrentOrg().getOrgId() == 183) {
+			if (asset.getCategory().getId() == 2938) {
+				addAssetReadingChart(tab1Sec1, 2127);
+				addAssetReadingChart(tab1Sec1, 4037);
+			}
+			else if (asset.getCategory().getId() == 2949) {
+				addAssetReadingChart(tab1Sec1, 2128);
+				addAssetReadingChart(tab1Sec1, 4042);
+			}
+			else if (asset.getCategory().getId() == 3027) {
+				addAssetReadingChart(tab1Sec1, 4034);
+				addAssetReadingChart(tab1Sec1, 4038);
+				addAssetReadingChart(tab1Sec1, 4041);
+				addAssetReadingChart(tab1Sec1, 4039);
+			}
+		}
+		
 		
 		Tab tab2 = page.new Tab("maintenance");
 		page.addTab(tab2);
