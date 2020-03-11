@@ -18,16 +18,18 @@ public class FacilioObjectQueue {
 	private static final Logger LOGGER = Logger.getLogger(FacilioObjectQueue.class.getName());
 
 	private FacilioQueueService queueInstance = null;
-	public FacilioObjectQueue(String tableName) {
-		queueInstance = new FacilioDbQueue(tableName);
+	public FacilioObjectQueue(String tableName, String dataTableName) {
+		queueInstance = new FacilioDbQueue(tableName,dataTableName);
 	}
 
+	private static final String TABLE_QUEUE_OLD = "FacilioInstantJobQueue";
+	private static final String TABLE_QUEUE_NEW = "FacilioInstantJobQueue_Data";
 	public boolean sendMessage(Serializable serializable) throws Exception {
 		if (serializable == null) {
 			return false;
 		}
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
+		long orgId = AccountUtil.getCurrentOrg().getId();
 		return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,orgId));
 	}
 

@@ -48,9 +48,9 @@ public class FacilioInstantJobExecutor implements Runnable {
 	private int pollingFrequency;
 
 
-	public FacilioInstantJobExecutor(String name, String tableName, int maxThreads, int queueSize, int dataRetention, int pollingFrequency) { //pollingFrequency can have maximum of 30s and so int 
+	public FacilioInstantJobExecutor(String name, String tableName, String dataTableName, int maxThreads, int queueSize, int dataRetention, int pollingFrequency) { //pollingFrequency can have maximum of 30s and so int 
 		this.name = name;
-		objectQueue = new FacilioObjectQueue(tableName);
+		objectQueue = new FacilioObjectQueue(tableName, dataTableName);
 		this.maxThreads = maxThreads > 0 ? maxThreads : DEFAULT_MAX_THREADS;
 		this.tableName = tableName;
 		this.dataRetention = dataRetention;
