@@ -12,6 +12,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
@@ -474,6 +475,26 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+
+    public List<Long> getRecordIds() { return recordIds; }
+
+    public void setRecordIds(List<Long> recordIds) { this.recordIds = recordIds; }
+
+    private List<Long> recordIds;
+    public String migrateControllers(){
+        try {
+            SqliteBridge.migrateAndAddControllers(getAgentId(),getRecordIds());
+            setResult(AgentConstants.RESULT,SUCCESS);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while migrating controllers ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+
     //__________________________________________________
     // general utilities
 

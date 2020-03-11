@@ -25,14 +25,12 @@ public class AddPointCommand extends FacilioCommand {
         Point point = (Point) context.get(FacilioConstants.ContextNames.RECORD);
         point.setCreatedTime(System.currentTimeMillis());
         JSONObject toInsertMap = point.getPointJSON();
-        LOGGER.info("point is "+toInsertMap);
         addPoint(ModuleFactory.getPointModule(), FieldFactory.getPointFields(),toInsertMap);
         if(toInsertMap.containsKey(AgentConstants.ID)){
             Long pointId = (Long) toInsertMap.get(AgentConstants.ID);
             LOGGER.info(" point inserted and pointId is " + pointId);
             if(pointId > 0){
                 point.setId(pointId);
-                LOGGER.info(" childpointJSON " + point.getChildJSON());
                 boolean childPointId = addChildPoint(point);
                 LOGGER.info(" child point id " + childPointId);
                 return childPointId;

@@ -127,7 +127,6 @@ public class AgentApiV2 {
             payload.putAll(record);
             try {
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
-                LOGGER.info(" making agent "+agent.toJSON());
                 agentList.add(agent);
             }catch (Exception e)
             {

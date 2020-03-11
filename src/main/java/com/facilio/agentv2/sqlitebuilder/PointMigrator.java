@@ -44,15 +44,18 @@ public class PointMigrator {
     public static void addPointsToSqlite(List<Point> points, FacilioControllerType controllerType) throws Exception {
         if ((points != null) && (!points.isEmpty())) {
             if (controllerType != null) {
+                StringBuilder pointsFailed = new StringBuilder();
                 for (Point point : points) {
                     try {
                         if (!addPointToSqlite(point, controllerType)) {
                             LOGGER.info(" failed adding point " + point.getId());
+                            pointsFailed.append(point.getId()+"-");
                         }
                     }catch (Exception e){
                         LOGGER.info(" exception while adding point of type "+controllerType+"    "+e);
                     }
                 }
+                LOGGER.info(" failed to add points "+pointsFailed.toString());
             } else {
                 LOGGER.info(" controller type cant be null ");
             }

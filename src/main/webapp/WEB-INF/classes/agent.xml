@@ -324,6 +324,8 @@
         </action>
         <action name="migrate" class="com.facilio.agentv2.actions.AgentIdAction" method="migrate">
         </action>
+        <action name="migrateController" class="com.facilio.agentv2.AgentAction" method="migrateControllers">
+        </action>
     </package>
 
     <package name="modbus" namespace="/api/v2/modbus" extends="agent">

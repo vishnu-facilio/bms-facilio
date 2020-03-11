@@ -170,4 +170,5 @@ public class AgentConstants
     public static final String INTEGRATIONS = "integrations";
     public static final String POINT = "point";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
+    public static final String COUNT = "count";
 }

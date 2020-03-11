@@ -62,14 +62,14 @@ public class ControllerMigrator {
                     }else {
                         LOGGER.info(" added controller "+controllerId +" to sqlite "+controller.getId());
                         FacilioContext context = new FacilioContext();
-                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE,2000);
+                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE,8000);
                         List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId,context);
                        if((points != null) && ( ! points.isEmpty())){
                            LOGGER.info(" fetched points for controller "+controllerId+" are "+points.size());
                            PointMigrator.setNewControllerId(controller.getId(),points);
                            LOGGER.info(" set new controller id ");
                            try {
-                               LOGGER.info(getPointCountDataJSON(points));
+                               LOGGER.info("point count data "+getPointCountDataJSON(points));
                            }catch ( Exception e){
                                LOGGER.info(" Exception while printing point count data ",e);
                            }
@@ -104,7 +104,6 @@ public class ControllerMigrator {
                     commPts++;
                 }
             }
-            LOGGER.info(" point subE" + point.getSubscribestatusEnum());
             if (point.getSubscribestatusEnum().equals(PointEnum.SubscribeStatus.SUBSCRIBED)) {
                 subPts++;
                 LOGGER.info(" yes subscribed " + subPts);
