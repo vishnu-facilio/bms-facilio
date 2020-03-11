@@ -172,6 +172,12 @@ public class CampusAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getSpaceModuleListChain();
 		FacilioContext constructListContext = chain.getContext();
 		constructListContext(constructListContext);
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "resource.name");
+			searchObj.put("query", getSearch());
+			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
 
 		chain.execute();
