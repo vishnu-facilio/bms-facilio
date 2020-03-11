@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -41,14 +42,33 @@ public class GetApplicationDetails extends FacilioCommand {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						for (WebTabContext webtab : webTabs) {
 							webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
-							webtab.setModuleIds(ApplicationApi.getModuleIdsForTab(webtab.getId()));
+							List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
+							List<Long> moduleIds = new ArrayList<>();
+							List<String> specialTypes = new ArrayList<>();
+							if(tabIdAppIdMappingContextList!=null && !tabIdAppIdMappingContextList.isEmpty()) {
+								for(TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+									if(tabIdAppIdMappingContext.getModuleId()>0) {
+										moduleIds.add(tabIdAppIdMappingContext.getTabId());
+									}
+									if(tabIdAppIdMappingContext.getSpecialType()!=null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null") && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")){
+										specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
+									}
+								}
+							}
+							webtab.setModuleIds(moduleIds);
+							webtab.setSpecialTypeModules(specialTypes);
 							String moduleName = "*";
 							if(webtab.getTypeEnum() == Type.MODULE) {
 								if (webtab.getModuleIds() != null && !webtab.getModuleIds().isEmpty()) {
 									moduleName = modBean.getModule(webtab.getModuleIds().get(0)).getName();
+								} else if(webtab.getConfigJSON()!=null){
+									moduleName = (String) webtab.getConfigJSON().get("type");
 								}
 							}
 							webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+							if(webtab.getTypeEnum() == Type.SETTINGS) {
+								webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
+							}
 							if (AccountUtil.getCurrentUser() != null) {
 								webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
 										AccountUtil.getCurrentUser().getRoleId()));
@@ -72,5 +92,4 @@ public class GetApplicationDetails extends FacilioCommand {
 		}
 		return false;
 	}
-
 }

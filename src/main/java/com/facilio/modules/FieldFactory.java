@@ -7780,6 +7780,7 @@ public class FieldFactory {
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         fields.add(getField("tabId", "TAB_ID", module, FieldType.NUMBER));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("specialType", "SPECIAL_TYPE", module, FieldType.STRING));
 
         return fields;
     }

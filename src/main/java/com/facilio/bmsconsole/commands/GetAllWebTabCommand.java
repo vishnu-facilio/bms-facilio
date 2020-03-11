@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
@@ -32,8 +33,21 @@ public class GetAllWebTabCommand extends FacilioCommand {
 			if (tabs != null && !tabs.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for (WebTabContext tab : tabs) {
-					tab.setModuleIds(ApplicationApi.getModuleIdsForTab(tab.getId()));
-
+					List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(tab.getId());
+					List<Long> moduleIds = new ArrayList<>();
+					List<String> specialTypes = new ArrayList<>();
+					if(tabIdAppIdMappingContextList!=null && !tabIdAppIdMappingContextList.isEmpty()) {
+						for(TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+							if(tabIdAppIdMappingContext.getModuleId()>0) {
+								moduleIds.add(tabIdAppIdMappingContext.getTabId());
+							}
+							if(tabIdAppIdMappingContext.getSpecialType()!=null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null") && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")){
+								specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
+							}
+						}
+					}
+					tab.setModuleIds(moduleIds);
+					tab.setSpecialTypeModules(specialTypes);
 					if (CollectionUtils.isNotEmpty(tab.getModuleIds())) {
 						List<FacilioModule> modules = new ArrayList<>();
 						for (Long moduleId : tab.getModuleIds()) {

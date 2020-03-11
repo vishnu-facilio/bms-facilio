@@ -58,6 +58,7 @@
 <%@ page import="com.facilio.bmsconsole.util.*" %>
 <%@ page import="com.facilio.bmsconsole.context.WebTabContext" %>
 <%@ page import="com.facilio.accounts.dto.NewPermission" %>
+<%@ page import="org.json.simple.JSONObject" %>
 
 <%--
 
@@ -95,18 +96,15 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            System.out.println("modbean executed");
             ApplicationContext applicationContext = com.facilio.bmsconsole.util.ApplicationApi.getDefaultApplication();
-            System.out.println("application executed");
             int groupOrder = 1;
             int webTabOrder = 1;
             if (applicationContext != null) {
-                System.out.println("appId: " + applicationContext.getId());
                 long appId = applicationContext.getId();
                 List<WebTabGroupContext> webTabGroups = new ArrayList<>();
                 Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
                 List<WebTabContext> webTabs = new ArrayList<>();
-                System.out.println("1:**");
+                JSONObject configJSON;
                 webTabGroups.add(new WebTabGroupContext("Home", "home", appId, 1, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, webTabOrder++, null, appId, null));
@@ -114,59 +112,53 @@
                 webTabs.add(new WebTabContext("KPIs", "kpi", WebTabContext.Type.KPI, webTabOrder++, null, appId, null));
                 webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.APPROVAL, webTabOrder++, null, appId, null));
                 groupNameVsWebTabsMap.put("home", webTabs);
-                System.out.println("2:**");
+
                 webTabGroups.add(new WebTabGroupContext("Space", "space", appId, 2, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("basespace").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("space", webTabs);
-                System.out.println("3:**");
+
                 webTabGroups.add(new WebTabGroupContext("Asset", "at", appId, 3, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Asset", "assets", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("asset").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("at", webTabs);
-                System.out.println("4:**");
+
                 webTabGroups.add(new WebTabGroupContext("Maintenance", "wo", appId, 4, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Work Orders", "orders", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
-//                webTabs.add(new WebTabContext("Planned", "planned", WebTabContext.Type.MODULE, 2, 1, appId));
+                configJSON = new JSONObject();
+                configJSON.put("type", "preventivemaintenance");
+                webTabs.add(new WebTabContext("Planned", "planned", WebTabContext.Type.MODULE, webTabOrder++, null, appId, configJSON));
                 webTabs.add(new WebTabContext("Calendar", "calendar", WebTabContext.Type.CALENDAR, webTabOrder++, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("wo", webTabs);
-                System.out.println("5:**");
+
                 webTabGroups.add(new WebTabGroupContext("Inventory", "in", appId, 5, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Storerooms", "storerooms", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("storeRoom").getModuleId()), appId, null));
-                System.out.println("storeroom");
 //                webTabs.add(new WebTabContext("Items", "items", WebTabContext.Type.MODULE, 3, Arrays.asList(modBean.getModule("item").getModuleId()), appId));
                 webTabs.add(new WebTabContext("Items", "items", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("item").getModuleId()), appId, null));
-                System.out.println("item");
                 webTabs.add(new WebTabContext("Tools", "tools", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("tool").getModuleId()), appId, null));
-                System.out.println("tool");
                 webTabs.add(new WebTabContext("Service", "service", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("service").getModuleId()), appId, null));
-                System.out.println("service");
                 webTabs.add(new WebTabContext("Item Types", "itemtypes", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("itemTypes").getModuleId()), appId, null));
-                System.out.println("itemtypes");
                 webTabs.add(new WebTabContext("Tool Types", "tooltypes", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("toolTypes").getModuleId()), appId, null));
-                System.out.println("tooltypes");
                 webTabs.add(new WebTabContext("Gate Pass", "gatepass", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("gatePass").getModuleId()), appId, null));
-                System.out.println("gatepass");
                 webTabs.add(new WebTabContext("Shipment", "shipment", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("shipment").getModuleId()), appId, null));
-                System.out.println("shipment");
                 groupNameVsWebTabsMap.put("in", webTabs);
-                System.out.println("6:**");
+
                 webTabGroups.add(new WebTabGroupContext("Purchase", "pu", appId, 6, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Purchase Request", "purchaserequest", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("purchaserequest").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Purchase Order", "purchaseorder", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("purchaseorder").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Receivables", "receivable", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("receivable").getModuleId()), appId, null));
-                webTabs.add(new WebTabContext("Terms & Conditions", "tandc", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("termsandconditions").getModuleId()), appId, null));
+//                webTabs.add(new WebTabContext("Terms & Conditions", "tandc", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("termsandconditions").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("pu", webTabs);
-                System.out.println("7:**");
-                webTabGroups.add(new WebTabGroupContext("Contracts", "co", appId, 7, groupOrder++));
+
+                webTabGroups.add(new WebTabGroupContext("Contracts", "ct", appId, 7, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Purchase Contracts", "purchase", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("purchasecontracts").getModuleId()), appId, null));
@@ -174,8 +166,15 @@
                 webTabs.add(new WebTabContext("Warranty Contracts", "warranty", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("warrantycontracts").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Labour Contracts", "labour", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("labourcontracts").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Terms & Conditions", "tandc", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("termsandconditions").getModuleId()), appId, null));
-                groupNameVsWebTabsMap.put("co", webTabs);
-                System.out.println("8:**");
+                groupNameVsWebTabsMap.put("ct", webTabs);
+
+                webTabGroups.add(new WebTabGroupContext("Bookings", "bo", appId, 7, groupOrder++));
+                webTabs = new ArrayList<>();
+                webTabOrder = 1;
+                webTabs.add(new WebTabContext("Room Booking", "roombooking", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("reservation").getModuleId()), appId, null));
+                webTabs.add(new WebTabContext("Calendar Booking", "calendarbooking", WebTabContext.Type.CALENDAR, webTabOrder++, Arrays.asList(modBean.getModule("reservation").getModuleId()), appId, null));
+                groupNameVsWebTabsMap.put("bo", webTabs);
+
                 webTabGroups.add(new WebTabGroupContext("Visitor", "vi", appId, 7, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
@@ -184,45 +183,114 @@
                 webTabs.add(new WebTabContext("Visitor", "visitor", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("visitor").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Watchlist", "watchlist", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("watchlist").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("vi", webTabs);
-                System.out.println("9:**");
+
                 webTabGroups.add(new WebTabGroupContext("Tenant", "te", appId, 8, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Tenants", "tenant", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("tenant").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Contacts", "contact", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("contact").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("te", webTabs);
-                System.out.println("10:**");
+
                 webTabGroups.add(new WebTabGroupContext("Vendor", "ve", appId, 9, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Vendors", "vendor", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("vendors").getModuleId()), appId, null));
-                webTabs.add(new WebTabContext("Contacts", "contact", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("contact").getModuleId()), appId, null));
+//                webTabs.add(new WebTabContext("Contacts", "contact", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("contact").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("ve", webTabs);
-                System.out.println("11:**");
+
                 webTabGroups.add(new WebTabGroupContext("Service Desk", "se", appId, 10, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Service Requests", "servicerequest", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("serviceRequest").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("se", webTabs);
-                System.out.println("12:**");
+
                 webTabGroups.add(new WebTabGroupContext("People", "pl", appId, 11, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Attendance", "attendance", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("attendance").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Shifts", "shift", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("shift").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Shift Planner", "shiftplanner", WebTabContext.Type.CALENDAR, webTabOrder++, Arrays.asList(modBean.getModule("shift").getModuleId()), appId, null));
-                webTabs.add(new WebTabContext("Shift Rotation", "shuftrotation", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("shiftRotation").getModuleId()), appId, null));
+                webTabs.add(new WebTabContext("Shift Rotation", "shiftrotation", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("shiftRotation").getModuleId()), appId, null));
                 groupNameVsWebTabsMap.put("pl", webTabs);
-                System.out.println("13:**");
+
+                webTabGroups.add(new WebTabGroupContext("Analytics", "an", appId, 12, groupOrder++));
+                webTabs = new ArrayList<>();
+                webTabOrder = 1;
+                configJSON = new JSONObject();
+                configJSON.put("type", "analytics_portfolio");
+                webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.ANALYTICS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "analytics_building");
+                webTabs.add(new WebTabContext("Building", "building", WebTabContext.Type.ANALYTICS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "analytics_regression");
+                webTabs.add(new WebTabContext("Regression", "regression", WebTabContext.Type.ANALYTICS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type","analytics_datavisualization");
+                webTabs.add(new WebTabContext("Data Visualization", "datavisualization", WebTabContext.Type.ANALYTICS, webTabOrder++, null, appId, configJSON));
+                webTabs.add(new WebTabContext("M&v", "mvproject", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("mvproject").getModuleId()), appId, null));
+                configJSON = new JSONObject();
+                configJSON.put("type", "analytics_reports");
+                webTabs.add(new WebTabContext("Reports", "reports", WebTabContext.Type.REPORT, webTabOrder++, null, appId, configJSON));
+                groupNameVsWebTabsMap.put("an", webTabs);
+
                 webTabGroups.add(new WebTabGroupContext("Diagnostics", "di", appId, 12, groupOrder++));
                 webTabs = new ArrayList<>();
                 webTabOrder = 1;
                 webTabs.add(new WebTabContext("Alarms", "alarms", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("alarm").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("Anomalies", "anomalies", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("mlalarm").getModuleId()), appId, null));
                 webTabs.add(new WebTabContext("KPI Violations", "kpi", WebTabContext.Type.CALENDAR, webTabOrder++, Arrays.asList(modBean.getModule("violationalarm").getModuleId()), appId, null));
-//                webTabs.add(new WebTabContext("FDD Rules", "fdd", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("readingrule").getModuleId()), appId, null));
+                configJSON = new JSONObject();
+                configJSON.put("type", "readingrule");
+                webTabs.add(new WebTabContext("FDD Rules", "fdd", WebTabContext.Type.MODULE, webTabOrder++, null, appId, configJSON));
                 groupNameVsWebTabsMap.put("di", webTabs);
-                System.out.println("we: " + webTabGroups.size());
+
+                webTabGroups.add(new WebTabGroupContext("control", "co", appId, 12, groupOrder++));
+                webTabs = new ArrayList<>();
+                webTabOrder = 1;
+                configJSON = new JSONObject();
+                configJSON.put("type", "control_graphics");
+                webTabs.add(new WebTabContext("Graphics", "graphics", WebTabContext.Type.CUSTOM, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "control_controls");
+                webTabs.add(new WebTabContext("Controls", "controls", WebTabContext.Type.CUSTOM, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "control_sequence");
+                webTabs.add(new WebTabContext("Sequence","sequence", WebTabContext.Type.CUSTOM, webTabOrder++, null, appId, configJSON));
+                groupNameVsWebTabsMap.put("co", webTabs);
+
+                webTabGroups.add(new WebTabGroupContext("Settings", "setup", appId, 13, groupOrder++));
+                webTabs = new ArrayList<>();
+                webTabOrder = 1;
+                configJSON = new JSONObject();
+                configJSON.put("type", "general");
+                webTabs.add(new WebTabContext("General", "general", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "users_management");
+                webTabs.add(new WebTabContext("User Management", "resource", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "workorder_settings");
+                webTabs.add(new WebTabContext("Work Order Settings", "workordersettings", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "alarm_settings");
+                webTabs.add(new WebTabContext("Alarm Settings", "alarm_settings", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "space_asset_settings");
+                webTabs.add(new WebTabContext("Space / Asset Settings", "space_asset_settings", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "automations");
+                webTabs.add(new WebTabContext("Automations", "automations", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "customization");
+                webTabs.add(new WebTabContext("Customization", "customization", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "energy_analytics");
+                webTabs.add(new WebTabContext("Energy Analytics", "energy_analytics", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                configJSON = new JSONObject();
+                configJSON.put("type", "agent_configurations");
+                webTabs.add(new WebTabContext("Agent Configurations", "agent_configurations", WebTabContext.Type.SETTINGS, webTabOrder++, null, appId, configJSON));
+                groupNameVsWebTabsMap.put("setup", webTabs);
+
                 for (WebTabGroupContext webTabGroupContext : webTabGroups) {
                     System.out.println("we: " + webTabGroupContext.getRoute());
                     FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
@@ -260,7 +328,6 @@
             AccountUtil.cleanCurrentAccount();
         }
     } catch (Exception e) {
-        System.out.println("migration error: " + e.getMessage());
         e.printStackTrace();
     }
     out.println("Done");

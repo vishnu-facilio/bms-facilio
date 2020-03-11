@@ -215,4 +215,14 @@ public class WebTabContext implements Serializable {
 
     public WebTabContext() {
     }
+
+    private List<String> specialTypeModules;
+
+    public List<String> getSpecialTypeModules() {
+        return specialTypeModules;
+    }
+
+    public void setSpecialTypeModules(List<String> specialTypeModules) {
+        this.specialTypeModules = specialTypeModules;
+    }
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.beans.ModuleBean;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -39,9 +40,9 @@ import com.facilio.modules.fields.FacilioField;
 
 public class PermissionUtil {
 	private static final Logger log = LogManager.getLogger(PermissionUtil.class.getName());
-	
+
 	private static final List<String> SPECIAL_MODULES = new ArrayList<>();
-	
+
 	static {
 //		SPECIAL_MODULES.add("planned");
 //		SPECIAL_MODULES.add("setup");
@@ -51,7 +52,7 @@ public class PermissionUtil {
     public static Criteria getCurrentUserScopeCriteria (String moduleName, FacilioField...fields) {
         return getUserScopeCriteria(AccountUtil.getCurrentUser(), moduleName, fields);
     }
-    
+
     private static Criteria getUserScopeCriteria(User user, String moduleName, FacilioField...fields) {
 		Criteria criteria = null;
         List<Long> accessibleSpace = user.getAccessibleSpace();
@@ -158,7 +159,7 @@ public class PermissionUtil {
 			criteria.addAndCondition(condition);
 		}
 		if (moduleName.equals(ContextNames.MV_PROJECT_MODULE)) {
-			criteria = criteria == null ? new Criteria() : criteria; 
+			criteria = criteria == null ? new Criteria() : criteria;
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), accessibleSpace, BuildingOperator.BUILDING_IS));
 		}
 		if (fields != null && fields.length > 0) {
@@ -176,11 +177,11 @@ public class PermissionUtil {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
+			}
 			return getPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
 	}
 
-	
+
 	private static Criteria getNewPermissionCriteria(Role role, String moduleName, String action) {
 		Criteria criteria = null;
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -196,9 +197,9 @@ public class PermissionUtil {
 						long userPermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getId());
 						int tabType = webTabContext.getType();
 						String moduleNameToFetch = moduleName;
-						if (moduleNameToFetch.equals("planned")) {
-							moduleNameToFetch = "workorder";
-						}
+//						if (moduleNameToFetch.equals("planned")) {
+//							moduleNameToFetch = "workorder";
+//						}
 						PermissionGroup permissionGroup = NewPermissionUtil.getPermissionGroup(tabType, moduleNameToFetch, action);
 						if (permissionGroup != null) {
 							List<Permission> permissions = permissionGroup.getPermissions();
@@ -287,7 +288,7 @@ public class PermissionUtil {
 		}
 		return criteria;
 	}
-	
+
 	private static Criteria getPermissionCriteria(Role role, String moduleName, String action) {
 		Criteria criteria = null;
 		List<Permissions> permissions = role.getPermissions();
@@ -391,7 +392,7 @@ public class PermissionUtil {
 		}
 		return criteria;
 	}
-	
+
 	public static boolean isSpecialModule(String moduleName) {
 		return SPECIAL_MODULES.contains(moduleName);
 	}
@@ -426,23 +427,26 @@ public class PermissionUtil {
 		}
 		return false;
 	}
-	
+
 	public static boolean currentUserHasPermission(long tabId, String moduleName, String action) {
 		Role role = AccountUtil.getCurrentUser().getRole();
-		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
+		if (role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
 		try {
+			if (moduleName.equalsIgnoreCase("planned"))
+				moduleName = ContextNames.PREVENTIVE_MAINTENANCE;
 			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
 			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-			if(moduleNames.contains(moduleName)) {
-				return hasPermission(rolePermissionVal, action, tabId);
+			if (!moduleNames.isEmpty()) {
+				if (moduleNames.contains(moduleName)) {
+					return hasPermission(rolePermissionVal, action, tabId);
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return false;
 	}
 
@@ -456,7 +460,7 @@ public class PermissionUtil {
 	private static boolean hasPermission(Permissions perm, AccountConstants.ModulePermission permission) {
 		return hasPermission(perm, permission.getModulePermission());
 	}
-	
+
 	private static boolean hasPermission(Permissions perm, String actions) throws Exception {
 
 		boolean hasAccess = false;
@@ -485,14 +489,14 @@ public class PermissionUtil {
 		}
 		return hasAccess;
 	}
-	
+
 	private static boolean hasPermission(long perm, long permission) {
 		if (perm == 0) {
 			return true;
 		}
 		return (perm & permission) == permission;
 	}
-	
+
 	private static boolean hasPermission(long perm, String actions, long tabId) throws Exception {
 
 		boolean hasAccess = false;
@@ -506,44 +510,6 @@ public class PermissionUtil {
 					action = action.trim();
 					long permVal = -1;
 					permVal = NewPermissionUtil.getPermissionValue(tabType.getIndex(), action);
-//					try {
-//						switch (tabType) {
-//						case MODULE:
-//							permVal = NewPermissionFactory.Module_Permission.valueOf(action).getPermission();
-//							break;
-//						case APPROVAL:
-//							permVal = NewPermissionFactory.Approval_Permission.valueOf(action).getPermission();
-//							break;
-//						case CALENDAR:
-//							permVal = NewPermissionFactory.Calendar_Permission.valueOf(action).getPermission();
-//							break;
-//						case REPORT:
-//							permVal = NewPermissionFactory.Reports_Permission.valueOf(action).getPermission();
-//							break;
-//						case ANALYTICS:
-//							permVal = NewPermissionFactory.Analytics_Permission.valueOf(action).getPermission();
-//							break;
-//						case KPI:
-//							permVal = NewPermissionFactory.KPI_Permission.valueOf(action).getPermission();
-//							break;
-//						case DASHBOARD:
-//							permVal = NewPermissionFactory.Dashboard_Permission.valueOf(action).getPermission();
-//							break;
-//						case CUSTOM:
-//							permVal = NewPermissionFactory.Custom_Permission.valueOf(action).getPermission();
-//							break;
-//						case WORKORDER_MODULE:
-//							permVal = NewPermissionFactory.Workorder_Permission.valueOf(action).getPermission();
-//							break;
-//						case INENTORY_MODULE:
-//							permVal = NewPermissionUtil.getPermissionValue(tabType.getIndex(), action);
-//							break;
-//						default:
-//							break;
-//						}
-//					} catch (Exception e) {
-//						e.getMessage();
-//					}
 					if (permVal > 0) {
 						hasAccess = hasPermission(perm, permVal);
 					}
@@ -559,7 +525,7 @@ public class PermissionUtil {
 				throw new Exception("Invalid Tab");
 			}
 		}
-		
+
 		return hasAccess;
 	}
 

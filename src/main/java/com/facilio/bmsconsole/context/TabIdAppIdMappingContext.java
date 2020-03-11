@@ -35,6 +35,17 @@ public class TabIdAppIdMappingContext implements Serializable{
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
+
+	private String specialType;
+
+	public String getSpecialType() {
+		return specialType;
+	}
+
+	public void setSpecialType(String specialType) {
+		this.specialType = specialType;
+	}
+
 	public TabIdAppIdMappingContext(long tabId, long moduleId, long appId) {
 		super();
 		this.tabId = tabId;
@@ -44,6 +55,11 @@ public class TabIdAppIdMappingContext implements Serializable{
 	public TabIdAppIdMappingContext() {
 		super();
 	}
-	
 
+	public TabIdAppIdMappingContext(long tabId,long appId, String specialType) {
+		super();
+		this.tabId = tabId;
+		this.appId = appId;
+		this.specialType = specialType;
+	}
 }
