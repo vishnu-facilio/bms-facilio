@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.db;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -485,5 +486,20 @@ public class BmsDBConf extends DBConf {
 	public void removeOrgCache(long currentOrgId) {
 		ResponseCacheUtil.removeOrgCache(DBConf.getInstance().getCurrentOrgId());		
 	}
-	
+
+	@Override
+	public long addFile(String msg) throws Exception {
+		return FacilioFactory.getFileStore().addFile("Queue_Data", msg, "text/plain");
+	}
+
+	@Override
+	public InputStream getFileContent(long fileId) throws Exception {
+		return FacilioFactory.getFileStore().readFile(fileId);
+	}
+
+	@Override
+	public boolean deleteFileContent(List<Long> fileIds) throws Exception {
+
+		return FacilioFactory.getFileStore().deleteFiles(fileIds);
+	}
 }

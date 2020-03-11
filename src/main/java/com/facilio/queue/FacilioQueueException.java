@@ -9,14 +9,13 @@ import com.facilio.queue.service.QueueMessage;
 import com.facilio.service.FacilioService;
 public class FacilioQueueException {
 
-	private static final String TABLE_QUEUE_OLD = "FacilioExceptionQueue";
-	private static final String TABLE_QUEUE_NEW = "FacilioExceptionQueue_Data";
-	private static final FacilioQueueService INSTANCE = new FacilioDbQueue(TABLE_QUEUE_OLD,TABLE_QUEUE_NEW);
+	private static final String TABLE_NAME = "ExceptionQueue";
+	private static final FacilioQueueService INSTANCE = new FacilioDbQueue(TABLE_NAME);
 	static FacilioQueueService getInstance() {
 		return INSTANCE;
 	}
 	public static boolean addException(String message) throws Exception {
-		long orgId = AccountUtil.getCurrentOrg().getId();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		return  FacilioService.runAsServiceWihReturn(() ->getInstance().push(message,orgId));
 	}
 
