@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -39,45 +39,59 @@ public class GetReadingFieldsCommand extends FacilioCommand {
 		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, fieldVsRules);
 		if(readings != null && !readings.isEmpty()) {
+			List<FacilioField> dataPoints = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(FacilioModule reading : readings) {
-				Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
-				Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
-				if(AccountUtil.getCurrentOrg().getId() == 191l) {
-					log.error("Module Name with fields ---- "+reading.getName() +" Fields -- "+modBean.getAllFields(reading.getName()));
-				}
-				List<FacilioField> dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(modBean.getAllFields(reading.getName()),parentId);
-				
-				StringJoiner j = new StringJoiner(",");
-				dataPoints.stream().forEach(f -> j.add(String.valueOf(f.getFieldId())));
-				
-				Criteria criteria = new Criteria();
-		        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
-		        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-		        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
-		       
-		        if (readingRules != null && !readingRules.isEmpty()) {
-		        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
-		            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-		        	for (ReadingRuleContext rule:  readingRules) {
-		        		if (rule.getReadingFieldId() != -1) { 
-		        			List<ReadingRuleContext> rules = fieldVsRules.get(rule.getReadingFieldId());
-		        			if (rules == null) {
-		        				rules = new ArrayList<>();
-		        				fieldVsRules.put(rule.getReadingFieldId(), rules);
-		        			}
-		        			rules.add(rule);
-		        		}
-		        		long workflowId = rule.getWorkflowId();
-		        		if (workflowId != -1) {
-		        			rule.setWorkflow(workflowMap.get(workflowId));
-		        		}
-		        		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
-		        		rule.setActions(actions);
-		        	}
-		        }
-				reading.setFields(dataPoints);
+				dataPoints.addAll(modBean.getAllFields(reading.getName()));
 			}
+			Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
+			Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
+			
+			String filter = (String) context.get(FacilioConstants.ContextNames.FILTER);
+			dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(dataPoints,parentId, filter);
+			
+			Map<Long, FacilioModule> readingMap = readings.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity(), (prevValue, curValue) -> {
+                return prevValue;
+            }));
+			for(FacilioField field : dataPoints) {
+				long moduleId = field.getModuleId();
+				FacilioModule facilioModule = readingMap.get(moduleId);
+				List<FacilioField> fields = facilioModule.getFields();
+				if (fields == null) {
+					fields = new ArrayList<>();
+					facilioModule.setFields(fields);
+				}
+				fields.add(field);
+			}
+			
+			StringJoiner j = new StringJoiner(",");
+			dataPoints.stream().forEach(f -> j.add(String.valueOf(f.getFieldId())));
+			
+			Criteria criteria = new Criteria();
+	        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", j.toString(), NumberOperators.EQUALS));
+	        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+	        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
+	       
+	        if (readingRules != null && !readingRules.isEmpty()) {
+	        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+	            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+	        	for (ReadingRuleContext rule:  readingRules) {
+	        		if (rule.getReadingFieldId() != -1) { 
+	        			List<ReadingRuleContext> rules = fieldVsRules.get(rule.getReadingFieldId());
+	        			if (rules == null) {
+	        				rules = new ArrayList<>();
+	        				fieldVsRules.put(rule.getReadingFieldId(), rules);
+	        			}
+	        			rules.add(rule);
+	        		}
+	        		long workflowId = rule.getWorkflowId();
+	        		if (workflowId != -1) {
+	        			rule.setWorkflow(workflowMap.get(workflowId));
+	        		}
+	        		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
+	        		rule.setActions(actions);
+	        	}
+	        }
 		}
 		return false;
 	}

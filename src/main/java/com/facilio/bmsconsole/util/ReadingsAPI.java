@@ -305,7 +305,7 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...inputTypes) throws Exception {
-		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, null, null, inputTypes);
+		return getReadingDataMetaList(resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null, fieldList, excludeEmptyFields, null, null, inputTypes);
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
@@ -357,6 +357,9 @@ public class ReadingsAPI {
 			FacilioField resourceIdField = readingFieldsMap.get("resourceId");
 			// LOGGER.debug("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
 			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
+		}
+		else if (inputTypes != null && inputTypes.length > 0) {
+			builder.groupBy(readingFieldsMap.get("fieldId").getCompleteColumnName());
 		}
 		
 		Criteria valueCriteria = new Criteria();
@@ -871,25 +874,55 @@ public class ReadingsAPI {
 		return fieldNames;
 	}
 	
-	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId) throws Exception {
+	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId, String filter) throws Exception {
+		if (CollectionUtils.isEmpty(fields)) {
+			return fields;
+		}
+		if (parentId == null) {
+			parentId = -1l;
+		}
 		List<Long> fieldsWithValues = null;
-		if (parentId != null && parentId > -1) {
-			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId, fields, true);
+		
+		List<ReadingInputType> inputTypes = new ArrayList<>();
+		if (StringUtils.isNotEmpty(filter)) {
+			if (filter.equals("connected")) {
+				inputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
+			}
+			else if (filter.equals("formula")) {
+				inputTypes.add(ReadingInputType.FORMULA_FIELD);
+			}
+			else if (filter.equals("available")) {
+				inputTypes.add(ReadingInputType.FORMULA_FIELD);
+				inputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
+			}
+		}
+		ReadingInputType[] types = null;
+		if (!inputTypes.isEmpty()) {
+			types = inputTypes.toArray(new ReadingInputType[inputTypes.size()]);
+		}
+		if (parentId > -1 || types != null) {
+			List<ReadingDataMeta> readingMetaDatas = getReadingDataMetaList(parentId > 0 ? parentId : null, fields, parentId > 0, types);
 			if (readingMetaDatas != null) {
 				fieldsWithValues = readingMetaDatas.stream().map(meta -> meta.getFieldId()).collect(Collectors.toList());
 			}
 		}
+		
 		List<FacilioField> fieldsToReturn = new ArrayList<>();
-		if(fields != null) {
-			for(FacilioField field: fields) {
-				if ((parentId == null || (fieldsWithValues != null && fieldsWithValues.contains(field.getId()))) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
-//					  if(field.getName().equals("sysCreatedTime") || field.getName().equals("marked")) {
-//						continue;
-//				       }
+		for(FacilioField field: fields) {
+			if (!DEFAULT_READING_FIELDS.contains(field.getName()) ) {
+				if (parentId == -1 && types == null) {
+					fieldsToReturn.add(field);
+				}
+				else if (fieldsWithValues != null) {
+					if (StringUtils.isNotEmpty(filter) && filter.equals("available") && !fieldsWithValues.contains(field.getId())) {
 						fieldsToReturn.add(field);
-			    }
+					}
+					else if (fieldsWithValues.contains(field.getId())){
+						fieldsToReturn.add(field);
+					}
+				}
 		    }
-		}
+	    }
 		return fieldsToReturn;
 	}
 	

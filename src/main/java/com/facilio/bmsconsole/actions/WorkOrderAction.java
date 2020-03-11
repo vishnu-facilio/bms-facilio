@@ -1594,7 +1594,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (e != null && FacilioProperties.isProduction() ) {
 			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
 				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder")  || e.getMessage().equals("Please close all tasks before closing the workorder")
-						|| e.getMessage().equals("Tasks should be completed before resolve")) {
+						|| e.getMessage().equals("Tasks should be completed before resolve") || (AccountUtil.getCurrentOrg().getOrgId() == 315 && e.getMessage().equals("Scanned QR code does not match associated asset"))) {
 					return;
 				}
 				errorTrace = ExceptionUtils.getStackTrace(e);
