@@ -359,7 +359,7 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		else if (inputTypes != null && inputTypes.length > 0) {
-			builder.groupBy(readingFieldsMap.get("fieldId").getCompleteColumnName());
+			builder.groupBy(readingFieldsMap.get("fieldId").getCompleteColumnName()).select(Collections.singletonList(readingFieldsMap.get("fieldId")));
 		}
 		
 		Criteria valueCriteria = new Criteria();

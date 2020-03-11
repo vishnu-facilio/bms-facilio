@@ -43,6 +43,7 @@ public class GetReadingFieldsCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(FacilioModule reading : readings) {
 				dataPoints.addAll(modBean.getAllFields(reading.getName()));
+				reading.setFields(null);
 			}
 			Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
 			Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
