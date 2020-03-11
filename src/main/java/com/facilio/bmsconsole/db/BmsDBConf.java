@@ -260,6 +260,9 @@ public class BmsDBConf extends DBConf {
                     long fileId = fs.addFile(fileName, file, fileType, resize);
                     value.put(field.getName(), fileId);
                 }
+                else if (value.get(field.getName()+"Id") != null) {
+                		value.put(field.getName(), value.get(field.getName()+"Id"));
+                }
             }
         }
 
