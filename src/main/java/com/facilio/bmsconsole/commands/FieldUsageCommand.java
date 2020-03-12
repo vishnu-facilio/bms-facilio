@@ -38,9 +38,9 @@ public class FieldUsageCommand extends FacilioCommand {
                 for (ReadingRuleContext rule : rules) {
                     if (rule.getReadingFieldId() == fieldId) {
                         ruleMap.put(rule.getParentRuleId(), rule.getName());
-
                     }
                 }
+                context.put(FacilioConstants.ContextNames.RULES, ruleMap);
             }
             FacilioField fieldObj = modBean.getField(fieldId);
             FacilioModule sourceModule = modBean.getModule(fieldObj.getModuleId());
@@ -49,11 +49,14 @@ public class FieldUsageCommand extends FacilioCommand {
                     .module(sourceModule)
                     .beanClass(ReadingContext.class)
                     .select(sourcefields)
-                    .andCondition(CriteriaAPI.getCondition(fieldObj, CommonOperators.IS_NOT_EMPTY));
-                    // .groupBy(sourceModule.getTableName() + ".PARENT_ID");
-
+                    .andCondition(CriteriaAPI.getCondition(fieldObj, CommonOperators.IS_NOT_EMPTY))
+                    .limit(1);
             List<ReadingContext> readingsList = builder.get();
-            System.out.println("readingsList" + readingsList.size());
+            if ( readingsList != null  && readingsList.size() > 0) {
+                System.out.println("readingsList" + readingsList.size());
+                context.put(FacilioConstants.ContextNames.READINGS, "Has Readings");
+
+            }
         }
 
         return false;

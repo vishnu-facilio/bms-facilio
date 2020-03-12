@@ -49,6 +49,8 @@ public class ReadingFieldMigrationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.CATEGORY_ID, categoryId);
         FacilioChain chain = ReadOnlyChainFactory.getFieldUsageLog();
         chain.execute(context);
+        setResult(FacilioConstants.ContextNames.RULES, context.getOrDefault(FacilioConstants.ContextNames.RULES, null));
+        setResult(FacilioConstants.ContextNames.READINGS, context.getOrDefault(FacilioConstants.ContextNames.READINGS, null));
 
         return SUCCESS;
     }
