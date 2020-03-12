@@ -61,7 +61,7 @@ public class UpdateBaseAndResourceCommand extends FacilioCommand implements Seri
 						break;
 					}
 				}
-				if(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+				if(facilioModule !=null && facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
 					for(int done= 0 ;done< readingsList.size();) {
 						String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
 						String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";

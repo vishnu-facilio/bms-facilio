@@ -1,20 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ImportDataCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -49,7 +60,23 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 					}
 				}
 			}
-			if (!importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+			String moduleName = "";
+			if(importProcessContext.getModule() == null){
+				FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+				List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+				
+				BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+				
+				boolean isBim = (bimImport!=null);
+				if(isBim){
+					JSONParser parser = new JSONParser();
+					JSONObject json = (JSONObject) parser.parse(importProcessContext.getImportJobMeta());
+					moduleName = ((JSONObject)json.get("moduleInfo")).get("module").toString();
+				}
+			}else{
+				moduleName = importProcessContext.getModule().getName();
+			}
+			if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
 				FacilioChain importChain = TransactionChainFactory.getImportChain();
 				importChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
 				importChain.execute();
@@ -142,6 +169,16 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
 				LOGGER.severe("Import failed: " + exceptionMessage);
+				
+				FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+				List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+				BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+				boolean isBim = (bimImport!=null);
+				if(isBim){
+					bimImport.setStatus(BimImportProcessMappingContext.Status.FAILED.getValue());
+					Condition condition = CriteriaAPI.getIdCondition(bimImport.getId(), bimModule);
+					BimAPI.updateBimImportProcessMapping(bimModule, bimFields, bimImport, condition);
+				}
 			}
 		} catch (Exception e1) {
 			CommonCommandUtil.emailException("Import Exception Handling failed",

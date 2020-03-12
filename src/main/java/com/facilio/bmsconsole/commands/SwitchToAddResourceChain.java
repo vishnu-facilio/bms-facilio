@@ -7,18 +7,24 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class SwitchToAddResourceChain extends FacilioCommand {
 
@@ -33,8 +39,26 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				readingsContext.addAll(rContext);
 			}
 		}
-		String moduleName = importProcessContext.getModule().getName();
-		FacilioModule facilioModule = bean.getModule(moduleName);
+		FacilioModule facilioModule = null;
+		if(importProcessContext.getModule() !=null){
+			String moduleName = importProcessContext.getModule().getName();
+			facilioModule = bean.getModule(moduleName);
+		}else{
+			FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+			List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+			
+			BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+			
+			boolean isBim = (bimImport!=null);
+			if(isBim){
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(importProcessContext.getImportJobMeta());
+				String moduleName = ((JSONObject)json.get("moduleInfo")).get("module").toString();
+				if(moduleName.equals("zonespacerel")){
+					facilioModule = ModuleFactory.getZoneRelModule(); 
+				}
+			}
+		}
 		
 		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))

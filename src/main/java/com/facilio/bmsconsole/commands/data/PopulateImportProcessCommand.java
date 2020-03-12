@@ -4,12 +4,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -24,6 +27,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -44,8 +48,21 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		HashMap<String, List<ReadingContext>> groupedReadingContext = (HashMap<String, List<ReadingContext>>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) c.get(FacilioConstants.ContextNames.RECORD_LIST);
-
-
+		String moduleName = "";
+		if(importProcessContext.getModule() == null){
+			FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+			List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+			BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+			boolean isBim = (bimImport!=null);
+			if(isBim){
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(importProcessContext.getImportJobMeta());
+				moduleName = ((JSONObject)json.get("moduleInfo")).get("module").toString();
+			}
+		}else{
+			moduleName = importProcessContext.getModule().getName();
+		}
+		
 		JSONObject meta = new JSONObject();
 		Integer Setting = importProcessContext.getImportSetting();
 		List<Long> listOfIds = new ArrayList<>();
@@ -55,12 +72,12 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				List<String> keys = new ArrayList(groupedReadingContext.keySet());
 				
 				for(int i=0; i<keys.size(); i++) {
-					listOfIds = populateData(groupedReadingContext.get(keys.get(i)),keys.get(i));
+					listOfIds = populateData(groupedReadingContext.get(keys.get(i)),keys.get(i),importProcessContext);
 					totalSize =  totalSize + groupedReadingContext.get(keys.get(i)).size();
 				}
 				if(!listOfIds.isEmpty()) {
 					for(Long id: listOfIds) {
-						recordsList.put(importProcessContext.getModule().getName(), id);
+						recordsList.put(moduleName, id);
 					}
 				}
 				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
@@ -76,7 +93,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		}
 		
 		else if (Setting == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
-			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
+			List<ReadingContext> readingsList = groupedReadingContext.get(moduleName);
 			List<ReadingContext> newItems = new ArrayList<ReadingContext>();
 			
 			meta = importProcessContext.getImportJobMetaJson();
@@ -92,10 +109,10 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 			}
 			
-			listOfIds = populateData(newItems,importProcessContext.getModule().getName());
+			listOfIds = populateData(newItems,moduleName,importProcessContext);
 			if(!listOfIds.isEmpty()) {
 				for(Long id: listOfIds) {
-					recordsList.put(importProcessContext.getModule().getName(), id);
+					recordsList.put(moduleName, id);
 				}
 			}
 			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
@@ -115,7 +132,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		}
 		
 		else if(Setting == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
-			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
+			List<ReadingContext> readingsList = groupedReadingContext.get(moduleName);
 			updateData(importProcessContext, readingsList);
 			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 				meta = importProcessContext.getImportJobMetaJson();
@@ -129,7 +146,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			
 		}
 		else if(Setting  == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()) {
-			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
+			List<ReadingContext> readingsList = groupedReadingContext.get(moduleName);
 			updateNotNull(importProcessContext, readingsList);
 			if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 				meta = importProcessContext.getImportJobMetaJson();
@@ -144,7 +161,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		}
 		
 		else if(Setting == ImportProcessContext.ImportSetting.BOTH.getValue()) {
-			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
+			List<ReadingContext> readingsList = groupedReadingContext.get(moduleName);
 			List<ReadingContext> insertItems = new ArrayList<ReadingContext>();
 			List<ReadingContext> updateItems = new ArrayList<ReadingContext>();
 			JSONObject importMeta= importProcessContext.getImportJobMetaJson();
@@ -160,10 +177,10 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 			}
 			
-			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
+			listOfIds = populateData(insertItems,moduleName,importProcessContext);
 			if(!listOfIds.isEmpty()) {
 				for(Long id: listOfIds) {
-					recordsList.put(importProcessContext.getModule().getName(), id);
+					recordsList.put(moduleName, id);
 				}
 			}
 			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
@@ -183,7 +200,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		}
 		
 		else if(Setting == ImportProcessContext.ImportSetting.BOTH_NOT_NULL.getValue()) {
-			List<ReadingContext> readingsList = groupedReadingContext.get(importProcessContext.getModule().getName());
+			List<ReadingContext> readingsList = groupedReadingContext.get(moduleName);
 			List<ReadingContext> insertItems = new ArrayList<ReadingContext>();
 			List<ReadingContext> updateItems = new ArrayList<ReadingContext>();
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
@@ -200,10 +217,10 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 			}
 			
-			listOfIds = populateData(insertItems,importProcessContext.getModule().getName());
+			listOfIds = populateData(insertItems,moduleName,importProcessContext);
 			if(!listOfIds.isEmpty()) {
 				for(Long id: listOfIds) {
-					recordsList.put(importProcessContext.getModule().getName(), id);
+					recordsList.put(moduleName, id);
 				}
 			}
 			c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
@@ -221,7 +238,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			emailMessage.append(",Inserted:" + insertItems.size() +"Updated:"+ updateItems.size() +",Skipped:" +0);
 		
 		}
-		// c.put(FacilioConstants.ContextNames.SPACE_TYPE, importProcessContext.getModule().getName()+"s");
+		// c.put(FacilioConstants.ContextNames.SPACE_TYPE, moduleName+"s");
 		c.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 //		ImportAPI.updateImportProcess(importProcessContext);
 		
@@ -362,10 +379,23 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		
 	}
 	
-	public static List<Long> populateData(List<ReadingContext> readingsEntireList,String moduleName) throws Exception {
+	public static List<Long> populateData(List<ReadingContext> readingsEntireList,String moduleName,ImportProcessContext importProcessContext) throws Exception {
 		List<Long> listOfIds = new ArrayList<>();
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = bean.getModule(moduleName);
+		
+		if(module == null){
+			FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+			List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+			BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+			boolean isBim = (bimImport!=null);
+			if(isBim && moduleName.equals("zonespacerel")){
+				for(ReadingContext reading:readingsEntireList){
+					SpaceAPI.addZoneChildren(Long.parseLong(reading.getReading("zoneId").toString()), Collections.singletonList(Long.parseLong(reading.getReading("basespaceId").toString())));
+				}
+			}
+		}else{
+		
 		
 		if(module.getTypeEnum() == ModuleType.READING 
 		|| module.getTypeEnum() == ModuleType.SCHEDULED_FORMULA || 
@@ -437,6 +467,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 		
 			}
+		}
 		}
 		return listOfIds;
 	}

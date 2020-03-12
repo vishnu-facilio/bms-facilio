@@ -788,7 +788,7 @@ public class ImportAPI {
 	}
 
 	public static boolean isAssetBaseModule(ImportProcessContext importProcessContext) throws Exception {
-		if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+		if (importProcessContext.getModule()!=null && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule() !=null &&importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)))) {
 			return true;
 		} else {
 			return false;

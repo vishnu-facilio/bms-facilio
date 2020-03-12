@@ -52,7 +52,7 @@ public class UpdateBimIntegrationLogCommand extends FacilioCommand {
 					
 					BimAPI.updateBimIntegrationLog(module, fields, bimIntegrationLog);
 				}else{
-					BimImportProcessMappingContext bimImportNew = bimImports.stream().filter(b->b.getStatus() == BimImportProcessMappingContext.Status.INPROGRESS.getValue()).findFirst().get();
+					BimImportProcessMappingContext bimImportNew = bimImports.stream().filter(b->b.getStatus() != BimImportProcessMappingContext.Status.COMPLETED.getValue()).findFirst().get();
 					ImportProcessContext importProcess = ImportAPI.getImportProcessContext(bimImportNew.getImportProcessId());
 					
 					String moduleName = bimImportNew.getModuleName();

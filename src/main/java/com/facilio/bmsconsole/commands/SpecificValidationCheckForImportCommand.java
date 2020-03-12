@@ -2,18 +2,23 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +39,27 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 		
 		String nameQueryString = StringUtils.join(groupedContext.keySet(), ",");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(importProcessContext.getModule().getName());
+		FacilioModule module = null;
+		if(importProcessContext.getModule() == null){
+			FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+			List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+			
+			BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+			
+			boolean isBim = (bimImport!=null);
+			if(isBim){
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(importProcessContext.getImportJobMeta());
+				String moduleName = ((JSONObject)json.get("moduleInfo")).get("module").toString();
+				if(moduleName.equals("zonespacerel")){
+					module = ModuleFactory.getZoneRelModule(); 
+				}
+			}
+		}else{
+			module = modBean.getModule(importProcessContext.getModule().getName());
+		}
+		
+		
 		if (ImportAPI.isAssetBaseModule(importProcessContext) && !(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));

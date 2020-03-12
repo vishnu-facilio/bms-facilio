@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -79,6 +79,8 @@ public class PMImportDataCommand extends FacilioCommand {
 		String sheetName = "Job";
 		List<ImportRowContext> rows = new ArrayList<>();
 	
+		List<String> defaultSecNames = new LinkedList<>(Arrays.asList("Task Description","Special Instructions","Procedures"));
+		
 		Sheet sheet = workbook.getSheet(sheetName);
 	
 		Iterator<Row> rowItr = sheet.iterator();
@@ -147,24 +149,46 @@ public class PMImportDataCommand extends FacilioCommand {
 			System.out.println("importRows:: "+colVal);
 			rows.add(rowContext);
 		}
-		Map<String,LinkedList<Integer>> titles = new HashMap<String,LinkedList<Integer>>();
+		Map<String,HashMap<String,LinkedList<Integer>>> titles = new HashMap<String,HashMap<String,LinkedList<Integer>>>();
 		
 		for(ImportRowContext row : rows){
+			
 			String title = row.getColVal().get(fieldMapping.get(moduleName+"__"+"title")).toString();
+			
+			String sectionName = "Untitled Section";
+			for(String secName:defaultSecNames){
+				if(title.contains("-"+secName)){
+					title = title.replaceFirst("-"+secName, "");
+					sectionName = secName;
+					break;
+				}
+			}
+			
 			if(!titles.containsKey(title)){
 				LinkedList<Integer> rowList = new LinkedList<Integer>();
 				rowList.add(row.getRowNumber());
-				titles.put(title,rowList);
+				HashMap<String,LinkedList<Integer>> secRowsMap= new HashMap<String,LinkedList<Integer>>();
+				secRowsMap.put(sectionName, rowList);
+				titles.put(title,secRowsMap);
 			}else{
-				LinkedList<Integer> rowList = titles.get(title);
-				rowList.add(row.getRowNumber());
-				titles.put(title,rowList);				
+				HashMap<String,LinkedList<Integer>> secRowsMap = titles.get(title);
+				if(secRowsMap.containsKey(sectionName)){
+					LinkedList<Integer> rowList = secRowsMap.get(sectionName);
+					rowList.add(row.getRowNumber());
+					titles.put(title,secRowsMap);		
+				}else{
+					LinkedList<Integer> rowList = new LinkedList<Integer>();
+					rowList.add(row.getRowNumber());
+					secRowsMap.put(sectionName, rowList);
+					titles.put(title,secRowsMap);
+				}
 			}
 		}
 		
+		System.out.println("titles :::: "+titles);
+		
 		JSONObject workOrderJson = new JSONObject();
 		JSONObject pmJson = new JSONObject();
-		JSONArray taskSecJsonArr = new JSONArray();
 		
 		FacilioModule module = ModuleFactory.getBimImportProcessMappingModule();
 		List<FacilioField> fields =  FieldFactory.getBimImportProcessMappingFields();
@@ -174,7 +198,7 @@ public class PMImportDataCommand extends FacilioCommand {
 		
 		Long siteId = Long.parseLong(bimDefaultValuesMap.get("site").toString());
 		
-		for(Entry<String,LinkedList<Integer>> en:titles.entrySet()){
+		for(Entry<String,HashMap<String,LinkedList<Integer>>> en:titles.entrySet()){
 			workOrderJson.put("subject", en.getKey());
 			workOrderJson.put("description",null);
 			workOrderJson.put("siteId",siteId);
@@ -182,23 +206,30 @@ public class PMImportDataCommand extends FacilioCommand {
 			pmJson.put("title", en.getKey());
 			pmJson.put("siteId",siteId);
 			
-			JSONObject taskSecJson = new JSONObject();
+			HashMap<String,LinkedList<Integer>> secRowsMap = en.getValue();
+			JSONArray taskSecJsonArr = new JSONArray();
 			
-			taskSecJson.put("name", "Untitled Section");
-			
-			JSONArray taskJsonArr = new JSONArray();
-			List<Integer> rowNos = en.getValue();
-			for(Integer rowNo:rowNos){
-				JSONObject taskJson = new JSONObject();
-				ImportRowContext row = rows.stream().filter(r->r.getRowNumber()==rowNo).findFirst().get();
-				taskJson.put("name", row.getColVal().get(fieldMapping.get(moduleName+"__"+"secName").toString()));
-				taskJsonArr.add(taskJson);
+			for(Entry<String,LinkedList<Integer>> sec:secRowsMap.entrySet()){
+				JSONObject taskSecJson = new JSONObject();
+				
+				taskSecJson.put("name", sec.getKey());
+				
+				JSONArray taskJsonArr = new JSONArray();
+				List<Integer> rowNos = sec.getValue();
+				int seq=1;
+				for(Integer rowNo:rowNos){
+					JSONObject taskJson = new JSONObject();
+					ImportRowContext row = rows.stream().filter(r->r.getRowNumber()==rowNo).findFirst().get();
+					taskJson.put("name", row.getColVal().get(fieldMapping.get(moduleName+"__"+"taskName").toString()));
+					taskJson.put("sequence", seq);
+					taskJsonArr.add(taskJson);
+					seq++;
+				}
+				
+				taskSecJson.put("taskTemplates", taskJsonArr);
+				
+				taskSecJsonArr.add(taskSecJson);
 			}
-			
-			taskSecJson.put("taskTemplates", taskJsonArr);
-			
-			taskSecJsonArr.add(taskSecJson);
-			
 			String workOrderString = workOrderJson.toJSONString();
 			String preventiveMaintenanceString = pmJson.toJSONString();
 			String tasksString = taskSecJsonArr.toJSONString();

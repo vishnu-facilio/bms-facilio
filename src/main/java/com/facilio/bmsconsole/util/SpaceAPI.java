@@ -475,6 +475,25 @@ public class SpaceAPI {
 		insertBuilder.save();
 	}
 
+	public static void addZoneChildren(long zoneId, List<Long> childrenIds) throws SQLException, RuntimeException, Exception {
+		List<Map<String, Object>> childProps = new ArrayList<>();
+
+		for(long childId : childrenIds) {
+			Map<String, Object> prop = new HashMap<>();
+			prop.put("zoneId", zoneId);
+			prop.put("basespaceId", childId);
+			prop.put("isImmediate", true);
+			childProps.add(prop);
+		}
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getZoneRelModule().getTableName())
+														.fields(FieldFactory.getZoneRelFields())
+														.addRecords(childProps);
+		
+		insertBuilder.save();
+	}
+	
 	public static List<ZoneContext> getTenantZones() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("zone");

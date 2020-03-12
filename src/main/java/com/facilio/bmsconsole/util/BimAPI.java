@@ -194,11 +194,10 @@ public class BimAPI {
 			}
 			FacilioModule facilioModule = modBean.getModule(moduleName);
 	        
-			if(facilioModule ==  null) {
-				throw new IllegalArgumentException("Module cannot be null");
+			if(facilioModule !=  null) {
+				importNew.setModuleId(facilioModule.getModuleId());
 			}
-			importNew.setModuleId(facilioModule.getModuleId());
-	        
+			 
 			JSONObject json = new JSONObject();
 			JSONObject moduleMetaJson = new JSONObject();
 			json.put("module", moduleName);
@@ -306,7 +305,7 @@ public class BimAPI {
 			fieldMapping.put(moduleName+"__"+"space", "SpaceNames");
 		}else if(moduleName.equalsIgnoreCase("preventivemaintenance")){
 			fieldMapping.put(moduleName+"__"+"title", "Name");
-			fieldMapping.put(moduleName+"__"+"secName", "Description");
+			fieldMapping.put(moduleName+"__"+"taskName", "Description");
 			
 		}
 		return fieldMapping;
