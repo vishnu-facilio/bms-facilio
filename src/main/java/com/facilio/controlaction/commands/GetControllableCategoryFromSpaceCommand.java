@@ -154,6 +154,7 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 				if(lastExecutedCommand != null) {
 					controlPointcontext.setValue(lastExecutedCommand.getValue());
 					controlPointcontext.setTtime(lastExecutedCommand.getExecutedTime());
+					controlPointcontext.setValueFromCommand(true);
 				}
 				
 				ControllablePointContext controllablePoint = FieldUtil.getAsBeanFromMap(prop, ControllablePointContext.class);

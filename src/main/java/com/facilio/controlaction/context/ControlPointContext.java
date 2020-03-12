@@ -15,6 +15,17 @@ public class ControlPointContext extends ReadingDataMeta {
 	double minValue = -1;
 	double maxValue = -1;
 	
+	boolean valueFromCommand = false; 
+	
+	public boolean isValueFromCommand() {
+		return valueFromCommand;
+	}
+	public boolean getValueFromCommand() {
+		return valueFromCommand;
+	}
+	public void setValueFromCommand(boolean valueFromCommand) {
+		this.valueFromCommand = valueFromCommand;
+	}
 	public ReadingDataMeta getChildRDM() {
 		return childRDM;
 	}

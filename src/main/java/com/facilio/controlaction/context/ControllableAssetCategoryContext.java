@@ -26,6 +26,10 @@ public class ControllableAssetCategoryContext extends AssetCategoryContext {
 		}
 		return -1;
 	}
+	
+	public ControllableCategory getControlTypeEnum() {
+		return controlType;
+	}
 
 	public void setControlType(int controlType) {
 		this.controlType = ControllableCategory.getControllableCategoryMap().get(controlType);

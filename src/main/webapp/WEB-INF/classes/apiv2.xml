@@ -602,6 +602,11 @@
 		
 		<action name="getControllableCategories"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategories">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 		
 	</package>
