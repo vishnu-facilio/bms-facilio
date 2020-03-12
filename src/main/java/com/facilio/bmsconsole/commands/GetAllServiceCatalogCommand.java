@@ -2,9 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
+import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -97,6 +99,18 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
                 FacilioModule module = modBean.getModule(serviceCatalog.getModuleId());
                 serviceCatalog.setModule(module);
                 serviceCatalog.setForm(formMap.get(serviceCatalog.getFormId()));
+                
+                FacilioChain fetchCatalogGroupChain=ReadOnlyChainFactory.getServiceCatalogGroupDetailChain();
+                FacilioContext catalogGroupContext=fetchCatalogGroupChain.getContext();
+                catalogGroupContext.put(FacilioConstants.ContextNames.ID, serviceCatalog.getGroupId());
+                fetchCatalogGroupChain.execute();
+                Object catalogGroup=catalogGroupContext.get(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP);
+                if(catalogGroup!=null)
+                {
+                	 serviceCatalog.setGroup((ServiceCatalogGroupContext)catalogGroup);
+                }
+               
+                
             }
         }
 

@@ -112,4 +112,12 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
     public void setGroupId(long groupId) {
         this.groupId = groupId;
     }
+    
+    ServiceCatalogGroupContext group;
+	public ServiceCatalogGroupContext getGroup() {
+		return group;
+	}
+	public void setGroup(ServiceCatalogGroupContext group) {
+		this.group = group;
+	}
 }
