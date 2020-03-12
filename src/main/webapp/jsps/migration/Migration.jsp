@@ -120,13 +120,15 @@
     }
 %>
 
+<%
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
-
         FacilioChain c = FacilioChain.getTransactionChain();
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();
 
         AccountUtil.cleanCurrentAccount();
     }
+    out.println("Done");
+%>
