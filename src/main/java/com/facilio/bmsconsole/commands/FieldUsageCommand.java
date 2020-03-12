@@ -33,7 +33,6 @@ public class FieldUsageCommand extends FacilioCommand {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", categoryId+"", NumberOperators.EQUALS));
             List<ReadingRuleContext> rules =  ReadingRuleAPI.getReadingRules(criteria);
-            System.out.println("Rules" + rules.size());
             Map<Long, String> ruleMap = new ArrayMap<>();
             if (!rules.isEmpty()) {
                 for (ReadingRuleContext rule : rules) {
