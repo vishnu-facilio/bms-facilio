@@ -40,9 +40,9 @@ public class SpaceManagementPageFactory extends PageFactory {
         Section tab1Sec2 = page.new Section();
         addBuildingsWidget(site.getId(), tab1Sec2,modBean);
         tab1.addSection(tab1Sec2);
-        
-        Section tab1Sec3 = page.new Section();
-        addSpacesWidget(tab1Sec3,modBean);
+		addSpacesWidget(tab1Sec2,modBean);
+
+		Section tab1Sec3 = page.new Section("spaceReadings");
         tab1.addSection(tab1Sec3);
 		addReadingWidget(tab1Sec3);
 		addCommonSubModuleGroup(tab1Sec3);
