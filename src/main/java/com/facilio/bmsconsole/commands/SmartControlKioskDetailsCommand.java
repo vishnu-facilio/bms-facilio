@@ -58,7 +58,7 @@ public class SmartControlKioskDetailsCommand extends FacilioCommand{
 		if(kiosk!=null) {
 			if((kiosk.getSpaceTypeEnum()==BaseSpaceContext.SpaceType.FLOOR) && (kiosk.getTenantId()>-1))
 			{
-				TenantsAPI.getTenant(kiosk.getTenantId());
+				kiosk.setTenant(TenantsAPI.getTenant(kiosk.getTenantId()));
 			}
 		}
 		
