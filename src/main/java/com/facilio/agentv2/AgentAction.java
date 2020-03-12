@@ -467,7 +467,7 @@ public class AgentAction extends AgentActionV2 {
             setResult(AgentConstants.DATA, downloadCertificateLink);
             Objects.requireNonNull(agent, "no such agent");
             try {
-                AwsUtil.addClientToPolicy(getName(), currentOrg.getDomain(), "facilio");
+                AwsUtil.addClientToPolicy(agent.getName(), currentOrg.getDomain(), "facilio");
                 ok();
             } catch (Exception e) {
                 setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());

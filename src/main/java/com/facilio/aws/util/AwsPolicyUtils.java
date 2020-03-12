@@ -54,13 +54,7 @@ public class AwsPolicyUtils
         JSONObject policy = new JSONObject();
         policy = getPolicyDocumentJson(getPolicy(policyName, client));
         LOGGER.info("existing policy document "+policy);
-        /*List<String> subscribeTopics = rule.getPublishtopics();
-        LOGGER.info(subscribeTopics);
-        List<String> publishTopics = rule.getPublishtopics();
-        LOGGER.info(publishTopics);
-        List<String> receiveTopics = rule.getReceiveTopics();
-        LOGGER.info(receiveTopics);*/
-        List<String> connectTopics = rule.getClientIds();
+        List<String> connectTopics = rule.getArnClientIds();
         addClientToPolicy(policy, connectTopics);
         LOGGER.info(" updated policy document "+policy);
         updateClientPolicyVersion(client, policyName, policy);
