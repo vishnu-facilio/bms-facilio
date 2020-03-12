@@ -5,6 +5,8 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -18,29 +20,29 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
 import java.util.*;
 
-public class FieldDeviceApi
-{
+public class FieldDeviceApi {
     private static final FacilioModule MODULE = ModuleFactory.getFieldDeviceModule();
-    public static final  Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+    public static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
 
     private static final Logger LOGGER = LogManager.getLogger(FieldDeviceApi.class.getName());
 
 
     public static int deleteDevices(Collection<Long> deviceId) throws SQLException {
-        LOGGER.info(" deleting devices ->"+deviceId);
+        LOGGER.info(" deleting devices ->" + deviceId);
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(MODULE.getTableName())
                 .fields(FieldFactory.getFieldDeviceFields())
                 .andCondition(CriteriaAPI.getIdCondition(deviceId, ModuleFactory.getFieldDeviceModule()));
-        Map<String,Object> toUpdateMap = new HashMap<>();
-        toUpdateMap.put(AgentConstants.DELETED_TIME,System.currentTimeMillis());
-       return builder.update(toUpdateMap);
+        Map<String, Object> toUpdateMap = new HashMap<>();
+        toUpdateMap.put(AgentConstants.DELETED_TIME, System.currentTimeMillis());
+        return builder.update(toUpdateMap);
     }
 
-    public static void addFieldDevices(List<Device> devices) throws Exception{
+    public static void addFieldDevices(List<Device> devices) throws Exception {
         try {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(MODULE.getTableName())
@@ -58,17 +60,17 @@ public class FieldDeviceApi
     }
 
     public static void addFieldDevice(Device device) throws Exception {
-        if(device.getCreatedTime() < 100){
+        if (device.getCreatedTime() < 100) {
             device.setCreatedTime(System.currentTimeMillis());
         }
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getFieldDeviceFields());
         long deviceId = builder.insert(FieldUtil.getAsProperties(device));
-        if ( deviceId > 0) {
-            LOGGER.info(" field device added "+deviceId);
+        if (deviceId > 0) {
+            LOGGER.info(" field device added " + deviceId);
             device.setId(deviceId);
-        }else {
+        } else {
             LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
 
         }
@@ -80,10 +82,10 @@ public class FieldDeviceApi
                 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                         .table(MODULE.getTableName())
                         .select(FIELD_MAP.values())
-                        .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.IDENTIFIER),identifier.trim(), StringOperators.IS))
+                        .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.IDENTIFIER), identifier.trim(), StringOperators.IS))
                         .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
                 List<Map<String, Object>> result = builder.get();
-                LOGGER.info(" query "+builder.toString());
+                LOGGER.info(" query " + builder.toString());
                 if (result.size() == 1) {
                     Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
                     if (device.getControllerProps().containsKey("type"))
@@ -101,43 +103,82 @@ public class FieldDeviceApi
         return null;
     }
 
-    /**
-     *
-     * @param agentId can be null
-     * @param ids null to get all devices.
-     * @return
-     */
-    public static List<Map<String, Object>> getDevices(Long agentId, List<Long> ids)  {
-        LOGGER.info(" getting devices for "+agentId+" ids "+ids);
+
+    public static List<Map<String, Object>> getDevices(List<Long> deviceIds) {
+        LOGGER.info(" getting devices for " + deviceIds);
         try {
-           GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                   .table(MODULE.getTableName())
-                   .select(FieldFactory.getFieldDeviceFields());
-           Criteria criteria = new Criteria();
-           Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
-           criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME),"NULL", CommonOperators.IS_EMPTY));
-           if( (agentId != null) && (agentId > 0) ){
-               criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID),String.valueOf(agentId),NumberOperators.EQUALS));
-           }
-           if( (ids != null) && ( ! ids.isEmpty() ) ){
-               criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));
-           }
-           List<Map<String, Object>> rows = builder.andCriteria(criteria).get();
-           LOGGER.info("  query -> "+builder.toString());
-           LOGGER.info(" got devices "+rows);
-           return rows;
-       }catch (Exception e){
-            LOGGER.info(" Exception occurred ",e);
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.RECORD_IDS, deviceIds);
+            return getDeviceData(context);
+        } catch (Exception e) {
+            LOGGER.info(" Exception occurred ", e);
         }
         return new ArrayList<>();
     }
 
-    public static boolean discoverPoints(List<Long> ids){
+    /**
+     * @param agentId can be null
+     * @return
+     */
+    public static List<Map<String, Object>> getDevices(Long agentId) {
+        LOGGER.info(" getting devices for " + agentId);
+        try {
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.AGENT_ID, agentId);
+            return getDeviceData(context);
+        } catch (Exception e) {
+            LOGGER.info(" Exception occurred ", e);
+        }
+        return new ArrayList<>();
+    }
+
+
+    private static List<Map<String, Object>> getDeviceData(FacilioContext context) throws Exception {
+        Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+        List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(FieldFactory.getFieldDeviceFields());
+        Criteria criteria = new Criteria();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+        if ((agentId != null) && (agentId > 0)) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        if ((ids != null) && (!ids.isEmpty())) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));
+        }
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+        if (pagination != null && !fetchCount) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page - 1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
+            builder.offset(offset);
+            builder.limit(perPage);
+        } else if (fetchCount) {
+            builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE));
+            builder.select(new ArrayList<>());
+        }
+
+        List<Map<String, Object>> rows = builder.andCriteria(criteria).get();
+        LOGGER.info("  query -> " + builder.toString());
+        LOGGER.info(" got devices " + rows);
+        return rows;
+    }
+
+    public static boolean discoverPoints(List<Long> ids) {
         Device device;
         Controller controller;
         LOGGER.info(" in discover points ");
-        for (Map<String, Object> deviceMap : getDevices(null, ids)) {
-            try{
+        for (Map<String, Object> deviceMap : getDevices(ids)) {
+            try {
                 device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
                 controller = ControllerUtilV2.makeControllerFromFieldDevice(device);
                 if (controller == null) {
@@ -156,15 +197,16 @@ public class FieldDeviceApi
     }
 
 
-    public static long getAgentDeviceCount(long agentId){
-        return getDeviceCount(agentId,null);
-    }
-    public static  long getTypeDeviceCount(FacilioControllerType type){
-        return getDeviceCount(-1,type);
+    public static long getAgentDeviceCount(long agentId) {
+        return getDeviceCount(agentId, null);
     }
 
-    public static  long getTypeDeviceCount(long agentId,FacilioControllerType type){
-        return getDeviceCount(agentId,type);
+    public static long getTypeDeviceCount(FacilioControllerType type) {
+        return getDeviceCount(-1, type);
+    }
+
+    public static long getTypeDeviceCount(long agentId, FacilioControllerType type) {
+        return getDeviceCount(agentId, type);
     }
 
     private static long getDeviceCount(long agentId, FacilioControllerType type) {
@@ -173,34 +215,35 @@ public class FieldDeviceApi
                     .table(MODULE.getTableName())
                     .select(new HashSet<>())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELD_MAP.get(AgentConstants.ID));
-            if(agentId>0){
-                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
+            if (agentId > 0) {
+                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
             }
-            if((type != null)){
-                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
+            if ((type != null)) {
+                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(type.asInt()), NumberOperators.EQUALS));
             }
             return (long) builder.get().get(0).get(AgentConstants.ID);
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting FieldDevices count",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting FieldDevices count", e);
         }
         return -1;
     }
 
     public static long getDeviceCount() {
-        return getDeviceCount(-1,null);
+        return getDeviceCount(-1, null);
     }
 
-    public static Map<String,Object> getDeviceData(Long deviceId) {
-        List<Map<String, Object>> devices = getDevices(null, Collections.singletonList(deviceId));
-        if((devices != null)&&( ! devices.isEmpty())){
+    public static Map<String, Object> getDeviceData(Long deviceId) {
+        List<Map<String, Object>> devices = getDevices(Collections.singletonList(deviceId));
+        if ((devices != null) && (!devices.isEmpty())) {
             return devices.get(0);
         }
         return new HashMap<>();
     }
-    public static Device getDevice(Long deviceId){
-        Map<String,Object> deviceData = getDeviceData(deviceId);
-        if(! deviceData.isEmpty()){
-            return FieldUtil.getAsBeanFromMap(deviceData,Device.class);
+
+    public static Device getDevice(Long deviceId) {
+        Map<String, Object> deviceData = getDeviceData(deviceId);
+        if (!deviceData.isEmpty()) {
+            return FieldUtil.getAsBeanFromMap(deviceData, Device.class);
         }
         return null;
     }
@@ -214,9 +257,25 @@ public class FieldDeviceApi
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(deviceFilterFields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
 
         return selectRecordBuilder.get();
+    }
+
+    public static boolean containsCheck(String key, Map map) {
+        if ((key != null) && (!key.isEmpty()) && (map != null) && (!map.isEmpty()) && (map.containsKey(key)) && (map.get(key) != null)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkNumber(Number number) {
+        return (number.intValue() > 0);
+    }
+
+    public static List<Map<String, Object>> getDevices(Long agentId, FacilioContext constructListContext) throws Exception {
+        constructListContext.put(AgentConstants.AGENT_ID, agentId);
+        return getDeviceData(constructListContext);
     }
 }

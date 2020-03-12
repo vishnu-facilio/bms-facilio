@@ -311,7 +311,7 @@
         <!--<action name="agetDeviceCount" class="com.facilio.agentv2.actions.AgentIdAction" method="countAgentDevices">
         </action>
 -->
-        <action name="count" class="com.facilio.agentv2.AgentAction" method="countDevices">
+        <action name="count" class="com.facilio.agentv2.actions.AgentIdAction" method="devicesCount">
         </action>
 
         <!--
