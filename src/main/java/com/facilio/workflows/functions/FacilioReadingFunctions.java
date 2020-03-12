@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DataUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.criteria.Condition;
@@ -36,6 +37,8 @@ import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
 import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
+
+import freemarker.template.utility.DateUtil;
 
 public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface  {
 
@@ -67,10 +70,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 					if(energyMeters != null && !energyMeters.isEmpty()) {
 						EnergyMeterContext meter = energyMeters.get(0);
 						
-						List<Map<String, Object>> data = ReportsUtil.fetchMeterData(meter.getId()+"",range.getStartTime(),range.getEndTime(),true);
-						if(data != null && !data.isEmpty()) {
-							return data.get(0).get("CONSUMPTION");
-						}
+						return DataUtil.getSumOfEnergyData(Collections.singletonList(meter.getId()),range.getStartTime(),range.getEndTime());
 					}
 					else {
 						List<BuildingContext> buildings = SpaceAPI.getSiteBuildings(baseSpaceId);
@@ -82,21 +82,8 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 								buildingMeters.add(energyMeters.get(0).getId());
 							}
 						}
-						if(!buildingMeters.isEmpty()) {
-							List<Map<String, Object>> data = ReportsUtil.fetchMeterData(StringUtils.join(buildingMeters, ","),range.getStartTime(),range.getEndTime(),true);
-							double consumption = 0.0;
-							if(data != null && !data.isEmpty()) {
-								
-								for(Map<String, Object> energyData :data) {
-									Double consumptionTemp = (Double) energyData.get("CONSUMPTION");
-									
-									consumption += consumptionTemp;
-								}
-							}
-							return consumption;
-						}
+						return DataUtil.getSumOfEnergyData(buildingMeters,range.getStartTime(),range.getEndTime());
 					}
-				break;
 				case BUILDING:
 				case FLOOR:
 				case SPACE:
@@ -105,10 +92,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 					if(energyMeters != null && !energyMeters.isEmpty()) {
 						EnergyMeterContext meter = energyMeters.get(0);
 						
-						List<Map<String, Object>> data = ReportsUtil.fetchMeterData(meter.getId()+"",range.getStartTime(),range.getEndTime(),true);
-						if(data != null && !data.isEmpty()) {
-							return data.get(0).get("CONSUMPTION");
-						}
+						return DataUtil.getSumOfEnergyData(Collections.singletonList(meter.getId()),range.getStartTime(),range.getEndTime());
 					}
 					break;
 				}
