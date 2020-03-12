@@ -71,18 +71,18 @@ public class AssetPageFactory extends PageFactory {
 		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 183) {
 			if (asset.getCategory().getId() == 2938) {
-				addAssetReadingChart(tab1Sec1, 2127);
-				addAssetReadingChart(tab1Sec1, 4037);
+				addAssetReadingChart(tab1Sec1, 2127, "MDB Consumption");
+				addAssetReadingChart(tab1Sec1, 4037, "Energy Reading Trend");
 			}
 			else if (asset.getCategory().getId() == 2949) {
-				addAssetReadingChart(tab1Sec1, 2128);
-				addAssetReadingChart(tab1Sec1, 4042);
+				addAssetReadingChart(tab1Sec1, 2128, "Water Consumption");
+				addAssetReadingChart(tab1Sec1, 4042, "Water Meter Reading Trend");
 			}
 			else if (asset.getCategory().getId() == 3027) {
-				addAssetReadingChart(tab1Sec1, 4034);
-				addAssetReadingChart(tab1Sec1, 4038);
-				addAssetReadingChart(tab1Sec1, 4041);
-				addAssetReadingChart(tab1Sec1, 4039);
+				addAssetReadingChart(tab1Sec1, 4034, "Chilled Water Consumption");
+				addAssetReadingChart(tab1Sec1, 4038, "Chilled Water Reading Trend");
+				addAssetReadingChart(tab1Sec1, 4041, "Chilled Water Flow Trend");
+				addAssetReadingChart(tab1Sec1, 4039, "Temperature Trend");
 			}
 		}
 		

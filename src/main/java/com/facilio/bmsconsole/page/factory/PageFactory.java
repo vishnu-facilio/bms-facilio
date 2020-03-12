@@ -98,9 +98,10 @@ public class PageFactory {
 		return subModuleGroup;
 	}
 	
-	protected static void addAssetReadingChart(Section section, long reportId) {
+	protected static void addAssetReadingChart(Section section, long reportId, String title) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "assetReadingWidget");
 		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.setTitle(title);
 		cardWidget.addToWidgetParams("reportId", reportId);
 		cardWidget.addCardType(CardType.ASSET_READING_WIDGET);
 		section.addWidget(cardWidget);
