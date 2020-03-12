@@ -1507,6 +1507,8 @@ public class FacilioConstants {
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String SOURCE_ID = "sourceId";
 
+		public static final String TARGET_ID = "targetId";
+
 	
 		public static final String FLOOR_PLAN = "floorPlan";
 		public static final String FLOOR_PLANS = "floorPlans";
