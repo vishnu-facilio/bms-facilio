@@ -9,6 +9,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -30,6 +31,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         long sourceId = (long) context.get(FacilioConstants.ContextNames.SOURCE_ID);
 
         long targetId = (long) context.get(FacilioConstants.ContextNames.TARGET_ID);
+        List<Long> resources = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -46,10 +48,16 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                 .select(sourcefields)
                 .andCondition(CriteriaAPI.getCondition(sourceField, CommonOperators.IS_NOT_EMPTY));
 
+
+        if (resources != null) {
+                builder.andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("parentId"),resources, NumberOperators.EQUALS));
+
+        }
+
         List<ReadingContext> readingsList = builder.get();
         if (readingsList != null && !readingsList.isEmpty()) {
 
-            addReading(targetId, sourceField.getName(), readingsList);
+            addReading(targetId, sourceField.getName(), readingsList, resources);
             List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
             List<Long> parentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());
             if (parentIds != null && parentIds.size() > 0) {
@@ -63,7 +71,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         return false;
     }
 
-    private void addReading ( long targetId, String oldFieldName, List<ReadingContext> readingsList) throws Exception {
+    private void addReading ( long targetId, String oldFieldName, List<ReadingContext> readingsList, List<Long> resources) throws Exception {
 
         List<ReadingContext> newList = new ArrayList<>();
 

@@ -45,15 +45,19 @@ public class FieldUsageCommand extends FacilioCommand {
             FacilioField fieldObj = modBean.getField(fieldId);
             FacilioModule sourceModule = modBean.getModule(fieldObj.getModuleId());
             List<FacilioField> sourcefields = modBean.getAllFields(sourceModule.getName());
+            Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(sourcefields);
+
+
             SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
                     .module(sourceModule)
                     .beanClass(ReadingContext.class)
                     .select(sourcefields)
                     .andCondition(CriteriaAPI.getCondition(fieldObj, CommonOperators.IS_NOT_EMPTY))
-                    .limit(1);
+                    .groupBy(sourcefieldMap.get("parentId").getCompleteColumnName());
             List<ReadingContext> readingsList = builder.get();
             if ( readingsList != null  && readingsList.size() > 0) {
-                System.out.println("readingsList" + readingsList.size());
+//                System.out.println("readingsList" + readingsList.size());
+                context.put(FacilioConstants.ContextNames.RESOURCE_LIST, readingsList);
                 context.put(FacilioConstants.ContextNames.READINGS, "Has Readings");
 
             }
