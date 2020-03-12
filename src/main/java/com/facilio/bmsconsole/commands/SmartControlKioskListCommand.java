@@ -39,8 +39,8 @@ public class SmartControlKioskListCommand extends FacilioCommand {
 		List<LookupField> fillLookups=new ArrayList<LookupField>();
 		LookupField associatedResource=(LookupField)modBean.getField("associatedResource", FacilioConstants.ModuleNames.DEVICES);
 		fillLookups.add(associatedResource);
-		LookupField site=(LookupField)modBean.getField("site", FacilioConstants.ModuleNames.DEVICES);
-		fillLookups.add(site);
+//		LookupField site=(LookupField)modBean.getField("site", FacilioConstants.ModuleNames.DEVICES);
+//		fillLookups.add(site);
 
 		
 		
