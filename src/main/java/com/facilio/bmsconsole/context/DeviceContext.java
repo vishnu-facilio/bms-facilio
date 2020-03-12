@@ -5,6 +5,14 @@ import com.facilio.modules.FacilioEnum;
 public class DeviceContext extends AssetContext {
 	private static final long serialVersionUID = 1L;
 	
+//	private SiteContext site;
+//	public SiteContext getSite() {
+//		return site;
+//	}
+//	public void setSite(SiteContext site) {
+//		this.site = site;
+////		this.siteId = site != null ? site.getId() : -1;
+//	}
 	public String getDeviceInfo() {
 		return deviceInfo;
 	}
@@ -120,6 +128,7 @@ public class DeviceContext extends AssetContext {
         VISITOR_KIOSK("Visitor Kiosk"),
         DIGITAL_LOGBOOK("Digital Log Book"),
 		FEEDBACK_KIOSK("Feedback Kiosk"),
+		SMART_CONTROL_KIOSK("Smart Control Kiosk")
         ;
 
         private String name;

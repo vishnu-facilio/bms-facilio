@@ -8019,4 +8019,14 @@ public class FieldFactory {
 		fields.add(getField("h", "H", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+    public static List<FacilioField> getSmartControlKioskFields() {
+        FacilioModule module = ModuleFactory.getSmartControlKioskModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getField("id", "ID", module, FieldType.NUMBER));
+        fields.add(getField("spaceType", "SPACE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("tenantId", "TENANT_ID", module, FieldType.NUMBER));
+        return fields;
+    }
 }

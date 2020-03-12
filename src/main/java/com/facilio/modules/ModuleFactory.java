@@ -3457,4 +3457,11 @@ public class ModuleFactory {
 		
 		return module;
 	}
+	public static FacilioModule getSmartControlKioskModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ModuleNames.SMART_CONTROL_KIOSK);
+		module.setDisplayName("Smart control Kiosk");
+		module.setTableName("Smart_Control_Kiosk");
+		return module;
+	}
 }

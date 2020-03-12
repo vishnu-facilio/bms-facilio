@@ -66,6 +66,7 @@ import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
 import com.facilio.bmsconsole.context.FeedbackKioskContext;
+import com.facilio.bmsconsole.context.SmartControlKioskContext;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -571,6 +572,11 @@ public class LoginAction extends FacilioAction {
 			{
 				FeedbackKioskContext feedbackKiosk=DevicesAPI.getFeedbackKioskDetails(device.getId());
 				data.put("feedbackKiosk",feedbackKiosk);
+			}
+			if(device.getDeviceTypeEnum()==DeviceType.SMART_CONTROL_KIOSK)
+			{
+				SmartControlKioskContext smartControlKiosk=DevicesAPI.getSmartControlKiosk(device.getId());
+				data.put("smartControlKiosk",smartControlKiosk);
 			}
 			
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));

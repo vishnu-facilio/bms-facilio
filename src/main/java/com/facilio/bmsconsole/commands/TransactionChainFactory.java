@@ -4786,6 +4786,13 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	public static FacilioChain addOrUpdateSmartControlKioskChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddOrUpdateSmartControlKioskCommand());
+		
+		return c;
+	}
 	public static FacilioChain addOrUpdateFeedbackTypeChain()
 	{
 		FacilioChain c=getDefaultChain();

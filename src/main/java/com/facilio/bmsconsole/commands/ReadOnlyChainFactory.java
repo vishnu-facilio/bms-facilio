@@ -2173,9 +2173,19 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new FeedbackKioskListCommand());
 		return chain;
 	}
+	public static FacilioChain getSmartControlKioskListChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new SmartControlKioskListCommand());
+		return chain;
+	}
 	public static FacilioChain getFeedbackKioskDetailsChain() {
 		FacilioChain chain = getDefaultChain();		
 		chain.addCommand(new FeedbackKioskDetailsCommand());
+		return chain;
+	}
+	public static FacilioChain getSmartControlKioskDetailsChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new SmartControlKioskDetailsCommand());
 		return chain;
 	}
 

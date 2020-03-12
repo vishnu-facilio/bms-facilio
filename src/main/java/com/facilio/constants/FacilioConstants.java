@@ -98,6 +98,7 @@ public class FacilioConstants {
 		public static final String PRINTERS ="printers";
 		public static final String VISITOR_KIOSK_CONFIG ="visitorKioskConfig";
 		public static final String FEEDBACK_KIOSK = "feedbackKiosk";
+		public static final String SMART_CONTROL_KIOSK = "smartControlKiosk";
 		public static final String FEEDBACK_TYPE = "feedbackType";
 		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
 		public static final String RULE_TEMPLATE_MODULE ="ruletemplate";

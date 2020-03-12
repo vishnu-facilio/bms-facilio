@@ -6,9 +6,10 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
-import com.facilio.bmsconsole.context.FeedbackKioskContext;
-import com.facilio.bmsconsole.util.DevicesAPI;
+import com.facilio.bmsconsole.context.SmartControlKioskContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.EnumOperators;
@@ -20,48 +21,53 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class FeedbackKioskListCommand extends FacilioCommand {
+public class SmartControlKioskListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule feedbackKioskModule = ModuleFactory.getFeedbackKioskModule();
+		FacilioModule smartControlKiosk = ModuleFactory.getSmartControlKioskModule();
 		FacilioModule devicesModule = modBean.getModule(FacilioConstants.ModuleNames.DEVICES);
 
 		List<FacilioField> deviceFields = modBean.getAllFields(FacilioConstants.ModuleNames.DEVICES);
-		List<FacilioField> feedbackKioskFields = FieldFactory.getFeedbackKioskFields();
+		List<FacilioField> smartControlKioskFields = FieldFactory.getSmartControlKioskFields();
 
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
 		selectFields.addAll(deviceFields);
-		selectFields.addAll(feedbackKioskFields);
+		selectFields.addAll(smartControlKioskFields);
 		List<LookupField> fillLookups=new ArrayList<LookupField>();
 		LookupField associatedResource=(LookupField)modBean.getField("associatedResource", FacilioConstants.ModuleNames.DEVICES);
 		fillLookups.add(associatedResource);
-//		LookupField site=(LookupField)modBean.getField("site", FacilioConstants.ModuleNames.DEVICES);
-//		fillLookups.add(site);
+		LookupField site=(LookupField)modBean.getField("site", FacilioConstants.ModuleNames.DEVICES);
+		fillLookups.add(site);
 
 		
 		
-		SelectRecordsBuilder<FeedbackKioskContext> builder = new SelectRecordsBuilder<FeedbackKioskContext>().select(selectFields)
-				.beanClass(FeedbackKioskContext.class).module(devicesModule).innerJoin(feedbackKioskModule.getTableName())
-				.on("Devices.ID=Feedback_Kiosk.ID")
-				.andCondition(CriteriaAPI.getCondition("DEVICE_TYPE", "deviceType", DeviceType.FEEDBACK_KIOSK.getIndex()+"", EnumOperators.IS)
+		SelectRecordsBuilder<SmartControlKioskContext> builder = new SelectRecordsBuilder<SmartControlKioskContext>().select(selectFields)
+				.beanClass(SmartControlKioskContext.class).module(devicesModule).innerJoin(smartControlKiosk.getTableName())
+				.on("Devices.ID=Smart_Control_Kiosk.ID")
+				.andCondition(CriteriaAPI.getCondition("DEVICE_TYPE", "deviceType", DeviceType.SMART_CONTROL_KIOSK.getIndex()+"", EnumOperators.IS)
 				);
 		builder.fetchSupplements(fillLookups);
 	
-		List<FeedbackKioskContext> feedbackKioskList=builder.get();
+		List<SmartControlKioskContext> smartControlKioskList=builder.get();
 		
 		
-		if(feedbackKioskList!=null) {
+		if(smartControlKioskList!=null) {
 			
-			for (FeedbackKioskContext feedbackKiosk : feedbackKioskList) {
-				feedbackKiosk.setFeedbackType(DevicesAPI.getFeedbackType(feedbackKiosk.getFeedbackTypeId(),(Boolean)context.getOrDefault(FacilioConstants.ContextNames.FILL_CATALOG_FORM, false)));	
+			for (SmartControlKioskContext kiosk : smartControlKioskList) {
+				
+				if((kiosk.getSpaceTypeEnum()==BaseSpaceContext.SpaceType.FLOOR) && (kiosk.getTenantId()>-1))
+				{
+					kiosk.setTenant(TenantsAPI.getTenant(kiosk.getTenantId()));
+					
+				}
 			}
 			
 		}
 		
-			context.put(FacilioConstants.ContextNames.RECORD_LIST,feedbackKioskList);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST,smartControlKioskList);
 
 		
 

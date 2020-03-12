@@ -4899,6 +4899,16 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
 		</action>
 	</package>
+	<package name="smartControlKiosk" namespace="/api/v2/smartControlKiosk" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskList">
+		</action>
+		<action name="get" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskDetails">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
+		</action>
+	</package>
 	<package name="feedbackType" namespace="/api/v2/feedbackType" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackTypeList">
 		</action>

@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.FeedbackKioskContext;
 import com.facilio.bmsconsole.context.FeedbackTypeContext;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
+import com.facilio.bmsconsole.context.SmartControlKioskContext;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -172,6 +173,16 @@ public class DevicesAPI {
 		
 
 		return (FeedbackKioskContext)context.get(ContextNames.RECORD);
+	}
+	
+	public static SmartControlKioskContext getSmartControlKiosk(long deviceId) throws Exception {
+		FacilioChain chain=ReadOnlyChainFactory.getSmartControlKioskDetailsChain();
+		FacilioContext context=chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, deviceId);
+		chain.execute();
+		
+
+		return (SmartControlKioskContext)context.get(ContextNames.RECORD);
 	}
 
 }
