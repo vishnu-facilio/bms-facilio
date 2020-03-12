@@ -5391,6 +5391,8 @@
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="addFloorPlan" />
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getFloorPlanData" />
+		<action name="getListOfFloorPlan"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getListOfFloorPlan" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="updateFloorPlanData" />
 	</package>

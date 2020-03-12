@@ -8001,6 +8001,7 @@ public class FieldFactory {
 		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getField("floorId", "FLOOR_ID", module, FieldType.NUMBER));
+		fields.add(getField("leagend", "LEAGEND", module, FieldType.STRING));
 		return fields;
 	}
 	public static List<FacilioField> getFloorPlanObjectFields() {

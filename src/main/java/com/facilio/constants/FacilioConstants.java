@@ -1509,6 +1509,7 @@ public class FacilioConstants {
 
 	
 		public static final String FLOOR_PLAN = "floorPlan";
+		public static final String FLOOR_PLANS = "floorPlans";
 		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
 		
 		

@@ -23,6 +23,15 @@ public class FloorContext extends BaseSpaceContext {
 		this.floorPlanId = floorPlanId;
 	}
 	
+	private long defaultFloorPlanId;
+	
+	public long getDefaultFloorPlanId() {
+		return defaultFloorPlanId;
+	}
+	public void setDefaultFloorPlanId(long defaultFloorPlanId) {
+		this.defaultFloorPlanId = defaultFloorPlanId;
+	}
+
 	private String floorPlanInfo;
 	
 	public String getFloorPlanInfo() {

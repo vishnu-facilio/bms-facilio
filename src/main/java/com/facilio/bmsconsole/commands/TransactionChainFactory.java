@@ -4773,6 +4773,12 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	public static FacilioChain getListOfFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFloorPlansCommand());
+		
+		return c;
+	}
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
 	{
 		FacilioChain c=getDefaultChain();

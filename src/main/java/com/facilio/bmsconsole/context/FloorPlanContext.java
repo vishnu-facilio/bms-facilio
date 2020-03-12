@@ -96,7 +96,16 @@ public class FloorPlanContext extends ModuleBaseWithCustomFields{
 		this.name = name;
 	}
 
+	private String leagend;
 
+
+	public String getLeagend() {
+		return leagend;
+	}
+
+	public void setLeagend(String leagend) {
+		this.leagend = leagend;
 	
+	}
 
 }

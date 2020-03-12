@@ -36,6 +36,13 @@ public String getFloorPlanData() throws Exception {
 	setResult(FacilioConstants.ContextNames.FLOOR_PLAN, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN));
 	return SUCCESS;
 }
+public String getListOfFloorPlan() throws Exception {
+	FacilioChain c = TransactionChainFactory.getListOfFloorPlanChain();
+	c.getContext().put(FacilioConstants.ContextNames.FLOOR_PLAN,floorPlan);
+	c.execute();
+	setResult(FacilioConstants.ContextNames.FLOOR_PLANS, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLANS));
+	return SUCCESS;
+}
 public String updateFloorPlanData() throws Exception {
 	FacilioChain c = TransactionChainFactory.updateFloorPlanChain();
 	c.getContext().put(FacilioConstants.ContextNames.FLOOR_PLAN,floorPlan);

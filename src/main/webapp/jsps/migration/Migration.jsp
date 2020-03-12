@@ -76,6 +76,8 @@
 <%@ page import="java.awt.image.BufferedImage" %>
 <%@ page import="java.io.FileInputStream" %>
 <%@ page import="com.facilio.services.filestore.FileStore" %>
+<%@ page import="com.facilio.modules.fields.NumberField" %>
+<%@ page import="com.facilio.modules.FieldFactory" %>
 
 <%--
 
@@ -96,227 +98,18 @@
         @Override
         public boolean executeCommand(Context context) throws Exception {
 
+        	try{
 
-        	int[] orgIds = {1,75,93,116,125,155,168,172,173,210};
- 				boolean contain = Arrays.stream(orgIds).anyMatch(n->n==AccountUtil.getCurrentOrg().getOrgId());
- 				if (!contain && (FacilioProperties.isProduction() || (AccountUtil.getCurrentOrg().getOrgId()  == 183))) {
- 					try {
- 		            	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
- 		                FacilioModule ticketAttachmentModule = modBean.getModule("ticketattachments");
- 		                
- 		            	SelectRecordsBuilder<AttachmentContext> builder = new SelectRecordsBuilder<AttachmentContext>()
- 								.module(ticketAttachmentModule)
- 								.beanClass(AttachmentContext.class)
- 								.select(modBean.getAllFields("ticketattachments"))
- 								;
- 		             
- 		            	List<AttachmentContext> attachments = builder.get();
- 		            	
- 		            	System.out.print("test" + attachments);
- 		            	
- 		            	if (CollectionUtils.isNotEmpty(attachments)) {
- 							
- 							for(AttachmentContext attachment: attachments) {
- 								System.out.print("test" + attachment.getFileId());
-	 							if (attachment.getFileId() > 0) {
-	 								FileStore fs = FacilioFactory.getFileStore();
-	 	 							FileInfo fileInfo = fs.getFileInfo(attachment.getFileId());
-	 	 							if (fileInfo  != null && fileInfo.getContentType().contains("image/")) {
-	 	 								InputStream downloadStream = null;
-	 	 								try{
-	 	 									downloadStream = fs.readFile(fileInfo);
-	 	 								}
-	 	 								catch(Exception e) {
-	 	 									continue;
-	 	 								}
- 										if (downloadStream != null) {
- 											BufferedImage imBuff = ImageIO.read(downloadStream);
- 	 										/* 
- 	 										For Local
- 	 										BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule floorModule = modBean.getModule("floor");
+                
+                NumberField field = new NumberField(floorModule, "defaultFloorPlanId", "Default Floor Plan", FacilioField.FieldDisplayType.NUMBER,"DEFAULT_FLOOR_PLAN_ID", FieldType.NUMBER, false, false, true,false);
+          		modBean.addField(field);
 
- 	 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
- 	 										ImageIO.write(out, "png", baos);
- 	 										
- 	 										String localFileStorePath = FacilioProperties.getLocalFileStorePath();
- 	 										if (StringUtils.isEmpty(localFileStorePath)) {
- 	 											ClassLoader classLoader = LocalFileStore.class.getClassLoader();
- 	 											URL fcDataFolder = classLoader.getResource("");
- 	 											localFileStorePath = fcDataFolder.getFile();
- 	 										}
- 	 										String rootPath = localFileStorePath + File.separator + "facilio-data" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
-
- 	 										File rootDir = new File(rootPath);
- 	 										if (!(rootDir.exists() && rootDir.isDirectory())) {
- 	 											rootDir.mkdirs();
- 	 										}
-
- 	 										String resizedFilePath = rootPath + File.separator + attachment.getFileId()+"-resized-"+360+"x"+360;
- 	 										
- 	 										
- 	 									    OutputStream os = null;
- 	 								    	File createFile = new File(resizedFilePath);
- 	 										createFile.createNewFile();
- 	 										
- 	 								        os = new FileOutputStream(resizedFilePath);
- 	 								        byte[] buffer = new byte[4096];
- 	 								        int length;
- 	 								        baos.writeTo(os);
- 	 								        os.flush();
- 	 								        
- 	 								        baos.flush();
- 	 										byte[] imageInByte = baos.toByteArray();
- 	 										baos.close(); */
- 	 										BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
- 	 										
- 	 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
- 	 										ImageIO.write(out, "png", baos);
- 	 										baos.flush();
- 	 										byte[] imageInByte = baos.toByteArray();
- 	 										baos.close();
- 	 										ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
- 	 										
- 	 										String rootPath = AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
- 	 										String resizedFilePath = rootPath + File.separator + attachment.getFileId()+"-resized-"+360+"x"+360;
- 	 										String bucketName = FacilioProperties.getConfig("s3.bucket.name");
- 	 								    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null); 
- 										    	if (rs != null) {	
- 		  								    	Connection conn = null;
- 	 								   			PreparedStatement pstmt = null;
- 	 								   			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
- 	 								   			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
- 	 								   			pstmt.setLong(1, attachment.getFileId());
- 	 								   			pstmt.setLong(2, AccountUtil.getCurrentOrg().getOrgId());
- 	 								   			pstmt.setInt(3, 360);
- 	 								   			pstmt.setInt(4, 360);
- 	 								   			pstmt.setString(5, resizedFilePath);
- 	 								   			pstmt.setLong(6, imageInByte.length);
- 	 								   			pstmt.setString(7, "image/png");
- 	 								   			pstmt.setLong(8, System.currentTimeMillis());
- 	 								   			pstmt.executeUpdate();
- 									    	}
- 											
- 										}
-	 	 							 				
-	 	 							}
-	 							}									
- 							}
- 						}
- 		            	
- 		            	
- 		            	
- 		            	
- 		            	
- 		            	
- 		            	
- 		            	
- 		            	
- 		                FacilioModule taskAttachmentModule = modBean.getModule("taskattachments");
- 		                
- 		            	SelectRecordsBuilder<AttachmentContext> taskBuilder = new SelectRecordsBuilder<AttachmentContext>()
- 								.module(taskAttachmentModule)
- 								.beanClass(AttachmentContext.class)
- 								.select(modBean.getAllFields("taskattachments"))
- 								;
- 		             
- 		            	List<AttachmentContext> taskAttachments = taskBuilder.get();
- 		            	
- 		            	if (CollectionUtils.isNotEmpty(taskAttachments)) {
- 							
- 							for(AttachmentContext attachment: taskAttachments) {
-	 							if (attachment.getFileId() > 0) {
-	 								FileStore fs = FacilioFactory.getFileStore();
-	 	 							FileInfo fileInfo = fs.getFileInfo(attachment.getFileId());
-	 	 							if (fileInfo  != null && fileInfo.getContentType().contains("image/")) {
-	 	 								
- 										InputStream downloadStream = null;
-	 	 								try{
-	 	 									downloadStream = fs.readFile(fileInfo);
-	 	 								}
-	 	 								catch(Exception e) {
-	 	 									continue;
-	 	 								}
- 										if (downloadStream != null) {
- 											BufferedImage imBuff = ImageIO.read(downloadStream);
- 	 										
- 	 										/* 
- 	 										For Local
- 	 										BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
-
- 	 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
- 	 										ImageIO.write(out, "png", baos);
- 	 										
- 	 										String localFileStorePath = FacilioProperties.getLocalFileStorePath();
- 	 										if (StringUtils.isEmpty(localFileStorePath)) {
- 	 											ClassLoader classLoader = LocalFileStore.class.getClassLoader();
- 	 											URL fcDataFolder = classLoader.getResource("");
- 	 											localFileStorePath = fcDataFolder.getFile();
- 	 										}
- 	 										String rootPath = localFileStorePath + File.separator + "facilio-data" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
-
- 	 										File rootDir = new File(rootPath);
- 	 										if (!(rootDir.exists() && rootDir.isDirectory())) {
- 	 											rootDir.mkdirs();
- 	 										}
-
- 	 										String resizedFilePath = rootPath + File.separator + attachment.getFileId()+"-resized-"+360+"x"+360;
- 	 										
- 	 										
- 	 									    OutputStream os = null;
- 	 								    	File createFile = new File(resizedFilePath);
- 	 										createFile.createNewFile();
- 	 										
- 	 								        os = new FileOutputStream(resizedFilePath);
- 	 								        byte[] buffer = new byte[4096];
- 	 								        int length;
- 	 								        baos.writeTo(os);
- 	 								        os.flush();
- 	 								        
- 	 								        baos.flush();
- 	 										byte[] imageInByte = baos.toByteArray();
- 	 										baos.close(); */
- 	 										BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
- 	 										
- 	 										ByteArrayOutputStream baos = new ByteArrayOutputStream();
- 	 										ImageIO.write(out, "png", baos);
- 	 										baos.flush();
- 	 										byte[] imageInByte = baos.toByteArray();
- 	 										baos.close();
- 	 										ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
- 	 										
- 	 										String rootPath = AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
- 	 										String resizedFilePath = rootPath + File.separator + attachment.getFileId()+"-resized-"+360+"x"+360;
- 	 										String bucketName = FacilioProperties.getConfig("s3.bucket.name");
- 	 								    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
- 	 								    	if (rs != null) { 
- 	 								    		Connection conn = null;
- 	 								   			PreparedStatement pstmt = null;
- 	 								   			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
- 	 								   			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
- 	 								   			pstmt.setLong(1, attachment.getFileId());
- 	 								   			pstmt.setLong(2, AccountUtil.getCurrentOrg().getOrgId());
- 	 								   			pstmt.setInt(3, 360);
- 	 								   			pstmt.setInt(4, 360);
- 	 								   			pstmt.setString(5, resizedFilePath);
- 	 								   			pstmt.setLong(6, imageInByte.length);
- 	 								   			pstmt.setString(7, "image/png");
- 	 								   			pstmt.setLong(8, System.currentTimeMillis());
- 	 								   			pstmt.executeUpdate();
- 	  								    	}
- 		 	 							 				
- 		 	 							}
- 										}
-	 							}									
- 							}
- 						}
- 		            	
- 		            }catch (Exception e){
- 		                LOGGER.info("Exception while migrating AgentMetrics fields ");
- 		                throw e;
- 		            }
- 				}
+            }
+            catch(Exception e) {
+                LOGGER.info(e.getMessage());
+            }
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
@@ -327,16 +120,13 @@
     }
 %>
 
-<%
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
+
         FacilioChain c = FacilioChain.getTransactionChain();
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();
 
         AccountUtil.cleanCurrentAccount();
     }
-    out.println("Done");
-%>
->>>>>>> Stashed changes
