@@ -97,7 +97,7 @@ public class AgentConstants
     public static final String PSEUDO = "pseudo";
     public static final String SUBSCRIBE_STATUS = "subscribeStatus";
     public static final String CONFIGURE_STATUS = "configureStatus";
-    public static final String AGENT_VERSION = "versionId";
+    public static final String VERSION_ID = "versionId";
     public static final String CREATED_BY = "createdBy";
     public static final String PUBLISH_TYPE = "publishType";
     public static final String VALUE = "value";
@@ -171,4 +171,7 @@ public class AgentConstants
     public static final String POINT = "point";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
     public static final String COUNT = "count";
+    public static final String UPDATED_TIME = "updatedTime";
+    public static final String AUTH_KEY = "authKey";
+    public static final String HEADER = "header";
 }

@@ -85,16 +85,16 @@ public class FieldFactory {
         return fields;
     }
 
-    public static Collection<FacilioField> getAgentVersionLogFields() {
+    public static List<FacilioField> getAgentVersionLogFields() {
         FacilioModule module = ModuleFactory.getAgentVersionLogModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
-        //fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
-        fields.add(getField("agentId", "AGENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("versionId", "VERSION_ID", module, FieldType.NUMBER));
-        fields.add(getField("updatedTime", "UPDATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("authKey", "AUTH_KEY", module, FieldType.STRING));
-        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.ORGID, "ORGID", module, FieldType.NUMBER));
+        fields.add(getNewAgentIdField(module));
+        fields.add(getField(AgentConstants.VERSION_ID, "VERSION_ID", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.UPDATED_TIME, "UPDATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.AUTH_KEY, "AUTH_KEY", module, FieldType.STRING));
+        fields.add(getCreatedTime(module));
 
 
         return fields;
@@ -568,7 +568,7 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getAgentVersionModule();
         fields.add(getIdField(module));
-        fields.add(getField(AgentConstants.AGENT_VERSION, "VERSION", FieldType.STRING));
+        fields.add(getField(AgentConstants.VERSION, "VERSION", FieldType.STRING));
         fields.add(getField(AgentConstants.DESCRIPTION, "DESCRIPTION", FieldType.STRING));
         fields.add(getCreatedTime(module));
         fields.add(getField(AgentConstants.CREATED_BY, "CREATED_BY", FieldType.STRING));

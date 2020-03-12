@@ -1,5 +1,6 @@
 package com.facilio.agentv2;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
@@ -88,7 +89,6 @@ public class AgentApiV2 {
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 
         List<Map<String, Object>> records = bean.getRows(context);
-        LOGGER.info(" rows selected are " + records);
         return getAgentsFromRows(records);
     }
 
@@ -96,17 +96,18 @@ public class AgentApiV2 {
         LOGGER.info(" agentId for getAgent is "+agentId);
         if( (agentId != null) && (agentId > 0)) {
             try {
-                ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
+                Organization currentOrg = AccountUtil.getCurrentOrg();
+                Objects.requireNonNull(currentOrg, " current org null ");
+                ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", currentOrg.getOrgId());
                 FacilioContext context = new FacilioContext();
                 context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.AGENT_TABLE);
                 Criteria criteria = new Criteria();
                 Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.ID), String.valueOf(agentId), NumberOperators.EQUALS));
-                context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+                context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
                 context.put(FacilioConstants.ContextNames.LIMIT_VALUE, 1);
                 context.put(FacilioConstants.ContextNames.FIELDS, fieldsMap.values());
                 List<Map<String, Object>> records = bean.getRows(context);
-                LOGGER.info(" rows selected are "+records);
                 List<FacilioAgent> agentList = getAgentsFromRows(records);
                 if (!agentList.isEmpty()) {
                     return agentList.get(0);
@@ -313,7 +314,8 @@ public class AgentApiV2 {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(new HashSet<>())
                     .table(MODULE.getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELDSMAP.get(AgentConstants.ID));
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELDSMAP.get(AgentConstants.ID))
+                    .andCondition(getDeletedTimeNullCondition(MODULE));
             List<Map<String, Object>> result = builder.get();
             LOGGER.info(" count is "+result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);

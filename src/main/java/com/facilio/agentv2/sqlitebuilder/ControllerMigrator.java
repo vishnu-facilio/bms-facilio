@@ -60,19 +60,20 @@ public class ControllerMigrator {
                     if (!addControllersToSqlite(controller, controllerType)) {
                         LOGGER.info("failed adding controller " + controller.getName());
                     }else {
-                        LOGGER.info(" added controller "+controllerId +" to sqlite "+controller.getId());
+                        LOGGER.info(" added controller " + controllerId + " to sqlite " + controller.getId());
                         FacilioContext context = new FacilioContext();
-                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE,8000);
-                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId,context);
-                       if((points != null) && ( ! points.isEmpty())){
-                           LOGGER.info(" fetched points for controller "+controllerId+" are "+points.size());
-                           PointMigrator.setNewControllerId(controller.getId(),points);
-                           LOGGER.info(" set new controller id ");
-                           try {
-                               LOGGER.info("point count data "+getPointCountDataJSON(points));
-                           }catch ( Exception e){
-                               LOGGER.info(" Exception while printing point count data ",e);
-                           }
+                        long pointsCount = PointsAPI.getPointsCount(controllerId, -1);
+                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE, pointsCount + 100);
+                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId, context);
+                        if ((points != null) && (!points.isEmpty())) {
+                            LOGGER.info(" fetched points for controller " + controllerId + " are " + points.size());
+                            PointMigrator.setNewControllerId(controller.getId(), points);
+                            LOGGER.info(" set new controller id ");
+                            try {
+                                LOGGER.info("point count data " + getPointCountDataJSON(points));
+                            } catch (Exception e) {
+                                LOGGER.info(" Exception while printing point count data ", e);
+                            }
                            PointMigrator.addPointsToSqlite(points, controllerType);
                        }else {
                            LOGGER.info(" no points for controller "+controllerId);

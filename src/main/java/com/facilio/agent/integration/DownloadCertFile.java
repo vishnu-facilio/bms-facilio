@@ -58,10 +58,11 @@ public class DownloadCertFile {
     }
 
     public static String downloadCertificateCommand(String policyName, String type) throws Exception {
+        Objects.requireNonNull(policyName, "policy name can't be null");
         LOGGER.info("policy name " + policyName);
         String certFileId = FacilioAgent.getCertFileId(type);
         LOGGER.info("certFileId " + certFileId);
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
         String url = null;
         Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
         if (orgInfo != null) {
@@ -73,7 +74,6 @@ public class DownloadCertFile {
             LOGGER.info(" url not present ");
             String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
             CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgDomainName, policyName, type);
-            AwsUtil.getIotKinesisTopic(orgDomainName);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
             File file = new File(System.getProperty("user.home") + outFileName);
@@ -83,7 +83,6 @@ public class DownloadCertFile {
                 addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgDomainName, orgDomainName));
                 out.finish();
                 out.flush();
-
                 FileStore fs = FacilioFactory.getFileStore();
                 long id = fs.addFile(file.getName(), file, "application/octet-stream");
                 url = fs.getPrivateUrl(id);

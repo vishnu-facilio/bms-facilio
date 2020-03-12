@@ -11,6 +11,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -20,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -107,22 +109,37 @@ public class LogsApi
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(MODULE.getTableName())
                     .fields(FIELDS);
-                    return builder.insert(toInsert);
+            return builder.insert(toInsert);
         } catch (Exception e) {
-            LOGGER.info("Exception while adding log ",e);
+            LOGGER.info("Exception while adding log ", e);
         }
         return -1;
     }
 
-    public static List<Map<String,Object>> getLogs(long agentId, FacilioContext context) throws Exception {
+    public static long getCount() {
+        try {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .select(new HashSet<>())
+                    .table(MODULE.getTableName())
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE));
+            List<Map<String, Object>> result = builder.get();
+            LOGGER.info(" count is " + result.get(0));
+            return (long) result.get(0).get(AgentConstants.ID);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agent count ", e);
+        }
+        return 0;
+    }
+
+    public static List<Map<String, Object>> getLogs(long agentId, FacilioContext context) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FIELDS)
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
-                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName()+" DESC,"+FieldFactory.getCreatedTime(MODULE).getColumnName()+" DESC")
+                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName() + " DESC," + FieldFactory.getCreatedTime(MODULE).getColumnName() + " DESC")
                 .limit(150);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-        if (pagination != null ) {
+        if (pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
 

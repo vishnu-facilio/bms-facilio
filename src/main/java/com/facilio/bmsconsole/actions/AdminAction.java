@@ -348,7 +348,7 @@ public class AdminAction extends ActionSupport {
 			context.put(ContextNames.TABLE_NAME, "Agent_Version");
 			context.put(ContextNames.FIELDS, FieldFactory.getAgentVersionFields());
 			Map<String, Object> toInsertMap = new HashMap<>();
-			toInsertMap.put(AgentConstants.AGENT_VERSION, agentVersion);
+			toInsertMap.put(AgentConstants.VERSION_ID, agentVersion);
 			toInsertMap.put(AgentConstants.CREATED_BY, user);
 			toInsertMap.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 			toInsertMap.put(AgentConstants.DESCRIPTION, description);

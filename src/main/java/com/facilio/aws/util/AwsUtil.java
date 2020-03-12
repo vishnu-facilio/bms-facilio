@@ -662,7 +662,7 @@ public class AwsUtil
 	}
 */
 
-	public static String createIotPolicy(String clientName, String domain, String type) {
+	public static String createIotPolicy(String clientName, String domain, String type) throws Exception {
 		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, domain, type, getIotClient());
 		return policy.getPolicyDocument().toString();
 	}
@@ -687,26 +687,31 @@ public class AwsUtil
 	}*/
 
 
-
-
-
-	private static CreateKeysAndCertificateResult createCertificate(AWSIot iotClient){
-	    LOGGER.info(" creating certificate ");
-		CreateKeysAndCertificateRequest certificateRequest = new CreateKeysAndCertificateRequest().withSetAsActive(true);
-		return iotClient.createKeysAndCertificate(certificateRequest);
+	private static CreateKeysAndCertificateResult createCertificate(AWSIot iotClient) throws Exception {
+		if (iotClient != null) {
+			CreateKeysAndCertificateRequest certificateRequest = new CreateKeysAndCertificateRequest().withSetAsActive(true);
+			return iotClient.createKeysAndCertificate(certificateRequest);
+		} else {
+			throw new Exception(" awsiot client can't be null");
+		}
 	}
 
-	private static void attachPolicy(AWSIot iotClient, CreateKeysAndCertificateResult certificateResult, String policyName){
-	    LOGGER.info(" attaching policy for "+policyName);
+
+	private static void attachPolicy(AWSIot iotClient, CreateKeysAndCertificateResult certificateResult, String policyName) throws Exception {
+		Objects.requireNonNull(iotClient, "iotclient cant be null");
+		Objects.requireNonNull(certificateResult, "certificate result not null");
+		Objects.requireNonNull(policyName, "policy name can't be null");
+		LOGGER.info(" attaching policy for " + policyName);
 		AttachPolicyRequest attachPolicyRequest = new AttachPolicyRequest().withPolicyName(policyName).withTarget(certificateResult.getCertificateArn());
 		AttachPolicyResult attachPolicyResult = iotClient.attachPolicy(attachPolicyRequest);
 		LOGGER.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
+
 	}
 
 	public static AmazonKinesis getKinesisClient() {
-    	if(kinesis == null) {
-    		synchronized (LOCK) {
-    			if(kinesis == null) {
+		if (kinesis == null) {
+			synchronized (LOCK) {
+				if (kinesis == null) {
     				kinesis = AmazonKinesisClientBuilder.standard()
 							.withCredentials(getAWSCredentialsProvider())
 							.withRegion(getRegion())
@@ -718,17 +723,21 @@ public class AwsUtil
 	}
 
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
-	    LOGGER.info(" creating kenisis stream "+streamName);
-    	try {
+		LOGGER.info(" creating kenisis stream " + streamName);
+		Objects.requireNonNull(kinesisClient, " kinesis client can't be null");
+		Objects.requireNonNull(streamName, "stream name can't be null");
+		try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
 			LOGGER.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
-		} catch (ResourceInUseException resourceInUse){
-    		LOGGER.info(" Exception Stream exists for name : " + streamName);
+		} catch (ResourceInUseException resourceInUse) {
+			LOGGER.info(" Exception Stream exists for name : " + streamName);
 		}
 	}
 
 
 	private static void createIotTopicRule(AWSIot iotClient, String policyAndOrgDomainName) {
+		Objects.requireNonNull(iotClient, "iotClient null");
+		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName null");
 		LOGGER.info(" creating iot rule ");
 		try {
 			KinesisAction kinesisAction = new KinesisAction().withStreamName(policyAndOrgDomainName)
@@ -755,36 +764,36 @@ public class AwsUtil
 	}
 
 
-
-	private static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type){
-		LOGGER.info(" create Iot Kenesis "+policyAndOrgDomainName);
+	private static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type) throws Exception {
+		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName can't be null");
+		Objects.requireNonNull(type, " type can't be null");
+		LOGGER.info(" create Iot Kenesis " + policyAndOrgDomainName);
 		AWSIot iotClient = null;
 		iotClient = getIotClient();
 		IotPolicy policy;
 		policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
-		CreateKeysAndCertificateResult certificateResult = 	createCertificate(iotClient);
-    	attachPolicy(iotClient, certificateResult, policyAndOrgDomainName);
-    	createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
-    	// Creating topic in kafka
+		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
+		attachPolicy(iotClient, certificateResult, policyAndOrgDomainName);
+		createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
+		// Creating topic in kafka
 		MessageQueueFactory.getMessageQueue().createQueue(policyAndOrgDomainName);
-    	policy.setStreamName(policyAndOrgDomainName);
-    	createIotTopicRule(iotClient,policyAndOrgDomainName);
-    	return certificateResult;
+		policy.setStreamName(policyAndOrgDomainName);
+		createIotTopicRule(iotClient, policyAndOrgDomainName);
+		return certificateResult;
 	}
 
 
-
-	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String clientName, String type){
-		LOGGER.info(" signing up to kinesis policyname "+orgDomainName);
+	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String clientName, String type) throws Exception {
+		LOGGER.info(" signing up to kinesis policyname " + orgDomainName);
 		return AwsUtil.createIotToKinesis(clientName, orgDomainName, type);
 	}
 
-	public static String getIotKinesisTopic(String orgDomainName){
-    	return orgDomainName;
+	public static String getIotKinesisTopic(String orgDomainName) {
+		return orgDomainName;
 	}
+
 	@Deprecated
-	public static void sendErrorMail(long orgid,long ml_id,String error)
-	{
+	public static void sendErrorMail(long orgid, long ml_id, String error) {
 		try
 		{
 			JSONObject json = new JSONObject();
@@ -811,15 +820,15 @@ public class AwsUtil
 			LOGGER.error("Error while sending mail ",e);
 		}
 	}
-	
-	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String,String> files) throws Exception {
+
+	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
 		Session session = Session.getDefaultInstance(new Properties());
-		MimeMessage message = EmailClient.constructMimeMessageContent(mailJson,session,files);
-	    message.addHeader("host", FacilioProperties.getAppDomain());
-	    return message;
+		MimeMessage message = EmailClient.constructMimeMessageContent(mailJson, session, files);
+		message.addHeader("host", FacilioProperties.getAppDomain());
+		return message;
 	}
 
-	public static void addClientToPolicy(String agentName,String policyName,String type) {
-		AwsPolicyUtils.createOrUpdateIotPolicy(agentName,policyName,type,getIotClient());
+	public static void addClientToPolicy(String agentName, String policyName, String type) throws Exception {
+		AwsPolicyUtils.createOrUpdateIotPolicy(agentName, policyName, type, getIotClient());
 	}
 }

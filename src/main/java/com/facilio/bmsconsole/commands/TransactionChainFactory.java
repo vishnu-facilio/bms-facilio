@@ -4874,6 +4874,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		return chain;
 	}
+
+	public static FacilioChain upgradeAgentChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpgradeAgentCommand());
+		chain.addCommand(new AddAndSendIotMessageCommand());
+		return chain;
+	}
 }
 
 

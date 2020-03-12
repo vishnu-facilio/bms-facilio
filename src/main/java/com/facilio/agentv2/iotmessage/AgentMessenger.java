@@ -28,28 +28,28 @@ public class AgentMessenger {
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
 
-    private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext messagePayload, FacilioControllerType type) throws Exception {
-        LOGGER.info(" context to construct message "+messagePayload);
+    private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
+        LOGGER.info(" context to construct message " + extraMsgContent);
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if (agent != null) {
             if ((command != FacilioCommand.PING) && (!agent.getConnected())) {
                 throw new Exception("Agent is not connected");
             }
-            JSONObject object = new JSONObject();
+            JSONObject messageBody = new JSONObject();
             IotData iotData = new IotData();
             iotData.setAgentId(agentId);
             iotData.setCommand(command.asInt());
-            object.put(AgentConstants.AGENT, agent.getName());
+            messageBody.put(AgentConstants.AGENT, agent.getName());
             if (type != null) {
-                object.put(AgentConstants.CONTROLLER_TYPE, type.asInt());
+                messageBody.put(AgentConstants.CONTROLLER_TYPE, type.asInt());
             }
-            object.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
-            object.put(AgentConstants.AGENT_ID, agentId);
-            object.put(AgentConstants.COMMAND, command.asInt());
+            messageBody.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
+            messageBody.put(AgentConstants.AGENT_ID, agentId);
+            messageBody.put(AgentConstants.COMMAND, command.asInt());
 
             switch (command) {
                 case PING:
-                    object.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
+                    messageBody.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
                     break;
                 case SHUTDOWN:
                     break;
@@ -57,22 +57,23 @@ public class AgentMessenger {
                 case CONFIGURE:
                 case ADD_CONTROLLER:
                 case EDIT_CONTROLLER:
-                    if (messagePayload.containsKey(AgentConstants.DATA)) {
-                        object.put(AgentConstants.CONTROLLER, messagePayload.get(AgentConstants.DATA));
+                    if (extraMsgContent.containsKey(AgentConstants.DATA)) {
+                        messageBody.put(AgentConstants.CONTROLLER, extraMsgContent.get(AgentConstants.DATA));
                         LOGGER.info(type);
                         if (type == FacilioControllerType.MODBUS_RTU) {
-                            alterMessageForRtu(object, messagePayload);
-                            LOGGER.info("object altered "+object);
+                            alterMessageForRtu(messageBody, extraMsgContent);
+                            LOGGER.info("object altered " + messageBody);
                         }
                     } else {
                         LOGGER.info("Exception occurred , no data in context for " + command.name());
                         throw new Exception("No data in context for " + command.name());
                     }
                     break;
-
+                case UPGRADE:
+                    messageBody.putAll(extraMsgContent);
             }
             List<IotMessage> messages = new ArrayList<>();
-            messages.add(MessengerUtil.getMessageObject(object, command));
+            messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
             LOGGER.info(" iot data generated is " + iotData);
             return iotData;
@@ -248,4 +249,12 @@ public class AgentMessenger {
         return sendControllerConfig(controllerContext);
     }
 
+
+    public static IotData sendAgentUpgradeCommand(long agentId, String version, String url, String authKey) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(AgentConstants.HEADER, authKey);
+        context.put(AgentConstants.VERSION, "v" + version);
+        context.put(AgentConstants.URL, url);
+        return constructNewIotAgentMessage(agentId, FacilioCommand.UPGRADE, context, null);
+    }
 }

@@ -150,8 +150,10 @@
         </action>
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
-
-
+        <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
+        </action>
+        <action name="upgradeAgent" class="com.facilio.agentv2.actions.VersionLogAction" method="upgradeAgent">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
@@ -190,13 +192,15 @@
                 method="getControllerUsingIdentifier">
         </action> <!--testing purpose-->
 
-        <action name="typeList" class="com.facilio.agentv2.actions.TypeAgentAction" method="getControllerOfTypeForAgent"> <!--DONE-->
+        <action name="typeList" class="com.facilio.agentv2.actions.TypeAgentAction"
+                method="getControllerOfTypeForAgent"> <!--DONE-->
         </action>
 
         <action name="getUsingId" class="com.facilio.agentv2.AgentAction" method="getControllerUsingId"> <!--DONE-->
         </action>
 
-        <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllerFilter"> <!--DONE-->
+        <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction"
+                method="getControllerFilter"> <!--DONE-->
         </action>
 
     </package>
@@ -245,21 +249,24 @@
 
         <action name="getConfPoints" class="com.facilio.agentv2.AgentAction" method="getConfiguredPoints"> <!--DONE-->
         </action>
-        <action name="configuredCount" class="com.facilio.agentv2.actions.TypeDevices" method="getConfiguredPointsCount"> <!--DONE-->
+        <action name="configuredCount" class="com.facilio.agentv2.actions.TypeDevices"
+                method="getConfiguredPointsCount"> <!--DONE-->
         </action>
 
         <action name="getSubPoints" class="com.facilio.agentv2.AgentAction"
                 method="getSubscribedPoints"> <!--DONE-->
         </action>
 
-        <action name="subscribedCount" class="com.facilio.agentv2.actions.TypeDevices" method="getSubscribedPointsCount"> <!--DONE-->
+        <action name="subscribedCount" class="com.facilio.agentv2.actions.TypeDevices"
+                method="getSubscribedPointsCount"> <!--DONE-->
         </action>
 
         <action name="getUnconfPoints" class="com.facilio.agentv2.AgentAction"
                 method="getUnconfiguredPoints"> <!--DONE-->
         </action>
 
-        <action name="unconfiguredCount" class="com.facilio.agentv2.actions.TypeDevices" method="getUnConfiguredPointsCount"> <!--DONE-->
+        <action name="unconfiguredCount" class="com.facilio.agentv2.actions.TypeDevices"
+                method="getUnConfiguredPointsCount"> <!--DONE-->
         </action>
 
         <action name="getCommPoints" class="com.facilio.agentv2.AgentAction"
@@ -267,11 +274,13 @@
         </action>
 
 
-        <action name="commissionedCount" class="com.facilio.agentv2.actions.TypeDevices" method="getCommissionedPointsCount"> <!--DONE-->
+        <action name="commissionedCount" class="com.facilio.agentv2.actions.TypeDevices"
+                method="getCommissionedPointsCount"> <!--DONE-->
         </action>
 
         <!--.. list points using controllerId..-->
-        <action name="getControllerConfPoints" class="com.facilio.agentv2.actions.ControllerActions" method="getConfiguredPoints"> <!--DONE-->
+        <action name="getControllerConfPoints" class="com.facilio.agentv2.actions.ControllerActions"
+                method="getConfiguredPoints"> <!--DONE-->
         </action>
 
         <action name="getControllerSubPoints" class="com.facilio.agentv2.actions.ControllerActions"
@@ -285,7 +294,6 @@
         <action name="getControllerCommPoints" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getCommissionedPoints"> <!--DONE-->
         </action>
-
 
 
     </package>

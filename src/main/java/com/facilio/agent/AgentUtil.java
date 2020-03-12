@@ -26,12 +26,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.urjanet.entity.Account;
-import com.facilio.wms.constants.WmsEventType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 
 import java.security.SecureRandom;
@@ -43,9 +40,8 @@ import java.util.stream.Collectors;
 /**
  * This class writes agent's payload data to a table in DB.
  */
-public  class AgentUtil
-{
-    private long orgId ;
+public class AgentUtil {
+    private long orgId;
     private String orgDomainName;
     private static final long DEFAULT_TIME = 10L;
 
@@ -54,7 +50,10 @@ public  class AgentUtil
 
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
-    public Map<String, FacilioAgent> getAgentMap() { return agentMap; }
+
+    public Map<String, FacilioAgent> getAgentMap() {
+        return agentMap;
+    }
 
     public int getAgentCount() {
         return agentMap.size();
@@ -64,31 +63,31 @@ public  class AgentUtil
 
     private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
 
-    public AgentUtil(long orgId, String orgDomainName)  {
+    public AgentUtil(long orgId, String orgDomainName) {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
     }
 
-    public void populateAgentContextMap(String agentName,AgentType type) {
+    public void populateAgentContextMap(String agentName, AgentType type) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            List<Map<String, Object>> records = bean.getAgentDataMap(agentName,type);
-            for (Map<String,Object> record :records) {
+            List<Map<String, Object>> records = bean.getAgentDataMap(agentName, type);
+            for (Map<String, Object> record : records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
                 agentMap.put(agent.getAgentName(), agent);
             }
         } catch (Exception e1) {
-            LOGGER.info("exception ",e1);
+            LOGGER.info("exception ", e1);
         }
     }
 
-    public FacilioAgent getFacilioAgent(String agentName,AgentType type) {
+    public FacilioAgent getFacilioAgent(String agentName, AgentType type) {
         FacilioAgent agent = agentMap.get(agentName);
-        if(agent == null){
-            populateAgentContextMap(agentName,type);
-            agent =agentMap.get(agentName);
+        if (agent == null) {
+            populateAgentContextMap(agentName, type);
+            agent = agentMap.get(agentName);
         }
         return agent;
     }
@@ -96,66 +95,65 @@ public  class AgentUtil
     /**
      * This method writes data from the Agent to its table in database using {@link GenericInsertRecordBuilder}<br>
      * this also adds appropriate values to  each<br>
+     *
      * @param payload is the JSONObject from Record and contains data to process
      */
 
-    private FacilioAgent getFacilioAgentFromJson(JSONObject payload){
+    private FacilioAgent getFacilioAgentFromJson(JSONObject payload) {
         FacilioAgent agent = new FacilioAgent();
-        if(payload.containsKey(AgentKeys.STATE)) {
+        if (payload.containsKey(AgentKeys.STATE)) {
             agent.setAgentState(Integer.parseInt(payload.get(AgentKeys.STATE).toString()));
-        } else{
+        } else {
             agent.setAgentState(0);
         }
-        if(payload.containsKey(AgentKeys.ID)){
+        if (payload.containsKey(AgentKeys.ID)) {
             agent.setId(Long.parseLong(payload.get(AgentKeys.ID).toString()));
         }
-        if(payload.containsKey(AgentKeys.SITE_ID)){
+        if (payload.containsKey(AgentKeys.SITE_ID)) {
             agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
         }
-        if(payload.containsKey(AgentKeys.VERSION)) {
+        if (payload.containsKey(AgentKeys.VERSION)) {
             agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
-            if(payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
+            if (payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
                 agent.setAgentVersion(payload.get(AgentKeys.FACILIO_MQTT_VERSION).toString());
             }
         }
 
-        if(payload.containsKey(AgentKeys.CONNECTION_STATUS)) {
+        if (payload.containsKey(AgentKeys.CONNECTION_STATUS)) {
             agent.setAgentConnStatus(Boolean.valueOf(payload.get(AgentKeys.CONNECTION_STATUS).toString()));
         } else {
             agent.setAgentConnStatus(true);
         }
 
-        if(payload.containsKey(AgentKeys.DATA_INTERVAL)) {
+        if (payload.containsKey(AgentKeys.DATA_INTERVAL)) {
             agent.setInterval(Long.parseLong(payload.get(AgentKeys.DATA_INTERVAL).toString()));
         } else {
             agent.setInterval(DEFAULT_TIME);
         }
 
-        if(payload.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
+        if (payload.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
             agent.setAgentNumberOfControllers(Integer.parseInt(payload.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString()));
         }
 
-        if(payload.containsKey(AgentKeys.NAME)){
+        if (payload.containsKey(AgentKeys.NAME)) {
             agent.setAgentName(payload.get(AgentKeys.NAME).toString().trim());
-        }
-        else if(payload.containsKey(PublishType.agent.getValue())){
+        } else if (payload.containsKey(PublishType.agent.getValue())) {
             agent.setAgentName(payload.get(PublishType.agent.getValue()).toString().trim());
-        }
-        else{
+        } else {
             agent.setAgentName(orgDomainName);
         }
 
-        if(payload.containsKey(AgentKeys.AGENT_TYPE)) {
+        if (payload.containsKey(AgentKeys.AGENT_TYPE)) {
 
             agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
-        if(payload.containsKey(AgentKeys.DELETED_TIME)){
+        if (payload.containsKey(AgentKeys.DELETED_TIME)) {
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
         }
-        if(payload.containsKey(AgentKeys.WRITABLE)){
+        if (payload.containsKey(AgentKeys.WRITABLE)) {
             agent.setWritable(Boolean.parseBoolean(payload.get(AgentKeys.WRITABLE).toString()));
-        }else {
+        } else {
             agent.setWritable(false);
         }
         return agent;
@@ -249,7 +247,7 @@ public  class AgentUtil
                         raiseAgentAlarm(agent);
                     }
                     if (status == 1) {
-                        dropAgentAlarm( agent);
+                        dropAgentAlarm(agent);
                     }
                 }
 
@@ -304,7 +302,7 @@ public  class AgentUtil
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
         addEventToDB(event);
-        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getAgentName() + " ( ID :" + agent.getId()+ ")");
+        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getAgentName() + " ( ID :" + agent.getId() + ")");
 
     }
 
@@ -326,16 +324,16 @@ public  class AgentUtil
 
     }
 
-    private static AgentEventContext getAgentEventContext( FacilioAgent agent, long currentTime, String severity) {
+    private static AgentEventContext getAgentEventContext(FacilioAgent agent, long currentTime, String severity) {
         AgentEventContext event = new AgentEventContext();
         String description = null;
         String message = null;
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
-            message = "agent "+agent.getAgentName() +" connection lost ";
+            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @" + DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent " + agent.getAgentName() + " connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
-            message = "agent "+agent.getAgentName() +" connection reestablished";
+            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @" + DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent " + agent.getAgentName() + " connection reestablished";
         }
         event.setMessage(message);
         event.setDescription(description);
@@ -366,7 +364,7 @@ public  class AgentUtil
         payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, currTime);
         FacilioChain chain = TransactionChainFactory.getAddAgentChain();
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
+        context.put(FacilioConstants.ContextNames.PAY_LOAD, payload);
         try {
             chain.execute(context);
         } catch (Exception e) {
@@ -378,19 +376,19 @@ public  class AgentUtil
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule), agent.getAgentName(), StringOperators.IS));
         long id = 0L;
         try {
-            List<Map<String,Object>> row = selectRecordBuilder.get();
-            if(row.size() == 1 && row.get(0).containsKey(AgentKeys.ID)){
+            List<Map<String, Object>> row = selectRecordBuilder.get();
+            if (row.size() == 1 && row.get(0).containsKey(AgentKeys.ID)) {
                 id = Long.parseLong(row.get(0).get(AgentKeys.ID).toString());
-            }else {
+            } else {
                 LOGGER.info("Exception multiple entries with same AgentId ");
             }
         } catch (Exception e) {
-            LOGGER.info("Exception while fetching agent detail for agentId ",e);
+            LOGGER.info("Exception while fetching agent detail for agentId ", e);
         }
 
         try {
             agent.setId(id);
-            if(id > 0)  {
+            if (id > 0) {
                 agentMap.put(agent.getAgentName(), agent);
             }
             return id;
@@ -403,39 +401,38 @@ public  class AgentUtil
 
 
     private String getVersion(Object payload) {
-        JSONObject jsonObject2 = (JSONObject)payload;
+        JSONObject jsonObject2 = (JSONObject) payload;
         return jsonObject2.get(AgentKeys.FACILIO_MQTT_VERSION).toString();
     }
 
 
-
     //This method fetches Details of all the agent in the current Org and which aren't deleted.
-    public List<Map<String,Object>> agentDetails()
-    {
+    public List<Map<String, Object>> agentDetails() {
         FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getControllerIdCount(ModuleFactory.getControllerModule()));
         fields.addAll(FieldFactory.getAgentDataFields());
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_TABLE)
                 .select(fields).leftJoin(AgentKeys.CONTROLLER_TABLE)
-                .on(AgentKeys.AGENT_TABLE +".ID=Controller.Agent_Id")
-                .groupBy(AgentKeys.AGENT_TABLE +".ID").andCondition(CriteriaAPI.getOrgIdCondition(orgId,agentDataModule))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
+                .on(AgentKeys.AGENT_TABLE + ".ID=Controller.Agent_Id")
+                .groupBy(AgentKeys.AGENT_TABLE + ".ID").andCondition(CriteriaAPI.getOrgIdCondition(orgId, agentDataModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
 
         try {
             return genericSelectRecordBuilder.get();
         } catch (Exception e) {
-            LOGGER.info("Exception occured ",e);
+            LOGGER.info("Exception occured ", e);
         }
         return new ArrayList<>();
     }
 
     /**
      * This method inserts system's current time to the specified agent's Deleted_Time column so that it will be considered deleted.
+     *
      * @return true if the deletion process happens and false if account is null or deletion doesn't happen.
      */
-    public static boolean agentDelete(String agentName)  {
-        if(AccountUtil.getCurrentOrg()!= null) {
+    public static boolean agentDelete(String agentName) {
+        if (AccountUtil.getCurrentOrg() != null) {
             List<FacilioField> fields = new ArrayList<>();
             fields.add(FieldFactory.getDeletedTimeField(ModuleFactory.getAgentDataModule()));
             HashMap<String, Object> toUpdate = new HashMap<>();
@@ -444,10 +441,10 @@ public  class AgentUtil
                     .table(AgentKeys.AGENT_TABLE)
                     .fields(fields);
 //                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
-            if (agentName!=null) {
+            if (agentName != null) {
                 int deletedRows = 0;
                 try {
-                    deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName, StringOperators.IS))
+                    deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()), agentName, StringOperators.IS))
                             .update(toUpdate);
                 } catch (SQLException e) {
                     LOGGER.info("Exception occurred");
@@ -462,14 +459,14 @@ public  class AgentUtil
 
     static boolean agentEdit(JSONObject payload) throws SQLException {
         boolean status = false;
-        if(AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
+        if (AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
             FacilioChain agentEditChain = TransactionChainFactory.getAgentEditChain();
             FacilioContext context = new FacilioContext();
-            context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
+            context.put(FacilioConstants.ContextNames.PAY_LOAD, payload);
             try {
                 status = agentEditChain.execute(context);
             } catch (Exception e) {
-                LOGGER.info("Exception occurred ",e);
+                LOGGER.info("Exception occurred ", e);
             }
         }
         return status;
@@ -477,12 +474,13 @@ public  class AgentUtil
 
     /**
      * This method inserts agent-log data into the log table, each time a message is sent to or received from an agent.
+     *
      * @param payLoad Contains data needed for the log-table.
-     * @param orgId Tells which org's lod data to be fetched.
+     * @param orgId   Tells which org's lod data to be fetched.
      * @param agentId If passed, fetches only that particular agent's log data.NOT MANDATORY.
      * @param sent
      */
-    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
+    public static void putLog(JSONObject payLoad, Long orgId, Long agentId, boolean sent) {
         FacilioChain addLogChain = TransactionChainFactory.addLogChain();
         FacilioContext context = new FacilioContext();
         context.put(AgentKeys.ORG_ID, orgId);
@@ -527,43 +525,44 @@ public  class AgentUtil
     }
 
 
-
     /**
      * This method fetches agent-log data of the entire organization or a particular agent.
+     *
      * @param agentId If passed, only those ogs which belongs this particular agent is returned, NOT MANDATORY.
      * @return agent-log data from database
      * @throws Exception
      */
-    public static List<Map<String,Object>> getAgentLog(Long agentId) throws Exception {
+    public static List<Map<String, Object>> getAgentLog(Long agentId) throws Exception {
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_LOG_TABLE)
                 .select(FieldFactory.getAgentLogFields());
 //                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentLogModule()));
-        if(agentId != null){
+        if (agentId != null) {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()), agentId.toString(), NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
     }
 
 
-
     // not used
+
     /**
      * This method fetches metrics data of a particular agent and for a particular Publish-type.
      * If agentId and publishType is absent results with just ORGID condition is returned.
-     * @param agentId This parameter if passed fetches only those data which belongs to an agent,NOT MANDATORY.
+     *
+     * @param agentId     This parameter if passed fetches only those data which belongs to an agent,NOT MANDATORY.
      * @param publishType This parameter if passed fetches only those data which belongs to this publish-type,NOT MANDATORY.
      * @throws Exception
      */
-    public static List<Map<String,Object>> getAgentMetrics(Long agentId,Integer publishType) throws Exception {
+    public static List<Map<String, Object>> getAgentMetrics(Long agentId, Integer publishType) throws Exception {
         FacilioModule agentMetriceModule = ModuleFactory.getAgentMetricsModule();
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.METRICS_TABLE)
                 .select(FieldFactory.getAgentMetricsFields());
 //                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentMetricsModule()));
-        if(agentId != null){
-            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentMetriceModule),agentId.toString(),NumberOperators.EQUALS));
+        if (agentId != null) {
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentMetriceModule), agentId.toString(), NumberOperators.EQUALS));
         }
-        if(publishType != null){
-            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(agentMetriceModule),publishType.toString(),NumberOperators.EQUALS));
+        if (publishType != null) {
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(agentMetriceModule), publishType.toString(), NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
     }
@@ -572,11 +571,12 @@ public  class AgentUtil
     /**
      * This method adds metrics to the database, which holds data explaining size and number of messages that were sent by the agent per publishtype, per day.
      * If message already there for a particular Publishtype tha day, updation takes place else insertion.
+     *
      * @param messageSize Size of an individual message.
-     * @param agentId If of the agent that sent this message.
+     * @param agentId     If of the agent that sent this message.
      * @param publishType Publish-Type of the message.
      */
-    public void addAgentMetrics(Integer messageSize, Long agentId, int publishType){
+    public void addAgentMetrics(Integer messageSize, Long agentId, int publishType) {
         Long createdTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());
         Long lastUpdatedTime = System.currentTimeMillis();
         ModuleCRUDBean bean;
@@ -585,14 +585,14 @@ public  class AgentUtil
         FacilioChain addAgentMetricsChain = TransactionChainFactory.getAddAgentMetricsChain();
         FacilioChain updateAgentMetricsChain = TransactionChainFactory.getUpdateAgentMetricsChain();
         FacilioContext context = new FacilioContext();
-        context.put(AgentKeys.ORG_ID,orgId);
+        context.put(AgentKeys.ORG_ID, orgId);
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
-            if(!records.isEmpty()) {
+            List<Map<String, Object>> records = bean.getMetrics(agentId, publishType, createdTime);
+            if (!records.isEmpty()) {
                 record = records.get(0);
                 //LOGGER.info(" record selected is -> "+record);
-                if ( (!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                if ((!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
                     // HashMap<String, Object> criteriax = new HashMap<>();
                     Criteria criteria = new Criteria();
                     Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMetricsFields());
@@ -616,15 +616,14 @@ public  class AgentUtil
                     updateAgentMetricsChain.execute(context);
                     //bean.updateAgentMetrics(metrics, criteria);
                 }
-            }
-            else {
+            } else {
                 metrics.put(AgentKeys.AGENT_ID, agentId);
                 metrics.put(EventUtil.DATA_TYPE, publishType);
                 metrics.put(AgentKeys.NO_OF_MESSAGES, 1);
                 metrics.put(AgentKeys.SIZE, messageSize);
                 metrics.put(AgentKeys.CREATED_TIME, createdTime);
                 metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,metrics);
+                context.put(FacilioConstants.ContextNames.TO_INSERT_MAP, metrics);
                 addAgentMetricsChain.execute(context);
                 //bean.insertAgentMetrics(metrics);
             }
@@ -634,7 +633,6 @@ public  class AgentUtil
             LOGGER.info("Exception occurred ", e);
         }
     }
-
 
 
     public static FacilioAgent getAgentDetails(long agentId) throws Exception {
@@ -665,32 +663,29 @@ public  class AgentUtil
         }
         return null;
     }
-    //untested
-    public String addVersionLog(long newVersionId,long agentId) throws Exception {
+
+    public String addVersionLog(long newVersionId, long agentId) throws Exception {
         try {
             Map<String, Object> row = new HashMap<>();
             row.put("orgId", this.orgId);
             row.put("versionId", newVersionId);
             row.put("agentId", agentId);
             String token = null;
-            for (int i = 0; i < 5; i++) {
-                token = generateNewToken();
-                GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                        .table(ModuleFactory.getAgentVersionLogModule().getTableName())
-                        .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()), token, StringOperators.IS));
-                List<Map<String, Object>> maps = selectRecordBuilder.get();
-                if (maps.size() == 0) {
-                    row.put("authKey", token);
-                    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                            .table(ModuleFactory.getAgentVersionLogModule().getTableName());
-                    insertRecordBuilder.insert(row);
+            token = generateNewToken();
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getAgentVersionLogModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()), token, StringOperators.IS));
+            List<Map<String, Object>> maps = selectRecordBuilder.get();
+            if (maps.size() == 0) {
+                row.put("authKey", token);
+                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                        .table(ModuleFactory.getAgentVersionLogModule().getTableName());
+                insertRecordBuilder.insert(row);
 
-                }
             }
 
-
             return token;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             LOGGER.error("Exception while creating token");
             return null;
         }

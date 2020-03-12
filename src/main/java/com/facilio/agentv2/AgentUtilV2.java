@@ -145,19 +145,6 @@ public class AgentUtilV2
         return agent;
     }
 
-    public long addAgent(FacilioAgent agent) throws Exception {
-        long agentId = AgentApiV2.addAgent(agent);
-        if (agentId > 0) {
-            agentMap.put(agent.getName(), agent);
-        }
-        return agentId;
-    }
-
-    private String getVersion(Object payload) {
-        JSONObject jsonObject2 = (JSONObject)payload;
-        return jsonObject2.get(AgentConstants.AGENT_VERSION).toString();
-    }
-
     private static boolean containsValueCheck(String key,JSONObject jsonObject){
         if(jsonObject.containsKey(key) && ( jsonObject.get(key) != null) ){
             return true;
@@ -165,14 +152,5 @@ public class AgentUtilV2
         return false;
     }
 
-    public static com.facilio.agentv2.FacilioAgent makeNewFacilioAgent(String agentName) {
-        LOGGER.info(" making new FacilioAgent for name "+agentName);
-        com.facilio.agentv2.FacilioAgent agent = new com.facilio.agentv2.FacilioAgent();
-        agent.setName(agentName);
-        agent.setConnected(Boolean.TRUE);
-        agent.setWritable(false);
-        agent.setInterval(15L);
-        agent.setWritable(false);
-        return agent;
-    }
+
 }

@@ -461,24 +461,20 @@ public class AgentAction extends AgentActionV2 {
     public String downloadCertificate(){
         try{
             Organization currentOrg = AccountUtil.getCurrentOrg();
-            if(currentOrg != null){
-                String agentName = getName();
-                if(name != null){
-                    FacilioAgent agent = AgentApiV2.getAgent(agentName);
-                    if (agent != null) {
-                        String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
-                        AwsUtil.addClientToPolicy(getName(),currentOrg.getDomain(),"facilio");
-                        setResult(AgentConstants.DATA,downloadCertificateLink);
-                        ok();
-                    }else {
-                        throw new Exception("No such agent");
-                    }
-                }else {
-                    throw new Exception("agent name can't be null");
-                }
-            }else {
-                throw new Exception("Exception occurred, account cant be null");
+            Objects.requireNonNull(currentOrg, " current org null");
+            FacilioAgent agent = AgentApiV2.getAgent(agentId);
+            String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
+            setResult(AgentConstants.DATA, downloadCertificateLink);
+            Objects.requireNonNull(agent, "no such agent");
+            try {
+                AwsUtil.addClientToPolicy(getName(), currentOrg.getDomain(), "facilio");
+                ok();
+            } catch (Exception e) {
+                setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());
+                LOGGER.info("Exception  while adding client to policy", e);
+                internalError();
             }
+
         }catch (Exception e){
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             internalError();
