@@ -876,7 +876,7 @@ public class ReadingsAPI {
 	
 	public static List<FacilioField> excludeDefaultAndEmptyReadingFields(List<FacilioField> fields,Long parentId, String filter) throws Exception {
 		if (CollectionUtils.isEmpty(fields)) {
-			return fields;
+			return Collections.EMPTY_LIST;
 		}
 		if (parentId == null) {
 			parentId = -1l;
