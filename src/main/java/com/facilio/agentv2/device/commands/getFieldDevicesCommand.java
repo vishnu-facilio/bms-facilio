@@ -20,7 +20,7 @@ public class getFieldDevicesCommand extends FacilioCommand {
         LOGGER.info(" in fielddevices command");
         if((context.containsKey(AgentConstants.ID)) ){
             Long deviceId = (Long) context.get(AgentConstants.ID);
-            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(null, Collections.singletonList(deviceId)),Device.class);
+            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(Collections.singletonList(deviceId)), Device.class);
             if(devices.isEmpty()){
                 throw new Exception(" no device found ");
             }

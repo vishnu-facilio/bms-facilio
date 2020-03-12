@@ -7,6 +7,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -55,7 +56,7 @@ public class GetControllerCommand extends AgentV2Command {
                 .select(allFields)
                 .table(controllerModule.getTableName())
                 .innerJoin(childTableModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + childTableModule.getTableName() + ".ID")
-                .leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "."+FieldFactory.getControllerIdField(pointModule).getColumnName())
+                .leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "." + FieldFactory.getControllerIdField(pointModule).getColumnName())
                 .innerJoin(resourceModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
 
@@ -64,7 +65,8 @@ public class GetControllerCommand extends AgentV2Command {
         }*/
         selectRecordBuilder.limit(100);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-        if (pagination != null) {
+        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+        if (pagination != null && !fetchCount) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
 
@@ -75,10 +77,14 @@ public class GetControllerCommand extends AgentV2Command {
 
             selectRecordBuilder.offset(offset);
             selectRecordBuilder.limit(perPage);
+        } else if (fetchCount) {
+            selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule));
+            selectRecordBuilder.select(new ArrayList<>());
         }
 
         if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
-            selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)),controllerModule));
+            selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)), controllerModule));
+            selectRecordBuilder.select(new ArrayList<>());
         }
 
 

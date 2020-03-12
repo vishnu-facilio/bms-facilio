@@ -14,6 +14,7 @@ import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,10 +43,30 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String devices() {
         try {
-            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(getAgentId(), null), Device.class);
+            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(getAgentId(), constructListContext(new FacilioContext())), Device.class);
             List<Device> newDevices = new ArrayList<>();
             newDevices.add(devices.get(0));
             setResult(AgentConstants.DATA, devices);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting devices ", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+
+    public String devicesCount() {
+        try {
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+            List<Map<String, Object>> devices = FieldDeviceApi.getDevices(getAgentId(), context);
+            long count = 0;
+            if (!devices.isEmpty()) {
+                count = (long) devices.get(0).get(AgentConstants.ID);
+            }
+            setResult(AgentConstants.DATA, count);
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting devices ", e);
