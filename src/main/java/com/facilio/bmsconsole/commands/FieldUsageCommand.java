@@ -30,18 +30,18 @@ public class FieldUsageCommand extends FacilioCommand {
 
         if (fieldId > 0 && categoryId > 0 ) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", categoryId+"", NumberOperators.EQUALS));
-            List<ReadingRuleContext> rules =  ReadingRuleAPI.getReadingRules(criteria);
-            Map<Long, String> ruleMap = new ArrayMap<>();
-            if (!rules.isEmpty()) {
-                for (ReadingRuleContext rule : rules) {
-                    if (rule.getReadingFieldId() == fieldId) {
-                        ruleMap.put(rule.getParentRuleId(), rule.getName());
-                    }
-                }
-                context.put(FacilioConstants.ContextNames.RULES, ruleMap);
-            }
+//            Criteria criteria = new Criteria();
+//            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategoryId", categoryId+"", NumberOperators.EQUALS));
+//            List<ReadingRuleContext> rules =  ReadingRuleAPI.getReadingRules(criteria);
+//            Map<Long, String> ruleMap = new ArrayMap<>();
+//            if (!rules.isEmpty()) {
+//                for (ReadingRuleContext rule : rules) {
+//                    if (rule.getReadingFieldId() == fieldId) {
+//                        ruleMap.put(rule.getParentRuleId(), rule.getName());
+//                    }
+//                }
+//                context.put(FacilioConstants.ContextNames.RULES, ruleMap);
+//            }
             FacilioField fieldObj = modBean.getField(fieldId);
             FacilioModule sourceModule = modBean.getModule(fieldObj.getModuleId());
             List<FacilioField> sourcefields = modBean.getAllFields(sourceModule.getName());

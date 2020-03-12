@@ -51,7 +51,9 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
 
         if (resources != null) {
                 builder.andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("parentId"),resources, NumberOperators.EQUALS));
-
+        } else
+        {
+            throw new IllegalArgumentException("Please select asset to migrate");
         }
 
         List<ReadingContext> readingsList = builder.get();
