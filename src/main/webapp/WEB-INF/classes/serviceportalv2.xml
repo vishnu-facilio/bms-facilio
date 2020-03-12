@@ -313,6 +313,22 @@
 		</action>
 
 	</package>
+	
+	<package name="graphicsApi" namespace="/api/service/v2/graphics"
+		extends="newServicePortalApiV2">
+		<action name="getById"
+			class="com.facilio.bmsconsole.actions.GraphicsAction"
+			method="getGraphicsDetails">
+		</action>
+	</package>
+	
+	<package name="workflowApi" namespace="/api/service/v2/workflow"
+		extends="newServicePortalApiV2">
+		<action name="getDefaultWorkflowResult"
+			class="com.facilio.workflows.action.WorkflowAction"
+			method="getDefaultWorkflowResultV2"></action>
+	</package>
+	
 	<package name="extendNewServicePortalApiV2" namespace="/api/service/v2" extends="newServicePortalApiV2">
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="formType">3</param>
