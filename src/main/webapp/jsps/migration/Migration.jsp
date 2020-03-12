@@ -101,14 +101,12 @@
 
         	try{
 
-                /* ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule floorModule = modBean.getModule("floor");
                 
                 NumberField field = new NumberField(floorModule, "defaultFloorPlanId", "Default Floor Plan", FacilioField.FieldDisplayType.NUMBER,"DEFAULT_FLOOR_PLAN_ID", FieldType.NUMBER, false, false, true,false);
-          		modBean.addField(field); */
+          		modBean.addField(field);
           		
-          		RollUpFieldUtil.addRollUpMigFields();
-
             }
             catch(Exception e) {
                 LOGGER.info(e.getMessage());
