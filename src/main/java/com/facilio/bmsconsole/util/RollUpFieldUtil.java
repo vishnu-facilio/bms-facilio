@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.instant.jobs.ParallelWorkflowRuleExecutionJob;
+import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.RollUpField;
@@ -25,10 +29,15 @@ import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class RollUpFieldUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(RollUpFieldUtil.class.getName());
 	
 	public static void addRollUpField(List<RollUpField> rollUpFields) throws Exception {
 		
@@ -90,7 +99,8 @@ public class RollUpFieldUtil {
 					rollUpField.setChildModule(modBean.getModule(rollUpField.getChildModuleId()));
 					rollUpField.getChildField().setModule(rollUpField.getChildModule());
 					if(rollUpField.getAggregateFieldId() == -1) {
-						rollUpField.setAggregateField(rollUpField.getChildField());		
+						rollUpField.setAggregateField(rollUpField.getChildField());	
+						rollUpField.setAggregateFieldId(rollUpField.getAggregateField().getFieldId());		
 					}else {
 						rollUpField.setAggregateField(fieldMap.get(rollUpField.getAggregateFieldId()));
 					}	
@@ -119,40 +129,60 @@ public class RollUpFieldUtil {
 	
 	public static void aggregateFieldAndAddRollUpFieldData(RollUpField triggeringChildField, List<Long> triggerChildGroupedIds, List<ReadingDataMeta> rollUpFieldData) throws Exception {
 		
-		FacilioField aggregationField = AggregateOperator.getAggregateOperator(triggeringChildField.getAggregateFunctionId()).getSelectField(triggeringChildField.getAggregateField());
-		aggregationField.setName("aggregationField");
-		
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
-		selectFields.add(aggregationField);
-		selectFields.add(triggeringChildField.getChildField());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(selectFields)
+		FacilioField childFieldCloned = triggeringChildField.getChildField().clone();
+		childFieldCloned.setName(childFieldCloned.getName()+"parentLookUpId");
+		selectFields.add(childFieldCloned);
+			
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.table(triggeringChildField.getChildModule().getTableName())
-				.innerJoin("Resources")
-				.on("Resources.ID=" +triggeringChildField.getChildModule().getTableName()+ ".ID")
-				.andCondition(CriteriaAPI.getCondition("Resources.SYS_DELETED","", "", CommonOperators.IS_EMPTY))
+				.module(triggeringChildField.getChildModule())
+				.select(selectFields)
+				.aggregate(AggregateOperator.getAggregateOperator(triggeringChildField.getAggregateFunctionId()), triggeringChildField.getAggregateField())
 				.andCondition(CriteriaAPI.getCondition(triggeringChildField.getChildField(), triggerChildGroupedIds, NumberOperators.EQUALS))
 				.groupBy(triggeringChildField.getChildModule().getTableName()+ "." +triggeringChildField.getChildField().getColumnName());
-		
+			
 		if(triggeringChildField.getChildCriteria() != null) {
 			selectBuilder.andCriteria(triggeringChildField.getChildCriteria());
 		}
 		
-		List<Map<String, Object>> propsList = selectBuilder.get();
-		System.out.println(" query -- "+selectBuilder.get());
+		List<Map<String, Object>> propsList = selectBuilder.getAsProps();
 		if(propsList != null && !propsList.isEmpty())
 		{
 			for(Map<String, Object> prop :propsList)
 			{
-				long parentLookUpId = (long)prop.get(triggeringChildField.getChildField().getName());
-				long aggregatedRollUpValue = (prop.get("aggregationField") != null) ? (long)prop.get("aggregationField") : -99;
-				constructAndAddDynamicRdm(parentLookUpId, aggregatedRollUpValue, triggeringChildField.getParentRollUpField(), rollUpFieldData);
+				long parentLookUpId = -1;
+				Object aggregatedRollUpValue = null;
+				
+				if(prop.get(triggeringChildField.getAggregateField().getName()) instanceof Map && triggeringChildField.getAggregateField() instanceof LookupField) {
+					Map<String, Object> lookUpAggregatedObject = (Map<String, Object>) prop.get(triggeringChildField.getAggregateField().getName());
+					if(lookUpAggregatedObject.get("id") != null) {
+						aggregatedRollUpValue = lookUpAggregatedObject.get("id");
+					}
+				}
+				else {
+					aggregatedRollUpValue = prop.get(triggeringChildField.getAggregateField().getName());
+				}
+				
+				if(prop.get(childFieldCloned.getName()) instanceof Map && childFieldCloned instanceof LookupField) {
+					Map<String, Object> lookUpObject = (Map<String, Object>) prop.get(childFieldCloned.getName());
+					if(lookUpObject.get("id") != null) {
+						parentLookUpId = (long)lookUpObject.get("id");
+					}
+				}
+				else {
+					parentLookUpId = (long)prop.get(childFieldCloned.getName());
+				}
+			
+				if(parentLookUpId != -1 && aggregatedRollUpValue != null) {
+					constructAndAddDynamicRdm(parentLookUpId, aggregatedRollUpValue, triggeringChildField.getParentRollUpField(), rollUpFieldData);
+				}
+				LOGGER.info("Aggregated Rollup Result : "+ aggregatedRollUpValue + " ParentLookUpPrimaryId : " + parentLookUpId +" RollUpFieldContext -- " +triggeringChildField);
 			}
 		}	
 	}
 	
-	private static void constructAndAddDynamicRdm(long parentLookUpId, long aggregatedRollUpResult, FacilioField parentRollUpField, List<ReadingDataMeta> rollUpFieldData) {
+	private static void constructAndAddDynamicRdm(long parentLookUpId, Object aggregatedRollUpResult, FacilioField parentRollUpField, List<ReadingDataMeta> rollUpFieldData) {
 		ReadingDataMeta rdm = new ReadingDataMeta();
 		rdm.setFieldId(parentRollUpField.getFieldId());
 		rdm.setField(parentRollUpField);	
@@ -251,7 +281,7 @@ public class RollUpFieldUtil {
 		floorRollUpFieldContextIS.setParentRollUpFieldId(floorModuleFields.get("noOfIndependentSpaces").getFieldId());
 	
 		Criteria criteria1 = new Criteria();
-		//criteria1.addAndCondition(spaceNotNull);
+		criteria1.addAndCondition(spaceNull);
 		criteria1.addAndCondition(spaceTypeSpace);
 		criteria1.addAndCondition(floorNotNull);
 		criteria1.addAndCondition(buildingNotNull);
@@ -266,7 +296,7 @@ public class RollUpFieldUtil {
 		buildingRollUpFieldContext.setParentModuleId(buildingModule.getModuleId());
 
 		Criteria criteria2 = new Criteria();
-		//criteria2.addAndCondition(spaceNull);
+		criteria2.addAndCondition(spaceNull);
 		criteria2.addAndCondition(spaceTypeNotSpace);
 		criteria2.addAndCondition(floorNotNull);
 		criteria2.addAndCondition(buildingNotNull);
@@ -279,7 +309,7 @@ public class RollUpFieldUtil {
 		rollUpFields.add(buildingRollUpFieldContextF);
 		
 		Criteria criteria3 = new Criteria();
-		//criteria3.addAndCondition(spaceNotNull);
+		criteria3.addAndCondition(spaceNull);
 		criteria3.addAndCondition(spaceTypeSpace);
 		criteria3.addAndCondition(floorNull);
 		criteria3.addAndCondition(buildingNotNull);
@@ -297,7 +327,7 @@ public class RollUpFieldUtil {
 		siteRollUpFieldContext.setParentModuleId(siteModule.getModuleId());
 		
 		Criteria criteria4 = new Criteria();
-		//criteria4.addAndCondition(spaceNull);
+		criteria4.addAndCondition(spaceNull);
 		criteria4.addAndCondition(spaceTypeNotSpace);
 		criteria4.addAndCondition(floorNull);
 		criteria4.addAndCondition(buildingNotNull);
@@ -310,7 +340,7 @@ public class RollUpFieldUtil {
 		rollUpFields.add(siteRollUpFieldContextB);
 		
 		Criteria criteria5 = new Criteria();
-		//criteria5.addAndCondition(spaceNotNull);
+		criteria5.addAndCondition(spaceNull);
 		criteria5.addAndCondition(spaceTypeSpace);
 		criteria5.addAndCondition(floorNull);
 		criteria5.addAndCondition(buildingNull);

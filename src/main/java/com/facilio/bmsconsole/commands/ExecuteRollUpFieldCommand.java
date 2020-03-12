@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -35,61 +35,71 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTransactionCommand{
 	
-	private static final Logger LOGGER = LogManager.getLogger(ExecuteRollUpFieldCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ExecuteRollUpFieldCommand.class.getName());
 	
 	private List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
+	private List<RollUpField> triggeringChildFields;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-		
-		if(recordMap != null && !recordMap.isEmpty()) 
-		{		
-			for(Map.Entry<String, List> entry : recordMap.entrySet()) 
-			{				
-				String moduleName = entry.getKey();
-				List records = new LinkedList<>(entry.getValue());
-				if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
-					LOGGER.log(Level.WARN, "Module Name / Records is null/ empty while upating records in rollUpField ==> "+moduleName+"==>"+entry.getValue());
-					continue;
-				}
+		try {
+			Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+			if(recordMap != null && !recordMap.isEmpty()) 
+			{		
+				for(Map.Entry<String, List> entry : recordMap.entrySet()) 
+				{				
+					String moduleName = entry.getKey();
+					List records = new LinkedList<>(entry.getValue());
+					if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
+						LOGGER.log(Level.WARNING, "Module Name / Records is null/ empty while upating records in rollUpField ==> "+moduleName+"==>"+entry.getValue());
+						continue;
+					}
+					
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(moduleName);
 				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(moduleName);
-			
-				List<RollUpField> triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);
-				if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {		
-					for(RollUpField triggeringChildField:triggeringChildFields) 
-					{
-						List<Long> triggerChildGroupedIds = new ArrayList<Long>();
-						for(Object record:records) 
+					triggeringChildFields = new ArrayList<RollUpField>();
+					triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);
+					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {		
+						for(RollUpField triggeringChildField:triggeringChildFields) 
 						{
-							Map<String, Object> recordData = FieldUtil.getAsProperties(record);
-							if(recordData.get(triggeringChildField.getChildField().getName()) != null) {	
-								if(triggeringChildField.getChildField() instanceof LookupField) {
-									Map<String, Object> lookUpObject = (Map<String, Object>) recordData.get(triggeringChildField.getChildField().getName());
-									if(lookUpObject.get("id") != null) {
-										triggerChildGroupedIds.add((long)lookUpObject.get("id"));
+							List<Long> triggerChildGroupedIds = new ArrayList<Long>();
+							for(Object record:records) 
+							{
+								Map<String, Object> recordData = FieldUtil.getAsProperties(record);
+								if(recordData.get(triggeringChildField.getChildField().getName()) != null) {	
+									if(triggeringChildField.getChildField() instanceof LookupField) {
+										Map<String, Object> lookUpObject = (Map<String, Object>) recordData.get(triggeringChildField.getChildField().getName());
+										if(lookUpObject.get("id") != null) {
+											triggerChildGroupedIds.add((long)lookUpObject.get("id"));
+										}
+									}
+									else {
+										triggerChildGroupedIds.add((long)recordData.get(triggeringChildField.getChildField().getName()));
 									}
 								}
-								else {
-									triggerChildGroupedIds.add((long)recordData.get(triggeringChildField.getChildField().getName()));
-								}
-							}
-						}				
-						if(triggerChildGroupedIds != null && !triggerChildGroupedIds.isEmpty()){						
-							RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
-						}	
-					}
-				}			
-			}	
-		}	
+							}				
+							if(triggerChildGroupedIds != null && !triggerChildGroupedIds.isEmpty()){						
+								RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
+							}	
+						}
+					}			
+				}	
+			}			
+		}
+		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
+					" Exception: " + e.getMessage() , e);
+		}
+			
 		return false;
 	}
 		
@@ -98,18 +108,25 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 		
 		if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
 		{
-			for(ReadingDataMeta rollUpData:rollUpFieldData) 
-			{			
-				FacilioField parentRollUpField = rollUpData.getField();
-				Map<String,Object> prop = new HashMap<String,Object>();
-				prop.put(parentRollUpField.getName(), rollUpData.getValue());
-				
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(parentRollUpField.getModule().getTableName())
-						.fields(Collections.singletonList(parentRollUpField))
-						.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
-				
-				updateBuilder.update(prop);
+			try {
+				for(ReadingDataMeta rollUpData:rollUpFieldData) 
+				{			
+					FacilioField parentRollUpField = rollUpData.getField();
+					Map<String,Object> prop = new HashMap<String,Object>();
+					prop.put(parentRollUpField.getName(), rollUpData.getValue());
+					
+					UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+							.table(parentRollUpField.getModule().getTableName())
+							.module(parentRollUpField.getModule())
+							.fields(Collections.singletonList(parentRollUpField))
+							.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
+					
+					updateBuilder.updateViaMap(prop);
+				}	
+			}
+			catch(Exception e) {
+				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
+						" Exception: " + e.getMessage() , e);
 			}	
 		}	
 		

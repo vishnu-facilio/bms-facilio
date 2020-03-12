@@ -14,7 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class RollUpField{
-	
+
 	private static final long serialVersionUID = 1L;
     
 	private long id = -1;
@@ -178,4 +178,19 @@ public class RollUpField{
 		this.childField = childField;
 	}
     
+	@Override
+	public String toString() {
+		
+		StringBuilder builder =  new StringBuilder()
+				.append(" RollUpField ID : ").append(id)
+				.append(", ChildFieldId : ").append(childFieldId)
+				.append(", ChildModuleId : ").append(childModuleId)
+				.append(", ChildCriteriaId : ").append(childCriteriaId)
+				.append(", aggregateFunctionId : "+aggregateFunctionId)
+				.append(", AggregateFieldId : ").append(aggregateFieldId)
+				.append(", ParentRollUpFieldId : ").append(parentRollUpFieldId)
+				.append(", ParentModuleId : ").append(parentModuleId);
+			
+		return builder.toString();
+	}
 }
