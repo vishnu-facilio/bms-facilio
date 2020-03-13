@@ -6,9 +6,11 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -64,7 +66,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                     readingDataIds.addAll(readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList()));
 
                     for (long assetId : batchParentIds) {
-                        deleteReadings(assetId, Collections.singletonList(sourceField), sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+                        deleteReadings(assetId, sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
                     }
                 }
                 parentIds.addAll(readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList()));
@@ -111,19 +113,19 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         chain.execute(context);
     }
 
-    public static void deleteReadings(long parentId, List<FacilioField> assetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
+    public static void deleteReadings(long parentId, FacilioField targetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
 
         ReadingContext reading = new ReadingContext();
-        assetFields.forEach(field -> {
+        // assetFields.forEach(field -> {
             Object value;
-            if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
+            if (targetFields.getDataTypeEnum() == FieldType.NUMBER || targetFields.getDataTypeEnum() == FieldType.DECIMAL) {
                 value = -99;
             }
             else {
                 value = null;
             }
-            reading.addReading(field.getName(), value);
-        });
+           //  reading.addReading(field.getName(), value);
+       //  });
 
         if (deleteReadings == null || deleteReadings.length == 0 || deleteReadings[0]) {
 
@@ -132,16 +134,27 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                 fields = bean.getAllFields(module.getName());
                 fieldMap = FieldFactory.getAsMap(fields);
             }
-
-            UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
-                    .module(module)
-                    .fields(fields)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
-            if (readingDataIds != null) {
-                updateBuilder.andCondition(CriteriaAPI.getIdCondition(readingDataIds, module));
+            List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdates = new ArrayList<>();
+            for (Long id : readingDataIds) {
+                GenericUpdateRecordBuilder.BatchUpdateByIdContext batchValue = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
+                batchValue.setWhereId(id);
+                batchValue.addUpdateValue("value", value);
+                batchUpdates.add(batchValue);
             }
-            updateBuilder.update(reading);
 
+//            UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
+//                    .module(module)
+//                    .fields(fields)
+//                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+//            if (readingDataIds != null) {
+//                updateBuilder.andCondition(CriteriaAPI.getIdCondition(readingDataIds, module));
+//            }
+//            updateBuilder.update(reading);
+
+            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(Collections.singletonList(fieldMap.get(targetFields.getName())));
+            builder.batchUpdateById(batchUpdates);
         }
 
     }
