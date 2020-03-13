@@ -8049,4 +8049,25 @@ public class FieldFactory {
         fields.add(getField("tenantId", "TENANT_ID", module, FieldType.NUMBER));
         return fields;
     }
+    
+	public static List<FacilioField> getCommissioningLogFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCommissioningLogModule();
+		fields.add(getIdField(module));
+		fields.addAll(getSystemFields(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getField("publishedTime", "PUBLISHED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("pointJsonStr", "POINT_JSON", module, FieldType.STRING));
+		fields.add(getField("clientMetaStr", "CLIENT_META_JSON", module, FieldType.STRING));
+		return fields;
+	}
+	
+	public static List<FacilioField> getCommissioningLogControllerFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCommissioningLogControllerModule();
+		fields.add(getField("commissioningLogId", "COMMISSIONING_LOG_ID", module, FieldType.LOOKUP));
+		fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.LOOKUP));
+		return fields;
+	}
 }

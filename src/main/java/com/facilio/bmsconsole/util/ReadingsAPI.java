@@ -200,17 +200,9 @@ public class ReadingsAPI {
 	}
 	
 	public static ReadingDataMeta getReadingDataMeta(long resourceId,FacilioField field) throws Exception {
-		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getReadingDataMetaFields())
-				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId)
-				.andCustomWhere(module.getTableName()+".FIELD_ID = ?", field.getFieldId());
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<ReadingDataMeta> readingMetaList = getReadingDataFromProps(props, Collections.singletonMap(field.getId(), field));
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		rdmPairs.add(Pair.of(resourceId, field));
+		List<ReadingDataMeta> readingMetaList = getReadingDataMetaList(rdmPairs);
 		if (readingMetaList != null && !readingMetaList.isEmpty()) {
 			return readingMetaList.get(0);
 		}

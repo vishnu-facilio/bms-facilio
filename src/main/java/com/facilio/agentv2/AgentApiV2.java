@@ -63,8 +63,16 @@ public class AgentApiV2 {
         LOGGER.info(" getting agent ");
         return getAgents(null,null,false,context);
     }
-
+    
+    public static List<FacilioAgent> getAgents(Collection<Long> ids) throws Exception {
+    		return getAgents(null, null, true, null, ids);
+    }
+    
     private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted,FacilioContext context) throws Exception {
+    		return getAgents(agentName, type, getDeleted, context, null);
+    }
+
+    private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted,FacilioContext context, Collection<Long> ids) throws Exception {
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         if(context == null){
@@ -81,6 +89,9 @@ public class AgentApiV2 {
         }
         if (!getDeleted) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+        }
+        if (ids != null) {
+        		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, MODULE));
         }
         context.put(FacilioConstants.ContextNames.SORT_FIELDS,fieldMap.get(AgentConstants.CONNECTED).getColumnName()+" DESC");
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);

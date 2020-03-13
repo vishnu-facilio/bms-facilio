@@ -2231,4 +2231,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FieldUsageCommand());
 		return c;
 	}
+	
+	public static FacilioChain getCommissioningLogsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCommissioningLogsCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getCommissioningDetailsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCommissioningDetailsCommand());
+		return chain;
+	}
 }

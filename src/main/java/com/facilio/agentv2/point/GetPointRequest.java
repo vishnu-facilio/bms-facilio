@@ -13,12 +13,15 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,10 +58,18 @@ public class GetPointRequest {
 
     public GetPointRequest withControllerId(long controllerId) throws Exception {
         if (controllerId > 0) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
-            return this;
+            return withControllerIds(Collections.singletonList(controllerId));
         } else {
             throw new Exception(" controller id cane be less than 1");
+        }
+    }
+    
+    public GetPointRequest withControllerIds(List<Long> controllerIds) throws Exception {
+        if (CollectionUtils.isNotEmpty(controllerIds)) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
+            return this;
+        } else {
+            throw new Exception(" controller ids cannot be empty");
         }
     }
 
@@ -145,6 +156,11 @@ public class GetPointRequest {
             data = selectRecordBuilder.get();
         }
         return data;
+    }
+    
+    public GetPointRequest limit(int limit) {
+    		this.limit = limit;
+    		return this;
     }
 
     private GenericSelectRecordBuilder loadBuilder(FacilioControllerType controllerType) throws Exception {

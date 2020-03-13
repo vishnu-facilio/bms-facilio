@@ -1271,7 +1271,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_REQUESTS = "inventoryrequests";
 		public static final String INVENTORY_REQUEST_LINE_ITEMS = "inventoryrequestlineitems";
 
-
+		public static final String LOG = "log";
 		public static final String UNIT_POINTS="unit";
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";

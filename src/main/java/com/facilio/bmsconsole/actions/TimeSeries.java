@@ -447,6 +447,5 @@ public class TimeSeries extends FacilioAction {
 	public void setShowInstanceCount(Boolean showInstanceCount) {
 		this.showInstanceCount = showInstanceCount;
 	}
-
 	
 }

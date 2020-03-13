@@ -2633,6 +2633,27 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.CommissionAction" method="logList">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.CommissionAction" method="addLog">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.CommissionAction" method="updateLog">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="publish" class="com.facilio.bmsconsole.actions.CommissionAction" method="publishLog">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.CommissionAction" method="logDetails">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+			<param name="id">{1}</param>
+		</action>
 	</package>
 
 	<package name="inventoryApi" namespace="/api/v2/inventory"
