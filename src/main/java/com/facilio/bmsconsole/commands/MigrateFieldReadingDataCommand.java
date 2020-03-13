@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.agent.integration.queue.AgentIntegrationQueue;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -18,6 +19,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +29,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MigrateFieldReadingDataCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(MigrateFieldReadingDataCommand.class.getName());
+
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -44,6 +49,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
 
         List<FacilioField> sourcefields = bean.getAllFields(sourceModule.getName());
         Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(sourcefields);
+        LOGGER.info("Field Migration Started ");
         int recordLimit = 5000;
         while (true) {
             SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
@@ -63,13 +69,13 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                 List<Long> batchParentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());
                 List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
                 if (batchParentIds != null && batchParentIds.size() > 0) {
-                    readingDataIds.addAll(readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList()));
-
                     for (long assetId : batchParentIds) {
                         deleteReadings(assetId, sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
                     }
                 }
                 parentIds.addAll(readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList()));
+                LOGGER.debug("Reading Ids ---> " + readingDataIds.size() );
+                LOGGER.debug("Reading Ids ---> " + readingDataIds );
             } else {
                 if (parentIds != null && parentIds.size() > 0) {
                     for (long assetId : parentIds) {
@@ -79,6 +85,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                //  break;
             }
             if (readingsList == null || readingsList.isEmpty() ) {
+                LOGGER.info("Field Migration Compeleted ");
                 break;
             }
         }
