@@ -306,7 +306,7 @@
 //        orgs = AccountUtil.getOrgBean().getOrgs();
 //        for (Organization org : orgs) {
 //            System.out.println("org: " + org.getOrgId());
-            AccountUtil.setCurrentAccount(1);
+            AccountUtil.setCurrentAccount(326);
             FacilioChain c = FacilioChain.getTransactionChain();
             c.addCommand(new OrgLevelMigrationCommand());
             c.execute();
