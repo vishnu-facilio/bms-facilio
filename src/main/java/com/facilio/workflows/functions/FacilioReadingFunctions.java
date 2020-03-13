@@ -50,7 +50,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			int dateOperator = Integer.parseInt(objects[1].toString());
 			
 			String dateOperatorValue = null;
-			if(objects[2] != null) {
+			if(objects.length > 2 && objects[2] != null) {
 				dateOperatorValue = objects[2].toString();
 			}
 			
