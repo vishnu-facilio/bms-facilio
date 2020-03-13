@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
@@ -38,6 +39,7 @@ public class DataUtil {
 					.module(energyDataModule)
 					.aggregate(NumberAggregateOperator.SUM, clonedEnergyField)
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(energyDataModule), String.valueOf(energyDataModule.getModuleId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), from+","+to, DateOperators.BETWEEN))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), energyMeterIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("marked"), Boolean.FALSE.toString(), BooleanOperators.IS))
 					;
