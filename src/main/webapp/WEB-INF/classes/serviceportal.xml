@@ -923,12 +923,24 @@
 		</action>
 		
 	</package>
-	<package name="moduleApi" namespace="/api/service/module" extends="homeApi">
+	<package name="moduleApi" namespace="/api/service/module" extends="serviceportal">
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="metadata">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="servicePortalassetSummaryApi" namespace="/api/service/asset/summary" extends="serviceportal">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="assetDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="assetId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^asset.*</param>
 			</result>
 		</action>
 	</package>
