@@ -7,7 +7,6 @@
 <%@page import="com.facilio.modules.FieldUtil" %>
 <%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
-<%@page import="com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType" %>
 <%@ page import="org.apache.commons.chain.Context" %>
 <%@page import="com.facilio.bmsconsole.workflow.rule.EventType" %>
 <%@ page import="org.apache.log4j.Logger" %>
@@ -79,19 +78,6 @@
 
         @Override
         public boolean executeCommand(Context context) throws Exception {
-
-        	try{
-
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule floorModule = modBean.getModule("floor");
-                
-                NumberField field = new NumberField(floorModule, "defaultFloorPlanId", "Default Floor Plan", FacilioField.FieldDisplayType.NUMBER,"DEFAULT_FLOOR_PLAN_ID", FieldType.NUMBER, false, false, true,false);
-          		modBean.addField(field);
-          		
-            }
-            catch(Exception e) {
-                LOGGER.info(e.getMessage());
-            }
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
@@ -317,18 +303,18 @@
 <%
     List<Organization> orgs = null;
     try {
-        orgs = AccountUtil.getOrgBean().getOrgs();
-        for (Organization org : orgs) {
-            System.out.println("org: " + org.getOrgId());
-            AccountUtil.setCurrentAccount(org.getOrgId());
+//        orgs = AccountUtil.getOrgBean().getOrgs();
+//        for (Organization org : orgs) {
+//            System.out.println("org: " + org.getOrgId());
+            AccountUtil.setCurrentAccount(1);
             FacilioChain c = FacilioChain.getTransactionChain();
             c.addCommand(new OrgLevelMigrationCommand());
             c.execute();
 
             AccountUtil.cleanCurrentAccount();
-        }
+//        }
     } catch (Exception e) {
         e.printStackTrace();
     }
-    out.println("Done");
+    System.out.println("Done");
 %>
