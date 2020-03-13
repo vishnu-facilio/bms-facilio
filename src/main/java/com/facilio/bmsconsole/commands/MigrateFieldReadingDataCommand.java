@@ -42,7 +42,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         List<FacilioField> sourcefields = bean.getAllFields(sourceModule.getName());
         Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(sourcefields);
         int page = 0 ;
-        int recordLimit = 1;
+        int recordLimit = 5000;
         while (true) {
             SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
                     .module(sourceModule)
