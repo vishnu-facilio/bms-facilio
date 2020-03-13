@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,10 +12,16 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddCommissioningLogCommand extends FacilioCommand {
 
@@ -42,8 +49,27 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void validateLog(List<Long> controllerIds) {
+	private void validateLog(List<Long> controllerIds) throws Exception {
+		FacilioModule module = ModuleFactory.getCommissioningLogModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogFields());
+		FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();
+		Map<String, FacilioField> controllerFieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogControllerFields());
 		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.innerJoin(controllerModule.getTableName())
+				.on(fieldMap.get("id").getCompleteColumnName()+"="+controllerFieldMap.get("commissioningLogId").getCompleteColumnName())
+				.select(new HashSet<>())
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("controllerId"), controllerIds, NumberOperators.EQUALS));
+				;
+				
+		Map<String, Object> props = builder.fetchFirst();
+		long count = (long) props.get("id");
+		if (count > 0) {
+			throw new IllegalArgumentException("Some controllers selected are already in draft mode");
+		}
 	}
 	
 	private void addControllers(CommissioningLogContext log) throws Exception {
