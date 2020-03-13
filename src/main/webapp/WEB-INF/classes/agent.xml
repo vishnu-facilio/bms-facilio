@@ -150,7 +150,7 @@
         </action>
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
-        <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
+        <action name="addClient" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
         </action>
         <action name="upgradeAgent" class="com.facilio.agentv2.actions.VersionLogAction" method="upgradeAgent">
         </action>

@@ -28,9 +28,6 @@ import java.util.Map;
 
 public class MetricsApi {
     private static final Logger LOGGER = LogManager.getLogger(MetricsApi.class.getName());
-
-    private static final FacilioModule MODULE = ModuleFactory.getAgentMetricsV2Module();
-    private static final List<FacilioField> FIELDS = FieldFactory.getAgentMetricV2Fields();
     public static final String MODULE_NAME = FacilioConstants.ContextNames.AGENT_METRICS_MODULE;
 
     public static boolean logMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
@@ -47,7 +44,9 @@ public class MetricsApi {
 
 
     public static List<Map<String, Object>> getMetrics(long agentId,FacilioContext context) throws Exception {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
+        List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
+        FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         if (fieldMap.containsKey(AgentConstants.AGENT_ID)) {
             fieldMap.remove(AgentConstants.AGENT_ID);
         }
@@ -61,9 +60,9 @@ public class MetricsApi {
         }
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(metricsV2Module.getTableName())
                 .select(fieldMap.values())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agentId), NumberOperators.EQUALS))
                 .orderBy(AgentConstants.CREATED_TIME + " DESC");
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         if (pagination != null) {
@@ -86,7 +85,9 @@ public class MetricsApi {
     }
 
     public static List<AgentMetrics> getMetrics() throws Exception {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FIELDS);
+        List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
+        FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(MODULE_NAME);
         List<FacilioField> allFields = modBean.getModuleFields(module.getName());
@@ -98,6 +99,8 @@ public class MetricsApi {
     }
 
     private static Map<String, Object> getMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
+        List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
+        FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
         LOGGER.info(" getting metrics for agent->" + agent.getId());
         if (agent != null) {
             if ((agent.getId() > 0)) {
@@ -107,11 +110,11 @@ public class MetricsApi {
                         int payloadInt = getPublishType(payload).asInt();
                         long createdTime = getCreatedTime(agent);
                         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                                .table(MODULE.getTableName())
+                                .table(metricsV2Module.getTableName())
                                 .select(FieldFactory.getAgentMetricV2Fields())
-                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agent.getId()), NumberOperators.EQUALS))
-                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentPublishTypeField(MODULE), String.valueOf(payloadInt), NumberOperators.EQUALS))
-                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(MODULE), String.valueOf(createdTime), NumberOperators.EQUALS));
+                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agent.getId()), NumberOperators.EQUALS))
+                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentPublishTypeField(metricsV2Module), String.valueOf(payloadInt), NumberOperators.EQUALS))
+                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsV2Module), String.valueOf(createdTime), NumberOperators.EQUALS));
                         List<Map<String, Object>> result = selectRecordBuilder.get();
                         LOGGER.info(" query to get metrics " + selectRecordBuilder.toString());
                         if (!result.isEmpty()) {
@@ -218,11 +221,13 @@ public class MetricsApi {
 
 
     private static List<Map<String, Object>> getMetrics(long createdTime, long agentId, int Pub) throws Exception {
+        List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
+        FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(metricsV2Module.getTableName())
                 .select(FieldFactory.getAgentMetricV2Fields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(MODULE), String.valueOf(createdTime), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsV2Module), String.valueOf(createdTime), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agentId), NumberOperators.EQUALS));
         List<Map<String, Object>> result = genericSelectRecordBuilder.get();
         if (!result.isEmpty()) {
             return result;
@@ -282,6 +287,8 @@ public class MetricsApi {
     }
 
     public static JSONObject getMetricsGraphData(Long agentId) {
+        List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
+        FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
         JSONObject obj = new JSONObject();
         obj.put("chartType", "line");
 
@@ -311,8 +318,8 @@ public class MetricsApi {
         obj.put("dateOperatorValue", null);
         if(agentId != null){
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
-            obj.put("criteria",criteria);
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agentId), NumberOperators.EQUALS));
+            obj.put("criteria", criteria);
         }
         else {
             obj.put("criteria", null);

@@ -55,9 +55,6 @@ public class AgentApiV2 {
         return null;
     }
 
-    private static final Map<String, FacilioField> FIELDSMAP = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
-    private static final FacilioModule MODULE = ModuleFactory.getNewAgentDataModule();
-
     public static List<FacilioAgent> getAgents(AgentType type) throws Exception {
         return getAgents(null, type, true,null);
     }
@@ -235,6 +232,7 @@ public class AgentApiV2 {
     }
 
     public static boolean updateAgent(FacilioAgent agent) throws Exception {
+        FacilioModule MODULE = ModuleFactory.getNewAgentDataModule();
         long currTime = System.currentTimeMillis();
         agent.setLastUpdatedTime(currTime);
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
@@ -250,12 +248,13 @@ public class AgentApiV2 {
     }
 
     public static boolean updateAgentLastDataRevievedTime(FacilioAgent agent){
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
         LOGGER.info(" updating agent last data recieved time "+agent.getCreatedTime());
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(agentDataModule.getTableName())
                 .fields(FieldFactory.getNewAgentFields())
-                .andCondition(CriteriaAPI.getIdCondition(agent.getId(), MODULE));
-        Map<String,Object> toUpdate = new HashMap<>();
+                .andCondition(CriteriaAPI.getIdCondition(agent.getId(), agentDataModule));
+        Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME,agent.getLastDataReceivedTime());
         try {
             if (updateRecordBuilder.update(toUpdate) > 0) {
@@ -275,22 +274,24 @@ public class AgentApiV2 {
         return CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(module), "NULL", CommonOperators.IS_EMPTY);
     }
 
-    static JSONObject getAgentCountDetails(){
-        try{
+    static JSONObject getAgentCountDetails() {
+        Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
+        try {
             List<FacilioField> fields = new ArrayList<>();
-            fields.add(FIELDSMAP.get(AgentConstants.CONNECTED));
-            fields.add(FieldFactory.getIdField(MODULE));
-            fields.add(FieldFactory.getSiteIdField(MODULE));
+            fields.add(fieldsmap.get(AgentConstants.CONNECTED));
+            fields.add(FieldFactory.getIdField(agentDataModule));
+            fields.add(FieldFactory.getSiteIdField(agentDataModule));
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .table(MODULE.getTableName())
+                    .table(agentDataModule.getTableName())
                     .select(fields)
-                    .andCondition(getDeletedTimeNullCondition(MODULE));
+                    .andCondition(getDeletedTimeNullCondition(agentDataModule));
             List<Map<String, Object>> data = selectRecordBuilder.get();
             Set<Long> siteSet = new HashSet<>();
             int offlineCount = 0;
-            if( ! data.isEmpty() ){
+            if (!data.isEmpty()) {
                 for (Map<String, Object> datum : data) {
-                    if( (datum.get(AgentConstants.CONNECTED) == null ) || (! (boolean)datum.get(AgentConstants.CONNECTED)) ){
+                    if ((datum.get(AgentConstants.CONNECTED) == null) || (!(boolean) datum.get(AgentConstants.CONNECTED))) {
                         offlineCount++;
                     }
                     if((datum.get(AgentConstants.SITE_ID) != null) && (((Number)datum.get(AgentConstants.SITE_ID)).longValue()>0) ){
@@ -310,16 +311,18 @@ public class AgentApiV2 {
     }
 
     static long getAgentCount() {
+        Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(new HashSet<>())
-                    .table(MODULE.getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELDSMAP.get(AgentConstants.ID))
-                    .andCondition(getDeletedTimeNullCondition(MODULE));
+                    .table(agentDataModule.getTableName())
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsmap.get(AgentConstants.ID))
+                    .andCondition(getDeletedTimeNullCondition(agentDataModule));
             List<Map<String, Object>> result = builder.get();
-            LOGGER.info(" count is "+result.get(0));
+            LOGGER.info(" count is " + result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.info("Exception while getting agent count ",e);
         }
         return 0;
@@ -335,13 +338,14 @@ public class AgentApiV2 {
     }
 
     public static boolean deleteAgent(List<Long> ids) {
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
         LOGGER.info(" in delete agent");
         try {
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(MODULE.getTableName())
+                    .table(agentDataModule.getTableName())
                     .fields(FieldFactory.getNewAgentFields())
-                    .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
-            Map<String,Object> toUpdateMap = new HashMap<>();
+                    .andCondition(CriteriaAPI.getIdCondition(ids, agentDataModule));
+            Map<String, Object> toUpdateMap = new HashMap<>();
             toUpdateMap.put(AgentConstants.DELETED_TIME,System.currentTimeMillis());
             int rowsAffected = builder.update(toUpdateMap);
             LOGGER.info(" rows affected ->"+rowsAffected);
@@ -357,6 +361,7 @@ public class AgentApiV2 {
     }
 
     public static List<Map<String, Object>> getAgentListData(boolean fetchDeleted) throws Exception {
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         if( ! fieldMap.isEmpty()){
@@ -375,16 +380,16 @@ public class AgentApiV2 {
         }
         fieldMap.put(AgentConstants.CONTROLLERS,FieldFactory.getCountOfDistinctField(FieldFactory.getIdField(controllerModule),AgentConstants.CONTROLLERS));
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(agentDataModule.getTableName())
                 .select(fieldMap.values())
-                .leftJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
-                .groupBy(MODULE.getTableName()+".ID");
+                .leftJoin(controllerModule.getTableName()).on(agentDataModule.getTableName() + ".ID = " + controllerModule.getTableName() + ".AGENT_ID")
+                .groupBy(agentDataModule.getTableName() + ".ID");
         if(fieldMap.containsKey(AgentConstants.CONNECTED)){
                 genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName());
 
         }
         if (!fetchDeleted) {
-            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
         }
         List<Map<String, Object>> maps = genericSelectRecordBuilder.get();
         LOGGER.info(" query "+genericSelectRecordBuilder.toString());
@@ -392,13 +397,14 @@ public class AgentApiV2 {
     }
 
     public static List<Map<String,Object>> getAgentFilter() throws Exception {
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentDataModule();
         List<FacilioField> filterFields = new ArrayList<>();
-        filterFields.add(FieldFactory.getIdField(MODULE));
-        filterFields.add(FieldFactory.getNameField(MODULE));
+        filterFields.add(FieldFactory.getIdField(agentDataModule));
+        filterFields.add(FieldFactory.getNameField(agentDataModule));
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(agentDataModule.getTableName())
                 .select(filterFields)
-                .andCondition(getDeletedTimeNullCondition(MODULE));
+                .andCondition(getDeletedTimeNullCondition(agentDataModule));
         return selectRecordBuilder.get();
     }
 

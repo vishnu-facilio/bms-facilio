@@ -42,9 +42,6 @@ import java.util.*;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
-    private static final FacilioModule MODULE = ModuleFactory.getPointModule();
-    private static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getPointFields());
-
 
     public static FacilioModule getPointModule(FacilioControllerType controllerType) throws Exception {
         switch (controllerType) {
@@ -231,6 +228,8 @@ public class PointsAPI {
 
 
     private static List<Map<String, Object>> fetchPoints(FacilioContext paginationContext) {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         List<Map<String, Object>> pointsData = new ArrayList<>();
         if (!containsValueCheck(AgentConstants.CONTROLLER_TYPE, paginationContext)) {
             LOGGER.info("Exception occurred, controllerType->" + paginationContext.get(AgentConstants.CONTROLLER_TYPE) + " is mandatory ");
@@ -259,13 +258,13 @@ public class PointsAPI {
             if (containsValueCheck(AgentConstants.POINT_IDS, paginationContext)) {
                 List<Long> ids = (List<Long>) paginationContext.get(AgentConstants.POINT_IDS);
                 if (!ids.isEmpty()) {
-                    criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, MODULE));
+                    criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, pointModule));
                 }
             }
             if (containsValueCheck(AgentConstants.DEVICE_ID, paginationContext) && checkValue((Long) paginationContext.get(AgentConstants.DEVICE_ID))) {
-                criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), String.valueOf(paginationContext.get(AgentConstants.DEVICE_ID)), NumberOperators.EQUALS));
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(paginationContext.get(AgentConstants.DEVICE_ID)), NumberOperators.EQUALS));
             }
-            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.ID), "0", NumberOperators.GREATER_THAN));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), "0", NumberOperators.GREATER_THAN));
             List<FacilioField> fields = FieldFactory.getPointFields();
             getPointTypeBasedConditionAndFields((FacilioControllerType) paginationContext.get(AgentConstants.CONTROLLER_TYPE), paginationContext);
             if (paginationContext != null && (!paginationContext.isEmpty())) {
@@ -505,12 +504,13 @@ public class PointsAPI {
     }
 
     private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         LOGGER.info(" making configuration complete ->" + pointNames);
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext context = editChain.getContext();
             Criteria criteria = getNameCriteria(pointNames);
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), String.valueOf(controllerId),NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
             context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
             context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
             editChain.execute();
@@ -522,12 +522,13 @@ public class PointsAPI {
     }
 
     private static boolean updatePointSubsctiptionComplete(long controllerId,List<String> pointNames) throws Exception {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         LOGGER.info(" making subscription complete ->" + pointNames);
         if ((pointNames != null) && (!pointNames.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext context = editChain.getContext();
             Criteria criteria = getNameCriteria(pointNames);
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), String.valueOf(controllerId),NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
             context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
             context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
             editChain.execute();
@@ -562,30 +563,33 @@ public class PointsAPI {
     }
 
     private static Criteria getIdCriteria(List<Long> pointIds) {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, MODULE));
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
         return criteria;
     }
     private static Criteria getNameCriteria(List<String> pointNames) {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(MODULE),  StringUtils.join(pointNames, ",") , StringOperators.IS));
-        LOGGER.info(" name criteria "+criteria);
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule), StringUtils.join(pointNames, ","), StringOperators.IS));
+        LOGGER.info(" name criteria " + criteria);
         return criteria;
     }
 
 
     public static long getPointsCount(long controllerId, long deviceId) {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         try {
             Criteria criteria = new Criteria();
             if (controllerId > 0L) {
-                LOGGER.info(FIELD_MAP.get(AgentConstants.CONTROLLER_ID));
-                criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.CONTROLLER_ID), String.valueOf(controllerId), NumberOperators.EQUALS));
+                LOGGER.info(fieldMap.get(AgentConstants.CONTROLLER_ID));
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_ID), String.valueOf(controllerId), NumberOperators.EQUALS));
             }
             if (deviceId > 0L) {
-                LOGGER.info(FIELD_MAP.get(AgentConstants.CONTROLLER_ID));
-                criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), String.valueOf(deviceId), NumberOperators.EQUALS));
+                LOGGER.info(fieldMap.get(AgentConstants.CONTROLLER_ID));
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(deviceId), NumberOperators.EQUALS));
             }
-            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.ID), String.valueOf(0), NumberOperators.GREATER_THAN));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), String.valueOf(0), NumberOperators.GREATER_THAN));
             return getPointsCount(criteria);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting agent points count", e);
@@ -594,10 +598,12 @@ public class PointsAPI {
     }
 
     private static long getPointsCount(Criteria criteria) throws Exception {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(pointModule.getTableName())
                 .select(new HashSet<>())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELD_MAP.get(AgentConstants.ID));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID));
         if (criteria != null) {
             builder.andCriteria(criteria);
         }
@@ -698,13 +704,14 @@ public class PointsAPI {
     }
 
     public static boolean executeDeletePoints(List<Long> pointIds) throws SQLException {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         //TODO -
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             LOGGER.info(" executing delete ");
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(MODULE.getTableName())
+                    .table(pointModule.getTableName())
                     .fields(FieldFactory.getPointFields())
-                    .andCondition(CriteriaAPI.getIdCondition(pointIds, MODULE));
+                    .andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
             Map<String, Object> toUpdateMap = new HashMap<>();
             toUpdateMap.put(AgentConstants.DELETED_TIME, System.currentTimeMillis());
             int rowsAffected = builder.update(toUpdateMap);
@@ -755,10 +762,11 @@ public class PointsAPI {
     }
 
     public static boolean resetConfiguredPoints(Long controllerId) throws SQLException {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(pointModule.getTableName())
                 .fields(FieldFactory.getPointFields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), String.valueOf(controllerId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
         Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
         int rowsAffected = builder.update(toUpdate);
@@ -839,12 +847,13 @@ public class PointsAPI {
 
 
     private static List<MiscPoint> getPointsSuperficial(Set<Long> controllerIds) throws Exception {
+        FacilioModule pointModule = ModuleFactory.getPointModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(pointModule.getTableName())
                 .select(FieldFactory.getPointFields())
-                .andCondition(AgentApiV2.getDeletedTimeNullCondition(MODULE));
+                .andCondition(AgentApiV2.getDeletedTimeNullCondition(pointModule));
         if( ! controllerIds.isEmpty()){
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
         }
         List<Map<String, Object>> data = builder.get();
         LOGGER.info(" data " + data);

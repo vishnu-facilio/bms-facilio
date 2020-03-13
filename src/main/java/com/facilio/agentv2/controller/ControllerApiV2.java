@@ -40,7 +40,7 @@ import java.util.*;
 public class ControllerApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
 
-    private static final FacilioModule MODULE = ModuleFactory.getNewControllerModule();
+
 
 
     /**
@@ -304,17 +304,18 @@ public class ControllerApiV2 {
 
 
     private static long getCount(Long agentId) {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         try {
             FacilioModule resourceModule = ModuleFactory.getResourceModule();
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(MODULE.getTableName())
+                    .table(controllerModule.getTableName())
                     .select(new HashSet<>())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
-                    .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID")
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule))
+                    .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName() + ".ID=" + controllerModule.getTableName() + ".ID")
                     .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
             if ((agentId != null) && (agentId > 0)) {
                 LOGGER.info("applying agent filter");
-                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
             }
             List<Map<String, Object>> result = builder.get();
             if ((result != null) && (!result.isEmpty())) {
@@ -364,11 +365,12 @@ public class ControllerApiV2 {
     }
 
     public static boolean checkForController(long controllerId) throws Exception {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(controllerModule.getTableName())
                 .select(new ArrayList<>())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
-                .andCondition(CriteriaAPI.getIdCondition(controllerId, MODULE));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule))
+                .andCondition(CriteriaAPI.getIdCondition(controllerId, controllerModule));
         List<Map<String, Object>> results = builder.get();
         if (!results.isEmpty()) {
             return (((Number) results.get(0).get(AgentConstants.ID)).intValue() > 0);
@@ -385,11 +387,12 @@ public class ControllerApiV2 {
 
 
     public static boolean checkForFieldDeviceController(long deviceId) throws Exception {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(controllerModule.getTableName())
                 .select(new ArrayList<>())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID, "DEVICE_ID", MODULE, FieldType.NUMBER), String.valueOf(deviceId), NumberOperators.EQUALS));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID, "DEVICE_ID", controllerModule, FieldType.NUMBER), String.valueOf(deviceId), NumberOperators.EQUALS));
         List<Map<String, Object>> records = builder.get();
         if (!records.isEmpty()) {
             LOGGER.info(" resord " + records);
@@ -404,14 +407,15 @@ public class ControllerApiV2 {
     }
 
     public static Map<Long, FacilioControllerType> getControllerIdsType(Long agentId) throws Exception {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         List<FacilioField> idTypefields = new ArrayList<>();
-        idTypefields.add(FieldFactory.getIdField(MODULE));
-        idTypefields.add(FieldFactory.getControllerTypeField(MODULE));
+        idTypefields.add(FieldFactory.getIdField(controllerModule));
+        idTypefields.add(FieldFactory.getControllerTypeField(controllerModule));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(controllerModule.getTableName())
                 .select(idTypefields);
         if (agentId != null) {
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
         }
         //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
         List<Map<String, Object>> results = builder.get();
@@ -426,13 +430,14 @@ public class ControllerApiV2 {
     }
 
     public static Set<Long> getControllerIds(Long agentId) throws Exception {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         List<FacilioField> idTypefields = new ArrayList<>();
-        idTypefields.add(FieldFactory.getIdField(MODULE));
+        idTypefields.add(FieldFactory.getIdField(controllerModule));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(controllerModule.getTableName())
                 .select(idTypefields);
         if (agentId != null) {
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
         }
         //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
         List<Map<String, Object>> results = builder.get();
@@ -494,19 +499,20 @@ public class ControllerApiV2 {
     }
 
     public static List<Map<String, Object>> getAgentControllerFilterData(Long agentId) throws Exception {
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule resourceModule = ModuleFactory.getResourceModule();
         fields.add(FieldFactory.getNameField(resourceModule));
-        fields.add(FieldFactory.getIdField(MODULE));
-        fields.add(FieldFactory.getControllerTypeField(MODULE));
+        fields.add(FieldFactory.getIdField(controllerModule));
+        fields.add(FieldFactory.getControllerTypeField(controllerModule));
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(controllerModule.getTableName())
                 .select(fields)
-                .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID")
+                .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName() + ".ID=" + controllerModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
-        if(agentId != null){
-                    genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
-                }
-                return genericSelectRecordBuilder.get();
+        if (agentId != null) {
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        return genericSelectRecordBuilder.get();
     }
 }

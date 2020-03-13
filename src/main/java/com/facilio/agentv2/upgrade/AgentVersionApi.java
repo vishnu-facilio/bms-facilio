@@ -5,16 +5,18 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.*;
 
 public class AgentVersionApi {
     private static final Logger LOGGER = LogManager.getLogger(AgentVersionApi.class.getName());
@@ -24,6 +26,7 @@ public class AgentVersionApi {
         versionContext.put(AgentConstants.VERSION, version);
         versionContext.put(AgentConstants.DESCRIPTION, description);
         versionContext.put(AgentConstants.CREATED_BY, createdBy);
+        versionContext.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
         versionContext.put(AgentConstants.URL, url);
         GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getAgentVersionModule().getTableName())
@@ -85,4 +88,15 @@ public class AgentVersionApi {
         return FacilioProperties.getClientAppUrl() + "/api/agent/download/downloadAgent";
     }
 
+    public static boolean markVersionLogUpdated(String token) throws SQLException {
+        FacilioModule agentVersionLogModule = ModuleFactory.getAgentVersionLogModule();
+        Map<String, Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.UPDATED_TIME, System.currentTimeMillis());
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(agentVersionLogModule.getTableName())
+                .fields(new ArrayList<>(Arrays.asList(FieldFactory.getUpdatedTimeField(agentVersionLogModule))))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(agentVersionLogModule), token, StringOperators.IS));
+        return updateRecordBuilder.update(toUpdate) > 0;
+
+    }
 }

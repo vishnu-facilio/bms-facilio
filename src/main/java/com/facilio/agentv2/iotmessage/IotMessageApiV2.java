@@ -38,10 +38,6 @@ import java.util.Map;
 public class IotMessageApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(IotMessageApiV2.class.getName());
 
-    private static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getIotMessageFields());
-
-    private static final FacilioModule MODULE = ModuleFactory.getIotMessageModule();
-
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
     public static boolean acknowdledgeMessage(long id, Status status) throws Exception {
@@ -85,11 +81,13 @@ public class IotMessageApiV2 {
     }
 
     private static List<IotMessage> getSiblingIotMessages(IotMessage iotMessage) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getIotMessageFields());
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(iotMessageModule.getTableName())
                 .select(FieldFactory.getIotMessageFields())
-                .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.PARENT_ID), String.valueOf(iotMessage.getParentId()),NumberOperators.EQUALS));
-        return FieldUtil.getAsBeanListFromMapList(builder.get(),IotMessage.class);
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.PARENT_ID), String.valueOf(iotMessage.getParentId()), NumberOperators.EQUALS));
+        return FieldUtil.getAsBeanListFromMapList(builder.get(), IotMessage.class);
     }
 
     private static void updatePointAcks(IotMessage iotMessage) throws Exception {
@@ -192,11 +190,12 @@ public class IotMessageApiV2 {
         }
     }
         private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
-                .select(FieldFactory.getIotMessageFields())
-                .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
-        List<Map<String, Object>> records = builder.get();
+            FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(iotMessageModule.getTableName())
+                    .select(FieldFactory.getIotMessageFields())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
+            List<Map<String, Object>> records = builder.get();
         LOGGER.info("  query "+builder.toString());
         if (records.isEmpty()) {
             return new ArrayList<>();
@@ -207,10 +206,11 @@ public class IotMessageApiV2 {
 
 
     public static int updateIotMessage(IotMessage iotMessage) throws Exception {
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
         return new GenericUpdateRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(iotMessageModule.getTableName())
                 .fields(FieldFactory.getIotMessageFields())
-                .andCondition(CriteriaAPI.getIdCondition(iotMessage.getId(), MODULE))
+                .andCondition(CriteriaAPI.getIdCondition(iotMessage.getId(), iotMessageModule))
                 .update(FieldUtil.getAsProperties(iotMessage));
     }
 
@@ -291,9 +291,10 @@ public class IotMessageApiV2 {
     }
 
     public static List<Map<String, Object>> listIotMessages(long agentId, FacilioContext paginationContext) throws Exception {
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
         List<Long> getIotDataIds = getIotDataIds(agentId);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
+                .table(iotMessageModule.getTableName())
                 .select(FieldFactory.getIotMessageFields());
         if( ! getIotDataIds.isEmpty()){
             FacilioField parentIdField = FieldFactory.getAsMap(FieldFactory.getIotMessageFields()).get(AgentConstants.PARENT_ID);

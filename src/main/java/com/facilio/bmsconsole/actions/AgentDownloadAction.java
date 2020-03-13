@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.interceptors.AgentDownloadInterceptor;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.upgrade.AgentVersionApi;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
@@ -14,7 +17,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static com.facilio.modules.ModuleFactory.getAgentVersionLogModule;
+import static com.facilio.modules.ModuleFactory.getAgentVersionModule;
 
 public class AgentDownloadAction extends ActionSupport {
     private static final Logger LOGGER = LogManager.getLogger(AgentDownloadAction.class.getName());
@@ -66,6 +75,7 @@ public class AgentDownloadAction extends ActionSupport {
                 LOGGER.info("FilePath " + file.getAbsolutePath());
             }
             fileInputStream = new FileInputStream(file);
+            FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
             return SUCCESS;
         }catch (Exception ex){
             LOGGER.info(ex.getMessage());
@@ -74,31 +84,34 @@ public class AgentDownloadAction extends ActionSupport {
     }
 
     private File downloadExeFrom(String url) throws Exception {
+        if (FacilioProperties.isProduction()) {
             InputStream inputStream = FacilioFactory.getFileStore().getSecretFile(url);
 
-            String key = "Org_"+this.orgId
-                    + "Agent_"+ this.agentId
-                    + "Version_"+ this.version
+            String key = "Org_" + this.orgId
+                    + "Agent_" + this.agentId
+                    + "Version_" + this.version
                     + System.currentTimeMillis()
-                    +"agent.tmp";
+                    + "agent.tmp";
 
-        File file = new File("/tmp/"+key);
+            File file = new File("/tmp/" + key);
 
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            try (FileOutputStream outputStream = new FileOutputStream(file)) {
 
-            int read;
-            byte[] bytes = new byte[1024];
+                int read;
+                byte[] bytes = new byte[1024];
 
-            while (inputStream!=null && (read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
+                while (inputStream != null && (read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+                }
+
+            } catch (IOException e) {
+                LOGGER.info("Error while downloading Agent Exe " + e.getMessage());
             }
-
-        } catch (IOException e) {
-            LOGGER.info("Error while downloading Agent Exe "+e.getMessage());
+            return file;
+        } else {
+            LOGGER.info(" not production ");
+            return null;
         }
-
-
-        return file;
     }
 
     private String getExeUrl(String token) throws Exception {
@@ -109,11 +122,11 @@ public class AgentDownloadAction extends ActionSupport {
             Collection<Long> vId = new ArrayList<>();
             vId.add(versionId);
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getAgentVersionModule().getTableName())
+                    .table(getAgentVersionModule().getTableName())
                     .select(FieldFactory.getAgentVersionFields())
                     .andCondition(CriteriaAPI.getCondition(
                             FieldFactory.getIdField
-                                    (ModuleFactory.getAgentVersionModule()),vId,NumberOperators.EQUALS));
+                                    (getAgentVersionModule()), vId, NumberOperators.EQUALS));
             List<Map<String, Object>> row = selectRecordBuilder.get();
             LOGGER.info("Agent_Version Record: "+row);
             if (row.get(0).containsKey("url")){
@@ -125,25 +138,32 @@ public class AgentDownloadAction extends ActionSupport {
     }
 
     private long getVersionIdFromToken(String token) throws Exception {
+        FacilioModule agentVersionLogModule = getAgentVersionLogModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getAgentVersionLogModule().getTableName())
+                .table(agentVersionLogModule.getTableName())
                 .select(FieldFactory.getAgentVersionLogFields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()),token, StringOperators.IS));
-        List<Map<String, Object>> row = selectRecordBuilder.get();
-        LOGGER.info("TOKEN : "+ token);
-        LOGGER.info("Agent_VersionLog record : "+ row);
-        if(row.get(0).containsKey("orgId")){
-            this.orgId=row.get(0).get("orgId").toString();
-        }
-        if(row.get(0).containsKey("agentId")){
-            this.agentId=row.get(0).get("agentId").toString();
-        }
-        if (row.get(0).containsKey("versionId")){
-            return Long.parseLong(row.get(0).get("versionId").toString());
-        }
-        else
-        {
-            return -1;
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(agentVersionLogModule), token, StringOperators.IS));
+        List<Map<String, Object>> rows = selectRecordBuilder.get();
+        LOGGER.info("TOKEN : " + token);
+        LOGGER.info("Agent_VersionLog record : " + rows);
+        if (rows.isEmpty()) {
+            throw new Exception(" no version log found ");
+        } else {
+            Map<String, Object> row = rows.get(0);
+            if (rows.contains(AgentConstants.UPDATED_TIME) && (row.get(AgentConstants.UPDATED_TIME) != null)) {
+                throw new Exception(" version log claimed");
+            }
+            if (row.containsKey(AgentConstants.ORGID) && (row.get(AgentConstants.ORGID) != null)) {
+                this.orgId = row.get(AgentConstants.ORGID).toString();
+            }
+            if (row.containsKey(AgentConstants.AGENT_ID)) {
+                this.agentId = row.get(AgentConstants.AGENT_ID).toString();
+            }
+            if (row.containsKey(AgentConstants.VERSION_ID)) {
+                return Long.parseLong(row.get(AgentConstants.VERSION_ID).toString());
+            } else {
+                return -1;
+            }
         }
     }
 

@@ -27,10 +27,7 @@ import java.util.Map;
 
 public class LogsApi
 {
-    private static final FacilioModule MODULE = ModuleFactory.getAgentV2LogModule();
-    private static final List<FacilioField> FIELDS = FieldFactory.getAgentV2LogFields();
-
-    private static final Logger LOGGER = LogManager.getLogger(IotMessageApiV2.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(LogsApi.class.getName());
 
 
     public static boolean logIotCommand(long agentId, long msgId ,FacilioCommand command, Status status){
@@ -94,21 +91,23 @@ public class LogsApi
     }
 
     private static long addLog(long agentId, Long msgId,FacilioCommand command, Status status,long timestamp,long createdTime) throws Exception {
-        Map<String,Object> toInsert = new HashMap<>();
-        toInsert.put(AgentConstants.AGENT_ID,agentId);
-        toInsert.put(AgentConstants.MESSAGE_ID,msgId);
-        if(command != null){
-            toInsert.put(AgentConstants.COMMAND,command.asInt());
+        FacilioModule agentV2LogModule = ModuleFactory.getAgentV2LogModule();
+        List<FacilioField> fields = FieldFactory.getAgentV2LogFields();
+        Map<String, Object> toInsert = new HashMap<>();
+        toInsert.put(AgentConstants.AGENT_ID, agentId);
+        toInsert.put(AgentConstants.MESSAGE_ID, msgId);
+        if (command != null) {
+            toInsert.put(AgentConstants.COMMAND, command.asInt());
         }
-        if(status != null){
-            toInsert.put(AgentConstants.STATUS,status.asInt());
+        if (status != null) {
+            toInsert.put(AgentConstants.STATUS, status.asInt());
         }
-        toInsert.put(AgentConstants.ACTUAL_TIME,timestamp);
+        toInsert.put(AgentConstants.ACTUAL_TIME, timestamp);
         toInsert.put(AgentConstants.CREATED_TIME,createdTime);
         try {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                    .table(MODULE.getTableName())
-                    .fields(FIELDS);
+                    .table(agentV2LogModule.getTableName())
+                    .fields(fields);
             return builder.insert(toInsert);
         } catch (Exception e) {
             LOGGER.info("Exception while adding log ", e);
@@ -117,11 +116,12 @@ public class LogsApi
     }
 
     public static long getCount() {
+        FacilioModule agentV2LogModule = ModuleFactory.getAgentV2LogModule();
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(new HashSet<>())
-                    .table(MODULE.getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE));
+                    .table(agentV2LogModule.getTableName())
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(agentV2LogModule));
             List<Map<String, Object>> result = builder.get();
             LOGGER.info(" count is " + result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);
@@ -132,11 +132,13 @@ public class LogsApi
     }
 
     public static List<Map<String, Object>> getLogs(long agentId, FacilioContext context) throws Exception {
+        FacilioModule agentV2LogModule = ModuleFactory.getAgentV2LogModule();
+        List<FacilioField> fields = FieldFactory.getAgentV2LogFields();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(MODULE.getTableName())
-                .select(FIELDS)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
-                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName() + " DESC," + FieldFactory.getCreatedTime(MODULE).getColumnName() + " DESC")
+                .table(agentV2LogModule.getTableName())
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(agentV2LogModule), String.valueOf(agentId), NumberOperators.EQUALS))
+                .orderBy(FieldFactory.getAgentV2MsgIdField(agentV2LogModule).getColumnName() + " DESC," + FieldFactory.getCreatedTime(agentV2LogModule).getColumnName() + " DESC")
                 .limit(150);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         if (pagination != null) {

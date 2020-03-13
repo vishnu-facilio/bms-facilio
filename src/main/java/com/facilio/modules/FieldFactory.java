@@ -92,13 +92,17 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.ORGID, "ORGID", module, FieldType.NUMBER));
         fields.add(getNewAgentIdField(module));
         fields.add(getField(AgentConstants.VERSION_ID, "VERSION_ID", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.UPDATED_TIME, "UPDATED_TIME", module, FieldType.NUMBER));
+        fields.add(getUpdatedTimeField(module));
         fields.add(getField(AgentConstants.AUTH_KEY, "AUTH_KEY", module, FieldType.STRING));
         fields.add(getCreatedTime(module));
 
 
         return fields;
 
+    }
+
+    public static FacilioField getUpdatedTimeField(FacilioModule module) {
+        return getField(AgentConstants.UPDATED_TIME, "UPDATED_TIME", module, FieldType.NUMBER);
     }
 
     public static Collection<FacilioField> getSecretFileFields() {
