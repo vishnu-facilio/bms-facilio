@@ -68,14 +68,15 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                 addReading(targetId, sourceField.getName(), readingsList, resources);
                 List<Long> batchParentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());
                 List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
-                if (batchParentIds != null && batchParentIds.size() > 0) {
-                    for (long assetId : batchParentIds) {
-                        deleteReadings(assetId, sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
-                    }
-                }
-                parentIds.addAll(readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList()));
                 LOGGER.debug("Reading Ids ---> " + readingDataIds.size() );
                 LOGGER.debug("Reading Ids ---> " + readingDataIds );
+                deleteReadings(sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+//                if (batchParentIds != null && batchParentIds.size() > 0) {
+//                    for (long assetId : batchParentIds) {
+//                        deleteReadings(assetId, sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+//                    }
+//                }
+                parentIds.addAll(readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList()));
             } else {
                 if (parentIds != null && parentIds.size() > 0) {
                     for (long assetId : parentIds) {
@@ -120,7 +121,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         chain.execute(context);
     }
 
-    public static void deleteReadings(long parentId, FacilioField targetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
+    public static void deleteReadings(FacilioField targetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
 
         ReadingContext reading = new ReadingContext();
         // assetFields.forEach(field -> {
