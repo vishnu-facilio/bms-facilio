@@ -326,12 +326,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		//The side effect of this is if another field has same name, even that will be removed from cache even if it doesn't extend the module of the field. We shall see how this goes!!
 		cache = LRUCache.getFieldNameCache();
 		String key = CacheUtil.FIELD_NAME_KEY_FOR_REMOVAL(getOrgId(), newField.getName());
-		for (Object cacheKey : cache.keys()) {
-			if (((String)cacheKey).startsWith(key)) {
-				cache.remove(cacheKey);
-			}
-		}
-
+		cache.removeStartsWith(key);
 	}
 	@Override
 	public int deleteField(long fieldId) throws Exception {

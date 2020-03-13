@@ -137,7 +137,7 @@ public class PubSubLRUCache<V> implements FacilioCache<String, V>  {
 
     @Override
     public void removeStartsWith(String keyStartsWith) {
-        for (String key : cache.keySet()) {
+        for (String key : keys()) { //Because keyset will be synchronised as well. Anyway we won't directly remove with iterator so cloning is better
             if (key.startsWith(keyStartsWith)) {
                 remove(key);
             }
