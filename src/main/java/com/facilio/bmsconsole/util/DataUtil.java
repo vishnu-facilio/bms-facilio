@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,33 +21,35 @@ public class DataUtil {
 	
 	public static Double getSumOfEnergyData(List<Long> energyMeterIds,long from,long to) throws Exception {
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		List<FacilioField> energyDataFields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(energyDataFields);
-		
-		FacilioField clonedEnergyField = fieldMap.get("totalEnergyConsumptionDelta").clone();
-		
-		clonedEnergyField.setName("result");
-		
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-				.table(energyDataModule.getTableName())
-				.module(energyDataModule)
-				.aggregate(NumberAggregateOperator.SUM, clonedEnergyField)
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(energyDataModule), String.valueOf(energyDataModule.getModuleId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), energyMeterIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("marked"), Boolean.FALSE.toString(), BooleanOperators.IS))
-				;
-		
-		List<Map<String, Object>> props = selectBuilder.getAsProps();
-		
-		if(props != null && !props.isEmpty()) {
-			Double result = (Double) props.get(0).get("result");
+		if(energyMeterIds != null && !energyMeterIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
-//			result = FacilioUtil.decimalClientFormat(result);
-			return result;
+			FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			List<FacilioField> energyDataFields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(energyDataFields);
+			
+			FacilioField clonedEnergyField = fieldMap.get("totalEnergyConsumptionDelta").clone();
+			
+			clonedEnergyField.setName("result");
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.table(energyDataModule.getTableName())
+					.module(energyDataModule)
+					.aggregate(NumberAggregateOperator.SUM, clonedEnergyField)
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(energyDataModule), String.valueOf(energyDataModule.getModuleId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), energyMeterIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("marked"), Boolean.FALSE.toString(), BooleanOperators.IS))
+					;
+			
+			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			
+			if(props != null && !props.isEmpty()) {
+				Double result = (Double) props.get(0).get("result");
+				
+//				result = FacilioUtil.decimalClientFormat(result);
+				return result;
+			}
 		}
 		return null;
 	}
