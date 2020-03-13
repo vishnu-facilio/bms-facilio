@@ -91,7 +91,7 @@ public class AgentApiV2 {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
         }
         if (ids != null) {
-        		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, MODULE));
+        		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, null));
         }
         context.put(FacilioConstants.ContextNames.SORT_FIELDS,fieldMap.get(AgentConstants.CONNECTED).getColumnName()+" DESC");
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
