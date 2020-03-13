@@ -52,7 +52,6 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
             if (!resources.isEmpty()) {
                 builder.andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("parentId"),resources, NumberOperators.EQUALS));
             }
-            page++;
             int offset = 0;
             builder.offset(offset);
             builder.limit(recordLimit);
