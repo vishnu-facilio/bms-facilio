@@ -10,4 +10,5 @@ public interface FacilioCache<K, V> {
     void remove(K key);
     void purgeCache();
     Set<K> keys();
+    void removeStartsWith(K keyStartsWith);
 }

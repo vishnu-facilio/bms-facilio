@@ -135,6 +135,15 @@ public class PubSubLRUCache<V> implements FacilioCache<String, V>  {
 //        }
     }
 
+    @Override
+    public void removeStartsWith(String keyStartsWith) {
+        for (String key : cache.keySet()) {
+            if (key.startsWith(keyStartsWith)) {
+                remove(key);
+            }
+        }
+    }
+
     void onlyRemove(String key) {
         cache.remove(key);
     }

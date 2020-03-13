@@ -332,7 +332,10 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		}
     }
 
-    private void deleteInRedis(K key) {
+	@Override
+	public void removeStartsWith(K keyStartsWith) {}
+
+	private void deleteInRedis(K key) {
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
 			AccountUtil.incrementRedisDeleteCount(1);
