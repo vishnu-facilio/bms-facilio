@@ -14,3 +14,13 @@ node_modules/
 src/main/webapp/META-INF/context\.xml
 *.iml
 .metadata
+bms.iml
+/src/main/java/com/facilio/testing.java
+/src/test/java/com/facilio/services/kinesis/KinesisProcessorTest.java
+testing.java
+FacilioAgentTest.java
+KinesisProcessorTest.java
+bms.iml
+awsprops.properties
+agentIntegration.properties
+/src/main/resources/conf/awsprops.properties

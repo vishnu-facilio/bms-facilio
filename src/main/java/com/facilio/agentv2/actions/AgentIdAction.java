@@ -271,6 +271,26 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getLogCount() {
+        try {
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+            List<Map<String, Object>> data = LogsApi.getLogs(agentId, context);
+            if (!data.isEmpty()) {
+                setResult(AgentConstants.DATA, data.get(0).get(AgentConstants.ID));
+            }
+            setResult(AgentConstants.RESULT, SUCCESS);
+            ok();
+            return SUCCESS;
+        } catch (Exception e) {
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+            LOGGER.info("Exception while getting agent logs for ->" + agentId + "  ", e);
+        }
+        return SUCCESS;
+    }
+
+
     public String getAgentMetrics() {
         try {
             JSONObject jsonObject = new JSONObject();

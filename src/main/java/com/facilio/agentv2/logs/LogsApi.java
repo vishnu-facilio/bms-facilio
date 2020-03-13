@@ -20,10 +20,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LogsApi
 {
@@ -141,17 +138,21 @@ public class LogsApi
                 .orderBy(FieldFactory.getAgentV2MsgIdField(agentV2LogModule).getColumnName() + " DESC," + FieldFactory.getCreatedTime(agentV2LogModule).getColumnName() + " DESC")
                 .limit(150);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-        if (pagination != null) {
+        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+        if (pagination != null && !fetchCount) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
 
-            int offset = ((page-1) * perPage);
+            int offset = ((page - 1) * perPage);
             if (offset < 0) {
                 offset = 0;
             }
 
             selectRecordBuilder.offset(offset);
             selectRecordBuilder.limit(perPage);
+        } else if (fetchCount) {
+            selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(agentV2LogModule));
+            selectRecordBuilder.select(new ArrayList<>());
         }
 
         return selectRecordBuilder.get();
