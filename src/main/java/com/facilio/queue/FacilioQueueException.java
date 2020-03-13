@@ -9,9 +9,8 @@ import com.facilio.queue.service.QueueMessage;
 import com.facilio.service.FacilioService;
 public class FacilioQueueException {
 
-	private static final String TABLE_QUEUE_OLD = "FacilioExceptionQueue";
-	private static final String TABLE_QUEUE_NEW = "FacilioExceptionQueue_Data";
-	private static final FacilioQueueService INSTANCE = new FacilioDbQueue(TABLE_QUEUE_OLD,TABLE_QUEUE_NEW);
+	private static final String TABLE_NAME = "ExceptionQueue";
+	private static final FacilioQueueService INSTANCE = new FacilioDbQueue(TABLE_NAME);
 	static FacilioQueueService getInstance() {
 		return INSTANCE;
 	}
@@ -20,10 +19,6 @@ public class FacilioQueueException {
 		return  FacilioService.runAsServiceWihReturn(() ->getInstance().push(message,orgId));
 	}
 
-//	public static QueueMessage pull() throws Exception{
-//		return FacilioService.runAsServiceWihReturn(() ->getInstance().pull());
-//	}
-	
 	public static List<QueueMessage> pull(int limit) throws Exception{
 		return FacilioService.runAsServiceWihReturn(() ->getInstance().pull(limit));
 	}		

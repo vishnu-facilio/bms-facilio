@@ -47,12 +47,11 @@ public class FacilioInstantJobScheduler {
             for (Map<String, Object> ex : executorList) {
                 String name = (String) ex.get("name");
                 String tableName = (String) ex.get("tableName");
-                String dataTableName = (String) ex.get("dataTableName");
                 int maxThreads = (int) ex.getOrDefault("maxThreads", -1);
                 int queueSize = (int) ex.getOrDefault("queueSize", -1);
             	int dataRetention = (int) ex.get("dataRetention");
                 int pollingFrequency = (int) ex.get("pollingFrequency");
-                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name, tableName, dataTableName, maxThreads, queueSize, dataRetention, pollingFrequency);
+                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name, tableName, maxThreads, queueSize, dataRetention, pollingFrequency);
                 executors.put(name, executor);
                 if (isInstantJobServer) {
                     executor.startExecutor();

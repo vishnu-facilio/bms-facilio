@@ -18,8 +18,8 @@ public class FacilioObjectQueue {
 	private static final Logger LOGGER = Logger.getLogger(FacilioObjectQueue.class.getName());
 
 	private FacilioQueueService queueInstance = null;
-	public FacilioObjectQueue(String tableName, String dataTableName) {
-		queueInstance = new FacilioDbQueue(tableName,dataTableName);
+	public FacilioObjectQueue(String tableName) {
+		queueInstance = new FacilioDbQueue(tableName);
 	}
 
 	private static final String TABLE_QUEUE_OLD = "FacilioInstantJobQueue";
@@ -49,7 +49,7 @@ public class FacilioObjectQueue {
 				LOGGER.info("Exception while deserializing msg :  " + serialized);
 			}
 			objectMessage.setSerializable(deserializedObject);
-			objectMessage.setReceiptHandle(message.getReceiptHandle());
+			objectMessage.setReceiptHandle(message.getId());
 			serializableList.add(objectMessage);
 		}
 		return serializableList;

@@ -1,15 +1,13 @@
 executors :
   - name : default
-    tableName : FacilioInstantJobQueue
-    dataTableName : FacilioInstantJobQueue_Data
+    tableName : InstantJobQueue
     maxThreads : 10 #optional default 10
     queueSize : 100 #optional default 100
     dataRetention : 3 #in days
     pollingFrequency : 5000 #in milliseconds
 
   - name : rule
-    tableName : FacilioRuleInstantJobQueue
-    dataTableName : FacilioRuleInstantJobQueue_Data
+    tableName : RuleInstantJobQueue
     maxThreads : 20
     queueSize : 100
     dataRetention : 3 #in days
