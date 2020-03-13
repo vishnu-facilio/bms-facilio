@@ -2,16 +2,21 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.google.api.client.util.ArrayMap;
@@ -42,19 +47,18 @@ public class FieldUsageCommand extends FacilioCommand {
 //                }
 //                context.put(FacilioConstants.ContextNames.RULES, ruleMap);
 //            }
-            FacilioField fieldObj = modBean.getField(fieldId);
-            FacilioModule sourceModule = modBean.getModule(fieldObj.getModuleId());
-            List<FacilioField> sourcefields = modBean.getAllFields(sourceModule.getName());
-            Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(sourcefields);
+            List<FacilioField> sourcefields = FieldFactory.getReadingDataMetaFields();
+            Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
 
 
-            SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
-                    .module(sourceModule)
-                    .beanClass(ReadingContext.class)
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(sourcefields)
-                    .andCondition(CriteriaAPI.getCondition(fieldObj, CommonOperators.IS_NOT_EMPTY))
-                    .groupBy(sourcefieldMap.get("parentId").getCompleteColumnName());
-            List<ReadingContext> readingsList = builder.get();
+                    .table(ModuleFactory.getReadingDataMetaModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("value"), "-1", StringOperators.ISN_T))
+                    .andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("fieldId"), fieldId+"", NumberOperators.EQUALS))
+                    .limit(100);
+
+            List<Map<String, Object>> readingsList = builder.get();
             if ( readingsList != null  && readingsList.size() > 0) {
 //                System.out.println("readingsList" + readingsList.size());
                 context.put(FacilioConstants.ContextNames.RESOURCE_LIST, readingsList);

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -40,35 +41,46 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
 
         List<FacilioField> sourcefields = bean.getAllFields(sourceModule.getName());
         Map<String, FacilioField> sourcefieldMap = FieldFactory.getAsMap(sourcefields);
-
-
-        SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
-                .module(sourceModule)
-                .beanClass(ReadingContext.class)
-                .select(sourcefields)
-                .andCondition(CriteriaAPI.getCondition(sourceField, CommonOperators.IS_NOT_EMPTY));
-
-
-        if (resources != null) {
+        int page = 0 ;
+        int recordLimit = 1;
+        while (true) {
+            SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
+                    .module(sourceModule)
+                    .beanClass(ReadingContext.class)
+                    .select(sourcefields)
+                    .andCondition(CriteriaAPI.getCondition(sourceField, CommonOperators.IS_NOT_EMPTY));
+            if (!resources.isEmpty()) {
                 builder.andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("parentId"),resources, NumberOperators.EQUALS));
-        } else
-        {
-            throw new IllegalArgumentException("Please select asset to migrate");
-        }
+            }
+            page++;
+            // int perPage = (int) pagination.get("perPage");
 
-        List<ReadingContext> readingsList = builder.get();
-        if (readingsList != null && !readingsList.isEmpty()) {
+            int offset = ((page-1) * recordLimit);
+            if (offset < 0) {
+                offset = 0;
+            }
 
-            addReading(targetId, sourceField.getName(), readingsList, resources);
-            List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
-            List<Long> parentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());
-            if (parentIds != null && parentIds.size() > 0) {
-                for (long assetId : parentIds) {
-                    ReadingsAPI.deleteReadings(assetId, Collections.singletonList(sourceField), sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+            builder.offset(offset);
+            builder.limit(recordLimit);
+            List<ReadingContext> readingsList = builder.get();
+            if (readingsList != null && !readingsList.isEmpty()) {
 
+                addReading(targetId, sourceField.getName(), readingsList, resources);
+                List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
+                List<Long> parentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());
+                if (parentIds != null && parentIds.size() > 0) {
+                    for (long assetId : parentIds) {
+                        ReadingsAPI.deleteReadings(assetId, Collections.singletonList(sourceField), sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+
+                    }
                 }
+            } else {
+                break;
             }
         }
+
+
+
 
         return false;
     }

@@ -2226,12 +2226,6 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	public  static  FacilioChain migrateFieldDataChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new MigrateFieldReadingDataCommand());
-		return c;
-	}
-
 	public  static  FacilioChain getFieldUsageLog () {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FieldUsageCommand());

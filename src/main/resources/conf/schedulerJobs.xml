@@ -113,6 +113,10 @@
 	<!--DeleteEmailExceptionQueue Job -->
 	<job name = 'DeleteEmailExceptioJob' classname='com.facilio.bmsconsole.jobs.DeleteEmailExceptionQueue' transactionTimeout="300000"/>
 
+	<!-- Field Migrtaion -->
+	<job name='FieldMigration' classname = 'com.facilio.bmsconsole.jobs.FieldMigrationJob' transactionTimeout='900000'/>
+
+
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>

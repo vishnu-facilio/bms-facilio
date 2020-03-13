@@ -1514,6 +1514,7 @@ public class FacilioConstants {
 
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String SOURCE_ID = "sourceId";
+		public  static final String FIELD_MIGRATION_JOB_ID = "fieldMigrationJobId";
 
 		public static final String TARGET_ID = "targetId";
 

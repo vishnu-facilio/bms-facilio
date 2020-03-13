@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -75,7 +76,8 @@ public class ReadingFieldMigrationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SOURCE_ID, toField);
         context.put(FacilioConstants.ContextNames.TARGET_ID, fromField);
         context.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetsId);
-        FacilioChain chain = ReadOnlyChainFactory.migrateFieldDataChain();
+        FacilioChain chain = TransactionChainFactory.addFieldMigrationJob();
+        // FacilioChain chain = TransactionChainFactory.migrateFieldDataChain();
         chain.execute(context);
 
         return SUCCESS;

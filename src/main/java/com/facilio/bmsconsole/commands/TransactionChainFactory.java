@@ -4894,6 +4894,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddAndSendIotMessageCommand());
 		return chain;
 	}
+	public  static  FacilioChain migrateFieldDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new MigrateFieldReadingDataCommand());
+		return c;
+	}
+
+	public static FacilioChain addFieldMigrationJob() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddFieldMigrationJobCommand());
+		return c;
+
+	}
 }
 
 
