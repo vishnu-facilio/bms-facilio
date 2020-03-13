@@ -259,7 +259,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						data.setRemoteIPAddress(remoteIPAddress);
 					}
 					if(data != null) {
-						if(AccountUtil.getCurrentOrg().getOrgId()==246 || AccountUtil.getCurrentOrg().getOrgId()==78 || AccountUtil.getCurrentOrg().getOrgId()==146) {
+						if(AccountUtil.getCurrentOrg().getOrgId()==246 || AccountUtil.getCurrentOrg().getOrgId()==78 || AccountUtil.getCurrentOrg().getOrgId()==146 ||
+								AccountUtil.getCurrentOrg().getOrgId()==285 || AccountUtil.getCurrentOrg().getOrgId()==176 || AccountUtil.getCurrentOrg().getOrgId()==316 ||
+								AccountUtil.getCurrentOrg().getOrgId()==315 ||AccountUtil.getCurrentOrg().getOrgId()==183) {
 							AuditData finalData = data;
 							FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
 							data.setId(finalData.getId());
