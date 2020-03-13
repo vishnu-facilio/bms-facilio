@@ -160,18 +160,18 @@
 %>
 
 <%
-    List<Organization> orgs = null;
+   // List<Organization> orgs = null;
     try {
-        orgs = AccountUtil.getOrgBean().getOrgs();
-        for (Organization org : orgs) {
-            System.out.println("org: " + org.getOrgId());
-            AccountUtil.setCurrentAccount(org.getOrgId());
+       // orgs = AccountUtil.getOrgBean().getOrgs();
+        //for (Organization org : orgs) {
+         //   System.out.println("org: " + org.getOrgId());
+       //     AccountUtil.setCurrentAccount(org.getOrgId());
             FacilioChain c = FacilioChain.getTransactionChain();
             c.addCommand(new OrgLevelMigrationCommand());
             c.execute();
 
-            AccountUtil.cleanCurrentAccount();
-        }
+       //     AccountUtil.cleanCurrentAccount();
+       // }
     } catch (Exception e) {
         e.printStackTrace();
     }
