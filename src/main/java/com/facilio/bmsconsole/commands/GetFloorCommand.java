@@ -1,16 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GetFloorCommand extends FacilioCommand {
 
@@ -30,7 +34,12 @@ public class GetFloorCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			List<LookupField> additionalLookups = new ArrayList<>();
+			LookupField buildingField = (LookupField) fieldsAsMap.get("building");
+			if (buildingField != null) {
+				additionalLookups.add(buildingField);
+			}
 			
 			SelectRecordsBuilder<FloorContext> builder = new SelectRecordsBuilder<FloorContext>()
 					.table(module.getTableName())
@@ -40,6 +49,9 @@ public class GetFloorCommand extends FacilioCommand {
 					.andCustomWhere(module.getTableName()+".ID = ?", floorId)
 					.orderBy("ID");
 
+			if (CollectionUtils.isNotEmpty(additionalLookups)) {
+				builder.fetchSupplements(additionalLookups);
+			}
 			List<FloorContext> floors = builder.get();	
 			if(floors.size() > 0) {
 				FloorContext floor = floors.get(0);

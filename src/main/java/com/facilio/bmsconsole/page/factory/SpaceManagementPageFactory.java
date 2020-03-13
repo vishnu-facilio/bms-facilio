@@ -116,9 +116,11 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1Sec1.addWidget(cardWidget);
 		addSpaceOccupancyWidget(tab1Sec1, 4);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Section tab1Sec2 = page.new Section();
-		addSpaceRelatedListWidget(tab1Sec2, "relatedSubSpaces",modBean);
-		tab1.addSection(tab1Sec2);
+		if (space.getSpace3() == null) {
+			Section tab1Sec2 = page.new Section();
+			addSpaceRelatedListWidget(tab1Sec2, "relatedSubSpaces",modBean);
+			tab1.addSection(tab1Sec2);
+		}
 		Section tab1Sec3 = page.new Section("spaceReadings");
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
