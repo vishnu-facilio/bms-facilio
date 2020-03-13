@@ -326,6 +326,9 @@
 		<action name="publish"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="publishStateFlow" />
+
+		<action name="clone"
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="cloneStateFlow" />
 	</package>
 
 	<package name="stateTransition"

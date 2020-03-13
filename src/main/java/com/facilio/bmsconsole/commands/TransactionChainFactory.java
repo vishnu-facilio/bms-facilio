@@ -4115,6 +4115,15 @@ public class TransactionChainFactory {
 	public static FacilioChain getCreateStateFlowDraftChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new CreateStateFlowDraftCommand());
+		chain.addCommand(new CreateCopyOfStateFlowCommand());
+		return chain;
+	}
+
+	public static FacilioChain getCloneStateFlowChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetStateFlowCommand());
+		chain.addCommand(new CreateClonedStateFlowCommand());
+		chain.addCommand(new CreateCopyOfStateFlowCommand());
 		return chain;
 	}
 

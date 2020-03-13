@@ -83,7 +83,7 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 		return false;
 	}
 
-	private void updateStateTransitionExecutionOrder(FacilioModule module) throws Exception {
+	public static void updateStateTransitionExecutionOrder(FacilioModule module) throws Exception {
 		FacilioField executionOrderField = FieldFactory.getField("executionOrder", "EXECUTION_ORDER", ModuleFactory.getWorkflowRuleModule(), FieldType.NUMBER);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleModule().getTableName())

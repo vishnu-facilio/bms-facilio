@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.db.criteria.Criteria;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -93,6 +94,26 @@ public class StateFlowAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
 
 		return SUCCESS;
+	}
+
+	public String cloneStateFlow() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getCloneStateFlowChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+		context.put(FacilioConstants.ContextNames.ID, stateFlowId);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.STATE_FLOW, context.get(FacilioConstants.ContextNames.STATE_FLOW));
+
+		return SUCCESS;
+	}
+
+	private Criteria criteria;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
 	}
 
 	public String publishStateFlow() throws Exception {

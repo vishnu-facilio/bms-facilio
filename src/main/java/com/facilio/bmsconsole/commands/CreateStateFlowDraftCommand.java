@@ -38,26 +38,7 @@ public class CreateStateFlowDraftCommand extends FacilioCommand {
             stateFlowContext.setDraftParentId(originalStateFlowId);
             stateFlowContext.setDraft(true);
 
-            FacilioChain ruleChain = TransactionChainFactory.addWorkflowRuleChain();
-            FacilioContext ruleContext = ruleChain.getContext();
-            ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlowContext);
-            ruleChain.execute();
-            long createdStateFlowId = stateFlowContext.getId();
             context.put(FacilioConstants.ContextNames.STATE_FLOW, stateFlowContext);
-
-            List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(originalStateFlowId);
-            if (CollectionUtils.isNotEmpty(allStateTransitionList)) {
-                for (WorkflowRuleContext workflowRuleContext : allStateTransitionList) {
-                    StateflowTransitionContext stateflowTransitionContext = (StateflowTransitionContext) workflowRuleContext;
-                    stateflowTransitionContext.setStateFlowId(createdStateFlowId);
-
-                    ruleChain = TransactionChainFactory.addWorkflowRuleChain();
-                    ruleContext = ruleChain.getContext();
-                    ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateflowTransitionContext);
-                    ruleChain.execute();
-                }
-            }
-            context.put(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, allStateTransitionList);
         }
         return false;
     }
