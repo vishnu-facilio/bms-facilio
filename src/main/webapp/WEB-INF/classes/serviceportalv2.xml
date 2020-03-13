@@ -397,7 +397,7 @@
 	</package>
 	
 	<package name="newWorkflowServiceApiv2" namespace="/api/service/v2/workflow"
-		extends="v2Api">
+		extends="newServicePortalApiV2">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
 		</action>
