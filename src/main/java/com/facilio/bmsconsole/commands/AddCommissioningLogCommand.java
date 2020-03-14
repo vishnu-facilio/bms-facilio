@@ -28,7 +28,7 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		CommissioningLogContext log = (CommissioningLogContext) context.get(ContextNames.LOG);
-		validateLog(log.getControllerIds());
+		validateLog(log);
 		
 		log.setSysCreatedTime(System.currentTimeMillis());
 		log.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
@@ -49,7 +49,11 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void validateLog(List<Long> controllerIds) throws Exception {
+	private void validateLog(CommissioningLogContext log) throws Exception {
+		if (log.getControllerTypeEnum() == null) {
+			throw new IllegalArgumentException("Please select controller type");
+		}
+		List<Long> controllerIds = log.getControllerIds();
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogFields());
 		FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();

@@ -11,13 +11,20 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONArray;
 
 import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -99,5 +106,44 @@ public class CommissioningApi {
 		}
 		return logControllerMap;
 	}
+	
+	public static void updateLog(CommissioningLogContext log) throws Exception {
+		log.setAgentId(-1);
+		FacilioModule module = ModuleFactory.getCommissioningLogModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getCommissioningLogFields())
+				.andCondition(CriteriaAPI.getIdCondition(log.getId(), module));
 
+		Map<String, Object> prop = FieldUtil.getAsProperties(log);
+		updateBuilder.update(prop);
+	}
+
+	public static Map<String, ReadingDataMeta> checkRDMType(JSONArray points) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		for(int i = 0; i < points.size(); i++) {
+			Map<String, Object> point = (Map<String, Object>) points.get(i);
+			Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
+			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
+			if (fieldId != null && fieldId != -1 && resourceId != null && resourceId != -1) {
+				FacilioField field = modBean.getField(fieldId);
+				rdmPairs.add(Pair.of(resourceId, field));
+			}
+		}
+		if (!rdmPairs.isEmpty()) {
+			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+				for(ReadingDataMeta rdm: rdmList) {
+					switch (rdm.getInputTypeEnum()) {
+					case CONTROLLER_MAPPED:
+						throw new IllegalArgumentException(rdm.getField().getDisplayName() + " is already mapped");
+					case FORMULA_FIELD:
+					case HIDDEN_FORMULA_FIELD:
+						throw new IllegalArgumentException(rdm.getField().getDisplayName() +" is formula field and therefore cannot be mapped");
+				}
+			}
+			return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
+		}
+		return null;
+	}
 }

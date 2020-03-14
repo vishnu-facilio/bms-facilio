@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
@@ -59,9 +60,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 				}
 				if (point.get("unit") != null && !unitMap.containsKey(point.get("unit"))) {
 					int unitId = Integer.parseInt(point.get("unit").toString());
-					Unit unit = Unit.valueOf(unitId);
-					unitMap.put(unitId, unit.getSymbol());
+					if (unitId > 0) {
+						Unit unit = Unit.valueOf(unitId);
+						unitMap.put(unitId, unit.getSymbol());
+					}
 				}
+				// TODO fetch only those points from db instead of filtering
 				// Points fetched from db will have orgId. Filtering unwanted values here
 				finalPoints.add(getPointObj(point, headers));
 			}
@@ -79,9 +83,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	private void setPoints(CommissioningLogContext log) throws Exception {
 		FacilioModule module = ModuleFactory.getPointModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()
 				.withControllerIds(log.getControllerIds())
+				.initBuilder(null)
+				.orderBy(fieldMap.get(AgentConstants.NAME).getCompleteColumnName())
 				.limit(-1);
 				;
 		if (CollectionUtils.isNotEmpty(log.getPoints())) {
@@ -150,12 +157,12 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		List<Map<String, Object>> headers = new ArrayList<>();
 
 		Map<String, Object> header = new HashMap<>();
-		header.put("name", "name");
+		header.put("name", AgentConstants.NAME);
 		header.put("editable", false);
 		headers.add(header);
 
 		header = new HashMap<>();
-		header.put("name", "deviceName");
+		header.put("name", AgentConstants.DEVICE_NAME);
 		header.put("editable", false);
 		headers.add(header);
 
@@ -163,19 +170,19 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		headers.addAll(typeBasedHeaders);
 
 		header = new HashMap<>();
-		header.put("name", "categoryId");
+		header.put("name", AgentConstants.ASSET_CATEGORY_ID);
 		headers.add(header);
 
 		header = new HashMap<>();
-		header.put("name", "resourceId");
+		header.put("name", AgentConstants.RESOURCE_ID);
 		headers.add(header);
 
 		header = new HashMap<>();
-		header.put("name", "fieldId");
+		header.put("name", AgentConstants.FIELD_ID);
 		headers.add(header);
 
 		header = new HashMap<>();
-		header.put("name", "unit");
+		header.put("name", AgentConstants.UNIT);
 		headers.add(header);
 
 		header = new HashMap<>();
@@ -191,7 +198,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		switch(type) {
 		case NIAGARA:
 			Map<String, Object> header = new HashMap<>();
-			header.put("name", "pointPath");
+			header.put("name", AgentConstants.PATH);
 			header.put("editable", false);
 			typeHeaders.add(header);
 			break;

@@ -35,6 +35,7 @@ public class GetPointRequest {
     private FacilioControllerType controllerType = null;
     private int limit = 150 ;
     private int offset = 0;
+    private String orderBy;
 
     public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
         if (controllerType != null) {
@@ -150,7 +151,7 @@ public class GetPointRequest {
 
         else {
             if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
-                selectRecordBuilder.andCriteria(criteria)
+                selectRecordBuilder.andCriteria(criteria).orderBy(orderBy)
                         .limit(limit).offset(offset);
             }
             data = selectRecordBuilder.get();
@@ -162,9 +163,27 @@ public class GetPointRequest {
     		this.limit = limit;
     		return this;
     }
+    
+    public GetPointRequest orderBy(String orderBy) {
+		this.orderBy = orderBy;
+		return this;
+	}
+    
+    public GetPointRequest initBuilder(List<FacilioField> fields) {
+		this.selectRecordBuilder = getPointBuilder();
+		if (fields == null) {
+			fields = new ArrayList<>(this.fields);
+		}
+		this.selectRecordBuilder.select(fields);
+		return this;
+}
+    
+    private GenericSelectRecordBuilder getPointBuilder() {
+    		return new GenericSelectRecordBuilder().table(pointModule.getTableName());
+    }
 
     private GenericSelectRecordBuilder loadBuilder(FacilioControllerType controllerType) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(pointModule.getTableName());
+        GenericSelectRecordBuilder builder = getPointBuilder();
         List<FacilioField> fields = new ArrayList<>(this.fields);
         switch (controllerType) {
             case MODBUS_RTU:

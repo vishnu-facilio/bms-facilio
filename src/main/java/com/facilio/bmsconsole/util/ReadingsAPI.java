@@ -113,6 +113,11 @@ public class ReadingsAPI {
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
 		
+		if (rdm.getReadingTypeEnum() != null && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
+			rdm.setIsControllable(true);
+			rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.LIVE.getValue());
+		}
+		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
@@ -409,6 +414,10 @@ public class ReadingsAPI {
 			return metaList;
 		}
 		return null;
+	}
+	
+	public static String getRDMKey(ReadingDataMeta meta) {
+		return getRDMKey(meta.getResourceId(), meta.getField());
 	}
 	
 	public static String getRDMKey(long resourceId, FacilioField field) {
