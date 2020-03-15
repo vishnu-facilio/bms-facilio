@@ -1,5 +1,16 @@
 package com.facilio.agentv2.point;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.chain.FacilioContext;
@@ -13,17 +24,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class GetPointRequest {
     private static final Logger LOGGER = LogManager.getLogger(GetPointRequest.class.getName());
@@ -50,7 +50,6 @@ public class GetPointRequest {
     public GetPointRequest withCriteria(Criteria criteria) throws Exception {
         if (criteria != null) {
             this.criteria.addAndConditions(new ArrayList<>(criteria.getConditions().values()));
-            this.criteria = criteria;
             return this;
         } else {
             throw new Exception(" criteria cant be null ");

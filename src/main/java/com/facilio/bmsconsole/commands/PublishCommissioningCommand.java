@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
-import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
@@ -74,12 +72,12 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
 			Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
 			Long unit = (Long) point.get(AgentConstants.UNIT);
-			boolean resourceChanged = resourceId != null && resourceId > 0;
-			boolean fieldChanged = fieldId != null && fieldId > 0;
+			boolean resourceAvailable = resourceId != null && resourceId > 0;
+			boolean fieldAvailable = fieldId != null && fieldId > 0;
 			boolean unitChanged = unit != null && unit > 0;
-			if ((categoryId != null && categoryId > 0 ) || resourceChanged || fieldChanged || unitChanged) {
+			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitChanged) {
 				
-				if (fieldChanged && resourceChanged) {
+				if (fieldAvailable && resourceAvailable) {
 					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
 						point.put("oldCategoryId", dbPoint.get(AgentConstants.ASSET_CATEGORY_ID));
 						point.put("oldFieldId", dbFieldId);
@@ -96,27 +94,26 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						}
 						unmodelledPoints.add(point);
 					}
-				}
-				
-				ReadingDataMeta meta = new ReadingDataMeta();
-				meta.setResourceId(resourceId);
-				meta.setFieldId(fieldId);
-				if (unitChanged) {
-					meta.setUnit(unit.intValue());
-					meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
-					if (writable) {
-						meta.setReadingType(ReadingType.WRITE);
-					}
-				}
-				else {
-					if (writable) {
-						writableReadingList.add(meta);
+					
+					ReadingDataMeta meta = new ReadingDataMeta();
+					meta.setResourceId(resourceId);
+					meta.setFieldId(fieldId);
+					if (unitChanged) {
+						meta.setUnit(unit.intValue());
+						meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
+						if (writable) {
+							meta.setReadingType(ReadingType.WRITE);
+						}
 					}
 					else {
-						remainingReadingList.add(meta);
+						if (writable) {
+							writableReadingList.add(meta);
+						}
+						else {
+							remainingReadingList.add(meta);
+						}
 					}
 				}
-				
 				updatePoint(point, publishTime);
 			}
 			
