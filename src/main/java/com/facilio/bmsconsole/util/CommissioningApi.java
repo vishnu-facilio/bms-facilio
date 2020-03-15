@@ -33,16 +33,19 @@ import com.facilio.modules.fields.FacilioField;
 
 
 public class CommissioningApi {
-	
 	public static CommissioningLogContext commissioniongDetails(long id) throws Exception {
-		List<CommissioningLogContext> logs = commissioniongList(Collections.singletonList(id));
+		return commissioniongDetails(id, true);
+	}
+	
+	public static CommissioningLogContext commissioniongDetails(long id, boolean fetchControllers) throws Exception {
+		List<CommissioningLogContext> logs = commissioniongList(Collections.singletonList(id), fetchControllers);
 		if (CollectionUtils.isNotEmpty(logs)) {
 			return logs.get(0);
 		}
 		return null;
 	}
 	
-	public static List<CommissioningLogContext> commissioniongList(List<Long> ids) throws Exception {
+	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers) throws Exception {
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		List<FacilioField> fields = FieldFactory.getCommissioningLogFields();
 		if (ids == null || ids.size() > 1) {
@@ -60,20 +63,22 @@ public class CommissioningApi {
 		List<Map<String, Object>> props = builder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			List<CommissioningLogContext> logs = FieldUtil.getAsBeanListFromMapList(props, CommissioningLogContext.class);
-			List<Long> logIds = new ArrayList<>();
-			Set<Long> agentIds = new HashSet<>();
-			for(CommissioningLogContext log: logs) {
-				logIds.add(log.getId());
-				agentIds.add(log.getAgentId());
-			}
-			
-			Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
-			List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
-			Map<Long, FacilioAgent> agentMap = agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
-			
-			for(CommissioningLogContext log: logs) {
-				log.setControllers(controllerMap.get(log.getId()));
-				log.setAgent(agentMap.get(log.getAgentId()));
+			if (fetchControllers) {
+				List<Long> logIds = new ArrayList<>();
+				Set<Long> agentIds = new HashSet<>();
+				for(CommissioningLogContext log: logs) {
+					logIds.add(log.getId());
+					agentIds.add(log.getAgentId());
+				}
+				
+				Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
+				List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
+				Map<Long, FacilioAgent> agentMap = agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+				
+				for(CommissioningLogContext log: logs) {
+					log.setControllers(controllerMap.get(log.getId()));
+					log.setAgent(agentMap.get(log.getAgentId()));
+				}
 			}
 			
 			return logs;

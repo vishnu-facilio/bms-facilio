@@ -170,6 +170,7 @@ public class AssetPageFactory extends PageFactory {
 		if ((isDemoOrg() && asset.isConnected() ) 
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
+				|| (AccountUtil.getCurrentOrg().getOrgId() == 323)
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 297l && (module.getName().equals("ahu") || module.getName().equals("vav")))
 			) {
 			

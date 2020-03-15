@@ -12,7 +12,7 @@ public class GetCommissioningLogsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		List<CommissioningLogContext> commissioniongList = CommissioningApi.commissioniongList(null);
+		List<CommissioningLogContext> commissioniongList = CommissioningApi.commissioniongList(null, true);
 		context.put("logs", commissioniongList);
 		
 		return false;
