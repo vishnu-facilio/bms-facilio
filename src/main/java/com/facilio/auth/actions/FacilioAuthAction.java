@@ -386,12 +386,17 @@ public class FacilioAuthAction extends FacilioAction {
 		String authtoken = request.getParameter("authtoken");
 		String serviceurl = request.getParameter("serviceurl");
 		String isPortal = request.getParameter("isPortal");
+		String isDevice = request.getParameter("isDevice");
 		boolean isPotalUser = false;
+		boolean isDeviceUser = false;
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
 			isPotalUser = true;
 		}
+		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isDevice) && isDevice.contentEquals("true")) {
+			isDeviceUser = true;
+		}
 		
-		addAuthCookies(authtoken, isPotalUser, request);
+		addAuthCookies(authtoken, isPotalUser, isDeviceUser, request);
 
 		Cookie token = new Cookie("fc.idToken", "facilio");
 		token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
@@ -413,11 +418,14 @@ public class FacilioAuthAction extends FacilioAction {
 		return null;
 	}
 	
-	private void addAuthCookies(String authtoken, boolean portalUser, HttpServletRequest request) {
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
 		if (portalUser) {
 			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
+		}
+		if (isDeviceUser) {
+			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
 		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
 		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
