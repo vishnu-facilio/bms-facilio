@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+\<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
     "http://struts.apache.org/dtds/struts-2.5.dtd">
@@ -5430,6 +5430,8 @@
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="addFloorPlan" />
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getFloorPlanData" />
+		<action name="spaces"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getFloorPlanSpaces" />
 		<action name="getListOfFloorPlan"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getListOfFloorPlan" />
 		<action name="update"

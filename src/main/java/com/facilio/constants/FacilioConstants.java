@@ -102,7 +102,7 @@ public class FacilioConstants {
 		public static final String FEEDBACK_TYPE = "feedbackType";
 		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
 		public static final String RULE_TEMPLATE_MODULE ="ruletemplate";
-
+		public static final String SPACE="space";
 		
 
 	}
@@ -1520,6 +1520,7 @@ public class FacilioConstants {
 
 	
 		public static final String FLOOR_PLAN = "floorPlan";
+		public static final String FLOOR_PLAN_ID = "floorPlanId";
 		public static final String FLOOR_PLANS = "floorPlans";
 		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
 		

@@ -358,7 +358,7 @@ public class FacilioAuthAction extends FacilioAction {
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
 
-				addAuthCookies(authtoken, portalUser, request);
+				addAuthCookies(authtoken, portalUser, false, request);
 
 			} 
 			catch (Exception e) {

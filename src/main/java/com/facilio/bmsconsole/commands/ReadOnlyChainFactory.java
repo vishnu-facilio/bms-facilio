@@ -2243,4 +2243,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetCommissioningDetailsCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getFloorPlanSpacesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFloorPlanSpacesCommand());
+		return c;
+	}
 }
