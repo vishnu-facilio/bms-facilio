@@ -45,7 +45,9 @@ public class GetControllableCategoryFromSpaceListCommand extends FacilioCommand 
 				
 				Map<Long,ControllableAssetCategoryContext> controllableAssetCategoryMap = (Map<Long,ControllableAssetCategoryContext>) context1.get(ControlActionUtil.CONTROLLABLE_CATEGORIES);
 				
-				result.put(spaceId, controllableAssetCategoryMap);
+				if(controllableAssetCategoryMap != null) {
+					result.put(spaceId, controllableAssetCategoryMap);
+				}
 			}
 		}
 		
