@@ -1,17 +1,23 @@
 package com.facilio.workflowv2.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflowv2.contexts.Value;
 
 public class WorkflowV2TypeUtil {
-		
-	public static double assignNumericValuesForComparison(Value value) {
+	
+	public static Double assignNumericValuesForComparison(Value value) {
 		
 		Double numericalValue = null;
 		if(value.asObject() == null || (value.asObject() instanceof String && StringUtils.isEmpty(value.asString()))) {
 			numericalValue = 0d;
+    	}
+		else if(value.asObject() instanceof String) {
+			if(NumberUtils.isNumber(value.asString())){
+				numericalValue = value.asDouble();
+			}
     	}
 		else if(value.asObject() instanceof Number) {
 			numericalValue = value.asDouble();
@@ -22,17 +28,16 @@ public class WorkflowV2TypeUtil {
 		return numericalValue;
 	}
 	
-	public static void assignBothNumericValuesForComparison(Value left, Double numericalLeftValue, Value right, Double numericalRightValue)
-	{	
-		numericalLeftValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(left);
-		numericalRightValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(right);	
-	}
-	
 	public static boolean evaluateEquality(Value left, Value right) {	
 		if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
     		return (left.asDouble().equals(right.asDouble()));
     	}
-    	return (left.equals(right));	
+    	return (left.equals(right));
     }
+	
+	public static void assignBothNumericValuesForComparison(Value left, Double numericalLeftValue, Value right, Double numericalRightValue)	{	
+		numericalLeftValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(left);
+		numericalRightValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(right);	
+	}
 	
 }

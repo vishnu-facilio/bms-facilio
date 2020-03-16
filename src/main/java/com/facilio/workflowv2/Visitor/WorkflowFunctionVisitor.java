@@ -619,7 +619,8 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 				}
         	}
         	else {
-        		WorkflowV2TypeUtil.assignBothNumericValuesForComparison(left, numericalLeftValue, right, numericalRightValue);
+        		numericalLeftValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(left);
+        		numericalRightValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(right);	
         	}
         }
         
