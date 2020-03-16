@@ -127,6 +127,19 @@ public class FacilioAuthAction extends FacilioAction {
 		this.password = cryptWithMD5(password);
 	}
 
+	private String appDomain;
+	
+	public String getAppDomain() {
+		if(org.apache.commons.lang3.StringUtils.isNotEmpty(appDomain)) {
+			return appDomain;
+		}
+		return AccountUtil.getDefaultAppDomain();
+	}
+
+	public void setAppDomain(String appDomain) {
+		this.appDomain = appDomain;
+	}
+
 	public String getInviteToken() {
 		return inviteToken;
 	}
@@ -334,7 +347,6 @@ public class FacilioAuthAction extends FacilioAction {
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				String ipAddress = request.getHeader("X-Forwarded-For");
-				String appDomainName = request.getServerName();
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
@@ -345,7 +357,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				LOGGER.info("validateLogin() : appdomainName : " + appDomainName);
 				
-				authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), appDomainName, userAgent, userType,
+				authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), getAppDomain(), userAgent, userType,
 							ipAddress);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
@@ -536,7 +548,6 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		authmodel.setDomain(parentdomain);
-		LOGGER.info("#################### facilio.in::: " + request.getServerName());
 		response.addCookie(authmodel);
 	}
 
@@ -552,9 +563,9 @@ public class FacilioAuthAction extends FacilioAction {
 		JSONObject invitation = new JSONObject();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
-		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken(), request.getServerName());
+		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
 		if(user != null) {
-			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
+			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(request.getServerName(), user.getOrgId(), user.getUid());
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(new Account(org, us));
@@ -743,7 +754,7 @@ public class FacilioAuthAction extends FacilioAction {
 		JSONObject invitation = new JSONObject();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
-		User user = AccountUtil.getUserBean().verifyEmail(getInviteToken(), request.getServerName());
+		User user = AccountUtil.getUserBean().verifyEmail(getInviteToken());
 		if (user == null) {
 			invitation.put("error", "link_expired");
 		} else {
@@ -760,14 +771,14 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 
 		if (getInviteToken() != null) {
-			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getPassword(), request.getServerName());
+			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getPassword());
 			User user = new User(iamUser);
 			if (user.getUid() > 0) {
 				invitation.put("status", "success");
 			}
 		} else {
 			User user = null;
-			Map<String, Object> userMap = IAMUserUtil.getUserFromUsername(getEmailaddress(), request.getServerName());
+			Map<String, Object> userMap = IAMUserUtil.getUserFromUsername(getEmailaddress());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			} 
@@ -795,7 +806,7 @@ public class FacilioAuthAction extends FacilioAction {
 				userType = "mobile";
 			}
 			
-			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType, request.getServerName());
+			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType);
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
 				setJsonresponse("status", "success");
@@ -816,7 +827,7 @@ public class FacilioAuthAction extends FacilioAction {
 		
 		HttpServletRequest request = ServletActionContext.getRequest(); 
 		
-		if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword(), request.getServerName())) {
+		if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword())) {
 			return SUCCESS;
 		}
 		return ERROR;

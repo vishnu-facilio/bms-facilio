@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -16,17 +17,17 @@ import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
-	public void createUser(long orgId, User user, int identifier, String appDomain) throws Exception;
+	public void createUser(long orgId, User user, long identifier, String appDomain) throws Exception;
 	
 	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, long identifier) throws Exception;
 
-	User verifyEmail(String token, String appDomain) throws Exception;
+	User verifyEmail(String token) throws Exception;
 
-	User validateUserInvite(String token, String appDomain) throws Exception;
+	User validateUserInvite(String token) throws Exception;
 
-	public boolean resendInvite(long orgId, long userId, String appDomain) throws Exception;
+	public boolean resendInvite(String appDomain, long orgId, long userId) throws Exception;
 	
-	public boolean acceptInvite(String token, String password, String appDomain) throws Exception;
+	public boolean acceptInvite(String token, String password) throws Exception;
 	
 	public boolean updateUser(User user) throws Exception;
 	
@@ -34,15 +35,13 @@ public interface UserBean {
 	
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception;
 	
-	public boolean deleteUser(long orgId, long userId, String appDomain) throws Exception;
+	public boolean deleteUser(long orgId, long userId) throws Exception;
 
-	public boolean disableUser(long orgId, long userId, String appDomain) throws Exception;
-	
-	public boolean enableUser(long orgId, long userId, String appDomain) throws Exception;
-	
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
 	
-	public User getUser(long orgId, long userId, String appDomain) throws Exception;
+	public User getUser(long userId, long orgId, boolean fetchDeleted) throws Exception;
+	
+	public User getUser(String appDomain, long orgId, long userId) throws Exception;
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
@@ -58,9 +57,9 @@ public interface UserBean {
 	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception;
 
-	public List<Organization> getOrgs(long uid, String appDomain) throws Exception;
+	public List<Organization> getOrgs(long uid) throws Exception;
 	
-	public Organization getDefaultOrg(long uid, String appDomain) throws Exception;
+	public Organization getDefaultOrg(long uid) throws Exception;
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
@@ -74,12 +73,12 @@ public interface UserBean {
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
     
-    public Account getPermalinkAccount(IAMAccount iamAccount) throws Exception ;
+    public Account getPermalinkAccount(String appDomain, IAMAccount iamAccount) throws Exception ;
 
     List<Long> getAccessibleSpaceList (long uid) throws Exception;
     List<Long> getAccessibleGroupList (long uid) throws Exception;
 
-	public boolean acceptUser(User user) throws Exception;
+	public boolean acceptUser(String appDomain, User user) throws Exception;
 
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 	
@@ -91,7 +90,17 @@ public interface UserBean {
 
 	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded, String appDomain) throws Exception;
 
-	public boolean setDefaultOrg(long orgId, long userId, String appDomain) throws Exception;
+	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
+	
+	public boolean disableUser(long orgId, long userId) throws Exception;
+	
+	public boolean enableUser(long orgId, long userId) throws Exception;
+	
+	public long addToORGUsersApps(User user, String appDomain) throws Exception;
+		
+	public int deleteUserFromApps(User user, AppDomain appDomain) throws Exception;
+	
+	
 
 	
 }

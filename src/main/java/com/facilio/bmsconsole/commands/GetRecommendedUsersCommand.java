@@ -136,7 +136,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(role.getRoleId()), PickListOperators.IS));
         
-        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(criteria, AccountUtil.getCurrentOrg().getOrgId());
+        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getDefaultAppDomain(), criteria, AccountUtil.getCurrentOrg().getOrgId());
 
         if (groupId > 0) {
             selectRecordBuilder.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
@@ -148,7 +148,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         List<Map<String, Object>> userProps = selectRecordBuilder.get();
         List<User> usersWithRole = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(userProps)) {
-        	IAMUserUtil.setIAMUserPropsv3(userProps, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+        	IAMUserUtil.setIAMUserPropsv3(userProps, AccountUtil.getCurrentOrg().getOrgId(), false);
             for (Map<String, Object> prop : userProps) {
                 usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, false));
             }

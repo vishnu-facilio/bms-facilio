@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.bean.GroupBean;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
@@ -26,6 +27,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -189,19 +191,26 @@ public class GroupBeanImpl implements GroupBean {
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		
+		String appDomain = AccountUtil.getDefaultAppDomain();
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
 				.innerJoin("GroupMembers")
 				.on("GroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
 				.andCustomWhere("GroupMembers.GROUPID = ?", groupId)
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS))
+				
 				;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<GroupMember> members = new ArrayList<>();
-			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			for(Map<String, Object> prop : props) {
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}

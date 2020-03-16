@@ -8,13 +8,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -87,11 +88,15 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				}
 				
 				Organization organization = null;
-				if (StringUtils.isNotBlank(currentOrgDomain)) {
+				AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+				if(appDomain.getOrgId() > 0) {
+					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
+				}
+				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
 				}
 				else {
-					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid(), request.getServerName());
+					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);
 			}

@@ -400,7 +400,7 @@ public class AccountUtil {
 	}
 	
 	
-	public static String getDefaultAppDomain() throws Exception{
+	public static String getDefaultAppDomain() {
 		if(FacilioProperties.isDevelopment()) {
 			return "localhost";
 		}

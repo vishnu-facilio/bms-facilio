@@ -7,20 +7,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {
 	
-	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String appDomain) throws Exception {
+	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser) throws Exception {
 		String facilioToken = null;
 		
-		if(StringUtils.isEmpty(appDomain)) {
-			appDomain = AccountUtil.getDefaultAppDomain();
-		}
-        if(portalUser) {
+		if(portalUser) {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
         } else {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
@@ -52,7 +48,7 @@ public class AuthenticationUtil {
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				userType = "mobile";
 			}
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, null, appDomain, userType);
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, userType);
 			return iamAccount;
         }
         return null;

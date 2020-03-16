@@ -114,11 +114,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				AccountUtil.setCurrentAccount(tempAccount);
 			
 				if(iamAccount.getUser() != null) {
-					user = AccountUtil.getUserBean().getUser(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid(), request.getServerName());
+					user = AccountUtil.getUserBean().getUser(request.getServerName(), iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
 					if (user == null) {
-						Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid(), request.getServerName());
+						Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
 						if(org != null) {
-							user = AccountUtil.getUserBean().getUser(org.getOrgId(), iamAccount.getUser().getUid(), request.getServerName());
+							user = AccountUtil.getUserBean().getUser(request.getServerName(), org.getOrgId(), iamAccount.getUser().getUid());
 							if(user == null) {
 								throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
 							}

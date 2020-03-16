@@ -7,13 +7,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.audit.AuditData;
-import com.facilio.audit.DBAudit;
-import com.facilio.audit.FacilioAudit;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.server.ServerInfo;
-import com.opensymphony.xwork2.ActionProxy;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,7 +59,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					URL url = new URL(referrer);
 					urlsToValidate.add(url.getPath());
 				}
-				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate, request.getServerName());
+				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
 				if(iamAccount == null) {
 					return Action.ERROR;
 				} else {
@@ -76,7 +69,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else if (!isRemoteScreenMode(request)) {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, request.getServerName());
+					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false);
 
 					if (iamAccount != null) {
 						request.setAttribute("iamAccount", iamAccount);

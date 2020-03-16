@@ -16,30 +16,26 @@ import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {
 	
-	public long addUserv3(long orgId, IAMUser user, long identifier, String appDomain) throws Exception;
+	public long addUserv3(long orgId, IAMUser user, long identifier) throws Exception;
 		
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
 	
-	IAMUser verifyEmailv2(String token, String appDomain) throws Exception;
+	IAMUser verifyEmailv2(String token) throws Exception;
 
-	IAMUser resetPasswordv2(String token, String password, String appDomain) throws Exception;
+	IAMUser resetPasswordv2(String token, String password) throws Exception;
 	
-	IAMUser validateUserInvitev2(String token, String appDomain) throws Exception;
+	IAMUser validateUserInvitev2(String token) throws Exception;
 
-	public IAMUser acceptInvitev2(String token, String password, String appDomain) throws Exception;
+	public IAMUser acceptInvitev2(String token, String password) throws Exception;
 	
 	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception;
 	
-	public boolean deleteUserv2(long userId, long orgId, String appDomain) throws Exception;
+	public boolean deleteUserv2(long userId, long orgId) throws Exception;
 
-	public boolean disableUserv2(long orgId, long uid, String appDomain) throws Exception;
+	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception;
 	
-	public boolean enableUserv2(long orgId, long uid, String appDomain) throws Exception;
-	
-	public boolean setDefaultOrgv2(long uid, long orgId, String appDomain) throws Exception;
-	
-	public List<Organization> getOrgsv2(long uid, String appDomain) throws Exception;
+	public List<Organization> getOrgsv2(long uid) throws Exception;
 	
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception;
 	
@@ -55,11 +51,11 @@ public interface IAMUserBean {
     
     public void clearAllUserSessionsv2(long uid) throws Exception;
     
-    public boolean acceptUserv2(IAMUser user, String appDomain) throws Exception;
+    public boolean acceptUserv2(IAMUser user) throws Exception;
 	
-	public String getEncodedTokenv2(IAMUser user, String appDomain) throws Exception;
+	public String getEncodedTokenv2(IAMUser user) throws Exception;
 	
-	public IAMUser getFacilioUser(long orgId, long userId, String appDomain, boolean checkStatus) throws Exception;
+	public IAMUser getFacilioUser(long orgId, long userId, boolean checkStatus) throws Exception;
 	
 	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception;
 
@@ -67,9 +63,9 @@ public interface IAMUserBean {
 	    
 	public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
 
-	public IAMAccount getPermalinkAccount(String token, List<String> url, String appDomain) throws Exception ;
+	public IAMAccount getPermalinkAccount(String token, List<String> url) throws Exception ;
 
-	public long signUpSuperAdminUserv3(long orgId, IAMUser user, int identifier, String appDomain) throws Exception;
+	public long signUpSuperAdminUserv3(long orgId, IAMUser user, int identifier) throws Exception;
 		
 	public boolean verifyUser(long userId) throws Exception;
 	
@@ -83,24 +79,24 @@ public interface IAMUserBean {
 	
     public AppDomain getAppDomain(String domain) throws Exception;
     
+    public AppDomain getAppDomain(long appDomainId) throws Exception;
+    
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception ;
 
     public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception;
     
-    public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String appDomain, String userType, String orgDomain) throws Exception;
+    public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType) throws Exception;
 	
-    public IAMAccount verifyUserSessionv3(String uId, String token, String appDomain, String userType, String orgDomain) throws Exception;
+    public IAMAccount verifyUserSessionv3(String uId, String token, String userType) throws Exception;
     
-    public IAMAccount getAccountv3(long userId, String appDomain, String orgDomain) throws Exception;
+    public IAMAccount getAccountv3(long userId) throws Exception;
     
-    public Organization getDefaultOrgv3(long uid, String appDomain) throws Exception;
+    public Organization getDefaultOrgv3(long uid) throws Exception;
 	
-    public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception;
+    public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
-    public boolean verifyPassword(long orgId, long userId, String oldPassword, String appDomain) throws Exception;
-    
-    public Map<String, Object> getUserForEmailOrPhone(String emailOrPhone, String appDomain, boolean isPhone, long orgId) throws Exception;
+    public Map<String, Object> getUserForEmailOrPhone(String emailOrPhone, boolean isPhone, long orgId) throws Exception;
     
     public long addAppDomain(String domainName, int groupType, int appType) throws Exception;
     
@@ -110,9 +106,15 @@ public interface IAMUserBean {
 
     public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception;
     
-    public Map<String, Object> getUserForUsername(String username, String appDomain, long orgId) throws Exception;
+    public Map<String, Object> getUserForUsername(String username, long orgId) throws Exception;
 
 	public IAMUser getFacilioUserV3(String username, long identifier) throws Exception;
+	
+	public boolean disableUser(long orgId, long userId) throws Exception;
+	
+	public boolean enableUser(long orgId, long userId) throws Exception;
+	
+	public boolean verifyPassword(long orgId, long userId, String oldPassword) throws Exception;
 	
     	
 }

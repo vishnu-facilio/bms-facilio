@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -35,6 +37,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -98,7 +101,8 @@ public class LookupSpecialTypeUtil {
 			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<User> users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId());
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL);
+			List<User> users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appdomainObj.getDomain());
 			Map<Long, String> userMap = new HashMap<Long, String>();
 			if (users != null) {
 				for (User usr : users) {

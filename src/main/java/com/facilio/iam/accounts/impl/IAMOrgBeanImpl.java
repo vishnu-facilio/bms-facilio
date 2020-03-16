@@ -147,32 +147,23 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	
     @Override
-   	public List<IAMUser> getAllOrgUsersv2(long orgId, String appDomain) throws Exception {
+   	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
    		
        	List<FacilioField> fields = new ArrayList<>();
    		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-   		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
    		fields.add(IAMAccountConstants.getOrgIdField());
-   		fields.add(IAMAccountConstants.getAppDomainField());
    		
    		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
    				.select(fields)
    				.table("Account_Users")
-   				.innerJoin("Account_User_Apps")
-   				.on("Account_Users.USERID = Account_User_Apps.USERID")
-   				.innerJoin("App_Domain")
-   				.on("App_Domain.ID = Account_User_Apps.APP_DOMAIN_ID")
-   				.innerJoin("Account_User_Apps_Orgs")
-   				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
+   				.innerJoin("Account_ORG_Users")
+   				.on("Account_ORG_Users.USERID = Account_Users.USERID")
+   				;
    		
-   		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+   		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
    		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
    	
    	
-   		if(StringUtils.isNotEmpty(appDomain)) {
-   			selectBuilder.andCondition(CriteriaAPI.getCondition("DOMAIN", "domain", appDomain, StringOperators.IS));
-   		}
-   		
    		List<Map<String, Object>> props = selectBuilder.get();
    		if (props != null && !props.isEmpty()) {
    			List<IAMUser> users = new ArrayList<>();
@@ -185,51 +176,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
    		return null;
    	}
    	
-	@Override
-	public List<IAMUser> getOrgUsersv2(long orgId, boolean status, String appDomain) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountUserAppOrgsFields());
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
-		
-		if(StringUtils.isNotEmpty(appDomain)) {
-   			criteria.addAndCondition(CriteriaAPI.getCondition("DOMAIN", "domain", appDomain, StringOperators.IS));
-   		}
-   		
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
-		if (props != null && !props.isEmpty()) {
-			List<IAMUser> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				users.add(IAMUtil.getUserBean().createUserFromProps(prop));
-			}
-			return users;
-		}
-		return null;
-	
-	}
-	
-	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
-		fields.add(IAMAccountConstants.getAppDomainField());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_User_Apps")
-				.on("Account_Users.USERID = Account_User_Apps.USERID")
-				.innerJoin("App_Domain")
-				.on("App_Domain.ID = Account_User_Apps.APP_DOMAIN_ID")
-				.innerJoin("Account_User_Apps_Orgs")
-				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
-			
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-	
-		return selectBuilder.get();
-	}
-
-	
 	@Override
 	public Organization createOrgv2(Organization org) throws Exception {
 		Organization existingOrg = getOrgv2(org.getDomain());
@@ -338,7 +284,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			user.setUserVerified(true);
 		}
 	//	IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);
-		IAMUtil.getUserBean().signUpSuperAdminUserv3(orgId, user, 1, AccountUtil.getDefaultAppDomain() );
+		IAMUtil.getUserBean().signUpSuperAdminUserv3(orgId, user, 1);
 		
 		return user;
 	}
@@ -346,7 +292,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	@Override
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception {
 		// TODO Auto-generated method stub
-		if(IAMUtil.getUserBean().deleteUserv2(superAdminUserId, orgId, AccountUtil.getDefaultAppDomain())) {
+		if(IAMUtil.getUserBean().deleteUserv2(superAdminUserId, orgId)) {
 			return deleteSignedUpOrgv2(orgId);
 		}
 		return false;

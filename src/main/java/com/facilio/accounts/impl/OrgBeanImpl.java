@@ -90,17 +90,28 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
     @Override
-	public List<User> getAllOrgUsers(long orgId) throws Exception {
+	public List<User> getAllOrgUsers(long orgId, String appDomain) throws Exception {
 		
+    	if(StringUtils.isEmpty(appDomain)) {
+    		appDomain = AccountUtil.getDefaultAppDomain();
+    	}
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getAppDomainIdField());
 		
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new IllegalArgumentException("Invalid app Domain");
+		}
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+					
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -144,8 +155,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, appDomain != null ? appDomain.getDomain() : null);
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
@@ -174,10 +184,12 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, Criteria criteria) throws Exception {
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
+		String appDomain = AccountUtil.getDefaultAppDomain();
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria, appDomainObj.getId());
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -191,10 +203,12 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public Map<Long, User> getOrgUsersAsMap(long orgId, Criteria criteria) throws Exception {
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
+		String appDomain = AccountUtil.getDefaultAppDomain();
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria, appDomainObj.getId());
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, true, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, true);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -206,20 +220,24 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 	
-	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
+	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria, long appDomainId) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
+				
 				;
 		
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-						
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainId), NumberOperators.EQUALS));
+							
 		return selectBuilder.get();
 	}
 
@@ -242,6 +260,8 @@ public class OrgBeanImpl implements OrgBean {
 	public User getSuperAdmin(long orgId) throws Exception {
 		
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		String appDomain = AccountUtil.getDefaultAppDomain();
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
 		
 		if(superAdminRole == null) {
 			return null;
@@ -254,15 +274,18 @@ public class OrgBeanImpl implements OrgBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.innerJoin("Role")
 				.on("ORG_Users.ROLE_ID = Role.ROLE_ID");
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getDefaultAppDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			if(CollectionUtils.isNotEmpty(props)) {
 				return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
 			}
@@ -325,18 +348,17 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override 
-    public List<User> getOrgPortalUsers(long orgId) throws Exception { 
+    public List<User> getOrgPortalUsers(long orgId, String appDomain) throws Exception { 
        
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null);
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null, appDomainObj.getId());
+		
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, null);
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				if(user.getUserType() == UserType.REQUESTER.getValue()) {
-					user.setFacilioAuth(true);
-					users.add(user);
-				}
+				users.add(user);
 			}
 			return users;
 		}

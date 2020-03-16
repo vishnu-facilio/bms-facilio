@@ -87,6 +87,18 @@ public class UserAction extends FacilioAction {
 		this.groupId = groupId;
 	}
 
+	private String appDomain;
+	
+	public String getAppDomain() {
+		if(org.apache.commons.lang3.StringUtils.isNotEmpty(appDomain)) {
+			return appDomain;
+		}
+		return AccountUtil.getDefaultAppDomain();
+	}
+
+	public void setAppDomain(String appDomain) {
+		this.appDomain = appDomain;
+	}
 	public String userPickList() throws Exception {
 		if (getGroupId() > 0) {
 			List<GroupMember> memberList = AccountUtil.getGroupBean().getGroupMembers(getGroupId());
@@ -95,7 +107,7 @@ public class UserAction extends FacilioAction {
 				this.users.addAll(memberList);
 			}
 		} else {
-			setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
+			setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
 		}
 		return SUCCESS;
 	}
@@ -107,21 +119,22 @@ public class UserAction extends FacilioAction {
 	}
 	public String userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
 		
 		return SUCCESS;
 	}
 	
 	public String v2userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
 		setResult("users", getUsers());
 		return SUCCESS;
 	}
 
 	public String portalUserList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		setAppDomain("aara.facilioportal.com");
+		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), getAppDomain()));
 		return SUCCESS;
 	}
 	
@@ -133,8 +146,10 @@ public class UserAction extends FacilioAction {
 //			  checkforTenantPrimaryContact(user.getEmail());
 //			}
 			HttpServletRequest request = ServletActionContext.getRequest(); 
-			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName(), request.getServerName());
-			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOrgId(), userTobeDeleted.getUid(), request.getServerName())) {
+			setAppDomain("aara.facilioportal.com");
+			
+			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName(), getAppDomain());
+			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOrgId(), userTobeDeleted.getUid())) {
 				setUserId(userTobeDeleted.getOuid());
 			    return SUCCESS;
 			}
@@ -187,7 +202,7 @@ public class UserAction extends FacilioAction {
 		
 		HttpServletRequest request = ServletActionContext.getRequest(); 
 		
-		if(AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
+		if(AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
 	    	setUserId(user.getOuid());
 	    	return SUCCESS;
 	    }
@@ -342,7 +357,7 @@ public class UserAction extends FacilioAction {
 		
 		System.out.println("##########userOrgid   :"+user.getOrgId());
 		if(user != null) {
-			(new UserBeanImpl()).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
+			(new UserBeanImpl()).resendInvite(ServletActionContext.getRequest().getServerName(), user.getOrgId(), user.getUid());
 			return SUCCESS;
 		}
 		return ERROR;
@@ -531,13 +546,13 @@ public class UserAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
 		if(user.getUserStatus()) {
-			if(AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
+			if(AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
 				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
 				return SUCCESS;
 			}
 		}
 		else {
-			if(AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
+			if(AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
 				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
 				return SUCCESS;
 			}

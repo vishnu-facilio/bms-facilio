@@ -473,7 +473,7 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getCondition("Shift.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+		IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(CollectionUtils.isNotEmpty(props)) {
 			return props.stream().map(x -> {return StringEscapeUtils.escapeHtml4((String) x.get("name"));}).collect(Collectors.toList());
 		}

@@ -36,22 +36,22 @@ public class IAMUserUtil {
 	public static final String JWT_DELIMITER = "#";
 	private static Logger log = LogManager.getLogger(IAMUserUtil.class.getName());
 	
-	public static long addUser(IAMUser user, long orgId, long identifier, String appDomain) throws Exception {
+	public static long addUser(IAMUser user, long orgId, long identifier) throws Exception {
 		if ((user != null) && orgId > 0) {
-			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier, appDomain));
+			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier));
 		} else {
 			throw new IllegalArgumentException("User Object cannot be null");
 		}
 	}
 
-	public static IAMUser resetPassword(String invitetoken, String password, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password, appDomain));
+	public static IAMUser resetPassword(String invitetoken, String password) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().resetPasswordv2(invitetoken, password));
 
 	}
 
-	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType, String appDomain) throws Exception {
+	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
 		
-		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password, appDomain));
+		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password));
 
 		if (verifyOldPassword != null && verifyOldPassword) {
 			IAMUser userToBeUpdated = new IAMUser();
@@ -67,8 +67,8 @@ public class IAMUserUtil {
 		}
 	}
 
-	public static IAMUser acceptInvite(String inviteToken, String password, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().acceptInvitev2(inviteToken, password, appDomain));
+	public static IAMUser acceptInvite(String inviteToken, String password) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().acceptInvitev2(inviteToken, password));
 	}
 
 	public static String verifyLoginPasswordv3(String userName, String password, String appDomainName, String userAgent, String userType,
@@ -82,8 +82,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, domain, true, appType));
 	}
 
-	public static IAMUser verifyEmail(String invitetoken, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken, appDomain));
+	public static IAMUser verifyEmail(String invitetoken) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));
 	}
 
 	public static boolean updateUser(IAMUser user, long orgId) throws Exception {
@@ -94,41 +94,24 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserv2(user, fieldsToBeUpdated));
 	}
 
-	public static boolean deleteUser(long userId, long orgId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId, appDomain));
+	public static boolean deleteUser(long userId, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
 	}
 
 	public static boolean verifyUser(long userId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyUser(userId));
 	}
 	
-	public static IAMUser validateUserInviteToken(String token, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateUserInvitev2(token, appDomain));
+	public static IAMUser validateUserInviteToken(String token) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateUserInvitev2(token));
 	}
 	
-	public static boolean acceptUser(IAMUser user, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().acceptUserv2(user, appDomain));
-	}
-	
-	public static boolean disableUser(long userId, long orgId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().disableUserv2(orgId, userId, appDomain));
-	}
-	
-	public static boolean enableUser(long userId, long orgId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUserv2(orgId, userId, appDomain));
+	public static boolean acceptUser(IAMUser user) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().acceptUserv2(user));
 	}
 	
 	public static String updateUserPhoto(long uid, User user) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
-	}
-	
-	public static boolean updateUserStatus(IAMUser user, String appDomain) throws Exception {
-		if(user.getUserStatus()) {
-			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUserv2(user.getOrgId(), user.getUid(), appDomain));
-		}
-		else {
-			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().disableUserv2(user.getOrgId(), user.getUid(), appDomain));
-		}
 	}
 	
 	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
@@ -143,8 +126,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyPermalinkForURL(token, urls));
 	}
 	
-	public static IAMAccount getPermalinkAccount(String token, List<String> urls, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls, appDomain));
+	public static IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls));
 	}
 	
 	public static String generateAuthToken(String username, String password, String appDomain) throws Exception {
@@ -163,8 +146,8 @@ public class IAMUserUtil {
 		return false;
 	}
 
-	public static String getEncodedToken(IAMUser user, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEncodedTokenv2(user, appDomain));
+	public static String getEncodedToken(IAMUser user) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEncodedTokenv2(user));
 	}
 
 	public static long startUserSession(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
@@ -175,25 +158,21 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserSessionsv2(uId, isActive));
 	}
 	
-	public static List<Organization> getUserOrgs(long uId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getOrgsv2(uId, appDomain));
-	}
-	
-	public static Organization getDefaultOrg(long uId, String appDomain) throws Exception {
+	public static Organization getDefaultOrg(long uId) throws Exception {
 	//	return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv2(uId));
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv3(uId, appDomain));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv3(uId));
 	}
 	
 	public static void clearUserSessions(long uid) throws Exception {
 		FacilioService.runAsService(() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid));
 	}
 	
-	public static boolean setDefaultOrg(long uid, long orgId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId, appDomain));
+	public static boolean setDefaultOrg(long uid, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId));
 	}
 	
-	public static boolean rollbackUserAdded(long userId, long orgId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId, appDomain));
+	public static boolean rollbackUserAdded(long userId, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
 	}
 	
 	public static boolean addUserMobileSettings(UserMobileSetting userMobileSetting) throws Exception {
@@ -226,26 +205,33 @@ public class IAMUserUtil {
 		
 	}
 	
-	public static IAMAccount verifiyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String orgDomain, String appDomain, String userType)
+	public static IAMAccount verifiyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType)
 			throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioTokenv3(idToken, overrideSessionCheck, appDomain, userType, orgDomain));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioTokenv3(idToken, overrideSessionCheck, userType));
 	}
 
-	public static List<IAMUser> getUserDatav3(String uids, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted, appDomain));
+	public static List<IAMUser> getUserDatav3(String uids, long orgId, boolean shouldFetchDeleted) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
 	}
 	
 	public static Map<String, Object> getUserForEmailOrPhone(String email, String appDomain, boolean isPhone, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmailOrPhone(email, appDomain, isPhone, orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmailOrPhone(email, isPhone, orgId));
 	}
 	
-	public static Map<String, Object> getUserForUsername(String username, String appDomain, boolean isPhone, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, appDomain, orgId));
+	public static Map<String, Object> getUserForUsername(String username, boolean isPhone, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId));
 	}
 	
+	public static boolean disableUser(long userId, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().disableUser(orgId, userId));
+	}
 	
-	public static IAMUser getFacilioUser(long orgId, long uId, String appDomain) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getFacilioUser(orgId, uId, appDomain, true));
+	public static boolean enableUser(long userId, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUser(orgId, userId));
+	}
+	
+	public static IAMUser getFacilioUser(long orgId, long uId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getFacilioUser(orgId, uId, true));
 	}
 	
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
@@ -265,14 +251,14 @@ public class IAMUserUtil {
 		return null;
 	}
 
-	public static void setIAMUserPropsv3(List<Map<String, Object>> actualPropsList, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
+	public static void setIAMUserPropsv3(List<Map<String, Object>> actualPropsList, long orgId, boolean shouldFetchDeleted) throws Exception {
 		if(CollectionUtils.isNotEmpty(actualPropsList)) {
 			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
 			StringJoiner userIds = new StringJoiner(",");
 			for(Map<String, Object> map : actualPropsList) {
 				userIds.add(String.valueOf((long)map.get("uid")));
 			}
-			List<IAMUser> iamUsers = getIAMUserPropsv3(userIds.toString(), orgId, shouldFetchDeleted, appDomain);
+			List<IAMUser> iamUsers = getIAMUserPropsv3(userIds.toString(), orgId, shouldFetchDeleted);
 			if (CollectionUtils.isNotEmpty(iamUsers)) {
 				for(Map<String, Object> map : actualPropsList) {
 					long uId = (long)map.get("uid");
@@ -290,12 +276,12 @@ public class IAMUserUtil {
 		}
 	}
 	
-	public static Map<String, Object> getUserFromUsername(String username, String appDomain) throws Exception {
-		return getUserForUsername(username, appDomain, false, -1);
+	public static Map<String, Object> getUserFromUsername(String username) throws Exception {
+		return getUserForUsername(username, false, -1);
 	}
 	
-	public static List<IAMUser> getIAMUserPropsv3(String userIds, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
-		return getUserDatav3(userIds, orgId, shouldFetchDeleted, appDomain);
+	public static List<IAMUser> getIAMUserPropsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
+		return getUserDatav3(userIds, orgId, shouldFetchDeleted);
 	}
 	
 	public static Map<String, Object> getUserFromPhone(String phone, String appDomain) throws Exception {

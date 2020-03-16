@@ -311,7 +311,7 @@ public class LoginAction extends FacilioAction {
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("portalInfo", AccountUtil.getPortalInfo());
-		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain());
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
@@ -360,13 +360,10 @@ public class LoginAction extends FacilioAction {
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		
-		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
-		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
-		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
-//		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -454,10 +451,10 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
@@ -548,7 +545,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain());
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -829,7 +826,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain());
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -857,7 +854,7 @@ public class LoginAction extends FacilioAction {
 	
 	public String getOrgs() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest(); 
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 		setResult("Orgs", orgs);
 		return SUCCESS;
 	}
@@ -897,9 +894,9 @@ public class LoginAction extends FacilioAction {
 	public String validatePermalink() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
-		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null, request.getServerName());
+		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
 		if(iamAccount != null) {
-			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(iamAccount);
+			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(request.getServerName(), iamAccount);
 			if(permalinkAccount != null) {
 				
 				AccountUtil.setCurrentAccount(permalinkAccount);
