@@ -68,7 +68,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
                     portalDomain = domainArray[0]; 
 		        }
             }
-            currentAccount = AuthenticationUtil.validateToken(request,true, portalDomain);
+            currentAccount = AuthenticationUtil.validateToken(request,true);
             request.setAttribute("iamAccount", currentAccount);
             request.setAttribute("isPortal", true);
             request.setAttribute("portalDomain", portalDomain);

@@ -56,6 +56,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
+			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
+			
 			return c;
 		}
 
@@ -4802,7 +4804,6 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new AddPeopleAccessCommand());
 		
 		return c;
 	}
@@ -4811,7 +4812,6 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	
@@ -4819,7 +4819,6 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	public static FacilioChain getListOfFloorPlanChain() {
@@ -5077,7 +5076,6 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	

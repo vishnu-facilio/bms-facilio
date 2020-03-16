@@ -58,23 +58,6 @@ public class EmployeeContext extends PeopleContext{
 		return false;
 	}
 	
-	private Boolean employeePortalAccess;
-
-	public Boolean getEmployeePortalAccess() {
-		return employeePortalAccess;
-	}
-	
-	public void setEmployeePortalAccess(Boolean employeePortalAccess) {
-		this.employeePortalAccess = employeePortalAccess;
-	}
-
-	public boolean isEmployeePortalAccess() {
-		if (employeePortalAccess != null) {
-			return employeePortalAccess.booleanValue();
-		}
-		return false;
-	}
-	
 	private Boolean appAccess;
 
 	public Boolean getAppAccess() {

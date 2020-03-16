@@ -7,14 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.bmsconsole.context.ClientContactContext;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 
@@ -31,23 +24,24 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 	    	AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL);
 	    	AppDomain clientPortalApp = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL);
 	    	
-	    	for(PeopleContext person : people) {
-	    		if(facilioApp != null && person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isAppAccess()) {
-	    			PeopleAPI.addAppUser(person, facilioApp != null ? facilioApp.getDomain() : null);
-	    		}
-	    		if(occupantPortalApp != null && ((person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isOccupantPortalAccess())|| (person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isOccupantPortalAccess()))) {
-	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp != null ? occupantPortalApp.getDomain() : null, 1);
-	    		}
-	    		if(vendorPortalApp != null && person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)person).isVendorPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, vendorPortalApp.getId());
-	    		}
-	    		if(tenantPortalApp != null && person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isTenantPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? tenantPortalApp.getDomain() : null, 1);
-	    		}
-	    		if(clientPortalApp != null && person.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT && ((ClientContactContext)person).isClientPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? clientPortalApp.getDomain() : null, 1);
-	    		}
-		    }
+//	    	for(PeopleContext person : people) {
+//	    		if(facilioApp != null && person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isAppAccess()) {
+//	    			PeopleAPI.addAppUser(person, facilioApp != null ? facilioApp.getDomain() : null);
+//	    		}
+//	    		if(occupantPortalApp != null && ((person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isOccupantPortalAccess())|| (person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isOccupantPortalAccess()))) {
+//	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp != null ? occupantPortalApp.getDomain() : null, 1);
+//	    		}
+//	    		if(vendorPortalApp != null && person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)person).isVendorPortalAccess()) {
+//	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, vendorPortalApp.getId());
+//	    		}
+//	    		if(tenantPortalApp != null && person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isTenantPortalAccess()) {
+//	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? tenantPortalApp.getDomain() : null, 1);
+//	    		}
+//	    		if(clientPortalApp != null && person.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT && ((ClientContactContext)person).isClientPortalAccess()) {
+//	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? clientPortalApp.getDomain() : null, 1);
+//	    		}
+//	    		
+//		    }
 	    }
 		return false;
 	}
