@@ -106,44 +106,45 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 												return false;
 											}
 											
-											if(currentTask.getInputValue().trim().isEmpty())
-											{
+											if(currentTask.getInputValue().trim().isEmpty()) {
 												return false;
 											}
-									
+											
 											currentInputValue = currentTask.getInputValue();
 											currentInputTime = currentTask.getInputTime();
 											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 											
+											if(currentTask.getReadingFieldUnit() <= 0) {
+												LOGGER.log(Level.INFO,"Unit missing from client, Currenttask ID: "+ taskContextId + " Current Input Time: " + currentInputTime + " Current Input Value: " + currentInputValue);
+											}
+											
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-											if(currentInputUnit != null) 
+											Double currentValueInSiUnit = (currentInputUnit != null) ? UnitsUtil.convertToSiUnit(currentValue, currentInputUnit) : currentValue;				
+											
+											if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
 											{		
-												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
-												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
-												{		
-													LOGGER.debug("Entered counterfield check");
-													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-													if(taskErrors!= null && !taskErrors.isEmpty()) {
-														LOGGER.debug("Entered errors check");
-														hasErrors = true;
-														errors.addAll(taskErrors);
+												LOGGER.debug("Entered counterfield check");
+												List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+												if(taskErrors!= null && !taskErrors.isEmpty()) {
+													LOGGER.debug("Entered errors check");
+													hasErrors = true;
+													errors.addAll(taskErrors);
+													TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+													if(unitSuggestion != null && errors.size() == 1) {
+														errors.add(unitSuggestion);
+													}
+												}
+												else {
+													TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+													if(taskError!= null) {
+														errors.add(taskError);
 														TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-														if(unitSuggestion != null && errors.size() == 1) {
+														if(unitSuggestion != null) {
 															errors.add(unitSuggestion);
 														}
 													}
-													else {
-														TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-														if(taskError!= null) {
-															errors.add(taskError);
-															TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-															if(unitSuggestion != null) {
-																errors.add(unitSuggestion);
-															}
-														}
-													}																					
-												}													
-											}																						
+												}																					
+											}																																			
 										}
 									}
 									break;
@@ -180,40 +181,40 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
 			previousValue = FacilioUtil.parseDouble(rdm.getValue());
-			LOGGER.debug(" Rdm check -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
+			LOGGER.debug(" Rdm Present Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 		}
 		else if(taskContext.getReadingDataId() != -1 && rdm.getReadingDataId()!= -1 && 
 				taskContext.getReadingDataId() == rdm.getReadingDataId())
 		{				
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(), NumberOperators.LESS_THAN);
-			LOGGER.debug(" Rdm Update case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
+			LOGGER.debug(" Rdm Update Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 
 		}
 		else 
 		{
 			isNextReading = true;
 			ReadingContext previousValueReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
-			LOGGER.debug(" previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
+			LOGGER.debug(" Past Case previousValueReadingContext -- " + previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 			
 			if(previousValueReadingContext != null && taskContext.getReadingDataId() != -1 && (previousValueReadingContext.getId() == taskContext.getReadingDataId()))
 			{
 				previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", previousValueReadingContext.getTtime(), NumberOperators.LESS_THAN);
-				LOGGER.debug(" Update of previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " prev time time -- "+previousValueReadingContext.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext data Id -- "+previousValueReadingContext.getId() +" previous val "+previousValue);
+				LOGGER.debug(" Past Update Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
 			}
 			else if(previousValueReadingContext != null)
 			{
 				previousValue = (double) previousValueReadingContext.getReading(numberField.getName());
-				LOGGER.debug(" previousValueReadingContext Enter -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " prev time -- "+previousValueReadingContext.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext data Id -- "+previousValueReadingContext.getId() +" previous val "+previousValue);
+				LOGGER.debug(" Past Simple Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
 			}
 			
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
-			LOGGER.debug(" next val "+nextValue);
+			LOGGER.debug(" Next value "+nextValue);
 		}
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-		LOGGER.debug(" currentInputUnit "+currentInputUnit+ " currentValueInSiUnit "+currentValueInSiUnit);
+		LOGGER.debug(" CurrentInputUnit "+currentInputUnit+ " CurrentValueInSiUnit "+currentValueInSiUnit);
 		
-		if(previousValue < 0 && nextValue < 0 && currentInputUnit == null) 
+		if(previousValue < 0 && nextValue < 0) 
 		{
 			return null;
 		}
@@ -266,78 +267,49 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return null;
 		}
 		
-		if(AccountUtil.getCurrentOrg().getId() != 155l) {
+		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
 			return null;
 		}
 				
-		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		double currentDelta = currentValueInSiUnit-previousValue;
 		
 		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()), currentTask, taskContext);
 		
-		if(averageValue != null && averageValue > 0 && numberField.getMetric() > 0) {
+		if(averageValue != null && averageValue > 0) {
 			
 			Double averageLowerLimit = averageValue - (averageValue * averageboundPercentage /100);
 			Double averageHigherLimit = averageValue + (averageValue * averageboundPercentage /100);
 			
 			double averageLowerLimitEnergyReading = previousValue + averageLowerLimit;
 			double averageHigherLimitEnergyReading = previousValue + averageHigherLimit;
-			
-			Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
+
 			Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
 			
-			if(currentInputUnit == null)
-			{
-				return null;
-			}
-			
-			double averageLowerLimitInInputUnit = UnitsUtil.convert(averageLowerLimitEnergyReading, siUnit, currentInputUnit);		
-			double averageHigherLimitInInputUnit = UnitsUtil.convert(averageHigherLimitEnergyReading, siUnit, currentInputUnit);	
+			double averageLowerLimitInInputUnit = (currentInputUnit != null) ? UnitsUtil.convert(averageLowerLimitEnergyReading, Unit.valueOf(numberField.getMetricEnum().getSiUnitId()), currentInputUnit) : averageLowerLimitEnergyReading;		
+			double averageHigherLimitInInputUnit = (currentInputUnit != null) ? UnitsUtil.convert(averageHigherLimitEnergyReading, Unit.valueOf(numberField.getMetricEnum().getSiUnitId()), currentInputUnit) : averageHigherLimitEnergyReading;	
 					
 			String averageLowerLimitString = WorkflowUtil.getStringValueFromDouble(getDecimalClientFormat(averageLowerLimitInInputUnit));
-			String averageHigherLimitString = WorkflowUtil.getStringValueFromDouble(getDecimalClientFormat(averageHigherLimitInInputUnit));
+			String averageHigherLimitString = WorkflowUtil.getStringValueFromDouble(getDecimalClientFormat(averageHigherLimitInInputUnit));		
 			
-			if(currentDelta < averageLowerLimit) {
-				
-				TaskErrorContext error = new TaskErrorContext();
-				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue()); 
-				error.setSuggestionType(TaskErrorContext.SuggestionType.LESS_THAN_AVG_VALUE.getValue());
-				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
-				error.setAverageValue(setAverageValueString(averageValue, numberField));
-				
-				if(averageLowerLimitString != null && averageHigherLimitString != null )
-				{
-					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
-							+ averageLowerLimitString + " - " 
-							+ averageHigherLimitString + " " + currentInputUnit.getSymbol());	
+			if(averageLowerLimitString != null && averageHigherLimitString != null ) {
+				if(currentDelta < averageLowerLimit) {	
+					TaskErrorContext error = new TaskErrorContext();
+					error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue()); 
+					error.setSuggestionType(TaskErrorContext.SuggestionType.LESS_THAN_AVG_VALUE.getValue());
+					error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
+					error.setAverageValue(setAverageValueString(averageValue, numberField));
+					error.setMessage(setSuggestionMessageString(error, averageLowerLimitString, averageHigherLimitString, currentInputUnit));		
+					return error;
 				}
-				else
-				{
-					error.setMessage("The reading you have entered is less than the average delta value of "+ error.getAverageValue() +".");
+				if(currentDelta > averageHigherLimit) {
+					TaskErrorContext error = new TaskErrorContext();
+					error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
+					error.setSuggestionType(TaskErrorContext.SuggestionType.GREATER_THAN_AVG_VALUE.getValue());
+					error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
+					error.setAverageValue(setAverageValueString(averageValue, numberField));
+					error.setMessage(setSuggestionMessageString(error, averageLowerLimitString, averageHigherLimitString, currentInputUnit));				
+					return error;
 				}	
-				
-				return error;
-			}
-			if(currentDelta > averageHigherLimit) {
-				
-				TaskErrorContext error = new TaskErrorContext();
-				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
-				error.setSuggestionType(TaskErrorContext.SuggestionType.GREATER_THAN_AVG_VALUE.getValue());
-				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
-				error.setAverageValue(setAverageValueString(averageValue, numberField));
-				
-				if(averageLowerLimitString != null && averageHigherLimitString != null )
-				{
-					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
-							+ averageLowerLimitString + " - " 
-							+ averageHigherLimitString + " " + currentInputUnit.getSymbol());			
-				}
-				else
-				{
-					error.setMessage("The reading you have entered is greater than the average delta value of " + error.getAverageValue() +".");
-				}
-				
-				return error;
 			}
 		}
 		 return null;
@@ -351,22 +323,22 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return null;
 		}
 		
-		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		double diff = previousValue / currentValueInSiUnit;
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
 		
-		if(currentInputUnit != null && suggestedUnit != null) {
+		if(currentInputUnit != null && currentInputUnit.getMultiplierTimes() != -1 && currentInputUnit.getMetric() != null) {
+			
+			Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
 			
 			TaskErrorContext error = new TaskErrorContext();		
 			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
 			error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
-			error.setSuggestedUnit(suggestedUnit);
+			if(suggestedUnit != null) {
+				error.setSuggestedUnit(suggestedUnit);
+			}
 			error.setMessage("We suggest you to double check the unit you have chosen.");
-			//It might be "+ Unit.valueOf(error.getSuggestedUnit()).getSymbol()+"."
-
 			String previousValueString = previousValue+"";
 			if(numberField.getMetric() > 0) {
 				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
@@ -442,11 +414,16 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return Unit.valueOf(currentTask.getReadingFieldUnit());
 		}
 		else if(rdm.getUnit() > 0) {
+			LOGGER.log(Level.INFO,"Unit missing from client, fetching from rdm, Currenttask ID: "+ currentTask.getId() + " Current Input Time: " + currentTask.getInputTime() + " Current Input Value: " + currentTask.getInputValue() + "  Unit "+ Unit.valueOf(rdm.getUnit()));
 			return Unit.valueOf(rdm.getUnit());
 		}
 		else if (numberField.getMetric() > 0)
 		{
+			LOGGER.log(Level.INFO,"Unit missing from client, fetching from orgLevelUnit, Currenttask ID: "+ currentTask.getId() + " Current Input Time: " + currentTask.getInputTime() + " Current Input Value: " + currentTask.getInputValue() + " Unit "+UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric()));
 			return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+		}
+		else {
+			LOGGER.log(Level.INFO,"Unit missing from client, No unit case, Currenttask ID: "+ currentTask.getId() + " Current Input Time: " + currentTask.getInputTime() + " Current Input Value: " + currentTask.getInputValue());
 		}
 		return null;
 	}
@@ -531,6 +508,16 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
 		}
 		return currentValueString;
+	}
+	
+	public static String setSuggestionMessageString(TaskErrorContext error, String averageLowerLimitString, String averageHigherLimitString, Unit currentInputUnit) throws Exception {	
+		
+		String suggestionMessage = "The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
+				+ averageLowerLimitString + " - " + averageHigherLimitString;	
+		if(currentInputUnit != null) {
+			suggestionMessage = suggestionMessage + " " + currentInputUnit.getSymbol();
+		}
+		return suggestionMessage;
 	}
 	
 	public static String setAverageValueString(Double averageValue, NumberField numberField) throws Exception {	
