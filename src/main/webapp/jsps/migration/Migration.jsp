@@ -1,3 +1,4 @@
+<%@page import="com.facilio.bmsconsole.context.ReadingDataMeta"%>
 <%@page import="com.facilio.constants.FacilioConstants.TicketStatus" %>
 <%@page import="com.facilio.chain.FacilioContext" %>
 <%@page import="com.facilio.modules.FieldFactory" %>
@@ -90,90 +91,58 @@
         @Override
         public boolean executeCommand(Context context) throws Exception {
         	try{
+        		
+        		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        		
+        		FacilioField field = modbean.getField(1103862l);
 
-				List<FacilioField> qeueuFields = new ArrayList<>();
-				qeueuFields.add(FieldFactory.getField("id", "ID", FieldType.ID));
-				qeueuFields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER));
-				qeueuFields.add(FieldFactory.getField("addedTime", "ADDED_TIME", FieldType.DATE_TIME));
-				qeueuFields.add(FieldFactory.getField("visibilityTimeout", "VISIBILITY_TIMEOUT", FieldType.NUMBER));
-				qeueuFields.add(FieldFactory.getField("lastClientReceivedTime", "LAST_CLIENT_RECEIVED_TIME", FieldType.DATE_TIME));
-				qeueuFields.add(FieldFactory.getField("maxClientReceiptCount", "MAX_CLIENT_RECEIPT_COUNT", FieldType.NUMBER));
-				qeueuFields.add(FieldFactory.getField("clientReceiptCount", "CLIENT_RECEIPT_COUNT", FieldType.NUMBER));
-				qeueuFields.add(FieldFactory.getField("deletedTime", "DELETED_TIME", FieldType.DATE_TIME));
-
-				List<FacilioField> qeueuNewFields = new ArrayList<>();
-				qeueuNewFields.add(FieldFactory.getField("id", "ID", FieldType.ID));
-				qeueuNewFields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER));
-				qeueuNewFields.add(FieldFactory.getField("addedTime", "ADDED_TIME", FieldType.DATE_TIME));
-				qeueuNewFields.add(FieldFactory.getField("visibilityTimeout", "VISIBILITY_TIMEOUT", FieldType.NUMBER));
-				qeueuNewFields.add(FieldFactory.getField("lastClientReceivedTime", "LAST_CLIENT_RECEIVED_TIME", FieldType.DATE_TIME));
-				qeueuNewFields.add(FieldFactory.getField("maxClientReceiptCount", "MAX_CLIENT_RECEIPT_COUNT", FieldType.NUMBER));
-				qeueuNewFields.add(FieldFactory.getField("clientReceiptCount", "CLIENT_RECEIPT_COUNT", FieldType.NUMBER));
-				qeueuNewFields.add(FieldFactory.getField("deletedTime", "DELETED_TIME", FieldType.DATE_TIME));
-				qeueuNewFields.add(FieldFactory.getField("fileId", "FILE_ID", FieldType.NUMBER));
-
-				List<FacilioField> fields = new ArrayList<>();
-				fields.add(FieldFactory.getField("queueId", "QUEUE_ID", FieldType.NUMBER));
-				fields.add(FieldFactory.getField("data", "DATA", FieldType.STRING));
-
-
-				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(qeueuFields).table("FacilioInstantJobQueue")
-						.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", null,CommonOperators.IS_EMPTY))
-						.orderBy("ID");
+				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().
+						select(FieldFactory.getControlPointFields()).table(ModuleFactory.getControlPointModule().getTableName());
 				List<Map<String,Object>> props = builder.get();
-				Map<Long,Map<String,Object>> finalMap = new HashMap<>();
-				List<Long> idVal = new ArrayList<>();	
+				
 				for(Map<String,Object> itr:props){
 					long id = (long)itr.get("id");
-					finalMap.put(id,itr);
-					idVal.add(id);	
+					ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(id);
+					ReadingDataMeta childRDM = ReadingsAPI.getReadingDataMeta(rdm.getResourceId(), field);
+					
+					GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+							.fields(FieldFactory.getControlPointFields())
+							.table(ModuleFactory.getControlPointModule().getTableName())
+							.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getControlPointModule()));
+					
+					Map<String,Object> updateProps = new HashMap<String,Object>();
+					updateProps.put("childRDMId", childRDM.getId());
+					update.update(updateProps);
 				}
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("FacilioInstantJobQueue_Data")
-						.andCondition(CriteriaAPI.getCondition("QUEUE_ID","queueId", StringUtils.join(idVal, ","), StringOperators.IS))
-						.orderBy("QUEUE_ID");
-				
-				List<Map<String,Object>> queueMessages = selectBuilder.get();
-				
-				List<Map<String,Object>> insertVal = new ArrayList<>();
-				for(Map<String,Object> itrVal:queueMessages){
-					long queueId = (long)itrVal.get("queueId");
-					String msg = (String) itrVal.get("data");
-					long fileId = DBConf.getInstance().addFile(msg);
-					finalMap.get(queueId).put("fileId", fileId);
-					insertVal.add(finalMap.get(queueId));
-				}
-				
-				
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().fields(qeueuNewFields).table("InstantJobQueue")
-						.addRecords(insertVal);
-				insertBuilder.save();
 
             }
             catch(Exception e) {
                 LOGGER.info(e.getMessage());
             }
-            // Have migration commands for each org
-            // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             return false;
         }
     }
 %>
 
 <%
-   // List<Organization> orgs = null;
+    List<Organization> orgs = null;
     try {
-       // orgs = AccountUtil.getOrgBean().getOrgs();
-        //for (Organization org : orgs) {
-         //   System.out.println("org: " + org.getOrgId());
-       //     AccountUtil.setCurrentAccount(org.getOrgId());
-            FacilioChain c = FacilioChain.getTransactionChain();
-            c.addCommand(new OrgLevelMigrationCommand());
-            c.execute();
+       orgs = AccountUtil.getOrgBean().getOrgs();
+        for (Organization org : orgs) {
+            System.out.println("org: " + org.getOrgId());
+            if(org.getOrgId() == 297l) {
+            	
+            	AccountUtil.setCurrentAccount(org.getOrgId());
+                FacilioChain c = FacilioChain.getTransactionChain();
+                c.addCommand(new OrgLevelMigrationCommand());
+                c.execute();
 
-       //     AccountUtil.cleanCurrentAccount();
-       // }
+                AccountUtil.cleanCurrentAccount();
+            }
+        }
     } catch (Exception e) {
         e.printStackTrace();
     }
     System.out.println("Done");
+    out.println("Done");
 %>
