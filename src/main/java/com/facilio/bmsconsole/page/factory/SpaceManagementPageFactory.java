@@ -40,12 +40,13 @@ public class SpaceManagementPageFactory extends PageFactory {
         Section tab1Sec2 = page.new Section();
         addBuildingsWidget(site.getId(), tab1Sec2,modBean);
         tab1.addSection(tab1Sec2);
-		addSpacesWidget(tab1Sec2,modBean);
-
-		Section tab1Sec3 = page.new Section("spaceReadings");
-        tab1.addSection(tab1Sec3);
-		addReadingWidget(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		Section tab1Sec3 = page.new Section("siteSpaces");
+		addSpacesWidget(tab1Sec3,modBean);
+		tab1.addSection(tab1Sec3);
+		Section tab1Sec4 = page.new Section("spaceReadings");
+        tab1.addSection(tab1Sec4);
+		addReadingWidget(tab1Sec4);
+		addCommonSubModuleGroup(tab1Sec4);
 
         return page;
     }
@@ -172,7 +173,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		relatedList.put("module", module);
 		PageWidget widget = new PageWidget(WidgetType.LIST, "siteSpaces");
 		widget.setRelatedList(relatedList);
-		widget.addToLayoutParams(section, 24, 8);
+		widget.addToLayoutParams(section, 24, 10);
 		section.addWidget(widget);
 	}
 	private static void addBuildingRelatedListWidget(Section section) throws Exception {
