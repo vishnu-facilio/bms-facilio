@@ -166,7 +166,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			fields.addAll(FieldFactory.getSystemFields(mod));
 		}
 		
-		if (moduleName.equals("workorder")) {
+		if (moduleName.equals("workorder") || moduleName.equals("asset")) {
 			fields.add(FieldFactory.getSiteIdField());
 		}
 		
