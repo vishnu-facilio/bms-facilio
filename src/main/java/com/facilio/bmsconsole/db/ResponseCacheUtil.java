@@ -12,10 +12,9 @@ import com.facilio.fw.LRUCache;
 public class ResponseCacheUtil {
 
 	public static void addCache(long orgId, long userId, String requestURI, String contentHash, Object json) {
-		long currentTimeMillis = System.currentTimeMillis();
 		String cacheKey = CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash);
 		if (!LRUCache.getResponseCache().contains(cacheKey)) {
-			LRUCache.getResponseCache().put(cacheKey, currentTimeMillis);
+			LRUCache.getResponseCache().put(cacheKey, json);
 		}
 	}
 	

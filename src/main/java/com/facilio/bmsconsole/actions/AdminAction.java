@@ -215,6 +215,7 @@ public class AdminAction extends ActionSupport {
 		LRUCache.getFieldNameCache().purgeCache();
 		LRUCache.getModuleFieldsCache().purgeCache();
 		LRUCache.getUserSessionCache().purgeCache();
+		LRUCache.getResponseCache().purgeCache();
 
 		return SUCCESS;
 	}
