@@ -115,8 +115,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					}
 
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.SPACE)) {
-					
-						
+
 							String moduleName = importProcessContext.getModule().getName();
 							ArrayList<String> spaceFields = new ArrayList<>();
 							spaceFields.add(moduleName+"__site");
@@ -126,9 +125,9 @@ public class ProcessImportCommand extends FacilioCommand {
 							spaceFields.add(moduleName + "__space2");
 							spaceFields.add(moduleName + "__space3");
 							spaceFields.add(moduleName + "__space4");
-							
+
 							String [] Ids = {"site","building","floor", "space1", "space2", "space3", "space4"};
-							
+
 							for(int k =0 ;k<Ids.length ;k++) {
 								HashMap<String, Object> sendToSpaceID = new HashMap<>();
 								for(int z=0 ;z<k+1;z++) {
@@ -136,10 +135,10 @@ public class ProcessImportCommand extends FacilioCommand {
 										sendToSpaceID.put(fieldMapping.get(spaceFields.get(z)), colVal.get(fieldMapping.get(spaceFields.get(z))));
 									}
 									else {
-										break;
+										continue;
 									}
 								}
-								if(sendToSpaceID.size() != k + 1) {
+								if(!sendToSpaceID.containsKey(fieldMapping.get(spaceFields.get(k)))) {
 									continue;
 								}
 								Long id = getSpaceID(importProcessContext, sendToSpaceID, fieldMapping);
@@ -154,7 +153,7 @@ public class ProcessImportCommand extends FacilioCommand {
 									}
 									props.put(Ids[k],lookupHolder);
 								}
-								
+
 							}
 							
 							props.put("spaceType",BaseSpaceContext.SpaceType.SPACE.getIntVal());
@@ -776,7 +775,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
 		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
 		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
-		
+		int start = 0;
 		if(spaceName != null || 
 				importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) 
 				|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
@@ -787,9 +786,10 @@ public class ProcessImportCommand extends FacilioCommand {
 					|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
 				
 				spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__space1"));
+				start = 1;
 			}
 			
-			for(int i =0; i <= 3; i++)
+			for(int i =start; i <= 3; i++)
 			{
 				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__space" + (i+1)));
 				if(temp != null && temp != "") {
