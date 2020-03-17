@@ -1526,7 +1526,8 @@ public class FacilioConstants {
 		public static final String FLOOR_PLAN_ID = "floorPlanId";
 		public static final String FLOOR_PLANS = "floorPlans";
 		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
-		
+		public static final String RULE_ASSET_COUNT = "ruleassetcount";
+
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
