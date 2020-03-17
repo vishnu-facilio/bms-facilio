@@ -146,9 +146,12 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 				ControlPointContext controlPointcontext = FieldUtil.getAsBeanFromMap(prop, ControlPointContext.class);
 				
 				ReadingsAPI.fillExtendedPropertiesForRDM(controlPointcontext, null);
+				ReadingsAPI.convertUnitForRdmData(controlPointcontext);
 				
 				if(controlPointcontext.getChildRDMId() > 0) {
-					controlPointcontext.setChildRDM(ReadingsAPI.getReadingDataMeta(controlPointcontext.getChildRDMId()));
+					ReadingDataMeta childRDM = ReadingsAPI.getReadingDataMeta(controlPointcontext.getChildRDMId());
+					ReadingsAPI.convertUnitForRdmData(childRDM);
+					controlPointcontext.setChildRDM(childRDM);
 				}
 				
 				ControlActionCommandContext lastExecutedCommand = ControlActionUtil.getLastExecutedCommandGreaterThanSpecificTime(controlPointcontext.getResourceId(), controlPointcontext.getFieldId(), controlPointcontext.getTtime());
