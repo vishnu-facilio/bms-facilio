@@ -17,6 +17,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -827,5 +828,13 @@ public class ModuleAction extends FacilioAction {
 
 	public void setAccessType(long accessType) {
 		this.accessType = accessType;
+	}
+	
+	public String fetchOperators() throws Exception {
+		
+		JSONObject operators = CommonCommandUtil.getOperators();
+		setResult("operators", operators);
+		
+		return SUCCESS;
 	}
 }
