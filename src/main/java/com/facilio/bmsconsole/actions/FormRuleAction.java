@@ -66,12 +66,12 @@ public class FormRuleAction extends FacilioAction {
 	
 	public String addRule() throws Exception {
 		
-		Context context = new FacilioContext();
+		FacilioChain c = TransactionChainFactory.getAddFormRuleChain();
+		Context context = c.getContext();
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		FacilioChain c = TransactionChainFactory.getAddFormRuleChain();
-		c.execute(context);
+		c.execute();
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
 		return SUCCESS;
@@ -79,12 +79,12 @@ public class FormRuleAction extends FacilioAction {
 	
 	public String updateRule() throws Exception {
 		
-		Context context = new FacilioContext();
+		FacilioChain c = TransactionChainFactory.getUpdateFormRuleChain();
+		Context context = c.getContext();
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		FacilioChain c = TransactionChainFactory.getUpdateFormRuleChain();
-		c.execute(context);
+		c.execute();
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
 		return SUCCESS;
@@ -92,12 +92,13 @@ public class FormRuleAction extends FacilioAction {
 	
 	public String deleteRule() throws Exception {
 		
-		Context context = new FacilioContext();
+		FacilioChain c = TransactionChainFactory.getDeleteFormRuleChain();
+		
+		Context context = c.getContext();
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		FacilioChain c = TransactionChainFactory.getDeleteFormRuleChain();
-		c.execute(context);
+		c.execute();
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
 		
@@ -112,15 +113,17 @@ public class FormRuleAction extends FacilioAction {
 	}
 
 	public String executeFormActionRules() throws Exception {
-		Context context = new FacilioContext();
+		
+		FacilioChain c = TransactionChainFactory.getExecuteFormActionRules();
+		
+		Context context = c.getContext();
 		
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		context.put(FacilioConstants.ContextNames.FORM_FIELD_ID, this.getFormFieldId());
 		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
 		context.put(FormRuleAPI.FORM_DATA,formData);
 		
-		FacilioChain c = TransactionChainFactory.getExecuteFormActionRules();
-		c.execute(context);
+		c.execute();
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
 		return SUCCESS;
