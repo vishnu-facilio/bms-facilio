@@ -4933,6 +4933,12 @@ public class TransactionChainFactory {
 		return c;
 
 	}
+
+	public static FacilioChain getAddOrUpdateApprovalRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
+		return chain;
+	}
 }
 
 

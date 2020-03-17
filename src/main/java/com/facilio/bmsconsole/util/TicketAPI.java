@@ -256,6 +256,18 @@ public class TicketAPI {
 		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		return getStatus(workorderModule, status);
 	}
+
+	public static List<FacilioStatus> getStatuses(FacilioModule module, Criteria criteria) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+		if (criteria != null && !criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
+		return builder.get();
+	}
 	
 	public static FacilioStatus getStatus(FacilioModule module, String status) throws Exception
 	{

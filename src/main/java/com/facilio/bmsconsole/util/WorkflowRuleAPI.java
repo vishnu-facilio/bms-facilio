@@ -446,6 +446,7 @@ public class WorkflowRuleAPI {
 		if(criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
+		builder.orderBy("EXECUTION_ORDER");
 
 		List<Map<String, Object>> list = builder.get();
 		if (clazz == null) {

@@ -77,40 +77,11 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 				ruleChain = TransactionChainFactory.updateWorkflowRuleChain();
 			}
 			ruleChain.execute(context);
-			
-			updateStateTransitionExecutionOrder(facilioModule);
+
+			if (add) {
+				StateFlowRulesAPI.updateStateTransitionExecutionOrder(facilioModule, RuleType.STATE_FLOW);
+			}
 		}
 		return false;
 	}
-
-	public static void updateStateTransitionExecutionOrder(FacilioModule module) throws Exception {
-		FacilioField executionOrderField = FieldFactory.getField("executionOrder", "EXECUTION_ORDER", ModuleFactory.getWorkflowRuleModule(), FieldType.NUMBER);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
-				.innerJoin(ModuleFactory.getStateFlowModule().getTableName())
-					.on(ModuleFactory.getWorkflowRuleModule().getTableName() + ".ID = " + ModuleFactory.getStateFlowModule().getTableName() + ".ID")
-				.select(Arrays.asList(FieldFactory.getIdField(ModuleFactory.getWorkflowRuleModule()), executionOrderField))
-				.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.STATE_FLOW.getIntVal()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
-				;
-		List<Map<String, Object>> list = selectBuilder.get();
-		
-		if (CollectionUtils.isNotEmpty(list)) {
-			for (Map<String, Object> map : list) {
-				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getWorkflowRuleModule().getTableName())
-						.fields(Collections.singletonList(executionOrderField))
-						.andCondition(CriteriaAPI.getIdCondition((long) map.get("id"), ModuleFactory.getWorkflowRuleModule()));
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
-				Integer executionOrder = ((Integer) map.get("executionOrder"));
-				if (executionOrder == null) {
-					executionOrder = 0;
-				}
-				map.put("executionOrder", executionOrder + 1);
-				builder.update(map);
-			}
-		}
-	}
-
 }

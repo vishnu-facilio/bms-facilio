@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import org.apache.commons.chain.Context;
@@ -23,7 +25,7 @@ public class CreateClonedStateFlowCommand extends FacilioCommand {
         stateFlow.setCriteria(criteria);
         stateFlow.setExecutionOrder(0);
 
-        AddOrUpdateStateFlowCommand.updateStateTransitionExecutionOrder(stateFlow.getModule());
+        StateFlowRulesAPI.updateStateTransitionExecutionOrder(stateFlow.getModule(), WorkflowRuleContext.RuleType.STATE_RULE);
 
         context.put(FacilioConstants.ContextNames.STATE_FLOW, stateFlow);
         return false;

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -42,6 +44,43 @@ public class ApprovalAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
 		chain.execute();
+		return SUCCESS;
+	}
+
+	private ApprovalRuleMetaContext approvalRule;
+	public ApprovalRuleMetaContext getApprovalRule() {
+		return approvalRule;
+	}
+	public void setApprovalRule(ApprovalRuleMetaContext approvalRule) {
+		this.approvalRule = approvalRule;
+	}
+
+	public String addOrUpdateApprovalRule() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApprovalRuleChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.APPROVAL_RULE, approvalRule);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
+		return SUCCESS;
+	}
+
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getApprovalRuleDetails() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApprovalRuleDetailsChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
 		return SUCCESS;
 	}
 }

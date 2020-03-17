@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
 
     private SharingContext<ApproverContext> approvers;
-    public List<ApproverContext> getApprovers() {
+    public SharingContext<ApproverContext> getApprovers() {
         return approvers;
     }
-    public void setApprovers(List<ApproverContext> approvers) {
+    public void setApprovers(SharingContext<ApproverContext> approvers) {
         if (approvers != null) {
             this.approvers = new SharingContext<>(approvers);
         }

@@ -361,7 +361,11 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
 	</package>
 
-	<package name="approvalTransition" extends="v2Api" namespace="/api/v2/approvalTransition">
+	<package name="approvalTransition" extends="v2Api" namespace="/api/v2/approval">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="addOrUpdateApprovalRule" />
+		<action name="view"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" />
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" />
 	</package>
