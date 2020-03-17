@@ -40,6 +40,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.aws.util.FederatedIdentityUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -378,6 +379,96 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		setJsonresponse("message", "Invalid username or password");
 		return ERROR;
+	}
+	
+	private String idToken;
+	
+	public void setIdToken(String idToken) {
+		this.idToken = idToken;
+	}
+	
+	public String getIdToken() {
+		return this.idToken;
+	}
+	
+	public String googleSignIn() throws Exception {
+		
+		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
+		if (payload != null) {
+			String email = (String) payload.get("email");
+			String hostedDomain = (String) payload.get("hd");
+			String name = (String) payload.get("name");
+		
+			try {
+				LOGGER.info("validateGoogleSignIn()");
+				String authtoken = null;
+				boolean portalUser = false;
+				if(portalId() > 0) {
+					portalUser = true;
+				}
+				HttpServletRequest request = ServletActionContext.getRequest();
+				
+				String userAgent = request.getHeader("User-Agent");
+				userAgent = userAgent != null ? userAgent : "";
+				userAgent = "googleauth:" + userAgent;
+				String ipAddress = request.getHeader("X-Forwarded-For");
+				String serverName = request.getServerName();
+				String[] domainNameArray = serverName.split("\\.");
+				
+				String domainName = "app";
+				if (domainNameArray.length > 2) {
+					String awsDomain = FacilioProperties.getDomain();
+					if(StringUtils.isNullOrEmpty(awsDomain)) {
+						awsDomain = "facilio";
+					}
+					if(!domainNameArray[1].equals(awsDomain) ) {
+						domainName = domainNameArray[0];
+					}
+				}
+				
+				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+	            String userType = "web";
+				String deviceType = request.getHeader("X-Device-Type");
+				if (!StringUtils.isNullOrEmpty(deviceType)
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
+	
+				LOGGER.info("validateLogin() : domainName : " + domainName);
+				
+				AppType appType = AppType.SERVICE_PORTAL;
+				if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
+					appType = AppType.VENDOR_PORTAL;
+				}
+				else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
+					appType = AppType.TENANT_PORTAL;
+				}
+		
+				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, domainName, appType);
+				setResult("token", authtoken);
+				setResult("username", email);
+	
+				addAuthCookies(authtoken, portalUser, false, request);
+			} 
+			catch (Exception e) {
+				LOGGER.log(Level.INFO, "Exception while validating google signin, ", e);
+				setResponseCode(1);
+				Exception ex = e;
+				while (ex != null) {
+					if (ex instanceof AccountException) {
+						setResult("message", ex.getMessage());
+						break;
+					}
+					ex = (Exception) ex.getCause();
+				}
+				return ERROR;
+			}
+		}
+		else {
+			setResponseCode(1);
+			setResult("message", "Invalid idToken!");
+		}
+		return SUCCESS;
 	}
 
 	public String loadWebView() {

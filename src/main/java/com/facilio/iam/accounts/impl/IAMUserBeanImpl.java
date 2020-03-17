@@ -1,6 +1,7 @@
 package com.facilio.iam.accounts.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +63,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.nimbusds.jose.JOSEException;
 
 ;
 
@@ -1233,6 +1235,22 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		}
 		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Password");
+	}
+	
+	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
+			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception  {
+		
+		IAMUser user = getFacilioUser(emailaddress, -1, domain);
+		if (user != null) {
+			long uid = user.getUid();
+			String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
+					System.currentTimeMillis() + 24 * 60 * 60000);
+			if (startUserSession) {
+				startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
+			}
+			return jwt;
+		}
+		throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 	}
 	
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {

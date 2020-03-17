@@ -37,6 +37,9 @@
 	String copyrightName =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name"); 
 	String copyrightYear =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.year"); 
 	
+	boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
+	String googleAuthClientId =com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid"); 
+	
 	JSONObject copyrightInfo = new JSONObject();
 	copyrightInfo.put("name", copyrightName);
 	copyrightInfo.put("year", copyrightYear);
@@ -195,6 +198,8 @@
         var servicePortalDomain = "<%=servicePortalDomain%>";
         var rebrandInfo = <%=rebrandInfo%>;
         window.rebrandInfo = rebrandInfo;
+        var googleAuthEnable = <%=googleAuthEnable%>;
+        var googleAuthClientId = "<%=googleAuthClientId%>";
   </script>
   
 <% if(isNewClientBuild) {%>
@@ -225,4 +230,5 @@
 <% }%> 	
 
   </body>
+  <script src="https://apis.google.com/js/api:client.js"></script>
 </html>

@@ -66,6 +66,12 @@ public class IAMUserUtil {
 			String ipAddress, String domain, AppType appType) throws Exception {
 		return validateLoginv2(userName, password, userAgent, userType, ipAddress, domain, true, appType);
 	}
+	
+	public static String verifyLoginWithoutPassword(String emailaddress, String userAgent, String userType,
+			String ipAddress, String domain, AppType appType) throws Exception {
+	
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, domain, true, appType));
+	}
 
 	public static IAMUser verifyEmail(String invitetoken) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));

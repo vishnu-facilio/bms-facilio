@@ -96,6 +96,9 @@ public interface IAMUserBean {
 	
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
 			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception ;
+	
+	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
+			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception ;
 
 	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, String userType, AppType appType) throws Exception;
 	
