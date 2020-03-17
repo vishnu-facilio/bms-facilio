@@ -224,6 +224,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Site Name"));
+		columns.add(new ViewField("siteType", "Site Type"));
 		columns.add(new ViewField("managedBy", "Mananged By"));
 		columns.add(new ViewField("grossFloorArea", "Floor Area"));
 		columns.add(new ViewField("area", "Total Area"));
@@ -1221,9 +1222,9 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("name", "Building Name"));
+		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("managedBy", "Mananged By"));
 		columns.add(new ViewField("noOfFloors", "Floors"));
-		columns.add(new ViewField("maxOccupancy", "Max Occupancy"));
 		columns.add(new ViewField("area", "Total Area"));
 
 		return columns;

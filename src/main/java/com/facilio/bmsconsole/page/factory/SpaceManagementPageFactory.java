@@ -86,7 +86,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		addFloorMapWidget(tab1Sec1);
+		if (floor.getDefaultFloorPlanId() > 0) {
+			addFloorMapWidget(tab1Sec1);
+		}
 		addSecondaryDetailsWidget(tab1Sec1);
 		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
 		cardWidget.addToLayoutParams(tab1Sec1, 16, 4);
