@@ -267,6 +267,33 @@ public class CommonCommandUtil {
 								
 	}
 	
+	public static void emailNewLead (String subject, String name, String email, String locale, String domain) {
+		try {
+			
+			if (FacilioProperties.isProduction()) {
+				JSONObject json = new JSONObject();
+				json.put("sender", "alert@facilio.com");
+				json.put("to", "getsmart@facilio.com");
+				json.put("subject", subject);
+				
+				StringBuilder body = new StringBuilder()
+										.append("\n\nInfo : \n--------\n")
+										.append("\n Name : ").append(name)
+										.append("\n Email : ").append(email)
+										.append("\n Locale : ").append(locale)
+										.append("\n Domain : ").append(domain)
+										;
+				json.put("message", body.toString());
+				
+				FacilioFactory.getEmailClient().sendEmail(json);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+								
+	}
+	
 	public static void emailException(String fromClass, String msg, Throwable e) {
 		emailException(fromClass, msg, e, null);
 	}

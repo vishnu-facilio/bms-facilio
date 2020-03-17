@@ -44,6 +44,7 @@ import com.facilio.aws.util.FederatedIdentityUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -398,6 +399,7 @@ public class FacilioAuthAction extends FacilioAction {
 			String email = (String) payload.get("email");
 			String hostedDomain = (String) payload.get("hd");
 			String name = (String) payload.get("name");
+			String locale = (String) payload.get("locale");
 		
 			try {
 				LOGGER.info("validateGoogleSignIn()");
@@ -451,6 +453,8 @@ public class FacilioAuthAction extends FacilioAction {
 				addAuthCookies(authtoken, portalUser, false, request);
 			} 
 			catch (Exception e) {
+				CommonCommandUtil.emailNewLead("New Lead - Google User", name, email, locale, hostedDomain);
+				
 				LOGGER.log(Level.INFO, "Exception while validating google signin, ", e);
 				setResponseCode(1);
 				Exception ex = e;
