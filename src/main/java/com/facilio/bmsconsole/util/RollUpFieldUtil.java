@@ -127,6 +127,36 @@ public class RollUpFieldUtil {
 		return null;		
 	}
 	
+	public static List<Long> getDistinctChildModuleRecordIds(RollUpField triggeringChildField, Criteria criteria, int offsetCount) throws Exception {
+			
+		FacilioField selectDistinctField = new FacilioField();
+		selectDistinctField.setName(triggeringChildField.getChildField().getName());
+		selectDistinctField.setDisplayName(triggeringChildField.getChildField().getDisplayName());
+		selectDistinctField.setColumnName("DISTINCT("+triggeringChildField.getChildField().getCompleteColumnName()+")");
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.table(triggeringChildField.getChildModule().getTableName())
+				.module(triggeringChildField.getChildModule())
+				.select(Collections.singletonList(selectDistinctField))
+				.orderBy(triggeringChildField.getChildModule().getTableName()+ "." +triggeringChildField.getChildField().getColumnName())
+				.limit(3)
+				.offset(offsetCount);
+		
+		if(triggeringChildField.getChildCriteria() != null) {
+			selectBuilder.andCriteria(triggeringChildField.getChildCriteria());
+		}
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
+		
+		List<Long> childModuleRecordIds = new ArrayList<Long>();
+		List<ModuleBaseWithCustomFields> childModuleRecords = selectBuilder.get();
+		for(ModuleBaseWithCustomFields childModuleRecord:childModuleRecords) {
+			childModuleRecordIds.add(childModuleRecord.getId());	
+		}
+		return childModuleRecordIds;
+	}
+	
 	public static void aggregateFieldAndAddRollUpFieldData(RollUpField triggeringChildField, List<Long> triggerChildGroupedIds, List<ReadingDataMeta> rollUpFieldData) throws Exception {
 		
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
@@ -196,51 +226,24 @@ public class RollUpFieldUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule siteModule = modBean.getModule("site");
-		FacilioModule buildingModule = modBean.getModule("building");
-		FacilioModule floorModule = modBean.getModule("floor");
+		FacilioModule spaceModule = modBean.getModule("space");
 		
 		Map<String, FacilioField> siteModuleFields = FieldFactory.getAsMap(modBean.getAllFields(siteModule.getName()));
 		FacilioField noOfBuildingsField = siteModuleFields.get("noOfBuildings");
 		
 		//add alter table for NO_OF_INDEPENDENT_SPACES for all three tables
-		FacilioField independentSpaceFieldF = new FacilioField();
-		independentSpaceFieldF.setName("noOfIndependentSpaces");
-		independentSpaceFieldF.setColumnName("NO_OF_INDEPENDENT_SPACES");
-		independentSpaceFieldF.setDisplayName("No. Of Independent Spaces");
-		independentSpaceFieldF.setOrgId(noOfBuildingsField.getOrgId());
-		independentSpaceFieldF.setDisplayType(noOfBuildingsField.getDisplayTypeInt());
-		independentSpaceFieldF.setDataType(noOfBuildingsField.getDataType());
-		independentSpaceFieldF.setDefault(noOfBuildingsField.getDefault());
-		independentSpaceFieldF.setDisabled(noOfBuildingsField.getDisabled());
-		independentSpaceFieldF.setRequired(noOfBuildingsField.getRequired());
-		independentSpaceFieldF.setModule(floorModule);
-		modBean.addField(independentSpaceFieldF);
-		
-		FacilioField independentSpaceFieldB = new FacilioField();
-		independentSpaceFieldB.setName("noOfIndependentSpaces");
-		independentSpaceFieldB.setColumnName("NO_OF_INDEPENDENT_SPACES");
-		independentSpaceFieldB.setDisplayName("No. Of Independent Spaces");
-		independentSpaceFieldB.setOrgId(noOfBuildingsField.getOrgId());
-		independentSpaceFieldB.setDisplayType(noOfBuildingsField.getDisplayTypeInt());
-		independentSpaceFieldB.setDataType(noOfBuildingsField.getDataType());
-		independentSpaceFieldB.setDefault(noOfBuildingsField.getDefault());
-		independentSpaceFieldB.setDisabled(noOfBuildingsField.getDisabled());
-		independentSpaceFieldB.setRequired(noOfBuildingsField.getRequired());
-		independentSpaceFieldB.setModule(buildingModule);
-		modBean.addField(independentSpaceFieldB);
-
-		FacilioField independentSpaceFieldS = new FacilioField();
-		independentSpaceFieldS.setName("noOfIndependentSpaces");
-		independentSpaceFieldS.setColumnName("NO_OF_INDEPENDENT_SPACES");
-		independentSpaceFieldS.setDisplayName("No. Of Independent Spaces");
-		independentSpaceFieldS.setOrgId(noOfBuildingsField.getOrgId());
-		independentSpaceFieldS.setDisplayType(noOfBuildingsField.getDisplayTypeInt());
-		independentSpaceFieldS.setDataType(noOfBuildingsField.getDataType());
-		independentSpaceFieldS.setDefault(noOfBuildingsField.getDefault());
-		independentSpaceFieldS.setDisabled(noOfBuildingsField.getDisabled());
-		independentSpaceFieldS.setRequired(noOfBuildingsField.getRequired());
-		independentSpaceFieldS.setModule(siteModule);
-		modBean.addField(independentSpaceFieldS);
+		FacilioField spaceField = new FacilioField();
+		spaceField.setName("noOfSubSpaces");
+		spaceField.setColumnName("NO_OF_SUB_SPACES");
+		spaceField.setDisplayName("No. Of Sub Spaces");
+		spaceField.setOrgId(noOfBuildingsField.getOrgId());
+		spaceField.setDisplayType(noOfBuildingsField.getDisplayTypeInt());
+		spaceField.setDataType(noOfBuildingsField.getDataType());
+		spaceField.setDefault(noOfBuildingsField.getDefault());
+		spaceField.setDisabled(noOfBuildingsField.getDisabled());
+		spaceField.setRequired(noOfBuildingsField.getRequired());
+		spaceField.setModule(spaceModule);
+		modBean.addField(spaceField);
 	}
 	
 	public static void addRollUpForBaseSpaceFields() throws Exception{
@@ -351,6 +354,97 @@ public class RollUpFieldUtil {
 		siteRollUpFieldContextIS.setParentRollUpFieldId(siteModuleFields.get("noOfIndependentSpaces").getFieldId());
 		siteRollUpFieldContextIS.setChildCriteriaId(childCriteriaId5);
 		rollUpFields.add(siteRollUpFieldContextIS);
+		
+		addRollUpField(rollUpFields);
+	}
+	
+	public static void addRollUpForSubSpaceFields() throws Exception{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule baseSpaceModule = modBean.getModule("basespace");
+		FacilioModule tagetSpaceModule = modBean.getModule("space");
+		
+		Map<String, FacilioField> baseSpaceModuleFields = FieldFactory.getAsMap(modBean.getAllFields(baseSpaceModule.getName()));
+		Map<String, FacilioField> targetSpaceModuleFields = FieldFactory.getAsMap(modBean.getAllFields(tagetSpaceModule.getName()));
+
+		List<RollUpField> rollUpFields = new ArrayList<RollUpField>();
+		long childCriteriaId1 = -1, childCriteriaId2 = -1, childCriteriaId3 = -1, childCriteriaId4 = -1;
+		
+		Condition space1NotNull = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space1"), "", CommonOperators.IS_NOT_EMPTY);
+		Condition space1Null = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space1"), "", CommonOperators.IS_EMPTY);
+		Condition space2NotNull = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space2"), "", CommonOperators.IS_NOT_EMPTY);
+		Condition space2Null = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space2"), "", CommonOperators.IS_EMPTY);
+		Condition space3NotNull = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space3"), "", CommonOperators.IS_NOT_EMPTY);
+		Condition space3Null = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space3"), "", CommonOperators.IS_EMPTY);
+		Condition space4NotNull = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space4"), "", CommonOperators.IS_NOT_EMPTY);
+		Condition space4Null = CriteriaAPI.getCondition(baseSpaceModuleFields.get("space4"), "", CommonOperators.IS_EMPTY);
+		Condition siteNotNull = CriteriaAPI.getCondition(baseSpaceModuleFields.get("site"), "", CommonOperators.IS_NOT_EMPTY);
+		Condition spaceTypeSpace = CriteriaAPI.getCondition(baseSpaceModuleFields.get("spaceType"), ""+SpaceType.SPACE.getIntVal(), NumberOperators.EQUALS);
+		
+		//Make sure no of independent/spaces fields is added prior to this and SetIds here directly
+		//space1
+
+		RollUpField rollUpFieldContext = new RollUpField();
+		rollUpFieldContext.setChildModuleId(baseSpaceModule.getModuleId());
+		rollUpFieldContext.setAggregateFunctionId(BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue());
+		rollUpFieldContext.setParentModuleId(tagetSpaceModule.getModuleId());
+		rollUpFieldContext.setParentRollUpFieldId(targetSpaceModuleFields.get("noOfSubSpaces").getFieldId());
+		
+		RollUpField space1RollUpFieldContext = new RollUpField(rollUpFieldContext);
+		space1RollUpFieldContext.setChildFieldId(baseSpaceModuleFields.get("space1").getFieldId());
+		
+		Criteria criteria1 = new Criteria();
+		criteria1.addAndCondition(spaceTypeSpace);
+		criteria1.addAndCondition(space1NotNull);
+		criteria1.addAndCondition(space2Null);
+		criteria1.addAndCondition(space3Null);
+		criteria1.addAndCondition(space4Null);
+		criteria1.addAndCondition(siteNotNull);
+		childCriteriaId1 = CriteriaAPI.addCriteria(criteria1);
+		space1RollUpFieldContext.setChildCriteriaId(childCriteriaId1);
+		rollUpFields.add(space1RollUpFieldContext);
+	
+		RollUpField space2RollUpFieldContext = new RollUpField(rollUpFieldContext);
+		space2RollUpFieldContext.setChildFieldId(baseSpaceModuleFields.get("space2").getFieldId());
+		
+		Criteria criteria2 = new Criteria();
+		criteria2.addAndCondition(spaceTypeSpace);
+		criteria2.addAndCondition(space1NotNull);
+		criteria2.addAndCondition(space2NotNull);
+		criteria2.addAndCondition(space3Null);
+		criteria2.addAndCondition(space4Null);
+		criteria2.addAndCondition(siteNotNull);
+		childCriteriaId2 = CriteriaAPI.addCriteria(criteria2);
+		space2RollUpFieldContext.setChildCriteriaId(childCriteriaId2);
+		rollUpFields.add(space2RollUpFieldContext);
+		
+		RollUpField space3RollUpFieldContext = new RollUpField(rollUpFieldContext);
+		space3RollUpFieldContext.setChildFieldId(baseSpaceModuleFields.get("space3").getFieldId());
+		
+		Criteria criteria3 = new Criteria();
+		criteria3.addAndCondition(spaceTypeSpace);
+		criteria3.addAndCondition(space1NotNull);
+		criteria3.addAndCondition(space2NotNull);
+		criteria3.addAndCondition(space3NotNull);
+		criteria3.addAndCondition(space4Null);
+		criteria3.addAndCondition(siteNotNull);
+		childCriteriaId3 = CriteriaAPI.addCriteria(criteria3);
+		space3RollUpFieldContext.setChildCriteriaId(childCriteriaId3);
+		rollUpFields.add(space3RollUpFieldContext);
+		
+		RollUpField space4RollUpFieldContext = new RollUpField(rollUpFieldContext);
+		space4RollUpFieldContext.setChildFieldId(baseSpaceModuleFields.get("space4").getFieldId());
+		
+		Criteria criteria4 = new Criteria();
+		criteria4.addAndCondition(spaceTypeSpace);
+		criteria4.addAndCondition(space1NotNull);
+		criteria4.addAndCondition(space2NotNull);
+		criteria4.addAndCondition(space3NotNull);
+		criteria4.addAndCondition(space4NotNull);
+		criteria4.addAndCondition(siteNotNull);
+		childCriteriaId4 = CriteriaAPI.addCriteria(criteria4);
+		space4RollUpFieldContext.setChildCriteriaId(childCriteriaId4);
+		rollUpFields.add(space4RollUpFieldContext);
 		
 		addRollUpField(rollUpFields);
 	}

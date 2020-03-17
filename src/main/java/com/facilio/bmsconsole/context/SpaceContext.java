@@ -63,4 +63,13 @@ public class SpaceContext extends BaseSpaceContext {
 	public void setUnitReservationCost(float unitReservationCost) {
 		this.unitReservationCost = unitReservationCost;
 	}
+	
+	private long noOfSubSpaces = -1;
+	public long getNoOfSubSpaces() {
+		return noOfSubSpaces;
+	}
+	public void setNoOfSubSpaces(long noOfSubSpaces) {
+		this.noOfSubSpaces = noOfSubSpaces;
+	}
+
 }

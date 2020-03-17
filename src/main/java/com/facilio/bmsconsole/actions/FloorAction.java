@@ -114,14 +114,9 @@ public class FloorAction extends FacilioAction {
 	
 	public String runRollUpFieldMig() throws Exception {
 		RollUpFieldUtil.addRollUpForBaseSpaceFields();
+		RollUpFieldUtil.addRollUpForSubSpaceFields();
 		setResult("Migration","Success");	
 		return SUCCESS;
-	}
-	
-	public String addRollUpFieldMig() throws Exception {
-		RollUpFieldUtil.addRollUpMigFields();
-		setResult("Migration","Success");	
-		return SUCCESS;	
 	}
 	
 	private File floorPlanImage;

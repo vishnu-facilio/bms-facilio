@@ -567,7 +567,8 @@ public class FacilioConstants {
 		public static final String AGGREGATE_FUNCTION_ID = "aggregateFunctionId";
 		public static final String AGGREGATE_FIELD_ID = "aggregateFieldId";	
 		public static final String PARENT_MODULE_ID = "parentModuleId";		
-		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";		
+		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";	
+		public static final String MODULE_CRITERIA_MAP = "moduleCriteriaMap";		
 
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
