@@ -901,13 +901,7 @@ public class ViewFactory {
 
 		FacilioModule siteModule = ModuleFactory.getSiteModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("id");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("ID");
-		createdTime.setModule(siteModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
