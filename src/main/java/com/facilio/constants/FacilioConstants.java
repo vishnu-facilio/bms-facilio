@@ -158,7 +158,7 @@ public class FacilioConstants {
 		public static final String SERVICE_PORTAL_APP_ID = "servicePortalappId";
 		public static final String VENDOR_PORTAL_APP_ID = "vendorPortalappId";
 		public static final String CLIENT_PORTAL_APP_ID = "clientPortalappId";
-		
+
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
         public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
 
@@ -224,7 +224,7 @@ public class FacilioConstants {
 		public static final String FETCH_SUPPLEMENTS = "fetchSupplement";
 
 		public static final String CONNECTEDAPP_SAML_LIST = "connectedAppSAMLList";
-		
+
 		public static final String TIMEOUT = "timeout";
 
 		public static final String TENANT_STATUS = "tenantStatus";
@@ -371,7 +371,13 @@ public class FacilioConstants {
 		public static final String IS_PRE_EVENT = "is_pre_event";
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 		public static final String FLOORPLAN_VIEW_CONTEXT = "floorPlanViewContext";
-	
+		public static final String RULE_ROLLUP_ALARM ="rulerollupalarm";
+		public static final String RULE_ROLLUP_OCCURRENCE="rulerollupoccurrence";
+		public  static final String RULE_ROLLUP_EVENT="rulerollupevent";
+		public static final String ASSET_ROLLUP_ALARM ="assetrollupalarm";
+		public static final String ASSET_ROLLUP_OCCURRENCE="assetrollupoccurrence";
+		public  static final String ASSET_ROLLUP_EVENT="assetrollupevent";
+
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
 		
@@ -421,7 +427,7 @@ public class FacilioConstants {
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
 		public static final String FILE_RESPONSE_STATUS = "fileResponseStatus";
 		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
-		
+
 		public static final String IS_BIM = "isBim";
 		public static final String VALID_SHEETS = "validSheets";
 		public static final String SELECTED_SHEET_NAMES = "selectedSheetNames";
@@ -601,9 +607,9 @@ public class FacilioConstants {
 		public static final String AGGREGATE_FUNCTION_ID = "aggregateFunctionId";
 		public static final String AGGREGATE_FIELD_ID = "aggregateFieldId";	
 		public static final String PARENT_MODULE_ID = "parentModuleId";		
-		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";	
-		public static final String MODULE_CRITERIA_MAP = "moduleCriteriaMap";	
-		public static final String ROLL_UP_FIELD_IDS = "rollUpFieldIds";		
+		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";
+		public static final String MODULE_CRITERIA_MAP = "moduleCriteriaMap";
+		public static final String ROLL_UP_FIELD_IDS = "rollUpFieldIds";
 
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
@@ -651,7 +657,7 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
 		public static final String BASE_SPACE_ID = "basespaceId";
-		
+
 		public static final String ASSET = "asset";
 		public static final String ASSET_ID = "assetId";
 		public static final String ASSET_LIST = "assets";
@@ -951,7 +957,7 @@ public class FacilioConstants {
 		public static final String GROUP_VIEWS = "groupViews";
 
 		public static final String VIEW_NAME = "viewName";
-		
+
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
 		public static final String VIEW_COUNT = "viewCount";
@@ -1589,24 +1595,24 @@ public class FacilioConstants {
 		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
 		public static final String RULE_ASSET_COUNT = "ruleassetcount";
 
-		
-	
+
+
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
-		
+
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_CONTACTS = "tenantcontacts";
-	
+
 		public static final String CLIENT_CONTACT = "clientcontact";
 		public static final String CLIENT_CONTACTS = "clientcontacts";
-	
+
 		public static final String VENDOR_CONTACT = "vendorcontact";
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
-	
+
 		public static final String PEOPLE = "people";
 
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
-	
+
 		public static final String TENANT_UNIT_SPACE = "tenantunit";
 		public static final String ALARM_TYPE = "alarmType";
 
@@ -1777,6 +1783,13 @@ public class FacilioConstants {
 			classMap.put(CONTROLLER_ALARM, ControllerAlarmContext.class);
 			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
 			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
+			classMap.put(RULE_ROLLUP_EVENT, RuleRollUpEvent.class);
+			classMap.put(RULE_ROLLUP_OCCURRENCE, RuleRollUpOccurrence.class);
+			classMap.put(RULE_ROLLUP_ALARM, RuleRollUpAlarm.class);
+			classMap.put(ASSET_ROLLUP_EVENT, AssetRollUpEvent.class);
+			classMap.put(ASSET_ROLLUP_OCCURRENCE, AssetRollUpOccurrence.class);
+			classMap.put(ASSET_ROLLUP_ALARM, AssetRollUpAlarm.class);
+
 			classMap.put(VISITOR, VisitorContext.class);
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);

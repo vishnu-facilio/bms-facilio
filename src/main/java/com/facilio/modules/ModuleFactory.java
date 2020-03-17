@@ -184,7 +184,7 @@ public class ModuleFactory {
 		formModule.setTableName("Form_Rule_Action");
 		return formModule;
 	}
-	
+
 	public static FacilioModule getFormRuleActionFieldModule() {
 		FacilioModule formModule = new FacilioModule();
 		formModule.setName("formRuleActionField");
@@ -750,7 +750,7 @@ public class ModuleFactory {
 	public static FacilioModule getEnergyStarMeterModule() {
 		return constructModule("energyStarMeter", "Energy Star Meter", "Energy_Star_Meter");
 	}
-	
+
 	public static FacilioModule getPMJobPlanModule() {
 		return constructModule("pmjobplan", "pm job plan", "PM_Job_Plan");
 	}
@@ -773,7 +773,7 @@ public class ModuleFactory {
 	public static FacilioModule getCBIntentChildModule() {
 		return constructModule("cbintentchild", "Chat Bot Intent Child", "CB_Intent_Child");
 	}
-	
+
 	public static FacilioModule getCBIntentActionModule() {
 		return constructModule("cbintentaction", "Chat Bot Intent Action", "CB_Intent_Action");
 	}
@@ -1096,7 +1096,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("ConnectedApps");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getConnectedAppSAMLModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connectedAppSAML");
@@ -1104,7 +1104,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("ConnectedApps_SAML");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getConnectedAppWidgetsModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connectedAppWidgets");
@@ -1112,7 +1112,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("ConnectedApp_Widgets");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getVariablesModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("variables");
@@ -1120,7 +1120,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("Variables");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getConnectedAppConnectorsModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connectedAppConnectors");
@@ -1128,7 +1128,7 @@ public class ModuleFactory {
 		connectedApp.setTableName("ConnectedApp_Connectors");
 		return connectedApp;
 	}
-	
+
 	public static FacilioModule getConnectionModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connection");
@@ -1209,7 +1209,7 @@ public class ModuleFactory {
 
 		return filesModule;
 	}
-	
+
 	public static FacilioModule getResizedFilesModule() {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("resilzedFiles");
@@ -3532,7 +3532,7 @@ public class ModuleFactory {
 		module.setExtendModule(getResourceModule());
 		return module;
 	}
-	
+
 	public static FacilioModule getTenantContactModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -3600,16 +3600,16 @@ public class ModuleFactory {
 		module.setTableName("CommissioningLogController");
 		return module;
 	}
-	
+
 	public static FacilioModule getPeopleModule() {
 		FacilioModule peopleModule = new FacilioModule();
 		peopleModule.setName(FacilioConstants.ContextNames.PEOPLE);
 		peopleModule.setDisplayName("People");
 		peopleModule.setTableName("People");
-		
+
 		return peopleModule;
 	}
-	
+
 	public static FacilioModule getBimIntegrationLogsModule(){
 		FacilioModule module = new FacilioModule();
 		module.setName("bimIntegrationLogs");
@@ -3617,7 +3617,7 @@ public class ModuleFactory {
 		module.setTableName("Bim_Integration_Logs");
 		return module;
 	}
-	
+
 	public static FacilioModule getBimImportProcessMappingModule(){
 		FacilioModule module = new FacilioModule();
 		module.setName("bimImportProcessMapping");
@@ -3625,7 +3625,7 @@ public class ModuleFactory {
 		module.setTableName("Bim_Import_Process_Mapping");
 		return module;
 	}
-	
+
 	public static FacilioModule getBimDefaultValuesModule(){
 		FacilioModule module = new FacilioModule();
 		module.setName("bimDefaultValues");
@@ -3711,7 +3711,7 @@ public class ModuleFactory {
 		module.setDisplayName("AgentThreadDump");
 		return module;
 	}
-	
+
 	public static FacilioModule getScopingConfigModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("scopingconfig");
@@ -3719,7 +3719,7 @@ public class ModuleFactory {
 		module.setDisplayName("Scoping Config");
 		return module;
 	}
-	
+
 	public static FacilioModule getScopingModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("scoping");

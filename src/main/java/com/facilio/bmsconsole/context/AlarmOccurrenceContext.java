@@ -308,7 +308,9 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		AGENT,
 		CONTROLLER,
 		PRE_OCCURRENCE,
-		OPERATION_OCCURRENCE;
+		OPERATION_OCCURRENCE,
+		RULE_ROLLUP,
+		ASSET_ROLLUP,
 		;
 
 		public int getIndex() {

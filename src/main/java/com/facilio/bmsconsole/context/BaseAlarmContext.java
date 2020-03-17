@@ -202,7 +202,9 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		AGENT_ALARM,
 		CONTROLLER_ALARM,
 		PRE_ALARM,
-		OPERATION_ALARM;
+		OPERATION_ALARM,
+		RULE_ROLLUP_ALARM,
+		ASSET_ROLLUP_ALARM
 		;
 		public int getIndex() {
 			return ordinal() + 1;
