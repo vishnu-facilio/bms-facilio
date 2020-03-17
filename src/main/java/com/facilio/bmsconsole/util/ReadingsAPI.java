@@ -452,6 +452,12 @@ public class ReadingsAPI {
 	
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
+		fillExtendedPropertiesForRDM(meta, fieldMap);
+		return meta;
+	}
+	
+	public static void fillExtendedPropertiesForRDM(ReadingDataMeta meta,Map<Long, FacilioField> fieldMap) throws Exception {
+		
 		Object value = meta.getValue();
 		meta.setActualValue((String) value);
 		if (meta.isCustom() && meta.getActualValue().equals("-1")) {
@@ -485,7 +491,7 @@ public class ReadingsAPI {
 		}
 		meta.setValue(FacilioUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
-		return meta;
+		
 	}
 	
 	private static String getReadingTypes(ReadingInputType... types) {
