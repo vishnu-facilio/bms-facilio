@@ -92,9 +92,9 @@
         public boolean executeCommand(Context context) throws Exception {
         	try{
         		
-        		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        		/* ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         		
-        		/* FacilioField field = modbean.getField(1103862l);
+        		FacilioField field = modbean.getField(1103862l);
 
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().
 						select(FieldFactory.getControlPointFields()).table(ModuleFactory.getControlPointModule().getTableName());
@@ -113,9 +113,11 @@
 					Map<String,Object> updateProps = new HashMap<String,Object>();
 					updateProps.put("childRDMId", childRDM.getId());
 					update.update(updateProps);
-				} */
+				}  */
 				
-          		RollUpFieldUtil.addRollUpMigFields();
+          		RollUpFieldUtil.addRollUpForBaseSpaceFields();
+          		RollUpFieldUtil.addRollUpForSubSpaceFields();
+        	//	RollUpFieldUtil.runMigForBulkRollUpField();
 
             }
             catch(Exception e) {
