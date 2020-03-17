@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -53,6 +57,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		boolean needCriteriaReport =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, false);
 		if(needCriteriaReport) {
+			
 			List<ReportDataPointContext> dFDataPoints = new ArrayList<>();
 			ReportDataPointContext tfDataPoint = null, cfDataPoint = null;
 			
@@ -62,52 +67,53 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			Map<String, Object> filters = new HashMap<>();
 			
 			List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
-			
-			JSONObject dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
-			if(dataFilter != null && !dataFilter.isEmpty()) {
-				JSONObject conditions = (JSONObject) dataFilter.get("conditions");
-				if(conditions != null && !conditions.isEmpty()) {
-					for(Object key : conditions.keySet()) {
-						JSONObject condition = (JSONObject)conditions.get((String)key);
-						List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange());
-						key = "Cri_"+key+".timeline";
-						filters.put((String) key, timeLine);
+			if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
+				JSONObject dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
+				if(dataFilter != null && !dataFilter.isEmpty()) {
+					JSONObject conditions = (JSONObject) dataFilter.get("conditions");
+					if(conditions != null && !conditions.isEmpty()) {
+						for(Object key : conditions.keySet()) {
+							JSONObject condition = (JSONObject)conditions.get((String)key);
+							List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange());
+							key = "Cri_"+key+".timeline";
+							filters.put((String) key, timeLine);
+						}
+					}
+					
+					dFDataPoints = FilterUtil.getDFDataPoints(dataFilter);
+				}
+				
+				
+				JSONObject timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
+				if(timeFilter != null && !timeFilter.isEmpty()) {
+					List<Map<String, Object>> TFTimeLine = getTFTimeLine(report.getDateRange(), timeFilter);
+					if(CollectionUtils.isNotEmpty(TFTimeLine)) {
+						filters.put("TimeFilter.timeline", TFTimeLine);
+						
+						tfDataPoint = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), getTFDataPointName(timeFilter));	
 					}
 				}
 				
-				dFDataPoints = FilterUtil.getDFDataPoints(dataFilter);
-			}
-			
-			
-			JSONObject timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
-			if(timeFilter != null && !timeFilter.isEmpty()) {
-				List<Map<String, Object>> TFTimeLine = getTFTimeLine(report.getDateRange(), timeFilter);
-				if(CollectionUtils.isNotEmpty(TFTimeLine)) {
-					filters.put("TimeFilter.timeline", TFTimeLine);
-					
-					tfDataPoint = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), getTFDataPointName(timeFilter));	
+				if(CollectionUtils.isNotEmpty(combinedList)) {
+					createCombinedMap();
+					if(MapUtils.isNotEmpty(combinedMap)) {
+						filters.put("Filter.timeline", getCombinedTimeLine());
+						
+						cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter");
+					}
 				}
-			}
-			
-			if(CollectionUtils.isNotEmpty(combinedList)) {
-				createCombinedMap();
-				if(MapUtils.isNotEmpty(combinedMap)) {
-					filters.put("Filter.timeline", getCombinedTimeLine());
-					
-					cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter");
+				if(cfDataPoint != null) {
+					reportDataPoints.add(cfDataPoint);
 				}
+				if(tfDataPoint != null) {
+					reportDataPoints.add(tfDataPoint);
+				}
+				if(!dFDataPoints.isEmpty()){
+					reportDataPoints.addAll(dFDataPoints);
+				}
+				report.setDataPoints(reportDataPoints);
+				reportAggrData.putAll(filters);
 			}
-			if(cfDataPoint != null) {
-				reportDataPoints.add(cfDataPoint);
-			}
-			if(tfDataPoint != null) {
-				reportDataPoints.add(tfDataPoint);
-			}
-			if(!dFDataPoints.isEmpty()){
-				reportDataPoints.addAll(dFDataPoints);
-			}
-			report.setDataPoints(reportDataPoints);
-			reportAggrData.putAll(filters);
 		}
 		return false;
 	}
@@ -221,10 +227,10 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 					ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 					do {
 						if ((days != null && !days.isEmpty()) && days.contains(new Long(start.getDayOfWeek().getValue()))) {
-							Map<String, Object> obj = new HashMap();
-			    			Map<String, Object> obj1 = new HashMap();
 					    	if(intervals != null && !intervals.isEmpty()) {
 					    		for (Object values : intervals.values()) {
+					    			Map<String, Object> obj = new HashMap();
+					    			Map<String, Object> obj1 = new HashMap();
 					    			JSONArray interval = (JSONArray) values;
 						    		Long startTime = (long) (LocalTime.parse((CharSequence) interval.get(0)).toSecondOfDay()*1000);
 							    	Long endTime = (long) (LocalTime.parse((CharSequence) interval.get(1)).toSecondOfDay()*1000);
@@ -233,16 +239,20 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
 							    	obj1.put("value", 0);
 							    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
+							    	timeline.add(obj);
+							    	timeline.add(obj1);
 					    		}
 					    	}else {
+					    		Map<String, Object> obj = new HashMap();
+				    			Map<String, Object> obj1 = new HashMap();
 					    		obj.put("key", DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
 						    	obj.put("value", 1);
 						    	obj1.put("key", DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
 						    	obj1.put("value", 0);
 						    	localMap.put(DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false), DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
+						    	timeline.add(obj);
+						    	timeline.add(obj1);
 					    	}
-					    	timeline.add(obj);
-					    	timeline.add(obj1);
 						}
 						else if (days == null && intervals != null && !intervals.isEmpty()){
 							for (Object values : intervals.values()) {
@@ -258,9 +268,9 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
 							    	obj1.put("value", 0);
 							    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
+							    	timeline.add(obj);
+							    	timeline.add(obj1);
 						    	}
-						    	timeline.add(obj);
-						    	timeline.add(obj1);
 						    };
 						}
 					    start = start.plusDays(1);
@@ -358,8 +368,16 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	}
 	
 	public String getTFDataPointName(JSONObject criteriaObj) {
+		JSONArray weekDays = new JSONArray();
+		weekDays.add(new Long(1));
+		weekDays.add(new Long(2));
+		weekDays.add(new Long(3));
+		weekDays.add(new Long(4));
+		weekDays.add(new Long(5));
+		JSONArray weekEnd = new JSONArray();
+		weekEnd.add(new Long(6));
+		weekEnd.add(new Long(7));
 		ArrayList<String> daysName =  new ArrayList<String>();
-		ArrayList<String> intervalName =  new ArrayList<String>();
 		String name = "";
 		String interval = "";
 		if(criteriaObj != null && !criteriaObj.isEmpty()) {
@@ -368,22 +386,36 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				JSONObject condition = (JSONObject)conditions.get((String)key);
 				if(condition.get("operatorId").equals(new Long(85))) {
 					JSONArray values = (JSONArray) condition.get("value");
-					for(int i = 0; i < values.size(); i++) {
-						int day = Integer.parseInt(values.get(i).toString());
-						String dayName = DayOfWeek.of(day).toString();
-						if(!daysName.contains(dayName)) {
-							daysName.add(dayName);
-						}
+					if(values.equals(weekDays)) {
+						name = "Weekdays";
 					}
-					name = StringUtils.join(daysName, ", ");
-				}
-				else if(condition.get("operatorId").equals(new Long(86))) {
-					JSONArray value = (JSONArray) condition.get("value");
-					if(StringUtils.isNotEmpty(interval)){
-						interval = interval + " or " + StringUtils.join(value, " - ");
+					else if(values.equals(weekEnd)) {
+						name = "Weekend";
 					}
 					else {
-						interval = StringUtils.join(value, " - ");
+						for(int i = 0; i < values.size(); i++) {
+							int day = Integer.parseInt(values.get(i).toString());
+							String dayName = DayOfWeek.of(day).toString();
+							if(!daysName.contains(dayName)) {
+								daysName.add(dayName);
+							}
+						}
+						name = StringUtils.join(daysName, ", ");
+					}
+				}
+				else if(condition.get("operatorId").equals(new Long(86))) {
+					JSONArray values = (JSONArray) condition.get("value");
+					JSONArray formatValue = new JSONArray();
+					for(int i = 0; i < values.size(); i++) {
+						ZonedDateTime zdt = ZonedDateTime.of(LocalDate.now(), LocalTime.parse((CharSequence) values.get(i)) , ZoneOffset.UTC );
+						formatValue.add(DateTimeFormatter.ofPattern("hh:mm a").format(zdt).toString());
+					}
+					
+					if(StringUtils.isNotEmpty(interval)){
+						interval = interval + " or " + StringUtils.join(formatValue, " - ");
+					}
+					else {
+						interval = StringUtils.join(formatValue, " - ");
 					}
 				}
 			}

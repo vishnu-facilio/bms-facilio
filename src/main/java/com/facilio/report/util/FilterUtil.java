@@ -48,6 +48,7 @@ public class FilterUtil {
 	public static Criteria getTimeFilterCriteria(String moduleName, JSONObject criteriaObj) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Criteria criteria = new Criteria();
+		Criteria intervalCriteria = new Criteria();
 		
 		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
 		if(conditions != null && !conditions.isEmpty()) {
@@ -55,8 +56,15 @@ public class FilterUtil {
 				JSONObject condition = (JSONObject)conditions.get((String)key);
 				
 				FacilioField timeField = modBean.getField(condition.get("field").toString(), moduleName);
-				criteria.addAndCondition(getTimeFieldCondition(timeField, condition));
+				if(condition.get("operatorId").equals(new Long(86))) {
+					intervalCriteria.addOrCondition(getTimeFieldCondition(timeField, condition));
+				}
+				else {
+					criteria.addAndCondition(getTimeFieldCondition(timeField, condition));
+				}
+				
 			}
+			criteria.andCriteria(intervalCriteria);
 		}
 		return criteria;
 	}
@@ -191,6 +199,7 @@ public class FilterUtil {
 				key = "Cri_"+key;
 				aliases.put("actual", (String)key);
 				dataPoint.setAliases(aliases);
+				dataPoint.setType(DataPointType.FILTER);
 				
 				List<String> orderBy = new ArrayList<>();
 				orderBy.add(timeField.getCompleteColumnName());
@@ -233,6 +242,7 @@ public class FilterUtil {
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", key);
 		dataPoint.setAliases(aliases);
+		dataPoint.setType(DataPointType.FILTER);
 		
 		return dataPoint;
 		
@@ -267,6 +277,7 @@ public class FilterUtil {
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", name);
 		dataPoint.setAliases(aliases);
+		dataPoint.setType(DataPointType.FILTER);
 		
 		return dataPoint;
 	}
