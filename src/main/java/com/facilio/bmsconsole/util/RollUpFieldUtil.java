@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -10,6 +11,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.instant.jobs.ParallelWorkflowRuleExecutionJob;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -34,6 +37,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.tasker.FacilioTimer;
 
 public class RollUpFieldUtil {
 	
@@ -128,18 +132,23 @@ public class RollUpFieldUtil {
 	}
 	
 	public static List<Long> getDistinctChildModuleRecordIds(RollUpField triggeringChildField, Criteria criteria, int offsetCount) throws Exception {
-			
+		
 		FacilioField selectDistinctField = new FacilioField();
-		selectDistinctField.setName(triggeringChildField.getChildField().getName());
+		selectDistinctField.setName(triggeringChildField.getChildField().getName()+"distinct");
 		selectDistinctField.setDisplayName(triggeringChildField.getChildField().getDisplayName());
 		selectDistinctField.setColumnName("DISTINCT("+triggeringChildField.getChildField().getCompleteColumnName()+")");
 		
+		List<FacilioField> selectFields = new ArrayList<>();
+		selectFields.add(selectDistinctField);
+		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.table(triggeringChildField.getChildModule().getTableName())
+				.beanClass(ModuleBaseWithCustomFields.class)
 				.module(triggeringChildField.getChildModule())
-				.select(Collections.singletonList(selectDistinctField))
+				.select(selectFields)
+				.setAggregation()
 				.orderBy(triggeringChildField.getChildModule().getTableName()+ "." +triggeringChildField.getChildField().getColumnName())
-				.limit(3)
+				.limit(5000)
 				.offset(offsetCount);
 		
 		if(triggeringChildField.getChildCriteria() != null) {
@@ -150,9 +159,27 @@ public class RollUpFieldUtil {
 		}
 		
 		List<Long> childModuleRecordIds = new ArrayList<Long>();
-		List<ModuleBaseWithCustomFields> childModuleRecords = selectBuilder.get();
-		for(ModuleBaseWithCustomFields childModuleRecord:childModuleRecords) {
-			childModuleRecordIds.add(childModuleRecord.getId());	
+		List<Map<String, Object>> propsList = selectBuilder.getAsProps();
+		
+		if(propsList != null && !propsList.isEmpty())
+		{
+			for(Map<String, Object> prop :propsList)
+			{
+				Long parentLookUpId = null;	
+				if(prop.get(selectDistinctField.getName()) instanceof Map && selectDistinctField instanceof LookupField) {
+					Map<String, Object> lookUpObject = (Map<String, Object>) prop.get(selectDistinctField.getName());
+					if(lookUpObject.get("id") != null) {
+						parentLookUpId = (Long) lookUpObject.get("id");
+					}
+				}
+				else {
+					parentLookUpId = (Long) prop.get(selectDistinctField.getName());
+				}
+				
+				if(parentLookUpId != null) {
+					childModuleRecordIds.add(parentLookUpId);	
+				}
+			}
 		}
 		return childModuleRecordIds;
 	}
@@ -447,5 +474,20 @@ public class RollUpFieldUtil {
 		rollUpFields.add(space4RollUpFieldContext);
 		
 		addRollUpField(rollUpFields);
+	}
+	
+	public static void runMigForBulkRollUpField() throws Exception{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule baseSpaceModule = modBean.getModule("basespace");
+		
+		Map<String, Criteria> moduleCriteriaMap = new HashMap<String, Criteria>();
+		moduleCriteriaMap.put(baseSpaceModule.getName(), null);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, baseSpaceModule.getName());
+		//context.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP, moduleCriteriaMap);
+		FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", context);
+
 	}
 }

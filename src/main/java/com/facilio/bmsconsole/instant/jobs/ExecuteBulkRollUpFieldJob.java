@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,25 +33,25 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.job.InstantJob;
 
-public class ExecuteBulkRollUpFieldJob extends InstantJob implements PostTransactionCommand{
+public class ExecuteBulkRollUpFieldJob extends InstantJob{
 		
 	private static final Logger LOGGER = Logger.getLogger(ExecuteBulkRollUpFieldJob.class.getName());
 	
-	public static final int offsetLimit = 3; 
+	public static final int offsetLimit = 5000; 
 	private boolean timedOut = false;
-
-	private List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
-	private List<RollUpField> triggeringChildFields;
+	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
+		
+		List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
+		List<RollUpField> triggeringChildFields = null;
 			
-		try {
-						
+		try {				
 			Map<String, Criteria> moduleCriteriaMap = (Map<String, Criteria>) context.get(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP);
 			if(moduleCriteriaMap == null || moduleCriteriaMap.isEmpty()) {
 				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 				if (moduleName == null || moduleName.isEmpty()) {
-					LOGGER.log(Level.WARNING, "Module Name / CriteriaMap is null/ empty while in bulk updating records in rollUpField Instant Job ==> "+moduleName);
+					LOGGER.log(Level.WARNING, "Module Name/CriteriaMap is null/empty while bulk updating records in ExecuteBulkRollUpFieldJob ==> "+moduleName);
 				}else {
 					moduleCriteriaMap = Collections.singletonMap(moduleName, null);
 				}
@@ -97,45 +97,32 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob implements PostTransac
 						}
 					}			
 				}	
+				
+				if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
+				{		
+					for(ReadingDataMeta rollUpData:rollUpFieldData) 
+					{			
+						FacilioField parentRollUpField = rollUpData.getField();
+						Map<String,Object> prop = new HashMap<String,Object>();
+						prop.put(parentRollUpField.getName(), rollUpData.getValue());
+						
+						UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+								.table(parentRollUpField.getModule().getTableName())
+								.module(parentRollUpField.getModule())
+								.fields(Collections.singletonList(parentRollUpField))
+								.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
+						
+						updateBuilder.updateViaMap(prop);
+					}					
+				}
 			}			
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
+			LOGGER.log(Level.SEVERE, "Error in ExecuteBulkRollUpFieldJob -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
 					" Exception: " + e.getMessage() , e);
-		}
-			
+		}		
 	}
 		
-	@Override
-	public boolean postExecute() throws Exception {
-		
-		if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
-		{
-			try {
-				for(ReadingDataMeta rollUpData:rollUpFieldData) 
-				{			
-					FacilioField parentRollUpField = rollUpData.getField();
-					Map<String,Object> prop = new HashMap<String,Object>();
-					prop.put(parentRollUpField.getName(), rollUpData.getValue());
-					
-					UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-							.table(parentRollUpField.getModule().getTableName())
-							.module(parentRollUpField.getModule())
-							.fields(Collections.singletonList(parentRollUpField))
-							.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
-					
-					updateBuilder.updateViaMap(prop);
-				}	
-			}
-			catch(Exception e) {
-				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
-						" Exception: " + e.getMessage() , e);
-			}	
-		}	
-		
-		return false;
-	}
-	
 	private static String constructChildFieldOffsetKey(long childFieldId, int offsetCount) {
 		return (childFieldId + "_" + offsetCount);			
 	}
