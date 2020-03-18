@@ -40,6 +40,7 @@ public class ChatBotSuggestionContext {
 	public enum Type {
 		OPTIONAL_PARAM(1, "OPTIONAL_PARAM"),
 		EDITABLE_PARAM(2, "EDITABLE_PARAM"),
+		OTHERS(3,"Other"),
 		;
 
 		int intVal;

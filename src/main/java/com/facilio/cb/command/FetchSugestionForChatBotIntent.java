@@ -28,6 +28,8 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
 				
+				chatBotSuggestionContexts.addAll( getDefaultSuggestionForConfirmationCard());
+				
 				List<ChatBotIntentParam> editableIntextParams = getEditableParamList(session.getIntent().getChatBotIntentParamList());
 				
 				for(ChatBotIntentParam editableIntextParam :editableIntextParams) {
@@ -72,6 +74,25 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			}
 		}
 		return editableIntextParams;
+	}
+	
+	private List<ChatBotSuggestionContext> getDefaultSuggestionForConfirmationCard() {
+		
+		List<ChatBotSuggestionContext> ChatBotSuggestionContexts = new ArrayList<ChatBotSuggestionContext>();
+		
+		ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
+		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
+		chatBotSuggestionContext.setSuggestion("yes");
+		
+		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
+		
+		chatBotSuggestionContext = new ChatBotSuggestionContext();
+		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
+		chatBotSuggestionContext.setSuggestion("no");
+		
+		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
+		
+		return ChatBotSuggestionContexts;
 	}
 	
 }
