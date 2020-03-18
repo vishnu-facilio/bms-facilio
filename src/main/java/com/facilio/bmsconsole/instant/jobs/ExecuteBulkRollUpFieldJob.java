@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -75,13 +76,19 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 					triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);
 					
 					HashMap<String, List<Long>> distinctChildGroupedIdsMap = new HashMap<String, List<Long>>();
-					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {		
+					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {	
+					LOGGER.info("Started OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildFieldsSize : " + triggeringChildFields.size());
+
 						for(RollUpField triggeringChildField:triggeringChildFields) 
 						{
 							int offsetCount = 0;	
 							while(!timedOut) 
 							{	
 								String key = constructChildFieldOffsetKey(triggeringChildField.getChildField().getId(), offsetCount);
+								if(offsetCount >= 10000) {
+									LOGGER.info(" FieldOffsetKey : "+ key + " triggeringChildFieldContext : " + triggeringChildField + " OrgId -- " +AccountUtil.getCurrentOrg().getOrgId());
+								}
+								
 								List<Long> triggerChildGroupedIds = distinctChildGroupedIdsMap.get(key);
 								if(triggerChildGroupedIds == null) {
 									triggerChildGroupedIds = RollUpFieldUtil.getDistinctChildModuleRecordIds(triggeringChildField, criteria, offsetCount);
@@ -91,8 +98,9 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 									break;
 								}
 								
+								LOGGER.info(" TriggerChildGroupedIds OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildField : " + triggeringChildField + " offset : "  +offsetCount+ " triggerChildGroupedIds size " + triggerChildGroupedIds.size());
 								RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
-								offsetCount+=offsetLimit;
+								offsetCount+=offsetLimit;							
 							}
 						}
 					}			
@@ -113,7 +121,8 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 								.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
 						
 						updateBuilder.updateViaMap(prop);
-					}					
+					}	
+					LOGGER.info("Update done OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " rollUpFieldData : " + rollUpFieldData);
 				}
 			}			
 		}

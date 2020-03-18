@@ -115,9 +115,7 @@
 					update.update(updateProps);
 				}  */
 				
-          		RollUpFieldUtil.addRollUpForBaseSpaceFields();
-          		RollUpFieldUtil.addRollUpForSubSpaceFields();
-        	//	RollUpFieldUtil.runMigForBulkRollUpField();
+        		RollUpFieldUtil.runMigForBulkRollUpField();
 
             }
             catch(Exception e) {
