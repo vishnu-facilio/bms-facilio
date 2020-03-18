@@ -25,8 +25,8 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		ControllerContext controller = null;
 		if (!context.containsKey(AgentConstants.IS_NEW_AGENT)){
 			controller = updateCheckPointAndControllerActivity(context);
-			executeWorkflowsRules(context);
 		}
+		executeWorkflowsRules(context);
 
 		Boolean adjustTime = (Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
 		if (adjustTime == null) {
