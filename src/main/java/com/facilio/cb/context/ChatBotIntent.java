@@ -27,6 +27,7 @@ public class ChatBotIntent {
 	List<ChatBotIntentAction> actions;
 	List<ChatBotIntentInvokeSample> invokeSamples;
 	WorkflowContext contextWorkflow;
+	boolean confirmationNeeded;
 	
 	List<ChatBotIntentParam> params;
 	
@@ -40,6 +41,14 @@ public class ChatBotIntent {
 
 	public List<ChatBotIntentInvokeSample> getInvokeSamples() {
 		return invokeSamples;
+	}
+	
+	public boolean isConfirmationNeeded() {
+		return confirmationNeeded;
+	}
+
+	public void setConfirmationNeeded(boolean confirmationNeeded) {
+		this.confirmationNeeded = confirmationNeeded;
 	}
 
 	public void setInvokeSamples(List<ChatBotIntentInvokeSample> invokeSamples) {

@@ -24,6 +24,7 @@ public class ChatBotSession {
 	long startTime = -1;
 	long endTime = -1;
 	long parentSessionId = -1;
+	Boolean confirmed;
 	
 	List<ChatBotSessionConversation> chatBotSessionConversations;
 	
@@ -41,6 +42,14 @@ public class ChatBotSession {
 
 	public void setParentSessionId(long parentSessionId) {
 		this.parentSessionId = parentSessionId;
+	}
+	
+	public Boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(Boolean confirmed) {
+		this.confirmed = confirmed;
 	}
 
 	public long getStartTime() {
@@ -164,6 +173,7 @@ public class ChatBotSession {
 		RESPONDED(3, "Responded"),
 		INVALID_QUERY(4, "Invalid Query"),
 		TERMINATED_GRACEFULLY(5,"Terminated Gracefully"),
+		WAITING_FOR_CONFIRMATION(6,"Waiting for Confirmation"),
 		;
 
 		int intVal;

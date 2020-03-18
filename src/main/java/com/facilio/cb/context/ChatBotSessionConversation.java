@@ -5,12 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
-public class ChatBotSessionConversation {
+public class ChatBotSessionConversation implements Cloneable {
 
 	long id = -1;
 	long orgId = -1;
@@ -24,7 +31,16 @@ public class ChatBotSessionConversation {
 
 	long requestedTime;
 	long respondedTime;
+	ChatBotIntentParam intentParam;
 	
+	public ChatBotIntentParam getIntentParam() {
+		return intentParam;
+	}
+
+	public void setIntentParam(ChatBotIntentParam intentParam) {
+		this.intentParam = intentParam;
+	}
+
 	public long getRequestedTime() {
 		return requestedTime;
 	}
@@ -145,7 +161,8 @@ public class ChatBotSessionConversation {
 		QUERY_RAISED(1, "Query Raised"),
 		REPLIED_CORRECTLY(2, "Replied Correctly"),
 		REPLIED_INCORRECTLY(3, "Replied Incorrectly"),
-		TERMINATE_GRACEFULLY_RISED(4,"terminate gracefully rised");
+		TERMINATE_GRACEFULLY_RISED(4,"terminate gracefully rised"),
+		CONFIRMATION_RAISED(5,"Confirmation Raised"),
 		;
 
 		int intVal;
@@ -178,5 +195,24 @@ public class ChatBotSessionConversation {
 		public static Map<Integer, State> getAllStates() {
 			return optionMap;
 		}
+	}
+	
+	@Override
+	public ChatBotSessionConversation clone() throws CloneNotSupportedException {
+		ChatBotSessionConversation conversation = new ChatBotSessionConversation();
+		
+		conversation.setOrgId(this.getOrgId());
+		
+		conversation.setSessionId(this.getSessionId());
+		
+		conversation.setIntentParamId(this.getIntentParamId());
+		
+		conversation.setRequestedTime(DateTimeUtil.getCurrenTime());
+		
+		conversation.setQuery(this.getQuery());
+		
+		conversation.setChatBotSession(this.getChatBotSession());
+		
+		return conversation;
 	}
 }

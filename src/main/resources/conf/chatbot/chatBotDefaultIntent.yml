@@ -120,19 +120,24 @@
    type: 1
    localId : 7
    withParams : true
+   confirmationNeeded : true
    params:
    -
       name : 'subject'
+      displayName : "Subject"
       askAs : 'Enter the Subject?'
       dataType : 1
       mlType : 1
       localId : 1
+      editable : true
    -
       name : 'description'
+      displayName : "Description"
       askAs : 'Tell us something more about the problem'
       dataType : 1
       mlType : 1
       localId : 2
+      optional : true
    actions:
     - 
         action: 
@@ -146,7 +151,9 @@
     
                                          wo = {};
                                          wo.subject = data.subject;
-                                         wo.description = data.description;
+                                         if(data.description != null) {
+                                            wo.description = data.description;
+                                         }
                                          wo.sourceType = 7; 
                                            
                                          cri = {

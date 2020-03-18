@@ -3,34 +3,38 @@ package com.facilio.cb.command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.util.ChatBotConstants;
 
-public class HandleInvalidQueryMessages extends FacilioCommand {
+public class HandleInvalidQueryMessageForConversations extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
 		ChatBotModel model = (ChatBotModel) context.get(ChatBotConstants.CHAT_BOT_MODEL);
 		
-		ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
-		
 		ChatBotMLResponse mlResponse = (ChatBotMLResponse) context.get(ChatBotConstants.CHAT_BOT_ML_RESPONSE);
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
+		int intitialState = chatBotSessionConversation.getState();
+		
 		
 		if(model.getChatBotModelVersion().getAccuracyRate() > 0) {
 			if(model.getChatBotModelVersion().getAccuracyRate() > mlResponse.getAccuracy()) {
-				setInvalidQuery(mlResponse,session,chatBotSessionConversation);
+				setInvalidQuery(mlResponse,chatBotSessionConversation);
 			}
 		}
 		else if(ChatBotConstants.DEFAULT_ACCURACY_RATE > mlResponse.getAccuracy()) {
-			setInvalidQuery(mlResponse,session,chatBotSessionConversation);
+			setInvalidQuery(mlResponse,chatBotSessionConversation);
 		}
 		
 		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseJson() != null) {
@@ -47,38 +51,28 @@ public class HandleInvalidQueryMessages extends FacilioCommand {
 				}
 			}
 			
-			return false;
-		}
-		else if(session != null && session.getQueryJson() != null) {
-			
-			ChatBotSession lastInvalidSession = ChatBotUtil.getLastInvalidQuerySession();
-			
-			if(lastInvalidSession != null) {
-				if(lastInvalidSession.getParentSessionId() > 0) {
-					session.setParentSessionId(lastInvalidSession.getParentSessionId());
-				}
-				else {
-					session.setParentSessionId(lastInvalidSession.getId());
-				}
+			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.REPLIED_INCORRECTLY.getIntVal()) {
+				
+				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
+				
+				ChatBotSessionConversation clonnedChatBotSessionConversation = chatBotSessionConversation.clone();
+				
+				clonnedChatBotSessionConversation.setState(intitialState);
+				
+				ChatBotUtil.addChatBotSessionConversation(clonnedChatBotSessionConversation);
+				
+				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, clonnedChatBotSessionConversation);
+				
+				context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
 			}
 			
 			return false;
-			
 		}
-		
 		return true;
 	}
 
-	private void setInvalidQuery(ChatBotMLResponse mlResponse,ChatBotSession session, ChatBotSessionConversation chatBotSessionConversation) {
+	private void setInvalidQuery(ChatBotMLResponse mlResponse, ChatBotSessionConversation chatBotSessionConversation) {
 		
-		if(chatBotSessionConversation != null )  {
-			
-			chatBotSessionConversation.setState(ChatBotSessionConversation.State.REPLIED_INCORRECTLY.getIntVal());
-		}
-		else {
-			mlResponse.setNotAccurate(true);
-			mlResponse.setIntent(ChatBotConstants.CHAT_BOT_INTENT_NOT_FOUND_INTENT);
-			session.setState(ChatBotSession.State.INVALID_QUERY.getIntVal());
-		}
+		chatBotSessionConversation.setState(ChatBotSessionConversation.State.REPLIED_INCORRECTLY.getIntVal());
 	}
 }

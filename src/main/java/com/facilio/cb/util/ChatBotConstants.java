@@ -36,6 +36,11 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_SESSION_PARAM = "chatBotSessionParam";
 	public static final String CHAT_BOT_SESSION_PARAMS = "chatBotSessionParams";
 	
+	public static final String CHAT_BOT_SKIP_ACTION_EXECUTION = "skipActionExecution";
+	
+	public static final String CHAT_BOT_SUGGESTIONS = "chatBotSugesstions";
+	public static final String CHAT_BOT_SUGGESTION = "chatBotSugesstion";
+	
 	public static final String CHAT_BOT_MODEL = "chatBotModel";
 	
 	public static final String CHAT_BOT_ML_MODEL_NAME = "chatBotMLModelName";
@@ -43,6 +48,7 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_MODEL_VERSION = "chatBotModelVersion";
 	
 	public static final String CHAT_BOT_RESPONSE = "chatBotResponse";
+	public static final String CHAT_BOT_CONFIRMATION_RESPONSE = "chatBotConfirmationResponse";
 	public static final String CHAT_BOT_RESPONSE_TYPE = "chatBotResponseType";
 	public static final String CHAT_BOT_RESPONSE_OPTIONS = "chatBotResponseOptions";
 	

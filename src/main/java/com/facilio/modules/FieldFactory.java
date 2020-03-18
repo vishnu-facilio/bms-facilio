@@ -7844,6 +7844,7 @@ public class FieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("withParams", "IS_WITH_PARAMS", module, FieldType.BOOLEAN));
+        fields.add(getField("confirmationNeeded", "IS_CONFIRMATION_NEEDED", module, FieldType.BOOLEAN));
 
         return fields;
     }
@@ -7879,10 +7880,13 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField("askAs", "ASK_AS", module, FieldType.STRING));
         fields.add(getField("mlType", "ML_TYPE", module, FieldType.NUMBER));
         fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField("localId", "LOCAL_ID", module, FieldType.NUMBER));
+        fields.add(getField("optional", "IS_OPTIONAL", module, FieldType.NUMBER));
+        fields.add(getField("editable", "IS_EDITABLE", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -7902,6 +7906,7 @@ public class FieldFactory {
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         fields.add(getField("parentSessionId", "PARENT_SESSION_ID", module, FieldType.NUMBER));
+        fields.add(getField("confirmed", "IS_CONFIRMED", module, FieldType.BOOLEAN));
 
         return fields;
     }

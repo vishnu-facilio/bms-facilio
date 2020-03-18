@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
+import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -22,7 +23,16 @@ public class ChatBotAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	
 	JSONObject chatMessage;
+	ChatBotSuggestionContext suggestion;
 	
+	public ChatBotSuggestionContext getSuggestion() {
+		return suggestion;
+	}
+
+	public void setSuggestion(ChatBotSuggestionContext suggestion) {
+		this.suggestion = suggestion;
+	}
+
 	long startTime = -1;
 	
 	public long getStartTime() {
@@ -78,12 +88,14 @@ public class ChatBotAction extends FacilioAction {
 			
 			FacilioContext context = chain.getContext();
 			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatMessage);
+			context.put(ChatBotConstants.CHAT_BOT_SUGGESTION, suggestion);
 			
 			chain.execute();
 			
 			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_JSON);
 			
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotReplyMessage);
+			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
 			
 		}
 		

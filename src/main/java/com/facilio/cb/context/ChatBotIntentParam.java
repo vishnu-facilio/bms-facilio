@@ -17,16 +17,42 @@ public class ChatBotIntentParam {
 	long orgId = -1;
 	long intentId = -1;
 	String name;
+	String displayName;
 	String askAs;
 	FieldType dataType;
 	ML_Type mlType;
 	int localId;
-	
+	boolean optional;
+	boolean editable;
+
 	List<JSONObject> options;
 	
 	String moduleName;		// for criteria Type
 	Criteria criteria;
 	
+	public boolean isOptional() {
+		return optional;
+	}
+
+	public void setOptional(boolean optional) {
+		this.optional = optional;
+	}
+
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
+	
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
 	public List<JSONObject> getOptions() {
 		return options;

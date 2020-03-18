@@ -4550,23 +4550,33 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
-		c.addCommand(new SendToMlApiCommand());
-		c.addCommand(new HandleInvalidQueryMessages());
+		c.addCommand(new SendToMlApiForSessionCommand());
+		c.addCommand(new FetchSugestionForChatBotIntent());
+		c.addCommand(new HandleInvalidQueryForSessionMessage());
 		c.addCommand(new ExecuteActionAndSetResponseForSessionCommand());
 		return c;
 	}
-
+	
 	public static FacilioChain HandleChatBotSessionConversationChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
-		c.addCommand(new SendToMlApiCommand());
+		c.addCommand(new SendToMlApiForConversationCommand());
 		c.addCommand(new HandleTerminateSessionCommand());
-		c.addCommand(new HandleInvalidQueryMessages());
+		c.addCommand(new HandleInvalidQueryMessageForConversations());
+		c.addCommand(new HandleEditParamFromSuggestionForConversations());
+		c.addCommand(new HandleAddParamFromSuggestionForConversations());
 		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
+		c.addCommand(new FetchSugestionForChatBotIntent());
 		return c;
 	}
-
+	
+	public static FacilioChain getFetchSugestionForChatBotIntentChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchSugestionForChatBotIntent());
+		return c;
+	}
+	
 	public static FacilioChain getAddChatBotIntentChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());

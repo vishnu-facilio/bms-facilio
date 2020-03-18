@@ -30,10 +30,13 @@ import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
@@ -155,6 +158,34 @@ public class ChatBotUtil {
 		return null;
 	}
 	
+	public static Map<Long,ChatBotIntentParam> getIntentParamsMap(long intentId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBIntentParamFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBIntentParamModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
+				.orderBy("LOCAL_ID");
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Map<Long,ChatBotIntentParam> chatBotIntentMap = new HashMap<>();
+		if (props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop :props) {
+				
+				ChatBotIntentParam chatBotIntentParam = FieldUtil.getAsBeanFromMap(prop, ChatBotIntentParam.class);
+				
+				chatBotIntentMap.put(chatBotIntentParam.getId(), chatBotIntentParam);
+			}
+		}
+			return chatBotIntentMap;
+	}
+		
+	
 	public static void executeIntentAction(ChatBotSession session,ChatBotIntent intent,Context context) throws Exception {
 		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
 		
@@ -233,7 +264,7 @@ public class ChatBotUtil {
 		return null;
 	}
 	
-	public static ChatBotIntentParam getIntentParams(long intentParamId) throws Exception {
+	public static ChatBotIntentParam getIntentParam(long intentParamId) throws Exception {
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -464,6 +495,7 @@ public class ChatBotUtil {
 		}
 		
 		chatBotSessionConversation1.setSessionId(session.getId());
+		chatBotSessionConversation1.setChatBotSession(session);
 		
 		chatBotSessionConversation1.setIntentParamId(param.getId());
 		
@@ -508,6 +540,48 @@ public class ChatBotUtil {
 		
 		return chatBotSessionConversation1;
 
+	}
+	
+	public static ChatBotSessionConversation constructAndAddConfirmationCBSessionConversationParams(ChatBotSession session) throws Exception {
+		
+		ChatBotSessionConversation chatBotSessionConversation1 = new ChatBotSessionConversation();
+		
+		chatBotSessionConversation1.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		chatBotSessionConversation1.setState(ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal());
+		
+		chatBotSessionConversation1.setSessionId(session.getId());
+		
+		chatBotSessionConversation1.setChatBotSession(session);
+		
+		chatBotSessionConversation1.setRequestedTime(DateTimeUtil.getCurrenTime());
+		
+		JSONArray resArray = new JSONArray();
+		JSONObject result = new JSONObject();
+		resArray.add(result);
+		
+		Map<Long, List<ChatBotSessionConversation>> conversationMap = ChatBotUtil.getSessionConversationMap(Collections.singletonList(session.getId()));
+		
+		List<ChatBotSessionConversation> conversations = conversationMap.get(session.getId());
+		
+		Map<Long, ChatBotIntentParam> intentParams = ChatBotUtil.getIntentParamsMap(session.getIntentId());
+		
+		for(ChatBotSessionConversation conversation :conversations) {
+			
+			conversation.setIntentParam(intentParams.get(conversation.getIntentParamId()));
+		}
+		
+		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
+		
+		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, "Please confirm the changes");
+		
+		result.put(ChatBotConstants.CHAT_BOT_CONFIRMATION_RESPONSE, FieldUtil.getAsJSONArray(conversations, ChatBotSessionConversation.class));
+		
+		chatBotSessionConversation1.setQuery(resArray.toJSONString());
+		
+		ChatBotUtil.addChatBotSessionConversation(chatBotSessionConversation1);
+		
+		return chatBotSessionConversation1;
 	}
 
 	public static void addSessionParams(ChatBotSessionParam sessionParam) throws Exception {
@@ -565,7 +639,29 @@ public class ChatBotUtil {
 		return returnProps;
 	}
 	
-	public static List<ChatBotIntentParam> fetchRemainingChatBotIntentParams(long intentId,long sessionId) throws Exception {
+	public static ChatBotSessionParam fetchSessionParam(long sessionId,long intentParamId) throws Exception {
+		
+		List<FacilioField> cbSessionParamFields = FieldFactory.getCBSessionParamsFields();
+		
+		Map<String, FacilioField> cbSessionParamFieldsMap = FieldFactory.getAsMap(cbSessionParamFields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(cbSessionParamFields)
+				.table(ModuleFactory.getCBSessionParamsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("intentParamId"), intentParamId+"", NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			
+			return FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSessionParam.class);
+		}
+		return null;
+	}
+	
+	public static List<ChatBotIntentParam> fetchRemainingMainChatBotIntentParams(long intentId,long sessionId) throws Exception {
 		
 		List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
@@ -577,11 +673,45 @@ public class ChatBotUtil {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(cbIntentFields)
-				.table(ModuleFactory.getCBSessionParamsModule().getTableName())
-				.innerJoin(ModuleFactory.getCBIntentParamModule().getTableName())
-				.on(ModuleFactory.getCBSessionParamsModule().getTableName()+".INTENT_PARAM_ID != "+ModuleFactory.getCBIntentParamModule().getTableName()+".ID")
+				.table(ModuleFactory.getCBIntentParamModule().getTableName())
+				.leftJoin(ModuleFactory.getCBSessionParamsModule().getTableName())
+				.on(ModuleFactory.getCBIntentParamModule().getTableName()+".ID = "+ModuleFactory.getCBSessionParamsModule().getTableName()+".INTENT_PARAM_ID")
 				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.FALSE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("id"),"", CommonOperators.IS_EMPTY))
+				.orderBy("LOCAL_ID")
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			
+			List<ChatBotIntentParam> intentParams = FieldUtil.getAsBeanListFromMapList(props, ChatBotIntentParam.class);
+			return intentParams;
+		}
+		return null;
+	}
+	
+	public static List<ChatBotIntentParam> fetchRemainingOptionalChatBotIntentParams(long intentId,long sessionId) throws Exception {
+		
+List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
+		
+		List<FacilioField> cbSessionParamFields = FieldFactory.getCBSessionParamsFields();
+		
+		Map<String, FacilioField> cbSessionParamFieldsMap = FieldFactory.getAsMap(cbSessionParamFields);
+		
+		Map<String, FacilioField> cbIntentFieldsMap = FieldFactory.getAsMap(cbIntentFields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(cbIntentFields)
+				.table(ModuleFactory.getCBIntentParamModule().getTableName())
+				.leftJoin(ModuleFactory.getCBSessionParamsModule().getTableName())
+				.on(ModuleFactory.getCBIntentParamModule().getTableName()+".ID = "+ModuleFactory.getCBSessionParamsModule().getTableName()+".INTENT_PARAM_ID")
+				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.TRUE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("id"),"", CommonOperators.IS_EMPTY))
 				.orderBy("LOCAL_ID")
 				;
 		
@@ -625,6 +755,37 @@ public class ChatBotUtil {
 		return null;
 		
 	}
+	
+	public static ChatBotSession getLastWaitingForConfirmationSession() throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		long last30MinsStartTime = DateTimeUtil.getCurrenTime() - ChatBotConstants.LAST_SESSION_WAITING_FOR_PARAM_BUFFER_TIME;
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBSessionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"), last30MinsStartTime+"", NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), AccountUtil.getCurrentUser().getId()+"", NumberOperators.EQUALS))
+				.orderBy("ID desc")
+				.limit(1);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			ChatBotSession chatBotSession = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSession.class);
+			if(chatBotSession.getState() == ChatBotSession.State.WAITING_FOR_CONFIRMATION.getIntVal()) {
+				if(chatBotSession.getIntentId() > 0) {
+					chatBotSession.setIntent(getIntent(chatBotSession.getIntentId()));
+				}
+				return chatBotSession;
+			}
+		}
+		return null;
+		
+	}
 
 	public static ChatBotSessionConversation getLastWaitingForParamConversation(long sessionId) throws Exception {
 		
@@ -644,6 +805,30 @@ public class ChatBotUtil {
 		if (props != null && !props.isEmpty()) {
 			ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSessionConversation.class);
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.QUERY_RAISED.getIntVal()) {
+				return chatBotSessionConversation;
+			}
+		}
+		return null;
+	}
+	
+	public static ChatBotSessionConversation getLastWaitingForConfirmationConversation(long sessionId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionConversationFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBSessionConversationModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
+				.orderBy("ID desc")
+				.limit(1);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSessionConversation.class);
+			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
 				return chatBotSessionConversation;
 			}
 		}
@@ -752,7 +937,9 @@ public class ChatBotUtil {
 		
 	}
 	
-	public static void addSessionParam(long intentParamId,long sessionId, String value) throws Exception {
+	public static void deleteAndAddSessionParam(long intentParamId,long sessionId, String value) throws Exception {
+		
+		deleteSessionParam(intentParamId, sessionId);
 		
 		ChatBotSessionParam sessionParam = new ChatBotSessionParam();
 		
@@ -763,6 +950,33 @@ public class ChatBotUtil {
 		
 		
 		ChatBotUtil.addSessionParams(sessionParam);
+	}
+	
+	public static void deleteSessionParam(long intentParamId,long sessionId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionParamsFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getCBSessionParamsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentParamId"), intentParamId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS));
+		
+		deleteRecordBuilder.delete();
+		
+	}
+	
+	public static int getRequiredParamCount(List<ChatBotIntentParam> intentParams) throws Exception {
+		
+		int i=0;
+		
+		for(ChatBotIntentParam intentParam :intentParams) {
+			if(!intentParam.isOptional()) {
+				i++;
+			}
+		}
+		return i;
 	}
 	
 	public static Object getRequiredFieldFromQueryJson(JSONObject queryJson) throws Exception {
