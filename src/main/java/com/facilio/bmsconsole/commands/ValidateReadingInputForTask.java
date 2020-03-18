@@ -181,38 +181,38 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
 			previousValue = FacilioUtil.parseDouble(rdm.getValue());
-			LOGGER.debug(" Rdm Present Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
+			LOGGER.debug("Rdm Present Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 		}
 		else if(taskContext.getReadingDataId() != -1 && rdm.getReadingDataId()!= -1 && 
 				taskContext.getReadingDataId() == rdm.getReadingDataId())
 		{				
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(), NumberOperators.LESS_THAN);
-			LOGGER.debug(" Rdm Update Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
+			LOGGER.debug("Rdm Update Case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 
 		}
 		else 
 		{
 			isNextReading = true;
 			ReadingContext previousValueReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
-			LOGGER.debug(" Past Case previousValueReadingContext -- " + previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
+			LOGGER.debug("Past Case previousValueReadingContext -- " + previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " Rdm readingdataID -- "+rdm.getReadingDataId());
 			
 			if(previousValueReadingContext != null && taskContext.getReadingDataId() != -1 && (previousValueReadingContext.getId() == taskContext.getReadingDataId()))
 			{
 				previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", previousValueReadingContext.getTtime(), NumberOperators.LESS_THAN);
-				LOGGER.debug(" Past Update Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
+				LOGGER.debug("Past Update Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
 			}
 			else if(previousValueReadingContext != null)
 			{
 				previousValue = (double) previousValueReadingContext.getReading(numberField.getName());
-				LOGGER.debug(" Past Simple Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
+				LOGGER.debug("Past Simple Case previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " previousValueReadingContext Prevtime -- "+previousValueReadingContext.getTtime() + " TaskContext readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext dataId -- "+previousValueReadingContext.getId() +" Previous value -- "+previousValue);
 			}
 			
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
-			LOGGER.debug(" Next value "+nextValue);
+			LOGGER.debug("Next value "+nextValue);
 		}
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-		LOGGER.debug(" CurrentInputUnit "+currentInputUnit+ " CurrentValueInSiUnit "+currentValueInSiUnit);
+		LOGGER.debug("CurrentInputUnit "+currentInputUnit+ " CurrentValueInSiUnit "+currentValueInSiUnit);
 		
 		if(previousValue < 0 && nextValue < 0) 
 		{
@@ -267,7 +267,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return null;
 		}
 		
-		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
+		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 299l) {
 			return null;
 		}
 				
