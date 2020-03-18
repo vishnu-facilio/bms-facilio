@@ -663,23 +663,16 @@ public class ChatBotUtil {
 	
 	public static List<ChatBotIntentParam> fetchRemainingMainChatBotIntentParams(long intentId,long sessionId) throws Exception {
 		
-		List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
-		
-		List<FacilioField> cbSessionParamFields = FieldFactory.getCBSessionParamsFields();
-		
-		Map<String, FacilioField> cbSessionParamFieldsMap = FieldFactory.getAsMap(cbSessionParamFields);
+List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
 		Map<String, FacilioField> cbIntentFieldsMap = FieldFactory.getAsMap(cbIntentFields);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(cbIntentFields)
 				.table(ModuleFactory.getCBIntentParamModule().getTableName())
-				.leftJoin(ModuleFactory.getCBSessionParamsModule().getTableName())
-				.on(ModuleFactory.getCBIntentParamModule().getTableName()+".ID = "+ModuleFactory.getCBSessionParamsModule().getTableName()+".INTENT_PARAM_ID")
-				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.FALSE.toString(), BooleanOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("id"),"", CommonOperators.IS_EMPTY))
+				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", sessionId)
 				.orderBy("LOCAL_ID")
 				;
 		
@@ -695,23 +688,16 @@ public class ChatBotUtil {
 	
 	public static List<ChatBotIntentParam> fetchRemainingOptionalChatBotIntentParams(long intentId,long sessionId) throws Exception {
 		
-List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
-		
-		List<FacilioField> cbSessionParamFields = FieldFactory.getCBSessionParamsFields();
-		
-		Map<String, FacilioField> cbSessionParamFieldsMap = FieldFactory.getAsMap(cbSessionParamFields);
+		List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
 		Map<String, FacilioField> cbIntentFieldsMap = FieldFactory.getAsMap(cbIntentFields);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(cbIntentFields)
 				.table(ModuleFactory.getCBIntentParamModule().getTableName())
-				.leftJoin(ModuleFactory.getCBSessionParamsModule().getTableName())
-				.on(ModuleFactory.getCBIntentParamModule().getTableName()+".ID = "+ModuleFactory.getCBSessionParamsModule().getTableName()+".INTENT_PARAM_ID")
-				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.TRUE.toString(), BooleanOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(cbSessionParamFieldsMap.get("id"),"", CommonOperators.IS_EMPTY))
+				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", sessionId)
 				.orderBy("LOCAL_ID")
 				;
 		

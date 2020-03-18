@@ -28,7 +28,7 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
 				
-				chatBotSuggestionContexts.addAll( getDefaultSuggestionForConfirmationCard());
+				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConfirmationCard());
 				
 				List<ChatBotIntentParam> editableIntextParams = getEditableParamList(session.getIntent().getChatBotIntentParamList());
 				

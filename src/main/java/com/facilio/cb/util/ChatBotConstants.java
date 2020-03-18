@@ -38,8 +38,8 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_SKIP_ACTION_EXECUTION = "skipActionExecution";
 	
-	public static final String CHAT_BOT_SUGGESTIONS = "chatBotSugesstions";
-	public static final String CHAT_BOT_SUGGESTION = "chatBotSugesstion";
+	public static final String CHAT_BOT_SUGGESTIONS = "chatBotSuggestions";
+	public static final String CHAT_BOT_SUGGESTION = "chatBotSuggestion";
 	
 	public static final String CHAT_BOT_MODEL = "chatBotModel";
 	
