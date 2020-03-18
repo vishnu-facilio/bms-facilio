@@ -18,6 +18,8 @@ import org.json.simple.JSONObject;
 
 import java.util.Arrays;
 
+import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
+
 public class SpaceManagementPageFactory extends PageFactory {
 	
 	public static Page getSitePage(SiteContext site) throws Exception {
@@ -126,8 +128,35 @@ public class SpaceManagementPageFactory extends PageFactory {
 		}
 		Section tab1Sec3 = page.new Section("spaceReadings");
 		addReadingWidget(tab1Sec3);
-		tab1.addSection(tab1Sec3);
 		addCommonSubModuleGroup(tab1Sec3);
+		tab1.addSection(tab1Sec3);
+
+		Tab tab2 = page.new Tab("Related Records");
+		page.addTab(tab2);
+		FacilioModule baseSpaceModule = modBean.getModule(ContextNames.BASE_SPACE);
+		Section tab1Sec6 = page.new Section();
+		addRelatedListWidget(tab1Sec6, ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+		tab2.addSection(tab1Sec6);
+
+		FacilioModule resourceModule = modBean.getModule(ContextNames.RESOURCE);
+		Section tab1Sec7 = page.new Section();
+		addRelatedListWidget(tab1Sec7, ContextNames.NEW_READING_ALARM, resourceModule.getModuleId(), "Alarms");
+		tab2.addSection(tab1Sec7);
+
+		Section tab1Sec4 = page.new Section("plannedWorkorder");
+		PageWidget plannedWidget = new PageWidget(WidgetType.LIST, "plannedWorkorder");
+		plannedWidget.addToLayoutParams(tab1Sec4, 24, 10);
+		tab1Sec4.addWidget(plannedWidget);
+		tab2.addSection(tab1Sec4);
+
+		Section tab1Sec5 = page.new Section("unplannedWorkorder");
+		PageWidget unplannedWidget = new PageWidget(WidgetType.LIST, "unPlannedWorkorder");
+		unplannedWidget.addToLayoutParams(tab1Sec5, 24, 10);
+		tab1Sec5.addWidget(unplannedWidget);
+		tab2.addSection(tab1Sec5);
+
+
+
 		return page;
 	}
 
