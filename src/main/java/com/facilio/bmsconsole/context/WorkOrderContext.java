@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
-import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -590,5 +589,13 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public void setClient(ClientContext client) {
 		this.client = client;
+	}
+	
+	private String deviationTaskUniqueId;
+	public String getDeviationTaskUniqueId() {
+		return deviationTaskUniqueId;
+	}
+	public void setDeviationTaskUniqueId(String deviationTaskUniqueId) {
+		this.deviationTaskUniqueId = deviationTaskUniqueId;
 	}
 }

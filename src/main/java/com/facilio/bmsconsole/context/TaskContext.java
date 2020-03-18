@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -549,4 +550,15 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
+	@JsonIgnore
+	private WorkOrderContext parentWo;
+	
+	@JSON(serialize = false)
+	public WorkOrderContext getParentWo() {
+		return parentWo;
+	}
+	@JSON(serialize = false)
+	public void setParentWo(WorkOrderContext parentWo) {
+		this.parentWo = parentWo;
+	}
 }

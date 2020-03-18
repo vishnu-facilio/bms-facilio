@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,12 +34,18 @@ public class ExecuteTaskFailureActionCommand extends FacilioCommand implements S
 			Map<Long, WorkOrderContext> woMap = workorders.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 			List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false, true);
 			if (tasks != null && !tasks.isEmpty()) {
+				Map<Long, Map<String, Object>> woPropertiesMap = new HashMap();
 				for(TaskContext task: tasks) {
 					if (task.isFailed() && task.getActionId() != -1) {
+						WorkOrderContext wo = woMap.get(task.getParentTicketId());
+						task.setParentWo(wo);
+						if (!woPropertiesMap.containsKey(wo.getId())) {
+							woPropertiesMap.put(wo.getId(), FieldUtil.getAsProperties(wo));
+						}
 						ActionContext action = ActionAPI.getAction(task.getActionId());
 						Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 						CommonCommandUtil.appendModuleNameInKey(ContextNames.TASK, ContextNames.TASK, FieldUtil.getAsProperties(task), placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(ContextNames.WORK_ORDER, ContextNames.WORK_ORDER, FieldUtil.getAsProperties(woMap.get(task.getParentTicketId())), placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(ContextNames.WORK_ORDER, ContextNames.WORK_ORDER, woPropertiesMap.get(wo.getId()), placeHolders);
 						action.executeAction(placeHolders, null, null, task);
 					}
 				}

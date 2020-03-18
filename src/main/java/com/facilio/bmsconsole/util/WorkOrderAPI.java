@@ -116,6 +116,24 @@ public class WorkOrderAPI {
       return workOrders;
    }
    
+   public static WorkOrderContext getOpenWorkOrderForDeviationTemplate(String uniqueId) throws Exception {
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	      FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	      List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+	      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	      FacilioField deviationTaskField = fieldMap.get("deviationTaskUniqueId");
+	      SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+	                                          .module(module)
+	                                          .beanClass(WorkOrderContext.class)
+	                                          .select(fields)
+	                                          .andCondition(CriteriaAPI.getCondition(deviationTaskField, uniqueId, StringOperators.IS))
+	                                          .andCondition(ViewFactory.getOpenStatusCondition())
+	                                          ;
+	      
+	      
+	      return builder.fetchFirst();
+   }
+   
    public static Map<Long, WorkOrderContext> getWorkOrdersAsMap(List<Long> workorderIds) throws Exception {
       List<WorkOrderContext> workorders = getWorkOrders(workorderIds);
       if (CollectionUtils.isNotEmpty(workorders)) {

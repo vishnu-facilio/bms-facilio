@@ -257,10 +257,7 @@ public class KPIUtil {
 	
 	public static Object getKPIValue(KPIContext kpi) throws Exception {
 		FacilioModule module = kpi.getModule();
-		Criteria criteria = new Criteria();
-		Criteria kpiCriteria = kpi.getCriteria();
-		criteria.setPattern(kpiCriteria.getPattern());
-		criteria.setConditions(new HashMap<>(kpiCriteria.getConditions()));
+		Criteria criteria = kpi.getCriteria().clone();
 		
 		FacilioField metric = kpi.getMetric();
 		FacilioField dateField = kpi.getDateField();

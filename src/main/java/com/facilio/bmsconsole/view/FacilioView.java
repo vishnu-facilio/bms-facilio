@@ -31,7 +31,9 @@ public class FacilioView {
 		this.moduleId = view.moduleId;
 		this.moduleName = view.moduleName;
 		this.criteriaId = view.criteriaId;
-		this.criteria = view.criteria;
+		if (view.criteria != null) {
+			this.criteria = view.criteria.clone();
+		}
 		this.isDefault = view.isDefault;
 		this.fields = view.fields;
 		this.sortFields = view.sortFields;

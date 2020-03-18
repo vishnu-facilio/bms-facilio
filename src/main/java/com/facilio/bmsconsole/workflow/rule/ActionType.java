@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.facilio.bmsconsole.context.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -38,7 +37,26 @@ import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreEventContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.ViolationEventContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
@@ -1245,8 +1263,28 @@ public enum ActionType {
 								  Object currentRecord) throws Exception {
 			try {
 				TaskContext task = (TaskContext) currentRecord;
-				List<AttachmentContext> attachments = AttachmentsAPI.getAttachments("taskattachments", task.getId());
-				addWorkOrder(obj, SourceType.TASK_DEVIATION, attachments);
+				long pmId = task.getParentWo().getPm().getId();
+				String taskUniqueId = pmId + "_" + task.getParentWo().getResource().getId() +"_" + task.getUniqueId(); 
+				WorkOrderContext deviationWo = WorkOrderAPI.getOpenWorkOrderForDeviationTemplate(taskUniqueId);
+				if (deviationWo != null) {
+					NoteContext note = new NoteContext();
+					note.setBody("Task " + task.getSubject() + " has been closed with the value " + task.getInputValue());
+					note.setParentId(deviationWo.getId());
+					note.setCreatedTime(task.getParentWo().getActualWorkEnd());
+
+					FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
+					FacilioContext noteContext = addNote.getContext();
+					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+					noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+					noteContext.put(FacilioConstants.ContextNames.NOTE, note);
+					addNote.execute();
+				}
+				else {
+					WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+					wo.setDeviationTaskUniqueId(taskUniqueId);
+					List<AttachmentContext> attachments = AttachmentsAPI.getAttachments("taskattachments", task.getId());
+					addWorkOrder(wo, SourceType.TASK_DEVIATION, attachments);
+				}
 			}
 			catch(Exception e) {
 				LOGGER.error("Exception occurred on creating deviation workorders", e);
@@ -1652,11 +1690,15 @@ public enum ActionType {
 	}
 	
 	private static void addWorkOrder (JSONObject obj, SourceType sourceType, List<AttachmentContext> attachments) throws Exception {
+		WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		addWorkOrder(wo, sourceType, attachments);
+	}
+	
+	private static void addWorkOrder (WorkOrderContext wo, SourceType sourceType, List<AttachmentContext> attachments) throws Exception {
 		// TODO Auto-generated method stub
 
-		LOGGER.debug("Action::Add Workorder::"+obj);
-
-		WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		LOGGER.debug("Action::Add Workorder::"+wo);
+		
 		wo.setSourceType(sourceType);
 		FacilioContext woContext = new FacilioContext();
 		woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
