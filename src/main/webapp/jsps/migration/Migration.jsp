@@ -185,18 +185,26 @@
 	
 	    								Connection conn = null;
 	    								PreparedStatement pstmt = null;
-	    								conn = FacilioConnectionPool.INSTANCE.getConnection();
-	
-	    								pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
-	    								pstmt.setLong(1, fileInfo.getFileId());
-	    								pstmt.setLong(2, AccountUtil.getCurrentOrg().getOrgId());
-	    								pstmt.setInt(3, 360);
-	    								pstmt.setInt(4, 360);
-	    								pstmt.setString(5, resizedFilePath);
-	    								pstmt.setLong(6, imageInByte.length);
-	    								pstmt.setString(7, "image/png");
-	    								pstmt.setLong(8, System.currentTimeMillis());
-	    								pstmt.executeUpdate();
+	    								try {
+		    								conn = FacilioConnectionPool.INSTANCE.getConnection();
+		
+		    								pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
+		    								pstmt.setLong(1, fileInfo.getFileId());
+		    								pstmt.setLong(2, AccountUtil.getCurrentOrg().getOrgId());
+		    								pstmt.setInt(3, 360);
+		    								pstmt.setInt(4, 360);
+		    								pstmt.setString(5, resizedFilePath);
+		    								pstmt.setLong(6, imageInByte.length);
+		    								pstmt.setString(7, "image/png");
+		    								pstmt.setLong(8, System.currentTimeMillis());
+		    								pstmt.executeUpdate();
+	    								}
+	    								catch(SQLException | RuntimeException e) {
+	    									throw e;
+	    								}
+	    								finally {
+	    									DBUtil.closeAll(conn, pstmt);
+	    								}
 	    							}
 	
 	    						}
