@@ -267,9 +267,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return null;
 		}
 		
-		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 299l) {
-			return null;
-		}
+//		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 299l) {
+//			return null;
+//		}
 				
 		double currentDelta = currentValueInSiUnit-previousValue;
 		
