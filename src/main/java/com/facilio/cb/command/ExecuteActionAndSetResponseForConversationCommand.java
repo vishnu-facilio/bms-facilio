@@ -28,7 +28,7 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			
 			ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
 			
-			ChatBotUtil.addSessionParam(chatBotSessionConversation.getIntentParamId(),chatBotSessionConversation.getChatBotSession().getId(),chatBotMLResponse.getAnswer());
+			ChatBotUtil.addSessionParam(chatBotSessionConversation.getIntentParamId(),chatBotSessionConversation.getChatBotSession().getId(),chatBotMLResponse.getAnswer());	// even user may enter wrong answer on that case ML will correct it, so answer is taken form mlResponse
 			
 			chatBotSessionConversation.getChatBotSession().setRecievedParamCount(chatBotSessionConversation.getChatBotSession().getRecievedParamCount()+1);
 			

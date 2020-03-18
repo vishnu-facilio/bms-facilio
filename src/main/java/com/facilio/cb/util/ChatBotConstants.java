@@ -29,7 +29,7 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_SESSION = "chatBotSession";
 	public static final String CHAT_BOT_SESSIONS = "chatBotSessions";
 	public static final String CHAT_BOT_SESSION_COUNT = "chatBotSessionCount";
-	public static final String CHAT_BOT_MESSAGE_STRING = "chatBotMessageString";
+	public static final String CHAT_BOT_MESSAGE_JSON = "chatBotMessageJson";
 	public static final String CHAT_BOT_OPTION_STRING = "chatBotOptionString";
 	public static final String CHAT_BOT_SESSION_CONVERSATION = "chatBotSessionConversation";
 	public static final String CHAT_BOT_IS_ACTION_EXECUTED = "chatBotIsActionExecuted";
@@ -47,6 +47,9 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_RESPONSE_OPTIONS = "chatBotResponseOptions";
 	
 	public static final String CHAT_BOT_INTENT = "chatBotIntent";
+	
+	public static final String CHAT_BOT_LABEL = "label";
+	public static final String CHAT_BOT_ID = "id";
 	
 	public static final String CHAT_BOT_INTENT_LIST = "chatBotIntentList";
 	

@@ -1,5 +1,7 @@
 package com.facilio.cb.action;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -19,7 +21,7 @@ public class ChatBotAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	String chatMessage;
+	JSONObject chatMessage;
 	
 	long startTime = -1;
 	
@@ -31,11 +33,11 @@ public class ChatBotAction extends FacilioAction {
 		this.startTime = startTime;
 	}
 
-	public String getChatMessage() {
+	public JSONObject getChatMessage() {
 		return chatMessage;
 	}
 
-	public void setChatMessage(String chatMessage) {
+	public void setChatMessage(JSONObject chatMessage) {
 		this.chatMessage = chatMessage;
 	}
 
@@ -75,13 +77,13 @@ public class ChatBotAction extends FacilioAction {
 			FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
 			
 			FacilioContext context = chain.getContext();
-			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_STRING, chatMessage);
+			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatMessage);
 			
 			chain.execute();
 			
-			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_STRING);
+			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_JSON);
 			
-			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_STRING, chatBotReplyMessage);
+			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotReplyMessage);
 			
 		}
 		

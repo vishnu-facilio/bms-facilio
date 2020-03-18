@@ -33,7 +33,7 @@ public class HandleInvalidQueryMessages extends FacilioCommand {
 			setInvalidQuery(mlResponse,session,chatBotSessionConversation);
 		}
 		
-		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponse() != null) {
+		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseJson() != null) {
 			
 			ChatBotSessionConversation lastInvalidCBConversation = ChatBotUtil.getLastInvalidQueryConversation(chatBotSessionConversation.getSessionId());
 			
@@ -49,7 +49,7 @@ public class HandleInvalidQueryMessages extends FacilioCommand {
 			
 			return false;
 		}
-		else if(session != null && session.getQuery() != null) {
+		else if(session != null && session.getQueryJson() != null) {
 			
 			ChatBotSession lastInvalidSession = ChatBotUtil.getLastInvalidQuerySession();
 			

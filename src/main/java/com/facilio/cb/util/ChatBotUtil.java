@@ -448,15 +448,15 @@ public class ChatBotUtil {
 		return null;
 	}
 	
-	public static ChatBotSessionConversation constructAndAddCBSessionConversationParams(ChatBotIntentParam param,ChatBotSession session,ChatBotSessionConversation parentChatBotConversation,String response) throws Exception {
+	public static ChatBotSessionConversation constructAndAddCBSessionConversationParams(ChatBotIntentParam param,ChatBotSession session,ChatBotSessionConversation parentChatBotConversation,JSONObject responseJson) throws Exception {
 		
 		
 		ChatBotSessionConversation chatBotSessionConversation1 = new ChatBotSessionConversation();
 		
 		chatBotSessionConversation1.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
-		if(response != null) {
-			chatBotSessionConversation1.setResponse(response);
+		if(responseJson != null) {
+			chatBotSessionConversation1.setResponseJson(responseJson);
 			chatBotSessionConversation1.setState(ChatBotSessionConversation.State.REPLIED_CORRECTLY.getIntVal());
 		}
 		else {
@@ -763,6 +763,16 @@ public class ChatBotUtil {
 		
 		
 		ChatBotUtil.addSessionParams(sessionParam);
+	}
+	
+	public static Object getRequiredFieldFromQueryJson(JSONObject queryJson) throws Exception {
+		
+		if(queryJson.containsKey(ChatBotConstants.CHAT_BOT_ID) && queryJson.get(ChatBotConstants.CHAT_BOT_ID) != null) {
+			return queryJson.get(ChatBotConstants.CHAT_BOT_ID);
+		}
+		else {
+			return queryJson.get(ChatBotConstants.CHAT_BOT_LABEL);
+		}
 	}
 
 }

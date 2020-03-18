@@ -5,13 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.util.FacilioUtil;
+
 public class ChatBotSession {
 
 	long id = -1;
 	long orgId = -1;
 	long userId = -1;
 	long intentId = -1;
-	String query;
+	JSONObject queryJson;
 	String response;
 	State state;
 	int requiredParamCount = 0;
@@ -104,12 +109,25 @@ public class ChatBotSession {
 		this.intentId = intentId;
 	}
 
-	public String getQuery() {
-		return query;
+	public String getQueryString() {
+		if(queryJson != null) {
+			return queryJson.toJSONString();
+		}
+		return null;
+	}
+	
+	public void setQueryString(String query) throws ParseException {
+		if(query != null) {
+			this.queryJson = FacilioUtil.parseJson(query);
+		}
 	}
 
-	public void setQuery(String query) {
-		this.query = query;
+	public JSONObject getQueryJson() {
+		return queryJson;
+	}
+
+	public void setQueryJson(JSONObject queryJson) {
+		this.queryJson = queryJson;
 	}
 
 	public String getResponse() {

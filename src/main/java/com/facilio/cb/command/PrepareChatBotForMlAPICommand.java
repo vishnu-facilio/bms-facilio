@@ -20,13 +20,13 @@ public class PrepareChatBotForMlAPICommand extends FacilioCommand {
 		
 		ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
 		
-		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponse() != null) {
+		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseString() != null) {
 			
 			chatBotSessionConversation.setOrgId(AccountUtil.getCurrentOrg().getId());
 			
 			return false;
 		}
-		else if(session != null && session.getQuery() != null) {
+		else if(session != null && session.getQueryJson() != null) {
 			session.setOrgId(AccountUtil.getCurrentOrg().getId());
 			session.setUserId(AccountUtil.getCurrentUser().getId());
 			session.setStartTime(DateTimeUtil.getCurrenTime());

@@ -34,23 +34,19 @@ public class SendToMlApiCommand extends FacilioCommand {
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
 		
-		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponse() != null) {
+		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseString() != null) {
 			
 			String answer = null;
 			String intent = null;
 			double accuracy;
 			
-			answer = chatBotSessionConversation.getResponse();
+			answer = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
 			accuracy = 0.6789;
 			
-			if(chatBotSessionConversation.getResponse().contains("exit")) {
+			if(answer.contains("exit")) {
 				intent = "system_terminate_session_intent";
 				accuracy = 0.6789;
 			}
-//			else {
-//				answer = chatBotSessionConversation.getResponse();
-//				accuracy = 0.0789;
-//			}
 			
 			ChatBotMLResponse mlResponse = new ChatBotMLResponse();
 			
@@ -62,7 +58,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 			
 			return false;
 		}
-		else if(session != null && session.getQuery() != null) {
+		else if(session != null && session.getQueryJson() != null) {
 			
 			ChatBotMLResponse mlResponse = new ChatBotMLResponse();
 			
@@ -73,7 +69,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 			
 			if(isMLWithFacilio) {
 				
-				JSONObject responseJSON = ChatBotMLUtil.getIntentFromML(session.getQuery(), null, model);
+				JSONObject responseJSON = ChatBotMLUtil.getIntentFromML(ChatBotUtil.getRequiredFieldFromQueryJson(session.getQueryJson()).toString(), null, model);
 				
 				JSONObject intentJson = (JSONObject) responseJSON.get(ChatBotMLUtil.ML_INTENT_STRING);
 				
@@ -82,7 +78,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 				accuracy = (double) intentJson.get(ChatBotMLUtil.ML_INTENT_CONFIDENCE_STRING);
 			}
 			else {
-				JSONObject responseJSON = ChatBotWitAIUtil.getIntentFromML(session.getQuery());
+				JSONObject responseJSON = ChatBotWitAIUtil.getIntentFromML(ChatBotUtil.getRequiredFieldFromQueryJson(session.getQueryJson()).toString());
 				
 				JSONObject entityJson = (JSONObject)responseJSON.get(ChatBotWitAIUtil.ENTITY_STRING);
 				

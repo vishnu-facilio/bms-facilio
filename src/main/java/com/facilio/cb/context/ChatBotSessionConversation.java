@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.util.FacilioUtil;
 
 public class ChatBotSessionConversation {
 
@@ -14,7 +17,7 @@ public class ChatBotSessionConversation {
 	long sessionId = -1;
 	long parentConversationId = -1;
 	String query;
-	String response;
+	JSONObject responseJson;
 	State state;
 	ChatBotSession chatBotSession;
 	long intentParamId = -1;
@@ -105,14 +108,24 @@ public class ChatBotSessionConversation {
 		this.query = query;
 	}
 
+	public JSONObject getResponseJson() {
+		return responseJson;
+	}
 
-	public String getResponse() {
-		return response;
+	public void setResponseJson(JSONObject responseJson) {
+		this.responseJson = responseJson;
+	}
+
+	public String getResponseString() {
+		if(responseJson != null) {
+			return responseJson.toJSONString();
+		}
+		return null;
 	}
 
 
-	public void setResponse(String response) {
-		this.response = response;
+	public void setResponseString(String response) throws ParseException {
+		this.responseJson = FacilioUtil.parseJson(response);
 	}
 
 

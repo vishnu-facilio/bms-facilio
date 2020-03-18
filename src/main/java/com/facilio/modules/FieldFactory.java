@@ -7894,7 +7894,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("userId", "USER_ID", module, FieldType.NUMBER));
         fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("query", "QUERY", module, FieldType.STRING));
+        fields.add(getField("queryString", "QUERY", module, FieldType.STRING));
         fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
         fields.add(getField("state", "STATE", module, FieldType.NUMBER));
         fields.add(getField("requiredParamCount", "REQUIRED_PARAM_COUNT", module, FieldType.NUMBER));
@@ -7914,7 +7914,7 @@ public class FieldFactory {
         fields.add(getField("sessionId", "SESSION_ID", module, FieldType.NUMBER));
         fields.add(getField("parentConversationId", "PARENT_CONVERSATION_ID", module, FieldType.NUMBER));
         fields.add(getField("query", "QUERY", module, FieldType.STRING));
-        fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
+        fields.add(getField("responseString", "RESPONSE", module, FieldType.STRING));
         fields.add(getField("state", "STATE", module, FieldType.NUMBER));
         fields.add(getField("intentParamId", "INTENT_PARAM_ID", module, FieldType.NUMBER));
         fields.add(getField("requestedTime", "REQUESTED_TIME", module, FieldType.NUMBER));
