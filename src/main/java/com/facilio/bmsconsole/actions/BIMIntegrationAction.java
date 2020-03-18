@@ -2,14 +2,23 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.net.URLConnection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class BIMIntegrationAction extends FacilioAction{
 
@@ -17,12 +26,8 @@ public class BIMIntegrationAction extends FacilioAction{
 
 	public String uploadBim() throws Exception {
 		
-		// comment out
-		String home = System.getProperty("user.home");
-		fileUpload=new File(home+"/Downloads/SampleCOBieSpreadsheet copy.xlsx");
 		fileUploadFileName = fileUpload.getName();
 		fileUploadContentType = URLConnection.guessContentTypeFromName(fileUploadFileName);
-		// comment out
 		
 		FacilioChain uploadFileChain = TransactionChainFactory.uploadBimFileChain();
 		FacilioContext context = uploadFileChain.getContext();
@@ -33,7 +38,7 @@ public class BIMIntegrationAction extends FacilioAction{
 		
 		uploadFileChain.execute();
 		setResult(FacilioConstants.ContextNames.BIM_IMPORT_ID ,(Long)context.get(FacilioConstants.ContextNames.BIM_IMPORT_ID));
-		setResult(FacilioConstants.ContextNames.SHEET_NAMES ,(List<String>)context.get(FacilioConstants.ContextNames.SHEET_NAMES));
+		setResult(FacilioConstants.ContextNames.VALID_SHEETS ,(JSONArray)context.get(FacilioConstants.ContextNames.VALID_SHEETS));
 		return SUCCESS;
 	}
 	
@@ -47,6 +52,16 @@ public class BIMIntegrationAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.SELECTED_SHEET_NAMES, selectedSheetNames);
 		
 		importSheetsChain.execute();
+		
+		return SUCCESS;
+	}
+	
+	public String checkStatus() throws Exception {
+		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
+		List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
+		BimIntegrationLogsContext bimIntegrationLog = BimAPI.getBimIntegrationLog(module, fields, bimImportId);
+		
+		setResult("bimIntegration" , bimIntegrationLog);
 		
 		return SUCCESS;
 	}

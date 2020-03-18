@@ -73,12 +73,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ArrayList<String> requiredFields = getRequiredFields(moduleName);
 		FileStore fs = FacilioFactory.getFileStore();
 		
-		//comment out
-//		InputStream is = fs.readFile(importProcessContext.getFileId());
-		String home = System.getProperty("user.home");
-		File fileUpload=new File(home+"/Downloads/SampleCOBieSpreadsheet copy.xls");
-		InputStream is = new FileInputStream(fileUpload);
-		//commentout
+		InputStream is = fs.readFile(importProcessContext.getFileId());
 		
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);

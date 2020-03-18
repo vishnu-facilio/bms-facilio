@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
+import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
@@ -158,26 +159,44 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 
 			
 			if (importProcessContext != null) {
+				
+				FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+				List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+				BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+				boolean isBim = (bimImport!=null);
+				
 				JSONObject meta = importProcessContext.getImportJobMetaJson();
 				if (meta != null && !meta.isEmpty()) {
-					meta.put("errorMessage", exceptionMessage);
+					if(isBim){
+						meta.put("errorMessage", "Module Name :: "+ bimImport.getModuleName() +" , "+exceptionMessage);
+					}else{
+						meta.put("errorMessage", exceptionMessage);
+					}
+					
 				} else {
 					meta = new JSONObject();
-					meta.put("errorMessage", exceptionMessage);
+					if(isBim){
+						meta.put("errorMessage", "Module Name :: "+ bimImport.getModuleName() +" , "+exceptionMessage);
+					}else{
+						meta.put("errorMessage", exceptionMessage);
+					}
 				}
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
 				LOGGER.severe("Import failed: " + exceptionMessage);
 				
-				FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
-				List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
-				BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
-				boolean isBim = (bimImport!=null);
 				if(isBim){
 					bimImport.setStatus(BimImportProcessMappingContext.Status.FAILED.getValue());
 					Condition condition = CriteriaAPI.getIdCondition(bimImport.getId(), bimModule);
 					BimAPI.updateBimImportProcessMapping(bimModule, bimFields, bimImport, condition);
+					
+					FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
+					List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
+					BimIntegrationLogsContext bimIntegration = BimAPI.getBimIntegrationLog(module, fields, bimImport.getBimId());
+					bimIntegration.setStatus(BimIntegrationLogsContext.Status.FAILED);
+					BimAPI.updateBimIntegrationLog(module, fields, bimIntegration);
+					
 				}
 			}
 		} catch (Exception e1) {

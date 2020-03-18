@@ -54,8 +54,8 @@ public class GenericImportDataLogJob extends InstantJob{
 				ImportAPI.updateImportProcess(importProcessContext);
 			}
 			
-			boolean isBim = (Boolean)context.get(FacilioConstants.ContextNames.IS_BIM);
-			if(isBim){
+			Boolean isBim = (Boolean)context.get(FacilioConstants.ContextNames.IS_BIM);
+			if(isBim != null && isBim){
 				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), "importData" , 10 , "priority");	
 			}
 			

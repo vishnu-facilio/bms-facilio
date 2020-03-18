@@ -65,7 +65,8 @@ public class BimIntegrationLogsContext{
 
 	public enum Status {
 		INPROGRESS,
-		COMPLETED;
+		COMPLETED,
+		FAILED;
 
 		public int getValue() {
 			return ordinal() + 1;

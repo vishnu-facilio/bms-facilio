@@ -65,12 +65,7 @@ public class PMImportDataCommand extends FacilioCommand {
 		
 		FileStore fs = FacilioFactory.getFileStore();
 		
-		//comment out
-//		InputStream is = fs.readFile(importProcessContext.getFileId());
-		String home = System.getProperty("user.home");
-		File fileUpload=new File(home+"/Downloads/2013-08-05-Barraks101-Handover.xlsx");
-		InputStream is = new FileInputStream(fileUpload);
-		//comment out
+		InputStream is = fs.readFile(importProcessContext.getFileId());
 		
 		Workbook workbook = WorkbookFactory.create(is);
 		

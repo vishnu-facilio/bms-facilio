@@ -5499,6 +5499,11 @@
 		<action name="importBim" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
 			method="importBim"
 		/>
+		
+		<action name="checkStatus" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="checkStatus"
+		/>
+		
 	</package>
 	
 </struts>

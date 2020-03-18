@@ -399,7 +399,7 @@ public class FacilioConstants {
 		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
 		
 		public static final String IS_BIM = "isBim";
-		public static final String SHEET_NAMES = "sheetNames";
+		public static final String VALID_SHEETS = "validSheets";
 		public static final String SELECTED_SHEET_NAMES = "selectedSheetNames";
 		public static final String SHEET_NAME = "sheetName";
 		public static final String BIM_IMPORT_ID = "bimImportId";

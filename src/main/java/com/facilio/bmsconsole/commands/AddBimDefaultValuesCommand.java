@@ -50,13 +50,7 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 				
 				BimIntegrationLogsContext bimIntegrationLog = BimAPI.getBimIntegrationLog(module,fields,bimImportId);
 				
-				//comment out
-//				InputStream inputStream = fs.readFile(bimIntegrationLog.getFileId());
-				String home = System.getProperty("user.home");
-				File fileUpload=new File(home+"/Downloads/SampleCOBieSpreadsheet copy.xlsx");
-				InputStream inputStream = new FileInputStream(fileUpload);
-				//commentout
-				
+				InputStream inputStream = fs.readFile(bimIntegrationLog.getFileId());
 				
 				Workbook workbook = WorkbookFactory.create(inputStream);
 				
