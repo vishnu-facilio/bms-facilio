@@ -735,7 +735,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
 			List<AlarmWorkflowRuleContext> workflowRulesForAlarms = alarmRule.getWorkflowRulesForAlarms();
 			for (AlarmWorkflowRuleContext alarmWorkflowRuleContext : workflowRulesForAlarms) {
-				alarmWorkflowRuleContext.setRuleId(alarmTriggerRule.getId());
+				alarmWorkflowRuleContext.setRuleId(alarmTriggerRule.getRuleGroupId());
 				alarmWorkflowRuleContext.setModule(module);
 				alarmWorkflowRuleContext.setRuleType(WorkflowRuleContext.RuleType.ALARM_WORKFLOW_RULE);
 				WorkflowRuleAPI.addWorkflowRule(alarmWorkflowRuleContext);
