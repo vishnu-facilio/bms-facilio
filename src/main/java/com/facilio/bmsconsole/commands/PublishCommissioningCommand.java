@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -14,6 +16,7 @@ import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -48,6 +51,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
 		List<ReadingDataMeta> unitRdmList = new ArrayList<>();
 		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
+		Set<Long> connectedAssetIds = new HashSet<>();
 
 		List<Map<String, Object>> dbPoints = getDbPoints(log);
 		Map<Long, Map<String, Object>> pointMap = null;
@@ -79,7 +83,6 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				
 				if (fieldAvailable && resourceAvailable) {
 					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
-						point.put("oldCategoryId", dbPoint.get(AgentConstants.ASSET_CATEGORY_ID));
 						point.put("oldFieldId", dbFieldId);
 						point.put("oldResourceId", dbResourceId);
 						point.put("oldUnit", dbPoint.get(AgentConstants.UNIT));
@@ -114,6 +117,8 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						}
 					}
 				}
+				connectedAssetIds.add(resourceId);
+				
 				updatePoint(point, publishTime);
 			}
 			
@@ -130,8 +135,12 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (!remainingReadingList.isEmpty()){
 			ReadingsAPI.updateReadingDataMetaInputType(remainingReadingList, ReadingInputType.CONTROLLER_MAPPED, null);
 		}
+		if (!connectedAssetIds.isEmpty()) {
+			AssetsAPI.updateAssetConnectionStatus(connectedAssetIds, true);
+		}
 		
 		updateLog(publishTime, id);
+		
 		
 		// TODO
 		// Migration 
@@ -213,7 +222,36 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 
 	@Override
 	public boolean postExecute() throws Exception {
-		// TODO Auto-generated method stub
+		
+		/*if (CollectionUtils.isNotEmpty(unmodelledPoints)) {
+			// TODO handle multiple mappings in ProcessUnmodelledHistoricalData
+			for(Map<String, Object> point: unmodelledPoints) {
+				FacilioContext context = new FacilioContext();
+				context.put(ContextNames.DEVICE_DATA, point.get(AgentConstants.DEVICE_NAME));
+				context.put(ContextNames.INSTANCE_INFO, point.get(AgentConstants.DEVICE_NAME));
+				context.put(ContextNames.ASSET_ID, point.get(AgentConstants.RESOURCE_ID));
+				context.put(ContextNames.FIELD_ID, point.get(AgentConstants.FIELD_ID));
+				context.put(ContextNames.CONTROLLER_ID, point.get(AgentConstants.CONTROLLER_ID));
+				FacilioTimer.scheduleInstantJob("ProcessUnmodelledHistoricalData", context);
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(modelledPoints)) {
+			// TODO handle multiple mappings in MigrateReadingData
+			for(Map<String, Object> point: modelledPoints) {
+				FacilioContext context = new FacilioContext();
+				
+				Map<String, Object> oldData = new HashMap<>();
+				oldData.put(AgentConstants.FIELD_ID, point.get("oldFieldId"));
+				oldData.put(AgentConstants.RESOURCE_ID, point.get("oldResourceId"));
+				context.put(ContextNames.RECORD, oldData);
+				
+				context.put(ContextNames.FIELD_ID, point.get(AgentConstants.FIELD_ID));
+				context.put(ContextNames.PARENT_ID, point.get(AgentConstants.RESOURCE_ID));
+				FacilioTimer.scheduleInstantJob("MigrateReadingData", context);
+			}
+		}*/
+		
 		return false;
 	}
 

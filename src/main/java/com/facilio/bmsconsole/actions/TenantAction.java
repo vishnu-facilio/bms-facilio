@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.pdf.PdfUtil;
 
 public class TenantAction extends FacilioAction {
@@ -343,12 +344,12 @@ private boolean tenantZone;
    }
    
    
-   private List<Long> spaceId;
-   public List<Long> getSpaceId() {
+   private long spaceId = -1;
+   public long getSpaceId() {
       return spaceId;
    }
 
-   public void setSpaceId(List<Long> spaceId) {
+   public void setSpaceId(long spaceId) {
       this.spaceId = spaceId;
    }
 
@@ -487,50 +488,7 @@ private Map<String, Double> readingData;
 	         return SUCCESS;
 	   } 
    
-   public String addTenant() {
-      try {
-         
-         FacilioContext context = new FacilioContext();
-         if(CollectionUtils.isNotEmpty(utilityAssets)) {
-            tenant.setUtilityAssets(utilityAssets);
-         }
-         tenant.parseFormData();
-         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-         context.put(FacilioConstants.ContextNames.RECORD, tenant);
-         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
-         context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
-         context.put(FacilioConstants.ContextNames.ZONE, zone);
-         if (CollectionUtils.isNotEmpty(spaceId)) {
-            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-         }
-         else if (CollectionUtils.isNotEmpty(spaceIds)) {
-            spaceId = new ArrayList<>();
-            for (String id : spaceIds) {
-               spaceId.add(Long.parseLong(id));
-            }
-            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-         }
-         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
-         
-         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-         tenant.setZone(zone);
-         if(tenantLogo != null) {
-            tenant.setTenantLogo(tenantLogo);
-         }
-         
-         FacilioChain addZone = FacilioChainFactory.getAddZoneChain();
-         addZone.addCommand(FacilioChainFactory.addTenantChain());
-         addZone.execute(context);
-         tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
-         setResult("tenant", tenant);
-         return SUCCESS;
-      }
-      catch (Exception e) {
-         setError("error",e.getMessage());
-         return ERROR;
-      }
-   }
+   
    private ContactsContext contact;
    
    public ContactsContext getContact() {
@@ -565,48 +523,6 @@ private Map<String, Double> readingData;
 		this.tenantLogoContentType = tenantLogoContentType;
 	}
 	
-   public String updateTenant() {
-      try {
-         if(CollectionUtils.isNotEmpty(utilityAssets)) {
-            tenant.setUtilityAssets(utilityAssets);
-         }
-         
-         tenant.parseFormData();
-         FacilioContext context = new FacilioContext();
-         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
-         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-         context.put(FacilioConstants.ContextNames.RECORD, tenant);
-         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
-         context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
-         context.put(FacilioConstants.ContextNames.ZONE, zone);
-         if (CollectionUtils.isNotEmpty(spaceId)) {
-            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-         }
-         else if (CollectionUtils.isNotEmpty(spaceIds)) {
-            spaceId = new ArrayList<>();
-            for (String id : spaceIds) {
-               spaceId.add(Long.parseLong(id));
-            }
-            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-         }
-         tenant.setZone(zone);
-         if(tenantLogo != null) {
-            tenant.setTenantLogo(tenantLogo);
-         }
-         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
-         context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-         FacilioChain updateZone = FacilioChainFactory.getUpdateZoneChain();
-         updateZone.addCommand(FacilioChainFactory.updateTenantChain());
-         updateZone.execute(context);
-         setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
-         return SUCCESS;
-      }
-      catch (Exception e) {
-         setError("error",e.getMessage());
-         return ERROR;
-      }
-   }
-   
    
    public String v2updateTenant() throws Exception {
 	   
@@ -833,6 +749,7 @@ private Map<String, Double> readingData;
 	      if (getCount()) {  // only count
 	         context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
 	      }
+	      context.put(ContextNames.SPACE_ID, spaceId);
 	         JSONObject pagination = new JSONObject();
 	         pagination.put("page", getPage());
 	         pagination.put("perPage", getPerPage());
@@ -852,6 +769,12 @@ private Map<String, Double> readingData;
 	   
 	         }
   
+  
+   public String getTenantsForSpace() throws Exception {
+	   List<TenantContext> tenants = TenantsAPI.getAllTenantsForSpace(Collections.singletonList(spaceId));
+	   setResult(ContextNames.TENANT_LIST, tenants);
+	   return SUCCESS;
+   }
    
    public String getTenantUsers() throws Exception {
       tenantsUsers = TenantsAPI.getAllTenantsUsers(tenantId);

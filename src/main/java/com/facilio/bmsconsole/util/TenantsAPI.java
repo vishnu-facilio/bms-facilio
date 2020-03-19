@@ -49,6 +49,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
@@ -1091,24 +1092,36 @@ public class TenantsAPI {
 		if (filteredSpaces.isEmpty()) {
 			return empty;
 		}
-
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
-		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
-				  .module(module)
-				  .beanClass(TenantSpaceContext.class)
-				  .select(fields)
-				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, NumberOperators.EQUALS))
-				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
-				  ;
-		List<TenantSpaceContext> tenantSpaces = builder.get();
+		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, false);
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
 			return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), TenantSpaceContext::getTenant));
 		}
 		return empty;
+	}
+	
+	public static List<TenantContext> getAllTenantsForSpace(Collection<Long> spaceIds) throws Exception {
+		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, true);
+		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
+			return tenantSpaces.stream().map(tenantSpace -> tenantSpace.getTenant()).collect(Collectors.toList());
+		}
+		return null;
+	}
+	
+	private static List<TenantSpaceContext> getTenantSpaces(Collection<Long> spaceIds, boolean fetchChildTenants) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
+		Operator operator = fetchChildTenants ? BuildingOperator.BUILDING_IS : NumberOperators.EQUALS;
+		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
+				  .module(module)
+				  .beanClass(TenantSpaceContext.class)
+				  .select(fields)
+				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, operator))
+				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
+				  ;
+		
+		return builder.get();
 	}
 	
     public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {

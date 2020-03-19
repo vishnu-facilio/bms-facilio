@@ -13,12 +13,15 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -55,6 +58,16 @@ public class GetTenantListCommand extends FacilioCommand{
 														.beanClass(TenantContext.class)
 														.select(fields)
 														;
+		Long spaceId = (Long) context.get(FacilioConstants.ContextNames.SPACE_ID);
+		if (spaceId != null && spaceId != -1) {
+			String spaceTable = modBean.getModule(ContextNames.TENANT_SPACES).getTableName();
+			List<FacilioField> spaceFields = modBean.getAllFields(ContextNames.TENANT_SPACES);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(spaceFields);
+			
+			builder.innerJoin(spaceTable).on(module.getTableName()+".ID="+fieldMap.get("tenant").getCompleteColumnName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), String.valueOf(spaceId), BuildingOperator.BUILDING_IS));
+		}
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);

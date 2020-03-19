@@ -1137,6 +1137,15 @@ public class ModuleFactory {
 		return filesModule;
 	}
 	
+	public static FacilioModule getResizedFilesModule() {
+		FacilioModule filesModule = new FacilioModule();
+		filesModule.setName("resilzedFiles");
+		filesModule.setDisplayName("Resized Files");
+		filesModule.setTableName("ResizedFile");
+
+		return filesModule;
+	}
+	
 	public static FacilioModule getPublicFilesModule() {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("publicfiles");

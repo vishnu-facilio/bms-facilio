@@ -1,5 +1,8 @@
 
 
+<%@page import="com.facilio.modules.FieldUtil"%>
+<%@page import="com.facilio.modules.FieldFactory"%>
+<%@page import="com.facilio.services.filestore.ResizedFileInfo"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand"%>
 <%@ page import="org.apache.commons.chain.Context"%>
@@ -115,7 +118,7 @@
 								;
 		             
 		            	List<AttachmentContext> attachments = builder.get();
- 		            	addFile(attachments);
+ 		            	int count = addFile(attachments);
  		            	
  		            FacilioModule taskAttachmentModule = modBean.getModule("taskattachments");
  		            	SelectRecordsBuilder<AttachmentContext> taskBuilder = new SelectRecordsBuilder<AttachmentContext>()
@@ -125,8 +128,9 @@
  								;
  		             
  		            	List<AttachmentContext> taskAttachments = taskBuilder.get();
- 		            	addFile(taskAttachments);
+ 		            	count += addFile(taskAttachments);
  		            	
+ 		            	LOGGER.info("file mig done for org - " + orgId + " :: " + count);
  		            	
  		            }catch (Exception e){
  		                LOGGER.error("Exception while migrating AgentMetrics fields for org: "+orgId, e);
@@ -142,23 +146,26 @@
 				field = new FacilioField(woModule, "deviationTaskUniqueId", "Deviation Task Unique Id",FieldDisplayType.TEXTBOX, "DEVIATION_TASK_UNIQUE_ID", FieldType.STRING, false,true, true, false);
 				modBean.addField(field);
 			}
-			
-			LOGGER.info("file mig done for org - " + orgId);
 
             return false;
         }
         
-        private void addFile(List<AttachmentContext> taskAttachments) throws Exception {
+        private int addFile(List<AttachmentContext> taskAttachments) throws Exception {
 	    		if (CollectionUtils.isNotEmpty(taskAttachments)) {
 	    			FileStore fs = FacilioFactory.getFileStore();
 	    			List<Long> fileIds = taskAttachments.stream().map(a -> a.getFileId()).collect(Collectors.toList());
 	    			List<Long> resizedIds = getResizedEntries(fileIds);
 	    			List<Long> ids = fileIds.stream().filter(id -> !resizedIds.contains(id)).collect(Collectors.toList());
 	    			if (ids.isEmpty()) {
-	    				return;
+	    				return 0;
 	    			}
 	    			
+	    			String rootPath = AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
+	    			String bucketName = FacilioProperties.getConfig("s3.bucket.name");
+	    			
 	    			List<FileInfo> fileInfoList = fs.getFileInfo(ids);
+	    			List<ResizedFileInfo> rfileInfos = new ArrayList<>();
+	    			long currentTime = System.currentTimeMillis();
 	    			for(FileInfo fileInfo: fileInfoList) {
 	    				if (fileInfo.getFileId() > 0) {
 	    					System.out.print("fileInfo" + fileInfo);
@@ -177,41 +184,34 @@
 	    							baos.close();
 	    							ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
 	
-	    							String rootPath = AccountUtil.getCurrentOrg().getOrgId() + File.separator + "files";
 	    							String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-resized-"+360+"x"+360;
-	    							String bucketName = FacilioProperties.getConfig("s3.bucket.name");
-	    							PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
-	    							if (rs != null) {  
-	
-	    								Connection conn = null;
-	    								PreparedStatement pstmt = null;
-	    								try {
-		    								conn = FacilioConnectionPool.INSTANCE.getConnection();
-		
-		    								pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
-		    								pstmt.setLong(1, fileInfo.getFileId());
-		    								pstmt.setLong(2, AccountUtil.getCurrentOrg().getOrgId());
-		    								pstmt.setInt(3, 360);
-		    								pstmt.setInt(4, 360);
-		    								pstmt.setString(5, resizedFilePath);
-		    								pstmt.setLong(6, imageInByte.length);
-		    								pstmt.setString(7, "image/png");
-		    								pstmt.setLong(8, System.currentTimeMillis());
-		    								pstmt.executeUpdate();
-	    								}
-	    								catch(SQLException | RuntimeException e) {
-	    									throw e;
-	    								}
-	    								finally {
-	    									DBUtil.closeAll(conn, pstmt);
-	    								}
+	    							PutObjectResult rs = null;
+	    							if (!FacilioProperties.isDevelopment()) {
+	    								rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
 	    							}
-	
+	    							if (rs != null || FacilioProperties.isDevelopment()) {
+	    								ResizedFileInfo rinfo = new ResizedFileInfo();
+	    								rinfo.setFileId(fileInfo.getFileId());
+	    								rinfo.setHeight(360);
+	    								rinfo.setWidth(360);
+	    								rinfo.setFilePath(resizedFilePath);
+	    								rinfo.setFileSize(imageInByte.length);
+	    								rinfo.setContentType("image/png");
+	    								rinfo.setGeneratedTime(currentTime);
+	    								rfileInfos.add(rinfo);
+	    							}
 	    						}
 	    					}
 	    				}									
 	    			}
+	    			if (!rfileInfos.isEmpty()) {
+	    				new GenericInsertRecordBuilder().table(ModuleFactory.getResizedFilesModule().getTableName())
+	    				.fields(FieldFactory.getResizedFileFields())
+	    				.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
+	    				return rfileInfos.size();
+	    			}
 	    		}
+			return 0;
 	    	}
         
         private List<Long> getResizedEntries(List<Long> ids) throws Exception {

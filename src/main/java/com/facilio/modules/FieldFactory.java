@@ -3615,6 +3615,21 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getResizedFileFields() {
+        FacilioModule module = ModuleFactory.getResizedFilesModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("width", "WIDTH", module, FieldType.NUMBER));
+        fields.add(getField("height", "HEIGHT", module, FieldType.NUMBER));
+        fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));
+        fields.add(getField("fileSize", "FILE_SIZE", module, FieldType.NUMBER));
+        fields.add(getField("contentType", "CONTENT_TYPE", module, FieldType.STRING));
+        fields.add(getField("generatedTime", "GENERATED_TIME", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getZoneRelFields() {
         FacilioModule module = ModuleFactory.getZoneRelModule();
