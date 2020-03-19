@@ -304,12 +304,14 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					StringJoiner joiner = new StringJoiner(", ");
 					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
 					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
-					for (Long parentId : metric.getParentId()) {
+					if(metric.getParentId() != null) {
+						for (Long parentId : metric.getParentId()) {
 						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
 							continue;
 						}
 						ResourceContext resource = resourceMap.get(parentId);
 						joiner.add(resource.getName());
+						}
 					}
 					if(joiner.length() > 0) {
 						return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : (" @ "+DateTimeUtil.getDateTimeFormat("yyyy-MM-dd HH:mm").format(DateTimeUtil.getDateTime(metric.getPredictedTime()))))+")";
@@ -343,12 +345,14 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					StringJoiner joiner = new StringJoiner(", ");
 					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
 					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
-					for (Long parentId : metric.getParentId()) {
-						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
-							continue;
+					if(metric.getParentId() != null) {
+						for (Long parentId : metric.getParentId()) {
+							if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
+								continue;
+							}
+							ResourceContext resource = resourceMap.get(parentId);
+							joiner.add(resource.getName());
 						}
-						ResourceContext resource = resourceMap.get(parentId);
-						joiner.add(resource.getName());
 					}
 					if(joiner.length() > 0) {
 						return joiner.toString();
@@ -380,18 +384,20 @@ private long getAssetCategoryId(ReportYAxisContext yField, ReportMode mode, Repo
 				else {
 					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
 					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
-					for (Long parentId : metric.getParentId()) {
-						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
-							continue;
-						}
-						ResourceContext resource = resourceMap.get(parentId);
-						if(resource.getResourceTypeEnum() == ResourceType.ASSET) {
-							AssetContext asset = AssetsAPI.getAssetInfo(parentId);
-							//Assuming only one parentId -- temp
-							return asset.getCategory().getId();
-						}
-						else {
-							return -1;
+					if(metric.getParentId() != null) {
+						for (Long parentId : metric.getParentId()) {
+							if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
+								continue;
+							}
+							ResourceContext resource = resourceMap.get(parentId);
+							if(resource.getResourceTypeEnum() == ResourceType.ASSET) {
+								AssetContext asset = AssetsAPI.getAssetInfo(parentId);
+								//Assuming only one parentId -- temp
+								return asset.getCategory().getId();
+							}
+							else {
+								return -1;
+							}
 						}
 					}
 				}
