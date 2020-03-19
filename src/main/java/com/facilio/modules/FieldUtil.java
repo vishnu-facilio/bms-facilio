@@ -509,4 +509,25 @@ public class FieldUtil {
 				.filter(f -> !(f.getDataTypeEnum() != null && f.getDataTypeEnum().isMultiRecord()))
 				.collect(Collectors.toList());
 	}
+
+    public static List<FacilioField> getFieldsByAccessType(Long accessType, String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = modBean.getAllFields(moduleName);
+        if (accessType == null || accessType <= 0) {
+            throw new IllegalArgumentException("Invalid access type.");
+        }
+
+        List<FacilioField> selectedFields = new ArrayList<>();
+        for (FacilioField field: allFields) {
+            long fieldAccessType = field.getAccessType();
+            if (fieldAccessType < 0) {
+                fieldAccessType = 0;
+            }
+
+            if ((fieldAccessType & accessType) == accessType) {
+                selectedFields.add(field);
+            }
+        }
+        return selectedFields;
+    }
 }
