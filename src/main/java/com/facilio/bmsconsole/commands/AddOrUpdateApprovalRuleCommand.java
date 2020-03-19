@@ -69,6 +69,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             approvalStateFlow.setRuleType(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
             approvalStateFlow.setActivityType(EventType.FIELD_CHANGE);
             approvalStateFlow.setModule(module);
+            approvalStateFlow.setDefaltStateFlow(false);
             approvalStateFlow.setCriteria(approvalMeta.getCriteria());
             approvalStateFlow.setDefaultStateId(requested.getId());
             approvalStateFlow.setId(approvalMeta.getId());
