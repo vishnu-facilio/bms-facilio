@@ -35,11 +35,10 @@ public class DeviceUtil {
     }
 
     public static boolean processDevices(FacilioAgent agent, JSONObject payload) throws Exception {
-        LOGGER.info(" processing devices ");
         List<Device> devices = new ArrayList<>();
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
-
+            LOGGER.info("in device count "+devicesArray.size());
             if (devicesArray.isEmpty()) {
                 throw new Exception("Exception Occurred, Device data is empty");
             }
@@ -77,6 +76,7 @@ public class DeviceUtil {
                 device.setControllerProps(deviceJSON);
                 devices.add(device);
             }
+            LOGGER.info(" device processed +"+devices.size());
             return addDevices(devices);
         } else {
             throw new Exception("Exception occurred while processing device, data is missing from payload->" + payload);
@@ -95,10 +95,6 @@ public class DeviceUtil {
 
     public static boolean addDevices(List<Device> devices) throws Exception {
         if (devices != null && !devices.isEmpty()) {
-            /*FacilioChain chain = TransactionChainFactory.getAddDevicesChain();
-            FacilioContext context = chain.getContext();
-            context.put(AgentConstants.DATA, devices);
-            return chain.execute();*/
             FieldDeviceApi.addFieldDevices(devices);
             return true;
         }

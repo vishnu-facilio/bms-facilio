@@ -70,7 +70,8 @@ public class PointsUtil
         LOGGER.info(" processing point "+device.getControllerProps());
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
-            if (pointsJSON.size() == 0) {
+            long incommingCount = pointsJSON.size();
+            if (incommingCount == 0) {
                 throw new Exception(" pointJSON cant be empty");
             }
             List<Point> points = new ArrayList<>();
@@ -79,11 +80,8 @@ public class PointsUtil
                 pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
                 pointJSON.put(AgentConstants.DEVICE_ID, device.getId());
                 pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
-                LOGGER.info(" point json " + pointJSON);
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
-                    LOGGER.info("point made");
-                    LOGGER.info("point to json ->" + FieldUtil.getAsJSON(point));
                     if (point != null) {
                         if (point.getControllerId() > 0) {
                             point.setControllerId(-1);
@@ -97,15 +95,18 @@ public class PointsUtil
             if (points.size() == 0) {
                 throw new Exception(" points to cadd can't be empty");
             }
-            LOGGER.info(" points processed " + points.size());
+            long pointsToBeAdded = points.size();
             //TODO try bulk insert first
+            long pointsAdded = 0;
             for (Point point : points) {
                 boolean pointEntry = PointsAPI.addPoint(point); //TODO make it bulk add
                 if (!pointEntry) {
                     LOGGER.info("Exception while adding point," + point.toJSON());
+                }else {
+                    pointsAdded++;
                 }
-                LOGGER.info("point add status -> " + pointEntry); //TODO
             }
+            LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->"+incommingCount+"  POINTSTOBEADDED->"+pointsToBeAdded+"  POINTSADDED->"+pointsAdded);
         }else {
             LOGGER.info(" Exception occurred, pointsData missing from payload -> "+payload);
         }

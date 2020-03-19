@@ -18,22 +18,22 @@ public class EditPointCommand extends FacilioCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(EditPointCommand.class.getName());
 
-    private static boolean containdAndNotNull(Context context, String key) {
+    private static boolean containsAndNotNull(Context context, String key) {
         return ((context != null) && (key != null) && context.containsKey(key) && (context.get(key) != null));
     }
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if (containdAndNotNull(context, FacilioConstants.ContextNames.TO_UPDATE_MAP)) {
+        if (containsAndNotNull(context, FacilioConstants.ContextNames.TO_UPDATE_MAP)) {
             boolean alterChildtable = false;
             int rowsUpdated = 0;
-            if (containdAndNotNull(context, AgentConstants.UPDATE_CHILD)) {
+            if (containsAndNotNull(context, AgentConstants.UPDATE_CHILD)) {
                 alterChildtable = (boolean) context.get(AgentConstants.UPDATE_CHILD);
             }
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(ModuleFactory.getPointModule().getTableName())
                     .fields(FieldFactory.getPointFields());
-            if (containdAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
+            if (containsAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
                 builder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
                 LOGGER.info(" to update map " + (Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
                 rowsUpdated = builder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
@@ -42,7 +42,7 @@ public class EditPointCommand extends FacilioCommand {
             } else {
                 throw new Exception("criteris missing");
             }
-            if (alterChildtable && containdAndNotNull(context, AgentConstants.CONTROLLER_TYPE)) {
+            if (alterChildtable && containsAndNotNull(context, AgentConstants.CONTROLLER_TYPE)) {
                 rowsUpdated += updateChild(context, (FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
             }
             if (rowsUpdated > 0) {
@@ -56,7 +56,7 @@ public class EditPointCommand extends FacilioCommand {
     }
 
     private int updateChild(Context context, FacilioControllerType controllerType) throws Exception {
-        if (containdAndNotNull(context, FacilioConstants.ContextNames.TO_UPDATE_CHILD_MAP) && containdAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
+        if (containsAndNotNull(context, FacilioConstants.ContextNames.TO_UPDATE_CHILD_MAP) && containsAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
             GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                     .table(PointsAPI.getPointModule(controllerType).getTableName())
                     .fields(PointsAPI.getChildPointFields(controllerType))

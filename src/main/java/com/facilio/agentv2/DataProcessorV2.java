@@ -43,12 +43,10 @@ public class DataProcessorV2
     private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
 
     public DataProcessorV2(long orgId, String orgDomainName) {
-        LOGGER.info(" loading newProcessor ");
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         try {
             agentUtil = new AgentUtilV2(orgId, orgDomainName);
-            LOGGER.info("done loading newProcessor ");
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
@@ -58,7 +56,6 @@ public class DataProcessorV2
     public boolean processRecord(JSONObject payload) {
         boolean processStatus = false;
         try {
-            LOGGER.info(" processing in processorV2 " + payload);
             if (payload.containsKey("clearAgentCache")) {
                 agentUtil.getAgentMap().clear();
                 LOGGER.info(" agent cache cleared ->" + agentUtil.getAgentMap());
@@ -86,7 +83,6 @@ public class DataProcessorV2
             if(publishType == null){
                 throw new Exception(" publish type cant be null "+JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
             }
-            LOGGER.info(" publish type for this record is " + publishType.name());
 
             markMetrices(agent,payload);
             switch (publishType) {
@@ -125,7 +121,6 @@ public class DataProcessorV2
                     Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     if (timeseriesController != null) {
-                        LOGGER.info(" timeseries controller found ");
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
                     } else {
                         LOGGER.info(" timeseries controller not found ");
@@ -173,7 +168,6 @@ public class DataProcessorV2
                         Controller controller = controllerUtil.getCachedController(controllerJSON, controllerType);
                         //Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON, agentId, controllerType);
                         if (controller != null) {
-                            LOGGER.info(" goet controller " + controller.getId());
                             return controller;
                         } else {
                             throw new Exception("No controller found " + controllerJSON);
@@ -222,7 +216,6 @@ public class DataProcessorV2
 
     private boolean processDevices(FacilioAgent agent, JSONObject payload) {
         try {
-            LOGGER.info(" processing device ");
             return DeviceUtil.processDevices(agent, payload);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while processing device", e);
@@ -244,14 +237,12 @@ public class DataProcessorV2
             if (controllerJson == null || controllerJson.isEmpty()) {
                 throw new Exception("Exception occurred, Controller identifier can't be null ->" + payload);
             }
-            LOGGER.info(" controller json "+controllerJson);
             if( ! payload.containsKey(AgentConstants.CONTROLLER_TYPE)){
                 throw new Exception("payload missing controllerType ");
             }
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
             Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(type,controllerJson));
             if (device != null) {
-                LOGGER.info(" device not null and so processing point");
                 return PointsUtil.processPoints(payload, device);
             } else {
                 throw new Exception("Exception occurred, Controller obtained in null");
@@ -266,10 +257,7 @@ public class DataProcessorV2
     private boolean processAgent(JSONObject payload, FacilioAgent agent) {
         try {
             if (agentUtil.processAgent(payload, agent)) {
-                LOGGER.info(" Agent processing successful ");
                 return true;
-            } else {
-                LOGGER.info(" Agent processing failed");
             }
         } catch (Exception e) {
             LOGGER.info("Exeception while processing agent", e);
@@ -278,7 +266,6 @@ public class DataProcessorV2
     }
 
     private boolean processTimeSeries(JSONObject payload, Controller controller, boolean isTimeSeries) {
-        LOGGER.info(" calling timeseries processer chain v2");
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
@@ -341,7 +328,6 @@ public class DataProcessorV2
                 context.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
             }
             chain.execute();
-            LOGGER.info(" done processes custom data command ");
             return true;
         } catch (Exception e) {
             LOGGER.info("Exception while processing timeseries data ", e);
@@ -364,12 +350,9 @@ public class DataProcessorV2
     public ControllerUtilV2 getControllerUtil(long agentId){
         ControllerUtilV2 cU;
         if(agentIdControllerUtilMap.containsKey(agentId)){
-            LOGGER.info(" returning existing controllerUtil");
             cU = agentIdControllerUtilMap.get(agentId);
         }else {
-            LOGGER.info(" creating new controllerUtil");
             cU = new ControllerUtilV2(agentId,orgId);
-            LOGGER.info(" created new controllerUtil");
             agentIdControllerUtilMap.put(agentId,cU);
         }
         return cU;
