@@ -4020,13 +4020,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
 			c.addCommand(new AddAttachmentRelationshipCommand());
-			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 							.addCommand(new AddNdaForVisitorLogCommand())
+							.addCommand(new GenerateQrInviteUrlCommand())
 							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
 							.addCommand(new VisitorFaceRecognitionCommand()));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());

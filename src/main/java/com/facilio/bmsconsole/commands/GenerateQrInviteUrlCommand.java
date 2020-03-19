@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.pdf.PdfUtil;
 
 
-public class GenerateQrInviteUrlCommand extends FacilioCommand {
+public class GenerateQrInviteUrlCommand extends FacilioCommand implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

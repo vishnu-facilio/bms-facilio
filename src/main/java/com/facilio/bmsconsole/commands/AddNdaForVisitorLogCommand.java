@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -12,11 +13,12 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
 
-public class AddNdaForVisitorLogCommand extends FacilioCommand implements PostTransactionCommand{
+public class AddNdaForVisitorLogCommand extends FacilioCommand implements Serializable{
 
-	Context context = null;
+	private static final long serialVersionUID = 1L;
+
 	@Override
-	public boolean postExecute() throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<VisitorLoggingContext> visitorLoggings = (List<VisitorLoggingContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(visitorLoggings)) {
@@ -28,14 +30,7 @@ public class AddNdaForVisitorLogCommand extends FacilioCommand implements PostTr
 				}
 			}
 		}
-		
-		return false;
-	}
-
-	@Override
-	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		this.context = context;
+	
 		return false;
 	}
 
