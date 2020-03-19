@@ -44,7 +44,7 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 
 			StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(facilioModule);
 			if (defaultStateFlow == null) {
-				stateFlow.setDefaltStateFlow(false);
+				stateFlow.setDefaltStateFlow(true);
 			}
 			else if (defaultStateFlow.getId() == stateFlow.getId()) {
 				stateFlow.setDefaltStateFlow(true);
