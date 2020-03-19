@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -38,10 +39,18 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                         approvalMeta.setApprovalOrder(stateTransitionRule.getApprovalOrder());
                         approvalMeta.setAllApprovalRequired(stateTransitionRule.getAllApprovalRequired());
                         approvalMeta.setApprovalForm(stateTransitionRule.getForm());
+                        if (stateTransitionRule.getActions() == null) {
+                            List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(stateTransitionRule.getId());
+                            stateTransitionRule.setActions(actions);
+                        }
                         approvalMeta.setApproveActions(stateTransitionRule.getActions());
                     }
                     else if (rule.getName().equals("Reject")) {
                         approvalMeta.setRejectForm(stateTransitionRule.getForm());
+                        if (stateTransitionRule.getActions() == null) {
+                            List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(stateTransitionRule.getId());
+                            stateTransitionRule.setActions(actions);
+                        }
                         approvalMeta.setRejectActions(stateTransitionRule.getActions());
                     }
                 }

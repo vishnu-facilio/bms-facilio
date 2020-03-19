@@ -117,7 +117,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
 
             ApprovalStateTransitionRuleContext transitionRuleContext =
                     getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
-                            approvalMeta.getAllApprovalRequired(), approvalMeta.getApprovalForm(),
+                            approvalMeta.isAllApprovalRequired(), approvalMeta.getApprovalForm(),
                             "Approve", module, approvalMeta.getApproveActions(), approvalStateFlowId);
             transitionRuleContext.setFromStateId(requested.getId());
             transitionRuleContext.setToStateId(exitStatus.getId());

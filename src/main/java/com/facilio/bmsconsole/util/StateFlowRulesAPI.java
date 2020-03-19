@@ -52,10 +52,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<Long> formIds = null;
 			for (WorkflowRuleContext workflowRuleContext : list) {
+				if (workflowRuleContext instanceof ApproverWorkflowRuleContext) {
+					ApproverWorkflowRuleContext approverWorkflowRuleContext = (ApproverWorkflowRuleContext) workflowRuleContext;
+					approverWorkflowRuleContext.setApprovers(SharingAPI.getSharing(approverWorkflowRuleContext.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
+				}
+
 				if (workflowRuleContext instanceof StateflowTransitionContext) {
 					StateflowTransitionContext stateFlowRule = (StateflowTransitionContext) workflowRuleContext;
-					stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
-
 					List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
 					stateFlowRule.setValidations(validations);
 
