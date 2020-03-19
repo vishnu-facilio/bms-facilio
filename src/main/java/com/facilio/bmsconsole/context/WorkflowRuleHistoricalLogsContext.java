@@ -16,6 +16,7 @@ public class WorkflowRuleHistoricalLogsContext {
 	private LogState logState;
 	private long calculationStartTime;
 	private long calculationEndTime;
+	private String errorMessage;
 	
 	public long getId() {
 		return id;
@@ -107,6 +108,15 @@ public class WorkflowRuleHistoricalLogsContext {
 	public void setCalculationEndTime(long calculationEndTime) {
 		this.calculationEndTime = calculationEndTime;
 	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	public enum Status {
 		
 		IN_PROGRESS(1),

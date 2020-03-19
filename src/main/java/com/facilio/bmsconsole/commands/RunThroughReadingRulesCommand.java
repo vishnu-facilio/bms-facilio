@@ -49,12 +49,12 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		}
 		
 		if (id == -1 || range == null || range.getStartTime() == -1 || range.getEndTime() == -1) {
-			throw new IllegalArgumentException("In sufficient params for running Alarm Rules for historical data");
+			throw new IllegalArgumentException("In sufficient params for running historical reading rule");
 		}
 		
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
 		if (rule == null || !(rule instanceof ReadingRuleContext)) {
-			throw new IllegalArgumentException("Invalid Alarm rule id for running through historical data");
+			throw new IllegalArgumentException("Invalid alarm rule id for running through historical data");
 		}
 		
 		List<Long> finalResourceIds = new ArrayList<Long>();
@@ -82,9 +82,9 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				}
 			}
 		}
-		else
+		if(finalResourceIds == null || finalResourceIds.isEmpty())
 		{
-			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
+			throw new Exception("Not a valid Inclusion/Exclusion of Resources for the given rule ");
 		}
 		
 		if(isScaledFlow)

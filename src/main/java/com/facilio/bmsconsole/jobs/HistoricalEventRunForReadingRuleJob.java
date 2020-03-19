@@ -65,6 +65,7 @@ public class HistoricalEventRunForReadingRuleJob extends FacilioJob {
 		}
 		catch(Exception historicalRuleException) {
 			try {
+				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 				LOGGER.error("Error occurred while doing Historical Event Rule Calculation Job" +historicalRuleException.toString());
 				throw historicalRuleException;			
 			}

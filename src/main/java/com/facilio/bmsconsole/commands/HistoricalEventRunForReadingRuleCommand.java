@@ -70,6 +70,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	private Long jobId;
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
+	boolean isManualFailed = false;
 	
 	@Override
 	public boolean executeCommand(Context jobContext) throws Exception {
@@ -105,7 +106,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				return false;
 			}
 
-			LOGGER.info("Historical Rule Job Started for JobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " at the JobStartTime: "+ jobStartTime);	
+			LOGGER.info("Historical Event Rule Job started for jobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " between "+ startTime +" and "+endTime+" with the jobtriggeredtime at: "+ jobStartTime);	
 			boolean isFirstIntervalJob = false;
 			boolean isLastIntervalJob = false;
 			
@@ -141,6 +142,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			if (fields != null) {
 				currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 			}
+			
 			
 			Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 			if (currentRDMList != null && !currentRDMList.isEmpty()) {
@@ -267,10 +269,22 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
 			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
 			LOGGER.log(Level.SEVERE, exceptionMessage);
-			if(workflowRuleHistoricalLogsContext != null)	{
+			
+			if(workflowRuleHistoricalLogsContext != null)	{				
+				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
+				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
+				
+				if(parentRuleResourceLoggerContext != null) {		
+					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());	
+					workflowRuleHistoricalLogsContext.setErrorMessage("Error propagated to the current Rule_Resource Parent Job");
+				}
+				if(exceptionMessage != null && isManualFailed) {
+					workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
+				}
+				
 				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
 			}
-			else {
+			else  {
 				LOGGER.severe("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
 			}	
 			
@@ -417,6 +431,10 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	}
 	
 	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId) throws Exception {
+		return getSupportingData(fields, startTime, endTime, resourceId, true);
+	}
+	
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, boolean canConstructErrorMessage) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
@@ -466,28 +484,33 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					}
 					supportingValues.put(rdmKey, rdms);
 				}
-				else {
-					selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-										.select(selectFields)
-										.module(valField.getModule())
-										.beanClass(ReadingContext.class)
-										.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), PickListOperators.IS))
-										.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), DateOperators.IS_BEFORE))
-										.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
-										.orderBy("TTIME DESC")
-										.limit(1)
-										;
-					values = selectBuilder.get();
-					ReadingDataMeta rdm = null;
-					if (values != null && !values.isEmpty()) {
-						rdm = getRDM(values.get(0), valField);
+				else {	
+					if(canConstructErrorMessage){
+						isManualFailed = true;
+						supportingValues.put(rdmKey, null);
+						throw new Exception("Data is not present for the supporting field (" + field.getField().getDisplayName() + ") for the above mentioned date interval");				
 					}
-					else {
-						rdm = ReadingsAPI.getReadingDataMeta(parentId, valField);
-					}
-					if (rdm != null) {
-						supportingValues.put(rdmKey, Collections.singletonList(rdm));
-					}
+//					selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+//										.select(selectFields)
+//										.module(valField.getModule())
+//										.beanClass(ReadingContext.class)
+//										.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), PickListOperators.IS))
+//										.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), DateOperators.IS_BEFORE))
+//										.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
+//										.orderBy("TTIME DESC")
+//										.limit(1)
+//										;
+//					values = selectBuilder.get();
+//					ReadingDataMeta rdm = null;
+//					if (values != null && !values.isEmpty()) {
+//						rdm = getRDM(values.get(0), valField);
+//					}
+//					else {
+//						rdm = ReadingsAPI.getReadingDataMeta(parentId, valField);
+//					}
+//					if (rdm != null) {
+//						supportingValues.put(rdmKey, Collections.singletonList(rdm));
+//					}
 				}
 			}
 		}
@@ -538,11 +561,11 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	{
 		Map<String, List<ReadingDataMeta>> extendedSupportFieldsRDM = null;
 		if (fields != null && !fields.isEmpty()) {
-			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
+			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, false);
 		}	
 		Map<String, List<ReadingDataMeta>> extendedCurrentRDMList = null;
 		if (fields != null) {
-			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
+			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId, false);
 		}
 		
 		Map<String, List<ReadingDataMeta>> extendedCurrentFields = extendedSupportFieldsRDM;

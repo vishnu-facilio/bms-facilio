@@ -4023,6 +4023,7 @@ public class FieldFactory {
         fields.add(getField("splitEndTime", "SPLIT_END_TIME", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("logState", "LOG_STATE", module, FieldType.NUMBER));
+        fields.add(getField("errorMessage", "ERROR_MESSAGE", module, FieldType.STRING));
         fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
         fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
         return fields;
