@@ -151,6 +151,24 @@ public class RESTAPIHandler {
             context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, includeParentFilter);
         }
 
+        boolean overrideViewOrderBy = params.get("overrideViewOrderBy") == null ? false : (Boolean) params.get("overrideViewOrderBy");
+        Object orderBy = params.get("orderBy");
+        Object orderByType = params.get("orderType");
+
+        if (overrideViewOrderBy && orderBy != null) {
+            JSONObject sorting = new JSONObject();
+            sorting.put("orderBy", orderBy);
+            sorting.put("orderType", orderByType);
+            context.put(FacilioConstants.ContextNames.SORTING, sorting);
+            context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+        }
+
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", params.get("page"));
+        pagination.put("perPage", params.get("perPage"));
+
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+
         nonTransactionChain.execute();
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);

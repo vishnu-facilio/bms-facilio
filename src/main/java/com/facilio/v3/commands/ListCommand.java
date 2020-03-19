@@ -13,7 +13,9 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ListCommand extends FacilioCommand {
     private FacilioModule module;
@@ -28,10 +30,6 @@ public class ListCommand extends FacilioCommand {
         String moduleName = module.getName();
         List<FacilioField> fields = modBean.getAllFields(moduleName);
 
-        //view criteria
-        //search criteria
-        //filter criteria
-
         SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder()
                 .module(module)
                 .select(fields);
@@ -39,7 +37,11 @@ public class ListCommand extends FacilioCommand {
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         Boolean includeParentCriteria = (Boolean) context.get(Constants.INCLUDE_PARENT_CRITERIA);
 
-        Criteria criteriaCommandResult = (Criteria) context.get(Constants.FILTER_CRITERIA);
+        Criteria beforeFetchCriteria = (Criteria) context.get(Constants.BEFORE_FETCH_CRITERIA);
+
+        if (beforeFetchCriteria != null) {
+            selectRecordsBuilder.andCriteria(beforeFetchCriteria);
+        }
 
         if (filterCriteria != null) {
             selectRecordsBuilder.andCriteria(filterCriteria);
@@ -55,6 +57,11 @@ public class ListCommand extends FacilioCommand {
             selectRecordsBuilder.andCriteria(searchCriteria);
         }
 
+        String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+        if (orderBy != null && !orderBy.isEmpty()) {
+            selectRecordsBuilder.orderBy(orderBy);
+        }
+
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         if (pagination != null) {
             int page = (int) pagination.get("page");
@@ -68,6 +75,13 @@ public class ListCommand extends FacilioCommand {
             selectRecordsBuilder.offset(offset);
             selectRecordsBuilder.limit(perPage);
         }
+
+        List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
+
+        Map<String, List<Map<String, Object>>> recordMap = new HashMap<>();
+        recordMap.put(moduleName, asProps);
+
+        context.put(Constants.RECORD_MAP, recordMap);
 
         return false;
     }
