@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
+import java.util.Map;
 
 public class FetchRuleSummaryCommand extends FacilioCommand {
     @Override
@@ -18,8 +19,9 @@ public class FetchRuleSummaryCommand extends FacilioCommand {
         }
         List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRules(id);
         AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getAlarmRulesList(id),readingAlarmRules);
-        long count=ReadingRuleAPI.getMatchedResourcesCount(alarmRule.getPreRequsite());
-		context.put(FacilioConstants.ContextNames.RULE_ASSET_COUNT,count);
+        Map<String,Object> resourcesWithCount=ReadingRuleAPI.getMatchedResourcesWithCount(alarmRule.getPreRequsite());
+		context.put(FacilioConstants.ContextNames.RULE_ASSET_COUNT,resourcesWithCount.get("count"));
+		context.put(FacilioConstants.ContextNames.ASSET_LIST,resourcesWithCount.get("resourceIds"));
         alarmRule.addAlarmRCARules(ReadingRuleAPI.getAlarmRCARules(id));
         context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 

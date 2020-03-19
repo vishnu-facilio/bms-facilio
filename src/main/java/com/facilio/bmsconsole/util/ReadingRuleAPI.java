@@ -882,11 +882,17 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return rcaMap;
 	}
-	public static long getMatchedResourcesCount(ReadingRuleContext readingRule) throws Exception{
+	public static Map<String,Object> getMatchedResourcesWithCount(ReadingRuleContext readingRule) throws Exception{
+		Map<String,Object> resourcesWithCount=new HashMap<>();
+		List<Long> matchedResourceIds=new ArrayList<>();
 		Map<Long, ResourceContext> matchedResources = new HashMap<>();
 			if (readingRule.getAssetCategoryId() == -1) {
 				long resourceId = readingRule.getResourceId();
 				matchedResources=Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId));
+				for(Long matchedResourceId:matchedResources.keySet())
+				{
+					matchedResourceIds.add(matchedResourceId);
+				}	
 			}
 			else {
 				List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
@@ -902,10 +908,14 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 									|| !readingRule.getExcludedResources().contains(asset.getId()))
 								) {
 							matchedResources.put(asset.getId(), asset);
+							matchedResourceIds.add(asset.getId());
 						}
 					}
 				}
 			}
-			return matchedResources.size();
+			resourcesWithCount.put("count",matchedResourceIds.size());
+			resourcesWithCount.put("resourceIds",matchedResourceIds);
+
+			return resourcesWithCount;
 		}
 }

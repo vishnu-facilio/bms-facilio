@@ -412,6 +412,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		fetchAlarmChain.execute(context);
 		alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		setResult("matchedassetcount", context.get(FacilioConstants.ContextNames.RULE_ASSET_COUNT));
+		setResult("matchedassetids", context.get(FacilioConstants.ContextNames.ASSET_LIST));
 		setResult("alarmRule", alarmRule);
 		return SUCCESS;
 	}
