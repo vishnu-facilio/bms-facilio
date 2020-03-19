@@ -690,6 +690,14 @@ public class V2ReportAction extends FacilioAction {
 		this.dateField = dateField;
 	}
 
+	private JSONArray having;
+	public JSONArray getHaving() {
+		return having;
+	}
+	public void setHaving(JSONArray having) {
+		this.having = having;
+	}
+
 	private JSONArray yField;
 	public JSONArray getyField() {
 		return yField;
@@ -822,7 +830,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put("limit", limit);
 		context.put("user-filters", userFilters);
 		context.put("chartState", chartState);
-		
+		context.put("having", having);
+
 		context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

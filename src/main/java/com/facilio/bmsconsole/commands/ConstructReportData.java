@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
+import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,25 +21,13 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFactory;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReportYAxisContext;
 
 ;
 
@@ -90,6 +80,7 @@ public class ConstructReportData extends FacilioCommand {
 		JSONArray groupByJSONArray = (JSONArray) context.get("group-by");
 		Criteria criteria = (Criteria) context.get("criteria");
 		JSONArray sortFields = (JSONArray) context.get("sort_fields");
+		JSONArray havingJSON = (JSONArray) context.get("having");
 		Integer sortOrder = null;
 		if (context.containsKey("sort_order")) {
 			sortOrder = ((Number) context.get("sort_order")).intValue();
@@ -100,10 +91,10 @@ public class ConstructReportData extends FacilioCommand {
 		}
 		
 		if (yAxisJSON == null || yAxisJSON.size() == 0) {
-			addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
+			addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit, havingJSON);
 		} else {
 			for (int i = 0; i < yAxisJSON.size(); i++) {
-				addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
+				addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit, havingJSON);
 			}
 		}
 		if(context.get("chartState")!= null) {
@@ -115,7 +106,7 @@ public class ConstructReportData extends FacilioCommand {
 		return false;
 	}
 	
-	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, JSONObject xAxisJSON, JSONObject dateField, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
+	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, JSONObject xAxisJSON, JSONObject dateField, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit, JSONArray havingJSON) throws Exception {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		
 		ReportFieldContext xAxis = new ReportFieldContext();
@@ -276,6 +267,25 @@ public class ConstructReportData extends FacilioCommand {
 				if (!c.isEmpty()) {
 					dataPointContext.setOtherCriteria(c);
 				}
+			}
+		}
+
+		if (havingJSON != null) {
+			List<ReportHavingContext> reportHavingList = FieldUtil.getAsBeanListFromJsonArray(havingJSON, ReportHavingContext.class);
+			if (CollectionUtils.isNotEmpty(reportHavingList)) {
+				for (ReportHavingContext reportHavingContext : reportHavingList) {
+					FacilioField field = null;
+					if (reportHavingContext.getFieldId() > 0) {
+						field = modBean.getField(reportHavingContext.getFieldId(), module.getName());
+					} else if (StringUtils.isNotEmpty(reportHavingContext.getFieldName())) {
+						field = ReportFactory.getReportField(reportHavingContext.getFieldName());
+					}
+					if (field == null) {
+						throw new IllegalArgumentException("Field cannot be empty in having");
+					}
+					reportHavingContext.setField(field);
+				}
+				dataPointContext.setHavingCriteria(reportHavingList);
 			}
 		}
 				

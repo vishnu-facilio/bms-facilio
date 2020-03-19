@@ -224,6 +224,14 @@ public class ReportDataPointContext {
 		this.dateFieldName = dateFieldName;
 	}
 
+	private List<ReportHavingContext> havingCriteria;
+	public List<ReportHavingContext> getHavingCriteria() {
+		return havingCriteria;
+	}
+	public void setHavingCriteria(List<ReportHavingContext> havingCriteria) {
+		this.havingCriteria = havingCriteria;
+	}
+
 	private ReportFieldContext dateField;
 	@JsonIgnore
 	public ReportFieldContext getDateField() {

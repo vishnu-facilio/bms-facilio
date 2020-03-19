@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.db.criteria.operators.*;
+import com.facilio.report.context.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -50,21 +51,9 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.report.context.ReadingAnalysisContext;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFilterContext;
-import com.facilio.report.context.ReportFolderContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportTemplateContext;
-import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.time.DateRange;
@@ -497,6 +486,13 @@ public class ReportUtil {
 							reportUserFilterContext.setField(modBean.getField(reportUserFilterContext.getFieldId()));
 						}
 					}
+
+					if (CollectionUtils.isNotEmpty(dataPoint.getHavingCriteria())) {
+						for (ReportHavingContext reportHavingContext : dataPoint.getHavingCriteria()) {
+							FacilioField field = getField(reportHavingContext.getFieldId(), xAxis.getModuleName(), reportHavingContext.getFieldName(), modBean);
+							reportHavingContext.setField(field);
+						}
+  					}
 
 					ReportFieldContext dateReportField = dataPoint.getDateField();
 					if (dataPoint.getDateFieldId() > 0 || dataPoint.getDateFieldName() != null) {

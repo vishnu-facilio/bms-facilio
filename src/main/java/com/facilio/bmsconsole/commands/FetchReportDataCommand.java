@@ -16,6 +16,7 @@ import java.util.Stack;
 import java.util.StringJoiner;
 import java.util.logging.Logger;
 
+import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,18 +50,9 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFilterContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportTemplateCategoryFilterContext;
-import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -412,7 +404,19 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 		}
 
-
+		if (CollectionUtils.isNotEmpty(dp.getHavingCriteria())) {
+			Criteria criteria = new Criteria();
+			for (ReportHavingContext reportHavingContext : dp.getHavingCriteria()) {
+				FacilioField selectField = reportHavingContext.getAggregateOperatorEnum().getSelectField(reportHavingContext.getField());
+				Condition condition = CriteriaAPI.getCondition(selectField, String.valueOf(reportHavingContext.getValue()), reportHavingContext.getOperatorEnum());
+				criteria.addAndCondition(condition);
+			}
+			String havingCondition = criteria.computeWhereClause();
+			if (CollectionUtils.isNotEmpty(criteria.getComputedValues())) {
+				throw new IllegalArgumentException("Having doesn't supported with operator");
+			}
+			newSelectBuilder.having(havingCondition);
+		}
 
 		if(report.getCriteria() != null) {
 			newSelectBuilder.andCriteria(report.getCriteria());
