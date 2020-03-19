@@ -92,7 +92,7 @@ public class RESTAPIHandler {
 
         FacilioContext context = nonTransactionChain.getContext();
 
-        context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 
         nonTransactionChain.execute();
 
@@ -210,6 +210,11 @@ public class RESTAPIHandler {
         }
 
         FacilioContext context = transactionChain.getContext();
+
+        Map<String, List> recordMap = new HashMap<>();
+        recordMap.put(moduleName, Arrays.asList(createObj));
+
+        context.put(Constants.RECORD_MAP, recordMap);
         transactionChain.execute();
     }
 
@@ -233,6 +238,11 @@ public class RESTAPIHandler {
         }
 
         FacilioContext context = transactionChain.getContext();
+
+        Map<String, List> recordMap = new HashMap<>();
+        recordMap.put(moduleName, Arrays.asList(updateObj));
+        context.put(Constants.RECORD_MAP, recordMap);
+
         transactionChain.execute();
     }
 
