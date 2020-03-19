@@ -31,14 +31,12 @@ public class MetricsApi {
     public static final String MODULE_NAME = FacilioConstants.ContextNames.AGENT_METRICS_MODULE;
 
     public static boolean logMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
-        LOGGER.info(" marking metrics ");
         Map<String, Object> metrics = getMetrics(agent, payload);
         if (metrics.isEmpty()) {
             addMetrics(agent, payload);
         } else {
             updateMetrics(agent, payload, metrics);
         }
-        LOGGER.info(" done marking metrics ");
         return false;
     }
 
@@ -155,7 +153,6 @@ public class MetricsApi {
     }
 
     private static boolean updateMetrics(FacilioAgent agent, JSONObject payload, Map<String, Object> metrics) throws Exception {
-        LOGGER.info(" updating agent metrics " + agent.getId() + " for metrics " + metrics);
         if (agent != null) {
             if ((agent.getId() > 0)) {
                 if (payload != null) {
@@ -185,7 +182,6 @@ public class MetricsApi {
     }
 
     private static boolean addMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
-        LOGGER.info(" adding metrics ");
         if (agent != null) {
             if ((agent.getId() > 0)) {
                 if (payload != null) {

@@ -16,10 +16,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -337,5 +334,19 @@ public class IotMessageApiV2 {
         }
         LOGGER.info(" iotData ids "+ids);
         return ids;
+    }
+
+    public static long getCount(Long agentId) throws Exception {
+        FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
+        List<Long> iotDataIds = getIotDataIds(agentId);
+        LOGGER.info("iot data ids "+iotDataIds);
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(iotMessageModule.getTableName())
+                .select(new ArrayList<>())
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(iotMessageModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishMessageParentIdField(iotMessageModule),iotDataIds,NumberOperators.EQUALS));
+        List<Map<String, Object>> result = selectRecordBuilder.get();
+        LOGGER.info(" query "+selectRecordBuilder.toString());
+        return (long) result.get(0).get(AgentConstants.ID);
     }
 }

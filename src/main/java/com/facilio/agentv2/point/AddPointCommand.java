@@ -21,7 +21,6 @@ public class AddPointCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" in add points command and context is " + context.keySet());
         Point point = (Point) context.get(FacilioConstants.ContextNames.RECORD);
         point.setCreatedTime(System.currentTimeMillis());
         JSONObject toInsertMap = point.getPointJSON();
@@ -41,7 +40,6 @@ public class AddPointCommand extends FacilioCommand {
 
     private boolean addChildPoint(Point point) throws Exception {
         JSONObject toInsertMap = point.getChildJSON();
-        LOGGER.info(" inserting child point for type " + point.getControllerType());
         return addPoint(PointsAPI.getPointModule(point.getControllerType()), PointsAPI.getChildPointFields(point.getControllerType()), toInsertMap) > 0;
         /*switch (point.getControllerType()){
             case MODBUS_IP:
@@ -69,7 +67,6 @@ public class AddPointCommand extends FacilioCommand {
     }
 
     private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception {
-        LOGGER.info("point json " + toInsertMap);
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
         return builder.insert(toInsertMap);
     }

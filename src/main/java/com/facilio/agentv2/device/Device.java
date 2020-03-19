@@ -18,7 +18,7 @@ public class Device
     @JsonInclude
     private JSONObject controllerProps;
     @JsonInclude
-    private Long createdTime;
+    private long createdTime;
 
     @JsonInclude
     private String identifier;
@@ -87,8 +87,8 @@ public class Device
     public void setName(String name) { this.name = name; }
 
 
-    public Long getCreatedTime() { return createdTime; }
-    public void setCreatedTime(Long createdTime) { this.createdTime = createdTime; }
+    public long getCreatedTime() { return createdTime; }
+    public void setCreatedTime(long createdTime) { this.createdTime = createdTime; }
 
 
 

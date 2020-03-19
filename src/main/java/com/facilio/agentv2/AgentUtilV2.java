@@ -37,7 +37,7 @@ public class AgentUtilV2
             LOGGER.info("Exception occurred while getting pointsCountData",e);
         }
         overiewData.put("chartParams",MetricsApi.getMetricsGraphData(null));
-        overiewData.put(AgentConstants.INTEGRATIONS,2);
+        overiewData.put(AgentConstants.INTEGRATIONS,0);
         return overiewData;
     }
 

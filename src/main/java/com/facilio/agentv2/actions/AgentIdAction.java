@@ -350,6 +350,20 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getIotMessageCount(){
+        try{
+            long count = IotMessageApiV2.getCount(agentId);
+            setResult(AgentConstants.DATA,count);
+            ok();
+        }catch (Exception e){
+            LOGGER.info("Exception while getting iot message count",e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+
     public String getPointCount() {
         try {
             setResult(AgentConstants.DATA, PointsAPI.getPointsCountData(getAgentId()));

@@ -136,6 +136,12 @@
         <action name="getIotMessages" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessages">
         </action>
 
+        <action name="getIotMessage" class="com.facilio.agentv2.AgentAction" method="getIotMessage">
+        </action>
+
+        <action name="iotMessageCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessageCount">
+        </action>
+
 
         <action name="getPointCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getPointCount">
         </action>
@@ -150,7 +156,7 @@
         </action>
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
         </action>
-        <action name="addClient" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
+        <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
         </action>
         <action name="upgradeAgent" class="com.facilio.agentv2.actions.VersionLogAction" method="upgradeAgent">
         </action>

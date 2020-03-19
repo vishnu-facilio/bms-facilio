@@ -30,7 +30,7 @@ public class NiagaraPointContext extends Point {
     public JSONObject getChildJSON() {
         JSONObject niagaraPointJSON = new JSONObject();
         niagaraPointJSON.put(AgentConstants.ID,getId());
-        niagaraPointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
+        niagaraPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         niagaraPointJSON.put(AgentConstants.PATH,path);
         return niagaraPointJSON;
     }

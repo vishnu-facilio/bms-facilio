@@ -157,7 +157,6 @@ public class DataProcessorV2
     }
 
     private void markMetrices(FacilioAgent agent, JSONObject payload) {
-        LOGGER.info(" marking metrics "+agent.getName());
         try {
             MetricsApi.logMetrics(agent,payload);
         } catch (Exception e) {

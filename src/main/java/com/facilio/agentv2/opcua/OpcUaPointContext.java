@@ -63,7 +63,7 @@ public class OpcUaPointContext extends Point {
     public JSONObject getChildJSON() {
         JSONObject opcUsPointJSON = new JSONObject();
         opcUsPointJSON.put(AgentConstants.ID,this.getId());
-        opcUsPointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
+        opcUsPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         opcUsPointJSON.put(AgentConstants.NAMESPACE,this.getNamespace());
         opcUsPointJSON.put(AgentConstants.IDENTIFIER,this.getIdentifier());
         return opcUsPointJSON;

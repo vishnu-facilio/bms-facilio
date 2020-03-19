@@ -35,10 +35,6 @@ public abstract class Point extends FacilioPoint{
         setSubscribed(false);
     }
 
-
-
-
-
     private long agentId;
     private long orgId;
     @JsonInclude
@@ -114,6 +110,10 @@ public abstract class Point extends FacilioPoint{
     public void setPseudo(boolean pseudo) { this.pseudo = pseudo; }
 
     public long getAgentId() { return agentId; }
+    public void setAgentId(long agentId) {
+        this.agentId = agentId;
+    }
+
 
     public long getOrgId() { return orgId; }
     public void setOrgId(long orgId) { this.orgId = orgId; }
