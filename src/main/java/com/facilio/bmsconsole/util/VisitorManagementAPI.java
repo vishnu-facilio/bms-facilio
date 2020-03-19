@@ -62,6 +62,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
@@ -729,6 +730,8 @@ public class VisitorManagementAPI {
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField ndaIdField = modBean.getField("nda", module.getName());
 			updateMap.put("nda", file);
+			updateMap.put("ndaContentType", FileFormat.PDF.getContentType());
+			
 			updatedfields.add(ndaIdField);
 			
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
