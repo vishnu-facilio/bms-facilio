@@ -4,10 +4,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GetFieldsByAccessType extends FacilioCommand {
@@ -27,24 +27,10 @@ public class GetFieldsByAccessType extends FacilioCommand {
             throw new IllegalArgumentException("Module is mandatory");
         }
 
-        List<FacilioField> allFields = modBean.getAllFields(moduleName);
-        if (accessType == null || accessType <= 0) {
-            throw new IllegalArgumentException("Invalid access type.");
-        }
-        
-        List<FacilioField> selectedFields = new ArrayList<>();
-        for (FacilioField field: allFields) {
-            long fieldAccessType = field.getAccessType();
-            if (fieldAccessType < 0) {
-                fieldAccessType = 0;
-            }
-
-            if ((fieldAccessType & accessType) == accessType) {
-                selectedFields.add(field);
-            }
-        }
+        List<FacilioField> selectedFields = FieldUtil.getFieldsByAccessType(accessType, moduleName);
 
         context.put(FacilioConstants.ContextNames.FIELDS, selectedFields);
         return false;
     }
+
 }

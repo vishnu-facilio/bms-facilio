@@ -3,7 +3,7 @@ package com.facilio.v3.V3Builder;
 import org.apache.commons.chain.Command;
 
 public interface ListBuilder {
-    ListBuilder criteria(Command criteriaCommand);
+    ListBuilder beforeFetch(Command criteriaCommand);
 
     ListBuilder afterFetch(Command afterFetchCommand);
 

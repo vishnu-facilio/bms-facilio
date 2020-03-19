@@ -11,9 +11,44 @@ public class V3Config implements V3Builder {
     private ListHandler listHandler;
     private SummaryHandler summaryHandler;
 
-    public V3Config(String modulename, Class bean) {
+    public SummaryHandler getSummaryHandler() {
+        return summaryHandler;
+    }
+
+    public void setSummaryHandler(SummaryHandler summaryHandler) {
+        this.summaryHandler = summaryHandler;
+    }
+
+    public ListHandler getListHandler() {
+        return listHandler;
+    }
+
+    public void setListHandler(ListHandler listHandler) {
+        this.listHandler = listHandler;
+    }
+
+    public DeleteHandler getDeleteHandler() {
+        return deleteHandler;
+    }
+
+    public void setDeleteHandler(DeleteHandler deleteHandler) {
+        this.deleteHandler = deleteHandler;
+    }
+
+    public UpdateHandler getUpdateHandler() {
+        return updateHandler;
+    }
+
+    public CreateHandler getCreateHandler() {
+        return createHandler;
+    }
+
+    public void setCreateHandler(CreateHandler createHandler) {
+        this.createHandler = createHandler;
+    }
+
+    public V3Config(Class bean) {
         this.beanClass = bean;
-        this.moduleName = modulename;
     }
 
     public UpdateHandler update() {
@@ -55,7 +90,23 @@ public class V3Config implements V3Builder {
         return this;
     }
 
-    private class CreateHandler implements CreateBuilder {
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public Class getBeanClass() {
+        return beanClass;
+    }
+
+    public void setBeanClass(Class beanClass) {
+        this.beanClass = beanClass;
+    }
+
+    public class CreateHandler implements CreateBuilder {
         private Command initCommand;
         private Command beforeSaveCommand;
         private Command afterSaveCommand;
@@ -102,21 +153,53 @@ public class V3Config implements V3Builder {
 
         @Override
         public ListBuilder list() {
-           return this.parent.list();
+            return this.parent.list();
         }
 
         @Override
         public SummaryBuilder summary() {
-           return this.parent.summary();
+            return this.parent.summary();
         }
 
         @Override
         public V3Builder build() {
-           return this.parent.build();
+            return this.parent.build();
+        }
+
+        public Command getInitCommand() {
+            return initCommand;
+        }
+
+        public void setInitCommand(Command initCommand) {
+            this.initCommand = initCommand;
+        }
+
+        public Command getBeforeSaveCommand() {
+            return beforeSaveCommand;
+        }
+
+        public void setBeforeSaveCommand(Command beforeSaveCommand) {
+            this.beforeSaveCommand = beforeSaveCommand;
+        }
+
+        public Command getAfterSaveCommand() {
+            return afterSaveCommand;
+        }
+
+        public void setAfterSaveCommand(Command afterSaveCommand) {
+            this.afterSaveCommand = afterSaveCommand;
+        }
+
+        public Command getAfterTransactionCommand() {
+            return afterTransactionCommand;
+        }
+
+        public void setAfterTransactionCommand(Command afterTransactionCommand) {
+            this.afterTransactionCommand = afterTransactionCommand;
         }
     }
 
-    private class UpdateHandler implements UpdateBuilder {
+    public class UpdateHandler implements UpdateBuilder {
         private Command initCommand;
         private Command beforeSaveCommand;
         private Command afterSaveCommand;
@@ -178,9 +261,40 @@ public class V3Config implements V3Builder {
         }
 
 
+        public Command getInitCommand() {
+            return initCommand;
+        }
+
+        public void setInitCommand(Command initCommand) {
+            this.initCommand = initCommand;
+        }
+
+        public Command getBeforeSaveCommand() {
+            return beforeSaveCommand;
+        }
+
+        public void setBeforeSaveCommand(Command beforeSaveCommand) {
+            this.beforeSaveCommand = beforeSaveCommand;
+        }
+
+        public Command getAfterSaveCommand() {
+            return afterSaveCommand;
+        }
+
+        public void setAfterSaveCommand(Command afterSaveCommand) {
+            this.afterSaveCommand = afterSaveCommand;
+        }
+
+        public Command getAfterTransactionCommand() {
+            return afterTransactionCommand;
+        }
+
+        public void setAfterTransactionCommand(Command afterTransactionCommand) {
+            this.afterTransactionCommand = afterTransactionCommand;
+        }
     }
 
-    private class DeleteHandler implements DeleteBuilder {
+    public class DeleteHandler implements DeleteBuilder {
         private Command initCommand;
         private Command beforeDeleteCommand;
         private Command afterDeleteCommand;
@@ -240,12 +354,44 @@ public class V3Config implements V3Builder {
         public V3Builder build() {
             return this.parent.build();
         }
+
+        public Command getInitCommand() {
+            return initCommand;
+        }
+
+        public void setInitCommand(Command initCommand) {
+            this.initCommand = initCommand;
+        }
+
+        public Command getBeforeDeleteCommand() {
+            return beforeDeleteCommand;
+        }
+
+        public void setBeforeDeleteCommand(Command beforeDeleteCommand) {
+            this.beforeDeleteCommand = beforeDeleteCommand;
+        }
+
+        public Command getAfterDeleteCommand() {
+            return afterDeleteCommand;
+        }
+
+        public void setAfterDeleteCommand(Command afterDeleteCommand) {
+            this.afterDeleteCommand = afterDeleteCommand;
+        }
+
+        public Command getAfterTransactionCommand() {
+            return afterTransactionCommand;
+        }
+
+        public void setAfterTransactionCommand(Command afterTransactionCommand) {
+            this.afterTransactionCommand = afterTransactionCommand;
+        }
     }
 
 
 
-    private class ListHandler implements ListBuilder {
-        private Command criteriaCommand;
+    public class ListHandler implements ListBuilder {
+        private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
 
@@ -254,8 +400,8 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public ListHandler criteria(Command criteriaCommand) {
-            this.criteriaCommand = criteriaCommand;
+        public ListBuilder beforeFetch(Command criteriaCommand) {
+            this.beforeFetchCommand = criteriaCommand;
             return this;
         }
 
@@ -289,9 +435,25 @@ public class V3Config implements V3Builder {
         public V3Builder build() {
             return this.parent.build();
         }
+
+        public Command getBeforeFetchCommand() {
+            return beforeFetchCommand;
+        }
+
+        public void setBeforeFetchCommand(Command beforeFetchCommand) {
+            this.beforeFetchCommand = beforeFetchCommand;
+        }
+
+        public Command getAfterFetchCommand() {
+            return afterFetchCommand;
+        }
+
+        public void setAfterFetchCommand(Command afterFetchCommand) {
+            this.afterFetchCommand = afterFetchCommand;
+        }
     }
 
-    private class SummaryHandler implements SummaryBuilder {
+    public class SummaryHandler implements SummaryBuilder {
         private Command afterFetchCommand;
         private V3Builder parent;
 
@@ -328,6 +490,14 @@ public class V3Config implements V3Builder {
         @Override
         public V3Builder build() {
             return this.parent.build();
+        }
+
+        public Command getAfterFetchCommand() {
+            return afterFetchCommand;
+        }
+
+        public void setAfterFetchCommand(Command afterFetchCommand) {
+            this.afterFetchCommand = afterFetchCommand;
         }
     }
 
