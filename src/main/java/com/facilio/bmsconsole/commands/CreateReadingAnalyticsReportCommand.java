@@ -15,8 +15,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -105,6 +108,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				
 				String name = getName(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
 				dataPoint.setName(name);
+				dataPoint.setResourceName(getResourceName(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context));
+				dataPoint.setAssetCategoryId(getAssetCategoryId(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context));
 				dataPoint.setBuildingId(metric.getBuildingId());
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
@@ -326,6 +331,82 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				return  yField.getLabel();
 		}
 		return null;
+	}
+	
+	private String getResourceName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+		
+		if (filterMode == null || filterMode == ReportFilterMode.NONE) {
+				if (mode == ReportMode.CONSOLIDATED) {
+					return " ";
+				}
+				else {
+					StringJoiner joiner = new StringJoiner(", ");
+					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
+					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
+					for (Long parentId : metric.getParentId()) {
+						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
+							continue;
+						}
+						ResourceContext resource = resourceMap.get(parentId);
+						joiner.add(resource.getName());
+					}
+					if(joiner.length() > 0) {
+						return joiner.toString();
+					}
+					else {
+						return " ";
+					}
+				}
+			}
+		
+		switch (filterMode) {
+			case NONE:
+				throw new RuntimeException("This is not supposed to happen!!");
+			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
+			case SPECIFIC_ASSETS_OF_CATEGORY:
+			case SPACE:
+			case SITE:
+				return  " ";
+		}
+		return null;
+	}
+	
+private long getAssetCategoryId(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+		
+		if (filterMode == null || filterMode == ReportFilterMode.NONE) {
+				if (mode == ReportMode.CONSOLIDATED) {
+					return -1;
+				}
+				else {
+					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
+					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
+					for (Long parentId : metric.getParentId()) {
+						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
+							continue;
+						}
+						ResourceContext resource = resourceMap.get(parentId);
+						if(resource.getResourceTypeEnum() == ResourceType.ASSET) {
+							AssetContext asset = AssetsAPI.getAssetInfo(parentId);
+							//Assuming only one parentId -- temp
+							return asset.getCategory().getId();
+						}
+						else {
+							return -1;
+						}
+					}
+				}
+			}
+		
+		switch (filterMode) {
+			case NONE:
+				throw new RuntimeException("This is not supposed to happen!!");
+			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
+			case SPECIFIC_ASSETS_OF_CATEGORY:
+			case SPACE:
+			case SITE:
+				return  -1;
+		}
+		return -1;
 	}
 	
 	private void setCriteria(ReportDataPointContext dataPoint, Map<String, FacilioField> fieldMap, ReadingAnalysisContext metric) {

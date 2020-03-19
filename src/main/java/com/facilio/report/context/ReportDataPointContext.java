@@ -43,6 +43,22 @@ public class ReportDataPointContext {
 		this.buildingId = buildingId;
 	}
 
+	private String resourceName;
+	public String getResourceName() {
+		return resourceName;
+	}
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+	
+	private long assetCategoryId=-1;
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	
 	private String name;
 	public String getName() {
 		return name;

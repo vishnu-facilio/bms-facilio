@@ -347,6 +347,14 @@ public class AssetAction extends FacilioAction {
 	public void setCategoryId(long categoryId) {
 		this.categoryId = categoryId;
 	}
+	
+	private List<Long> categoryIds;
+	public List<Long> getCategoryIds() {
+		return categoryIds;
+	}
+	public void setCategoryIds(List<Long> categoryIds) {
+		this.categoryIds = categoryIds;
+	}
 
 	private JSONObject reports;
 	public JSONObject getReports() {
@@ -557,6 +565,14 @@ public class AssetAction extends FacilioAction {
 		this.assetsReadings = assetsReadings;
 	}
 	
+	JSONObject assetCategoriesWithReadings;
+	public JSONObject getAssetCategoriesWithReadings() {
+		return assetCategoriesWithReadings;
+	}
+	public void setAssetCategoriesWithReadings(JSONObject assetCategoriesWithReadings) {
+		this.assetCategoriesWithReadings = assetCategoriesWithReadings;
+	}
+	
 	public String getReadingsWithAssets() throws Exception {
 		if (search == null || search.isEmpty()) {
 			assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, fieldsNotRequired != null && fieldsNotRequired);
@@ -569,6 +585,16 @@ public class AssetAction extends FacilioAction {
 		}
 		return SUCCESS;
   	}
+	
+	public String getReadingsWithAssetsForSpecificCategories() throws Exception {
+			assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds);
+		return SUCCESS;
+  	}
+	
+	public String getAssetCategoryWithReadings () throws Exception {
+			assetCategoriesWithReadings = AssetsAPI.getAssetCategoryWithReadings(buildingIds);
+		return SUCCESS;
+	}
 	
 	private Boolean fieldsNotRequired;
 	public Boolean getFieldsNotRequired() {

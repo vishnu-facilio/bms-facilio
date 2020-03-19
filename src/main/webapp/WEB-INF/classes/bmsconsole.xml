@@ -879,6 +879,20 @@
 				<param name="root">assetsReadings</param>
 			</result>
 		</action>
+		
+		<action name="getReadingsForSpecificAssetCategory" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="getReadingsWithAssetsForSpecificCategories">
+			<result name="success" type="json">
+				<param name="root">assetsReadings</param>
+			</result>
+		</action>
+		
+		<action name="getAssetCategoryWithReadings" class="com.facilio.bmsconsole.actions.AssetAction" 
+			method="getAssetCategoryWithReadings">
+			<result name="success" type="json">
+				<param name="root">assetCategoriesWithReadings</param>
+			</result>
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">
