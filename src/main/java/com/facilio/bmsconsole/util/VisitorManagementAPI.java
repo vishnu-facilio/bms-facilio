@@ -731,6 +731,8 @@ public class VisitorManagementAPI {
 			FacilioField ndaIdField = modBean.getField("nda", module.getName());
 			updateMap.put("nda", file);
 			updateMap.put("ndaContentType", FileFormat.PDF.getContentType());
+			updateMap.put("ndaFileName", "NDA_" + logId);
+			
 			
 			updatedfields.add(ndaIdField);
 			
