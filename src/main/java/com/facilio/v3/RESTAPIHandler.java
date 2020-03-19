@@ -33,7 +33,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO remove static methods
+//TODO remove static methods, instantiate as object, better when testing
 public class RESTAPIHandler {
     private static final Map<String, V3Config> MODULE_HANDLER_MAP = new HashMap<>();
 
@@ -92,7 +92,11 @@ public class RESTAPIHandler {
 
         FacilioContext context = nonTransactionChain.getContext();
 
+        context.put(FacilioConstants.ContextNames.ID, id);
+
         nonTransactionChain.execute();
+
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
         return null;
     }
