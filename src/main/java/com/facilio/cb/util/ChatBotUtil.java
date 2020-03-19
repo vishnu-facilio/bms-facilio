@@ -338,6 +338,48 @@ public class ChatBotUtil {
 		return null;
 	}
 	
+	public static List<ChatBotSessionConversation> getSessionConversationMapForConfirmationCard(Long sessionId,Long intentId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionConversationFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBSessionConversationModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentParamId"), "", CommonOperators.IS_NOT_EMPTY))
+				.orderBy("RESPONDED_TIME desc")
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<ChatBotSessionConversation> returnList = new ArrayList<>();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			Map<Long,ChatBotSessionConversation> sessionConversationMap = new HashMap<>();
+			
+			Map<Long, ChatBotIntentParam> intentParams = ChatBotUtil.getIntentParamsMap(intentId);
+			
+			for(ChatBotIntentParam intentParam :intentParams.values()) {
+				returnList.add(null);
+			}
+			
+			for(Map<String, Object> prop :props) {
+				ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(prop, ChatBotSessionConversation.class);
+				
+				if(!sessionConversationMap.containsKey(chatBotSessionConversation.getIntentParamId())) {
+					sessionConversationMap.put(chatBotSessionConversation.getIntentParamId(), chatBotSessionConversation);
+					chatBotSessionConversation.setIntentParam(intentParams.get(chatBotSessionConversation.getIntentParamId()));
+					
+					returnList.set(chatBotSessionConversation.getIntentParam().getLocalId()-1, chatBotSessionConversation);
+				}
+			}
+		}
+		return returnList;
+	}
+	
 	public static List<ChatBotIntentAction> getIntentActions(long intentId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getCBIntentActionFields();
@@ -560,16 +602,7 @@ public class ChatBotUtil {
 		JSONObject result = new JSONObject();
 		resArray.add(result);
 		
-		Map<Long, List<ChatBotSessionConversation>> conversationMap = ChatBotUtil.getSessionConversationMap(Collections.singletonList(session.getId()));
-		
-		List<ChatBotSessionConversation> conversations = conversationMap.get(session.getId());
-		
-		Map<Long, ChatBotIntentParam> intentParams = ChatBotUtil.getIntentParamsMap(session.getIntentId());
-		
-		for(ChatBotSessionConversation conversation :conversations) {
-			
-			conversation.setIntentParam(intentParams.get(conversation.getIntentParamId()));
-		}
+		List<ChatBotSessionConversation> conversations = ChatBotUtil.getSessionConversationMapForConfirmationCard(session.getId(),session.getIntentId());
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
 		

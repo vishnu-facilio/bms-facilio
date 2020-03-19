@@ -7885,8 +7885,8 @@ public class FieldFactory {
         fields.add(getField("mlType", "ML_TYPE", module, FieldType.NUMBER));
         fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField("localId", "LOCAL_ID", module, FieldType.NUMBER));
-        fields.add(getField("optional", "IS_OPTIONAL", module, FieldType.NUMBER));
-        fields.add(getField("editable", "IS_EDITABLE", module, FieldType.NUMBER));
+        fields.add(getField("optional", "IS_OPTIONAL", module, FieldType.BOOLEAN));
+        fields.add(getField("editable", "IS_EDITABLE", module, FieldType.BOOLEAN));
 
         return fields;
     }
