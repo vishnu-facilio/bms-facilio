@@ -53,6 +53,7 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 import io.sentry.SentryClient;
@@ -482,6 +483,7 @@ public class FacilioAuthAction extends FacilioAction {
 		String serviceurl = request.getParameter("serviceurl");
 		String isPortal = request.getParameter("isPortal");
 		String isDevice = request.getParameter("isDevice");
+		String currentOrg = request.getParameter("currentOrg");
 		boolean isPotalUser = false;
 		boolean isDeviceUser = false;
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
@@ -502,6 +504,10 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		token.setDomain(request.getServerName());
 		response.addCookie(token);
+		
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(currentOrg)) {
+			AuthenticationUtil.addDomainCookie(currentOrg, response);
+		}
 
 		try {
 			response.sendRedirect(serviceurl);

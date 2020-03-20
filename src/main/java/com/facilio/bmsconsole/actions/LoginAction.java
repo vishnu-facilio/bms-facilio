@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Inflater;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -89,6 +88,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.util.AuthenticationUtil;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
@@ -608,12 +608,7 @@ public class LoginAction extends FacilioAction {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
-		Cookie cookie = new Cookie("fc.currentOrg", getSwitchOrgDomain());
-		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
-		cookie.setPath("/");
-		cookie.setSecure(true);
-		cookie.setHttpOnly(true);
-		response.addCookie(cookie);
+		AuthenticationUtil.addDomainCookie(getSwitchOrgDomain(), response);
 
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;
