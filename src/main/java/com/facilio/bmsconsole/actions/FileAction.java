@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -190,11 +191,11 @@ public class FileAction extends FacilioAction {
 					}
 				}
 				else {
-					response.setStatus(404);
+					response.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
 				}
 			}
 		} else {
-			response.setStatus(304);
+			response.setStatus(HttpURLConnection.HTTP_NOT_MODIFIED);
 			return NONE;
 		}
 		throw new IllegalArgumentException("Cannot fetch file");

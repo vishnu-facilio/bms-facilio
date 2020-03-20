@@ -77,6 +77,9 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
 		long fileSize = file.length();
@@ -114,6 +117,9 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	
 	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();

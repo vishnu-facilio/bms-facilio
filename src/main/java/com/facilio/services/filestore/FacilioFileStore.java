@@ -146,7 +146,9 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
-
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
 		HttpUtil httpConn;
 
 			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");

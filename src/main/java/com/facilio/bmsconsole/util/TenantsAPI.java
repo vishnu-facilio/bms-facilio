@@ -1099,6 +1099,12 @@ public class TenantsAPI {
 		return empty;
 	}
 	
+	public static List<TenantContext> getAllTenantsForResource(long resourceId) throws Exception {
+		ResourceContext resource = ResourceAPI.getResource(resourceId);
+		long spaceId = resource.getResourceTypeEnum() == ResourceType.ASSET ? resource.getSpaceId() : resource.getId();
+		return getAllTenantsForSpace(Collections.singletonList(spaceId));
+	}
+	
 	public static List<TenantContext> getAllTenantsForSpace(Collection<Long> spaceIds) throws Exception {
 		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, true);
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {

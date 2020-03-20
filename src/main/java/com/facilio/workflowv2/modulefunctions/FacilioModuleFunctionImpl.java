@@ -571,7 +571,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		return view.getCriteria();
+		Criteria criteria = view.getCriteria();
+		if (criteria != null) {
+			return criteria.clone();
+		}
+		return null;
 	}
 
 }

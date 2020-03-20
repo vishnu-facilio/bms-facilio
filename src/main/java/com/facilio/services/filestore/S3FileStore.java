@@ -65,6 +65,9 @@ public class S3FileStore extends FileStore {
 	
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
 		long fileSize = file.length();
@@ -127,6 +130,9 @@ public class S3FileStore extends FileStore {
 	
 	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();
