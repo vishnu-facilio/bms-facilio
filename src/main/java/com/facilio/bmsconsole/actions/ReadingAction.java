@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -1165,14 +1166,14 @@ public class ReadingAction extends FacilioAction {
 		this.isScaledFlow = isScaledFlow;
 	}
 	
-	private List<Long> historicalReadingRules;
+	private List<Long> internalRuleIds;
 	
-	public List<Long> getHistoricalReadingRules() {
-		return historicalReadingRules;
+	public List<Long> getInternalRuleIds() {
+		return internalRuleIds;
 	}
 
-	public void setHistoricalReadingRules(List<Long> historicalReadingRules) {
-		this.historicalReadingRules = historicalReadingRules;
+	public void setInternalRuleIds(List<Long> internalRuleIds) {
+		this.internalRuleIds = internalRuleIds;
 	}
 
 	public String runThroughRule() throws Exception {
@@ -1213,7 +1214,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
 
-		for(long ruleId:historicalReadingRules)
+		for(long ruleId:internalRuleIds)
 		{
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
 			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
@@ -1221,6 +1222,19 @@ public class ReadingAction extends FacilioAction {
 		}	
 		setResult("success", "Historical rule evaluation in the given period has been started for all the given rules");	
 		return SUCCESS;	
+	}
+	
+	public String runRollUpFieldRule() throws Exception
+	{
+		RollUpFieldUtil.runInternalBulkRollUpFieldRules(internalRuleIds);
+		setResult("success", "Rollup Field bulk execution has been started for the given rules");	
+		return SUCCESS;	
+	}
+	
+	public String runRollUpFieldForModule() throws Exception {
+		RollUpFieldUtil.runRollUpFieldForModule(moduleName);
+		setResult("Module Data_Migration","Success");	
+		return SUCCESS;
 	}
 	
 	public String getWorkflowRuleParentLoggers() throws Exception {

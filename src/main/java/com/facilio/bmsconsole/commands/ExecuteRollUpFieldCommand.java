@@ -109,20 +109,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 		if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
 		{
 			try {
-				for(ReadingDataMeta rollUpData:rollUpFieldData) 
-				{			
-					FacilioField parentRollUpField = rollUpData.getField();
-					Map<String,Object> prop = new HashMap<String,Object>();
-					prop.put(parentRollUpField.getName(), rollUpData.getValue());
-					
-					UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-							.table(parentRollUpField.getModule().getTableName())
-							.module(parentRollUpField.getModule())
-							.fields(Collections.singletonList(parentRollUpField))
-							.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
-					
-					updateBuilder.updateViaMap(prop);
-				}	
+				RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);
 			}
 			catch(Exception e) {
 				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 

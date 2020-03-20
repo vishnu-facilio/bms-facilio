@@ -1821,8 +1821,15 @@
 		<action name="runHistoricalRule"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="runHistoricalRule">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		<action name="runRollUpFieldRule"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runRollUpFieldRule">
+		</action>
+		<action name="runRollUpFieldForModule"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runRollUpFieldForModule">
 		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"
@@ -5468,8 +5475,6 @@
 	</package>
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
-		<action name="runRollUpFieldMig" class="com.facilio.bmsconsole.actions.FloorAction" method="runRollUpFieldMig" />	
-		<action name="addRollUpFieldMig" class="com.facilio.bmsconsole.actions.FloorAction" method="addRollUpFieldMig" />	
 	</package>
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />

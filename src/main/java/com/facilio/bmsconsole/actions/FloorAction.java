@@ -112,12 +112,6 @@ public class FloorAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String runRollUpFieldMig() throws Exception {
-		RollUpFieldUtil.runMigForBulkRollUpField();
-		setResult("Data_Migration","Success");	
-		return SUCCESS;
-	}
-	
 	private File floorPlanImage;
 	private String floorPlanImageFileName;
 	private String floorPlanImageContentType;

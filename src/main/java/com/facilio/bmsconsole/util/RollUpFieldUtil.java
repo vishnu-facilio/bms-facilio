@@ -35,6 +35,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.FacilioTimer;
@@ -55,6 +56,37 @@ public class RollUpFieldUtil {
 		}
 		insertBuilder.save();
 	}
+	
+	public static void updateRollUpFieldParentDataFromRDM(List<ReadingDataMeta> rollUpFieldData) throws Exception {
+		
+		for(ReadingDataMeta rollUpData:rollUpFieldData) 
+		{			
+			FacilioField parentRollUpField = rollUpData.getField();
+			Map<String,Object> prop = new HashMap<String,Object>();
+			prop.put(parentRollUpField.getName(), rollUpData.getValue());
+			
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+					.table(parentRollUpField.getModule().getTableName())
+					.module(parentRollUpField.getModule())
+					.fields(Collections.singletonList(parentRollUpField))
+					.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
+			
+			updateBuilder.updateViaMap(prop);
+		}
+	}
+	
+	public static List<RollUpField> getRollUpFieldsByIds(List<Long> ids, boolean isFetchSubProps) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getRollUpFieldFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(FieldFactory.getRollUpFieldFields())
+			.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
+							
+		List<Map<String, Object>> props = selectBuilder.get();
+		return getRollUpFieldFromProps(props, isFetchSubProps);
+	}
 
 	public static List<RollUpField> getRollUpFieldsByChildModuleId(FacilioModule childModule, boolean isFetchSubProps) throws Exception {
 		
@@ -66,10 +98,10 @@ public class RollUpFieldUtil {
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), childModule.getExtendedModuleIds(), NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
-		return getRollUpFieldFromProps(props, childModule, isFetchSubProps);
+		return getRollUpFieldFromProps(props, isFetchSubProps);
 	}
 	
-	public static List<RollUpField> getRollUpFieldFromProps(List<Map<String, Object>> props, FacilioModule childModule, boolean isFetchSubProps) throws Exception {
+	public static List<RollUpField> getRollUpFieldFromProps(List<Map<String, Object>> props, boolean isFetchSubProps) throws Exception {
 		
 		if (props != null && !props.isEmpty()) {
 			
@@ -476,18 +508,23 @@ public class RollUpFieldUtil {
 		addRollUpField(rollUpFields);
 	}
 	
-	public static void runMigForBulkRollUpField() throws Exception{
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule baseSpaceModule = modBean.getModule("basespace");
-		
-		Map<String, Criteria> moduleCriteriaMap = new HashMap<String, Criteria>();
-		moduleCriteriaMap.put(baseSpaceModule.getName(), null);
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, baseSpaceModule.getName());
-		//context.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP, moduleCriteriaMap);
-		FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", context);
+	public static void runRollUpFieldForModule(String moduleName) throws Exception{
 
+		FacilioContext context = new FacilioContext();		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+//		Map<String, Criteria> moduleCriteriaMap = new HashMap<String, Criteria>();
+//		moduleCriteriaMap.put(moduleName, null);
+		
+		FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", context);
+	}
+	
+	public static void runInternalBulkRollUpFieldRules(List<Long> rollUpFieldRuleIds) throws Exception{	
+		if(rollUpFieldRuleIds != null && !rollUpFieldRuleIds.isEmpty()) 
+		{	
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS,rollUpFieldRuleIds);
+			FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", context);	
+		}
 	}
 }

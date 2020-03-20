@@ -45,10 +45,11 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 	public void execute(FacilioContext context) throws Exception {
 		
 		List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
-		List<RollUpField> triggeringChildFields = null;
+		List<RollUpField> triggeringChildFields = new ArrayList<RollUpField>();;
 			
 		try {				
 			Map<String, Criteria> moduleCriteriaMap = (Map<String, Criteria>) context.get(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP);
+			List<Long> rollUpFieldRuleIds = (List<Long>) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS);
 			if(moduleCriteriaMap == null || moduleCriteriaMap.isEmpty()) {
 				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 				if (moduleName == null || moduleName.isEmpty()) {
@@ -72,59 +73,20 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(moduleName);
 				
-					triggeringChildFields = new ArrayList<RollUpField>();
-					triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);
-					
-					HashMap<String, List<Long>> distinctChildGroupedIdsMap = new HashMap<String, List<Long>>();
-					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {	
-					LOGGER.info("Started OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildFieldsSize : " + triggeringChildFields.size());
-
-						for(RollUpField triggeringChildField:triggeringChildFields) 
-						{
-							int offsetCount = 0;	
-							while(!timedOut) 
-							{	
-								String key = constructChildFieldOffsetKey(triggeringChildField.getChildField().getId(), offsetCount);
-								if(offsetCount >= 10000) {
-									LOGGER.info(" FieldOffsetKey : "+ key + " triggeringChildFieldContext : " + triggeringChildField + " OrgId -- " +AccountUtil.getCurrentOrg().getOrgId());
-								}
-								
-								List<Long> triggerChildGroupedIds = distinctChildGroupedIdsMap.get(key);
-								if(triggerChildGroupedIds == null) {
-									triggerChildGroupedIds = RollUpFieldUtil.getDistinctChildModuleRecordIds(triggeringChildField, criteria, offsetCount);
-									distinctChildGroupedIdsMap.put(key, triggerChildGroupedIds);
-								}
-								if(triggerChildGroupedIds == null || triggerChildGroupedIds.isEmpty()) {
-									break;
-								}
-								
-								LOGGER.info(" TriggerChildGroupedIds OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildField : " + triggeringChildField + " offset : "  +offsetCount+ " triggerChildGroupedIds size " + triggerChildGroupedIds.size());
-								RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
-								offsetCount+=offsetLimit;							
-							}
-						}
-					}			
-				}	
-				
-				if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
-				{		
-					for(ReadingDataMeta rollUpData:rollUpFieldData) 
-					{			
-						FacilioField parentRollUpField = rollUpData.getField();
-						Map<String,Object> prop = new HashMap<String,Object>();
-						prop.put(parentRollUpField.getName(), rollUpData.getValue());
-						
-						UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-								.table(parentRollUpField.getModule().getTableName())
-								.module(parentRollUpField.getModule())
-								.fields(Collections.singletonList(parentRollUpField))
-								.andCondition(CriteriaAPI.getIdCondition(rollUpData.getReadingDataId(), parentRollUpField.getModule()));
-						
-						updateBuilder.updateViaMap(prop);
-					}	
-					LOGGER.info("Update done OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " rollUpFieldData : " + rollUpFieldData);
-				}
-			}			
+					triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);	
+					executeBulkUpdateForRollUpFields(triggeringChildFields, rollUpFieldData, criteria);
+				}						
+			}
+			else if(rollUpFieldRuleIds != null && !rollUpFieldRuleIds.isEmpty())
+			{
+				executeBulkUpdateForRollUpFields(RollUpFieldUtil.getRollUpFieldsByIds(rollUpFieldRuleIds, true), rollUpFieldData, null);
+			}
+			
+			if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
+			{		
+				RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);	
+				LOGGER.info("Update done OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " rollUpFieldData : " + rollUpFieldData);
+			}
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, "Error in ExecuteBulkRollUpFieldJob -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
@@ -141,6 +103,39 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 		LOGGER.info("ExecuteBulkRollUpFieldJob timed out!!");
 		timedOut = true;
 		super.handleTimeOut();
+	}
+	
+	private void executeBulkUpdateForRollUpFields(List<RollUpField> triggeringChildFields, List<ReadingDataMeta> rollUpFieldData, Criteria criteria) throws Exception 
+	{
+		HashMap<String, List<Long>> distinctChildGroupedIdsMap = new HashMap<String, List<Long>>();
+		if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) 
+		{	
+			LOGGER.info("Started OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildFieldsSize : " + triggeringChildFields.size());
+			for(RollUpField triggeringChildField:triggeringChildFields) 
+			{
+				int offsetCount = 0;	
+				while(!timedOut) 
+				{	
+					String key = constructChildFieldOffsetKey(triggeringChildField.getChildField().getId(), offsetCount);
+					if(offsetCount >= 10000) {
+						LOGGER.info(" FieldOffsetKey : "+ key + " triggeringChildFieldContext : " + triggeringChildField + " OrgId -- " +AccountUtil.getCurrentOrg().getOrgId());
+					}
+					
+					List<Long> triggerChildGroupedIds = distinctChildGroupedIdsMap.get(key);
+					if(triggerChildGroupedIds == null) {
+						triggerChildGroupedIds = RollUpFieldUtil.getDistinctChildModuleRecordIds(triggeringChildField, criteria, offsetCount);
+						distinctChildGroupedIdsMap.put(key, triggerChildGroupedIds);
+					}
+					if(triggerChildGroupedIds == null || triggerChildGroupedIds.isEmpty()) {
+						break;
+					}
+					
+					LOGGER.info(" TriggerChildGroupedIds OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " triggeringChildField : " + triggeringChildField + " offset : "  +offsetCount+ " triggerChildGroupedIds size " + triggerChildGroupedIds.size());
+					RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
+					offsetCount+=offsetLimit;							
+				}
+			}
+		}			
 	}
 
 }

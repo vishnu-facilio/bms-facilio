@@ -54,7 +54,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
 		if (rule == null || !(rule instanceof ReadingRuleContext)) {
-			throw new IllegalArgumentException("Invalid alarm rule id for running through historical data");
+			throw new IllegalArgumentException("Invalid alarm rule id to run through historical data");
 		}
 		
 		List<Long> finalResourceIds = new ArrayList<Long>();
