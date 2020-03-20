@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -88,7 +89,7 @@ public class GetWorkOrderRequestListCommand extends FacilioCommand {
 			builder.andCriteria(scopeCriteria);
 		}
 		
-		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+		if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
 			if(permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
@@ -189,7 +190,7 @@ public class GetWorkOrderRequestListCommand extends FacilioCommand {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 
-		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+		if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(workorderRequestModule.getName(),"read");
 			if(permissionCriteria != null) {
 				selectBuilder.andCriteria(permissionCriteria);

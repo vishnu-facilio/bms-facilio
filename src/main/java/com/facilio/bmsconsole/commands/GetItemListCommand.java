@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountConstants.UserType;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
@@ -75,7 +76,7 @@ public class GetItemListCommand extends FacilioCommand {
 			builder.andCustomWhere(
 					"(Item_Types.INDIVIDUAL_TRACKING = 0) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
 		} 
-		else if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+		else if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory",
 					"read");
 			if (permissionCriteria != null) {

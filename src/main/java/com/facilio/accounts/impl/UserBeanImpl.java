@@ -355,7 +355,7 @@ public class UserBeanImpl implements UserBean {
 		if (user.getAccessibleSpace() != null) {
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 		}
-		if(user.getUserType() == UserType.USER.getValue()) {
+		if(user.getAppDomain() != null && user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			if (user.getGroups() != null) {
 				addAccessibleTeam(user.getOuid(), user.getGroups());
 			}

@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -503,7 +504,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						builder.andCriteria(scopeCriteria);
 					}
 
-					if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
+					if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO && AccountUtil.getCurrentUser().getRole() != null) {
 						Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(), "read");
 						if (permissionCriteria != null) {
 							builder.andCriteria(permissionCriteria);

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -74,7 +75,7 @@ public class VendorPageFactory extends PageFactory{
 		tab2.addSection(tab2Sec3);
 		addRelatedListWidget(tab2Sec3, "insurance", vendor.getModuleId());
 		
-		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+		if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 
 			Section tab2Sec4 = page.new Section();
 			tab2.addSection(tab2Sec4);

@@ -21,6 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -1657,14 +1658,14 @@ public class DashboardUtil {
 						}
 					}
 				}
-				if(AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 					for (Long dashboardId : dashboardIds) {
 						dashboardList.add(dashboardMap.get(dashboardId));
 					}
 				}
 			}
 			else {
-				if(AccountUtil.getCurrentAccount().getUser().getUserType() != 2) { 
+				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) { 
 					dashboardList.addAll(dashboardMap.values());
 				}
 			}

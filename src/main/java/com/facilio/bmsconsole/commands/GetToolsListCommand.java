@@ -11,6 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.accounts.util.AccountConstants.UserType;
@@ -68,7 +69,7 @@ public class GetToolsListCommand extends FacilioCommand {
 		if (getCount) {
 			builder.setAggregation();
 		}
-		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()){
+		if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO){
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 			if (permissionCriteria != null) {
 				builder.innerJoin("Store_room").on("Tool.STORE_ROOM_ID = Store_room.ID");
