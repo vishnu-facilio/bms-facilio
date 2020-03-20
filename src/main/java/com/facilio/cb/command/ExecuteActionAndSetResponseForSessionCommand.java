@@ -43,22 +43,11 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 		session.setIntentId(intent.getId());
 		session.setIntent(intent);
 		
-		if(intent.getContextWorkflow() != null) {
-			
-			session.setState(State.WAITING_FOR_PARAMS.getIntVal());
-			
-			ChatBotUtil.addChatBotSession(session);
-			
-			ChatBotUtil.executeContextWorkflow(intent, session, context);
-			
-			return false;
-		}
+		session.setState(State.WAITING_FOR_PARAMS.getIntVal());
+		
+		ChatBotUtil.addChatBotSession(session);
 		
 		if(intent.isWithParams()) {
-			
-			session.setState(State.WAITING_FOR_PARAMS.getIntVal());
-			
-			ChatBotUtil.addChatBotSession(session);
 			
 			int requriedCount = ChatBotUtil.getRequiredParamCount(intent.getChatBotIntentParamList());
 			
@@ -107,7 +96,19 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			session.setRequiredParamCount(requriedCount);
 			session.setRecievedParamCount(recievedCount);
 			
-			if(recievedCount == requriedCount) {
+			ChatBotUtil.updateChatBotSession(session);
+		}
+		
+		if(intent.getContextWorkflow() != null) {
+			
+			ChatBotUtil.executeContextWorkflow(intent, session, context);
+			
+			return false;
+		}
+		
+		if(intent.isWithParams()) {
+			
+			if(session.getRecievedParamCount() >= session.getRequiredParamCount()) {
 				
 				if(intent.isConfirmationNeeded() && (session.isConfirmed() == null || !session.isConfirmed())) {
 					
@@ -117,7 +118,6 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 					
 					context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, chatBotSessionConversation);
 					
-					ChatBotUtil.updateChatBotSession(session);
 				}
 				else {
 					ChatBotUtil.executeIntentAction(session, intent, context);
@@ -145,7 +145,7 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			
 			session.setResponse(response.toJSONString());
 			
-			ChatBotUtil.addChatBotSession(session);
+			ChatBotUtil.updateChatBotSession(session);
 		}
 		
 		return false;

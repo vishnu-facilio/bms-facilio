@@ -23,22 +23,29 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 		
 		if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && intentParam != null) {
 			
-			ChatBotSessionParam sessionParam = ChatBotUtil.fetchSessionParam(chatBotSessionConversation.getSessionId(), intentParam.getId());
-			
-			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),null,null);
-			
-			JSONObject json = new JSONObject();
-			json.put(ChatBotConstants.CHAT_BOT_LABEL, sessionParam.getValue());
-			
-			newChatBotSessionConversation.setResponseString(json.toJSONString());
-			
-			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
-			
-			context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
-			
+			if(chatBotSessionConversation.getChatBotSession().getIntent().getContextWorkflow() != null) {
+				
+				ChatBotUtil.deleteSessionParam(intentParam.getId(), chatBotSessionConversation.getSessionId());
+				ChatBotUtil.executeContextWorkflow(chatBotSessionConversation.getChatBotSession().getIntent(), chatBotSessionConversation.getChatBotSession(), context);
+			}
+			else {
+				
+				ChatBotSessionParam sessionParam = ChatBotUtil.fetchSessionParam(chatBotSessionConversation.getSessionId(), intentParam.getId());
+				
+				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),null,null);
+				
+				JSONObject json = new JSONObject();
+				json.put(ChatBotConstants.CHAT_BOT_LABEL, sessionParam.getValue());
+				
+				newChatBotSessionConversation.setResponseString(json.toJSONString());
+				
+				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+				
+			}
 			chatBotSessionConversation.getChatBotSession().setState(ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal());
 			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
-				
+			
+			context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
 		}
 		return false;
 	}

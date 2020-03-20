@@ -22,6 +22,7 @@ import com.facilio.cb.context.ChatBotIntentInvokeSample;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.cb.context.ChatBotModel.App_Type;
+import com.facilio.cb.context.ChatBotSession.State;
 import com.facilio.cb.context.ChatBotModelVersion;
 import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.cb.context.ChatBotSession;
@@ -265,7 +266,19 @@ public class ChatBotUtil {
 		}
 		else if (value instanceof ChatBotExecuteContext) {
 			
-			ChatBotUtil.executeIntentAction(session, intent, context);
+			if(intent.isConfirmationNeeded() && (session.isConfirmed() == null || !session.isConfirmed())) {
+				
+				session.setState(State.WAITING_FOR_CONFIRMATION.getIntVal());
+				
+				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddConfirmationCBSessionConversationParams(session);
+				
+				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+				
+				ChatBotUtil.updateChatBotSession(session);
+			}
+			else {
+				ChatBotUtil.executeIntentAction(session, intent, context);
+			}
 		}
 		
 	}
@@ -1094,6 +1107,10 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		ChatBotSession session = getLastChatBotSession();
+		
+		if(session == null) {
+			return null;
+		}
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)

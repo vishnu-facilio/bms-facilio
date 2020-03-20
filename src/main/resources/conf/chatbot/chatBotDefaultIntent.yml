@@ -362,39 +362,39 @@
       mlType : 1
       localId : 2
       typeConfig : 1
-   #contextWorkflow :
-   #    isV2Script : true
-   #    workflowV2String : 'ChatBotAction test(Map data){
-   #                          if(data.woId == null) {
-   #                          
-   #                             db = {
-#								    criteria : [sourceType != 7],
-#								    limit : 10,
-#								    orderBy: "createdTime" desc
-#							    };
- #                               
- #                             	wos = WorkOrder().fetch(db);
-#                                
- #                               woMapList = [];
-  #                              
-   #                             for each index,wo in wos {
-    #                                woMap = {};
-     #                               woMap.id = wo.id;
-      #                              woMap.label = wo.subject;
-       #                             
-        #                            woMapList.add(woMap);
-#                                }
-#                                
-#                                return chatBot().param("woId","Select your workrequest",woMapList);
-#                             }
-#                             if(data.woId != null && data.note == null) {
-#                                return chatBot().param("note","Enter your note");
-#                             }
-#                             if(data.woId != null && data.note != null) {
-#                             
-#                                return chatBot().execute();
-#                             }
-#                           }' 
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.woId == null) {
+                             
+                                db = {
+								    criteria : [sourceType != 7],
+								    limit : 10,
+								    orderBy: "createdTime" desc
+							    };
+                                
+                              	wos = WorkOrder().fetch(db);
+                                
+                                woMapList = [];
+                               
+                                for each index,wo in wos {
+                                    woMap = {};
+                                    woMap.id = wo.id;
+                                    woMap.label = wo.subject;
+                                    
+                                    woMapList.add(woMap);
+                                }
+                                
+                                return chatBot().param("woId","Select your workrequest",woMapList);
+                             }
+                             if(data.woId != null && data.note == null) {
+                                return chatBot().param("note","Enter your note");
+                             }
+                             if(data.woId != null && data.note != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
    actions:
     - 
         action: 
@@ -479,6 +479,7 @@
    type: 1
    localId : 15
    withParams : true
+   editable : true
    params:
    -
       name : 'visitorType'
@@ -508,6 +509,8 @@
       mlType : 1
       localId : 4
       typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit email'
    -
       name : 'host'
       askAs : "Select host"
@@ -515,6 +518,8 @@
       mlType : 1
       localId : 5
       typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit host'
    -
       name : 'purpose'
       askAs : "Select purpose"
@@ -522,6 +527,8 @@
       mlType : 1
       localId : 6
       typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit purpose'
       
    contextWorkflow :
        isV2Script : true
