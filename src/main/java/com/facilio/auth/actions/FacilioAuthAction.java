@@ -358,7 +358,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				LOGGER.info("validateLogin() : appdomainName : " + appDomainName);
 				
-				authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), getAppDomain(), userAgent, userType,
+				authtoken = IAMUserUtil.verifyLoginPasswordv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType,
 							ipAddress);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
