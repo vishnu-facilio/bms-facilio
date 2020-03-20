@@ -99,20 +99,19 @@ public class S3FileStore extends FileStore {
 		long fileId = this.addFile(fileName, file, contentType);
 		
 		for (int resizeVal : resize) {
-			try {
+			ByteArrayInputStream bis = null;
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
 				if (contentType.contains("image/")) {
 					// Image resizing...
 					
 					FileInputStream fis = new FileInputStream(file);
 					BufferedImage imBuff = ImageIO.read(fis);
 					BufferedImage out = ImageScaleUtil.resizeImage(imBuff, resizeVal, resizeVal);
-					
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					ImageIO.write(out, "png", baos);
 					baos.flush();
 					byte[] imageInByte = baos.toByteArray();
 					baos.close();
-					ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
+					bis = new ByteArrayInputStream(imageInByte);
 					
 					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
 					
@@ -122,8 +121,13 @@ public class S3FileStore extends FileStore {
 			    	}
 				}
 		    } catch (Exception e) {
-		    	log.info("Exception occurred ", e);
+		    	log.error("Exception occurred ", e);
 		    }
+			finally {
+				if (bis != null) {
+					bis.close();
+				}
+			}
 		}
 		return fileId;
 	}
