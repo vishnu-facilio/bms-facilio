@@ -82,13 +82,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		
 		if(workflowRuleHistoricalLogsContext != null && workflowRuleHistoricalLogsContext.getStatusAsEnum() != null)
 		{
-			switch(workflowRuleHistoricalLogsContext.getStatusAsEnum()) {
-			case FAILED:
-				return false;
-			default:
-				break;
-			}
-
 			workflowRuleHistoricalLogsContext.setCalculationStartTime(jobStartTime);
 			Long startTime = workflowRuleHistoricalLogsContext.getSplitStartTime();
 			Long endTime = workflowRuleHistoricalLogsContext.getSplitEndTime();
@@ -221,11 +214,23 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				}			
 			}
 
+			if(workflowRuleHistoricalLogsContext.getStatus() == WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()) {  //In retry case, reverting back parentResourceLogger's status from Failed to Event Generating state and setting event job errorMessage to null
+				workflowRuleHistoricalLogsContext.setErrorMessage(null);;
+				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
+				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
+				if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()) 
+				{	
+					parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal());				
+					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
+				}	
+			}
+			
 			LOGGER.info("Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime) + " and isReadingsEmpty -- " +isReadingsEmpty+
 					" Fetch prequisite readings time taken will be : --" + (readingsFetchStartTime - jobStartTime) + " Fetch readings time taken -- " + (eventProcessingStartTime - readingsFetchStartTime) +
 					" Event processing time will be -- " +(eventSpecialCaseStartTime - eventProcessingStartTime)+ " Event special handling time -- " +(eventInsertStartTime- eventSpecialCaseStartTime) +
 					" Event insertion time will be -- " +(eventInsertEndTime - eventInsertStartTime));
-			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
+			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
+			
 		}		
 	}
 	
@@ -245,7 +250,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		if(activeRuleResourceGroupedLoggerIds.size() == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-			parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
+			parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
 			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)
 			{
@@ -282,7 +287,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
 				}
 				
-				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
+				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
 			}
 			else  {
 				LOGGER.severe("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);

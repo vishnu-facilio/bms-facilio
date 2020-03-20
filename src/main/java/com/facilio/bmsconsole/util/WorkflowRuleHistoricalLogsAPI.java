@@ -102,7 +102,7 @@ public class WorkflowRuleHistoricalLogsAPI {
 		updateBuilder.update(props);
 	}
 	
-	public static void updateWorkflowRuleHistoricalLogsContextToResolvedState(WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext, int status) throws Exception {
+	public static void updateWorkflowRuleHistoricalLogsContextState(WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext, int status) throws Exception {
 		workflowRuleHistoricalLogsContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 		workflowRuleHistoricalLogsContext.setStatus(status);
 		updateWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
