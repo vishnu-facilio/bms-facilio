@@ -70,7 +70,11 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.WATCHLIST);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SAFETY_PLAN);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.HAZARD);
-		modulesWithLocalId.add(FacilioConstants.ContextNames.PRECAUTION);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.PEOPLE);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TENANT_CONTACT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.VENDOR_CONTACT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.EMPLOYEE);
 		
 		return modulesWithLocalId;
 	}

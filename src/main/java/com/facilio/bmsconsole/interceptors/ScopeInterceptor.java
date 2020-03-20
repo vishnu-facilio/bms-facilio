@@ -324,7 +324,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 
 	private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission) throws Exception {
 
-		if (action == null || "".equals(action.trim())) {
+		if (action == null || "".equals(action.trim()) || AccountUtil.getCurrentUser().getRoleId() <= 0) {
 			return true;
 		}
 

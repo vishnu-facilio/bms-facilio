@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -12,7 +15,13 @@ public class AddEmployeeTypePeopleForUserAdditionCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		if(user != null) {
-			PeopleAPI.addPeopleForUser(user);
+			Role superAdminRole = AccountUtil.getRoleBean(user.getOrgId()).getRole(user.getOrgId(), AccountConstants.DefaultRole.SUPER_ADMIN, false);
+			if(user.getRoleId() == superAdminRole.getRoleId()) {
+				PeopleAPI.addPeopleForUser(user, true);
+			}
+			else {
+				PeopleAPI.addPeopleForUser(user, false);
+			}
 		}
 		return false;
 	}

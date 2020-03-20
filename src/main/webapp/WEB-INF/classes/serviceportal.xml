@@ -17,11 +17,11 @@
 				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
 			<interceptor name="datasourceinterceptor"
 				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="portalauthinterceptor"
+			<interceptor name="authinterceptor"
 				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="portalauthinterceptor" />
+				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
@@ -70,8 +70,9 @@
 				</result>
         </action>
   
-    <action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
-		<result name="samllogin">/service/samllogin.jsp</result>
+    <action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv3">
+		   <param name="auth">false</param>
+         <result name="samllogin">/service/samllogin.jsp</result>
 		                <result name="success" type="json">
                         <param name="includeProperties">jsonresponse.*</param>
                 </result>
@@ -117,10 +118,17 @@
             </result>
         </action>
 
+		<action name="portalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
+				method="portalAccount">
+		   <param name="auth">false</param>
+           <result name="success" type="json">
+				<param name="includeProperties">account.*</param>
+			</result>
+		</action>
+		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="portalAccount">
-            <param name="auth">false</param>
-			<result name="success" type="json">
+		  	<result name="success" type="json">
 				<param name="includeProperties">account.*</param>
 			</result>
 		</action>

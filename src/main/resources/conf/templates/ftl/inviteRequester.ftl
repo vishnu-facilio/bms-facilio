@@ -19,7 +19,7 @@
                                     <div class="td-width-mobile" style="padding-right: 30px;">
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; padding-top: 30px;letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${toUser.name},</div>
                                         <div style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
-                                          Welcome to ${org.name} organization. You are added by ${inviter.name} to the ${portalType} of the organization. 
+                                          Welcome to ${org.name} organization. You are added by ${inviter.name} to the ${appType} of the organization. 
                                         </div>
                                           <div style="margin-top: 35px;margin-bottom: 35px;">
                                           <a href="${invitelink}" style="border: 0;border-radius: 3px;background:#ff3989;font-size: 13px; font-weight: bold; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.8px; text-align: center; color: #ffffff;text-decoration: none;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;margin-right: 15px;padding: 17px 24px;margin-top: 30px;">JOIN NOW</a>

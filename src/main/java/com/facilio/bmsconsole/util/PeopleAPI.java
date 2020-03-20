@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.mssql.DeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,6 +35,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
@@ -64,9 +66,25 @@ public class PeopleAPI {
 		PeopleContext records = builder.fetchFirst();
 		return records;
 	}
+	
+	public static PeopleContext getPeopleForId(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+		SelectRecordsBuilder<PeopleContext> builder = new SelectRecordsBuilder<PeopleContext>()
+														.module(module)
+														.beanClass(PeopleContext.class)
+														.select(fields)
+														;
+		
+		builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
+		
+		PeopleContext records = builder.fetchFirst();
+		return records;
+	}
 
 	
-	public static void addPeopleForUser(User user) throws Exception {
+	public static void addPeopleForUser(User user, boolean isSignup) throws Exception {
 		
 		PeopleContext peopleExisiting = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -74,16 +92,63 @@ public class PeopleAPI {
 		
 		if(peopleExisiting == null) {
 			EmployeeContext people = new EmployeeContext();
-			people.setCanBeAssigned(false);
+			people.setIsAssignable(false);
 			people.setEmail(user.getEmail());
 			people.setName(user.getName());
 			people.setActive(true);
 			people.setPhone(user.getMobile());
 			people.setPeopleType(PeopleType.EMPLOYEE);
-			people.setAppAccess(true);
+			people.setIsAppAccess(true);
+			
+			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
+			if(isSignup) {
+				people.setLocalId(1);
+			}
+			RecordAPI.addRecord(!isSignup, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
+			
+			FacilioField peopleId = new FacilioField();
+			peopleId.setName("peopleId");
+			peopleId.setDataType(FieldType.NUMBER);
+			peopleId.setColumnName("PEOPLE_ID");
+			peopleId.setModule(AccountConstants.getAppOrgUserModule());
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(peopleId);
+			
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(fields);
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
+			
+			Map<String, Object> props = new HashMap<>();
+			props.put("peopleId", people.getId());
+		    updateBuilder.update(props);
+		}
+	}
+	
+	
+	public static void addPeopleForRequester(User user) throws Exception {
+		
+		PeopleContext peopleExisiting = getPeople(user.getEmail());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+		
+		if(peopleExisiting == null) {
+			EmployeeContext people = new EmployeeContext();
+			people.setIsAssignable(false);
+			people.setEmail(user.getEmail());
+			people.setName(user.getName());
+			people.setActive(true);
+			people.setPhone(user.getMobile());
+			people.setPeopleType(PeopleType.EMPLOYEE);
+			people.setIsAppAccess(false);
+			people.setIsOccupantPortalAccess(true);
+			
+			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			
 			RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
-		
+			
 			FacilioField peopleId = new FacilioField();
 			peopleId.setName("peopleId");
 			peopleId.setDataType(FieldType.NUMBER);
@@ -142,21 +207,29 @@ public class PeopleAPI {
 	}
 	
 	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
-		
+        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+        PeopleContext existingPeople = getPeopleForId(person.getId());
+    	
         if(appDomain != null) {
-			User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
+			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
 			if((appDomainType == AppDomainType.FACILIO && person.isAppAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
-					AppUserAPI.addUserInApp(user, appDomain);
+					user.setAppDomain(appDomain);
+					ApplicationApi.addUserInApp(user);
+					if(user.getRoleId() != existingPeople.getRoleId()) {
+						user.setRoleId(existingPeople.getRoleId());
+						AccountUtil.getUserBean().updateUser(user);
+					}
 				}
 				else {
-					User newUser = addAppUser(person, appDomain.getDomain());
-					AppUserAPI.addUserInApp(newUser, appDomain);
+					User newUser = addAppUser(existingPeople, appDomain.getDomain());
+					newUser.setAppDomain(appDomain);
 				}
 			}
 			else {
-				AppUserAPI.deleteUserFromApp(user, appDomain);
+				if(user != null) {
+					ApplicationApi.deleteUserFromApp(user, appDomain);
+				}
 			}
 		}
         else {
@@ -166,22 +239,24 @@ public class PeopleAPI {
 	}
 	
 	public static void updateTenantContactAppPortalAccess(TenantContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
-		
-        if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
-			if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
+        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+        PeopleContext existingPeople = getPeopleForId(person.getId());
+    	if(appDomain != null) {
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
-					AppUserAPI.addUserInApp(user, appDomain);
+					user.setAppDomain(appDomain);
+			    	ApplicationApi.addUserInApp(user);
 				}
 				else {
-					User newUser = addPortalAppUser(person, appDomain.getDomain(), 1);
-					
-					AppUserAPI.addUserInApp(newUser, appDomain);
+					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), 1);
+					newUser.setAppDomain(appDomain);
 				}
 			}
 			else {
-				AppUserAPI.deleteUserFromApp(user, appDomain);
+				if(user != null) {
+					ApplicationApi.deleteUserFromApp(user, appDomain);
+				}
 			}
 		}
         else {
@@ -191,22 +266,25 @@ public class PeopleAPI {
 	}
 	
 	public static void updateClientContactAppPortalAccess(ClientContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
-		
+        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+        PeopleContext existingPeople = getPeopleForId(person.getId());
+    	
         if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
-			if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
 				if(user != null) {
-					AppUserAPI.addUserInApp(user, appDomain);
+					user.setAppDomain(appDomain);
+					ApplicationApi.addUserInApp(user);
 				}
 				else {
-					User newUser = addPortalAppUser(person, appDomain.getDomain(), 1);
-					
-					AppUserAPI.addUserInApp(newUser, appDomain);
+					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), 1);
+					newUser.setAppDomain(appDomain);
 				}
 			}
 			else {
-				AppUserAPI.deleteUserFromApp(user, appDomain);
+				if(user != null) {
+					ApplicationApi.deleteUserFromApp(user, appDomain);
+				}
 			}
 	    }
         else {
@@ -216,22 +294,24 @@ public class PeopleAPI {
 	}
 	
 	public static void updateVendorContactAppPortalAccess(VendorContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
-		
-        if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
-			if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
+        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+        PeopleContext existingPeople = getPeopleForId(person.getId());
+		if(appDomain != null) {
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
 				if(user != null) {
-					AppUserAPI.addUserInApp(user, appDomain);
+					user.setAppDomain(appDomain);
+		    		ApplicationApi.addUserInApp(user);
 				}
 				else {
-					User newUser = addPortalAppUser(person, appDomain.getDomain(), appDomain.getId());
-					
-					AppUserAPI.addUserInApp(newUser, appDomain);
-				}
+					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getId());
+					newUser.setAppDomain(appDomain);
+		    	}
 			}
 			else {
-				AppUserAPI.deleteUserFromApp(user, appDomain);
+				if(user != null) {
+					ApplicationApi.deleteUserFromApp(user, appDomain);
+				}
 			}
 		}
         else {
@@ -250,24 +330,55 @@ public class PeopleAPI {
 		
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
-			AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), (long)list.get(0).get("uid"));
+			AccountUtil.getUserBean().deleteUser((long)list.get(0).get("ouid"), false);
 		}
+	}
+	
+	public static int deletePeopleForUser(long ouId) throws Exception {
+		long peopleId = PeopleAPI.getPeopleIdForUser(ouId);
+		if(peopleId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			com.facilio.modules.DeleteRecordBuilder<PeopleContext> deleteBuilder = new com.facilio.modules.DeleteRecordBuilder<PeopleContext>()
+					.module(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+			deleteBuilder.andCondition(CriteriaAPI.getIdCondition(peopleId, ModuleFactory.getPeopleModule()));
+			return deleteBuilder.markAsDelete();
+		
+		}
+		return -1;
 	}
 		
 	
-	public static User addAppUser(PeopleContext person, String appDomain) throws Exception {
+	public static long getPeopleIdForUser(long ouId) throws Exception {
+		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+									.select(fields)
+									.table("ORG_Users")
+									;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return (long)list.get(0).get("peopleId");
+		}
+		return -1;
+	}
+	
+	public static User addAppUser(PeopleContext existingPeople, String appDomain) throws Exception {
 		if(StringUtils.isEmpty(appDomain)) {
 			throw new IllegalArgumentException("Invalid App Domain");
 		}
+		
 		User user = new User();
-		user.setEmail(person.getEmail());
-		user.setPhone(person.getPhone());
-		user.setName(person.getName());
+		user.setEmail(existingPeople.getEmail());
+		user.setPhone(existingPeople.getPhone());
+		user.setName(existingPeople.getName());
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
-		user.setPeopleId(person.getId());
+		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.USER.getValue());
+		user.setRoleId(existingPeople.getRoleId());
 		
 		
 		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, 1, appDomain);
@@ -275,21 +386,23 @@ public class PeopleAPI {
 		
 	}
 	
-	public static User addPortalAppUser(PeopleContext people, String appDomain, long identifier) throws Exception {
+	public static User addPortalAppUser(PeopleContext existingPeople, String appDomain, long identifier) throws Exception {
 		if(StringUtils.isEmpty(appDomain)) {
 			throw new IllegalArgumentException("Invalid App Domain");
 		}
 		User user = new User();
-		user.setEmail(people.getEmail());
-		user.setPhone(people.getPhone());
-		user.setName(people.getName());
+		user.setEmail(existingPeople.getEmail());
+		user.setPhone(existingPeople.getPhone());
+		user.setName(existingPeople.getName());
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
-		user.setPeopleId(people.getId());
+		user.setPeopleId(existingPeople.getId());
+		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		
 		
-		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain, identifier);
+		
+		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain, identifier, false);
 		return user;
 	}
 	

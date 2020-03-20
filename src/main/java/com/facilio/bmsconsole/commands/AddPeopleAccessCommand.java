@@ -18,12 +18,12 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 	    List<PeopleContext> people = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 	    if(CollectionUtils.isNotEmpty(people)) {
-	    	AppDomain facilioApp = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-	    	AppDomain occupantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL);
-	    	AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL);
-	    	AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL);
-	    	AppDomain clientPortalApp = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL);
-	    	
+//	    	AppDomain facilioApp = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
+//	    	AppDomain occupantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL);
+//	    	AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL);
+//	    	AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL);
+//	    	AppDomain clientPortalApp = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL);
+//	    	
 //	    	for(PeopleContext person : people) {
 //	    		if(facilioApp != null && person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isAppAccess()) {
 //	    			PeopleAPI.addAppUser(person, facilioApp != null ? facilioApp.getDomain() : null);

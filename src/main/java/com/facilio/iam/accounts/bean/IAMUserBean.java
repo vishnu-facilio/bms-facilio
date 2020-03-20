@@ -77,10 +77,6 @@ public interface IAMUserBean {
 	
 	public Object getPermalinkDetails(String token) throws Exception;
 	
-    public AppDomain getAppDomain(String domain) throws Exception;
-    
-    public AppDomain getAppDomain(long appDomainId) throws Exception;
-    
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception ;
 
@@ -96,14 +92,10 @@ public interface IAMUserBean {
 	
     public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
-    public Map<String, Object> getUserForEmailOrPhone(String emailOrPhone, boolean isPhone, long orgId) throws Exception;
+    public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId) throws Exception;
     
-    public long addAppDomain(String domainName, int groupType, int appType) throws Exception;
+    public Map<String, Object> getUserForPhone(String phone, long orgId) throws Exception;
     
-    public int deleteAppDomain(long id) throws Exception;
-    
-    public AppDomain getAppDomain(AppDomainType type) throws Exception;
-
     public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception;
     
     public Map<String, Object> getUserForUsername(String username, long orgId) throws Exception;
@@ -116,5 +108,19 @@ public interface IAMUserBean {
 	
 	public boolean verifyPassword(long orgId, long userId, String oldPassword) throws Exception;
 	
-    	
+	public void addAppDomains(List<AppDomain> appDomains) throws Exception;
+	
+	public int deleteAppDomain(long id) throws Exception;
+    
+    public AppDomain getAppDomain(AppDomainType type, long orgId) throws Exception;
+    
+    public AppDomain getAppDomain(String domain) throws Exception;
+    
+    public List<AppDomain> getPortalAppDomains() throws Exception;
+    
+    public AppDomain getAppDomain(long appDomainId) throws Exception;
+    
+    
+
+    
 }

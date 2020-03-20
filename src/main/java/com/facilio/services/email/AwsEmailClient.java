@@ -25,7 +25,7 @@ class AwsEmailClient extends EmailClient {
 
     public void sendEmail(JSONObject mailJson) throws Exception  {
             logEmail(mailJson);
-            sendEmailViaAws(mailJson);
+   //         sendEmailViaAws(mailJson);
 
     }
     public static AwsEmailClient getClient(){

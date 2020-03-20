@@ -7,36 +7,36 @@ public class EmployeeContext extends PeopleContext{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Boolean canBeAssigned;
+	private Boolean isAssignable;
 
-	public Boolean getCanBeAssigned() {
-		return canBeAssigned;
+	public Boolean getIsAssignable() {
+		return isAssignable;
 	}
 
-	public void setCanBeAssigned(Boolean canBeAssigned) {
-		this.canBeAssigned = canBeAssigned;
+	public void setIsAssignable(Boolean canBeAssigned) {
+		this.isAssignable = canBeAssigned;
 	}
 
 	public boolean canBeAssigned() {
-		if (canBeAssigned != null) {
-			return canBeAssigned.booleanValue();
+		if (isAssignable != null) {
+			return isAssignable.booleanValue();
 		}
 		return false;
 	}
 	
-	private Boolean occupantPortalAccess;
+	private Boolean isOccupantPortalAccess;
 
-	public Boolean getOccupantPortalAccess() {
-		return occupantPortalAccess;
+	public Boolean getIsOccupantPortalAccess() {
+		return isOccupantPortalAccess;
 	}
 	
-	public void setOccupantPortalAccess(Boolean occupantPortalAccess) {
-		this.occupantPortalAccess = occupantPortalAccess;
+	public void setIsOccupantPortalAccess(Boolean occupantPortalAccess) {
+		this.isOccupantPortalAccess = occupantPortalAccess;
 	}
 
 	public boolean isOccupantPortalAccess() {
-		if (occupantPortalAccess != null) {
-			return occupantPortalAccess.booleanValue();
+		if (isOccupantPortalAccess != null) {
+			return isOccupantPortalAccess.booleanValue();
 		}
 		return false;
 	}
@@ -58,19 +58,19 @@ public class EmployeeContext extends PeopleContext{
 		return false;
 	}
 	
-	private Boolean appAccess;
+	private Boolean isAppAccess;
 
-	public Boolean getAppAccess() {
-		return appAccess;
+	public Boolean getIsAppAccess() {
+		return isAppAccess;
 	}
 	
-	public void setAppAccess(Boolean appAccess) {
-		this.appAccess = appAccess;
+	public void setIsAppAccess(Boolean appAccess) {
+		this.isAppAccess = appAccess;
 	}
 
 	public boolean isAppAccess() {
-		if (appAccess != null) {
-			return appAccess.booleanValue();
+		if (isAppAccess != null) {
+			return isAppAccess.booleanValue();
 		}
 		return false;
 	}

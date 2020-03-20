@@ -22,7 +22,8 @@
     	OrgBean orgBean =  AccountUtil.getOrgBean();
   	  org =orgBean.getOrg(Long.parseLong(orgid));
   	  result = AccountUtil.getOrgBean(orgId).orgInfo();
-  	  users = orgBean.getAllOrgUsers(orgId);
+  	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, null, false);
+		;
   	  roles =AccountUtil.getRoleBean(orgId).getRoles();
   	  
   	 for(Long key :FEATUREMAPUNORDERED.keySet())

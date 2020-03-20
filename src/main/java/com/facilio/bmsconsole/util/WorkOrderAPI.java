@@ -2319,7 +2319,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
        List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
          
        if(CollectionUtils.isNotEmpty(topNTechnicians)) {
-          Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), null);
+          Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId());
           for(Map<String, Object> map : topNTechnicians) {
              long userId = (long)map.get("assignedTo");
              User techDetails = orgUsers.get(userId);

@@ -20,6 +20,9 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(employees)) {
 			if(accessChangeFor == 1) {
 				for(EmployeeContext emp : employees) {
+					if(emp.isAppAccess() && emp.getRoleId() <= 0) {
+						throw new IllegalArgumentException("Role cannot be null");
+					}
 					PeopleAPI.updateEmployeeAppPortalAccess(emp, AppDomainType.FACILIO);
 				}
 			}

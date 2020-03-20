@@ -27,8 +27,7 @@ public class GetPermaLinkTokenCommand extends FacilioCommand{
 			
 		String url = (String) context.get(FacilioConstants.ContextNames.PERMALINK_FOR_URL);
 		String email = (String) context.get(FacilioConstants.ContextNames.USER_EMAIL);
-		AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-		User user = AccountUtil.getUserBean().getUser(email, appDomain != null ? appDomain.getDomain() : AccountUtil.getDefaultAppDomain());
+		User user = AccountUtil.getUserBean().getUser(email);
 		
 		JSONObject sessionObject = (JSONObject) context.get(FacilioConstants.ContextNames.SESSION);
 		String token;

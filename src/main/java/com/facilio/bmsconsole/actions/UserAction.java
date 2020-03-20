@@ -22,6 +22,8 @@ import com.chargebee.models.Card;
 import com.chargebee.models.Customer;
 import com.chargebee.models.Subscription;
 import com.chargebee.models.enums.Gateway;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -37,10 +39,12 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
@@ -107,7 +111,7 @@ public class UserAction extends FacilioAction {
 				this.users.addAll(memberList);
 			}
 		} else {
-			setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
+			setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
 		}
 		return SUCCESS;
 	}
@@ -119,22 +123,21 @@ public class UserAction extends FacilioAction {
 	}
 	public String userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
 		
 		return SUCCESS;
 	}
 	
 	public String v2userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain()));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
 		setResult("users", getUsers());
 		return SUCCESS;
 	}
 
 	public String portalUserList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setAppDomain("aara.facilioportal.com");
-		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), getAppDomain()));
+		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), null));
 		return SUCCESS;
 	}
 	
@@ -148,8 +151,8 @@ public class UserAction extends FacilioAction {
 			HttpServletRequest request = ServletActionContext.getRequest(); 
 			setAppDomain("aara.facilioportal.com");
 			
-			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName(), getAppDomain());
-			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOrgId(), userTobeDeleted.getUid())) {
+			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName());
+			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid(), true)) {
 				setUserId(userTobeDeleted.getOuid());
 			    return SUCCESS;
 			}
@@ -202,7 +205,7 @@ public class UserAction extends FacilioAction {
 		
 		HttpServletRequest request = ServletActionContext.getRequest(); 
 		
-		if(AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid())) {
+		if(AccountUtil.getUserBean().deleteUser(user.getOuid(), true)) {
 	    	setUserId(user.getOuid());
 	    	return SUCCESS;
 	    }
@@ -254,8 +257,8 @@ public class UserAction extends FacilioAction {
 		}
 		
 		try {
-			String appDomain = AccountUtil.getCurrentOrg().getDomain() +".facilioportal.com";
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain, 1) > 0) {
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain.getDomain(), 1, true) > 0) {
 				setUserId(user.getId());
 			}
 			else {
@@ -354,10 +357,10 @@ public class UserAction extends FacilioAction {
 	
 	public String resendInvite() throws Exception {
 		ServletActionContext.getRequest().getParameter("portal");
-		
-		System.out.println("##########userOrgid   :"+user.getOrgId());
-		if(user != null) {
-			(new UserBeanImpl()).resendInvite(ServletActionContext.getRequest().getServerName(), user.getOrgId(), user.getUid());
+		User appUser = AccountUtil.getUserBean().getUser(user.getOuid(), false);
+		if(appUser != null) {
+			(new UserBeanImpl()).resendInvite(appUser);
+			setUserId(appUser.getId());
 			return SUCCESS;
 		}
 		return ERROR;

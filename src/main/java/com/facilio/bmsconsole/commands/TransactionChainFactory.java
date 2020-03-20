@@ -4772,14 +4772,6 @@ public class TransactionChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain addPeopleChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForPeople());
-		c.addCommand(new GenericAddModuleDataListCommand());
-		
-		return c;
-	}
-	
 	public static FacilioChain updateClientsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClient());
@@ -4799,10 +4791,21 @@ public class TransactionChainFactory {
 		c.addCommand(new getFloorPlanCommand());
 		return c;
 	}
-
+	
+	public static FacilioChain addPeopleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+	
 	public static FacilioChain addTenantContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new CheckForMandatoryTenantIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		
 		return c;
@@ -4811,6 +4814,8 @@ public class TransactionChainFactory {
 	public static FacilioChain addVendorContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new CheckForMandatoryVendorIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}
@@ -4818,6 +4823,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}
@@ -4831,6 +4837,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateTenantContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		return c;
@@ -4839,6 +4846,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateVendorContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		return c;
@@ -4847,6 +4855,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateEmployeeChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		
 		return c;
@@ -4855,6 +4864,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updatePeopleChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		
 		return c;
@@ -5075,6 +5085,8 @@ public class TransactionChainFactory {
 	public static FacilioChain addClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new CheckForMandatoryClientIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}
@@ -5082,6 +5094,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		return c;

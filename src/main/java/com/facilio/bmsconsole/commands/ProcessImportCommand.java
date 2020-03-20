@@ -41,11 +41,6 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValu
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -810,7 +805,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					user = new User();
 					user.setEmail(value.toString());
 					String appDomain = AccountUtil.getCurrentOrg().getDomain() + ".facilioportal.com";
-					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false, appDomain, 1);
+					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false, appDomain, 1, true);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;

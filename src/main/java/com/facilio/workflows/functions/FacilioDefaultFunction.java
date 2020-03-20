@@ -395,8 +395,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return null;
 			}
 			
-			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-			User user = AccountUtil.getUserBean().getUser((String) objects[5],appDomain != null ? appDomain.getDomain() : AccountUtil.getDefaultAppDomain());
+			User user = AccountUtil.getUserBean().getUser((String) objects[5]);
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
@@ -412,8 +411,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-			User user = AccountUtil.getUserBean().getUser((String) objects[5],appDomain != null ? appDomain.getDomain() : AccountUtil.getDefaultAppDomain());
+			User user = AccountUtil.getUserBean().getUser((String) objects[5]);
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
 			if(dashboard == null) {

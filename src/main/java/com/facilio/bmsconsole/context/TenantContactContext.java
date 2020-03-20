@@ -9,19 +9,19 @@ public class TenantContactContext extends PeopleContext{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Boolean tenantPortalAccess;
+	private Boolean isTenantPortalAccess;
 
-	public Boolean getTenantPortalAccess() {
-		return tenantPortalAccess;
+	public Boolean getIsTenantPortalAccess() {
+		return isTenantPortalAccess;
 	}
 
-	public void setTenantPortalAccess(Boolean tenantPortalAccess) {
-		this.tenantPortalAccess = tenantPortalAccess;
+	public void setIsTenantPortalAccess(Boolean tenantPortalAccess) {
+		this.isTenantPortalAccess = tenantPortalAccess;
 	}
 
 	public boolean isTenantPortalAccess() {
-		if (tenantPortalAccess != null) {
-			return tenantPortalAccess.booleanValue();
+		if (isTenantPortalAccess != null) {
+			return isTenantPortalAccess.booleanValue();
 		}
 		return false;
 	}
@@ -53,19 +53,19 @@ public class TenantContactContext extends PeopleContext{
 		return false;
 	}
 	
-	private Boolean occupantPortalAccess;
+	private Boolean isOccupantPortalAccess;
 
-	public Boolean getOccupantPortalAccess() {
-		return occupantPortalAccess;
+	public Boolean getIsOccupantPortalAccess() {
+		return isOccupantPortalAccess;
 	}
 
-	public void setOccupantPortalAccess(Boolean occupantPortalAccess) {
-		this.occupantPortalAccess = occupantPortalAccess;
+	public void setIsOccupantPortalAccess(Boolean occupantPortalAccess) {
+		this.isOccupantPortalAccess = occupantPortalAccess;
 	}
 
 	public boolean isOccupantPortalAccess() {
-		if (occupantPortalAccess != null) {
-			return occupantPortalAccess.booleanValue();
+		if (isOccupantPortalAccess != null) {
+			return isOccupantPortalAccess.booleanValue();
 		}
 		return false;
 	}

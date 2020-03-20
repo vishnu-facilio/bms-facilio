@@ -101,7 +101,7 @@ public class LookupSpecialTypeUtil {
 			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL);
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
 			List<User> users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appdomainObj.getDomain());
 			Map<Long, String> userMap = new HashMap<Long, String>();
 			if (users != null) {

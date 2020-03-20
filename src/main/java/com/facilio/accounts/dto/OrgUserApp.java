@@ -11,22 +11,8 @@ public class OrgUserApp implements Serializable {
 	
 	private long id;
 	private long ouid;
-	private long appDomainId;
-	private long deletedTime;
+	private long applicationId;
 	
-	private Boolean userStatus;
-	public Boolean getUserStatus() {
-		return userStatus;
-	}
-	public void setUserStatus(Boolean userStatus) {
-		this.userStatus = userStatus;
-	}
-	public boolean isActive() {
-		if(userStatus != null) {
-			return userStatus.booleanValue();
-		}
-		return false;
-	}
 	public long getId() {
 		return id;
 	}
@@ -39,17 +25,11 @@ public class OrgUserApp implements Serializable {
 	public void setOuid(long ouid) {
 		this.ouid = ouid;
 	}
-	public long getAppDomainId() {
-		return appDomainId;
+	public long getApplicationId() {
+		return applicationId;
 	}
-	public void setAppDomainId(long appDomainId) {
-		this.appDomainId = appDomainId;
+	public void setApplicationId(long applicationId) {
+		this.applicationId = applicationId;
 	}
-	public long getDeletedTime() {
-		return deletedTime;
-	}
-	public void setDeletedTime(long deletedTime) {
-		this.deletedTime = deletedTime;
-	}
-
+	
 }

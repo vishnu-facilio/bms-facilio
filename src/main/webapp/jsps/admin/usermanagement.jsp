@@ -20,7 +20,7 @@ java.sql.Timestamp,
       		long orgId = usr.getOrgId();
       		long roleId = usr.getRoleId();
       		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-      			userList = AccountUtil.getOrgBean(orgId).getAllOrgUsers(orgId);
+      			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, null, false);
       		}
       	}
    %>

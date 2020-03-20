@@ -19,6 +19,7 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -193,6 +194,8 @@ public class GroupBeanImpl implements GroupBean {
 		
 		String appDomain = AccountUtil.getDefaultAppDomain();
 		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -203,7 +206,7 @@ public class GroupBeanImpl implements GroupBean {
 				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
 				.andCustomWhere("GroupMembers.GROUPID = ?", groupId)
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS))
 				
 				;
 		

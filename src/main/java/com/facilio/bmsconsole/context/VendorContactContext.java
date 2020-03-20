@@ -24,19 +24,19 @@ public class VendorContactContext extends PeopleContext{
 		return false;
 	}
 	
-	private Boolean vendorPortalAccess;
+	private Boolean isVendorPortalAccess;
 
-	public Boolean getVendorPortalAccess() {
-		return vendorPortalAccess;
+	public Boolean getIsVendorPortalAccess() {
+		return isVendorPortalAccess;
 	}
 
-	public void setVendorPortalAccess(Boolean vendorPortalAccess) {
-		this.vendorPortalAccess = vendorPortalAccess;
+	public void setIsVendorPortalAccess(Boolean vendorPortalAccess) {
+		this.isVendorPortalAccess = vendorPortalAccess;
 	}
 
 	public boolean isVendorPortalAccess() {
-		if (vendorPortalAccess != null) {
-			return vendorPortalAccess.booleanValue();
+		if (isVendorPortalAccess != null) {
+			return isVendorPortalAccess.booleanValue();
 		}
 		return false;
 	}

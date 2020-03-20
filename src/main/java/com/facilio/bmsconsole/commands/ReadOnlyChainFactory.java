@@ -2181,6 +2181,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new AddClientContactLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
@@ -2295,6 +2296,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new AddClientContactLookUpCommand());
+		
 		return chain;
 	}
 	
@@ -2305,6 +2308,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new AddClientContactLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
@@ -2331,6 +2335,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getVendorContactDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new AddVendorContactLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
@@ -2338,6 +2343,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getTenantContactDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new AddTenantContactLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
@@ -2352,6 +2358,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getClientContactDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new AddClientContactLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}

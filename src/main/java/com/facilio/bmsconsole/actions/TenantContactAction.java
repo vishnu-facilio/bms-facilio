@@ -180,7 +180,7 @@ private static final long serialVersionUID = 1L;
 	public String updateTenantPortalAccess() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(tenantContacts)) {
-			FacilioChain c = TransactionChainFactory.updateTenantContactChain();
+			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			//1 - tenant portal, 2- Occupant portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
@@ -194,9 +194,9 @@ private static final long serialVersionUID = 1L;
 	public String updateOccupantPortalAccess() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(tenantContacts)) {
-			FacilioChain c = TransactionChainFactory.updateTenantContactChain();
+			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			//1 - tenant portal, 2- Occupant portal
-			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 2);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

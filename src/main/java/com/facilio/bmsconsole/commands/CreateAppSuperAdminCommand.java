@@ -2,12 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.services.procon.consumer.FacilioConsumer;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand{
@@ -26,7 +28,9 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		if(FacilioProperties.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		AccountUtil.getUserBean().createUserEntry(orgId, user, true, AccountUtil.getDefaultAppDomain());
+		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+		user.setAppDomain(appDomain);
+		AccountUtil.getUserBean().createUserEntry(orgId, user, true);
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
 	}

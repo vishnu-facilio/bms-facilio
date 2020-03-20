@@ -36,7 +36,6 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -56,7 +55,6 @@ import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
@@ -252,20 +250,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(AccountConstants.getOrgUserAppsModule());
+		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
 	   GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgUserAppsModule().getTableName())
-				.innerJoin("ORG_Users")
-				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("userStatus", true);
@@ -284,20 +280,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(AccountConstants.getOrgUserAppsModule());
+		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
-		 GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getOrgUserAppsModule().getTableName())
-					.innerJoin("ORG_Users")
-					.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-					.fields(fields);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getAccountOrgUserModule().getTableName())
+				.fields(fields);
 			
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
 			
 		
 		Map<String, Object> props = new HashMap<>();
@@ -970,7 +964,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		user.setUserStatus(true);
 		user.setOrgId(orgId);
 		long ouId = checkIfExistsInOrgUsers(orgId, user);
-		//user.setIamOrgUserId(ouId);
+		user.setIamOrgUserId(ouId);
 		return ouId;
 	}
 
@@ -988,6 +982,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("userId", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> mapList = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(mapList)) {
@@ -1017,62 +1012,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	
 
-	@Override
-	public long addAppDomain(String domainName, int groupType, int appType) throws Exception {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAppDomainFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("App_Domain")
-				.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN","domainName" , domainName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE","appDomainType" , String.valueOf(appType), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE","groupType" , String.valueOf(groupType), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(props)) {
-			Map<String, Object> map = props.get(0);
-			return (long)map.get("id");
-		}
-		else {
-			return addNewAppDomain(domainName, groupType, appType);
-		}
-		
-	}
-	
-	@Override
-	public int deleteAppDomain(long appDomainId) throws Exception {
-		
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table("App_Domain")
-				.andCondition(CriteriaAPI.getCondition("App_Domain.ID","id" , String.valueOf(appDomainId), NumberOperators.EQUALS));
-				
-		return deleteBuilder.delete();
-		
-	}
-	
-	private static long addNewAppDomain(String domain_name, int group_type, int app_type) throws Exception {
-
-		if(StringUtils.isNotEmpty(domain_name)) {
-			
-			List<FacilioField> fields = IAMAccountConstants.getAppDomainFields();
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(IAMAccountConstants.getAppDomainModule().getTableName())
-					.fields(fields);
-	
-			AppDomain appDomain = new AppDomain(domain_name, app_type, group_type);
-			Map<String, Object> props = FieldUtil.getAsProperties(appDomain);
-	
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-			long appdomainId = (Long) props.get("id");
-			return appdomainId;
-		}
-		
-		return -1;
-			
-	}
-	
 	private long addAccountOrgUserEntry(long orgId, IAMUser user) throws Exception {
 
 		List<FacilioField> fields = IAMAccountConstants.getAccountsOrgUserFields();
@@ -1089,40 +1028,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return accUserAppOrgId;
 			
 	}
-
-	@Override
-	public AppDomain getAppDomain(String domain) throws Exception {
-		// TODO Auto-generated method stub
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getAppDomainFields())
-				.table("App_Domain");
-				
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
-		}
-		return null;
-
-	}
-
-	@Override
-	public AppDomain getAppDomain(long domainId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getAppDomainFields())
-				.table("App_Domain");
-				
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "id", String.valueOf(domainId), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
-		}
-		return null;
-
-	}
-
 
 	@Override
 	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
@@ -1362,7 +1267,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
 
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", userIds, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORG_USERID", "iamOrgUserId", userIds, NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -1413,7 +1318,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public Map<String, Object> getUserForEmailOrPhone(String emailOrPhone, boolean isPhone, long orgId) throws Exception {
+	public Map<String, Object> getUserForEmail(String email, long orgId) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1425,16 +1330,37 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "status", "1", NumberOperators.EQUALS));
 
-		if(isPhone) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.PHONE", "phone", emailOrPhone, StringOperators.IS));
-			criteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", emailOrPhone, StringOperators.IS));
-			selectBuilder.andCriteria(criteria);
-		}
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailOrPhone, StringOperators.IS));
-		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
 		
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	
+	}
+	
+	@Override
+	public Map<String, Object> getUserForPhone(String phone, long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", phone, StringOperators.IS));
+		criteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.PHONE", "phone", phone, StringOperators.IS));
+		
+		selectBuilder.andCriteria(criteria);
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
@@ -1478,22 +1404,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public AppDomain getAppDomain(AppDomainType type) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getAppDomainFields())
-				.table("App_Domain");
-				
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type.getIndex()), EnumOperators.IS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
-		}
-		return null;
-
-	}
-
-	@Override
 	public Map<String, Object> getUserForUsername(String username, long orgId) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -1518,5 +1428,140 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	
 	}
+	
+	private long addAppDomain(AppDomain appDomain) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAppDomainFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("App_Domain")
+				.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN","domainName" , appDomain.getDomain(), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE","appDomainType" , String.valueOf(appDomain.getAppDomainType()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE","groupType" , String.valueOf(appDomain.getGroupType()), NumberOperators.EQUALS));
+		//		.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID","orgId" , String.valueOf(appDomain.getOrgId()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			Map<String, Object> map = props.get(0);
+			return (long)map.get("id");
+		}
+		else {
+			return addNewAppDomain(appDomain);
+		}
+		
+	}
+	
+	@Override
+	public int deleteAppDomain(long appDomainId) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table("App_Domain")
+				.andCondition(CriteriaAPI.getCondition("App_Domain.ID","id" , String.valueOf(appDomainId), NumberOperators.EQUALS));
+				
+		return deleteBuilder.delete();
+		
+	}
+	
+	private static long addNewAppDomain(AppDomain appDomain) throws Exception {
+
+		if(StringUtils.isNotEmpty(appDomain.getDomain())) {
+			
+			List<FacilioField> fields = IAMAccountConstants.getAppDomainFields();
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(IAMAccountConstants.getAppDomainModule().getTableName())
+					.fields(fields);
+	
+			Map<String, Object> props = FieldUtil.getAsProperties(appDomain);
+	
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			long appdomainId = (Long) props.get("id");
+			return appdomainId;
+		}
+		
+		return -1;
+			
+	}
+	
+
+	@Override
+	public AppDomain getAppDomain(AppDomainType type, long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type.getIndex()), EnumOperators.IS));
+		if(type != AppDomainType.FACILIO) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+	
+	@Override
+	public AppDomain getAppDomain(String domain) throws Exception {
+		// TODO Auto-generated method stub
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+
+	@Override
+	public AppDomain getAppDomain(long domainId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "id", String.valueOf(domainId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+
+	@Override
+	public List<AppDomain> getPortalAppDomains() throws Exception {
+		// TODO Auto-generated method stub
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(AppDomainType.FACILIO.getIndex()), NumberOperators.NOT_EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
+		}
+		return null;
+	}
+
+	@Override
+	public void addAppDomains(List<AppDomain> appDomains) throws Exception {
+		if(CollectionUtils.isNotEmpty(appDomains)) {
+			for(AppDomain appDomain : appDomains) {
+				addAppDomain(appDomain);
+			}
+		}
+		
+	}
+
 		
 }

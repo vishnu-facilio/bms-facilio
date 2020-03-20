@@ -7,19 +7,19 @@ public class ClientContactContext extends PeopleContext{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Boolean clientPortalAccess;
+	private Boolean isClientPortalAccess;
 
-	public Boolean getClientPortalAccess() {
-		return clientPortalAccess;
+	public Boolean getIsClientPortalAccess() {
+		return isClientPortalAccess;
 	}
 
-	public void setClientPortalAccess(Boolean clientPortalAccess) {
-		this.clientPortalAccess = clientPortalAccess;
+	public void setIsClientPortalAccess(Boolean clientPortalAccess) {
+		this.isClientPortalAccess = clientPortalAccess;
 	}
 
 	public boolean isClientPortalAccess() {
-		if (clientPortalAccess != null) {
-			return clientPortalAccess.booleanValue();
+		if (isClientPortalAccess != null) {
+			return isClientPortalAccess.booleanValue();
 		}
 		return false;
 	}

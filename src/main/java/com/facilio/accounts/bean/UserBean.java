@@ -19,13 +19,13 @@ public interface UserBean {
 	
 	public void createUser(long orgId, User user, long identifier, String appDomain) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, long identifier) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, long identifier, boolean addPeople) throws Exception;
 
 	User verifyEmail(String token) throws Exception;
 
 	User validateUserInvite(String token) throws Exception;
 
-	public boolean resendInvite(String appDomain, long orgId, long userId) throws Exception;
+	public boolean resendInvite(User user) throws Exception;
 	
 	public boolean acceptInvite(String token, String password) throws Exception;
 	
@@ -35,11 +35,9 @@ public interface UserBean {
 	
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception;
 	
-	public boolean deleteUser(long orgId, long userId) throws Exception;
+	public boolean deleteUser(long ouId, boolean shouldDeletePeople) throws Exception;
 
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
-	
-	public User getUser(long userId, long orgId, boolean fetchDeleted) throws Exception;
 	
 	public User getUser(String appDomain, long orgId, long userId) throws Exception;
 
@@ -63,7 +61,7 @@ public interface UserBean {
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getUser(String username, String appDomain) throws Exception;
+    public User getUserForUserName(String username, String appDomain) throws Exception;
     
     public User getUser(String email) throws Exception;
     
@@ -88,7 +86,7 @@ public interface UserBean {
 
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
 
-	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded, String appDomain) throws Exception;
+	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
 
 	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
 	
@@ -96,11 +94,11 @@ public interface UserBean {
 	
 	public boolean enableUser(long orgId, long userId) throws Exception;
 	
-	public long addToORGUsersApps(User user, String appDomain) throws Exception;
+	public long addToORGUsersApps(User user) throws Exception;
 		
-	public int deleteUserFromApps(User user, AppDomain appDomain) throws Exception;
+	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	
+	public int deletePeopleForUser(User user) throws Exception;
 	
-
 	
 }

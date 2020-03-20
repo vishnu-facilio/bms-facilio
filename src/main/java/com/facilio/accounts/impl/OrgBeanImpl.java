@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.AppDomain;
@@ -17,7 +18,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.FacilioProperties;
@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -90,19 +91,20 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
     @Override
-	public List<User> getAllOrgUsers(long orgId, String appDomain) throws Exception {
+	public List<User> getAppUsers(long orgId, String appDomain, boolean checkAccessibleSites) throws Exception {
 		
     	if(StringUtils.isEmpty(appDomain)) {
     		appDomain = AccountUtil.getDefaultAppDomain();
     	}
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getAppDomainIdField());
+		fields.add(AccountConstants.getApplicationIdField());
 		
 		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
 		if(appDomainObj == null) {
 			throw new IllegalArgumentException("Invalid app Domain");
 		}
+		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
@@ -110,46 +112,48 @@ public class OrgBeanImpl implements OrgBean {
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
 					
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
 		}
-		List<Long> accessibleSpace = currentUser.getAccessibleSpace();
-		String siteIdCondition = "";
-		if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
-			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
-			List<Long> siteIds = new ArrayList<>();
-			for (BaseSpaceContext baseSpace: idVsBaseSpace.values()) {
-				if (baseSpace.getSiteId() > 0) {
-					siteIds.add(baseSpace.getSiteId());
+		if(checkAccessibleSites) {
+			List<Long> accessibleSpace = currentUser.getAccessibleSpace();
+			String siteIdCondition = "";
+			if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+				List<Long> siteIds = new ArrayList<>();
+				for (BaseSpaceContext baseSpace: idVsBaseSpace.values()) {
+					if (baseSpace.getSiteId() > 0) {
+						siteIds.add(baseSpace.getSiteId());
+					}
+				}
+				
+				if (!siteIds.isEmpty()) {
+					siteIdCondition = StringUtils.join(siteIds, ',');
+					siteIdCondition = "(" + siteIdCondition + ")";
 				}
 			}
 			
-			if (!siteIds.isEmpty()) {
-				siteIdCondition = StringUtils.join(siteIds, ',');
-				siteIdCondition = "(" + siteIdCondition + ")";
+			long currentSiteId = AccountUtil.getCurrentSiteId();
+			
+			String whereCondition = "";
+			if (currentSiteId > 0 && !siteIdCondition.isEmpty()) {
+				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId);
+				whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
+			} else if (currentSiteId > 0 && siteIdCondition.isEmpty()) {
+				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId) + ")))"; 
+			} else if (currentSiteId <= 0 && !siteIdCondition.isEmpty()) {
+				whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID ";
+				whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
 			}
-		}
-		
-		long currentSiteId = AccountUtil.getCurrentSiteId();
-		
-		String whereCondition = "";
-		if (currentSiteId > 0 && !siteIdCondition.isEmpty()) {
-			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId);
-			whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
-		} else if (currentSiteId > 0 && siteIdCondition.isEmpty()) {
-			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID AND Accessible_Space.SITE_ID = " + String.valueOf(currentSiteId) + ")))"; 
-		} else if (currentSiteId <= 0 && !siteIdCondition.isEmpty()) {
-			whereCondition = "((not exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID)) OR (exists(select 1 from Accessible_Space where Accessible_Space.ORG_USER_ID=ORG_Users.ORG_USERID ";
-			whereCondition += " and Accessible_Space.SITE_ID IN" + siteIdCondition + ")))" ;
-		}
-		
-		
-		if(!whereCondition.isEmpty()) {
-			selectBuilder
-				.andCustomWhere(whereCondition);
+			
+			
+			if(!whereCondition.isEmpty()) {
+				selectBuilder
+					.andCustomWhere(whereCondition);
+			}
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -169,7 +173,7 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
-		List<User> userList = getOrgUsers(orgId, null);
+		List<User> userList = getDefaultAppUsers(orgId);
 		if(CollectionUtils.isNotEmpty(userList)) {
 			List<User> finalUserList = new ArrayList<User>();
 			for(User user : userList) {
@@ -183,44 +187,25 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 	@Override
-	public List<User> getOrgUsers(long orgId, Criteria criteria) throws Exception {
-		String appDomain = AccountUtil.getDefaultAppDomain();
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria, appDomainObj.getId());
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				if(user.getUserType() == UserType.USER.getValue()) {
-					users.add(user);
-				}
-			}
-			return users;
-		}
-		return null;
+	public List<User> getDefaultAppUsers(long orgId) throws Exception {
+		return getAppUsers(orgId, AccountUtil.getDefaultAppDomain(), false);
 	}
 	
 	@Override
-	public Map<Long, User> getOrgUsersAsMap(long orgId, Criteria criteria) throws Exception {
-		String appDomain = AccountUtil.getDefaultAppDomain();
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria, appDomainObj.getId());
-		if (props != null && !props.isEmpty()) {
-			Map<Long, User> users = new HashMap<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, true);
-			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				if(user.getUserType() == UserType.USER.getValue()) {
-					users.put(user.getId(), user);
-				}
+	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception {
+		
+		List<User> userList = getDefaultAppUsers(orgId);
+		Map<Long, User> map = new HashMap<Long, User>();
+		if(CollectionUtils.isNotEmpty(userList)) {
+			for(User u : userList) {
+				map.put(u.getId(), u);
 			}
-			return users;
+			return map;
 		}
 		return null;
 	}
 	
-	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria, long appDomainId) throws Exception {
+	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria, List<Long> applicationIds) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
@@ -236,14 +221,20 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.andCriteria(criteria);
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainId), NumberOperators.EQUALS));
+		if(CollectionUtils.isNotEmpty(applicationIds)) {
+			StringJoiner idString = new StringJoiner(",");
+			for(long id : applicationIds) {
+				idString.add(String.valueOf(id));
+			}
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", idString.toString(), NumberOperators.EQUALS));
+		}
 							
 		return selectBuilder.get();
 	}
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception {
 
-		List<User> userList = getOrgUsers(orgId, null);
+		List<User> userList = getDefaultAppUsers(orgId);
 		if(CollectionUtils.isNotEmpty(userList)) {
 			List<User> finalUserList = new ArrayList<User>();
 			for(User user : userList) {
@@ -262,6 +253,7 @@ public class OrgBeanImpl implements OrgBean {
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		String appDomain = AccountUtil.getDefaultAppDomain();
 		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 		
 		if(superAdminRole == null) {
 			return null;
@@ -281,7 +273,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -349,18 +341,31 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override 
     public List<User> getOrgPortalUsers(long orgId, String appDomain) throws Exception { 
-       
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null, appDomainObj.getId());
-		
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				users.add(user);
+       List<Long> applicationIds = new ArrayList<Long>();
+		if(StringUtils.isNotEmpty(appDomain)) {
+			AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+			applicationIds.add(ApplicationApi.getApplicationIdForApp(appDomainObj));
+		}
+		else {
+			List<AppDomain> appDomains = IAMAppUtil.getPortalAppDomains();
+			if(CollectionUtils.isNotEmpty(appDomains)) {
+				for(AppDomain ad : appDomains) {
+					applicationIds.add(ApplicationApi.getApplicationIdForApp(ad));
+				}
 			}
-			return users;
+		}
+		if(CollectionUtils.isNotEmpty(applicationIds)) {
+			List<Map<String, Object>> props = fetchOrgUserProps(orgId, null, applicationIds);
+			
+			if (props != null && !props.isEmpty()) {
+				List<User> users = new ArrayList<>();
+				IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+				for(Map<String, Object> prop : props) {
+					User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
+					users.add(user);
+				}
+				return users;
+			}
 		}
 		return null;
     }

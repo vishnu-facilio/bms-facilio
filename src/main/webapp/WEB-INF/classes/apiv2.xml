@@ -5770,4 +5770,28 @@
 		
 	</package>
 	
+	<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="employeeList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="clientcontact" namespace="/api/v2/clientcontact"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="addClientContacts" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="updateClientContacts" />
+		<action name="updateClientAppAccess"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="updateClientAppAccess" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="deleteClientContacts" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="getClientContactDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="clientContactList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 </struts>

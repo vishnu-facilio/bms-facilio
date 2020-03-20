@@ -36,32 +36,8 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation invocation) throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
-		String portalDomain = "app";
-		if(request.getAttribute("portalDomain") != null) {
-			portalDomain = (String)request.getAttribute("portalDomain");
-		}
-		
-		//portal related changes
-		if(request.getAttribute("isPortal") != null && (boolean)request.getAttribute("isPortal")) {
-			if(portalDomain != null) { 
-                    String currentAccountSubDomain = ""; 
-                    if (iamAccount != null && iamAccount.getOrg() != null) { 
-                        currentAccountSubDomain = iamAccount.getOrg().getDomain(); 
-                    } 
-                    Organization org = null; 
-                    if (portalDomain.equalsIgnoreCase(currentAccountSubDomain)) { 
-                        org = iamAccount.getOrg(); 
-                    } else { 
-                        org = IAMOrgUtil.getOrg(portalDomain); 
-                    } 
-                    if (iamAccount == null && org != null) { 
-                    	iamAccount = new IAMAccount(org, null);
-                    	request.setAttribute("iamAccount", iamAccount);
-                    }
-            }
-		}
 		//remote screen handling
-		else if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
+		if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
 			RemoteScreenContext remoteScreen = (RemoteScreenContext) request.getAttribute("remoteScreen");
 			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
 			if(org != null) {
@@ -81,14 +57,15 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			
 		}
 		else {
+			Organization organization = null;
+			
+			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 			if (iamAccount != null) {
 				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
 				if (currentOrgDomain == null) {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
 				
-				Organization organization = null;
-				AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 				if(appDomain.getOrgId() > 0) {
 					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				}
@@ -99,6 +76,13 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);
+			}
+			else {
+				organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
+              	if(organization != null) {
+                	iamAccount = new IAMAccount(organization, null);
+                	request.setAttribute("iamAccount", iamAccount);
+              	}
 			}
 		}
 		return invocation.invoke();

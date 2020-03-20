@@ -3502,6 +3502,14 @@ public class ModuleFactory {
 		module.setDisplayName("Commissioning Log Controller");
 		module.setTableName("CommissioningLogController");
 		return module;
+	
+	public static FacilioModule getPeopleModule() {
+		FacilioModule peopleModule = new FacilioModule();
+		peopleModule.setName(FacilioConstants.ContextNames.PEOPLE);
+		peopleModule.setDisplayName("People");
+		peopleModule.setTableName("People");
+		
+		return peopleModule;
 	}
 	
 	public static FacilioModule getBimIntegrationLogsModule(){

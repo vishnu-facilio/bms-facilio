@@ -2,9 +2,18 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
@@ -17,9 +26,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ApplicationApi {
     public static long addApplicationApi(ApplicationContext application) throws Exception {
@@ -158,4 +169,117 @@ public class ApplicationApi {
         }
         return moduleNames;
     }
+	public static List<NewPermission> getPermissionsForWebTab(long webTabId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.select(FieldFactory.getNewPermissionFields())
+				.andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(webTabId), NumberOperators.EQUALS));
+		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
+		return permissions;
+	}
+	
+	public static List<Long> getModuleIdsForTab(long tabId) throws Exception {
+		List<Long> ids = new ArrayList<Long>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+				.select(FieldFactory.getTabIdAppIdMappingFields())
+				.andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.TAB_ID", "tabId", String.valueOf(tabId), NumberOperators.EQUALS));
+		List<TabIdAppIdMappingContext> tabidMappings = FieldUtil.getAsBeanListFromMapList(builder.get(), TabIdAppIdMappingContext.class);
+		if(tabidMappings!=null && !tabidMappings.isEmpty()) {
+			for(TabIdAppIdMappingContext tabIdAppIdMappingContext :tabidMappings ) {
+				ids.add(tabIdAppIdMappingContext.getModuleId());
+			}
+		}
+		return ids;
+	}
+	
+	public static long addUserInApp(User user) throws Exception {
+		   return AccountUtil.getUserBean().addToORGUsersApps(user);
+		}
+		
+		public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
+			long applicationId = getApplicationIdForApp(appDomain);
+		   return AccountUtil.getUserBean().deleteUserFromApps(user, applicationId);
+		}
+		
+		public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
+			List<FacilioField> fields = FieldFactory.getApplicationFields();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+										.select(fields)
+										.table(ModuleFactory.getApplicationModule().getTableName())
+										;
+			selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> list = selectBuilder.get();
+			if(CollectionUtils.isNotEmpty(list)) {
+				return (long)list.get(0).get("id");
+			}
+			return -1;
+		}
+		
+		public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {
+			List<FacilioField> fields = FieldFactory.getApplicationFields();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+										.select(fields)
+										.table(ModuleFactory.getApplicationModule().getTableName())
+										;
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(applicationId), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> list = selectBuilder.get();
+			if(CollectionUtils.isNotEmpty(list)) {
+				long appDomainId = (long)list.get(0).get("appDomainId");
+				return IAMAppUtil.getAppDomain(appDomainId);
+			}
+			return null;
+		}
+		
+		public static void addDefaultApps(long orgId) throws Exception {
+			List<FacilioField> fields = FieldFactory.getApplicationFields();
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getApplicationModule().getTableName())
+					.fields(fields);
+
+			AppDomain facilioApp = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, orgId);
+			ApplicationContext facilioApplication = new ApplicationContext(orgId, "FACILIO", true, facilioApp.getId());
+
+			AppDomain servicePortalApp = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, orgId);
+			ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", true, servicePortalApp.getId());
+			
+			AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, orgId);
+			ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", true, tenantPortalApp.getId());
+			
+			AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, orgId);
+			ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", true, vendorPortalApp.getId());
+			
+			AppDomain clientPortalApp = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, orgId);
+			ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", true, clientPortalApp.getId());
+			
+			List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
+			applicationsDefault.add(facilioApplication);
+			applicationsDefault.add(servicePortalapplication);
+			applicationsDefault.add(tenantPortalapplication);
+			applicationsDefault.add(vendorPortalapplication);
+			applicationsDefault.add(clientPortalapplication);
+			
+			List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
+
+			insertBuilder.addRecords(props);
+			insertBuilder.save();
+		}
+		
+		public static void addDefaultAppDomains(long orgId) throws Exception {
+			Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isDevelopment() ? ".facilstack.com" : ".facilioportal.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), 1, orgId);
+			AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), 2, orgId);
+			AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), 1, orgId);
+			AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), 1, orgId);
+			
+			List<AppDomain> appDomains = new ArrayList<AppDomain>();
+			appDomains.add(servicePortalAppDomain);
+			appDomains.add(vendorPortalAppDomain);
+			appDomains.add(tenantPortalAppDomain);
+			appDomains.add(clientPortalAppDomain);
+			
+			IAMAppUtil.addAppDomains(appDomains);
+		}
 }

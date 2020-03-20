@@ -214,8 +214,12 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
 	}
 	
-	public static Map<String, Object> getUserForEmailOrPhone(String email, String appDomain, boolean isPhone, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmailOrPhone(email, isPhone, orgId));
+	public static Map<String, Object> getUserForPhone(String phone, String appDomain, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId));
+	}
+	
+	public static Map<String, Object> getUserForEmail(String email, String appDomain, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId));
 	}
 	
 	public static Map<String, Object> getUserForUsername(String username, boolean isPhone, long orgId) throws Exception {
@@ -256,14 +260,14 @@ public class IAMUserUtil {
 			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
 			StringJoiner userIds = new StringJoiner(",");
 			for(Map<String, Object> map : actualPropsList) {
-				userIds.add(String.valueOf((long)map.get("uid")));
+				userIds.add(String.valueOf((long)map.get("iamOrgUserId")));
 			}
 			List<IAMUser> iamUsers = getIAMUserPropsv3(userIds.toString(), orgId, shouldFetchDeleted);
 			if (CollectionUtils.isNotEmpty(iamUsers)) {
 				for(Map<String, Object> map : actualPropsList) {
-					long uId = (long)map.get("uid");
+					long iamOrgUserId = (long)map.get("iamOrgUserId");
 					List<IAMUser> result = iamUsers.stream()  
-	                .filter(user -> user.getUid() == uId)     
+	                .filter(user -> user.getIamOrgUserId() == iamOrgUserId)     
 	                .collect(Collectors.toList());
 					if(CollectionUtils.isNotEmpty(result)) {
 						map.putAll(FieldUtil.getAsProperties(result.get(0)));
@@ -285,11 +289,11 @@ public class IAMUserUtil {
 	}
 	
 	public static Map<String, Object> getUserFromPhone(String phone, String appDomain) throws Exception {
-		return getUserForEmailOrPhone(phone, appDomain, true, -1);
+		return getUserForPhone(phone, appDomain, -1);
 	}
 	
 	public static Map<String, Object> getUserFromEmailOrPhoneForOrg(String emailOrPhone, String appDomain) throws Exception {
-		return getUserForEmailOrPhone(emailOrPhone, appDomain, true, AccountUtil.getCurrentOrg().getOrgId());
+		return getUserForEmail(emailOrPhone, appDomain, AccountUtil.getCurrentOrg().getOrgId());
 	}
 	
 	

@@ -9,8 +9,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.EmployeeContext;
+import com.facilio.bmsconsole.context.ClientContactContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -38,19 +37,19 @@ private static final long serialVersionUID = 1L;
 		this.fetchCount = fetchCount;
 	}
 
-	private ClientContext clientContact;
-	private List<ClientContext> clientContacts;
+	private ClientContactContext clientContact;
+	private List<ClientContactContext> clientContacts;
 	
-	public ClientContext getClientContact() {
+	public ClientContactContext getClientContact() {
 		return clientContact;
 	}
-	public void setClientContact(ClientContext clientContact) {
+	public void setClientContact(ClientContactContext clientContact) {
 		this.clientContact = clientContact;
 	}
-	public List<ClientContext> getClientContacts() {
+	public List<ClientContactContext> getClientContacts() {
 		return clientContacts;
 	}
-	public void setClientContacts(List<ClientContext> clientContacts) {
+	public void setClientContacts(List<ClientContactContext> clientContacts) {
 		this.clientContacts = clientContacts;
 	}
 
@@ -158,7 +157,7 @@ private static final long serialVersionUID = 1L;
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
-			List<ClientContext> clientContactList = (List<ClientContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+			List<ClientContactContext> clientContactList = (List<ClientContactContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACTS, clientContactList);
 		}
 		
@@ -172,7 +171,7 @@ private static final long serialVersionUID = 1L;
 		
 		chain.execute();
 		
-		ClientContext clientContact = (ClientContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		ClientContactContext clientContact = (ClientContactContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
 		setResult(FacilioConstants.ContextNames.CLIENT_CONTACT, clientContact);
 		
 		return SUCCESS;

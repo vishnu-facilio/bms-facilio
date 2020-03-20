@@ -44,6 +44,7 @@ import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -299,6 +300,7 @@ public class FacilioAuthAction extends FacilioAction {
 		Locale locale = request.getLocale();
 		IAMAccount iamAccount = null;
 		try {
+			
 			iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
 			Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
 			
@@ -953,7 +955,8 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, req.getServerName(), 1);
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, req.getServerName(), 1, true);
+				
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {
 				Throwable e = ie.getTargetException();

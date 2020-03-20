@@ -1766,6 +1766,11 @@ public class FacilioConstants {
 			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
 			classMap.put(FLOOR_PLAN, FloorPlanContext.class);
 			classMap.put(FLOORPLAN_OBJECT, FloorPlanObjectContext.class);
+			classMap.put(PEOPLE, PeopleContext.class);
+			classMap.put(EMPLOYEE, EmployeeContext.class);
+			classMap.put(TENANT_CONTACT, TenantContactContext.class);
+			classMap.put(CLIENT_CONTACT, ClientContactContext.class);
+			classMap.put(VENDOR_CONTACT, VendorContactContext.class);
 			
 			return classMap;
 		}

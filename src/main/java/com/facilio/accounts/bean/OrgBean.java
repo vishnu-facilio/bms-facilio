@@ -28,13 +28,13 @@ public interface OrgBean {
 	
 	public List<User> getOrgPortalUsers(long orgId, String appDomain) throws Exception;
 
-	public List<User> getAllOrgUsers(long orgId, String appDomain) throws Exception;
+	public List<User> getAppUsers(long orgId, String appDomain, boolean checkAccessibleSites) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
 	
-	public List<User> getOrgUsers(long orgId, Criteria criteria) throws Exception;
+	public List<User> getDefaultAppUsers(long orgId) throws Exception;
 	
-	public Map<Long, User> getOrgUsersAsMap(long orgId, Criteria criteria) throws Exception;
+	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception;
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception;
 

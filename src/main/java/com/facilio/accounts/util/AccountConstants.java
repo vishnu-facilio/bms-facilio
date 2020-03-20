@@ -8,6 +8,8 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -894,6 +896,14 @@ public class AccountConstants {
 		peopleId.setModule(module);
 		fields.add(peopleId);
 		
+		FacilioField iamOrgUserId = new FacilioField();
+		iamOrgUserId.setName("iamOrgUserId");
+		iamOrgUserId.setDataType(FieldType.NUMBER);
+		iamOrgUserId.setColumnName("IAM_ORG_USERID");
+		iamOrgUserId.setModule(module);
+		fields.add(iamOrgUserId);
+	
+		
 		return fields;
 	}
 
@@ -1315,13 +1325,13 @@ public class AccountConstants {
 		return orgUserAppModule;
 	}
 	
-	public static FacilioField getAppDomainIdField() {
+	public static FacilioField getApplicationIdField() {
 		FacilioModule module = getOrgUserAppsModule();
 		
 		FacilioField domain = new FacilioField();
-		domain.setName("appDomainId");
+		domain.setName("applicationId");
 		domain.setDataType(FieldType.NUMBER);
-		domain.setColumnName("APP_DOMAIN_ID");
+		domain.setColumnName("APPLICATION_ID");
 		domain.setModule(module);
 		
 		return domain;
@@ -1345,12 +1355,12 @@ public class AccountConstants {
 		ouId.setModule(module);
 		fields.add(ouId);
 		
-		FacilioField appDomainId = new FacilioField();
-		appDomainId.setName("appDomainId");
-		appDomainId.setDataType(FieldType.NUMBER);
-		appDomainId.setColumnName("APP_DOMAIN_ID");
-		appDomainId.setModule(module);
-		fields.add(appDomainId);
+		FacilioField applicationId = new FacilioField();
+		applicationId.setName("applicationId");
+		applicationId.setDataType(FieldType.NUMBER);
+		applicationId.setColumnName("APPLICATION_ID");
+		applicationId.setModule(module);
+		fields.add(applicationId);
 		
 		
 		return fields;

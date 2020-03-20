@@ -15,11 +15,11 @@
 				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
 			<interceptor name="datasourceinterceptor"
 				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="portalauthinterceptor"
+			<interceptor name="authinterceptor"
 				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="portalauthinterceptor" />
+				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
@@ -209,12 +209,12 @@
 				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
 			<interceptor name="datasourceinterceptor"
 				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="portalauthinterceptor"
+			<interceptor name="authinterceptor"
 				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
 		
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="portalauthinterceptor" />
+				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="json">
