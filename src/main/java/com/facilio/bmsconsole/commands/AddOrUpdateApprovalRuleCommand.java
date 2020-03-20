@@ -15,7 +15,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -117,7 +116,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
 
             ApprovalStateTransitionRuleContext transitionRuleContext =
                     getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
-                            approvalMeta.isAllApprovalRequired(), approvalMeta.getApprovalForm(),
+                            approvalMeta.isAllApprovalRequired(), approvalMeta.getApprovalForm(), approvalMeta.getApprovalDialogTypeEnum(),
                             "Approve", module, approvalMeta.getApproveActions(), approvalStateFlowId);
             transitionRuleContext.setFromStateId(requested.getId());
             transitionRuleContext.setToStateId(exitStatus.getId());
@@ -130,7 +129,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             ruleContext = ruleChain.getContext();
             transitionRuleContext =
                     getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
-                            false, approvalMeta.getRejectForm(),
+                            false, approvalMeta.getRejectForm(), approvalMeta.getRejectDialogTypeEnum(),
                             "Reject", module, approvalMeta.getRejectActions(), approvalStateFlowId);
             transitionRuleContext.setFromStateId(requested.getId());
             transitionRuleContext.setToStateId(rejected.getId());
@@ -141,13 +140,14 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
     }
 
     private ApprovalStateTransitionRuleContext getApprovalTransition(List<ApproverContext> approvers, int approvalOrder,
-                                                                     boolean allApprovalRequired, FacilioForm form, String name, FacilioModule module, List<ActionContext> actions, long stateFlowId) {
+                                                                     boolean allApprovalRequired, FacilioForm form, AbstractStateTransitionRuleContext.DialogType dialogType, String name, FacilioModule module, List<ActionContext> actions, long stateFlowId) {
         ApprovalStateTransitionRuleContext transitionRuleContext = new ApprovalStateTransitionRuleContext();
         transitionRuleContext.setRuleType(WorkflowRuleContext.RuleType.APPROVAL_STATE_TRANSITION);
         transitionRuleContext.setApprovers((SharingContext<ApproverContext>) approvers);
         transitionRuleContext.setApprovalOrder(approvalOrder);
         transitionRuleContext.setAllApprovalRequired(allApprovalRequired);
         transitionRuleContext.setForm(form);
+        transitionRuleContext.setDialogType(dialogType);
         transitionRuleContext.setName(name);
         transitionRuleContext.setModule(module);
         transitionRuleContext.setActions(actions);

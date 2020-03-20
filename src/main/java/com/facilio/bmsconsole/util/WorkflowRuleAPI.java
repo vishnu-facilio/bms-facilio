@@ -128,6 +128,7 @@ public class WorkflowRuleAPI {
 				if (stateflowTransition.getDialogTypeEnum() != null && stateflowTransition.getDialogTypeEnum() == AbstractStateTransitionRuleContext.DialogType.MODULE) {
 					StateFlowRulesAPI.addOrUpdateFormDetails(stateflowTransition);
 				}
+				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				break;
 			case STATE_FLOW:

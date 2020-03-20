@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
@@ -109,6 +110,23 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.rejectActions = rejectActions;
     }
 
+    private AbstractStateTransitionRuleContext.DialogType approvalDialogType = AbstractStateTransitionRuleContext.DialogType.MODULE;
+    public int getApprovalDialogType() {
+        if (approvalDialogType != null) {
+            return approvalDialogType.getIndex();
+        }
+        return -1;
+    }
+    public AbstractStateTransitionRuleContext.DialogType getApprovalDialogTypeEnum() {
+        return approvalDialogType;
+    }
+    public void setApprovalDialogType(AbstractStateTransitionRuleContext.DialogType approvalDialogType) {
+        this.approvalDialogType = approvalDialogType;
+    }
+    public void setApprovalDialogType(int approvalDialogTypeInt) {
+        this.approvalDialogType = AbstractStateTransitionRuleContext.DialogType.valueOf(approvalDialogTypeInt);
+    }
+
     private FacilioForm approvalForm;
     public FacilioForm getApprovalForm() {
         return approvalForm;
@@ -117,6 +135,22 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.approvalForm = approvalForm;
     }
 
+    private AbstractStateTransitionRuleContext.DialogType rejectDialogType = AbstractStateTransitionRuleContext.DialogType.MODULE;
+    public int getRejectDialogType() {
+        if (rejectDialogType != null) {
+            return rejectDialogType.getIndex();
+        }
+        return -1;
+    }
+    public AbstractStateTransitionRuleContext.DialogType getRejectDialogTypeEnum() {
+        return rejectDialogType;
+    }
+    public void setRejectDialogType(AbstractStateTransitionRuleContext.DialogType rejectDialogType) {
+        this.rejectDialogType = rejectDialogType;
+    }
+    public void setRejectDialogType(int approvalDialogTypeInt) {
+        this.rejectDialogType = AbstractStateTransitionRuleContext.DialogType.valueOf(approvalDialogTypeInt);
+    }
     private FacilioForm rejectForm;
     public FacilioForm getRejectForm() {
         return rejectForm;
