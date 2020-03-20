@@ -199,6 +199,30 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	LAST_INDEX_OF(12,"lastIndexOf") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			String subString = objects[1].toString();
+			int fromIndex = string.length();
+			if(objects.length > 2) {
+				fromIndex = Double.valueOf(objects[2].toString()).intValue();
+			}
+			if(fromIndex <= string.length()) {
+				return string.lastIndexOf(subString,fromIndex);
+			}
+			else {
+				return string.lastIndexOf(subString);
+			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
