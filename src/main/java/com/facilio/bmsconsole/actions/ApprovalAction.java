@@ -95,4 +95,19 @@ public class ApprovalAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
+	public String getAvailableState() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getAvailableState();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, context.get("availableStates"));
+		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
+
+		return SUCCESS;
+	}
 }

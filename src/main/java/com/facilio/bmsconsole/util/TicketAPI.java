@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -268,7 +269,19 @@ public class TicketAPI {
 		}
 		return builder.get();
 	}
-	
+
+	public static FacilioStatus getApprovalStatus(String status) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+				.beanClass(FacilioStatus.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+				.andCustomWhere("STATUS = ?", status)
+				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", "", CommonOperators.IS_EMPTY))
+				.orderBy("ID");
+		return builder.fetchFirst();
+	}
+
 	public static FacilioStatus getStatus(FacilioModule module, String status) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

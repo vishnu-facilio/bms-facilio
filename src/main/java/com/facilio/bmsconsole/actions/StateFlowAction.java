@@ -281,11 +281,12 @@ public class StateFlowAction extends FacilioAction {
 	}
 	
 	public String getAvailableState() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
-		updateContext(context);
+
 		FacilioChain chain = TransactionChainFactory.getAvailableState();
-		chain.execute(context);
+		FacilioContext context = chain.getContext();
+		updateContext(context);
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.STATE_FLOW);
+		chain.execute();
 		
 		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, context.get("availableStates"));
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));

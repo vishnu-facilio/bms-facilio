@@ -47,19 +47,18 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
 
 
             // Getting necessary status for approval state-transition
-            FacilioStatus rejected = TicketAPI.getStatus(module, "Rejected");
+            FacilioStatus rejected = TicketAPI.getApprovalStatus("Rejected");
             if (rejected == null) {
-                throw new IllegalArgumentException("No Rejected status is found for module " + moduleName);
+                throw new IllegalArgumentException("No Rejected status is found");
             }
-            FacilioStatus requested = TicketAPI.getStatus(module, "Requested");
+            FacilioStatus requested = TicketAPI.getApprovalStatus("Requested1");
             if (requested == null) {
-                throw new IllegalArgumentException("No requested status is found for module " + moduleName);
+                throw new IllegalArgumentException("No requested status is found");
             }
-            List<FacilioStatus> statusOfStatusType = TicketAPI.getStatusOfStatusType(module, FacilioStatus.StatusType.EXIT);
-            if (CollectionUtils.isEmpty(statusOfStatusType)) {
-                throw new IllegalArgumentException("No Exit status is found for module " + moduleName);
+            FacilioStatus exitStatus = TicketAPI.getApprovalStatus("Approved");
+            if (exitStatus == null || exitStatus.getType() != FacilioStatus.StatusType.EXIT) {
+                throw new IllegalArgumentException("No Exit status is found");
             }
-            FacilioStatus exitStatus = statusOfStatusType.get(0);
 
             // Creating state-flow
             ApprovalStateFlowRuleContext approvalStateFlow = new ApprovalStateFlowRuleContext();

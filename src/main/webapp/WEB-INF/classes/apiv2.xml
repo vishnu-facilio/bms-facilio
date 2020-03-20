@@ -374,6 +374,8 @@
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="addOrUpdateApprovalRule" />
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" />
+		<action name="availableTransitions"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" />
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" />
 		<action name="reorder"

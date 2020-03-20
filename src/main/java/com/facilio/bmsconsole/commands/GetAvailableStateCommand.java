@@ -28,20 +28,47 @@ public class GetAvailableStateCommand extends FacilioCommand {
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (moduleData != null) {
-			FacilioStatus currentState = moduleData.getModuleState();
+			WorkflowRuleContext.RuleType ruleType = (WorkflowRuleContext.RuleType) context.get(FacilioConstants.ContextNames.RULE_TYPE);
+			if (ruleType == null) {
+				ruleType = WorkflowRuleContext.RuleType.STATE_FLOW;
+			}
+			FacilioStatus currentState = getStatus(moduleData, ruleType);
+			long stateFlowId = getStateFlowId(moduleData, ruleType);
 			context.put("currentState", currentState);
 			if (currentState != null) {
 				long currentTime = System.currentTimeMillis();
-				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), currentState.getId(), moduleName, moduleData, (FacilioContext) context);
+				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(stateFlowId, currentState.getId(), moduleName,
+						moduleData, (FacilioContext) context);
 				removeUnwantedTranstions(availableState);
-//				System.out.println("################### time taken: " + (System.currentTimeMillis() - currentTime));
 				LOGGER.debug("### time taken inside getAvailableState: " + this.getClass().getSimpleName() + ": " + (System.currentTimeMillis() - currentTime));
 				context.put("availableStates", availableState);
 			}
 		}
 		return false;
 	}
-	
+
+	private long getStateFlowId(ModuleBaseWithCustomFields moduleData, WorkflowRuleContext.RuleType ruleType) {
+		switch (ruleType) {
+			case STATE_FLOW:
+				return moduleData.getStateFlowId();
+			case APPROVAL_STATE_FLOW:
+				return moduleData.getApprovalFlowId();
+			default:
+				throw new IllegalArgumentException("Invalid rule type");
+		}
+	}
+
+	private FacilioStatus getStatus(ModuleBaseWithCustomFields moduleData, WorkflowRuleContext.RuleType ruleType) {
+		switch (ruleType) {
+			case STATE_FLOW:
+				return moduleData.getModuleState();
+			case APPROVAL_STATE_FLOW:
+				return moduleData.getApprovalStatus();
+			default:
+				throw new IllegalArgumentException("Invalid rule type");
+		}
+	}
+
 	public static void removeUnwantedTranstions(List<WorkflowRuleContext> states) {
 		if (CollectionUtils.isEmpty(states)) {
 			return;
@@ -49,7 +76,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 		
 		Iterator<WorkflowRuleContext> iterator = states.iterator();
 		while (iterator.hasNext()) {
-			StateflowTransitionContext transition = (StateflowTransitionContext) iterator.next();
+			AbstractStateTransitionRuleContext transition = (AbstractStateTransitionRuleContext) iterator.next();
 			if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
 				iterator.remove();
 				continue;

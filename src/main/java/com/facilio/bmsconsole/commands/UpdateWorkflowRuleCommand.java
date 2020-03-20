@@ -53,7 +53,7 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		else if (rule instanceof ApprovalRuleContext) {
 			rule = ApprovalRulesAPI.updateApprovalRuleWithChldren((ApprovalRuleContext) rule);
 		}
-		else if (rule instanceof StateFlowRuleContext) {
+		else if (rule instanceof StateFlowRuleContext || rule instanceof ApprovalStateFlowRuleContext) {
 			WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
 			WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields());
 		}
