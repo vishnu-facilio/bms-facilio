@@ -1563,5 +1563,30 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 	}
 
+	@Override
+	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
+			String ipAddress, boolean startUserSession, String appDomain) throws Exception {
+		// TODO Auto-generated method stub
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid App Domain");
+		}
+		long identifier = appDomainObj.getIdentifier();
+		IAMUser user = getFacilioUserV3(emailaddress, identifier);
+		if (user != null) {
+			long uid = user.getUid();
+			String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
+					System.currentTimeMillis() + 24 * 60 * 60000);
+			if (startUserSession) {
+				startUserSessionv2(uid, jwt, ipAddress, userAgent, userType);
+			}
+			return jwt;
+		}
+		throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+	}
+
 		
 }

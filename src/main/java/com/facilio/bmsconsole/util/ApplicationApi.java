@@ -169,14 +169,6 @@ public class ApplicationApi {
         }
         return moduleNames;
     }
-	public static List<NewPermission> getPermissionsForWebTab(long webTabId) throws Exception {
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getNewPermissionModule().getTableName())
-				.select(FieldFactory.getNewPermissionFields())
-				.andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(webTabId), NumberOperators.EQUALS));
-		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
-		return permissions;
-	}
 	
 	public static List<Long> getModuleIdsForTab(long tabId) throws Exception {
 		List<Long> ids = new ArrayList<Long>();

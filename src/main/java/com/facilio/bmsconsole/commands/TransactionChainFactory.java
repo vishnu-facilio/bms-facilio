@@ -5081,6 +5081,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
 		return chain;
+	}
 	
 	public static FacilioChain addClientContactChain() {
 		FacilioChain c = getDefaultChain();

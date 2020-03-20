@@ -120,7 +120,9 @@ public interface IAMUserBean {
     
     public AppDomain getAppDomain(long appDomainId) throws Exception;
     
+    public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
+			String ipAddress, boolean startUserSession, String appDomain) throws Exception;
     
-
+    
     
 }

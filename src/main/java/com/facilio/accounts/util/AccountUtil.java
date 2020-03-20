@@ -16,6 +16,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;

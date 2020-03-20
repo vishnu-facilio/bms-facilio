@@ -44,7 +44,6 @@ import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -442,15 +441,7 @@ public class FacilioAuthAction extends FacilioAction {
 	
 				LOGGER.info("validateLogin() : domainName : " + domainName);
 				
-				AppType appType = AppType.SERVICE_PORTAL;
-				if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
-					appType = AppType.VENDOR_PORTAL;
-				}
-				else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
-					appType = AppType.TENANT_PORTAL;
-				}
-		
-				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, domainName, appType);
+				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName());
 				setResult("token", authtoken);
 				setResult("username", email);
 	

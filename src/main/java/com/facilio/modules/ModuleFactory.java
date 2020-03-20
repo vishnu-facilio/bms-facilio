@@ -3502,6 +3502,7 @@ public class ModuleFactory {
 		module.setDisplayName("Commissioning Log Controller");
 		module.setTableName("CommissioningLogController");
 		return module;
+	}
 	
 	public static FacilioModule getPeopleModule() {
 		FacilioModule peopleModule = new FacilioModule();
