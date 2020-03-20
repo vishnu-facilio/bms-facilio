@@ -238,8 +238,7 @@ public enum CardLayout {
 			if (beanClassName == null) {
 				if (module.isCustom()) {
 					beanClassName = CustomModuleData.class;
-				}
-				else {
+				} else {
 					beanClassName = ModuleBaseWithCustomFields.class;
 				}
 			}
@@ -253,10 +252,11 @@ public enum CardLayout {
 			SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
 					.module(module)
 					.beanClass(beanClassName)
-					.select(fields)
-					;
+					.select(fields);
 			if (criteria != null) {
 				selectRecordBuilder.andCriteria(criteria);
+			} else {
+				selectRecordBuilder.limit(50);
 			}
 
 			List<? extends ModuleBaseWithCustomFields> records = selectRecordBuilder.get();
@@ -273,24 +273,26 @@ public enum CardLayout {
 							className = AttachmentContext.class;
 						}
 						List<FacilioField> subModuleFields = modBean.getAllFields(subModuleName);
+						List<FacilioField> fileFields = FieldFactory.getFileFields();
+						subModuleFields.addAll(fileFields);
 						Map<String, FacilioField> subModuleFieldsMap = FieldFactory.getAsMap(subModuleFields);
 						SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> attachmentBuilder = new SelectRecordsBuilder<>();
+						attachmentBuilder
+								.select(subModuleFields)
+								.module(subModule)
+								.beanClass(className)
+								.innerJoin("FacilioFile")
+								.on("FacilioFile.FILE_ID = " + subModule.getTableName() + ".FILE_ID")
+						;
 						if (subModuleName.equals(ContextNames.TASK_ATTACHMENTS)) {
-							List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds,false,false);
+							List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false, false);
 							List<Long> taskIds = tasks.stream().map(task -> task.getId()).collect(Collectors.toList());
-							attachmentBuilder
-									.select(subModuleFields)
-									.module(subModule)
-									.beanClass(className)
-									.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), taskIds, PickListOperators.IS));
+							attachmentBuilder.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), taskIds, PickListOperators.IS));
 						} else {
 							attachmentBuilder
-									.select(subModuleFields)
-									.module(subModule)
-									.beanClass(className)
 									.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), recordIds, PickListOperators.IS));
 						}
-						List <? extends ModuleBaseWithCustomFields> subModuleRecords = attachmentBuilder.get();
+						List<? extends ModuleBaseWithCustomFields> subModuleRecords = attachmentBuilder.get();
 						if (CollectionUtils.isNotEmpty(subModuleRecords)) {
 							JSONObject subModuleHolder = new JSONObject();
 							subModuleHolder.put("records", subModuleRecords);
