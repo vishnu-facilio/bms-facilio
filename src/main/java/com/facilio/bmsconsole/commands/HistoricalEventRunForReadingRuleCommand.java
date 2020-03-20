@@ -276,13 +276,13 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			LOGGER.log(Level.SEVERE, exceptionMessage);
 			
 			if(workflowRuleHistoricalLogsContext != null)	{				
-				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
-				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-				
-				if(parentRuleResourceLoggerContext != null) {		
-					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());	
-					workflowRuleHistoricalLogsContext.setErrorMessage("Error propagated to the current Rule_Resource Parent Job");
-				}
+//				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
+//				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
+//				
+//				if(parentRuleResourceLoggerContext != null) {		
+//					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());	
+//					workflowRuleHistoricalLogsContext.setErrorMessage("Error propagated to the current Rule_Resource Parent Job");
+//				}
 				if(exceptionMessage != null && isManualFailed) {
 					workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
 				}
