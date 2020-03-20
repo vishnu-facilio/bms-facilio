@@ -56,25 +56,25 @@ public class ReportFactoryFields {
 			}
 	}
 		
-		if(customFields.size() != 0 && !(facilioModule.isCustom() )) {
-			for(String customFieldName: customFields.keySet()) {
-				FacilioField customField = fields.get(customFieldName);
-				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
-					LookupField lookupField = (LookupField) customField;
-					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"user".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
-						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
-					}
-					}
-					else {
-						selectedFields.add(customFields.get(customFieldName));
-					}
-				}
-				else {
-					selectedFields.add(customFields.get(customFieldName));
-				}
-			}
-		}
+//		if(customFields.size() != 0 && !(facilioModule.isCustom() )) {
+//			for(String customFieldName: customFields.keySet()) {
+//				FacilioField customField = fields.get(customFieldName);
+//				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+//					LookupField lookupField = (LookupField) customField;
+//					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"user".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
+//					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
+//						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+//					}
+//					}
+//					else {
+//						selectedFields.add(customFields.get(customFieldName));
+//					}
+//				}
+//				else {
+//					selectedFields.add(customFields.get(customFieldName));
+//				}
+//			}
+//		}
 		if(facilioModule.isCustom()) {
 			selectedFields.addAll(FieldFactory.getSystemFields(facilioModule));
 		}
