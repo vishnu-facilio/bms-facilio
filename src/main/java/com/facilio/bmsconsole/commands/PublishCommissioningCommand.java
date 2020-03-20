@@ -116,8 +116,8 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 							remainingReadingList.add(meta);
 						}
 					}
+					connectedAssetIds.add(resourceId);
 				}
-				connectedAssetIds.add(resourceId);
 				
 				updatePoint(point, publishTime);
 			}
