@@ -1,36 +1,39 @@
 package com.facilio.cards.util;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
-
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.KPIContext;
-import com.facilio.bmsconsole.context.WidgetCardContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public enum CardLayout {
 	
@@ -155,7 +158,7 @@ public enum CardLayout {
 		@Override
 		public Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
-			
+
 			String title = (String) cardParams.get("title");
 			String kpiType = (String) cardParams.get("kpiType");
 			String dateRange = (String) cardParams.get("dateRange");
@@ -214,6 +217,96 @@ public enum CardLayout {
 			returnValue.put("baselinePeriod", baselineRange);
 
 			
+			return returnValue;
+		}
+	},
+	PHOTOS_LAYOUT_1("photos_layout_1") {
+		@Override
+		public Object execute(WidgetCardContext cardContext) throws Exception {
+			JSONObject cardParams = cardContext.getCardParams();
+
+			String title = (String) cardParams.get("title");
+			String moduleName = (String) cardParams.get("moduleName");
+			List<String> modulePhotosList = (List<String>) cardParams.get("photosModuleList");
+			JSONObject criteriaObj = (JSONObject) cardParams.get("criteria");
+			Criteria criteria = FieldUtil.getAsBeanFromMap(criteriaObj, Criteria.class);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> allFields = modBean.getAllFields(moduleName);
+			List<FacilioField> photoFields = allFields.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataType() == FieldType.FILE.getTypeAsInt()).collect(Collectors.toList());
+			Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+			if (beanClassName == null) {
+				if (module.isCustom()) {
+					beanClassName = CustomModuleData.class;
+				}
+				else {
+					beanClassName = ModuleBaseWithCustomFields.class;
+				}
+			}
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(FieldFactory.getIdField(module));
+			fields.add(modBean.getPrimaryField(moduleName));
+			if (CollectionUtils.isNotEmpty(photoFields)) {
+				fields.addAll(photoFields);
+			}
+
+			SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
+					.module(module)
+					.beanClass(beanClassName)
+					.select(fields)
+					;
+			if (criteria != null) {
+				selectRecordBuilder.andCriteria(criteria);
+			}
+
+			List<? extends ModuleBaseWithCustomFields> records = selectRecordBuilder.get();
+			List<Long> recordIds;
+			List<JSONObject> submoduleVsRecords = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(records)) {
+				recordIds = records.stream().map(record -> record.getId()).collect(Collectors.toList());
+
+				if (CollectionUtils.isNotEmpty(modulePhotosList)) {
+					for (String subModuleName : modulePhotosList) {
+						FacilioModule subModule = modBean.getModule(subModuleName);
+						Class className = FacilioConstants.ContextNames.getClassFromModule(subModule);
+						if (className == null) {
+							className = AttachmentContext.class;
+						}
+						List<FacilioField> subModuleFields = modBean.getAllFields(subModuleName);
+						Map<String, FacilioField> subModuleFieldsMap = FieldFactory.getAsMap(subModuleFields);
+						SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> attachmentBuilder = new SelectRecordsBuilder<>();
+						if (subModuleName.equals(ContextNames.TASK_ATTACHMENTS)) {
+							List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds,false,false);
+							List<Long> taskIds = tasks.stream().map(task -> task.getId()).collect(Collectors.toList());
+							attachmentBuilder
+									.select(subModuleFields)
+									.module(subModule)
+									.beanClass(className)
+									.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), taskIds, PickListOperators.IS));
+						} else {
+							attachmentBuilder
+									.select(subModuleFields)
+									.module(subModule)
+									.beanClass(className)
+									.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), recordIds, PickListOperators.IS));
+						}
+						List <? extends ModuleBaseWithCustomFields> subModuleRecords = attachmentBuilder.get();
+						if (CollectionUtils.isNotEmpty(subModuleRecords)) {
+							JSONObject subModuleHolder = new JSONObject();
+							subModuleHolder.put("records", subModuleRecords);
+							subModuleHolder.put("displayName", subModule.getDisplayName());
+							subModuleHolder.put("moduleName", subModuleName);
+							submoduleVsRecords.add(subModuleHolder);
+						}
+					}
+				}
+			}
+
+
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", title);
+			returnValue.put("parentModuleRecords", records);
+			returnValue.put("subModuleVsRecords", submoduleVsRecords);
 			return returnValue;
 		}
 	};
