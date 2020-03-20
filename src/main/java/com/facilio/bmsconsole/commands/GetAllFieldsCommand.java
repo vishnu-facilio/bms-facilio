@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -18,7 +17,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetAllFieldsCommand extends FacilioCommand {
@@ -137,7 +135,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					}
 				}
 				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
-					if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}

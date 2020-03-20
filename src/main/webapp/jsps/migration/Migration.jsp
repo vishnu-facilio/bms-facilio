@@ -104,9 +104,10 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             
-           	List<Long> orgIds = Arrays.asList(75l,93l,116l,125l,155l,168l,172l,173l,210l);
-            		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-			if (!orgIds.contains(orgId) && (FacilioProperties.isProduction() || (orgId  == 183))) {
+           	/* List<Long> orgIds = Arrays.asList(75l,93l,116l,125l,155l,168l,172l,173l,210l); */
+            	long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			/*  if (!orgIds.contains(orgId) && (FacilioProperties.isProduction() || (orgId  == 146))) { */
+			if (orgId  == 146){
 				try {
 		            	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		            FacilioModule ticketAttachmentModule = modBean.getModule("ticketattachments");
@@ -118,7 +119,7 @@
 								;
 		             
 		            	List<AttachmentContext> attachments = builder.get();
- 		            	int count = addFile(attachments);
+ 		            	int count = addFile(attachments, orgId);
  		            	
  		            FacilioModule taskAttachmentModule = modBean.getModule("taskattachments");
  		            	SelectRecordsBuilder<AttachmentContext> taskBuilder = new SelectRecordsBuilder<AttachmentContext>()
@@ -128,7 +129,7 @@
  								;
  		             
  		            	List<AttachmentContext> taskAttachments = taskBuilder.get();
- 		            	count += addFile(taskAttachments);
+ 		            	count += addFile(taskAttachments, orgId);
  		            	
  		            	LOGGER.info("file mig done for org - " + orgId + " :: " + count);
  		            	
@@ -150,7 +151,7 @@
             return false;
         }
         
-        private int addFile(List<AttachmentContext> taskAttachments) throws Exception {
+        private int addFile(List<AttachmentContext> taskAttachments, long orgId) throws Exception {
 	    		if (CollectionUtils.isNotEmpty(taskAttachments)) {
 	    			FileStore fs = FacilioFactory.getFileStore();
 	    			List<Long> fileIds = taskAttachments.stream().map(a -> a.getFileId()).collect(Collectors.toList());
@@ -166,17 +167,30 @@
 	    			List<FileInfo> fileInfoList = fs.getFileInfo(ids);
 	    			List<ResizedFileInfo> rfileInfos = new ArrayList<>();
 	    			long currentTime = System.currentTimeMillis();
+	    			int i = 1;
 	    			for(FileInfo fileInfo: fileInfoList) {
 	    				if (fileInfo.getFileId() > 0) {
-	    					System.out.print("fileInfo" + fileInfo);
+	    					if (i % 1000 == 0) {
+	    						LOGGER.info(i + " done for - " + orgId);
+	    					}
+	    					i++;
 	    					if (fileInfo != null && fileInfo.getContentType().contains("image/")) {
-	
-	    						InputStream downloadStream = fs.readFile(fileInfo);
+	    						InputStream downloadStream = null; 
+	    						try{
+	    							downloadStream = fs.readFile(fileInfo);
+	    						}
+	    						catch(Exception e) {
+	    							LOGGER.error("error reading file - " + fileInfo.getFileId(), e);
+	    						}
 	
 	    						if (downloadStream != null) {
+	    							
 	    							BufferedImage imBuff = ImageIO.read(downloadStream);
+	    							/* long beforeRead = System.currentTimeMillis();
+	    							LOGGER.info("before read: " + beforeRead); */
 	    							BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
-	
+	    							/* long afterRead = System.currentTimeMillis();
+	    							LOGGER.info("after scale: " + afterRead); */
 	    							ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	    							ImageIO.write(out, "png", baos);
 	    							baos.flush();
@@ -189,6 +203,10 @@
 	    							if (!FacilioProperties.isDevelopment()) {
 	    								rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
 	    							}
+	    							/* long afterWrite = System.currentTimeMillis();
+	    							LOGGER.info("after afterWrite: " + afterWrite);
+	    							LOGGER.info("time taken: " + (afterWrite - beforeRead)/1000); */
+	    							
 	    							if (rs != null || FacilioProperties.isDevelopment()) {
 	    								ResizedFileInfo rinfo = new ResizedFileInfo();
 	    								rinfo.setFileId(fileInfo.getFileId());
@@ -205,9 +223,11 @@
 	    				}									
 	    			}
 	    			if (!rfileInfos.isEmpty()) {
+	    				/* LOGGER.info("rfileInfos.size(): " + rfileInfos.size()); */
 	    				new GenericInsertRecordBuilder().table(ModuleFactory.getResizedFilesModule().getTableName())
 	    				.fields(FieldFactory.getResizedFileFields())
 	    				.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
+	    				/* LOGGER.info("rfileInfos done"); */
 	    				return rfileInfos.size();
 	    			}
 	    		}
@@ -254,7 +274,7 @@
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
-        FacilioChain c = FacilioChain.getTransactionChain();
+        FacilioChain c = FacilioChain.getTransactionChain(3600_000);
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();
 
