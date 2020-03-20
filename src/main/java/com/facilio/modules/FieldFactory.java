@@ -7884,6 +7884,16 @@ public class FieldFactory {
         fields.add(getField("responseType", "RESPONSE_TYPE", module, FieldType.NUMBER));
         return fields;
     }
+    
+    public static List<FacilioField> getCBIntentChildFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCBIntentChildModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("childId", "CHILD_ID", module, FieldType.NUMBER));
+        return fields;
+    }
 
     public static List<FacilioField> getCBIntentInvokeSamplesFields() {
         List<FacilioField> fields = new ArrayList<>();
@@ -7909,8 +7919,9 @@ public class FieldFactory {
         fields.add(getField("mlType", "ML_TYPE", module, FieldType.NUMBER));
         fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField("localId", "LOCAL_ID", module, FieldType.NUMBER));
-        fields.add(getField("optional", "IS_OPTIONAL", module, FieldType.BOOLEAN));
+        fields.add(getField("typeConfig", "TYPE_CONFIG", module, FieldType.NUMBER));
         fields.add(getField("editable", "IS_EDITABLE", module, FieldType.BOOLEAN));
+        fields.add(getField("fillableByParent", "IS_FILLABLE_BY_PARENT", module, FieldType.BOOLEAN));
 
         return fields;
     }

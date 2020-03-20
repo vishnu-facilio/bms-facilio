@@ -60,6 +60,7 @@
       dataType : 1
       mlType : 1
       localId : 1
+      typeConfig : 1
    actions:
     - 
         action: 
@@ -121,6 +122,9 @@
    localId : 7
    withParams : true
    confirmationNeeded : true
+   childIntentNames:
+   - "system_update_wo_note_intent"
+   - "system_show_open_workorder_count_intent"
    params:
    -
       name : 'subject'
@@ -130,6 +134,7 @@
       mlType : 1
       localId : 1
       editable : true
+      typeConfig : 1
    -
       name : 'description'
       displayName : "Description"
@@ -137,7 +142,12 @@
       dataType : 1
       mlType : 1
       localId : 2
-      optional : true
+      typeConfig : 2
+   -
+      name : 'woId'
+      dataType : 2
+      localId : 3
+      typeConfig : 3
    actions:
     - 
         action: 
@@ -147,7 +157,7 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'String test(Map data){
+                   workflowV2String : 'Map test(Map data){
     
                                          wo = {};
                                          wo.subject = data.subject;
@@ -168,7 +178,13 @@
                                          
                                          WorkOrder().add(wo);
                                          
-                                         return "Workorder created Successfully.";
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Workorder created Successfully __[#"+wo.id+"](https://app.facilio.com/app/wo/orders/summary/"+wo.id+")__.");
+                                         extraParmas = {};
+                                         extraParmas.put("woId",wo.id);
+                                         resultMap.put("extraParams",extraParmas);
+                                         return resultMap;
                                        }'   
    invokeSamples:
     -
@@ -324,7 +340,7 @@
         
 - 
    name: "system_update_wo_note_intent"
-   displayName: "System update wo Intent"
+   displayName: "add note to workorder"
    type: 1
    localId : 13
    withParams : true
@@ -335,45 +351,48 @@
       dataType : 2
       mlType : 1
       localId : 1
+      typeConfig : 1
+      fillableByParent : true
    -
       name : 'note'
       askAs : "Enter your note"
       dataType : 1
       mlType : 1
       localId : 2
-   contextWorkflow :
-       isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
-                             if(data.woId == null) {
-                             
-                                db = {
-								    criteria : [sourceType != 7],
-								    limit : 10,
-								    orderBy: "createdTime" desc
-							    };
-                                
-                              	wos = WorkOrder().fetch(db);
-                                
-                                woMapList = [];
-                                
-                                for each index,wo in wos {
-                                    woMap = {};
-                                    woMap.id = wo.id;
-                                    woMap.label = wo.subject;
-                                    
-                                    woMapList.add(woMap);
-                                }
-                                
-                                return chatBot().param("woId","Select your workrequest",woMapList);
-                             }
-                             if(data.woId != null && data.note == null) {
-                                return chatBot().param("note","Enter your note");
-                             }
-                             if(data.woId != null && data.note != null) {
-                             
-                                return chatBot().execute();
-                             }
-                           }' 
+      typeConfig : 1
+   #contextWorkflow :
+   #    isV2Script : true
+   #    workflowV2String : 'ChatBotAction test(Map data){
+   #                          if(data.woId == null) {
+   #                          
+   #                             db = {
+#								    criteria : [sourceType != 7],
+#								    limit : 10,
+#								    orderBy: "createdTime" desc
+#							    };
+ #                               
+ #                             	wos = WorkOrder().fetch(db);
+#                                
+ #                               woMapList = [];
+  #                              
+   #                             for each index,wo in wos {
+    #                                woMap = {};
+     #                               woMap.id = wo.id;
+      #                              woMap.label = wo.subject;
+       #                             
+        #                            woMapList.add(woMap);
+#                                }
+#                                
+#                                return chatBot().param("woId","Select your workrequest",woMapList);
+#                             }
+#                             if(data.woId != null && data.note == null) {
+#                                return chatBot().param("note","Enter your note");
+#                             }
+#                             if(data.woId != null && data.note != null) {
+#                             
+#                                return chatBot().execute();
+#                             }
+#                           }' 
    actions:
     - 
         action: 
@@ -383,11 +402,16 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'String test(Map data){
+                   workflowV2String : 'Map test(Map data){
     
                                          WorkOrder().addNote(data.woId,data.note);
                                          
-                                         return "Note updated Successfully.";
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Note updated Successfully.");
+                                         
+                                         return resultMap;
+                                         
                                        }'  
    invokeSamples:
     -
@@ -460,36 +484,42 @@
       dataType : 2
       mlType : 1
       localId : 1
+      typeConfig : 1
    -
       name : 'name'
       askAs : "Enter name"
       dataType : 1
       mlType : 1
       localId : 2
+      typeConfig : 1
    -
       name : 'phone'
       askAs : "Enter phone number"
       dataType : 1
       mlType : 1
       localId : 3
+      typeConfig : 1
    -
       name : 'email'
       askAs : "Enter email"
       dataType : 1
       mlType : 1
       localId : 4
+      typeConfig : 1
    -
       name : 'host'
       askAs : "Select host"
       dataType : 2
       mlType : 1
       localId : 5
+      typeConfig : 1
    -
       name : 'purpose'
       askAs : "Select purpose"
       dataType : 2
       mlType : 1
       localId : 6
+      typeConfig : 1
       
    contextWorkflow :
        isV2Script : true
@@ -543,7 +573,7 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'String test(Map data){
+                   workflowV2String : 'Map test(Map data){
     
                                          invite = {};
                                          invite.visitorType.id = data.visitorType;
@@ -556,7 +586,11 @@
                                          
                                          VisitorLogging().add(invite);
                                          
-                                         return "Invited successfully.";
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Invited successfully.");
+                                        
+                                         return resultMap;
                                        }'  
    invokeSamples:
     -

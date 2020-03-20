@@ -1432,7 +1432,7 @@ public enum ActionType {
 			
 			String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
 			
-			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, response);
+			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, Collections.singletonMap(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT, response));
 				
 		}
 

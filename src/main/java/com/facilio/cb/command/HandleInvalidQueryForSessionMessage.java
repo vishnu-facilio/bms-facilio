@@ -57,7 +57,7 @@ public class HandleInvalidQueryForSessionMessage extends FacilioCommand {
 				
 				ChatBotUtil.addChatBotSession(session);
 				
-				return true;
+				context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
 			}
 			
 		}

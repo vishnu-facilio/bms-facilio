@@ -4551,9 +4551,9 @@ public class TransactionChainFactory {
 		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
 		c.addCommand(new SendToMlApiForSessionCommand());
-		c.addCommand(new FetchSugestionForChatBotIntent());
 		c.addCommand(new HandleInvalidQueryForSessionMessage());
 		c.addCommand(new ExecuteActionAndSetResponseForSessionCommand());
+		c.addCommand(new FetchSugestionForChatBotIntent());
 		return c;
 	}
 	
@@ -4567,12 +4567,6 @@ public class TransactionChainFactory {
 		c.addCommand(new HandleEditParamFromSuggestionForConversations());
 		c.addCommand(new HandleAddParamFromSuggestionForConversations());
 		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
-		c.addCommand(new FetchSugestionForChatBotIntent());
-		return c;
-	}
-	
-	public static FacilioChain getFetchSugestionForChatBotIntentChain() {
-		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchSugestionForChatBotIntent());
 		return c;
 	}

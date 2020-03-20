@@ -17,6 +17,7 @@ import com.facilio.cb.context.ChatBotConfirmContext;
 import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentAction;
+import com.facilio.cb.context.ChatBotIntentChildContent;
 import com.facilio.cb.context.ChatBotIntentInvokeSample;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotModel;
@@ -102,6 +103,33 @@ public class ChatBotUtil {
 			ChatBotIntent chatBotIntent = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotIntent.class);
 			fillIntentExtraParams(chatBotIntent);
 			return chatBotIntent;
+		}
+		return null;
+	}
+	
+	public static List<ChatBotIntentChildContent> getChildIntent(long parentIntentId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBIntentChildFields();
+		
+		Map<String, FacilioField> FieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBIntentChildModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldMap.get("parentId"), parentIntentId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			List<ChatBotIntentChildContent> returnList = new ArrayList<>();
+			
+			for(Map<String, Object> prop : props) {
+				ChatBotIntentChildContent chatBotIntent = FieldUtil.getAsBeanFromMap(prop, ChatBotIntentChildContent.class);
+				chatBotIntent.setChildIntent(getIntent(chatBotIntent.getChildId()));
+				returnList.add(chatBotIntent);
+			}
+			return returnList;
 		}
 		return null;
 	}
@@ -242,7 +270,7 @@ public class ChatBotUtil {
 		
 	}
 	
-	private static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
+	public static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getCBIntentParamFields();
 		
@@ -704,7 +732,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 				.select(cbIntentFields)
 				.table(ModuleFactory.getCBIntentParamModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.FALSE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("typeConfig"),ChatBotIntentParam.Type_Config.MANDATORY.getIntVal()+"", NumberOperators.EQUALS))
 				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", sessionId)
 				.orderBy("LOCAL_ID")
 				;
@@ -729,7 +757,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 				.select(cbIntentFields)
 				.table(ModuleFactory.getCBIntentParamModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("optional"),Boolean.TRUE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("typeConfig"),ChatBotIntentParam.Type_Config.OPTIONAL.getIntVal()+"", NumberOperators.EQUALS))
 				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", sessionId)
 				.orderBy("LOCAL_ID")
 				;
@@ -991,7 +1019,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		int i=0;
 		
 		for(ChatBotIntentParam intentParam :intentParams) {
-			if(!intentParam.isOptional()) {
+			if(intentParam.getTypeConfig() == ChatBotIntentParam.Type_Config.MANDATORY.getIntVal()) {
 				i++;
 			}
 		}
@@ -1005,6 +1033,16 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		}
 		else {
 			return queryJson.get(ChatBotConstants.CHAT_BOT_LABEL);
+		}
+	}
+
+	public static ChatBotSession getChatbotSessionFromContext(Context context) {
+		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
+		if(chatBotSessionConversation != null) {
+			return chatBotSessionConversation.getChatBotSession();
+		}
+		else {
+			return (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
 		}
 	}
 

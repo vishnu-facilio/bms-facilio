@@ -8,8 +8,18 @@ public class ChatBotSuggestionContext {
 	
 	String suggestion;
 	Type type;
-	long intentParamId;
+	long intentParamId = -1;
+	long parentSessionId = -1;
 	
+
+	public long getParentSessionId() {
+		return parentSessionId;
+	}
+
+	public void setParentSessionId(long parentSessionId) {
+		this.parentSessionId = parentSessionId;
+	}
+
 	public String getSuggestion() {
 		return suggestion;
 	}
@@ -41,6 +51,7 @@ public class ChatBotSuggestionContext {
 		OPTIONAL_PARAM(1, "OPTIONAL_PARAM"),
 		EDITABLE_PARAM(2, "EDITABLE_PARAM"),
 		OTHERS(3,"Other"),
+		CHAINED_INTENT(4,"CHAINED_INTENT"),
 		;
 
 		int intVal;

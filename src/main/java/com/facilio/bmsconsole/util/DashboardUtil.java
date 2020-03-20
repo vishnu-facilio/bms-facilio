@@ -994,6 +994,8 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
+		LOGGER.log(Level.SEVERE, "selectBuilder getDashboardWithWidgets --"+selectBuilder +" props -- "+props);
+		
 		if (props != null && !props.isEmpty()) {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
 			

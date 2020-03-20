@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.cb.context.ChatBotIntent;
+import com.facilio.cb.context.ChatBotIntentChildContent;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
@@ -18,13 +20,15 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		ChatBotSession session = null;
+		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
+		
+		List<ChatBotSuggestionContext> chatBotSuggestionContexts = new ArrayList<>();
 		
 		if(chatBotSessionConversation != null) {
 			
-			ChatBotSession session = chatBotSessionConversation.getChatBotSession();
-			
-			List<ChatBotSuggestionContext> chatBotSuggestionContexts = new ArrayList<>();
+			session = chatBotSessionConversation.getChatBotSession();
 			
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
 				
@@ -58,6 +62,32 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 					}
 				}
 				
+				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
+				
+				return false;
+			}
+		}
+		else {
+			session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
+		}
+		
+		if(session.getState() == ChatBotSession.State.RESPONDED.getIntVal()) {
+			
+			ChatBotIntent intent = session.getIntent();
+			
+			List<ChatBotIntentChildContent> intentChilds = ChatBotUtil.getChildIntent(intent.getId());
+			
+			if(intentChilds != null) {
+				for(ChatBotIntentChildContent intentChild :intentChilds) {
+					
+					ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
+					
+					chatBotSuggestionContext.setSuggestion(intentChild.getChildIntent().getDisplayName());
+					chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.CHAINED_INTENT.getIntVal());
+					chatBotSuggestionContext.setParentSessionId(session.getId());
+					
+					chatBotSuggestionContexts.add(chatBotSuggestionContext);
+				}
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
 			}
 		}

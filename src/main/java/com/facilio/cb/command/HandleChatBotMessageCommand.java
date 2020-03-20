@@ -32,6 +32,8 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				
 				FacilioContext newcontext = chain.getContext();
 				
+				newcontext.putAll(context);
+				
 				ChatBotSession chatBotSession = new ChatBotSession();
 				chatBotSession.setQueryJson(chatMessageQuery);
 				newcontext.put(ChatBotConstants.CHAT_BOT_SESSION, chatBotSession);

@@ -733,6 +733,10 @@ public class ModuleFactory {
 		return constructModule("cbintent", "Chat Bot Intent", "CB_Intent");
 	}
 	
+	public static FacilioModule getCBIntentChildModule() {
+		return constructModule("cbintentchild", "Chat Bot Intent Child", "CB_Intent_Child");
+	}
+	
 	public static FacilioModule getCBIntentActionModule() {
 		return constructModule("cbintentaction", "Chat Bot Intent Action", "CB_Intent_Action");
 	}

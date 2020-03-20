@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -28,7 +29,16 @@ public class ChatBotIntent {
 	List<ChatBotIntentInvokeSample> invokeSamples;
 	WorkflowContext contextWorkflow;
 	boolean confirmationNeeded;
+	List<String> childIntentNames;
 	
+	public List<String> getChildIntentNames() {
+		return childIntentNames;
+	}
+
+	public void setChildIntentNames(List<String> childIntentNames) {
+		this.childIntentNames = childIntentNames;
+	}
+
 	List<ChatBotIntentParam> params;
 	
 	public List<ChatBotIntentParam> getParams() {
@@ -77,11 +87,31 @@ public class ChatBotIntent {
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, cbaction.getResponseType());
 				
 				if(context.get(WorkflowV2Util.WORKFLOW_RESPONSE) != null) {
-					result.put(ChatBotConstants.CHAT_BOT_RESPONSE, context.get(WorkflowV2Util.WORKFLOW_RESPONSE));
+					Map<String, Object> resultMap = (Map<String,Object>) context.get(WorkflowV2Util.WORKFLOW_RESPONSE);
+					
+					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT)) {
+						result.put(ChatBotConstants.CHAT_BOT_RESPONSE, resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT));
+					}
+					else {
+						result.put(ChatBotConstants.CHAT_BOT_RESPONSE,resultMap);
+					}
+					
+					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_PARAM)) {
+						Map<String, Object> extraParam = (Map<String,Object>) resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_PARAM);
+						
+						ChatBotSession session = ChatBotUtil.getChatbotSessionFromContext(context);
+						for(String key : extraParam.keySet()) {
+							Object param = extraParam.get(key);
+							ChatBotIntentParam intentParamContext = ChatBotUtil.getIntentParam(session.getIntentId(),key);
+							
+							ChatBotUtil.deleteAndAddSessionParam(intentParamContext.getId(), session.getId(), param.toString());
+						}
+					}
 				}
 				else if(cbaction.getResponse() != null) {
 					result.put(ChatBotConstants.CHAT_BOT_RESPONSE, cbaction.getResponse());
 				}
+				 
 				resArray.add(result);
 			}
 		}

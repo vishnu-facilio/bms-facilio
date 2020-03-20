@@ -57,44 +57,47 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 		Object insertObject = objects.get(1);
 		
-		List<WorkOrderContext> workorders = new ArrayList<WorkOrderContext>();
 		if(insertObject instanceof Map) {
-
-			WorkOrderContext wo = FieldUtil.getAsBeanFromMap((Map<String, Object>) insertObject, WorkOrderContext.class);
+			Map<String, Object> woMap = (Map<String, Object>) insertObject;
+			WorkOrderContext wo = FieldUtil.getAsBeanFromMap(woMap, WorkOrderContext.class);
 			
-			workorders.add(wo);
+			long id = addWorkOrderContext(wo);
+			woMap.put("id", id);
 		}
 		else if (insertObject instanceof Collection) {
 			
 			List<Object> insertList = (List<Object>)insertObject;
 			
 			for(Object insert :insertList) {
-				WorkOrderContext wo = FieldUtil.getAsBeanFromMap((Map<String, Object>) insert, WorkOrderContext.class);
-				workorders.add(wo);
+				Map<String, Object> woMap = (Map<String, Object>) insert;
+				WorkOrderContext wo = FieldUtil.getAsBeanFromMap(woMap, WorkOrderContext.class);
+				long id = addWorkOrderContext(wo);
+				woMap.put("id", id);
 			}
 		}
 		
-		for(WorkOrderContext workorder :workorders) {
-			
-			if (workorder.getSourceTypeEnum() == null) {
-				workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
-			}
-			
-			FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-			FacilioContext context = addWorkOrder.getContext();
-
-			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-			if (AccountUtil.getCurrentUser() == null) {
-				context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
-			}
-			
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-			
-			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-
-			addWorkOrder.execute();
+	}
+	
+	public long addWorkOrderContext(WorkOrderContext workorder) throws Exception {
+		
+		if (workorder.getSourceTypeEnum() == null) {
+			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 		}
 		
+		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+		FacilioContext context = addWorkOrder.getContext();
+
+		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+		if (AccountUtil.getCurrentUser() == null) {
+			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
+		}
+		
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+		addWorkOrder.execute();
+		return workorder.getId();
 	}
 	
 	public void addNote(Map<String,Object> globalParams,List<Object> objects) throws Exception {

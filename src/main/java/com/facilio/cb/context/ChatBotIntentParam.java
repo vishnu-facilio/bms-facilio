@@ -22,20 +22,32 @@ public class ChatBotIntentParam {
 	FieldType dataType;
 	ML_Type mlType;
 	int localId;
-	boolean optional;
+	Type_Config typeConfig;
 	boolean editable;
+	boolean fillableByParent;
+
+	public boolean isFillableByParent() {
+		return fillableByParent;
+	}
+
+	public void setFillableByParent(boolean fillableByParent) {
+		this.fillableByParent = fillableByParent;
+	}
 
 	List<JSONObject> options;
 	
 	String moduleName;		// for criteria Type
 	Criteria criteria;
 	
-	public boolean isOptional() {
-		return optional;
+	public int getTypeConfig() {
+		if(typeConfig != null) {
+			return typeConfig.getIntVal();
+		}
+		return -1;
 	}
 
-	public void setOptional(boolean optional) {
-		this.optional = optional;
+	public void setTypeConfig(int typeConfig) {
+		this.typeConfig = Type_Config.getAllTypeConfig().get(typeConfig);
 	}
 
 	public boolean isEditable() {
@@ -207,6 +219,45 @@ public class ChatBotIntentParam {
 		}
 
 		public static Map<Integer, ML_Type> getAllMLTypes() {
+			return optionMap;
+		}
+	}
+	
+	public enum Type_Config {
+		
+		MANDATORY(1, "Mandatory"),
+		OPTIONAL(2, "optional"),
+		AFTER_FILL(3, "After fill"),
+		;
+
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Type_Config(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Type_Config> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Type_Config> initTypeMap() {
+			Map<Integer, Type_Config> typeMap = new HashMap<>();
+
+			for (Type_Config type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Type_Config> getAllTypeConfig() {
 			return optionMap;
 		}
 	}

@@ -36,6 +36,10 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_SESSION_PARAM = "chatBotSessionParam";
 	public static final String CHAT_BOT_SESSION_PARAMS = "chatBotSessionParams";
 	
+	
+	public static final String CHAT_BOT_WORKFLOW_RETURN_TEXT = "returnText";
+	public static final String CHAT_BOT_WORKFLOW_RETURN_EXTRA_PARAM = "extraParams";
+	
 	public static final String CHAT_BOT_SKIP_ACTION_EXECUTION = "skipActionExecution";
 	
 	public static final String CHAT_BOT_SUGGESTIONS = "chatBotSuggestions";

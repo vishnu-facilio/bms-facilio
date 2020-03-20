@@ -1,31 +1,34 @@
 package com.facilio.cb.command;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.cb.context.ChatBotConfirmContext;
-import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotModel;
-import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSession.State;
 import com.facilio.cb.context.ChatBotSessionConversation;
+import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotUtil;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		
+		Boolean skipActionExecution = (Boolean) context.get(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION);
+		
+		if(skipActionExecution != null && skipActionExecution) {
+			return false;
+		}
 		
 		ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
 		
@@ -59,29 +62,52 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			
 			int requriedCount = ChatBotUtil.getRequiredParamCount(intent.getChatBotIntentParamList());
 			
-			if(chatBotMLResponse.getMlParams() != null) {
+			int recievedCount = 0;
+			
+			ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
+			
+			int size = intent.getChatBotIntentParamList().size();
+			
+			List<ChatBotIntentParam> filledParams = new ArrayList<>();
+			
+			if(suggestion != null && suggestion.getType() == ChatBotSuggestionContext.Type.CHAINED_INTENT.getIntVal()) {
 				
-				for(int i=0;i<intent.getChatBotIntentParamList().size();i++) {
+				Map<String, Object> resProps = ChatBotUtil.fetchAllSessionParams(suggestion.getParentSessionId());
+				
+				for(ChatBotIntentParam chatBotParam : intent.getChatBotIntentParamList()) {
 					
-					ChatBotIntentParam chatBotParam = intent.getChatBotIntentParamList().get(i);
+					if(chatBotParam.isFillableByParent() && resProps.containsKey(chatBotParam.getName())) {
+						
+						ChatBotUtil.deleteAndAddSessionParam(chatBotParam.getId(), session.getId(), resProps.get(chatBotParam.getName()).toString());
+						
+						filledParams.add(chatBotParam);
+						recievedCount++;
+					}
+				}
+				intent.getChatBotIntentParamList().removeAll(filledParams);
+			}
+			else if(chatBotMLResponse.getMlParams() != null) {
+				
+				filledParams = new ArrayList<>();
+				
+				for(ChatBotIntentParam chatBotParam : intent.getChatBotIntentParamList()) {
 					
 					if(chatBotMLResponse.getMlParams() != null && chatBotMLResponse.getMlParams().get(chatBotParam.getMlTypeEnum().getMLName()) != null) {
 						
-						ChatBotUtil.deleteAndAddSessionParam(chatBotParam.getIntentId(), session.getId(), chatBotMLResponse.getMlParams().get(chatBotParam.getMlTypeEnum().getMLName()));
+						ChatBotUtil.deleteAndAddSessionParam(chatBotParam.getId(), session.getId(), chatBotMLResponse.getMlParams().get(chatBotParam.getMlTypeEnum().getMLName()));
 						
-						intent.getChatBotIntentParamList().remove(i);
+						filledParams.add(chatBotParam);
+						recievedCount++;
 					}
 				}
 			}
-			
-			int recievedCount  = requriedCount - intent.getChatBotIntentParamList().size();
 			
 			session.setRequiredParamCount(requriedCount);
 			session.setRecievedParamCount(recievedCount);
 			
 			if(recievedCount == requriedCount) {
 				
-				if(intent.isConfirmationNeeded() && !session.isConfirmed()) {
+				if(intent.isConfirmationNeeded() && (session.isConfirmed() == null || !session.isConfirmed())) {
 					
 					session.setState(State.WAITING_FOR_CONFIRMATION.getIntVal());
 					
@@ -98,7 +124,7 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			else {
 				ChatBotIntentParam nextParam = null;
 				for(ChatBotIntentParam intentParam : intent.getChatBotIntentParamList()) {
-					if(!intentParam.isOptional()) {
+					if(intentParam.getTypeConfig() == ChatBotIntentParam.Type_Config.MANDATORY.getIntVal()) {
 						nextParam = intentParam;
 						break;
 					}
