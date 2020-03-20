@@ -10,7 +10,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SLAAction extends FacilioAction {
@@ -197,7 +196,7 @@ public class SLAAction extends FacilioAction {
     }
 
     public String reorderSLAPolicy() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getReorderSLAPolicyChain();
+        FacilioChain chain = TransactionChainFactory.getReorderWorkflowRuleChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);

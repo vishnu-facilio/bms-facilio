@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -81,6 +82,17 @@ public class ApprovalAction extends FacilioAction {
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
+		return SUCCESS;
+	}
+
+	public String reorderApprovalRule() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getReorderWorkflowRuleChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
+		chain.execute();
+
 		return SUCCESS;
 	}
 }

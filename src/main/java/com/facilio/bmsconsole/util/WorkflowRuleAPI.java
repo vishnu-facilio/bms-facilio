@@ -27,6 +27,7 @@ import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -455,14 +456,18 @@ public class WorkflowRuleAPI {
 		}
 		return FieldUtil.getAsBeanListFromMapList(list, clazz);
 	}
-	
-	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
+
+	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception {
+		return getWorkflowRules(type, fetchChildren, criteria, searchQuery, pagination, null);
+	}
+
+	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination, String orderBy) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
 		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
-		
+
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
@@ -470,16 +475,16 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
-		
+
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
-			
+
 			int offset = ((page-1) * perPage);
 			if (offset < 0) {
 				offset = 0;
 			}
-			
+
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
@@ -489,7 +494,10 @@ public class WorkflowRuleAPI {
 		if(criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
-	
+		if (StringUtils.isNotEmpty(orderBy)) {
+			builder.orderBy(orderBy);
+		}
+
 		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
 	

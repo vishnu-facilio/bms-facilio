@@ -376,6 +376,8 @@
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" />
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" />
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="reorderApprovalRule" />
 	</package>
 
 	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">
