@@ -3,6 +3,7 @@ package com.facilio.cb.command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.cb.context.ChatBotSession;
@@ -18,8 +19,6 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
-		ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
-		
 		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseString() != null) {
 			
 			String answer = null;
@@ -33,8 +32,33 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 				intent = "system_terminate_session_intent";
 				accuracy = 0.6789;
 			}
-			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && suggestion == null) {
-				if(answer.contains("yes") || answer.contains("ok") || answer.contains("confirm")) { 
+			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
+				
+				String chatMeg = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
+				
+				if(chatMeg.startsWith("Add")) {
+					ChatBotIntentParam intentParam = ChatBotUtil.getIntentParamWithAddTriggerText(chatMeg);
+					if(intentParam == null) {
+						intent = "dummy_intent";
+						accuracy = 0.01;
+					}
+					else {
+						intent = "dummy_intent";
+						context.put(ChatBotConstants.CHAT_BOT_ADD_ACTION_INTENT_PARAM, intentParam);
+					}
+				}
+				if(chatMeg.startsWith("Edit")) {
+					ChatBotIntentParam intentParam = ChatBotUtil.getIntentParamWithUpdateTriggerText(chatMeg);
+					if(intentParam == null) {
+						intent = "dummy_intent";
+						accuracy = 0.01;
+					}
+					else {
+						intent = "dummy_intent";
+						context.put(ChatBotConstants.CHAT_BOT_EDIT_ACTION_INTENT_PARAM, intentParam);
+					}
+				}
+				else if(answer.contains("yes") || answer.contains("ok") || answer.contains("confirm")) { 
 					intent = "system_affirmative_intent";
 					accuracy = 0.6789;
 					chatBotSessionConversation.getChatBotSession().setConfirmed(Boolean.TRUE);

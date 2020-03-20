@@ -64,15 +64,17 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			
 			int recievedCount = 0;
 			
-			ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
+//			ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
 			
 			int size = intent.getChatBotIntentParamList().size();
 			
 			List<ChatBotIntentParam> filledParams = new ArrayList<>();
 			
-			if(suggestion != null && suggestion.getType() == ChatBotSuggestionContext.Type.CHAINED_INTENT.getIntVal()) {
+			ChatBotSession prevoiusSession = ChatBotUtil.checkChildIntentAndGetPrevoisSessionContext(intent.getId());
+			
+			if(prevoiusSession != null) {
 				
-				Map<String, Object> resProps = ChatBotUtil.fetchAllSessionParams(suggestion.getParentSessionId());
+				Map<String, Object> resProps = ChatBotUtil.fetchAllSessionParams(prevoiusSession.getId());
 				
 				for(ChatBotIntentParam chatBotParam : intent.getChatBotIntentParamList()) {
 					

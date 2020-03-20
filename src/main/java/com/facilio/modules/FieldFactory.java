@@ -7922,6 +7922,8 @@ public class FieldFactory {
         fields.add(getField("typeConfig", "TYPE_CONFIG", module, FieldType.NUMBER));
         fields.add(getField("editable", "IS_EDITABLE", module, FieldType.BOOLEAN));
         fields.add(getField("fillableByParent", "IS_FILLABLE_BY_PARENT", module, FieldType.BOOLEAN));
+        fields.add(getField("addParamTriggerText", "ADD_PARAM_TRIGGER_TEXT", module, FieldType.STRING));
+        fields.add(getField("updateParamTriggerText", "UPDATE_PARAM_TRIGGER_TEXT", module, FieldType.STRING));
 
         return fields;
     }

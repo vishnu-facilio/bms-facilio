@@ -135,6 +135,7 @@
       localId : 1
       editable : true
       typeConfig : 1
+      updateParamTriggerText : 'Edit Subject'
    -
       name : 'description'
       displayName : "Description"
@@ -143,6 +144,7 @@
       mlType : 1
       localId : 2
       typeConfig : 2
+      addParamTriggerText : 'Add Description'
    -
       name : 'woId'
       dataType : 2

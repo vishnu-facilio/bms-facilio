@@ -17,11 +17,9 @@ public class HandleAddParamFromSuggestionForConversations extends FacilioCommand
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
-		ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
+		ChatBotIntentParam intentParam = (ChatBotIntentParam) context.get(ChatBotConstants.CHAT_BOT_ADD_ACTION_INTENT_PARAM);
 		
-		if(suggestion != null && suggestion.getType() == ChatBotSuggestionContext.Type.OPTIONAL_PARAM.getIntVal()) {
-			
-			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParam(suggestion.getIntentParamId());
+		if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && intentParam != null) {
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),null,null);
 			
@@ -31,6 +29,7 @@ public class HandleAddParamFromSuggestionForConversations extends FacilioCommand
 			
 			chatBotSessionConversation.getChatBotSession().setState(ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal());
 			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
+			
 		}
 		return false;
 		

@@ -19,13 +19,11 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
-		ChatBotSuggestionContext suggestion = (ChatBotSuggestionContext) context.get(ChatBotConstants.CHAT_BOT_SUGGESTION);
+		ChatBotIntentParam intentParam = (ChatBotIntentParam) context.get(ChatBotConstants.CHAT_BOT_EDIT_ACTION_INTENT_PARAM);
 		
-		if(suggestion != null && suggestion.getType() == ChatBotSuggestionContext.Type.EDITABLE_PARAM.getIntVal()) {
+		if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && intentParam != null) {
 			
-			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParam(suggestion.getIntentParamId());
-			
-			ChatBotSessionParam sessionParam = ChatBotUtil.fetchSessionParam(chatBotSessionConversation.getSessionId(), suggestion.getIntentParamId());
+			ChatBotSessionParam sessionParam = ChatBotUtil.fetchSessionParam(chatBotSessionConversation.getSessionId(), intentParam.getId());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),null,null);
 			
@@ -40,6 +38,7 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 			
 			chatBotSessionConversation.getChatBotSession().setState(ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal());
 			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
+				
 		}
 		return false;
 	}

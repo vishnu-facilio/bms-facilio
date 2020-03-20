@@ -25,6 +25,25 @@ public class ChatBotIntentParam {
 	Type_Config typeConfig;
 	boolean editable;
 	boolean fillableByParent;
+	String addParamTriggerText;
+	String updateParamTriggerText;
+	
+	
+	public String getAddParamTriggerText() {
+		return addParamTriggerText;
+	}
+
+	public void setAddParamTriggerText(String addParamTriggerText) {
+		this.addParamTriggerText = addParamTriggerText;
+	}
+
+	public String getUpdateParamTriggerText() {
+		return updateParamTriggerText;
+	}
+
+	public void setUpdateParamTriggerText(String updateParamTriggerText) {
+		this.updateParamTriggerText = updateParamTriggerText;
+	}
 
 	public boolean isFillableByParent() {
 		return fillableByParent;
