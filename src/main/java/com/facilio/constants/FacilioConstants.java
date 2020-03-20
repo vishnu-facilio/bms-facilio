@@ -1686,6 +1686,7 @@ public class FacilioConstants {
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(BASE_EVENT, BaseEventContext.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
+			classMap.put(READING_ALARM_OCCURRENCE, ReadingAlarmOccurrenceContext.class);
 			classMap.put(PRE_ALARM, PreAlarmContext.class);
 			classMap.put(PRE_ALARM_OCCURRENCE, PreAlarmOccurrenceContext.class);
 			classMap.put(PRE_EVENT, PreEventContext.class);
