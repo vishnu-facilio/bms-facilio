@@ -6,4 +6,5 @@
 	 <module displayname = 'User' name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
 	 <module displayname = 'VisitorLogging' name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
 	 <module displayname = 'BaseAlarm' name='basealarm' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
+	 <module displayname = 'ReadingAlarm' name='newreadingalarm' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
 </workflow>
