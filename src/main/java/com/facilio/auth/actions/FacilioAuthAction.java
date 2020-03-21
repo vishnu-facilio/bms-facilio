@@ -46,6 +46,7 @@ import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -560,7 +561,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
 		if(user != null) {
-			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(request.getServerName(), user.getOrgId(), user.getUid());
+			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(null, user.getOrgId(), user.getUid());
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(new Account(org, us));
@@ -887,10 +888,12 @@ public class FacilioAuthAction extends FacilioAction {
 	public String signupPortalUser() throws Exception {
 		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + password + ", email : "
 				+ getEmailaddress() );
-		return addPortalUser(getUsername(), getPassword(), getEmailaddress());
+		HttpServletRequest req = ServletActionContext.getRequest();
+		
+		return addPortalUser(getUsername(), getPassword(), getEmailaddress(), req.getServerName());
 	}
 
-	private String addPortalUser(String username, String password, String emailaddress)
+	private String addPortalUser(String username, String password, String emailaddress, String appDomain)
 			throws Exception {
 		LOGGER.info("### addPortalUser() :" + emailaddress);
 
@@ -948,7 +951,20 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, req.getServerName(), 1, true);
+				AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+				if(appDomainObj == null) {
+					setJsonresponse("message", "Invalid app domain");
+					return ERROR;
+				}
+				long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+				user.setApplicationId(applicationId);
+				user.setAppDomain(appDomainObj);
+				long identifier = 1l;
+				if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
+					identifier = appDomainObj.getId();
+				}
+				
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, identifier, true);
 				
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {

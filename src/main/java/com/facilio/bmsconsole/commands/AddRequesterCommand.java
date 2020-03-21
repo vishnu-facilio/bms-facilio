@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 
@@ -29,7 +30,12 @@ public class AddRequesterCommand extends FacilioCommand {
 					requester.setId(portalUser.getOuid());
 				}
 				else {
-					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, appDomain.get(0).getDomain(), 1, true));
+					
+					long appId = ApplicationApi.getApplicationIdForApp(appDomain.get(0));
+					requester.setApplicationId(appId);
+					requester.setAppDomain(appDomain.get(0));
+					
+					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, 1, true));
 					
 				}
 				

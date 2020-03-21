@@ -271,19 +271,28 @@ public class UserAction extends FacilioAction {
 		
 		try {
 			AppDomain appDomain = null;
-			if(getAppId() > 0) {
-				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
-			}
-			else {
+			if(getAppId() <= 0) {
 				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
 			       if(CollectionUtils.isNotEmpty(appDomains)) {
 			    	   if(appDomains.size() > 1) {
-			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    		   addFieldError("error", "Please send the appId as there are multiple apps configured for this type");
+			    		   return ERROR;
 			    	   }
 			    	   appDomain = appDomains.get(0);
+			    	   setAppId(ApplicationApi.getApplicationIdForApp(appDomain));
+			       }
+			       else {
+			    	   addFieldError("error", "No Service Portal configured");
+			    	   return ERROR;
 			       }
 			}
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain.getDomain(), 1, true) > 0) {
+			else {
+				appDomain = ApplicationApi.getAppDomainForApplication(getAppId());
+			}
+			user.setApplicationId(getAppId());
+			user.setAppDomain(appDomain);
+			
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, 1, true) > 0) {
 				setUserId(user.getId());
 			}
 			else {

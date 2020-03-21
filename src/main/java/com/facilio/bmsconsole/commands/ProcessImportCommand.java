@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -48,6 +49,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -805,7 +807,12 @@ public class ProcessImportCommand extends FacilioCommand {
 					user = new User();
 					user.setEmail(value.toString());
 					String appDomain = AccountUtil.getCurrentOrg().getDomain() + ".facilioportal.com";
-					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false, appDomain, 1, true);
+					AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+					long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+					user.setApplicationId(appId);
+					user.setAppDomain(appDomainObj);
+					
+					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false, 1, true);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;

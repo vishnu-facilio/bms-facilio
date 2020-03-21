@@ -425,7 +425,11 @@ public class PeopleAPI {
 		if(StringUtils.isEmpty(appDomain)) {
 			throw new IllegalArgumentException("Invalid App Domain");
 		}
-		
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new IllegalArgumentException("Invalid App Domain");
+		}
+		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 		User user = new User();
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
@@ -437,8 +441,10 @@ public class PeopleAPI {
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setRoleId(existingPeople.getRoleId());
 		
+		user.setApplicationId(appId);
+		user.setAppDomain(appDomainObj);
 		
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, 1, appDomain);
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, 1);
 		return user;
 		
 	}
@@ -447,6 +453,12 @@ public class PeopleAPI {
 		if(StringUtils.isEmpty(appDomain)) {
 			throw new IllegalArgumentException("Invalid App Domain");
 		}
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new IllegalArgumentException("Invalid App Domain");
+		}
+		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		
 		User user = new User();
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
@@ -457,9 +469,11 @@ public class PeopleAPI {
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		
+		user.setApplicationId(appId);
+		user.setAppDomain(appDomainObj);
 		
 		
-		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain, identifier, false);
+		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false);
 		return user;
 	}
 	

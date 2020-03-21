@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
@@ -16,6 +17,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -24,6 +26,7 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -136,7 +139,13 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(role.getRoleId()), PickListOperators.IS));
         
-        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getDefaultAppDomain(), criteria, AccountUtil.getCurrentOrg().getOrgId());
+        long appId = -1;
+        AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+		
+        if(appDomainObj != null) {
+        	appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+        }
+        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(appId, criteria, AccountUtil.getCurrentOrg().getOrgId());
 
         if (groupId > 0) {
             selectRecordBuilder.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
