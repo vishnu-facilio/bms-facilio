@@ -110,10 +110,9 @@ public class BimAPI {
 		Row row = sheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
 		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-
 		for (int i = 0; i < lastCellNum; i++) {
 			Cell cell = row.getCell(i);
-			if (columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
+			if (columnHeadings.size() <= i || columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
 				continue;
 			} else {
 				if (cell == null) {
@@ -290,7 +289,6 @@ public class BimAPI {
 		}else if(moduleName.equalsIgnoreCase("building")){
 			fieldMapping.put("resource"+"__"+"name", "ProjectName");
 			fieldMapping.put("resource"+"__"+"description", "ProjectDescription");
-			fieldMapping.put(moduleName+"__"+"site", "Name");
 		}else if(moduleName.equalsIgnoreCase("floor")){
 			fieldMapping.put("resource"+"__"+"name", "Name");
 			fieldMapping.put("resource"+"__"+"description", "Description");

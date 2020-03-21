@@ -4920,7 +4920,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getPMImportDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PMImportDataCommand());
-//		c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
+		c.addCommand(TransactionChainFactory.getbimImportUpdateChain());
 		return c;
 	}
 

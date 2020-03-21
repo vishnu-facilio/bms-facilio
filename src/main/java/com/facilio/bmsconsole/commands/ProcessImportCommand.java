@@ -209,8 +209,13 @@ public class ProcessImportCommand extends FacilioCommand {
 					}
 
 					else if (module.equals(FacilioConstants.ContextNames.BUILDING)) {
-					
-						Long buildingId = getSpaceID(importProcessContext,colVal, fieldMapping);
+						long buildingId = -1;
+						if(!isBim){
+							buildingId = getSpaceID(importProcessContext,colVal, fieldMapping);
+						}else{
+							buildingId = Long.parseLong(props.get("site").toString());
+						}
+						
 						lookupHolder = new HashMap<>();
 						lookupHolder.put("id", buildingId);
 						props.put("siteId", buildingId);

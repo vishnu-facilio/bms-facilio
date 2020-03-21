@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands.data;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
@@ -384,11 +386,13 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = bean.getModule(moduleName);
 		
+		FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
+		List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
+		BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
+		boolean isBim = (bimImport!=null);
+		
 		if(module == null){
-			FacilioModule bimModule = ModuleFactory.getBimImportProcessMappingModule();
-			List<FacilioField> bimFields = FieldFactory.getBimImportProcessMappingFields();
-			BimImportProcessMappingContext bimImport = BimAPI.getBimImportProcessMappingByImportProcessId(bimModule,bimFields,importProcessContext.getId());
-			boolean isBim = (bimImport!=null);
+			
 			if(isBim && moduleName.equals("zonespacerel")){
 				for(ReadingContext reading:readingsEntireList){
 					SpaceAPI.addZoneChildren(Long.parseLong(reading.getReading("zoneId").toString()), Collections.singletonList(Long.parseLong(reading.getReading("basespaceId").toString())));
@@ -396,6 +400,23 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			}
 		}else{
 		
+			if(isBim && moduleName.equals(FacilioConstants.ContextNames.ASSET_CATEGORY)){
+				for(ReadingContext reading:readingsEntireList){
+					AssetCategoryContext assetCategory = new AssetCategoryContext();
+					assetCategory.setName(reading.getReading("name").toString());
+					assetCategory.setType(Integer.parseInt(reading.getReading("type").toString()));
+					
+					if(assetCategory.getName() == null || assetCategory.getName().isEmpty()) {
+						if(assetCategory.getDisplayName() != null && !assetCategory.getDisplayName().isEmpty()) {
+							assetCategory.setName(assetCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+						}
+					}
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+					FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+					addAssetCategoryChain.execute(context);
+				}
+			}else{
 		
 		if(module.getTypeEnum() == ModuleType.READING 
 		|| module.getTypeEnum() == ModuleType.SCHEDULED_FORMULA || 
@@ -467,6 +488,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				}
 		
 			}
+		}
 		}
 		}
 		return listOfIds;

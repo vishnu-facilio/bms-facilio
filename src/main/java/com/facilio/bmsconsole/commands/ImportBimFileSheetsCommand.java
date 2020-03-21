@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +100,7 @@ public class ImportBimFileSheetsCommand extends FacilioCommand {
 			
 			BimAPI.ScheduleBimGenericImportJob(firstModuleName, firstSheetName, importList.get(0));
 		}
-		
+		inputStream.close();
 		return false;
 	}
 	

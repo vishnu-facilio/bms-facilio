@@ -33,14 +33,10 @@ public class ValidateBimFileSheetsCommand extends FacilioCommand {
 				String[] moduleNames = moduleName.split("&&");
 				for(int j=0;j<moduleNames.length;j++){
 					FacilioModule facilioModule = modBean.getModule(moduleNames[j]);
-					if(facilioModule == null){
-						if(sheetName.equals("Job")){
-							validSheetsMap.put(sheetName,"Planned Maintenance");
-						}
-					}else{
+					if(facilioModule != null){
 						if(validSheetsMap.containsKey(sheetName)){
 							String name = (String)validSheetsMap.get(sheetName);
-							validSheetsMap.put(sheetName, name+" and "+ facilioModule.getDisplayName());
+							validSheetsMap.put(sheetName, name+" , "+ facilioModule.getDisplayName());
 						}else{
 							validSheetsMap.put(sheetName,facilioModule.getDisplayName());
 						}

@@ -2,19 +2,20 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.net.URLConnection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
+import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -57,11 +58,17 @@ public class BIMIntegrationAction extends FacilioAction{
 	}
 	
 	public String checkStatus() throws Exception {
-		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
-		List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
-		BimIntegrationLogsContext bimIntegrationLog = BimAPI.getBimIntegrationLog(module, fields, bimImportId);
-		
-		setResult("bimIntegration" , bimIntegrationLog);
+		FacilioModule module = ModuleFactory.getBimImportProcessMappingModule();
+		List<FacilioField> fields =  FieldFactory.getBimImportProcessMappingFields();
+		List<BimImportProcessMappingContext> bimImportProcessList = BimAPI.getBimImportProcessMapping(module, fields, bimImportId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(BimImportProcessMappingContext bim : bimImportProcessList){
+			FacilioModule facilioModule = modBean.getModule(bim.getModuleName());
+			if(facilioModule != null){
+				bim.setModuleName(facilioModule.getDisplayName());
+			}
+		}
+		setResult("bimImportProcessList" , bimImportProcessList);
 		
 		return SUCCESS;
 	}

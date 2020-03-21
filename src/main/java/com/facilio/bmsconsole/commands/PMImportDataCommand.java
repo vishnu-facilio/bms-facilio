@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +55,8 @@ public class PMImportDataCommand extends FacilioCommand {
 		long jobId = (Long) context.get(ImportAPI.ImportProcessConstants.JOB_ID);
 
 		ImportProcessContext importProcessContext = ImportAPI.getImportProcessContext(jobId);
+
+ 		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
 		
 		JSONParser parser = new JSONParser();
@@ -141,7 +142,6 @@ public class PMImportDataCommand extends FacilioCommand {
 			
 			rowContext.setRowNumber(row_no);
 			rowContext.setColVal(colVal);
-			System.out.println("importRows:: "+colVal);
 			rows.add(rowContext);
 		}
 		Map<String,HashMap<String,LinkedList<Integer>>> titles = new HashMap<String,HashMap<String,LinkedList<Integer>>>();
@@ -180,7 +180,6 @@ public class PMImportDataCommand extends FacilioCommand {
 			}
 		}
 		
-		System.out.println("titles :::: "+titles);
 		
 		JSONObject workOrderJson = new JSONObject();
 		JSONObject pmJson = new JSONObject();
@@ -287,9 +286,8 @@ public class PMImportDataCommand extends FacilioCommand {
 
 	 		FacilioChain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 	 		addTemplate.execute(context);
-			
+	 		
 		}
-		
 		
 		return false;
 	}

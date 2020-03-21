@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +55,7 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 				String moduleName = bimImport.getModuleName();
 				
 				addBimDefaultValues(workbook, moduleName, bimImportId,importProcessContext);
-				
+				inputStream.close();
 			}
 			
 		}
@@ -96,6 +94,11 @@ public class AddBimDefaultValuesCommand extends FacilioCommand {
 			bimDefaultValues.add(bimDefaultValue);
 			
 			BimDefaultValuesContext bimDefaultValue1 = (BimDefaultValuesContext) bimDefaultValue.clone();
+			FacilioModule buildingModule = modBean.getModule("building");
+			bimDefaultValue1.setModuleId(buildingModule.getModuleId());
+			bimDefaultValues.add(bimDefaultValue1);
+			
+			bimDefaultValue1 = (BimDefaultValuesContext) bimDefaultValue.clone();
 			FacilioModule floorModule = modBean.getModule("floor");
 			bimDefaultValue1.setModuleId(floorModule.getModuleId());
 			bimDefaultValues.add(bimDefaultValue1);
