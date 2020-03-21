@@ -17,15 +17,17 @@ public class UpdateTenantAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<TenantContactContext> tenantContacts = (List<TenantContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Integer accessChangeFor = (Integer)context.get(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR);
+		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
+		
 		if(CollectionUtils.isNotEmpty(tenantContacts)) {
 			if(accessChangeFor == 1) {
 				for(TenantContactContext tc : tenantContacts) {
-					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.TENANT_PORTAL);
+					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.TENANT_PORTAL, appId);
 				}
 			}
 			else if(accessChangeFor == 2){
 				for(TenantContactContext tc : tenantContacts) {
-					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.SERVICE_PORTAL);
+					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.SERVICE_PORTAL, appId);
 				}
 			}
 		}

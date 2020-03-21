@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -39,6 +40,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -227,6 +229,17 @@ public class UserAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	private long appId;
+	
+	public long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+
 	public String inviteRequester() throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest(); 
@@ -257,7 +270,19 @@ public class UserAction extends FacilioAction {
 		}
 		
 		try {
-			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
+			AppDomain appDomain = null;
+			if(getAppId() > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+			}
+			else {
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
+			       if(CollectionUtils.isNotEmpty(appDomains)) {
+			    	   if(appDomains.size() > 1) {
+			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    	   }
+			    	   appDomain = appDomains.get(0);
+			       }
+			}
 			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain.getDomain(), 1, true) > 0) {
 				setUserId(user.getId());
 			}

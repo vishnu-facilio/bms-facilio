@@ -17,18 +17,20 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<EmployeeContext> employees = (List<EmployeeContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Integer accessChangeFor = (Integer)context.get(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR);
+		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
+		
 		if(CollectionUtils.isNotEmpty(employees)) {
 			if(accessChangeFor == 1) {
 				for(EmployeeContext emp : employees) {
 					if(emp.isAppAccess() && emp.getRoleId() <= 0) {
 						throw new IllegalArgumentException("Role cannot be null");
 					}
-					PeopleAPI.updateEmployeeAppPortalAccess(emp, AppDomainType.FACILIO);
+					PeopleAPI.updateEmployeeAppPortalAccess(emp, AppDomainType.FACILIO, appId);
 				}
 			}
 			else if(accessChangeFor == 2){
 				for(EmployeeContext emp : employees) {
-					PeopleAPI.updateEmployeeAppPortalAccess(emp, AppDomainType.SERVICE_PORTAL);
+					PeopleAPI.updateEmployeeAppPortalAccess(emp, AppDomainType.SERVICE_PORTAL, appId);
 				}
 			}
 		}

@@ -88,6 +88,14 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
+	private long appId;
+	
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
 	public String addEmployees() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(employees)) {
@@ -184,6 +192,8 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			//1 - app, 2- Occupant portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -197,6 +207,8 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
 			//1 - app, 2- Occupant portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 2);
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -88,6 +88,13 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
+	private long appId;
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
 	public String addClientContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(clientContacts)) {
@@ -184,6 +191,8 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
 			//1 - Client portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACT, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}

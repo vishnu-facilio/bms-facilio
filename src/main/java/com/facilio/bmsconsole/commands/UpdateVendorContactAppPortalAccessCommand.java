@@ -17,10 +17,12 @@ public class UpdateVendorContactAppPortalAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<VendorContactContext> vendorContacts = (List<VendorContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Integer accessChangeFor = (Integer)context.get(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR);
+		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
+		
 		if(CollectionUtils.isNotEmpty(vendorContacts)) {
 			if(accessChangeFor == 1) {
 				for(VendorContactContext vc : vendorContacts) {
-					PeopleAPI.updateVendorContactAppPortalAccess(vc, AppDomainType.VENDOR_PORTAL);
+					PeopleAPI.updateVendorContactAppPortalAccess(vc, AppDomainType.VENDOR_PORTAL, appId);
 				}
 			}
 		}

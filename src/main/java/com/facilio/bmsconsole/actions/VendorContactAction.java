@@ -87,6 +87,14 @@ public class VendorContactAction extends FacilioAction{
 		this.id = id;
 	}
 	
+	private long appId;
+	
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -182,6 +190,8 @@ public class VendorContactAction extends FacilioAction{
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
 			//1 - Vendor portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -214,9 +214,22 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-        PeopleContext existingPeople = getPeopleForId(person.getId());
+	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType, long appId) throws Exception {
+	   AppDomain appDomain = null;
+		if(appId > 0) {
+			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+		}
+		else {
+			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+		       if(CollectionUtils.isNotEmpty(appDomains)) {
+		    	   if(appDomains.size() > 1) {
+		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+		    	   }
+		    	   appDomain = appDomains.get(0);
+		       }
+		}
+	
+		PeopleContext existingPeople = getPeopleForId(person.getId());
     	
         if(appDomain != null) {
 			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
@@ -246,9 +259,21 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void updateTenantContactAppPortalAccess(TenantContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-        PeopleContext existingPeople = getPeopleForId(person.getId());
+	public static void updateTenantContactAppPortalAccess(TenantContactContext person, AppDomainType appDomainType, long appId) throws Exception {
+	   AppDomain appDomain = null;
+		if(appId > 0) {
+			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+		}
+		else {
+			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+		       if(CollectionUtils.isNotEmpty(appDomains)) {
+		    	   if(appDomains.size() > 1) {
+		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+		    	   }
+		    	   appDomain = appDomains.get(0);
+		       }
+		}
+		PeopleContext existingPeople = getPeopleForId(person.getId());
     	if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
         	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
@@ -273,9 +298,21 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void updateClientContactAppPortalAccess(ClientContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-        PeopleContext existingPeople = getPeopleForId(person.getId());
+	public static void updateClientContactAppPortalAccess(ClientContactContext person, AppDomainType appDomainType, long appId) throws Exception {
+		AppDomain appDomain = null;
+		if(appId > 0) {
+			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+		}
+		else {
+			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+		       if(CollectionUtils.isNotEmpty(appDomains)) {
+		    	   if(appDomains.size() > 1) {
+		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+		    	   }
+		    	   appDomain = appDomains.get(0);
+		       }
+		}
+		PeopleContext existingPeople = getPeopleForId(person.getId());
     	
         if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
@@ -301,9 +338,21 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void updateVendorContactAppPortalAccess(VendorContactContext person, AppDomainType appDomainType) throws Exception {
-        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-        PeopleContext existingPeople = getPeopleForId(person.getId());
+	public static void updateVendorContactAppPortalAccess(VendorContactContext person, AppDomainType appDomainType, long appId) throws Exception {
+       AppDomain appDomain = null;
+		if(appId > 0) {
+			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+		}
+		else {
+			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+		       if(CollectionUtils.isNotEmpty(appDomains)) {
+		    	   if(appDomains.size() > 1) {
+		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+		    	   }
+		    	   appDomain = appDomains.get(0);
+		       }
+		}
+	    PeopleContext existingPeople = getPeopleForId(person.getId());
 		if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
         	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {

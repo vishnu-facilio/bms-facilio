@@ -12,7 +12,7 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteAppDomain(id));
 	}
 	
-	public static AppDomain getAppDomain(AppDomainType type, long orgId) throws Exception {
+	public static List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(type, orgId));
 	}
 	

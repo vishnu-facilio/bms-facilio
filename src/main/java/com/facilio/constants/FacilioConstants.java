@@ -1559,7 +1559,7 @@ public class FacilioConstants {
 		public static final String PEOPLE = "people";
 
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
-
+	
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

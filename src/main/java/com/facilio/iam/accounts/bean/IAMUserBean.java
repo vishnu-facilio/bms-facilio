@@ -112,7 +112,7 @@ public interface IAMUserBean {
 	
 	public int deleteAppDomain(long id) throws Exception;
     
-    public AppDomain getAppDomain(AppDomainType type, long orgId) throws Exception;
+    public List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception;
     
     public AppDomain getAppDomain(String domain) throws Exception;
     

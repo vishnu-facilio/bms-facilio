@@ -1486,7 +1486,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 
 	@Override
-	public AppDomain getAppDomain(AppDomainType type, long orgId) throws Exception {
+	public List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
@@ -1498,7 +1498,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
 		}
 		return null;
 
