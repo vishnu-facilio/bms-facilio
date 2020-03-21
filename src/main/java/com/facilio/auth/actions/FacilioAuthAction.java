@@ -31,6 +31,8 @@ import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
@@ -48,6 +50,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
@@ -334,16 +337,19 @@ public class FacilioAuthAction extends FacilioAction {
 	public String validateLoginv3() {
 
 		boolean portalUser = false;
+		HttpServletRequest request = ServletActionContext.getRequest();
+		
 
 		if (getUsername() != null && getPassword() != null) {
 			try {
 				LOGGER.info("validateLogin() : username : " + getUsername() 
-						+ " portal id : " + portalId());
+						);
 				String authtoken = null;
-				if(portalId() > 0) {
+				String appDomain = request.getServerName();
+				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 					portalUser = true;
 				}
-				HttpServletRequest request = ServletActionContext.getRequest();
 				
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
@@ -398,6 +404,8 @@ public class FacilioAuthAction extends FacilioAction {
 	public String googleSignIn() throws Exception {
 		
 		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
+		HttpServletRequest request = ServletActionContext.getRequest();
+		
 		if (payload != null) {
 			String email = (String) payload.get("email");
 			String hostedDomain = (String) payload.get("hd");
@@ -408,10 +416,11 @@ public class FacilioAuthAction extends FacilioAction {
 				LOGGER.info("validateGoogleSignIn()");
 				String authtoken = null;
 				boolean portalUser = false;
-				if(portalId() > 0) {
+				String appDomain = request.getServerName();
+				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+				if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 					portalUser = true;
 				}
-				HttpServletRequest request = ServletActionContext.getRequest();
 				
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
@@ -542,13 +551,6 @@ public class FacilioAuthAction extends FacilioAction {
 
 		authmodel.setDomain(parentdomain);
 		response.addCookie(authmodel);
-	}
-
-	public long portalId() {
-		if (AccountUtil.getCurrentOrg() != null) {
-			return AccountUtil.getCurrentOrg().getPortalId();
-		}
-		return -1L;
 	}
 
 	public String validateInviteLink() throws Exception {
@@ -884,11 +886,11 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String signupPortalUser() throws Exception {
 		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + password + ", email : "
-				+ getEmailaddress() + "portal " + portalId());
-		return addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
+				+ getEmailaddress() );
+		return addPortalUser(getUsername(), getPassword(), getEmailaddress());
 	}
 
-	private String addPortalUser(String username, String password, String emailaddress, long portalId)
+	private String addPortalUser(String username, String password, String emailaddress)
 			throws Exception {
 		LOGGER.info("### addPortalUser() :" + emailaddress);
 
@@ -977,22 +979,6 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String apiLogout() throws Exception {
 
-//		HttpServletRequest request = ServletActionContext.getRequest();
-//		HttpServletResponse response = ServletActionContext.getResponse();
-//		HttpSession session = request.getSession();
-//
-//		session.invalidate();
-//
-//		String parentdomain = request.getServerName().replaceAll("app.", ""); 
-//        
-//        if(portalId() > 0) { 
-//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain); 
-//        } else { 
-//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain); 
-//        } 
-//        
-//        FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null); 
-//		return SUCCESS;
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
@@ -1001,9 +987,12 @@ public class FacilioAuthAction extends FacilioAction {
 		try {
 			
 			String facilioToken = null;
-			if(portalId() > 0) {
+			String appDomain = request.getServerName();
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
-			}else {
+			}
+			else {
 				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 			}
 			if (facilioToken != null) {
@@ -1017,10 +1006,18 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
+		boolean portalUser = false;
+		String appDomain = request.getServerName();
+		AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+			portalUser = true;
+		}
+	
+		
 		HttpSession session = request.getSession();
 		session.invalidate();
 		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
-		FacilioCookie.eraseUserCookie(request, response, portalId() > 0 ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
+		FacilioCookie.eraseUserCookie(request, response, portalUser ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);

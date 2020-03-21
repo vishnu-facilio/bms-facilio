@@ -17,7 +17,7 @@
 	},
 	"7" : {
 		"name": "ADDED_TO_APP_EMAIL",
-		"message_ftl": "inviteRequester"
+		"message_ftl": "appAddition"
 	}
 	
 }

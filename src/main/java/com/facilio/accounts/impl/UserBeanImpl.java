@@ -182,12 +182,12 @@ public class UserBeanImpl implements UserBean {
 		}
 		user.setOrgId(orgId);
 		user.setUserStatus(true);
-		addToORGUsers(user, true);
+		addToORGUsers(user);
 		if(isSignUpEmailVerificationNeeded) {
 			ApplicationApi.addDefaultAppDomains(orgId);
 			ApplicationApi.addDefaultApps(orgId);
 		}
-		addToORGUsersApps(user);
+		addToORGUsersApps(user, true);
 		addUserDetail(user);
 		
 	}
@@ -213,7 +213,7 @@ public class UserBeanImpl implements UserBean {
 
 	}
 	
-	private void addToORGUsers(User user, boolean isEmailVerificationNeeded) throws Exception {
+	private void addToORGUsers(User user) throws Exception {
 		
 		long ouId = checkIfExistsInOrgUsers(user.getUid(), user.getOrgId());
 		if(ouId <= 0) {
@@ -240,11 +240,7 @@ public class UserBeanImpl implements UserBean {
 			insertBuilder.save();
 	
 			user.setOuid((long) props.get("ouid"));
-			if((long)props.get("ouid") > 0) {
-				if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-					sendInvitation(user, false, true);
-				}
-			}
+			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 			context.put(FacilioConstants.ContextNames.MODULE_LIST,
@@ -255,14 +251,11 @@ public class UserBeanImpl implements UserBean {
 		}
 		else {
 			user.setOuid(ouId);
-			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-				sendInvitation(user, false, false);
-			}
 		}
 	}
 	
 	@Override
-	public long addToORGUsersApps(User user) throws Exception {
+	public long addToORGUsersApps(User user, boolean isEmailVerificationNeeded) throws Exception {
 		
 		List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -277,6 +270,12 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 		
 		if(props.get("id") != null) {
+			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
+				sendInvitation(user, false, true);
+			}
+			else {
+				sendInvitation(user, false, false);
+			}
 			return (long)props.get("id");
 		}
 		return -1;

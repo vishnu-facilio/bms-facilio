@@ -94,7 +94,7 @@ public interface UserBean {
 	
 	public boolean enableUser(long orgId, long userId) throws Exception;
 	
-	public long addToORGUsersApps(User user) throws Exception;
+	public long addToORGUsersApps(User user, boolean isEmailVerificationNeeded) throws Exception;
 		
 	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	

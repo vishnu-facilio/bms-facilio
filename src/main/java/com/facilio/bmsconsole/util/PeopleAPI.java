@@ -125,6 +125,10 @@ public class PeopleAPI {
 			props.put("peopleId", people.getId());
 		    updateBuilder.update(props);
 		}
+		else {
+			((EmployeeContext)peopleExisiting).setIsAppAccess(true);
+			RecordAPI.updateRecord(peopleExisiting, module, modBean.getAllFields(module.getName()));
+		}
 	}
 	
 	
@@ -167,6 +171,10 @@ public class PeopleAPI {
 			Map<String, Object> props = new HashMap<>();
 			props.put("peopleId", people.getId());
 		    updateBuilder.update(props);
+		}
+		else {
+			((EmployeeContext)peopleExisiting).setIsOccupantPortalAccess(true);
+			RecordAPI.updateRecord(peopleExisiting, module, modBean.getAllFields(module.getName()));
 		}
 	}
 	

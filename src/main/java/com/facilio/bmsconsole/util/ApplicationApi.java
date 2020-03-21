@@ -186,7 +186,7 @@ public class ApplicationApi {
 	}
 	
 	public static long addUserInApp(User user) throws Exception {
-		   return AccountUtil.getUserBean().addToORGUsersApps(user);
+		   return AccountUtil.getUserBean().addToORGUsersApps(user, true);
 		}
 		
 		public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
