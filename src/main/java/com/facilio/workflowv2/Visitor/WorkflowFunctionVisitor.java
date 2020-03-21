@@ -632,7 +632,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                 
             case WorkflowV2Parser.LTEQ:	            	
             	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue < numericalRightValue) : false;
-            	equalityResult = WorkflowV2TypeUtil.evaluateEquality(left, right);
+            	equalityResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue.equals(numericalRightValue)) : WorkflowV2TypeUtil.evaluateEquality(left, right);
             	return new Value(comparisonResult || equalityResult);
             	
             case WorkflowV2Parser.GT:	
@@ -640,7 +640,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             	
             case WorkflowV2Parser.GTEQ:    	
             	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue > numericalRightValue) : false;
-            	equalityResult = WorkflowV2TypeUtil.evaluateEquality(left, right);
+            	equalityResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue.equals(numericalRightValue)) : WorkflowV2TypeUtil.evaluateEquality(left, right);
             	return new Value(comparisonResult || equalityResult);
             	
             case WorkflowV2Parser.EQ:           	

@@ -1,5 +1,11 @@
 package com.facilio.workflowv2.util;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -14,30 +20,49 @@ public class WorkflowV2TypeUtil {
 		if(value.asObject() == null || (value.asObject() instanceof String && StringUtils.isEmpty(value.asString()))) {
 			numericalValue = 0d;
     	}
-		else if(value.asObject() instanceof String) {
-			if(NumberUtils.isNumber(value.asString())){
-				numericalValue = value.asDouble();
-			}
+		else if(value.asObject() instanceof String && NumberUtils.isNumber(value.asString())) {
+			numericalValue = value.asDouble();
     	}
-		else if(value.asObject() instanceof Number) {
+		else if(value.asObject() instanceof Number && !value.asDouble().isNaN()) {
 			numericalValue = value.asDouble();
 		}
     	else if(value.asObject() instanceof Boolean) {
-    		numericalValue = (value.asBoolean() == true) ? 1d : 0d;
+    		numericalValue = (value.asBoolean().booleanValue() == true) ? 1d : 0d;
+    	}
+    	else if(value.asObject() instanceof ArrayList && ((ArrayList)value.asObject()).isEmpty()) {
+    		numericalValue = 0d;
     	}
 		return numericalValue;
 	}
 	
-	public static boolean evaluateEquality(Value left, Value right) {	
-		if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
-    		return (left.asDouble().equals(right.asDouble()));
-    	}
-    	return (left.equals(right));
+	public static boolean evaluateEquality(Value left, Value right) {
+        
+        boolean equalityResult = false;
+		
+		if(left.asObject() != null && right.asObject() != null && !left.asObject().getClass().equals(right.asObject().getClass())) 
+		{
+			Double leftNumericalValue = assignNumericValuesForComparison(left);
+			Double rightNumericalValue = assignNumericValuesForComparison(right);
+			equalityResult = (leftNumericalValue != null && rightNumericalValue != null) ? leftNumericalValue.equals(rightNumericalValue) : left.equals(right);				
+		}
+		else 
+		{
+			if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
+				equalityResult =  left.asDouble().equals(right.asDouble());
+	    	}
+			else if(left.asObject() != null && left.asObject() instanceof ArrayList && ((ArrayList)left.asObject()).isEmpty() &&
+					right.asObject() != null && right.asObject() instanceof ArrayList && ((ArrayList)right.asObject()).isEmpty()) {
+				equalityResult = false;
+	    	}
+			else if(left.asObject() != null && left.asObject() instanceof HashMap && ((HashMap)left.asObject()).isEmpty() &&
+					right.asObject() != null && right.asObject() instanceof HashMap && ((HashMap)right.asObject()).isEmpty()) {
+				equalityResult = false;
+	    	}
+			else {
+				equalityResult =  left.equals(right);
+			}
+		}
+		return equalityResult;	
     }
-	
-	public static void assignBothNumericValuesForComparison(Value left, Double numericalLeftValue, Value right, Double numericalRightValue)	{	
-		numericalLeftValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(left);
-		numericalRightValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(right);	
-	}
 	
 }
