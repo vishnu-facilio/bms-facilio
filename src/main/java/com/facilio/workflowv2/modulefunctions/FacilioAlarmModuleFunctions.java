@@ -46,7 +46,7 @@ public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 				.select(selectFields)
 				.module(module)
 				.beanClass(ContextNames.getClassFromModule(module))
-				.orderBy(durationField.getName())
+				.orderBy(durationField.getName() + " desc")
 				.limit(limit);
 		if (criteria != null) {
 			selectBuilder.andCriteria(criteria);
