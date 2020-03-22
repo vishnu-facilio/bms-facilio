@@ -38,7 +38,7 @@ public class ProcessDataCommand extends FacilioCommand {
 		Criteria criteriaList = new Criteria();
 
 		Map<String, Map<String, String>> deviceData = new HashMap<String, Map<String, String>>();
-		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: " + payLoad);
+		LOGGER.info("Inside ProcessDataCommand####### incoming JSON: " + payLoad);
 		while (keyList.hasNext()) {
 			String actualKey = keyList.next();
 

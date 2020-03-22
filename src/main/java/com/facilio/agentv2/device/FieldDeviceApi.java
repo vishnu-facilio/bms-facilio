@@ -106,6 +106,33 @@ public class FieldDeviceApi {
         }
         return null;
     }
+    public static Device getDeviceByName(long agentId, String name) throws Exception {
+        FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+        if (agentId > 0) {
+            if ((name != null) && (!name.isEmpty())) {
+                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                        .table(fieldDeviceModule.getTableName())
+                        .select(fieldMap.values())
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.NAME), name.trim(), StringOperators.IS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+                List<Map<String, Object>> result = builder.get();
+                if (result.size() == 1) {
+                    Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
+                    if (device.getControllerProps().containsKey("type"))
+                        device.setControllerType(Integer.parseInt(device.getControllerProps().get("type").toString()));
+                    return device;
+                } else {
+                    LOGGER.info("Exception, unexpected results, only one row should be selected for device->" + name + " agentId->" + agentId + " rowsSelected->" + result.size());
+                }
+            } else {
+                throw new Exception(" device name can't be null or empty");
+            }
+        } else {
+            throw new Exception("agentId can't be less than 1");
+        }
+        return null;
+    }
 
 
     public static List<Map<String, Object>> getDevices(List<Long> deviceIds) {

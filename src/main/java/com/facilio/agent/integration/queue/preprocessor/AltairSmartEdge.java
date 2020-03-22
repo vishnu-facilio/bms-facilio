@@ -5,14 +5,18 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Implementation for pre processing the data from AltairSmartEdge
  */
-public class AltairSmartEdge implements AgentIntegrationPreprocessor {
+public class AltairSmartEdge implements AgentMessagePreProcessor {
     private static final Logger LOGGER = LogManager.getLogger(AltairSmartEdge.class.getName());
 
     @Override
-    public JSONObject preProcess(Object o)  {
+    public List<JSONObject> preProcess(Object o)  {
         JSONObject timeSeriesData = new JSONObject();
         timeSeriesData.put("agent", AgentMessageIntegrationProcessorType.ALTAIR.getLabel());
         timeSeriesData.put("PUBLISH_TYPE","timeseries");
@@ -25,8 +29,9 @@ public class AltairSmartEdge implements AgentIntegrationPreprocessor {
         }
         timeSeriesData.put(((JSONObject)array.get(0)).get("deviceCd"),data);
         LOGGER.info("Timeseries Data :"+timeSeriesData);
-        return timeSeriesData;
+
+        List<JSONObject> messages = new ArrayList<>();
+        messages.add(timeSeriesData);
+        return messages;
     }
-
-
 }

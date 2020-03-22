@@ -2,6 +2,7 @@ package com.facilio.dataprocessor;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
+import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.DataProcessorV2;
@@ -133,9 +134,23 @@ public class DataProcessorUtil {
             }
 
             switch (processorVersion){
+                case 1:
+                    if  (!FacilioProperties.isProduction()){
+                        LOGGER.info("PreProcessor for V1 to V2 data");
+                        AgentMessagePreProcessor preProcessor = new v1ToV2PreProcessor();
+                        List<JSONObject> messages= preProcessor.preProcess(payLoad);
+                        boolean isEveryMessageProcessed = true;
+                        for (JSONObject msg:
+                                messages) {
+                            isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg,recordId);
+                        }
+                        return isEveryMessageProcessed;
+                    }
+                    break;
                 case 2:
                     LOGGER.info(" new processor data ");
                     return sendToProcessorV2(payLoad,recordId);
+
                 default:
                     LOGGER.info(" old processor data ");
                     // will divert to another class in future.

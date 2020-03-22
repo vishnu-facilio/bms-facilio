@@ -2,10 +2,12 @@ package com.facilio.agent.integration.queue.preprocessor;
 
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 /**
  * Interface for pre processing the data from AgentMessageIntegrationQueues
  */
-public interface AgentIntegrationPreprocessor {
+public interface AgentMessagePreProcessor {
 
-    public abstract JSONObject preProcess(Object o) throws Exception;
+    public abstract List<JSONObject> preProcess(Object o) throws Exception;
 }

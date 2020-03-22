@@ -7,6 +7,7 @@ import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
+import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
@@ -18,6 +19,7 @@ import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.system.SystemControllerContext;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -30,6 +32,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
@@ -565,5 +568,63 @@ public class ControllerApiV2 {
     	.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getNewControllerModule()), String.valueOf(agentIds), NumberOperators.EQUALS));
     	List<Map<String, Object>> props =  builder.get();
     	return props.stream().map(p -> (long)p.get("id")).collect(Collectors.toList());
+    }
+
+    public static Controller getControllerByName(Long agentId,String deviceName) throws Exception {
+        Device device = FieldDeviceApi.getDeviceByName(agentId,deviceName);
+        if (device != null){
+            return getControllerFromDevice(device);
+        }else{
+            LOGGER.info("Device not found for agentID :" + agentId + " deviceName : " + deviceName );
+        }
+        return null;
+    }
+
+    private static Controller getControllerFromDevice(Device device) throws Exception {
+        FacilioControllerType controllerType = FacilioControllerType.valueOf(device.getControllerType());
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = moduleBean.getAllFields("controller");
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        List<FacilioField> controllerFields = new ArrayList<>();
+        for (FacilioField field :
+                allFields) {
+            if (field.getModule().getName().equals("controller")){
+                controllerFields.add(field);
+            }
+        }
+        List<Long> deviceIds = new ArrayList<>();
+        deviceIds.add(device.getId());
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNewControllerModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"),deviceIds,NumberOperators.EQUALS))
+                .limit(1);
+        switch (controllerType){
+            case BACNET_IP:
+                controllerFields.addAll(moduleBean.getAllFields("bacnetipcontroller"));
+                select.select(controllerFields).innerJoin(moduleBean.getModule("bacnetipcontroller").getTableName())
+                        .on("Controllers.ID = BACnet_IP_Controller.ID");
+                List<Map<String, Object>> res = select.get();
+                if (res != null){
+                    return FieldUtil.getAsBeanFromMap(res.get(0),BacnetIpControllerContext.class);
+                }
+                break;
+            case NIAGARA:
+                for (FacilioField field :
+                        moduleBean.getAllFields("niagaracontroller")) {
+                    if (field.getModule().getName().equals("niagaracontroller")){
+                        controllerFields.add(field);
+                    }
+                }
+                select.select(controllerFields).innerJoin(moduleBean.getModule("niagaracontroller").getTableName())
+                        .on("Controllers.ID = Niagara_Controller.ID");
+                List<Map<String, Object>> res_2 = select.get();
+                if (res_2 != null){
+                    return FieldUtil.getAsBeanFromMap(res_2.get(0),NiagaraControllerContext.class);
+                }
+                break;
+            default:
+                LOGGER.info("Unknown controller type "+ controllerType);
+        }
+        return null;
     }
 }

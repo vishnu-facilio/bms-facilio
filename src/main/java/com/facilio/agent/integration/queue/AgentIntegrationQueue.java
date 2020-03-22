@@ -1,7 +1,6 @@
 package com.facilio.agent.integration.queue;
 
-import com.facilio.agent.integration.queue.preprocessor.AgentIntegrationPreprocessor;
-import com.facilio.bmsconsole.util.LoggerAPI;
+import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -11,7 +10,7 @@ import org.apache.log4j.Logger;
 public abstract class AgentIntegrationQueue implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(AgentIntegrationQueue.class.getName());
     private long orgId = -1;
-    private AgentIntegrationPreprocessor preprocessor = null;
+    private AgentMessagePreProcessor preprocessor = null;
 
     public long getOrgId() {
         return orgId;
@@ -33,7 +32,7 @@ public abstract class AgentIntegrationQueue implements Runnable {
      *
      * @param preprocessor
      */
-    void setPreprocessor(AgentIntegrationPreprocessor preprocessor) {
+    void setPreprocessor(AgentMessagePreProcessor preprocessor) {
         this.preprocessor = preprocessor;
     }
 
@@ -47,7 +46,7 @@ public abstract class AgentIntegrationQueue implements Runnable {
      * returns pre processor
      * @return
      */
-    public AgentIntegrationPreprocessor getPreProcessor(){return preprocessor; }
+    public AgentMessagePreProcessor getPreProcessor(){return preprocessor; }
     @Override
     public void run(){
         if (orgId !=-1)

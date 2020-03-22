@@ -15,6 +15,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Class for handling data from Google Pub Sub through Agent Message Integration Preprocessor
@@ -54,7 +55,11 @@ public class GooglePubSub extends AgentIntegrationQueue{
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject)parser.parse(message.getData().toStringUtf8());
                             if (jsonObject.containsKey("events")&&(((JSONArray)jsonObject.get("events")).size()>0)) {
-                                TimeSeriesAPI.processPayLoad(0,getPreProcessor().preProcess(jsonObject), null);
+                                List<JSONObject> messages = getPreProcessor().preProcess(jsonObject);
+                                for (JSONObject msg :
+                                        messages) {
+                                    TimeSeriesAPI.processPayLoad(0,msg, null);
+                                }
                             }
                         } catch (Exception e) {
                             LOGGER.error("Error while processing data");
@@ -73,11 +78,6 @@ public class GooglePubSub extends AgentIntegrationQueue{
             subscriber.awaitTerminated();
         }catch (Exception ex){
             LOGGER.info(ex.getMessage());
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            String sStackTrace = sw.toString(); // stack trace as a string
-            LOGGER.info(sStackTrace);
         }
         finally {
             // Stop receiving messages
