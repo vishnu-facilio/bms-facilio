@@ -14,7 +14,10 @@ public class UpdateCommissioningCommand extends FacilioCommand {
 
 		CommissioningLogContext log = (CommissioningLogContext) context.get(ContextNames.LOG);
 		CommissioningLogContext oldLog = CommissioningApi.commissioniongDetails(log.getId(), false);
-		validate(log, oldLog);
+		
+		log.setControllerType(oldLog.getControllerType());
+		CommissioningApi.setPointContext(log);
+		CommissioningApi.filterAndValidatePointsOnUpdate(log, oldLog);
 
 		log.setSysModifiedTime(System.currentTimeMillis());
 		log.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
@@ -23,13 +26,5 @@ public class UpdateCommissioningCommand extends FacilioCommand {
 
 		return false;
 	}
-
-	private void validate(CommissioningLogContext log, CommissioningLogContext oldLog) throws Exception {
-		if (oldLog.getPublishedTime() != -1) {
-			throw new IllegalArgumentException("This has already been published");
-		}
-		if (log.getPoints() != null) {
-			CommissioningApi.checkRDMType(log.getPoints());
-		}
-	}
+	
 }

@@ -15,13 +15,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
 
 import com.facilio.agentv2.AgentApiV2;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -67,6 +70,10 @@ public class CommissioningApi {
 				List<Long> logIds = new ArrayList<>();
 				Set<Long> agentIds = new HashSet<>();
 				for(CommissioningLogContext log: logs) {
+					if (log.getPoints() != null) {
+						setPointContext(log);
+					}
+					
 					logIds.add(log.getId());
 					agentIds.add(log.getAgentId());
 				}
@@ -85,6 +92,11 @@ public class CommissioningApi {
 		}
 		
 		return null;
+	}
+	
+	public static void setPointContext(CommissioningLogContext log) throws Exception {
+		Class pointType = PointsAPI.getPointType(log.getControllerTypeEnum());
+		log.setPointList(FieldUtil.getAsBeanListFromJsonArray(log.getPoints(), pointType));
 	}
 	
 	private static Map<Long, List<Map<String, Object>>> getCommissionedControllers(List<Long> logIds) throws Exception {
@@ -124,31 +136,87 @@ public class CommissioningApi {
 		updateBuilder.update(prop);
 	}
 
-	public static Map<String, ReadingDataMeta> checkRDMType(JSONArray points) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-		for(int i = 0; i < points.size(); i++) {
-			Map<String, Object> point = (Map<String, Object>) points.get(i);
-			Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
-			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
-			if (fieldId != null && fieldId != -1 && resourceId != null && resourceId != -1) {
-				FacilioField field = modBean.getField(fieldId);
-				rdmPairs.add(Pair.of(resourceId, field));
+	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+			for(ReadingDataMeta rdm: rdmList) {
+				switch (rdm.getInputTypeEnum()) {
+				case CONTROLLER_MAPPED:
+					throw new IllegalArgumentException(rdm.getField().getDisplayName() + " is already mapped");
+				case FORMULA_FIELD:
+				case HIDDEN_FORMULA_FIELD:
+					throw new IllegalArgumentException(rdm.getField().getDisplayName() +" is formula field and therefore cannot be mapped");
 			}
 		}
-		if (!rdmPairs.isEmpty()) {
-			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
-				for(ReadingDataMeta rdm: rdmList) {
-					switch (rdm.getInputTypeEnum()) {
-					case CONTROLLER_MAPPED:
-						throw new IllegalArgumentException(rdm.getField().getDisplayName() + " is already mapped");
-					case FORMULA_FIELD:
-					case HIDDEN_FORMULA_FIELD:
-						throw new IllegalArgumentException(rdm.getField().getDisplayName() +" is formula field and therefore cannot be mapped");
+		return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
+	}
+	
+	
+	public static void filterAndValidatePointsOnUpdate(CommissioningLogContext log, CommissioningLogContext oldLog) throws Exception {
+		if (oldLog == null) {
+			oldLog = log;
+		}
+		if (oldLog.getPublishedTime() != -1) {
+			throw new IllegalArgumentException("This has already been published");
+		}
+		
+		List<Point> points = log.getPointList();
+		List<Long> pointIds = points.stream().map(Point::getId).collect(Collectors.toList());
+		FacilioModule module = ModuleFactory.getPointModule();
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, module));
+		
+		GetPointRequest getPointRequest = new GetPointRequest()
+				.ofType(oldLog.getControllerTypeEnum())
+				.limit(-1)
+				.withCriteria(criteria);
+		List<Point> dbPoints = getPointRequest.getPoints();
+		Map<Long, Point> dbPointMap = dbPoints.stream().collect(Collectors.toMap(Point::getId, Function.identity()));
+		
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		JSONArray finalPoints = new JSONArray();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(Point point: points) {
+			Long categoryId = point.getCategoryId();
+			Long resourceId = point.getResourceId();
+			Long fieldId = point.getFieldId();
+			int unit = point.getUnit();
+			
+			Point dbPoint = dbPointMap.get(point.getId());
+			Long dbResourceId = dbPoint.getResourceId();
+			Long dbFieldId = dbPoint.getFieldId();
+			
+			if (dbResourceId != null && dbFieldId != null) {
+				if (resourceId == null || fieldId == null) {
+					// TODO Change rdm type
+				}
+				else if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
+					rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
 				}
 			}
-			return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
+			else if (resourceId != null && fieldId != null) {		// New mapping
+				rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
+			}
+			
+			/*if ((dbResourceId != null && (resourceId == null || !dbResourceId.equals(resourceId))) || 
+					(dbFieldId != null && (fieldId == null || !dbFieldId.equals(fieldId))) ) {
+				// TODO Change rdm type
+//				finalPoints.add(point);
+				if (resourceId != null && fieldId != null) {	// Both values are changed here
+					rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
+				}
+			}
+			else if (resourceId != null && fieldId != null) {		// New mapping
+				rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
+			}*/
+			/*else if (resourceId != null || fieldId != null || categoryId != null || dbPoint.getUnit() != unit) {
+				finalPoints.add(point);
+			}*/
 		}
-		return null;
+//		log.setPoints(finalPoints);
+		
+		if (!rdmPairs.isEmpty()) {
+			checkRDMType(rdmPairs);
+		}
 	}
+	
 }

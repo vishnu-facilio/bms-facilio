@@ -12,11 +12,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
-import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -64,6 +64,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 						Unit unit = Unit.valueOf(unitId);
 						unitMap.put(unitId, unit.getSymbol());
 					}
+					else {
+						point.put("unit", null); // since unit is set as 0 by default in points table even if there is no data
+					}
 				}
 				// TODO fetch only those points from db instead of filtering
 				// Points fetched from db will have orgId. Filtering unwanted values here
@@ -87,7 +90,8 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		GetPointRequest getPointRequest = new GetPointRequest()
 				.filterConfigurePoints()
 				.withControllerIds(log.getControllerIds())
-				.initBuilder(null)
+				.ofType(log.getControllerTypeEnum())
+//				.initBuilder(null)
 				.orderBy(fieldMap.get(AgentConstants.NAME).getCompleteColumnName())
 				.limit(-1);
 				;
@@ -158,12 +162,10 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 		Map<String, Object> header = new HashMap<>();
 		header.put("name", AgentConstants.NAME);
-		header.put("editable", false);
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.DEVICE_NAME);
-		header.put("editable", false);
 		headers.add(header);
 
 		List<Map<String, Object>> typeBasedHeaders = getTypeBasedHeaders(log.getControllerTypeEnum());
@@ -171,37 +173,53 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.ASSET_CATEGORY_ID);
+		header.put("editable", true);
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.RESOURCE_ID);
+		header.put("editable", true);
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.FIELD_ID);
+		header.put("editable", true);
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.UNIT);
+		header.put("editable", true);
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", "enumInputValues");
+		header.put("editable", true);
 		headers.add(header);
 
 		log.setHeaders(headers);
 
 	}
 
-	private List<Map<String, Object>> getTypeBasedHeaders(ControllerType type) {
+	private List<Map<String, Object>> getTypeBasedHeaders(FacilioControllerType type) {
 		List<Map<String, Object>> typeHeaders = new ArrayList<>();
 		switch(type) {
-		case NIAGARA:
-			Map<String, Object> header = new HashMap<>();
-			header.put("name", AgentConstants.PATH);
-			header.put("editable", false);
-			typeHeaders.add(header);
-			break;
+			case NIAGARA:
+				Map<String, Object> header = new HashMap<>();
+				header.put("name", AgentConstants.PATH);
+				typeHeaders.add(header);
+				break;
+				
+			case BACNET_IP:
+			case BACNET_MSTP:
+				header = new HashMap<>();
+				header.put("name", AgentConstants.INSTANCE_NUMBER);
+				typeHeaders.add(header);
+				
+				header = new HashMap<>();
+				header.put("name", AgentConstants.INSTANCE_TYPE);
+				typeHeaders.add(header);
+				break;
+			
 		}
 		return typeHeaders;
 	}

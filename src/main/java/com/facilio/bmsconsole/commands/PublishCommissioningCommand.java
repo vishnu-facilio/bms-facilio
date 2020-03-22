@@ -153,11 +153,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (log.getPoints() == null || log.getPoints().isEmpty()) {
 			throw new IllegalArgumentException("No points mapped");
 		}
-		if (log.getPublishedTime() != -1) {
-			throw new IllegalArgumentException("This log has already been published");
-		}
-		
-		CommissioningApi.checkRDMType(log.getPoints());
+		CommissioningApi.filterAndValidatePointsOnUpdate(log, null);
 	}
 	
 	@SuppressWarnings("unchecked")

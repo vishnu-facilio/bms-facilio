@@ -10,7 +10,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.point.Point;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -62,6 +64,17 @@ public class CommissioningLogContext {
 	}
 	public void setPublishedTime(long publishedTime) {
 		this.publishedTime = publishedTime;
+	}
+	
+	@JsonIgnore
+	private List<Point> pointList;
+	@JSON(serialize = false)
+	public List<Point> getPointList() {
+		return pointList;
+	}
+	@JSON(serialize = false)
+	public void setPointList(List<Point> pointList) {
+		this.pointList = pointList;
 	}
 	
 	@JsonIgnore
@@ -190,19 +203,19 @@ public class CommissioningLogContext {
 		this.headers = headers;
 	}
 	
-	private ControllerType controllerType;
+	private FacilioControllerType controllerType;
 	public int getControllerType() {
 		if(controllerType != null) {
-			return controllerType.getKey();
+			return controllerType.asInt();
 		}
 		else {
 			return -1;
 		}
 	}
-	public ControllerType getControllerTypeEnum() {
+	public FacilioControllerType getControllerTypeEnum() {
 		return controllerType;
 	}
 	public void setControllerType(int type) {
-		this.controllerType = ControllerType.valueOf(type);
+		this.controllerType = FacilioControllerType.valueOf(type);
 	}
 }
