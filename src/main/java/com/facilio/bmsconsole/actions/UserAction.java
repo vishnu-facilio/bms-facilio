@@ -151,7 +151,6 @@ public class UserAction extends FacilioAction {
 //			  checkforTenantPrimaryContact(user.getEmail());
 //			}
 			HttpServletRequest request = ServletActionContext.getRequest(); 
-			setAppDomain("aara.facilioportal.com");
 			
 			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName());
 			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid(), true)) {
@@ -166,41 +165,14 @@ public class UserAction extends FacilioAction {
 	
 	public String userAgent() throws Exception{
 		System.out.println("********UserAgentAnalyzer************");
-//		UserAgentAnalyzer uaa;
-//
-//		uaa = UserAgentAnalyzer
-//		        .newBuilder()
-//		        .withField("DeviceClass")
-//		        .withField("AgentNameVersionMajor")
-//		        .build();
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		AccountUtil.getRoleBean(orgId).getRoles();
 		// AccountUtil.getUserBean().updateUserLicense(2, 4);
 		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator", false);
 		System.out.println(admin.getId());
-//		for ( Role role : roles){
-//		AccountUtil.getUserBean().addUserLicense(orgId, role.getRoleId(), 2);
-//		}
-//		List<Map<String, Object>> sessions = AccountUtil.getUserBean().getUserSessions(AccountUtil.getCurrentUser().getUid(), true);
-//		
-//		UserAgentAnalyzer uaa = UserAgentAnalyzer
-//                .newBuilder()
-//                .hideMatcherLoadStats()
-//                .withCache(25000)
-//                .build();
-//		
-//		if (sessions != null) {
-//			for (Map<String, Object> session : sessions) {
-//				UserAgent agent = uaa.parse((String) session.get("userAgent"));
-//				
-//				for (String fieldName: agent.getAvailableFieldNamesSorted()) {
-//			        System.out.println(fieldName + " = " + agent.getValue(fieldName));
-//			    }
-//			}
-//		}
 		
-			return SUCCESS;
+		return SUCCESS;
 	}
 
 	public String deleteUser() throws Exception {

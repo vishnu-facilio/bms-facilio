@@ -209,6 +209,16 @@ public class ApplicationApi {
 			return -1;
 		}
 		
+		public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
+			
+			AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+			if(appDomainObj == null) {
+				throw new IllegalArgumentException("Invalid app domain");
+			}
+			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+			return appId;
+		}
+		
 		public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {
 			List<FacilioField> fields = FieldFactory.getApplicationFields();
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

@@ -41,6 +41,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -51,11 +52,13 @@ import org.w3c.dom.NodeList;
 
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -71,6 +74,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.DevicesAPI;
@@ -83,6 +87,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -896,7 +901,15 @@ public class LoginAction extends FacilioAction {
 		
 		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
 		if(iamAccount != null) {
-			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(request.getServerName(), iamAccount);
+			long appId = -1;
+			try {
+				appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
+			}
+			catch(Exception e) {
+				account =null;
+				return ERROR;
+			}
+			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(appId, iamAccount);
 			if(permalinkAccount != null) {
 				
 				AccountUtil.setCurrentAccount(permalinkAccount);

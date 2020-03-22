@@ -39,7 +39,7 @@ public interface UserBean {
 
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
 	
-	public User getUser(String appDomain, long orgId, long userId) throws Exception;
+	public User getUser(long appId, long orgId, long userId) throws Exception;
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
@@ -61,7 +61,7 @@ public interface UserBean {
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getUserForUserName(String username, String appDomain) throws Exception;
+    public User getUserForUserName(String username, long appId) throws Exception;
     
     public User getUser(String email) throws Exception;
     
@@ -71,12 +71,12 @@ public interface UserBean {
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
     
-    public Account getPermalinkAccount(String appDomain, IAMAccount iamAccount) throws Exception ;
+    public Account getPermalinkAccount(long appId, IAMAccount iamAccount) throws Exception ;
 
     List<Long> getAccessibleSpaceList (long uid) throws Exception;
     List<Long> getAccessibleGroupList (long uid) throws Exception;
 
-	public boolean acceptUser(String appDomain, User user) throws Exception;
+	public boolean acceptUser(User user) throws Exception;
 
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 	

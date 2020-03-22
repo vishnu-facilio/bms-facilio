@@ -193,8 +193,7 @@ public class GroupBeanImpl implements GroupBean {
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		
 		String appDomain = AccountUtil.getDefaultAppDomain();
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

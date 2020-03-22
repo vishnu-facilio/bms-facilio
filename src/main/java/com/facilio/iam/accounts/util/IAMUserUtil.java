@@ -222,7 +222,7 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId));
 	}
 	
-	public static Map<String, Object> getUserForUsername(String username, boolean isPhone, long orgId) throws Exception {
+	public static Map<String, Object> getUserForUsername(String username, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId));
 	}
 	
@@ -281,7 +281,7 @@ public class IAMUserUtil {
 	}
 	
 	public static Map<String, Object> getUserFromUsername(String username) throws Exception {
-		return getUserForUsername(username, false, -1);
+		return getUserForUsername(username, -1);
 	}
 	
 	public static List<IAMUser> getIAMUserPropsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception {

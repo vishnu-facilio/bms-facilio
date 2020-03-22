@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
@@ -113,14 +114,22 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				Account tempAccount = new Account(iamAccount.getOrg(), user);
 				AccountUtil.setCurrentAccount(tempAccount);
 			
+				long appId = -1;
+				try {
+					appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
+				}
+				catch(Exception e) {
+					throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid appDomain");
+				}
 				if(iamAccount.getUser() != null) {
-					user = AccountUtil.getUserBean().getUser(request.getServerName(), iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+					
+					user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
 					if (user == null) {
 						Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
 						if(org != null) {
-							user = AccountUtil.getUserBean().getUser(request.getServerName(), org.getOrgId(), iamAccount.getUser().getUid());
+							user = AccountUtil.getUserBean().getUser(appId, org.getOrgId(), iamAccount.getUser().getUid());
 							if(user == null) {
-								throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_THIS_APP_OF_THE_ORG, "User doesn't exists in this app of the org");
+								return "unauthorized";
 							}
 							iamAccount.setOrg(org);
 						}

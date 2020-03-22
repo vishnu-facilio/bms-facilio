@@ -4158,7 +4158,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
 		c.addCommand(new CheckForContactDuplicationCommand());
-		c.addCommand(new AddContactsAsRequesterCommand());
+		//c.addCommand(new AddContactsAsRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
 		c.addCommand(new SendEventToDeviceCommand());
@@ -4170,7 +4170,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
 		c.addCommand(new CheckForContactDuplicationCommand());
-		c.addCommand(new UpdateContactsRequesterCommand());
+		//c.addCommand(new UpdateContactsRequesterCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
 

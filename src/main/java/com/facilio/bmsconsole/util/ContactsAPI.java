@@ -7,7 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
@@ -20,6 +22,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -130,7 +133,10 @@ public class ContactsAPI {
 		
 	}
 	
-	public static void addUserAsRequester(ContactsContext contact) throws Exception {
+	public static void addUserAsRequester(ContactsContext contact, AppDomain appDomain, long identifier) throws Exception {
+		
+		long appId = ApplicationApi.getApplicationIdForApp(appDomain);
+		
 		User user = new User();
 		user.setEmail(contact.getEmail());
 		user.setPhone(contact.getPhone());
@@ -138,18 +144,12 @@ public class ContactsAPI {
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
-//
-//		if(contact.getContactType() == 1) {
-//			user.setAppType(2);
-//		}
-//		else if(contact.getContactType() == 2) {
-//			user.setAppType(3);
-//		}
-//		else if(contact.getContactType() == 3) {
-//			user.setAppType(1);
-//		}
-//		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, AccountUtil.getDefaultAppDomain(), 1);
-//		user.setId(userId);
+		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
+		
+		user.setApplicationId(appId);
+		user.setAppDomain(appDomain);
+		long id = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false);
+		user.setId(id);
 		contact.setRequester(user);
 	}
 	

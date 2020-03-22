@@ -98,21 +98,20 @@ public class OrgBeanImpl implements OrgBean {
     	}
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getApplicationIdField());
 		
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		if(appDomainObj == null) {
-			throw new IllegalArgumentException("Invalid app Domain");
-		}
-		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
-				.innerJoin("ORG_User_Apps")
-				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
+	
+		if(applicationId > 0) {
+			fields.add(AccountConstants.getApplicationIdField());
+			selectBuilder.innerJoin("ORG_User_Apps")
+			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
+		}
 					
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -252,8 +251,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		String appDomain = AccountUtil.getDefaultAppDomain();
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
 		
 		if(superAdminRole == null) {
 			return null;
