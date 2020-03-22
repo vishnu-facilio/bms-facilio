@@ -8,6 +8,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -20,10 +22,20 @@ public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 	public List<Map<String, Object>> getTopNAlarms(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		String moduleName = (String)objects.get(1);
-		int limit = Integer.parseInt(objects.get(2).toString());
+		int limit = Double.valueOf(objects.get(2).toString()).intValue();
 		Criteria criteria = null;
+		long duration = -1;
+		int durationOperator = 0;
+		String groupBy = "alarm";
 		if (objects.size() >=4 ) {
 			criteria = (Criteria)objects.get(3);
+			if (objects.size() >= 5 ) {
+				duration =  Double.valueOf(objects.get(4).toString()).longValue();
+				durationOperator = Double.valueOf(objects.get(5).toString()).intValue();
+				if (objects.size() >= 7 ) {
+					groupBy = (String) objects.get(6);
+				}
+			}
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -38,7 +50,7 @@ public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 				.append(clearedTimeFieldColumn).append(",").append(String.valueOf(System.currentTimeMillis())).append(") - ")
 				.append(createdTimeFieldColumn).append(")/1000");
 				;
-		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
+		FacilioField durationField = FieldFactory.getField("durationAggr", durationAggrColumn.toString(), FieldType.NUMBER);
 		selectFields.addAll(fields);
 		selectFields.add(durationField);
 		
@@ -46,11 +58,17 @@ public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 				.select(selectFields)
 				.module(module)
 				.beanClass(ContextNames.getClassFromModule(module))
-				.groupBy(fieldMap.get("alarm").getCompleteColumnName())
+				.groupBy(fieldMap.get(groupBy).getCompleteColumnName())
 				.orderBy(durationField.getName() + " desc")
 				.limit(limit);
 		if (criteria != null) {
 			selectBuilder.andCriteria(criteria);
+		}
+		if (duration != -1) {
+			Operator operator = Operator.getOperator(durationOperator);
+			Criteria havingCrit = new Criteria();
+			havingCrit.addAndCondition(CriteriaAPI.getCondition(durationField, String.valueOf(duration), operator));
+			selectBuilder.having(havingCrit.computeWhereClause());
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
