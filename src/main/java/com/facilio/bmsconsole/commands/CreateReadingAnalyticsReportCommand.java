@@ -399,9 +399,8 @@ private long getAssetCategoryId(ReportYAxisContext yField, ReportMode mode, Repo
 								return -1;
 							}
 						}
-					} else {
-						return -1;
 					}
+					return -1;
 				}
 			}
 		
