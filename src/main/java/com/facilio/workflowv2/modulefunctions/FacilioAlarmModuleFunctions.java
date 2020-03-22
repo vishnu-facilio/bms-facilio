@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -32,20 +32,21 @@ public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 		List<FacilioField> selectFields = new ArrayList<>();
-		String clearedTimeFieldColumn = fieldMap.get("lastClearedTime").getColumnName();
-		String createdTimeFieldColumn = fieldMap.get("lastCreatedTime").getColumnName();
-		StringBuilder durationAggrColumn = new StringBuilder("COALESCE(")
+		String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
+		String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
+		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
 				.append(clearedTimeFieldColumn).append(",").append(String.valueOf(System.currentTimeMillis())).append(") - ")
-				.append(createdTimeFieldColumn)
+				.append(createdTimeFieldColumn).append(")/1000");
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 		selectFields.addAll(fields);
 		selectFields.add(durationField);
 		
-		SelectRecordsBuilder<? extends BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
+		SelectRecordsBuilder<? extends AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(selectFields)
 				.module(module)
 				.beanClass(ContextNames.getClassFromModule(module))
+				.groupBy(fieldMap.get("alarm").getCompleteColumnName())
 				.orderBy(durationField.getName() + " desc")
 				.limit(limit);
 		if (criteria != null) {
