@@ -28,7 +28,7 @@ public class BIMIntegrationAction extends FacilioAction{
 	public String uploadBim() throws Exception {
 		
 		fileUploadFileName = fileUpload.getName();
-		fileUploadContentType = URLConnection.guessContentTypeFromName(fileUploadFileName);
+//		fileUploadContentType = URLConnection.guessContentTypeFromName(fileUploadFileName);
 		
 		FacilioChain uploadFileChain = TransactionChainFactory.uploadBimFileChain();
 		FacilioContext context = uploadFileChain.getContext();
