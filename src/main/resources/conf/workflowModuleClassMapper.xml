@@ -5,6 +5,6 @@
 	 <module displayname = 'Contact' name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
 	 <module displayname = 'User' name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
 	 <module displayname = 'VisitorLogging' name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
-	 <module displayname = 'BaseAlarm' name='basealarm' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
-	 <module displayname = 'ReadingAlarm' name='newreadingalarm' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
+	 <module displayname = 'AlarmOccurrence' name='alarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
+	 <module displayname = 'ReadingAlarmOccurrence' name='readingalarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
 </workflow>
