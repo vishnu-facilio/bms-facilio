@@ -520,15 +520,6 @@
       typeConfig : 1
       editable : true
       updateParamTriggerText : 'Edit host'
-   -
-      name : 'purpose'
-      askAs : "Select purpose"
-      dataType : 2
-      mlType : 1
-      localId : 6
-      typeConfig : 1
-      editable : true
-      updateParamTriggerText : 'Edit purpose'
       
    contextWorkflow :
        isV2Script : true
