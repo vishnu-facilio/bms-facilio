@@ -269,6 +269,21 @@ public class FieldDeviceApi {
         return selectRecordBuilder.get();
     }
 
+    public static List<Map<String,Object>> getModbusDeviceFilter(Long agentId) throws Exception {
+        FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
+        List<FacilioField> deviceFilterFields = new ArrayList<>();
+        deviceFilterFields.add(FieldFactory.getIdField(fieldDeviceModule));
+        deviceFilterFields.add(FieldFactory.getNameField(fieldDeviceModule));
+        deviceFilterFields.add(FieldFactory.getFieldDeviceTypeField(fieldDeviceModule));
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(fieldDeviceModule.getTableName())
+                .select(deviceFilterFields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(fieldDeviceModule), String.valueOf(agentId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(fieldDeviceModule), "NULL", CommonOperators.IS_EMPTY))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceTypeField(fieldDeviceModule), String.valueOf(FacilioControllerType.MODBUS_IP.asInt()),NumberOperators.EQUALS));
+        return selectRecordBuilder.get();
+    }
+
     public static boolean containsCheck(String key, Map map) {
         if ((key != null) && (!key.isEmpty()) && (map != null) && (!map.isEmpty()) && (map.containsKey(key)) && (map.get(key) != null)) {
             return true;

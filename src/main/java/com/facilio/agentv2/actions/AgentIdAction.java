@@ -416,6 +416,19 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getModbusDevice(){
+        try{
+            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getModbusDeviceFilter(getAgentId());
+            setResult(AgentConstants.DATA, deviceFilter);
+            ok();
+        }catch (Exception e){
+            internalError();
+            LOGGER.info("Exception occurred while getting device filter ", e);
+            internalError();
+        }
+        return SUCCESS;
+    }
+
     public String getMetrics() {
         try {
             List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),constructListContext(new FacilioContext()));

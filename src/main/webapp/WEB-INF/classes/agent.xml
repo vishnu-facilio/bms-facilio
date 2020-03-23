@@ -337,6 +337,9 @@
 
         <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceFilter">
         </action>
+
+        <action name="getModbusDevices" class="com.facilio.agentv2.actions.AgentIdAction" method="getModbusDevice">
+        </action>
     </package>
 
     <package name="dbMigration" namespace="/api/v2/db" extends="agent">
