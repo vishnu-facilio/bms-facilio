@@ -48,7 +48,7 @@
         </global-exception-mappings>
     </package>
 
-    <package name="v3Api" namespace="/api/v3/module" extends="v3BaseApi">
+    <package name="v3Api" namespace="/api/v3/modules/data" extends="v3BaseApi">
         <interceptors>
             <interceptor name="cacheinterceptor"
                          class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
