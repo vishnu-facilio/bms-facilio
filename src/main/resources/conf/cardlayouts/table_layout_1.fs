@@ -131,6 +131,8 @@ Map cardLayout(Map params) {
             }
         }
     }
+    result["title"] = params.title;
+    result["period"] = dateRange;
     result["columns"] = columns;
     result["rows"] = rows;
     return result;
