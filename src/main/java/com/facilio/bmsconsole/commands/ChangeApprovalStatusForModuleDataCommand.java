@@ -26,9 +26,9 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-        Long transitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
-        if (MapUtils.isNotEmpty(recordMap) && transitionId != null) {
-            ApprovalStateTransitionRuleContext approvalTransition = (ApprovalStateTransitionRuleContext) WorkflowRuleAPI.getWorkflowRule(transitionId);
+        Long approvalTransitionId = (Long) context.get(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID);
+        if (MapUtils.isNotEmpty(recordMap) && approvalTransitionId != null) {
+            ApprovalStateTransitionRuleContext approvalTransition = (ApprovalStateTransitionRuleContext) WorkflowRuleAPI.getWorkflowRule(approvalTransitionId);
             if (approvalTransition == null) {
                 throw new IllegalArgumentException("Invalid approval transition");
             }

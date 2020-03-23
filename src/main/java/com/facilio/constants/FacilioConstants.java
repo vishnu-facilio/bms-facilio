@@ -1265,6 +1265,8 @@ public class FacilioConstants {
 		public static final String STATEFLOW_DIAGRAM = "stateFlowDiagram";
 //		public static final String DEFAULT_STATEFLOW = "defaultStateflow";
 
+		public static final String APPROVAL_TRANSITION_ID = "approvalTransitionId";
+
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		
 		public static final String WO_ITEMS_LIST = "woItemsList";

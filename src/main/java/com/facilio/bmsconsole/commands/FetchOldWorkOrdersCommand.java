@@ -36,7 +36,9 @@ public class FetchOldWorkOrdersCommand extends FacilioCommand {
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 					.orderBy("ID");
 
-			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, builder.get());
+			List<WorkOrderContext> workOrderContexts = builder.get();
+			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, workOrderContexts);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrderContexts);
 		}
 		
 		return false;

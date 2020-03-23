@@ -360,6 +360,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
+			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddRequesterCommand());

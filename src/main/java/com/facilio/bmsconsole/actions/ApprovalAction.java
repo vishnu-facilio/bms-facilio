@@ -43,7 +43,7 @@ public class ApprovalAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, transitionId);
 		chain.execute();
 		return SUCCESS;
 	}
