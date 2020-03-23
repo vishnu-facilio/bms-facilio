@@ -322,6 +322,84 @@
 		</action>
 	</package>
 	
+	<package name="controlActionModule" namespace="/api/service/v2/controlAction"
+		extends="newServicePortalApiV2">
+		<action name="setReadingValue"
+			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+			
+		<action name="setReadingValueForSpace"
+			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace"></action>
+			
+		<action name="getControlGroups"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+		
+		<action name="getControlGroupMeta"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta"></action>
+			
+		<action name="getControlActionCommands"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
+		
+		<action name="getControllablePoints"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
+		
+		<action name="addControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
+		
+		<action name="updateControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule"></action>
+		
+		<action name="deleteControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule"></action>
+		
+		<action name="getControlActionRules"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
+		
+		<action name="getControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule"></action>
+		
+		<action name="updateRDM"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
+		
+		<action name="updateControlModeForBaseSpaces"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlModeForBaseSpaces"></action>
+		
+		<action name="getControllableAssets"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets"></action>
+		
+		<action name="getControllableFields"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
+		
+		<action name="addControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup"></action>
+		
+		<action name="updateControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup"></action>
+		
+		<action name="deleteControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup"></action>
+		
+		<action name="metaData"
+		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
+		
+		<action name="getControllableCategoryList"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategoryList">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+		
+		<action name="getControllableCategories"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategories">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="extendNewServicePortalApiV2" namespace="/api/service/v2" extends="newServicePortalApiV2">
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="formType">3</param>
