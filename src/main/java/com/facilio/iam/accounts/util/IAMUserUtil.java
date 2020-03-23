@@ -214,16 +214,16 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
 	}
 	
-	public static Map<String, Object> getUserForPhone(String phone, String appDomain, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId));
+	public static Map<String, Object> getUserForPhone(String phone, long identifier, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId, identifier));
 	}
 	
-	public static Map<String, Object> getUserForEmail(String email, String appDomain, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId));
+	public static Map<String, Object> getUserForEmail(String email, long identifier, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier));
 	}
 	
-	public static Map<String, Object> getUserForUsername(String username, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId));
+	public static Map<String, Object> getUserForUsername(String username, long orgId, long identifier) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
 	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {
@@ -280,20 +280,12 @@ public class IAMUserUtil {
 		}
 	}
 	
-	public static Map<String, Object> getUserFromUsername(String username) throws Exception {
-		return getUserForUsername(username, -1);
-	}
-	
 	public static List<IAMUser> getIAMUserPropsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
 		return getUserDatav3(userIds, orgId, shouldFetchDeleted);
 	}
 	
-	public static Map<String, Object> getUserFromPhone(String phone, String appDomain) throws Exception {
-		return getUserForPhone(phone, appDomain, -1);
-	}
-	
-	public static Map<String, Object> getUserFromEmailOrPhoneForOrg(String emailOrPhone, String appDomain) throws Exception {
-		return getUserForEmail(emailOrPhone, appDomain, AccountUtil.getCurrentOrg().getOrgId());
+	public static Map<String, Object> getUserFromPhone(String phone, long identifier) throws Exception {
+		return getUserForPhone(phone, identifier, -1);
 	}
 	
 	

@@ -394,8 +394,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			
-			User user = AccountUtil.getUserBean().getUser((String) objects[5]);
+			User user = AccountUtil.getUserBean().getUser((String) objects[5], 1);
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
@@ -411,7 +410,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			User user = AccountUtil.getUserBean().getUser((String) objects[5]);
+			User user = AccountUtil.getUserBean().getUser((String) objects[5], 1);
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
 			if(dashboard == null) {
@@ -650,6 +649,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL,url);
 			context.put(FacilioConstants.ContextNames.SESSION,sessionObjectJson);
 			context.put(FacilioConstants.ContextNames.USER_EMAIL,email);
+			context.put(FacilioConstants.ContextNames.IDENTIFIER,1);
+			
 			chain.execute();
 			
 			String permaLink = (String) context.get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL);

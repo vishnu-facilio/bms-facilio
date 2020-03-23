@@ -274,6 +274,7 @@ public class FacilioConstants {
 		public static final String ADMIN_USER_EMAIL = "email";
 		public static final String SESSION = "session";
 		public static final String TOKEN = "token";
+		public static final String IDENTIFIER = "identifier";
 
 		
 		public static final String TEMPLATE_ID = "templateId";

@@ -139,24 +139,40 @@ public class UserAction extends FacilioAction {
 
 	public String portalUserList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), null));
-		return SUCCESS;
+		//now showing only service portal user listing here
+		
+		List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
+		if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
+			if(servicePortalDomain.size() == 1) {
+				setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), servicePortalDomain.get(0).getDomain()));
+				return SUCCESS;
+			}
+		}
+		return ERROR;
+		
+		
+		
 	}
 	
 
 	public String deletePortalUser() throws Exception {
 		System.out.println("### Delete portal user :"+user.getEmail());
-		try	{
-//			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-//			  checkforTenantPrimaryContact(user.getEmail());
-//			}
 			HttpServletRequest request = ServletActionContext.getRequest(); 
-			
-			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName());
-			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid(), true)) {
-				setUserId(userTobeDeleted.getOuid());
-			    return SUCCESS;
+		long appId = -1;
+		try {
+			List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
+			if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
+				if(servicePortalDomain.size() > 1) {
+					return ERROR;
+				}
+				appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
+				User orgUser = AccountUtil.getUserBean().getUser(user.getEmail(), servicePortalDomain.get(0).getIdentifier()) ;
+				if(ApplicationApi.deleteUserFromApp(orgUser, appId) > 0) {
+					setUserId(orgUser.getOuid());
+				    return SUCCESS;
+				}
 			}
+			
 			return ERROR;
 		} catch (Exception e) {
 			throw e;

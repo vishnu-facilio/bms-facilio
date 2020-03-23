@@ -901,8 +901,10 @@ public class LoginAction extends FacilioAction {
 		
 		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
 		if(iamAccount != null) {
+			
 			long appId = -1;
 			try {
+				AccountUtil.setCurrentAccount(iamAccount.getOrg().getOrgId());
 				appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
 			}
 			catch(Exception e) {
@@ -910,7 +912,7 @@ public class LoginAction extends FacilioAction {
 				return ERROR;
 			}
 			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(appId, iamAccount);
-			if(permalinkAccount != null) {
+			if(permalinkAccount != null && permalinkAccount.getOrg() != null && permalinkAccount.getUser() != null) {
 				
 				AccountUtil.setCurrentAccount(permalinkAccount);
 				account = new HashMap<>();

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -774,7 +775,12 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else {
 			User user = null;
-			Map<String, Object> userMap = IAMUserUtil.getUserFromUsername(getEmailaddress());
+			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+			if(appDomain == null) {
+				invitation.put("status", "failed");
+				invitation.put("message", "Invalid app domain");
+			}
+			Map<String, Object> userMap = IAMUserUtil.getUserForUsername(getEmailaddress(), -1, appDomain.getIdentifier());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			} 

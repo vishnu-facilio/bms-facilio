@@ -232,7 +232,7 @@ public class PeopleAPI {
 		PeopleContext existingPeople = getPeopleForId(person.getId());
     	
         if(appDomain != null) {
-			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), 1);
 			if((appDomainType == AppDomainType.FACILIO && person.isAppAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
@@ -275,7 +275,7 @@ public class PeopleAPI {
 		}
 		PeopleContext existingPeople = getPeopleForId(person.getId());
     	if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), 1);
         	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
@@ -315,7 +315,7 @@ public class PeopleAPI {
 		PeopleContext existingPeople = getPeopleForId(person.getId());
     	
         if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), 1);
         	if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
@@ -354,7 +354,7 @@ public class PeopleAPI {
 		}
 	    PeopleContext existingPeople = getPeopleForId(person.getId());
 		if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail());
+        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getId());
         	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);

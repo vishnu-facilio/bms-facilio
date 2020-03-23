@@ -43,7 +43,7 @@ public interface UserBean {
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
-	public User getUserFromPhone(String phone) throws Exception;
+	public User getUserFromPhone(String phone, long identifier) throws Exception;
 	
 	public List<User> getUsers(Criteria criteria, boolean fetchOnlyActiveUsers, boolean fetchDeleted, Collection<Long>... ouids) throws Exception;
 	
@@ -61,9 +61,9 @@ public interface UserBean {
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getUserForUserName(String username, long appId) throws Exception;
+    public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
     
-    public User getUser(String email) throws Exception;
+    public User getUser(String email, long identifier) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
 

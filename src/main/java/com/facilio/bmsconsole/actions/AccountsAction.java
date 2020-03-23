@@ -1,9 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import com.amazonaws.Request;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -53,10 +60,18 @@ public class AccountsAction extends FacilioAction{
 	}
 
 	public String getPermalinkToken() throws Exception {
+		
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+		if(appDomainObj == null) {
+			return ERROR;
+		}
 
 		FacilioChain permaLinkTokenChain = FacilioChainFactory.getPermaLinkTokenChain();
 		permaLinkTokenChain.getContext().put(FacilioConstants.ContextNames.PERMALINK_FOR_URL, getUrl());
 		permaLinkTokenChain.getContext().put(FacilioConstants.ContextNames.USER_EMAIL, getEmail());
+		permaLinkTokenChain.getContext().put(FacilioConstants.ContextNames.IDENTIFIER, appDomainObj.getIdentifier());
 
 		if (StringUtils.isNotEmpty(sessionString)) {
 			JSONParser parser = new JSONParser();

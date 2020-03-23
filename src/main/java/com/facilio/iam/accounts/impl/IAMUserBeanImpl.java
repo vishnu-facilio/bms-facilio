@@ -1318,7 +1318,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public Map<String, Object> getUserForEmail(String email, long orgId) throws Exception {
+	public Map<String, Object> getUserForEmail(String email, long orgId, long identifier) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1335,6 +1335,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
+		if(identifier > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", String.valueOf(identifier), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
 			return list.get(0);
@@ -1344,7 +1347,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public Map<String, Object> getUserForPhone(String phone, long orgId) throws Exception {
+	public Map<String, Object> getUserForPhone(String phone, long orgId, long identifier) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1361,6 +1364,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		criteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.PHONE", "phone", phone, StringOperators.IS));
 		
 		selectBuilder.andCriteria(criteria);
+		if(identifier > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", String.valueOf(identifier), NumberOperators.EQUALS));
+		}
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
@@ -1404,7 +1410,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getUserForUsername(String username, long orgId) throws Exception {
+	public Map<String, Object> getUserForUsername(String username, long orgId, long identifier) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1414,6 +1420,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		if(identifier > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", String.valueOf(identifier), NumberOperators.EQUALS));
+		}
 		
 	
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
@@ -1510,7 +1519,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
-				
+		//handling done for domain alias for our main app
+		if(StringUtils.isNotEmpty(domain) && domain.contains("api.facilio.com")) {
+			domain = "app.facilio.com";
+		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();

@@ -17,13 +17,13 @@ public class AddContactsAsRequesterCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ContactsContext> contactsList = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		if(CollectionUtils.isNotEmpty(contactsList)) {
-			for(ContactsContext contact : contactsList) {
-				if(contact.isPortalAccessNeeded()) {
-					ContactsAPI.addUserAsRequester(contact);
-				}
-			}
-		}
+//		if(CollectionUtils.isNotEmpty(contactsList)) {
+//			for(ContactsContext contact : contactsList) {
+//				if(contact.isPortalAccessNeeded()) {
+//					ContactsAPI.addUserAsRequester(contact);
+//				}
+//			}
+//		}
 		return false;
 	}
 

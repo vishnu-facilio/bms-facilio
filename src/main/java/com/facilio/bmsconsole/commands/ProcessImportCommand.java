@@ -776,7 +776,7 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 			switch (moduleName) {
 			case "workorder": {
-				User user = AccountUtil.getUserBean().getUser(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
 			}
@@ -799,7 +799,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				User user = AccountUtil.getUserBean().getUser(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
 				if(user == null) {
 					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
 						throw new Exception("Value not found");

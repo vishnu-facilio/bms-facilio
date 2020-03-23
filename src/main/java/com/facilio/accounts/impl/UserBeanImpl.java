@@ -575,9 +575,9 @@ public class UserBeanImpl implements UserBean {
 
 
 	@Override
-	public User getUserFromPhone(String phone) throws Exception {
+	public User getUserFromPhone(String phone, long identifier) throws Exception {
 
-		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, null);
+		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, identifier);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(-1, props, true, true, false);
 		}
@@ -585,9 +585,10 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUserForUserName(String username, long appId) throws Exception {
+	public User getAppUserForUserName(String username, long appId, long orgId) throws Exception {
 
-		Map<String, Object> props = IAMUserUtil.getUserFromUsername(username);
+		AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
+		Map<String, Object> props = IAMUserUtil.getUserForUsername(username, orgId, appDomain.getIdentifier());
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(appId, props, true, true, false);
 		}
@@ -1123,14 +1124,14 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(String emailOrPhone) throws Exception {
+	public User getUser(String emailOrPhone, long identifier) throws Exception {
 		// TODO Auto-generated method stub
 		Organization currentOrg = AccountUtil.getCurrentOrg();
 		if (currentOrg == null) {
 			throw new IllegalArgumentException("Organization cannot be empty");
 		}
 		
-		Map<String, Object> props = IAMUserUtil.getUserForUsername(emailOrPhone, -1);
+		Map<String, Object> props = IAMUserUtil.getUserForUsername(emailOrPhone, currentOrg.getOrgId(), identifier);
 		if (props != null && !props.isEmpty()) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));

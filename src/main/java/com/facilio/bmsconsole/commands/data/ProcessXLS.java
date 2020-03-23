@@ -408,7 +408,7 @@ public class ProcessXLS extends FacilioCommand {
 				case "assignedBy":
 				case "assignedTo":
 				case "requester": {
-					User user = AccountUtil.getUserBean().getUser(value.toString());
+					User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
 					Map<String, Object> prop = FieldUtil.getAsProperties(user);
 					return prop;
 					

@@ -92,13 +92,13 @@ public interface IAMUserBean {
 	
     public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
-    public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId) throws Exception;
+    public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId, long identifier) throws Exception;
     
-    public Map<String, Object> getUserForPhone(String phone, long orgId) throws Exception;
+    public Map<String, Object> getUserForPhone(String phone, long orgId, long identifier) throws Exception;
     
     public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception;
     
-    public Map<String, Object> getUserForUsername(String username, long orgId) throws Exception;
+    public Map<String, Object> getUserForUsername(String username, long orgId, long identifier) throws Exception;
 
 	public IAMUser getFacilioUserV3(String username, long identifier) throws Exception;
 	

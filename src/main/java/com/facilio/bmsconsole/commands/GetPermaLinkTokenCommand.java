@@ -23,11 +23,12 @@ public class GetPermaLinkTokenCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());
 			
 		String url = (String) context.get(FacilioConstants.ContextNames.PERMALINK_FOR_URL);
 		String email = (String) context.get(FacilioConstants.ContextNames.USER_EMAIL);
-		User user = AccountUtil.getUserBean().getUser(email);
+		Long identifier = (Long) context.get(FacilioConstants.ContextNames.IDENTIFIER);
+		
+		User user = AccountUtil.getUserBean().getUser(email, identifier);
 		
 		JSONObject sessionObject = (JSONObject) context.get(FacilioConstants.ContextNames.SESSION);
 		String token;

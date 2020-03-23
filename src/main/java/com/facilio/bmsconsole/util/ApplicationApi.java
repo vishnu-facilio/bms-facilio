@@ -194,6 +194,10 @@ public class ApplicationApi {
 		   return AccountUtil.getUserBean().deleteUserFromApps(user, applicationId);
 		}
 		
+		public static int deleteUserFromApp(User user, long appId) throws Exception {
+		   return AccountUtil.getUserBean().deleteUserFromApps(user, appId);
+		}
+		
 		public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
 			List<FacilioField> fields = FieldFactory.getApplicationFields();
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
