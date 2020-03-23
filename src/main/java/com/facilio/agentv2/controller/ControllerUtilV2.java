@@ -76,6 +76,7 @@ public class ControllerUtilV2 {
                     controller.setActive(true);
                     controller.setDataInterval(900000);
                     controller.setAvailablePoints(0);
+                    controller.setDeviceId(device.getId());
                     long controllerId = ControllerApiV2.addController(controller);
                     if (controllerId > 0) {
                         controller.setId(controllerId);

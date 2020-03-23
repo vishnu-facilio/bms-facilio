@@ -198,7 +198,7 @@
         <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
         </action>
 
-        <action name="getControllerUsingIdentifier" class="com.facilio.agentv2.AgentAction"
+        <action name="getControllerForDevice" class="com.facilio.agentv2.AgentAction"
                 method="getControllerUsingIdentifier">
         </action> <!--testing purpose-->
 

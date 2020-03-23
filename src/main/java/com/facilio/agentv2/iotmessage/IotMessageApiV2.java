@@ -183,7 +183,7 @@ public class IotMessageApiV2 {
         if( (result != null) && (! result.isEmpty()) && (result.size()==1) ){
             return result.get(0);
         }else {
-            throw new Exception(" unexpected result, cant have this many records ->"+result.size());
+            throw new Exception(" unexpected result, cant have this many records ->"+result);
         }
     }
         private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
@@ -230,11 +230,6 @@ public class IotMessageApiV2 {
 			return;
 		}
 
-       /* LOGGER.info(" Iot Message is "+object);
-        if(true){ //TODO to be removed
-            LOGGER.info(" skipping iot comm for local testing ");
-            return;
-        }*/
         if (FacilioProperties.isOnpremise()) {
             publishToRabbitMQ(client, object);
         } else {

@@ -14,6 +14,7 @@ import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
+import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
@@ -274,9 +275,9 @@ public class AgentAction extends AgentActionV2 {
 
     public String getControllerUsingIdentifier() {
         try {
+            Long deviceId = getDeviceId();
             GetControllerRequest getControllerRequest = new GetControllerRequest()
-                    .withAgentId(agentId)
-                    .withControllerProperties(childJson, FacilioControllerType.valueOf(getControllerType()));
+                    .forDevice(deviceId).ofType(FacilioControllerType.MODBUS_IP);
             Controller controller = getControllerRequest.getController();
             JSONObject jsonObject = new JSONObject();
             if (controller != null) {

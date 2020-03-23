@@ -1,7 +1,12 @@
 package com.facilio.agentv2.point;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -68,11 +73,20 @@ public class PointsUtil
 
     public static boolean processPoints(JSONObject payload, Device device) throws Exception {
         LOGGER.info(" processing point "+device.getControllerProps());
+
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
             long incommingCount = pointsJSON.size();
             if (incommingCount == 0) {
                 throw new Exception(" pointJSON cant be empty");
+            }
+            Controller controller = null;
+            try {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .forDevice(device.getId()).ofType(FacilioControllerType.MODBUS_IP);
+                 controller = getControllerRequest.getController();
+            }catch(Exception e){
+                LOGGER.info("Exception while fetching controller ",e); //TODO watch and remove try catch.
             }
             List<Point> points = new ArrayList<>();
             for (Object o : pointsJSON) {
@@ -85,6 +99,9 @@ public class PointsUtil
                     if (point != null) {
                         if (point.getControllerId() > 0) {
                             point.setControllerId(-1);
+                        }
+                        if(controller != null){
+                            point.setControllerId(controller.getId());
                         }
                         points.add(point);
                     }

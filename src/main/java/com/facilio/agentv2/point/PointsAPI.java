@@ -431,10 +431,27 @@ public class PointsAPI {
             for (Point point : points) {
                 pointIds.add(point.getId());
             }
+            try {
+                updatePointsControllerId(controller);
+            }catch (Exception e){
+                LOGGER.info("Exception while updating point's controller id for device "+controller.getDeviceId());
+            }
             return updatePointsConfiguredInprogress(pointIds, controller.getId(), controller.getControllerType());
         } else {
             throw new Exception("points can't be null or empty");
         }
+    }
+
+    private static void updatePointsControllerId(Controller controller) throws SQLException {
+        Objects.requireNonNull(controller,"controllr can't be null");
+        FacilioModule pointModule = ModuleFactory.getPointModule();
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(pointModule.getTableName())
+                .fields(FieldFactory.getPointsFields())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(pointModule), String.valueOf(controller.getDeviceId()), NumberOperators.EQUALS));
+        Map<String,Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.CONTROLLER_ID,controller.getId());
+        updateRecordBuilder.update(toUpdate);
     }
 
     public static boolean updatePointsConfigurationComplete(List<Long> pointIds) throws Exception {

@@ -10,13 +10,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 
-public class ModbusPointAction extends AgentIdAction {
+public class ModbusPointAction extends ControllerActions {
     private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ModbusPointAction.class.getName());
 
 
-    @NotNull
-    @Min(1)
-    private Long controllerId;
+
     @NotNull
     private Long registerNumber;
     @NotNull
@@ -31,7 +29,6 @@ public class ModbusPointAction extends AgentIdAction {
     private Integer controllerType;
 
     @NotNull
-    @Min(1)
     private String name;
 
     public String getName() {
@@ -48,15 +45,6 @@ public class ModbusPointAction extends AgentIdAction {
 
     public void setControllerType(Integer controllerType) {
         this.controllerType = controllerType;
-    }
-
-
-    public Long getControllerId() {
-        return controllerId;
-    }
-
-    public void setControllerId(Long controllerId) {
-        this.controllerId = controllerId;
     }
 
     public Long getRegisterNumber() {
@@ -88,7 +76,7 @@ public class ModbusPointAction extends AgentIdAction {
     public String createModbusPoint() {
         try {
             if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
-                ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(getAgentId(), getControllerId());
+                ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext( -1,getControllerId());
                 tcpPointContext.setFunctionCode(functionCode);
                 tcpPointContext.setModbusDataType(modbusDataType);
                 tcpPointContext.setRegisterNumber(registerNumber);
@@ -97,7 +85,7 @@ public class ModbusPointAction extends AgentIdAction {
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
             } else {
-                ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(getAgentId(), getControllerId());
+                ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(-1, getControllerId());
                 rtuPointContext.setFunctionCode(functionCode);
                 rtuPointContext.setModbusDataType(modbusDataType);
                 rtuPointContext.setRegisterNumber(registerNumber);

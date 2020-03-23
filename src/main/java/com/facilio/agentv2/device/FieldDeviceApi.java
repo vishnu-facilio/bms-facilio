@@ -123,7 +123,7 @@ public class FieldDeviceApi {
      * @param agentId can be null
      * @return
      */
-    public static List<Map<String, Object>> getDevices(Long agentId) {
+    public static List<Map<String, Object>> getDevicesForAgent(Long agentId) {
         LOGGER.info(" getting devices for " + agentId);
         try {
             FacilioContext context = new FacilioContext();

@@ -6,6 +6,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -62,12 +63,13 @@ public class DeviceUtil {
                     device.setIdentifier( getControllerIdentifier(device.getControllerType(),(JSONObject) deviceJSON.get(AgentConstants.CONTROLLER)));
                 } else {
                     LOGGER.info("Exception occurred, controller params found in device json -> " + payload);
-                    device.setName(deviceJSON.toString());
+                    device.setIdentifier(deviceJSON.toString());
                 }
                 if(deviceJSON.containsKey(AgentConstants.NAME)){
                     device.setName((String)deviceJSON.get(AgentConstants.NAME));
+                    System.out.println(" name found and setting it ");
                 }else{
-                    device.setName(device.getIdentifier().toString());
+                    device.setName(device.getIdentifier());
                 }
                 device.setCreatedTime(System.currentTimeMillis());
                 if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
@@ -96,6 +98,16 @@ public class DeviceUtil {
     public static boolean addDevices(List<Device> devices) throws Exception {
         if (devices != null && !devices.isEmpty()) {
             FieldDeviceApi.addFieldDevices(devices);
+            try{
+                for (Device device : devices) {
+                    if(device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt()){
+                        LOGGER.info("Adding device straight to controller for modbus ip");
+                        ControllerUtilV2.fieldDeviceToController(device);
+                    }
+                }
+            }catch (Exception e){
+                LOGGER.info("Exception while making controller from device",e);
+            }
             return true;
         }
         throw new Exception("Devices to add can't be empty");

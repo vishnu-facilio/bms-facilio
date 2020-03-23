@@ -3,6 +3,7 @@ package com.facilio.agentv2.controller;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.device.Device;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -14,15 +15,13 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GetControllerRequest
 {
@@ -99,6 +98,15 @@ public class GetControllerRequest
             } else {
                 LOGGER.info(" controller condition for this type " + controllerType.asString() + " is missing ");
             }
+        }
+        return this;
+    }
+
+    public GetControllerRequest forDevice(long deviceId){
+        if ((deviceId > 1)) {
+            LOGGER.info(FIELD_MAP.containsKey(AgentConstants.DEVICE_ID));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), Collections.singleton(deviceId),NumberOperators.EQUALS));
+            context.put(FacilioConstants.ContextNames.FILTER_CRITERIA,criteria);
         }
         return this;
     }
