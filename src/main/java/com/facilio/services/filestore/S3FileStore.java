@@ -99,35 +99,25 @@ public class S3FileStore extends FileStore {
 		long fileId = this.addFile(fileName, file, contentType);
 		
 		for (int resizeVal : resize) {
-			ByteArrayInputStream bis = null;
-			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();FileInputStream fis = new FileInputStream(file);) {
 				if (contentType.contains("image/")) {
 					// Image resizing...
-					
-					FileInputStream fis = new FileInputStream(file);
 					BufferedImage imBuff = ImageIO.read(fis);
 					BufferedImage out = ImageScaleUtil.resizeImage(imBuff, resizeVal, resizeVal);
 					ImageIO.write(out, "png", baos);
 					baos.flush();
 					byte[] imageInByte = baos.toByteArray();
-					baos.close();
-					bis = new ByteArrayInputStream(imageInByte);
-					
-					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
-					
-			    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), resizedFilePath, bis, null);
-			    	if (rs != null) {
-			    		addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
-			    	}
+					try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
+						String resizedFilePath = getRootPath() + File.separator + fileId + "-resized-" + resizeVal + "x" + resizeVal;
+						PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), resizedFilePath, bis, null);
+						if (rs != null) {
+							addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
+						}
+					}
 				}
 		    } catch (Exception e) {
 		    	log.error("Exception occurred ", e);
 		    }
-			finally {
-				if (bis != null) {
-					bis.close();
-				}
-			}
 		}
 		return fileId;
 	}
