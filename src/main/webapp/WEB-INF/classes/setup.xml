@@ -133,7 +133,7 @@
 		</action>
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,USERS</param>
 			<param name="cache">org</param>  
 			<result name="success" type="json">
 			<param name="includeProperties">users.*</param></result>
@@ -141,12 +141,13 @@
 		<action name="portalusers" class="com.facilio.bmsconsole.actions.UserAction" method="portalUserList">
 			<param name="moduleName">setup</param>
 			<param name="cache">org</param>
+			<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">users.*</param></result>
 		</action>
 	<action name="deleteportaluser" class="com.facilio.bmsconsole.actions.UserAction" method="deletePortalUser">
 		<param name="moduleName">setup</param>
-		<param name="permission">USER_ACCESS_ADMINISTER</param>
+		<param name="permission">USER_ACCESS_ADMINISTER,REQUESTERS</param>
 		<param name="cache">org</param>
 		<result name = "success" type="json">
 				<param name ="includeProperties">userId</param>
@@ -156,14 +157,14 @@
 	</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
 		<param name="moduleName">setup</param>
-		<param name="permission">USER_MANAGEMENT</param>
+		<param name="permission">USER_MANAGEMENT,TEAMS</param>
 		<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 		<param name="moduleName">setup</param>
-		<param name="permission">USER_MANAGEMENT</param>
+		<param name="permission">USER_MANAGEMENT,ROLES</param>
 		<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
@@ -210,7 +211,7 @@
 		</action>	
 		<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction" method="changeStatus">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,USERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">user.orgUserId</param>
 			</result>
@@ -222,7 +223,7 @@
 		</action>
 		<action name="deleteUser" class = "com.facilio.bmsconsole.actions.UserAction" method = "deleteUser">
 			<param name="moduleName">setup</param>
-			<param name= "permission">USER_MANAGEMENT</param>
+			<param name= "permission">USER_MANAGEMENT,USERS</param>
 			<result name = "success" type="json">
 				<param name ="includeProperties">userId</param>
 			</result>
@@ -246,7 +247,7 @@
 			</action>
 			<action name="inviterequester" class="com.facilio.bmsconsole.actions.UserAction" method="inviteRequester">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
 			</result>
@@ -270,7 +271,7 @@
 			</action>
 		<action name="updateuser"  class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,USERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
 			</result>
@@ -306,7 +307,7 @@
 		</action>
 		<action name="addgroup" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,TEAMS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
 			</result>
@@ -318,7 +319,7 @@
 		</action>
 		<action name="updategroup" class="com.facilio.bmsconsole.actions.GroupAction" method="updateGroup">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,TEAMS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
 			</result>
@@ -330,7 +331,7 @@
 		</action>
 		<action name="deletegroup" class="com.facilio.bmsconsole.actions.GroupAction" method="deleteGroup">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,TEAMS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
 			</result>
@@ -343,7 +344,7 @@
 		
 		<action name="deleterole" class="com.facilio.bmsconsole.actions.RoleAction" method="deleteRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -355,7 +356,7 @@
 		</action>
 		<action name="changeTeamStatus" class="com.facilio.bmsconsole.actions.GroupAction" method="changeTeamStatus">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,TEAMS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">group.groupId</param>
 			</result>
@@ -367,7 +368,7 @@
 		</action>	
 		<action name="addRole" class="com.facilio.bmsconsole.actions.RoleAction" method="addRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -392,7 +393,7 @@
 		</action>
 		<action name="updaterole" class="com.facilio.bmsconsole.actions.RoleAction" method="updateRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -475,7 +476,7 @@
 	<!-- Work Order Actions -->		
 	 <action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailSetting.*,supportEmails.*</param>
 			</result>
@@ -510,21 +511,21 @@
 		</action>	
 	<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
 		<action name="addemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">supportEmailId</param>
 			</result>
 		</action>
 		<action name="deleteemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 			</result>
 		</action>
@@ -532,7 +533,7 @@
 		<action name="subscription" class="com.facilio.bmsconsole.actions.UserAction"
 			method="subscriptionInfo">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^subscription.*</param>
 			</result>

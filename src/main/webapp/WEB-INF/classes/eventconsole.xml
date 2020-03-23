@@ -78,32 +78,32 @@
 			</result>
 		</action>
 		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
-			<param name="moduleName">alarm</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRules</param>
 			</result>
 		</action>
 		
 		<action name="addEventRule" class="com.facilio.events.actions.EventAction" method="addEventRule">
-			<param name="moduleName">alarm</param>
-			<param name="permission">CREATE</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
 		</action>
 		
 		<action name="updateEventRule" class="com.facilio.events.actions.EventAction" method="updateEventRule">
-			<param name="moduleName">alarm</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
 		</action>
 		
 		<action name="deleteEventRule" class="com.facilio.events.actions.EventAction" method="deleteEventRule">
-			<param name="moduleName">alarm</param>
-			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">ALARM_SETTINGS,EVENT_FILTERING</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>

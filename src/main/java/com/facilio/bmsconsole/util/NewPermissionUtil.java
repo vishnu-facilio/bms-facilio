@@ -139,7 +139,8 @@ public class NewPermissionUtil {
         settingsTabType.put("LOGS", 4294967296L);
         settingsTabType.put("CONFIGURATION", 8589934592L);
         settingsTabType.put("COMMISSIONING", 17179869184L);
-//		settingsTabType.put("", 34359738368L);
+		settingsTabType.put("FEEDBACK_AND_COMPLAINTS", 34359738368L);
+		settingsTabType.put("SMART_CONTROLS", 68719476736L);
 
         return settingsTabType;
     }
@@ -275,6 +276,9 @@ public class NewPermissionUtil {
         permissions.add(new Permission("SERVICE_PORTAL", "Service Portal", settingsTabType.get("SERVICE_PORTAL"), null));
         permissions.add(new Permission("DEVICES", "Devices", settingsTabType.get("DEVICES"), null));
         permissions.add(new Permission("VISITOR_SETTINGS", "Visitor Settings", settingsTabType.get("VISITOR_SETTINGS"), null));
+        permissions.add(new Permission("FEEDBACK_AND_COMPLAINTS", "Feedback and Complaints", settingsTabType.get("FEEDBACK_AND_COMPLAINTS"), null));
+        permissions.add(new Permission("SMART_CONTROLS", "Smart Controls", settingsTabType.get("SMART_CONTROLS"), null));
+
         permissionMap.put("general", permissions);
         permissionList.put(Type.SETTINGS.getIndex(), permissionMap);
 

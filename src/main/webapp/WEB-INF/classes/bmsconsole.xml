@@ -247,7 +247,7 @@
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction"
 			method="groupList">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,TEAMS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groups,groups\[\d+\],groups\[\d+\].*</param>
 			</result>
@@ -386,7 +386,7 @@
 		<action name="getlist" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="spaceCategoriesList">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_CATEGORIES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
 			</result>
@@ -394,7 +394,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="addSpaceCategory">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_CATEGORIES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
 			</result>
@@ -402,7 +402,7 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="updateSpaceCategory">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_CATEGORIES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
 			</result>
@@ -410,7 +410,7 @@
 		<action name="delete" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="deleteSpaceCategory">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_CATEGORIES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">resultMessage,resultAction</param>
 			</result>
@@ -457,7 +457,7 @@
 		<action name="updateserviceportal" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="updateServicePortal">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">GENERAL,SERVICE_PORTAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -465,7 +465,7 @@
 		<action name="savessoconfig" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="saveSSOConfiguration">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">GENERAL,SERVICE_PORTAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
@@ -473,7 +473,7 @@
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">GENERAL,SERVICE_PORTAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^protalInfo.*</param>
 			</result>
@@ -759,7 +759,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeter">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="permission">ENERGY_ANALYTICS,ENERGY_METERS</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
@@ -768,7 +768,7 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="updateEnergyMeter">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="permission">ENERGY_ANALYTICS,ENERGY_METERS</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">energyMeter</param>
@@ -1310,7 +1310,7 @@
 		<action name="addsetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addReadings">
 				<param name="moduleName">setup</param>
-				<param name="permission">ASSET_SETTINGS</param>
+				<param name="permission">ASSET_SETTINGS,READINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
 			</result>
@@ -1319,7 +1319,7 @@
 		<action name="updatesetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="updateReading">
 				<param name="moduleName">setup</param>
-				<param name="permission">ASSET_SETTINGS</param>
+				<param name="permission">ASSET_SETTINGS,READINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">field</param>
 			</result>
@@ -1381,7 +1381,7 @@
 		<action name="getallspacetypereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllSpaceTypeReadings">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS</param>
+			<param name="permission">SPACE_SETTINGS,READINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">moduleMap.*,moduleMap\[\d+\],moduleMap\[\d+\].*,spaces.*,spaces\[\d+\],spaces\[\d+\].*</param>
 			</result>
@@ -1414,7 +1414,7 @@
 		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllAssetReadings">
 			<param name="moduleName">setup</param>
-			<param name="permission">ASSET_SETTINGS</param>
+			<param name="permission">ASSET_SETTINGS,READINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">moduleMap.*,assetCount.*,fieldVsRules.*</param>
 			</result>
@@ -2222,7 +2222,7 @@
 		<action name="addBaseLine" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="addBaseLine">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="permission">ENERGY_ANALYTICS,BASELINE</param>
 			<result name="success" type="json">
 				<param name="root">baseLine</param>
 			</result>
@@ -2230,7 +2230,7 @@
 		<action name="all" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="getAllBaseLineList">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="permission">ENERGY_ANALYTICS,BASELINE</param>
 			<result name="success" type="json">
 				<param name="root">baseLines</param>
 			</result>
@@ -2844,7 +2844,7 @@
 		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="updateOrgSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">GENERAL,COMPANY_PROFILE</param>
 			<result name="success" type="json">
 			</result>
 		</action>

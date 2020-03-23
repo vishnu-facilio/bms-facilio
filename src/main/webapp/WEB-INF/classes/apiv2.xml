@@ -1346,27 +1346,54 @@
 
 	<package name="serviceCatalog" namespace="/api/v2/servicecatalog" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="addOrUpdateServiceCatalog" />
+				method="addOrUpdateServiceCatalog">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="getServiceCatalogList" />
+				method="getServiceCatalogList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="getServiceCatalogDetails" />
+				method="getServiceCatalogDetails">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="deleteServiceCatalog" />
+				method="deleteServiceCatalog">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 
 		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="getModules" />
+				method="getModules">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 	</package>
 
 	<package name="serviceCatalogGroup" namespace="/api/v2/servicecataloggroup" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="addOrUpdateServiceCatalogGroup" />
+				method="addOrUpdateServiceCatalogGroup">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="getAllServiceCatalogGroup" />
+				method="getAllServiceCatalogGroup">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="getServiceCatalogDetailGroup" />
+				method="getServiceCatalogDetailGroup">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
-				method="deleteServiceCatalogGroup" />
+				method="deleteServiceCatalogGroup">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+		</action>
 	</package>
 
 	<package name="alarmEventListApiv2"
@@ -3863,34 +3890,39 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="addLabour">
-			<param name="moduleName">labour</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">LABOUR</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="updateLabour">
-			<param name="moduleName">labour</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">LABOUR</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="deleteLabour">
-			<param name="moduleName">labour</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">LABOUR</param>
 		</action>
 		<action name="labourList"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourList">
-			<param name="moduleName">labour</param>
+<!--			<param name="moduleName">setup</param>-->
+<!--			<param name="permission">LABOUR</param>-->
 		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourDetails">
-			<param name="moduleName">labour</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">LABOUR</param>
 			<param name="labourId">{1}</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemCount">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">LABOUR</param>
 		</action>
 	</package>
 
@@ -4906,19 +4938,33 @@
 	</package>
 	
 	<package name="deviceApi" namespace="/api/v2/devices" extends="v2Api">
-			<action name="add" class="com.facilio.bmsconsole.actions.DevicesAction" method="addDevice">							
+			<action name="add" class="com.facilio.bmsconsole.actions.DevicesAction" method="addDevice">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="connect" class="com.facilio.bmsconsole.actions.DevicesAction" method="connectDevice">							
+			<action name="connect" class="com.facilio.bmsconsole.actions.DevicesAction" method="connectDevice">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="update" class="com.facilio.bmsconsole.actions.DevicesAction" method="updateDevice">							
+			<action name="update" class="com.facilio.bmsconsole.actions.DevicesAction" method="updateDevice">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">							
+			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">							
+			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="delete" class="com.facilio.bmsconsole.actions.DevicesAction" method="deleteDevice">							
+			<action name="delete" class="com.facilio.bmsconsole.actions.DevicesAction" method="deleteDevice">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
-			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
+			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">
+				<param name="moduleName">setup</param>
+				<param name="permission">GENERAL,DEVICES</param>
 			</action>
 	</package>
 	<package name="printerApi" namespace="/api/v2/printer" extends="v2Api">
@@ -4942,30 +4988,52 @@
 	</package>
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="get" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskDetails">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 	</package>
 	<package name="smartControlKiosk" namespace="/api/v2/smartControlKiosk" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="get" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskDetails">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 	</package>
 	<package name="feedbackType" namespace="/api/v2/feedbackType" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackTypeList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 	</package>
 
