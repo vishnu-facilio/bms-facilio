@@ -1,5 +1,20 @@
 package com.facilio.aws.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
@@ -7,18 +22,6 @@ import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.facilio.agent.AgentKeys;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
 
 public class FacilioProperties {
 
@@ -75,6 +78,7 @@ public class FacilioProperties {
     private static String sentryschedulerdsn;
     private static String pythonAI;
     private static String pythonPath;
+    private static String allowedAppDomains;
 
     private static String emailClient;
     private static String fileStore;
@@ -110,6 +114,8 @@ public class FacilioProperties {
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 clientAppUrl = "https://"+ appDomain;
                 allowedPortalDomains = PROPERTIES.getProperty("allowedportal.domains");
+                allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
+                
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -224,6 +230,10 @@ public class FacilioProperties {
     
     public static String getAllowedPortalDomainsUrl() {
         return allowedPortalDomains;
+    }
+    
+    public static String getAllowedAppDomains() {
+        return allowedAppDomains;
     }
 
     public static String getPushNotificationKey() {

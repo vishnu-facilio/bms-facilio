@@ -32,4 +32,12 @@ public class IAMAppUtil {
 		FacilioService.runAsService(() -> IAMUtil.getUserBean().addAppDomains(appDomains));
 	}
 	
+	public static List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomainsForOrg(orgId));
+	}
+	
+	public static int deleteAppDomains(List<Long> appDomainIds) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteAppDomains(appDomainIds));
+	}
+	
 }

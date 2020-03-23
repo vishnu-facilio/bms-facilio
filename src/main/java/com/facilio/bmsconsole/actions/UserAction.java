@@ -92,6 +92,15 @@ public class UserAction extends FacilioAction {
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
+	
+	private boolean portal = false;
+	public boolean isPortal() {
+		return portal;
+	}
+
+	public void setPortal(boolean portal) {
+		this.portal = portal;
+	}
 
 	private String appDomain;
 	
@@ -379,11 +388,25 @@ public class UserAction extends FacilioAction {
 	
 	public String resendInvite() throws Exception {
 		ServletActionContext.getRequest().getParameter("portal");
-		User appUser = AccountUtil.getUserBean().getUser(user.getOuid(), false);
-		if(appUser != null) {
-			(new UserBeanImpl()).resendInvite(appUser);
-			setUserId(appUser.getId());
-			return SUCCESS;
+		long appId = -1;
+		try {
+			List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(portal ? AppDomainType.SERVICE_PORTAL : AppDomainType.FACILIO, AccountUtil.getCurrentOrg().getOrgId());
+			if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
+				if(servicePortalDomain.size() > 1) {
+					return ERROR;
+				}
+				appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
+				User appUser = AccountUtil.getUserBean().getUser(userId, false);
+				if(appUser != null) {
+					appUser.setAppDomain(servicePortalDomain.get(0));
+					appUser.setApplicationId(appId);
+					(new UserBeanImpl()).resendInvite(appUser);
+					setUserId(appUser.getId());
+					return SUCCESS;
+				}
+			}
+		} catch (Exception e) {
+			throw e;
 		}
 		return ERROR;
 		

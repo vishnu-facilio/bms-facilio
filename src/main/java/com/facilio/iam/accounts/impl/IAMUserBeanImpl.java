@@ -5,6 +5,7 @@ import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -1463,13 +1465,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	@Override
 	public int deleteAppDomain(long appDomainId) throws Exception {
-		
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table("App_Domain")
-				.andCondition(CriteriaAPI.getCondition("App_Domain.ID","id" , String.valueOf(appDomainId), NumberOperators.EQUALS));
-				
-		return deleteBuilder.delete();
-		
+		return deleteAppDomains(Collections.singletonList(appDomainId));
 	}
 	
 	private static long addNewAppDomain(AppDomain appDomain) throws Exception {
@@ -1514,14 +1510,38 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
+	public List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
+		}
+		return null;
+
+	}
+	
+	@Override
 	public AppDomain getAppDomain(String domain) throws Exception {
 		// TODO Auto-generated method stub
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
-		//handling done for domain alias for our main app
-		if(StringUtils.isNotEmpty(domain) && (domain.contains("api.facilio.com") || domain.contains("demo.facilio.com"))) {
-			domain = "app.facilio.com";
+		//handling done for domain aliases for our main app
+		if(StringUtils.isNotEmpty(domain)) {
+			String allowedAppdomains = FacilioProperties.getAllowedAppDomains();
+			String[] appdomains = allowedAppdomains.split(",");
+			if(appdomains.length > 0){
+				List<String> allowedAppDomainList = Arrays.asList(appdomains);
+				if(allowedAppDomainList.contains(domain)) {
+					domain = AccountUtil.getDefaultAppDomain();
+				}
+			}
+			
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
 		
@@ -1574,6 +1594,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		
 	}
+	
+	@Override
+	public int deleteAppDomains(List<Long> appDomainIds) throws Exception {
+		if(CollectionUtils.isNotEmpty(appDomainIds)) {
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(IAMAccountConstants.getAppDomainModule().getTableName());
+			
+			builder.andCondition(CriteriaAPI.getIdCondition(appDomainIds, IAMAccountConstants.getAppDomainModule()));
+			return builder.delete();
+			
+		}
+		return -1;
+	}
 
 	@Override
 	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
@@ -1598,6 +1631,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return jwt;
 		}
 		throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+	}
+
+	@Override
+	public void deleteDefaultAppDomains(long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<AppDomain> orgDomains = getAppDomainsForOrg(orgId);
+		List<Long> domainIds = new ArrayList<Long>();
+		if(CollectionUtils.isNotEmpty(orgDomains)) {
+			for(AppDomain domain : orgDomains) {
+				domainIds.add(domain.getId());
+			}
+			deleteAppDomains(domainIds);
+		}
 	}
 
 		

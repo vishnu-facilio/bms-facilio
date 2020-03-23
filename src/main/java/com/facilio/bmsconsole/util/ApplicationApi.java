@@ -246,7 +246,7 @@ public class ApplicationApi {
 					.fields(fields);
 
 			Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
-			AppDomain facilioApp = IAMAppUtil.getAppDomain("app.facilio.com");
+			AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
 			ApplicationContext facilioApplication = new ApplicationContext(orgId, "FACILIO", true, facilioApp.getId());
 
 			

@@ -236,7 +236,8 @@ public class PeopleAPI {
 			if((appDomainType == AppDomainType.FACILIO && person.isAppAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
-					ApplicationApi.addUserInApp(user);
+					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+				    ApplicationApi.addUserInApp(user);
 					if(user.getRoleId() != existingPeople.getRoleId()) {
 						user.setRoleId(existingPeople.getRoleId());
 						AccountUtil.getUserBean().updateUser(user);
@@ -279,6 +280,7 @@ public class PeopleAPI {
         	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
+					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
 			    	ApplicationApi.addUserInApp(user);
 				}
 				else {
@@ -319,7 +321,8 @@ public class PeopleAPI {
         	if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
-					ApplicationApi.addUserInApp(user);
+					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+				    ApplicationApi.addUserInApp(user);
 				}
 				else {
 					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), 1);
@@ -358,7 +361,8 @@ public class PeopleAPI {
         	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
 				if(user != null) {
 					user.setAppDomain(appDomain);
-		    		ApplicationApi.addUserInApp(user);
+					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+				    ApplicationApi.addUserInApp(user);
 				}
 				else {
 					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getId());

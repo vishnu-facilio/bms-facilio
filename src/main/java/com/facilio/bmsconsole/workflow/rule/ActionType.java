@@ -1580,7 +1580,7 @@ public enum ActionType {
 	
 	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-		User user = userBean.getUser(email, -1);
+		User user = userBean.getUserFromEmail(email, -1);
 		return (user == null || (user != null && user.getUserStatus()));
 	}
 

@@ -14,7 +14,7 @@ java.sql.Timestamp,
        List<Map<String, Object>> sessions = null;
        User usr = null;
        			if (email != null) {
-      		usr = AccountUtil.getUserBean().getUser(email);
+      		usr = AccountUtil.getUserBean().getUser(email, 1);//for now only identifier 1 users
       		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
       		long orgId = usr.getOrgId();

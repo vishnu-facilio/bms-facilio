@@ -86,7 +86,7 @@ public interface UserBean {
 
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
 
-	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
+	public void createUserEntry(long orgId, User user, boolean isSignup) throws Exception;
 
 	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
 	
@@ -99,6 +99,9 @@ public interface UserBean {
 	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	
 	public int deletePeopleForUser(User user) throws Exception;
+	
+	public User getUserFromEmail(String email, long identifier) throws Exception;
+	
 	
 	
 }

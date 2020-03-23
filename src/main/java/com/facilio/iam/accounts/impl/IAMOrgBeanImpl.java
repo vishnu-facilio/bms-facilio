@@ -289,6 +289,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception {
 		// TODO Auto-generated method stub
 		if(IAMUtil.getUserBean().deleteUserv2(superAdminUserId, orgId)) {
+			IAMUtil.getUserBean().deleteDefaultAppDomains(orgId);
 			return deleteSignedUpOrgv2(orgId);
 		}
 		return false;

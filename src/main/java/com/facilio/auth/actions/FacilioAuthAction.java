@@ -1011,7 +1011,7 @@ public class FacilioAuthAction extends FacilioAction {
 			String facilioToken = null;
 			String appDomain = request.getServerName();
 			AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
-			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
 			}
 			else {

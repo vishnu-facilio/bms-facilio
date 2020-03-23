@@ -170,17 +170,20 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public void createUserEntry(long orgId, User user, boolean isSignUpEmailVerificationNeeded) throws Exception {
+	public void createUserEntry(long orgId, User user, boolean isSignUp) throws Exception {
 
-		if (isSignUpEmailVerificationNeeded) {
+		if (isSignUp) {
 			sendEmailRegistration(user);
 		}
 		user.setOrgId(orgId);
 		user.setUserStatus(true);
 		addToORGUsers(user);
-		if(isSignUpEmailVerificationNeeded) {
+		if(isSignUp) {
 			ApplicationApi.addDefaultAppDomains(orgId);
 			ApplicationApi.addDefaultApps(orgId);
+			long appId = ApplicationApi.getApplicationIdForApp(user.getAppDomain());
+			user.setApplicationId(appId);
+		
 		}
 		addToORGUsersApps(user, true);
 		addUserDetail(user);
@@ -578,6 +581,16 @@ public class UserBeanImpl implements UserBean {
 	public User getUserFromPhone(String phone, long identifier) throws Exception {
 
 		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, identifier);
+		if (props != null && !props.isEmpty()) {
+			return getAppUser(-1, props, true, true, false);
+		}
+		return null;
+	}
+	
+	@Override
+	public User getUserFromEmail(String email, long identifier) throws Exception {
+
+		Map<String, Object> props = IAMUserUtil.getUserForEmail(email, identifier , -1);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(-1, props, true, true, false);
 		}

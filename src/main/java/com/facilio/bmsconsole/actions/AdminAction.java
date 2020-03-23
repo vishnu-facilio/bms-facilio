@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.amazonaws.services.ec2.model.Instance;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
@@ -10,6 +11,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -18,6 +20,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FieldFactory;
@@ -105,12 +108,22 @@ public class AdminAction extends ActionSupport {
 		newUser.setInviteAcceptStatus(true);
 		newUser.setInvitedTime(System.currentTimeMillis());
 		newUser.setUserStatus(true);
-//		try {
-//			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+			if(appDomainObj == null) {
+				throw new IllegalArgumentException("Invalid App Domain");
+			}
+			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+				//for now add main app users only from admin console
+			newUser.setApplicationId(appId);
+			newUser.setAppDomain(appDomainObj);
+			
+			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, 1);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return SUCCESS;
 	}
