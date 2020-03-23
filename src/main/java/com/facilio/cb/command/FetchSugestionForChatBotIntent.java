@@ -30,7 +30,7 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			
 			session = chatBotSessionConversation.getChatBotSession();
 			
-			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
+			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {		// in conversation suggestions
 				
 				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConfirmationCard());
 				

@@ -47,4 +47,7 @@ system_what_is_your_gender_intent:
    - "I dont't have a gender."
    - "I'm gender neutral"
    
+system_what_can_you_do_intent:
+   - "I can help you in these ways."
+   
    
