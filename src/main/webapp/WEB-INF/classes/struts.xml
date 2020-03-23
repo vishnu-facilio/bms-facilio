@@ -27,6 +27,7 @@
 	<include file="public.xml" />
 	<include file="vendorportalv2.xml"/>
 	<include file="agent.xml"/>
+	<include file="apiv3.xml"/>
 	
 	
 	<!-- Add packages here -->

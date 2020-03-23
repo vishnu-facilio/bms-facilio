@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+
+<struts>
+    <package name="v3BaseApi" strict-method-invocation="false"
+             extends="struts-default,json-default">
+        <result-types>
+            <result-type name="json"
+                         class="com.facilio.bmsconsole.interceptors.CacheResult" />
+        </result-types>
+
+        <global-results>
+            <result name="login" type="httpheader">
+                <param name="status">401</param>
+            </result>
+            <result name="unauthorized" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="error" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, message, stackTrace</param>
+            </result>
+            <result name="exception" type="chain">
+                <param name="actionName">handleException</param>
+                <param name="namespace">/v2/exception</param>
+            </result>
+            <result name="cachedResponse" type="chain">
+                <param name="actionName">cachedResponse</param>
+                <param name="namespace">/v2/cachedResponse</param>
+            </result>
+            <result name="success" type="json">
+                <!-- <param name="excludeNullProperties">true</param> -->
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^data.*,^meta.*</param>
+            </result>
+            <result name="failure" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^message.*,^code.*</param>
+            </result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception"
+                               result="exception" />
+        </global-exception-mappings>
+    </package>
+
+    <package name="v3Api" namespace="/api/v3/module" extends="v3BaseApi">
+        <interceptors>
+            <interceptor name="cacheinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+            <interceptor name="scopeinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+            <interceptor name="datasourceinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+            <interceptor name="authinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+            <interceptor-stack name="defaultInterceptor">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref
+                name="defaultInterceptor" />
+
+        <action name="create"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="create">
+        </action>
+
+        <action name="update"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="update">
+        </action>
+
+        <action name="list"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="list">
+        </action>
+
+        <action name="summary"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="summary">
+        </action>
+
+
+    </package>
+
+</struts>
