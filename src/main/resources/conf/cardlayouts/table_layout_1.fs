@@ -66,7 +66,7 @@ Map cardLayout(Map params) {
                     else {
                         cell["value"] = fieldValue;
                     }
-                    if (fieldMapInfo.mainField) {
+                    if (fieldMapInfo.mainField != null) {
                         linkTo = {};
                         linkTo.id = asset.id;
                         linkTo.module = moduleName;
