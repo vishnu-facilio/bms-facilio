@@ -3,6 +3,7 @@ Map cardLayout(Map params) {
 
     moduleName = params.moduleName;
     assetCategoryId = params.assetCategoryId;
+    buildingId = params.buildingId;
     columns = params.columns;
     excludeEmptyReadings = true;
     if (params.excludeEmptyReadings != null) {
@@ -17,7 +18,14 @@ Map cardLayout(Map params) {
     month = date.getDateRange(dateRange);
 
     assetModule = Module(moduleName);
-    assetList = assetModule.fetch([category == assetCategoryId]);
+    assetList = null;
+    if (buildingId != null && buildingId > 0) {
+        bs = resource().getBaseSpace(buildingId);
+        assetList = assetModule.fetch([category == assetCategoryId && space == bs]);
+    }
+    else {
+        assetList = assetModule.fetch([category == assetCategoryId]);
+    }
 
     rows = [];
     if (assetList != null) {
@@ -58,6 +66,13 @@ Map cardLayout(Map params) {
                     else {
                         cell["value"] = fieldValue;
                     }
+                    if (fieldMapInfo.mainField) {
+                        linkTo = {};
+                        linkTo.id = asset.id;
+                        linkTo.module = moduleName;
+                        linkTo.linkType = "SUMMARY";
+                        cell["linkTo"] = linkTo;
+                    }
                 }
                 else if (column.type == "reading") {
                     readingColumnCount = readingColumnCount + 1;
@@ -83,6 +98,18 @@ Map cardLayout(Map params) {
                             cell["value"] = enumMap.get(readingValue);
                         }
                     }
+
+                    readingObj = {};
+                    readingObj["fieldId"] = fieldObj.id();
+                    readingObj["parentId"] = asset.id;
+                    readingObj["moduleName"] = column.moduleName;
+                    readings = [];
+                    readings.add(readingObj);
+                    
+                    linkTo = {};
+                    linkTo.readings = readings;
+                    linkTo.linkType = "ANALYTICS";
+                    cell["linkTo"] = linkTo;
                 }
                 
                 if (fieldMapInfo != null) {
