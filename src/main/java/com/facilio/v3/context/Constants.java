@@ -9,4 +9,5 @@ public class Constants {
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String MODULE_NAME = "moduleName";
     public static final String MODULE_BEAN = "moduleBean";
+    public static final String RECORD_ID = "recordId";
 }

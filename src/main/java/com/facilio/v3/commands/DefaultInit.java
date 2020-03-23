@@ -18,8 +18,16 @@ public class DefaultInit extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         JSONObject data = (JSONObject) context.get(Constants.RAW_INPUT);
         ModuleBaseWithCustomFields asBeanFromJson = FieldUtil.getAsBeanFromJson(data, ModuleBaseWithCustomFields.class);
+
+        Long id = (Long) context.get(Constants.RECORD_ID);
+
+        if (id != null) {
+            asBeanFromJson.setId(id);
+        }
+
         Map<String, List> recordMap = new HashMap<>();
         recordMap.put((String) context.get(Constants.MODULE_NAME), Arrays.asList(asBeanFromJson));
+
         context.put(Constants.RECORD_MAP, recordMap);
         return false;
     }

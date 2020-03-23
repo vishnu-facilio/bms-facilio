@@ -235,12 +235,27 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
 
-        V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
+        V3Config.UpdateHandler updateHandler = null;
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
-        if (updateHandler != null) {
-            addIfNotNull(transactionChain, updateHandler.getInitCommand());
-            addIfNotNull(transactionChain, updateHandler.getBeforeSaveCommand());
+        if (!module.isCustom()) {
+            if (v3Config == null) {
+                throw new IllegalArgumentException("not a valid module");
+            }
+
+            updateHandler = v3Config.getUpdateHandler();
+
+            if (updateHandler != null) {
+                addIfNotNull(transactionChain, updateHandler.getInitCommand());
+                addIfNotNull(transactionChain, updateHandler.getBeforeSaveCommand());
+            }
+
+            if (updateHandler == null) {
+                //TODO unsupported operation
+                throw new IllegalArgumentException("unsupported operation");
+            }
+        } else {
+            addIfNotNull(transactionChain, new DefaultInit());
         }
 
         transactionChain.addCommand(new UpdateCommand(module));
@@ -252,9 +267,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioContext context = transactionChain.getContext();
 
-        Map<String, List> recordMap = new HashMap<>();
-        recordMap.put(moduleName, Arrays.asList(updateObj));
-        context.put(Constants.RECORD_MAP, recordMap);
+        context.put(Constants.RECORD_ID, id);
+        context.put(Constants.MODULE_NAME, moduleName);
+        context.put(Constants.RAW_INPUT, updateObj);
 
         transactionChain.execute();
     }
