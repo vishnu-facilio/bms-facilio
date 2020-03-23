@@ -139,5 +139,16 @@ public class CommissionAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
+	
+	public String deleteLog() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getDeleteCommissioningChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.ID, id);
+		
+		chain.execute();
+		setResult(ContextNames.RESULT, "success");
+		
+		return SUCCESS;
+	}
 
 }

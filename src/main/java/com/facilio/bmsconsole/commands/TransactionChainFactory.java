@@ -4957,6 +4957,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new PublishCommissioningCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getDeleteCommissioningChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteCommissioningCommand());
+		return chain;
+	}
+	
 	public  static  FacilioChain migrateFieldDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new MigrateFieldReadingDataCommand());

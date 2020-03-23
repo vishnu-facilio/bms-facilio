@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -89,6 +88,7 @@ public abstract class FileStore {
 	}
 	
 	protected boolean updateFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -295,8 +295,6 @@ public abstract class FileStore {
 	
 	public abstract long addFile(String fileName, File file, String contentType, int[] resize) throws Exception;
 
-//	public abstract long addFile(String fileName, File file, String contentType, int[] resize, long fileId) throws Exception;
-	
 	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
 	
 	public FileInfo getFileInfo(long fileId) throws Exception {

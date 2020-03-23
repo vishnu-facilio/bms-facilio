@@ -2672,6 +2672,10 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.CommissionAction" method="deleteLog">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.CommissionAction" method="logDetails">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>

@@ -108,6 +108,7 @@
             	long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			/*  if (!orgIds.contains(orgId) && (FacilioProperties.isProduction() || (orgId  == 146))) { */
 			if (orgId  == 146){
+				LOGGER.info("Mig for file started");
 				try {
 		            	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		            FacilioModule ticketAttachmentModule = modBean.getModule("ticketattachments");
@@ -175,49 +176,51 @@
 	    					}
 	    					i++;
 	    					if (fileInfo != null && fileInfo.getContentType().contains("image/")) {
-	    						InputStream downloadStream = null; 
-	    						try{
-	    							downloadStream = fs.readFile(fileInfo);
+	    						try(InputStream downloadStream = fs.readFile(fileInfo);) {
+	    							if (downloadStream != null) {
+		    							FileOutputStream os = null;
+		    							ByteArrayInputStream bis = null;
+		    							try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+		    								BufferedImage imBuff = ImageIO.read(downloadStream);
+			    							BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
+			    							ImageIO.write(out, "png", baos);
+			    							baos.flush();
+			    							byte[] imageInByte = baos.toByteArray();
+			    							baos.close();
+			    							bis = new ByteArrayInputStream(imageInByte);
+			    							
+			    							String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-resized-"+360+"x"+360;
+			    							PutObjectResult rs = null;
+			    							if (!FacilioProperties.isDevelopment()) {
+			    								rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
+			    							}
+			    							
+			    							if (rs != null || FacilioProperties.isDevelopment()) {
+			    								ResizedFileInfo rinfo = new ResizedFileInfo();
+			    								rinfo.setFileId(fileInfo.getFileId());
+			    								rinfo.setHeight(360);
+			    								rinfo.setWidth(360);
+			    								rinfo.setFilePath(resizedFilePath);
+			    								rinfo.setFileSize(imageInByte.length);
+			    								rinfo.setContentType("image/png");
+			    								rinfo.setGeneratedTime(currentTime);
+			    								rfileInfos.add(rinfo);
+			    							}
+			    							
+		    							} catch (Exception e) {
+		    						    		LOGGER.error("Exception occurred ", e);
+		    						    		e.printStackTrace();
+		    						    }
+		    							finally {
+		    								if (bis != null) {
+		    									bis.close();
+		    								}
+		    							}
+	    							}
 	    						}
 	    						catch(Exception e) {
 	    							LOGGER.error("error reading file - " + fileInfo.getFileId(), e);
-	    						}
-	
-	    						if (downloadStream != null) {
-	    							
-	    							BufferedImage imBuff = ImageIO.read(downloadStream);
-	    							/* long beforeRead = System.currentTimeMillis();
-	    							LOGGER.info("before read: " + beforeRead); */
-	    							BufferedImage out = ImageScaleUtil.resizeImage(imBuff, 360, 360);
-	    							/* long afterRead = System.currentTimeMillis();
-	    							LOGGER.info("after scale: " + afterRead); */
-	    							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    							ImageIO.write(out, "png", baos);
-	    							baos.flush();
-	    							byte[] imageInByte = baos.toByteArray();
-	    							baos.close();
-	    							ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
-	
-	    							String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-resized-"+360+"x"+360;
-	    							PutObjectResult rs = null;
-	    							if (!FacilioProperties.isDevelopment()) {
-	    								rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
-	    							}
-	    							/* long afterWrite = System.currentTimeMillis();
-	    							LOGGER.info("after afterWrite: " + afterWrite);
-	    							LOGGER.info("time taken: " + (afterWrite - beforeRead)/1000); */
-	    							
-	    							if (rs != null || FacilioProperties.isDevelopment()) {
-	    								ResizedFileInfo rinfo = new ResizedFileInfo();
-	    								rinfo.setFileId(fileInfo.getFileId());
-	    								rinfo.setHeight(360);
-	    								rinfo.setWidth(360);
-	    								rinfo.setFilePath(resizedFilePath);
-	    								rinfo.setFileSize(imageInByte.length);
-	    								rinfo.setContentType("image/png");
-	    								rinfo.setGeneratedTime(currentTime);
-	    								rfileInfos.add(rinfo);
-	    							}
+	    							e.printStackTrace();
 	    						}
 	    					}
 	    				}									
@@ -274,7 +277,7 @@
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
-        FacilioChain c = FacilioChain.getTransactionChain(3600_000);
+        FacilioChain c = FacilioChain.getTransactionChain(7200_000);
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();
 
