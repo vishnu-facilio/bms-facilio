@@ -25,6 +25,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -224,15 +225,17 @@ public enum CardLayout {
 		@Override
 		public Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
+			JSONObject returnValue = new JSONObject();
 
 			String title = (String) cardParams.get("title");
 			String moduleName = (String) cardParams.get("moduleName");
-			List<String> modulePhotosList = (List<String>) cardParams.get("photosModuleList");
+			String subModuleName = (String) cardParams.get("attachmentModule");
 			JSONObject criteriaObj = (JSONObject) cardParams.get("criteria");
 			Criteria criteria = FieldUtil.getAsBeanFromMap(criteriaObj, Criteria.class);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> allFields = modBean.getAllFields(moduleName);
+
 			List<FacilioField> photoFields = allFields.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataType() == FieldType.FILE.getTypeAsInt()).collect(Collectors.toList());
 			Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 			if (beanClassName == null) {
@@ -244,7 +247,8 @@ public enum CardLayout {
 			}
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
-			fields.add(modBean.getPrimaryField(moduleName));
+			FacilioField primaryField = modBean.getPrimaryField(moduleName);
+			fields.add(primaryField);
 			if (CollectionUtils.isNotEmpty(photoFields)) {
 				fields.addAll(photoFields);
 			}
@@ -252,21 +256,25 @@ public enum CardLayout {
 			SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
 					.module(module)
 					.beanClass(beanClassName)
-					.select(fields);
+					.select(fields)
+					.orderBy("ID DESC");
 			if (criteria != null) {
-				selectRecordBuilder.andCriteria(criteria);
+				selectRecordBuilder.andCriteria(criteria)
+				;
 			} else {
 				selectRecordBuilder.limit(50);
 			}
 
-			List<? extends ModuleBaseWithCustomFields> records = selectRecordBuilder.get();
-			List<Long> recordIds;
+			List<Map<String, Object>> records = selectRecordBuilder.getAsProps();
+			List<Long> recordIds = new ArrayList<>();
+			Map<Long,String> recordIdsVsName = new HashMap<>();
 			List<JSONObject> submoduleVsRecords = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(records)) {
-				recordIds = records.stream().map(record -> record.getId()).collect(Collectors.toList());
-
-				if (CollectionUtils.isNotEmpty(modulePhotosList)) {
-					for (String subModuleName : modulePhotosList) {
+				records.stream().forEach(record -> {
+					recordIds.add((Long) record.get("id"));
+					recordIdsVsName.put((Long)record.get("id"), record.get(primaryField.getName()).toString());
+				});
+				if (StringUtils.isNotEmpty(subModuleName)) {
 						FacilioModule subModule = modBean.getModule(subModuleName);
 						Class className = FacilioConstants.ContextNames.getClassFromModule(subModule);
 						if (className == null) {
@@ -283,11 +291,21 @@ public enum CardLayout {
 								.beanClass(className)
 								.innerJoin("FacilioFile")
 								.on("FacilioFile.FILE_ID = " + subModule.getTableName() + ".FILE_ID")
+								.orderBy("ID DESC").limit(100)
 						;
 						if (subModuleName.equals(ContextNames.TASK_ATTACHMENTS)) {
 							List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false, false);
-							List<Long> taskIds = tasks.stream().map(task -> task.getId()).collect(Collectors.toList());
+							List<Long> taskIds = new ArrayList<>();
+							Map<Long, JSONObject> taskDetailsMap = new HashMap<>();
+							tasks.stream().forEach(task -> {
+								taskIds.add(task.getId());
+								JSONObject meta = new JSONObject();
+								meta.put("taskSubject", task.getSubject());
+								meta.put("woId", task.getParentTicketId());
+								taskDetailsMap.put(task.getId(), meta);
+							});
 							attachmentBuilder.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), taskIds, PickListOperators.IS));
+							returnValue.put("taskMeta", taskDetailsMap);
 						} else {
 							attachmentBuilder
 									.andCondition(CriteriaAPI.getCondition(subModuleFieldsMap.get("parentId"), recordIds, PickListOperators.IS));
@@ -301,13 +319,11 @@ public enum CardLayout {
 							submoduleVsRecords.add(subModuleHolder);
 						}
 					}
-				}
 			}
 
 
-			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", title);
-			returnValue.put("parentModuleRecords", records);
+			returnValue.put("recordsPrimaryValue", recordIdsVsName);
 			returnValue.put("subModuleVsRecords", submoduleVsRecords);
 			return returnValue;
 		}
