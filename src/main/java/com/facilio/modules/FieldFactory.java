@@ -225,7 +225,7 @@ public class FieldFactory {
             assetFieldsInclude.add("supplier");
             assetFieldsInclude.add("tagNumber");
             assetFieldsInclude.add("type");
-//			assetFieldsInclude.add("resource");
+			assetFieldsInclude.add("space");
             assetFieldsInclude.add("unitPrice");
             assetFieldsInclude.add("warrantyExpiryDate");
             assetFieldsInclude.add("distanceMoved");
