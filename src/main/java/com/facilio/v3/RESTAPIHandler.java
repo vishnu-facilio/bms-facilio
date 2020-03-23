@@ -134,14 +134,22 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
 
-        if (v3Config.getListHandler() != null && v3Config.getListHandler().getBeforeFetchCommand() != null) {
-            nonTransactionChain.addCommand(v3Config.getListHandler().getBeforeFetchCommand());
+        if (!module.isCustom()) {
+            if (v3Config.getListHandler() == null) {
+                throw new IllegalArgumentException("unsupported operation");
+            }
+
+            if (v3Config.getListHandler().getBeforeFetchCommand() != null) {
+                nonTransactionChain.addCommand(v3Config.getListHandler().getBeforeFetchCommand());
+            }
         }
 
         nonTransactionChain.addCommand(new ListCommand(module));
 
-        if (v3Config.getListHandler() != null && v3Config.getListHandler().getAfterFetchCommand() != null) {
-            nonTransactionChain.addCommand(v3Config.getListHandler().getAfterFetchCommand());
+        if (!module.isCustom()) {
+            if (v3Config.getListHandler().getAfterFetchCommand() != null) {
+                nonTransactionChain.addCommand(v3Config.getListHandler().getAfterFetchCommand());
+            }
         }
 
         FacilioContext context = nonTransactionChain.getContext();
