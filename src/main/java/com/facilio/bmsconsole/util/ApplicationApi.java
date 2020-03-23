@@ -250,7 +250,7 @@ public class ApplicationApi {
 			ApplicationContext facilioApplication = new ApplicationContext(orgId, "FACILIO", true, facilioApp.getId());
 
 			
-			AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isDevelopment() ? ".facilstack.com" : ".facilioportal.com" ));
+			AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
 			ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", true, servicePortalApp.getId());
 			
 			AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
@@ -277,7 +277,7 @@ public class ApplicationApi {
 		
 		public static void addDefaultAppDomains(long orgId) throws Exception {
 			Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isDevelopment() ? ".facilstack.com" : ".facilioportal.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), 1, orgId);
+			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), 1, orgId);
 			AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), 2, orgId);
 			AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), 1, orgId);
 			AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), 1, orgId);
