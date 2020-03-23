@@ -1131,6 +1131,18 @@ public class V2ReportAction extends FacilioAction {
 				yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			}
 		}
+		List<Object> fieldId = new ArrayList<>();
+		// removing duplicate field Id in alarm report
+		for (int i = 0; i < dataPoints.size(); i++) {
+			JSONObject json = (JSONObject) dataPoints.get(i);
+			JSONObject yAxisJson = (JSONObject) json.get("yAxis");
+			if (fieldId.contains(yAxisJson.get("fieldId"))) {
+				dataPoints.remove(i);
+			}
+			else {
+				fieldId.add(yAxisJson.get("fieldId"));
+			}
+		}
 		fields =  dataPoints.toJSONString();
 	}
 	
