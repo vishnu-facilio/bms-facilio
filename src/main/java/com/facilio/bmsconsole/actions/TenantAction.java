@@ -760,11 +760,13 @@ private Map<String, Double> readingData;
 	         fetchTenants.execute();
 	          if (getCount()) {
 	            setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+	            setResult("count", getTenantCount());
 	         }
 	         else {
 	          tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-	         }
 	          setResult("tenants", tenants);
+	         }
+	          
 	          return SUCCESS;
 	   
 	         }
