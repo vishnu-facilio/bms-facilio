@@ -420,7 +420,9 @@ public class PeopleAPI {
 		
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
-			return (long)list.get(0).get("peopleId");
+			if(list.get(0).get("peopleId") != null) {
+				return (long)list.get(0).get("peopleId");
+			}
 		}
 		return -1;
 	}
