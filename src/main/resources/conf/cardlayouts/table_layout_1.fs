@@ -91,8 +91,11 @@ Map cardLayout(Map params) {
                 }
                 row.add(cell);
             }
-            if (excludeEmptyReadings != null && excludeEmptyReadings) {
-                if (readingColumnCount > 0 && readingColumnCount != nullReadingCount) {
+            if (excludeEmptyReadings != null) {
+                if (excludeEmptyReadings == true && readingColumnCount > 0 && readingColumnCount != nullReadingCount) {
+                    rows.add(row);
+                }
+                else if (readingColumnCount == 0) {
                     rows.add(row);
                 }
             }
