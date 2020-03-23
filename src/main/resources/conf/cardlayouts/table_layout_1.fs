@@ -95,7 +95,7 @@ Map cardLayout(Map params) {
                 if (excludeEmptyReadings == true && readingColumnCount > 0 && readingColumnCount != nullReadingCount) {
                     rows.add(row);
                 }
-                else if (readingColumnCount == 0) {
+                else if (excludeEmptyReadings == false || readingColumnCount == 0) {
                     rows.add(row);
                 }
             }
