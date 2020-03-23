@@ -86,25 +86,13 @@ public class ChatBotConstants {
 	static {
 
 		Yaml yaml = new Yaml();
-        InputStream inputStream = null;
-        try {
-        	
-        	inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_REPLIES);
+        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_REPLIES);) {
         	defaultIntentResponse = yaml.load(inputStream);
         	
         }
         catch (Exception e) {
             LOGGER.error("Error occurred while reading defaultIntentResponse conf file. "+e.getMessage(), e);
         }
-		finally {
-			if(inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while clossing stream. "+e.getMessage(), e);
-				}
-			}
-		}
 	}
 	
 	public static String getDefaultIntentResponse(String intent) {

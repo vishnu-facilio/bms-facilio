@@ -143,36 +143,37 @@ public class TemplateAPI {
 		}
 	}
 	private static Map<Integer, DefaultTemplate> parseTemplateObject (String path, ClassLoader classLoader,DefaultTemplateType defaultTemplateType,Map<Integer, WorkflowContext> defaultWorkflows ) throws Exception {
-		JSONParser parser = new JSONParser();
-		JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
-		Map<Integer, DefaultTemplate> templates = new HashMap<>();
-		for (Object key : templateJsons.keySet()) {
-			Integer templateId = Integer.parseInt(key.toString());
-			JSONObject template = (JSONObject) templateJsons.get(key);
-			String name = (String) template.remove("name");
-			DefaultTemplate defaultTemplate = new DefaultTemplate();
-			defaultTemplate.setId(templateId);
-			defaultTemplate.setName(name);
-			defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
-			defaultTemplate.setJson(template);
-			defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
-			defaultTemplate.setDefaultTemplateType(defaultTemplateType);
-			if (defaultWorkflows != null) {
-				WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
-				if (defaultWorkflow != null) {
-					defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
-					if (!defaultTemplate.isFtl()) { //Temp fix
-						WorkflowUtil.parseExpression(defaultWorkflow);
+		try (FileReader fileReader = new FileReader(classLoader.getResource(path + ".json").getFile())) {
+			JSONParser parser = new JSONParser();
+			JSONObject templateJsons = (JSONObject) parser.parse(fileReader);
+			Map<Integer, DefaultTemplate> templates = new HashMap<>();
+			for (Object key : templateJsons.keySet()) {
+				Integer templateId = Integer.parseInt(key.toString());
+				JSONObject template = (JSONObject) templateJsons.get(key);
+				String name = (String) template.remove("name");
+				DefaultTemplate defaultTemplate = new DefaultTemplate();
+				defaultTemplate.setId(templateId);
+				defaultTemplate.setName(name);
+				defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
+				defaultTemplate.setJson(template);
+				defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
+				defaultTemplate.setDefaultTemplateType(defaultTemplateType);
+				if (defaultWorkflows != null) {
+					WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
+					if (defaultWorkflow != null) {
+						defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
+						if (!defaultTemplate.isFtl()) { //Temp fix
+							WorkflowUtil.parseExpression(defaultWorkflow);
+						}
+						defaultTemplate.setWorkflow(defaultWorkflow);
+					} else {
+						throw new IllegalArgumentException("Workflow cannot be null for Default Template : " + templateId);
 					}
-					defaultTemplate.setWorkflow(defaultWorkflow);
 				}
-				else {
-					 throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
-				}
+				templates.put(templateId, defaultTemplate);
 			}
-			templates.put(templateId, defaultTemplate);
+			return templates;
 		}
-		return templates;
 	}
 	private static final String FTL_KEY_SUFFIX = "_ftl";
 	private static final String FTL_FILE_PATH = "conf/templates/ftl/";

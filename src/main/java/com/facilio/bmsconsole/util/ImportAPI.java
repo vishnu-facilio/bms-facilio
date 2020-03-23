@@ -506,11 +506,8 @@ public class ImportAPI {
 	public static List<Map<Integer,String>> parseRawString(String rawString,String rawStringType) throws Exception {
 		
 		if(rawStringType.equals("tsv")) {
-			
-			ICsvListReader listReader = null;
-	        try {
-	            Reader rawStringReaded = new StringReader(rawString);
-                listReader = new CsvListReader(rawStringReaded, CsvPreference.TAB_PREFERENCE);
+	        try(Reader rawStringReaded = new StringReader(rawString);
+				ICsvListReader listReader = new CsvListReader(rawStringReaded, CsvPreference.TAB_PREFERENCE);) {
                 
 //	            listReader.getHeader(true);
                 
@@ -529,19 +526,10 @@ public class ImportAPI {
                 System.out.println("parsedData --- "+parsedData);
                 return parsedData;
 	        }
-	        finally {
-                if( listReader != null ) {
-                     listReader.close();
-                }
-	        }
-	        
 		}
 		else if(rawStringType.equals("csv")) {
-			ICsvListReader listReader = null;
-	        try {
-	            Reader rawStringReaded = new StringReader(rawString);
-                listReader = new CsvListReader(rawStringReaded, CsvPreference.STANDARD_PREFERENCE);
-                
+	        try(Reader rawStringReaded = new StringReader(rawString);
+				ICsvListReader listReader = new CsvListReader(rawStringReaded, CsvPreference.STANDARD_PREFERENCE);) {
 //	            listReader.getHeader(true);
                 
                 List<String> rowDatas;
@@ -558,11 +546,6 @@ public class ImportAPI {
                 }
                 System.out.println("parsedData --- "+parsedData);
                 return parsedData;
-	        }
-	        finally {
-                if( listReader != null ) {
-                     listReader.close();
-                }
 	        }
 		}
 		return null;

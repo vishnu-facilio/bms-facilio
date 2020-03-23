@@ -20,23 +20,21 @@ public class PublicFileUtil {
 	
 	
 	private static long createFile(String content,String fileName,String fileType,String contentType) throws Exception {
-		
 		if(!fileName.contains(".")) {
 			fileName = fileName + "."+ fileType;
 		}
-    	FileWriter writer = new FileWriter(fileName, false);
-    	
-    	writer.append(content);
-    	
-    	writer.flush();
-    	writer.close();
-    	
-    	File file = new File(fileName);
-    	file.createNewFile();
-    	FileStore fs = FacilioFactory.getFileStore();
-    	long fileId = fs.addFile(file.getPath(), file, contentType);
-			
-    	return fileId;
+
+		try(FileWriter writer = new FileWriter(fileName, false);) {
+			writer.append(content);
+			writer.flush();
+
+			File file = new File(fileName);
+			file.createNewFile();
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = fs.addFile(file.getPath(), file, contentType);
+
+			return fileId;
+		}
 	}
 	
 	public static String createPublicFile(String content,String fileName,String fileType,String contentType, long expiresOn) throws Exception {
