@@ -81,10 +81,21 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
     }
 
-    private static Map<String, Object> handleSummaryRequest(String moduleName, long id) throws Exception {
+    private  void handleSummaryRequest(String moduleName, long id) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
-        V3Config.SummaryHandler summaryHandler = v3Config.getSummaryHandler();
+        V3Config.SummaryHandler summaryHandler = null;
+
+        if (!module.isCustom()) {
+            if (v3Config == null) {
+                throw new IllegalArgumentException("not a valid module");
+            }
+            summaryHandler = v3Config.getSummaryHandler();
+            if (summaryHandler == null) {
+                //TODO unsupported operation
+                throw new IllegalArgumentException("unsupported operation");
+            }
+        }
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new SummaryCommand(module));
@@ -94,13 +105,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioContext context = nonTransactionChain.getContext();
 
-        context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+        context.put(Constants.RECORD_ID, id);
 
         nonTransactionChain.execute();
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
-        return null;
+        this.setData(FieldUtil.getAsJSON(recordMap));
     }
 
     private static FacilioModule getModule(String moduleName) throws Exception {
@@ -114,7 +125,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return module;
     }
 
-    private List<Map<String, Object>> handleListRequest(String moduleName) throws Exception {
+    private void handleListRequest(String moduleName) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
 
@@ -178,8 +189,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         nonTransactionChain.execute();
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-
-        return null;
+        this.setData(FieldUtil.getAsJSON(recordMap));
     }
 
     private static V3Config getV3Config(String moduleName) {

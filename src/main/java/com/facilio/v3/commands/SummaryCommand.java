@@ -24,7 +24,7 @@ public class SummaryCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long id = (long) context.get(FacilioConstants.ContextNames.ID);
+        long id = (long) context.get(Constants.RECORD_ID);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = module.getName();
