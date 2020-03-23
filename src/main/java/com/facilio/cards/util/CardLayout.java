@@ -311,7 +311,8 @@ public enum CardLayout {
 			returnValue.put("subModuleVsRecords", submoduleVsRecords);
 			return returnValue;
 		}
-	};
+	},
+	TABLE_LAYOUT_1("table_layout_1");
 	
 	private static final Logger LOGGER = Logger.getLogger(CardLayout.class.getName());
 			
