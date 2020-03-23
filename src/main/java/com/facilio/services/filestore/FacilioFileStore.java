@@ -193,7 +193,6 @@ public class FacilioFileStore extends FileStore {
 		String url = FacilioProperties.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
 		con.setRequestMethod("GET");
 
 		int responseCode = con.getResponseCode();

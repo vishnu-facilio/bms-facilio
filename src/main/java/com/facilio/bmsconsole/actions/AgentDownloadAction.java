@@ -85,8 +85,6 @@ public class AgentDownloadAction extends ActionSupport {
 
     private File downloadExeFrom(String url) throws Exception {
         if (FacilioProperties.isProduction()) {
-            InputStream inputStream = FacilioFactory.getFileStore().getSecretFile(url);
-
             String key = "Org_" + this.orgId
                     + "Agent_" + this.agentId
                     + "Version_" + this.version
@@ -95,7 +93,7 @@ public class AgentDownloadAction extends ActionSupport {
 
             File file = new File("/tmp/" + key);
 
-            try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            try (FileOutputStream outputStream = new FileOutputStream(file);InputStream inputStream = FacilioFactory.getFileStore().getSecretFile(url);) {
 
                 int read;
                 byte[] bytes = new byte[1024];

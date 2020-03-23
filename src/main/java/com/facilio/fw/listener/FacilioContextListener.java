@@ -174,8 +174,7 @@ public class FacilioContextListener implements ServletContextListener {
 				File file = new File("/tmp/secrets/google_app_credentials.json");
 				if (file.exists()) {
 					if (file.delete()) {
-						try (FileOutputStream outputStream = new FileOutputStream(file)) {
-							InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");
+						try (FileOutputStream outputStream = new FileOutputStream(file); InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");) {
 							int read;
 							byte[] bytes = new byte[1024];
 							while (inputStream != null && (read = inputStream.read(bytes)) != -1) {
