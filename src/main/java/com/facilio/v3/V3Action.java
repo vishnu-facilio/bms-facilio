@@ -103,20 +103,18 @@ public class V3Action extends ActionSupport {
 		return this.orderType;
 	}
 
-	private int page;
+	private int page = 1;
 	public void setPage(int page) {
 		this.page = page;
 	}
-
 	public int getPage() {
 		return this.page;
 	}
 
-	private int perPage = -1;
+	private int perPage = 50;
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
-
 	public int getPerPage() {
 		return this.perPage;
 	}
