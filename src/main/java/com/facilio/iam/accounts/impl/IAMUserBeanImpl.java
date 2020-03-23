@@ -1520,7 +1520,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
 		//handling done for domain alias for our main app
-		if(StringUtils.isNotEmpty(domain) && domain.contains("api.facilio.com")) {
+		if(StringUtils.isNotEmpty(domain) && (domain.contains("api.facilio.com") || domain.contains("demo.facilio.com"))) {
 			domain = "app.facilio.com";
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
