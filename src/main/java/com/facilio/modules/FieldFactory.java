@@ -229,6 +229,7 @@ public class FieldFactory {
             assetFieldsInclude.add("unitPrice");
             assetFieldsInclude.add("warrantyExpiryDate");
             assetFieldsInclude.add("distanceMoved");
+            assetFieldsInclude.add("connected");
         }
 
         public static List<String> approvalFormFields = new ArrayList<String>();
