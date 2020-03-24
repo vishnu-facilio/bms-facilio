@@ -10,5 +10,5 @@ executors :
     tableName : RuleInstantJobQueue
     maxThreads : 20
     queueSize : 100
-    dataRetention : 3 #in days
+    dataRetention : 1 #in days
     pollingFrequency : 5000 #in milliseconds
