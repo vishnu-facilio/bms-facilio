@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.time.DateTimeUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -94,21 +95,27 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private long createdTime = -1;
+	public String getCreatedTimeString() {
+		if(createdTime != -1) {
+			return DateTimeUtil.getZonedDateTime(createdTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
+		}
+		return null;
+	}
 	public long getCreatedTime() {
 		return createdTime;
 	}
+
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
-	
 	private long lastOccurredTime = -1;
 	public long getLastOccurredTime() {
 		return lastOccurredTime;
 	}
+
 	public void setLastOccurredTime(long lastOccurredTime) {
 		this.lastOccurredTime = lastOccurredTime;
 	}
-	
 	private long clearedTime = -1;
 	public long getClearedTime() {
 		return clearedTime;
@@ -116,7 +123,6 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void setClearedTime(long clearedTime) {
 		this.clearedTime = clearedTime;
 	}
-
 	@JsonInclude
 	public long getDuration() {
 		if (clearedTime != -1) {

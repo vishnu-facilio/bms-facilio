@@ -1,6 +1,6 @@
 package com.facilio.agent.alarms;
 
-import com.facilio.agent.FacilioAgent;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.context.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.chain.Context;

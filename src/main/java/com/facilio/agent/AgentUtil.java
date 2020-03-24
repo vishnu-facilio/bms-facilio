@@ -244,10 +244,10 @@ public class AgentUtil {
                 if (jsonObject.containsKey(AgentKeys.STATUS)) {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
                     if (status == 0) {
-                        raiseAgentAlarm(agent);
+                      //  raiseAgentAlarm(agent);
                     }
                     if (status == 1) {
-                        dropAgentAlarm(agent);
+                      //  dropAgentAlarm( agent);
                     }
                 }
 
@@ -298,7 +298,7 @@ public class AgentUtil {
         return 0;
     }
 
-    public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
+    /*public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
         addEventToDB(event);
@@ -344,7 +344,7 @@ public class AgentUtil {
         event.setAgent(agent);
         return event;
     }
-
+*/
 
     public long addAgent(FacilioAgent agent) {
         JSONObject payload = new JSONObject();

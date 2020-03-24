@@ -1,25 +1,54 @@
 package com.facilio.agentv2;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class AgentUtilV2
 {
+    private static final Logger LOGGER = LogManager.getLogger(AgentUtilV2.class.getName());
     private long orgId ;
     private String orgDomainName;
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
+
+    private Map<Long,FacilioAgent> idVsAgentMap = new HashMap<>();
+
+
+    public Map<Long, FacilioAgent> getIdVsAgentMap() {
+        return idVsAgentMap;
+    }
+    public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds){
+        List<FacilioAgent> agents = (List<FacilioAgent>) getAgentMap().values();
+        if (CollectionUtils.isNotEmpty(agents)) {
+            return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+        }
+        return null;
+    }
 
     public static JSONObject getOverview() {
         JSONObject overiewData = new JSONObject();
@@ -67,10 +96,8 @@ public class AgentUtilV2
     public int getAgentCount() {
         return agentMap.size();
     }
-
     private int agentCount;
 
-    private static final Logger LOGGER = LogManager.getLogger(AgentUtilV2.class.getName());
 
     public AgentUtilV2(long orgId, String orgDomainName)  {
         this.orgId = orgId;
@@ -116,19 +143,74 @@ public class AgentUtilV2
                     LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
-                AckUtil.ackPing(agent.getId(), orgId, payload);
-                agent.setConnected(true);
+                AckUtil.ackPing(agent.getId(),orgId,payload);
+                int status = Integer.parseInt(payload.get(AgentConstants.STATUS).toString());
+                if (status == 0) {
+                    raiseAgentAlarm(agent);
+                }
+                if (status == 1) {
+                    dropAgentAlarm( agent);
+                }
             }
+            agent.setConnected(true);
             return updateAgent(agent, payload);
         } else {
             throw new Exception("Agent can't be null");
         }
     }
+    public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
+        addEventToDB(event);
+        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+
+    }
+
+    private static void addEventToDB(AgentEventContext event) throws Exception {
+        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+        eventList.add(event);
+        FacilioContext context = new FacilioContext();
+        context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
+        FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
+        chain.execute(context);
+    }
+
+    public static void raiseAgentAlarm(FacilioAgent agent) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY);
+
+        addEventToDB(event);
+        LOGGER.info("Added Agent Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+
+    }
+
+    private static AgentEventContext getAgentEventContext(FacilioAgent agent, long currentTime, String severity) {
+        AgentEventContext event = new AgentEventContext();
+        String description = null;
+        String message = null;
+        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
+            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent "+agent.getName() +" connection lost ";
+        } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent "+agent.getName() +" connection reestablished";
+        }
+        event.setMessage(message);
+        event.setDescription(description);
+        //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
+        event.setSeverityString(severity);
+        event.setCreatedTime(currentTime);
+        //event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setAgent(agent);
+        return event;
+    }
+
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
         boolean isDone = AgentApiV2.editAgent(agent, jsonObject);
         if (isDone) {
             agentMap.replace(agent.getName(), agent);
+            idVsAgentMap.replace(agent.getId(),agent);
         }
         return isDone;
     }
@@ -140,6 +222,7 @@ public class AgentUtilV2
             agent = AgentApiV2.getAgent(agentName);
             if (agent != null) {
                 agentMap.put(agentName, agent);
+                idVsAgentMap.put(agent.getId(),agent);
             }
         }
         return agent;

@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.AgentContent;
 import com.facilio.agent.AgentUtil;
-import com.facilio.agent.FacilioAgent;
+import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.agentv2.AgentApiV2;
@@ -405,7 +406,8 @@ public class NewAlarmAPI {
 			List<AgentAlarmContext> agentAlarm = alarms.stream().map(i -> (AgentAlarmContext) i).collect(Collectors.toList());
 			List<Long> agentIds = agentAlarm.stream().filter(alarm -> alarm != null && alarm.getAgent() != null)
 					.map(alarm -> alarm.getAgent().getId()).collect(Collectors.toList());
-			Map<Long, FacilioAgent> extendedAgent = AgentUtil.getAgentsMap(agentIds);
+			AgentUtilV2 agentUtil = new AgentUtilV2(AccountUtil.getCurrentOrg().getOrgId(),AccountUtil.getCurrentOrg().getDomain());
+			Map<Long, FacilioAgent> extendedAgent = agentUtil.getAgentsFromIds(agentIds);
 			for (AgentAlarmContext alarm : agentAlarm) {
 				if (alarm != null) {
 					FacilioAgent agent = alarm.getAgent();

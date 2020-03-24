@@ -58,6 +58,7 @@ public class DataProcessorV2
         try {
             if (payload.containsKey("clearAgentCache")) {
                 agentUtil.getAgentMap().clear();
+                agentUtil.getIdVsAgentMap().clear();
                 LOGGER.info(" agent cache cleared ->" + agentUtil.getAgentMap());
                 return true;
             }
