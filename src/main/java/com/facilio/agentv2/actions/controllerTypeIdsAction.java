@@ -45,9 +45,8 @@ public class controllerTypeIdsAction extends IdsAction {
         } catch (Exception e) {
             LOGGER.info("Exception occurred while configuring controller", e);
             setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            ok();
+            internalError();
         }
         return SUCCESS;
     }
@@ -63,7 +62,7 @@ public class controllerTypeIdsAction extends IdsAction {
                 setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED);
             }
         } catch (Exception e) {
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             LOGGER.info("Exception while deleting point", e);
             setResult(AgentConstants.RESULT, ERROR);
@@ -82,7 +81,7 @@ public class controllerTypeIdsAction extends IdsAction {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -96,7 +95,7 @@ public class controllerTypeIdsAction extends IdsAction {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -110,7 +109,7 @@ public class controllerTypeIdsAction extends IdsAction {
             LOGGER.info("Exception occurred while unconfiguring point -> " + getRecordIds() + " -,", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
