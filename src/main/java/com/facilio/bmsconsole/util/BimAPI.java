@@ -569,5 +569,76 @@ public class BimAPI {
 		}
 	}
 	
+	public static boolean isContentsEmpty(Workbook workbook,Sheet sheet){
+		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
+		Iterator<Row> rowItr = sheet.iterator();
+		boolean heading = true;
+		long row_no = 0;
+		while (rowItr.hasNext()) {
+			row_no++;
+			Row row = rowItr.next();
+
+			if (row.getPhysicalNumberOfCells() <= 0) {
+				break;
+			}
+			if (heading) {
+				Iterator<Cell> cellItr = row.cellIterator();
+				int cellIndex = 0;
+				while (cellItr.hasNext()) {
+					Cell cell = cellItr.next();
+					String cellValue = cell.getStringCellValue();
+					headerIndex.put(cellIndex, cellValue);
+					cellIndex++;
+				}
+				heading = false;
+				row_no--;
+				continue;
+			}
+
+			HashMap<String, Object> colVal = new HashMap<>();
+			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+			Iterator<Cell> cellItr = row.cellIterator();
+			while (cellItr.hasNext()) {
+				Cell cell = cellItr.next();
+
+				String cellName = headerIndex.get(cell.getColumnIndex());
+				if (cellName == null || cellName == "") {
+					continue;
+				}
+				Object val = 0.0;
+				try {
+					CellValue cellValue = evaluator.evaluate(cell);
+					val = ImportAPI.getValueFromCell(cell, cellValue);
+				} catch(Exception e) {
+					throw new IllegalArgumentException("Unable To Read Value under column " + cellName);
+				}
+				
+				colVal.put(cellName, val);
+			}
+			
+
+			
+			if (colVal.values() == null || colVal.values().isEmpty()) {
+				row_no--;
+				break;
+			} else {
+				boolean isAllNull = true;
+				for (Object value : colVal.values()) {
+					if (value != null) {
+						isAllNull = false;
+						break;
+					}
+				}
+				if (isAllNull) {
+					row_no--;
+					break;
+				}
+			}
+		}
+		
+		return row_no==0;
+	}
+	
+	
 	
 }

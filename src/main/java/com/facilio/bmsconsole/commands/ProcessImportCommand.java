@@ -146,7 +146,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 					else if (module.equals(FacilioConstants.ContextNames.SPACE)) {
 					
-						
+						if(!isBim){
 							String moduleName = module;
 							ArrayList<String> spaceFields = new ArrayList<>();
 							spaceFields.add(moduleName+"__site");
@@ -186,22 +186,21 @@ public class ProcessImportCommand extends FacilioCommand {
 								}
 
 							}
+						}else{
+							Long siteId = Long.parseLong(props.get("site").toString());
+							ResourceContext site = SpaceAPI.getSiteSpace(siteId);
+							fieldMapping.put("space__site", "SiteName");
+							colVal.put("SiteName", site.getName());
 							
-							if(isBim){
-								Long siteId = Long.parseLong(props.get("site").toString());
-								ResourceContext site = SpaceAPI.getSiteSpace(siteId);
-								fieldMapping.put("space__site", "SiteName");
-								colVal.put("SiteName", site.getName());
-								
-								Long buildingId = Long.parseLong(props.get("building").toString());
-								ResourceContext building = SpaceAPI.getBuildingSpace(buildingId);
-								fieldMapping.put("space__building", "BuildingName");
-								colVal.put("BuildingName", building.getName());
-								
-								Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
-								props.put("floor", floorId);
-								props.put("siteId", Long.parseLong(props.get("site").toString()));
-							}
+							Long buildingId = Long.parseLong(props.get("building").toString());
+							ResourceContext building = SpaceAPI.getBuildingSpace(buildingId);
+							fieldMapping.put("space__building", "BuildingName");
+							colVal.put("BuildingName", building.getName());
+							
+							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
+							props.put("floor", floorId);
+							props.put("siteId", Long.parseLong(props.get("site").toString()));
+						}
 							
 							props.put("spaceType",BaseSpaceContext.SpaceType.SPACE.getIntVal());
 							props.put("resourceType", ResourceType.SPACE.getValue());

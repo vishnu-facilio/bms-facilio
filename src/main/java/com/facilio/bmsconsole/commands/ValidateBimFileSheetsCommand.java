@@ -29,7 +29,8 @@ public class ValidateBimFileSheetsCommand extends FacilioCommand {
 		for (int i=0; i<wb.getNumberOfSheets(); i++) {
 			String sheetName = wb.getSheetName(i);
 			String moduleName = BimAPI.getModuleNameBySheetName(sheetName);
-			if(moduleName !=null){
+			boolean isContentsEmpty = BimAPI.isContentsEmpty(wb, wb.getSheet(sheetName));
+			if(moduleName !=null && !isContentsEmpty){
 				String[] moduleNames = moduleName.split("&&");
 				for(int j=0;j<moduleNames.length;j++){
 					FacilioModule facilioModule = modBean.getModule(moduleNames[j]);
