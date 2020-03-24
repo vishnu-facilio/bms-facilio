@@ -14,6 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -67,9 +68,6 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
     public ApprovalRuleContext.ApprovalOrder getApprovalOrderEnum() {
         return approvalOrder;
     }
-    public void setApprovalOrder(ApprovalRuleContext.ApprovalOrder approvalOrder) {
-        this.approvalOrder = approvalOrder;
-    }
     public int getApprovalOrder() {
         if (approvalOrder != null) {
             return approvalOrder.getValue();
@@ -78,6 +76,9 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
     }
     public void setApprovalOrder(int approvalOrder) {
         this.approvalOrder = ApprovalRuleContext.ApprovalOrder.valueOf(approvalOrder);
+    }
+    public void setApprovalOrder(ApprovalRuleContext.ApprovalOrder approvalOrder) {
+        this.approvalOrder = approvalOrder;
     }
 
     private List<ValidationContext> validations;
@@ -97,6 +98,10 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
             List<SingleSharingContext> matching = approvers.getMatching(record);
 
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
+            if (getApprovalOrderEnum() != null && getApprovalOrderEnum() == ApprovalRuleContext.ApprovalOrder.SEQUENTIAL && CollectionUtils.isNotEmpty(checkAnyPendingApprovers)) {
+                // if sequential, check only next user
+                checkAnyPendingApprovers = Collections.singletonList(checkAnyPendingApprovers.get(0));
+            }
             List<SingleSharingContext> matchingAgain = new SharingContext<>(checkAnyPendingApprovers).getMatching(record);
             result = CollectionUtils.isNotEmpty(matchingAgain);
         }

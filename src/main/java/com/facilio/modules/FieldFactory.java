@@ -7248,6 +7248,7 @@ public class FieldFactory {
         dialogTypeField.setValues(FacilioEnum.getEnumValues("DialogType"));
         list.add(dialogTypeField);
         list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", stageRuleModule, FieldType.BOOLEAN));
+        list.add(getField("approvalOrder", "APPROVAL_ORDER", stageRuleModule, FieldType.NUMBER));
         list.add(getField("parallelTransition", "PARALLEL_TRANSITION", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
         list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
