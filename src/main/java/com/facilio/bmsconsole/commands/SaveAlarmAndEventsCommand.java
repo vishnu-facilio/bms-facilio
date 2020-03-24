@@ -204,7 +204,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		}
 
 		Collection<BaseAlarmContext> alarmList = alarmMap.values();
-		if (CollectionUtils.isNotEmpty(alarmList) && alarmList.size() == 1) {
+		if (CollectionUtils.isNotEmpty(alarmList) && alarmList.size() <= 2) {
 			Map<String, List<BaseAlarmContext>> alarmModuleMap = new HashMap<>();
 			for (BaseAlarmContext alarm : alarmList) {
 				String alarmModuleName = NewAlarmAPI.getAlarmModuleName(alarm.getTypeEnum());
