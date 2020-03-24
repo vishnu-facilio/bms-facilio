@@ -202,6 +202,7 @@ public class PMImportDataCommand extends FacilioCommand {
 			
 			HashMap<String,LinkedList<Integer>> secRowsMap = en.getValue();
 			JSONArray taskSecJsonArr = new JSONArray();
+			int seq=1;
 			
 			for(Entry<String,LinkedList<Integer>> sec:secRowsMap.entrySet()){
 				JSONObject taskSecJson = new JSONObject();
@@ -210,7 +211,6 @@ public class PMImportDataCommand extends FacilioCommand {
 				
 				JSONArray taskJsonArr = new JSONArray();
 				List<Integer> rowNos = sec.getValue();
-				int seq=1;
 				for(Integer rowNo:rowNos){
 					JSONObject taskJson = new JSONObject();
 					ImportRowContext row = rows.stream().filter(r->r.getRowNumber()==rowNo).findFirst().get();
