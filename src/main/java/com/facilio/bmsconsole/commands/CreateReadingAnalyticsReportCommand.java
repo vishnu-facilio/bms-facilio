@@ -351,7 +351,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 								continue;
 							}
 							ResourceContext resource = resourceMap.get(parentId);
-							joiner.add(resource.getName());
+							if(resource != null) {
+								joiner.add(resource.getName());
+							}
 						}
 					}
 					if(joiner.length() > 0) {
@@ -390,7 +392,7 @@ private long getAssetCategoryId(ReportYAxisContext yField, ReportMode mode, Repo
 								continue;
 							}
 							ResourceContext resource = resourceMap.get(parentId);
-							if(resource.getResourceTypeEnum() == ResourceType.ASSET) {
+							if(resource != null && resource.getResourceTypeEnum() == ResourceType.ASSET) {
 								AssetContext asset = AssetsAPI.getAssetInfo(parentId);
 								//Assuming only one parentId -- temp
 								return asset.getCategory().getId();
