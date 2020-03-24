@@ -29,6 +29,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportDataPointContext;
@@ -38,8 +39,6 @@ import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class FilterUtil {
@@ -105,13 +104,14 @@ public class FilterUtil {
 	public static GenericSelectRecordBuilder getDFConditionSelectBuilder(JSONObject conditionObj, DateRange range) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		String moduleName = (String) conditionObj.get("moduleName");
-		String field = (String) conditionObj.get("fieldName");
+		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
+		
+		FacilioField conditionField = modBean.getField(field);
+		String moduleName = conditionField.getModule().getName();
 		
 		FacilioField selectField = modBean.getField("ttime", moduleName);
 		FacilioField parentIdField = modBean.getField("parentId", moduleName);
-		FacilioField conditionField = modBean.getField(field, moduleName);
 		String tableName = conditionField.getModule().getTableName();
 		
 		Object value = conditionObj.get("value"); 
@@ -120,6 +120,9 @@ public class FilterUtil {
 			if(numberField.getUnitEnum() != null) {
 				value = UnitsUtil.convertToSiUnit(value, numberField.getUnitEnum());
 			}
+		}
+		else if(conditionField instanceof BooleanField) {
+			value = (Long)value == 1 ? Boolean.TRUE : Boolean.FALSE;
 		}
 		int operatorId = ((Number) conditionObj.get("operatorId")).intValue();
 		Operator operator = Operator.getOperator(operatorId);
@@ -150,36 +153,24 @@ public class FilterUtil {
 				
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
 				
-				String moduleName = (String) condition.get("moduleName");
-				String field = (String) condition.get("fieldName");
-//				Long parentId = (Long) condition.get("parentId");
+				Long field = (Long) condition.get("fieldId");
+				FacilioField conditionField = modBean.getField(field);
 				
+				String moduleName = conditionField.getModule().getName();
 				FacilioField timeField = modBean.getField("ttime", moduleName);
-//				FacilioField parentIdField = modBean.getField("parentId", moduleName);
-				FacilioField conditionField = modBean.getField(field, moduleName);
-				String value = (String) condition.get("value");
+				Object value = condition.get("value");
 				int operatorId = ((Number) condition.get("operatorId")).intValue();
 				Operator operator = Operator.getOperator(operatorId);
 				
+				if(conditionField instanceof BooleanField) {
+					value = (Long)value == 1 ? "True" : "False";
+				}
+				
 				FacilioModule module = conditionField.getModule();
-//				String tableName = module.getTableName();
 				
-//				String value = (String) condition.get("value");
-//				int operatorId = ((Number) condition.get("operatorId")).intValue();
-//				Operator operator = Operator.getOperator(operatorId);
-				
-//				Criteria dpCriteria = new Criteria();
-//				dpCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS));
-//				dpCriteria.addAndCondition(CriteriaAPI.getCondition(conditionField, value, operator));
-//				dataPoint.setDpCriteria(dpCriteria);
-				
-				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "CASE WHEN "+conditionField.getCompleteColumnName()+"="+value+" THEN 'true' ELSE 'false' END", FieldType.BOOLEAN);
+				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "appliedVsUnapplied", FieldType.BOOLEAN);
 				ReportYAxisContext yAxis = new ReportYAxisContext();
 				yAxis.setField(module, yField);
-				Map<Integer, Object> enumMap = new HashMap<>();
-				enumMap.put(0, "False");
-				enumMap.put(1, "True");
-				yAxis.setEnumMap(enumMap);
 				dataPoint.setyAxis(yAxis);
 				
 				dataPoint.setModuleName(moduleName);
@@ -201,10 +192,6 @@ public class FilterUtil {
 				dataPoint.setAliases(aliases);
 				dataPoint.setType(DataPointType.FILTER);
 				
-				List<String> orderBy = new ArrayList<>();
-				orderBy.add(timeField.getCompleteColumnName());
-//				dataPoint.setType(DataPointType.CRITERIA);
-//				dataPoint.setOrderBy(orderBy);
 				dataPoints.add(dataPoint);
 			}
 		}

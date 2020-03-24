@@ -142,6 +142,14 @@ public class ReportUtil {
 				}
 			}
 		}
+		String timeFilter = (String) context.get(FacilioConstants.ContextNames.TIME_FILTER);
+		if(StringUtils.isNotEmpty(timeFilter)) {
+			report.setTimeFilter(timeFilter);
+		}
+		String dataFilter = (String) context.get(FacilioConstants.ContextNames.DATA_FILTER);
+		if(StringUtils.isNotEmpty(dataFilter)) {
+			report.setDataFilter(dataFilter);
+		}
 		
 		
 		

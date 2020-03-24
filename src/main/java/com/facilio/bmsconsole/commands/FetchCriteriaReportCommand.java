@@ -2,14 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,6 +35,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportContext;
@@ -55,8 +54,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		boolean needCriteriaReport =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, false);
-		if(needCriteriaReport) {
 			
 			List<ReportDataPointContext> dFDataPoints = new ArrayList<>();
 			ReportDataPointContext tfDataPoint = null, cfDataPoint = null;
@@ -68,7 +65,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			
 			List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
 			if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
-				JSONObject dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
+				JSONObject dataFilter = report.getDataFilterJSON();
 				if(dataFilter != null && !dataFilter.isEmpty()) {
 					JSONObject conditions = (JSONObject) dataFilter.get("conditions");
 					if(conditions != null && !conditions.isEmpty()) {
@@ -84,7 +81,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				}
 				
 				
-				JSONObject timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
+				JSONObject timeFilter = report.getTimeFilterJSON();
 				if(timeFilter != null && !timeFilter.isEmpty()) {
 					List<Map<String, Object>> TFTimeLine = getTFTimeLine(report.getDateRange(), timeFilter);
 					if(CollectionUtils.isNotEmpty(TFTimeLine)) {
@@ -114,7 +111,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				report.setDataPoints(reportDataPoints);
 				reportAggrData.putAll(filters);
 			}
-		}
 		return false;
 	}
 	
@@ -125,14 +121,16 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		String moduleName = (String) conditionObj.get("moduleName");
-		String field = (String) conditionObj.get("fieldName");
+		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
 		
-		FacilioModule module = modBean.getModule(moduleName);
+		FacilioField conditionField = modBean.getField(field);
+		
+		FacilioModule module = conditionField.getModule();
+		String moduleName = module.getName();
+		
 		FacilioField timeField = modBean.getField("ttime", moduleName);
 		FacilioField parentIdField = modBean.getField("parentId", moduleName);
-		FacilioField conditionField = modBean.getField(field, moduleName);
 		String tableName = conditionField.getModule().getTableName();
 		
 		Object value = conditionObj.get("value"); 
@@ -142,6 +140,10 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				value = UnitsUtil.convertToSiUnit(value, numberField.getUnitEnum());
 			}
 		}
+		else if(conditionField instanceof BooleanField) {
+			value = (Long)value == 1 ? Boolean.TRUE : Boolean.FALSE;
+		}
+		
 		int operatorId = ((Number) conditionObj.get("operatorId")).intValue();
 		Operator operator = Operator.getOperator(operatorId);
 		

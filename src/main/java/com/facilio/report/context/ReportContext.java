@@ -8,6 +8,7 @@ import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TabularReportContext;
@@ -681,5 +682,45 @@ public class ReportContext {
 			}
 			return null;
 		}
+	}
+	
+	private String timeFilter;
+
+	public String getTimeFilter() {
+		return timeFilter;
+	}
+
+	public void setTimeFilter(String timeFilter) {
+		if (timeFilter != null) {
+			this.timeFilter = timeFilter;
+		}
+	}
+	
+	public JSONObject getTimeFilterJSON() throws Exception {
+		if (timeFilter != null) {
+			JSONParser parser = new JSONParser();
+			return (JSONObject)parser.parse(timeFilter);
+		}
+		return new JSONObject();
+	}
+	
+	private String dataFilter;
+
+	public String getDataFilter() {
+		return dataFilter;
+	}
+
+	public void setDataFilter(String dataFilter) {
+		if (dataFilter != null) {
+			this.dataFilter = dataFilter;
+		}
+	}
+
+	public JSONObject getDataFilterJSON() throws Exception {
+		if (dataFilter != null) {
+			JSONParser parser = new JSONParser();
+			return (JSONObject)parser.parse(dataFilter);
+		}
+		return new JSONObject();
 	}
 }

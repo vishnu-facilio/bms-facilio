@@ -325,7 +325,6 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
 		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
-		context.put(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, needCriteriaReport);
 		if(trendLine != null){
 			context.put(FacilioConstants.ContextNames.TREND_LINE, trendLine);
 		}
@@ -337,15 +336,12 @@ public class V2ReportAction extends FacilioAction {
 		if(hmAggr != null) {
 			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
 		}
-		if(timeFilter != null) {
-			context.put(FacilioConstants.ContextNames.TIME_FILTER, (JSONObject) parser.parse(timeFilter));
-		}
-		if(dataFilter != null) {
-			context.put(FacilioConstants.ContextNames.DATA_FILTER, (JSONObject) parser.parse(dataFilter));
-		}
-		
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+		
+		context.put(FacilioConstants.ContextNames.TIME_FILTER, timeFilter);
+		context.put(FacilioConstants.ContextNames.DATA_FILTER, dataFilter);
+		
 	}
 	
 	public String fetchReportByType() throws Exception{
@@ -1820,14 +1816,6 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setDataFilter(String dataFilter) {
 		this.dataFilter = dataFilter;
-	}
-	
-	private boolean needCriteriaReport = false;
-	public boolean getNeedCriteriaReport () {
-		return needCriteriaReport;
-	}
-	public void setNeedCriteriaReport(boolean needCriteriaReport) {
-		this.needCriteriaReport = needCriteriaReport;
 	}
 
 	private AggregateOperator xAggr;

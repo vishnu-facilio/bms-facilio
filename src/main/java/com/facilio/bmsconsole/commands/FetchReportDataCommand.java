@@ -73,8 +73,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
-		dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
@@ -426,12 +424,14 @@ public class FetchReportDataCommand extends FacilioCommand {
 			newSelectBuilder.andCriteria(dp.getDpCriteria());
 		}
 		
+		JSONObject timeFilter = report.getTimeFilterJSON();
 		if(timeFilter != null && !timeFilter.isEmpty()) {
 			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(dp.getxAxis().getModuleName(), timeFilter);
 			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
 				newSelectBuilder.andCriteria(timeFilterCriteria);
 			}
 		}
+		JSONObject dataFilter = report.getDataFilterJSON();
 		if(dataFilter != null && !dataFilter.isEmpty()) {
 			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder);
 		}
