@@ -91,6 +91,11 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 				FloorContext floor = floors.get(i);
 				BuildingContext building = new BuildingContext();
 				building.setId(floor.getBuildingId());
+
+				if (parentObjList.get(floor.getBuildingId()) == null) {
+					continue;
+				}
+
 				String buildingName = parentObjList.get(floor.getBuildingId()).getName();
 				building.setName(buildingName);
 				floor.setBuilding(building);
