@@ -191,28 +191,76 @@
    invokeSamples:
     -
        sampleLocalId : 1
-       sample: "create wo"
+       sample: "I need to raise a complaint"
     -
        sampleLocalId : 2
-       sample: "create a wo"
+       sample: "I need to submit a work order"
     -
        sampleLocalId : 3
-       sample: "create workorder"
+       sample: "I have a complaint"
     -
        sampleLocalId : 4
-       sample: "create a workorder"
+       sample: "I want to report something"
     -
        sampleLocalId : 5
-       sample: "file a workorder"
+       sample: "I want to report a leak"
     -
        sampleLocalId : 6
-       sample: "file wo"
+       sample: "I want to raise an issue"
     -
        sampleLocalId : 7
-       sample: "make a workorder"
+       sample: "I want to notify about a problem"
     -
        sampleLocalId : 8
-       sample: "make wo"
+       sample: "I want to notify the FM team"
+    -
+       sampleLocalId : 9
+       sample: "Can I report  a problem"
+    -
+       sampleLocalId : 10
+       sample: "Do you accept service requests"
+    -
+       sampleLocalId : 11
+       sample: "I have a problem to report"
+    -
+       sampleLocalId : 12
+       sample: "Can service request be submitted through you"
+    -
+       sampleLocalId : 13
+       sample: "I need to put in a work order"
+    -
+       sampleLocalId : 14
+       sample: "How do I report compaints"
+    -
+       sampleLocalId : 15
+       sample: "Report problem"
+    -
+       sampleLocalId : 16
+       sample: "Report issue"
+    -
+       sampleLocalId : 17
+       sample: "Raise complaint"
+    -
+       sampleLocalId : 18
+       sample: "Create work order"
+    -
+       sampleLocalId : 19
+       sample: "Create service request"
+    -
+       sampleLocalId : 20
+       sample: "Create complaint"
+    -
+       sampleLocalId : 21
+       sample: "I want to put in a work order"
+    -
+       sampleLocalId : 22
+       sample: "report a problem"
+    -
+       sampleLocalId : 23
+       sample: "I want to notify the FM team"
+    -
+       sampleLocalId : 24
+       sample: "I have a problem"
        
 - 
    name: "system_what_is_workorder_question_intent"
