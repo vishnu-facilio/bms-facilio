@@ -919,18 +919,24 @@
 	<package name="picklistApi" namespace="/api/picklist" extends="homeApi">
 		<action name="addTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketCategory</param>
 			</result>
 		</action>
 		<action name="updateTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketCategory</param>
 			</result>
 		</action>
 		<action name="deleteTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketCategory</param>
 			</result>
@@ -955,24 +961,32 @@
 		</action>
 		<action name="addTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketType">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
 		</action>
 		<action name="updateTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketType">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
 		</action>
 		<action name="deleteTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketType">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
 		</action>
 		<action name="addAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetCategory</param>
@@ -980,6 +994,8 @@
 		</action>
 		<action name="updateAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateAssetCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetCategory</param>
@@ -987,6 +1003,8 @@
 		</action>
 		<action name="deleteAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteAssetCategory">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result> 
@@ -997,6 +1015,8 @@
 		</action>
 		<action name="addAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetDepartment">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetDepartment</param>
@@ -1004,6 +1024,8 @@
 		</action>
 		<action name="updateAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateAssetDepartment">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetDepartment</param>
@@ -1011,6 +1033,8 @@
 		</action>
 		<action name="deleteAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteAssetDepartment">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result> 
@@ -1022,6 +1046,8 @@
 		
 		<action name="addAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addAssetType">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetType</param>
@@ -1030,6 +1056,8 @@
 		
 		<action name="updateAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateAssetType">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="root">assetType</param>
@@ -1038,6 +1066,8 @@
 		
 		<action name="deleteAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteAssetType">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS,SPACE_ASSET_CUSTOMIZATIONS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result> 

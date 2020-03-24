@@ -312,22 +312,42 @@
 		extends="v2Api">
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
-			method="addOrUpdateStateFlow" />
+			method="addOrUpdateStateFlow">
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">STATEFLOWS</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="updateDiagram"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="updateStateflowDiagram" />
 
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
-			method="rearrangeStateFlows" />
+			method="rearrangeStateFlows" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">STATEFLOWS</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="changeStatus"
-				class="com.facilio.bmsconsole.actions.StateFlowAction" method="changeStatus" />
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="changeStatus" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">STATEFLOWS</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
-			method="getStateFlowList" />
+			method="getStateFlowList" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">STATEFLOWS</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
-			method="viewStateFlow" />
+			method="viewStateFlow" >
+<!--			<param name="moduleName">setup</param>-->
+<!--			<param name="permission">STATEFLOWS</param>-->
+<!--			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="createDraft"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="createDraft" />
@@ -393,11 +413,23 @@
 
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
 		<action name="list"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAPolicy" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAPolicy">
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="addOrUpdate"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="delete"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="viewSLAPolicy" />
 		<action name="getEscalations"
@@ -405,12 +437,24 @@
 		<action name="addEscalations"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyEscalations" />
 		<action name="reorder"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 
 		<action name="addOrUpdateWithChildren"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 		<action name="getWithChildren"
-				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyWithChildren" />
+				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyWithChildren" >
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SLA_POLICIES</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
@@ -2572,7 +2616,11 @@
 
 		<action name="addScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="addScheduledWorkflow"></action>
+			method="addScheduledWorkflow">
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SCHEDULER</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 
 		<action name="updateScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
@@ -2580,11 +2628,19 @@
 
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="deleteScheduledWorkflow"></action>
+			method="deleteScheduledWorkflow">
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SCHEDULER</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 
 		<action name="getScheduledWorkflowList"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="getScheduledWorkflowList"></action>
+			method="getScheduledWorkflowList">
+			<!--<param name="moduleName">setup</param>
+			<param name="permission">SCHEDULER</param>
+			<param name="isNewPermission">true</param>-->
+		</action>
 
 
 		<action name="runWorkflow"
