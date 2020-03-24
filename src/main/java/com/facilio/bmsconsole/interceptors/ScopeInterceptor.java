@@ -44,10 +44,21 @@ public class ScopeInterceptor extends AbstractInterceptor {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ScopeInterceptor.class);
+	private static final HashSet<Long> ORGID_LIST = new HashSet<>();
 			
 	@Override
 	public void init() {
 		super.init();
+		ORGID_LIST.add(78L);
+		ORGID_LIST.add(146L);
+		ORGID_LIST.add(176L);
+		ORGID_LIST.add(183L);
+		ORGID_LIST.add(246L);
+		ORGID_LIST.add(155L);
+		ORGID_LIST.add(285L);
+		ORGID_LIST.add(320L);
+		ORGID_LIST.add(315L);
+		ORGID_LIST.add(316L);
 	}
 
 	@Override
@@ -252,20 +263,20 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			} else {
 				AuditData data = null;
 				FacilioAudit audit = new DBAudit();
+				long orgId = 0L;
+				if(AccountUtil.getCurrentOrg() != null) {
+					orgId = AccountUtil.getCurrentOrg().getOrgId();
+				}
 				int status = 200;
 				try {
 					data = getAuditData(arg0);
 					if(StringUtils.isNotEmpty(remoteIPAddress) && data != null ){
 						data.setRemoteIPAddress(remoteIPAddress);
 					}
-					if(data != null) {
-						if(AccountUtil.getCurrentOrg().getOrgId()==246 || AccountUtil.getCurrentOrg().getOrgId()==78 || AccountUtil.getCurrentOrg().getOrgId()==146 ||
-								AccountUtil.getCurrentOrg().getOrgId()==285 || AccountUtil.getCurrentOrg().getOrgId()==176 || AccountUtil.getCurrentOrg().getOrgId()==316 ||
-								AccountUtil.getCurrentOrg().getOrgId()==315 ||AccountUtil.getCurrentOrg().getOrgId()==183) {
-							AuditData finalData = data;
-							FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
-							data.setId(finalData.getId());
-						}
+					if(data != null && ORGID_LIST.contains(orgId)) {
+						AuditData finalData = data;
+						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
+						data.setId(finalData.getId());
 					}
 					return arg0.invoke();
 				} catch (Exception e) {
@@ -273,14 +284,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					LOGGER.info("Exception from action classs " + e.getMessage());
 					throw e;
 				} finally {
-					if(data != null) {
-						if(AccountUtil.getCurrentOrg().getOrgId()==246 || AccountUtil.getCurrentOrg().getOrgId()==78 || AccountUtil.getCurrentOrg().getOrgId()==146) {
+					if(data != null && ORGID_LIST.contains(orgId)) {
 							data.setEndTime(System.currentTimeMillis());
 							data.setStatus(status);
 							data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
 							AuditData finalData1 = data;
 							FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
-						}
 					}
 				}
 			}
