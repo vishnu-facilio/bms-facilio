@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -151,9 +152,28 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
             if (isAllApprovalRequired()) {
                 shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
+                if (shouldExecuteTrueActions) {
+                    deletePreviousApprovalSteps(moduleRecord.getId());
+                }
             }
         }
         return shouldExecuteTrueActions;
+    }
+
+    private int deletePreviousApprovalSteps(long id) throws Exception {
+        FacilioModule module = ModuleFactory.getApprovalStepsModule();
+        List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        FacilioField ruleIdField = fieldMap.get("ruleId");
+        FacilioField recordIdField = fieldMap.get("recordId");
+
+        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                .table(module.getTableName())
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+                .andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(id), PickListOperators.IS))
+                ;
+        return deleteBuilder.delete();
     }
 
     private List<SingleSharingContext> checkAnyPendingApprovers(ModuleBaseWithCustomFields moduleRecord, List<SingleSharingContext> matching) throws Exception {
