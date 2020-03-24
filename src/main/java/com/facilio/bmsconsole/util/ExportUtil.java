@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -27,7 +26,12 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -39,10 +43,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -74,167 +78,169 @@ public class ExportUtil {
 	@SuppressWarnings("resource")
 	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
 	{
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
-		HSSFRow rowhead = sheet.createRow((short) 0);
-		
-		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-		for (BaseSpaceContext site : siteList) {
-			siteIdVsSiteMap.put(site.getId(), site);
-		}
-		int i = 0;
-		for(ViewField vf : fields)
-		{
-			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
-			rowhead.createCell((short) i).setCellValue(displayName);
-			i++;
-		}
-		
-		Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
-		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
-
-
-		int rowCount = 1;
-		for(ModuleBaseWithCustomFields record : records)
-		{
-			HSSFRow row = sheet.createRow(rowCount);
-			i = 0;
+		try(HSSFWorkbook workbook = new HSSFWorkbook();){
+			HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
+			HSSFRow rowhead = sheet.createRow((short) 0);
+			
+			List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
+			Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
+			for (BaseSpaceContext site : siteList) {
+				siteIdVsSiteMap.put(site.getId(), site);
+			}
+			int i = 0;
 			for(ViewField vf : fields)
 			{
-				FacilioField field = vf.getField();
-				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
-				Object value = null;
-				if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
-					value = siteIdVsSiteMap.get(record.getSiteId()).getName();
-				}
-				else {
-					value =	getValue(recordProp, vf);
-				}
-				if(value != null)
-				{
-					Object val = getFormattedValue(modVsData, field, value);
-					if(val!=null) {
-						value=val;
-					}
-
-					row.createCell((short) i).setCellValue(value.toString());
-				}
-				else
-				{
-					row.createCell((short) i).setCellValue("");
-				}
+				String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
+				rowhead.createCell((short) i).setCellValue(displayName);
 				i++;
 			}
-			rowCount++;
+			
+			Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
+			Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
+	
+	
+			int rowCount = 1;
+			for(ModuleBaseWithCustomFields record : records)
+			{
+				HSSFRow row = sheet.createRow(rowCount);
+				i = 0;
+				for(ViewField vf : fields)
+				{
+					FacilioField field = vf.getField();
+					Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
+					Object value = null;
+					if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
+						value = siteIdVsSiteMap.get(record.getSiteId()).getName();
+					}
+					else {
+						value =	getValue(recordProp, vf);
+					}
+					if(value != null)
+					{
+						Object val = getFormattedValue(modVsData, field, value);
+						if(val!=null) {
+							value=val;
+						}
+	
+						row.createCell((short) i).setCellValue(value.toString());
+					}
+					else
+					{
+						row.createCell((short) i).setCellValue("");
+					}
+					i++;
+				}
+				rowCount++;
+			}
+			autoSizeColumns(sheet);
+			
+			String fileName = facilioModule.getDisplayName() + ".xls";
+			String filePath = getRootFilePath(fileName);
+	
+			try(FileOutputStream fileOut = new FileOutputStream(filePath);) {
+				workbook.write(fileOut);
+			}
+	
+			File file = new File(filePath);
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = fs.addFile(fileName, file, "application/xls");
+	
+			if (isS3Url) {
+				return fs.getOrgiDownloadUrl(fileId);
+			}
+	
+			return fs.getDownloadUrl(fileId);
 		}
-		autoSizeColumns(sheet);
-		
-		String fileName = facilioModule.getDisplayName() + ".xls";
-		String filePath = getRootFilePath(fileName);
-
-		FileOutputStream fileOut = new FileOutputStream(filePath);
-		workbook.write(fileOut);
-		fileOut.close();
-
-		File file = new File(filePath);
-		FileStore fs = FacilioFactory.getFileStore();
-		long fileId = fs.addFile(fileName, file, "application/xls");
-
-		if (isS3Url) {
-			return fs.getOrgiDownloadUrl(fileId);
-		}
-
-		return fs.getDownloadUrl(fileId);
 	}
 	
 	public static String exportDataAsXLS(String name, Map<String,Object> table, boolean isS3Url) throws Exception 
 	{
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFSheet sheet = workbook.createSheet(name);
-		HSSFRow rowhead = sheet.createRow((short) 0);
-		
-		List<String> headers = (ArrayList<String>) table.get("headers");
-		Map<String, FacilioField> headerFields = new HashMap<>();
-	    	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
-	    	if (table.containsKey("modVsIds")) {
-	    		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
-	    		if (modVsIds != null) {
-	    			modVsData = getModuleData(modVsIds);
-	    		}
-	    		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
-	    	}
-		for(int i = 0, len = headers.size(); i < len; i++) {
-			String header = headers.get(i).toString();
-			if (i != 0 && headerFields.containsKey(header)) {
-				FacilioField field = headerFields.get(header);
-				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-					Object val = getFormattedValue(modVsData, field, header);
-	    				if(val!=null) {
-	    					header=(String) val;
-	    				}
+		try(HSSFWorkbook workbook = new HSSFWorkbook();) {
+			HSSFSheet sheet = workbook.createSheet(name);
+			HSSFRow rowhead = sheet.createRow((short) 0);
+			
+			List<String> headers = (ArrayList<String>) table.get("headers");
+			Map<String, FacilioField> headerFields = new HashMap<>();
+		    	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
+		    	if (table.containsKey("modVsIds")) {
+		    		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
+		    		if (modVsIds != null) {
+		    			modVsData = getModuleData(modVsIds);
+		    		}
+		    		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
+		    	}
+			for(int i = 0, len = headers.size(); i < len; i++) {
+				String header = headers.get(i).toString();
+				if (i != 0 && headerFields.containsKey(header)) {
+					FacilioField field = headerFields.get(header);
+					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+						Object val = getFormattedValue(modVsData, field, header);
+		    				if(val!=null) {
+		    					header=(String) val;
+		    				}
+					}
 				}
-			}
-			rowhead.createCell((short) i).setCellValue(header);
-		}
-		
-		List<List> records = (ArrayList<List>) table.get("records");
-		int rowCount = 1;
-		for(int i = 0, len = records.size(); i < len; i++) {
-			HSSFRow row = sheet.createRow(rowCount);
-			Object recordObj = records.get(i);
-			if (recordObj instanceof List) {
-				List<Object> record = (List<Object>) recordObj;
-				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
-					Object value = record.get(j);
-					if(value instanceof Double) {
-						value = BigDecimal.valueOf((Double)value).toPlainString();
-					}
-					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
-				}
-			}
-			else if (recordObj instanceof Map) {
-				Map<String,Object> record = (Map<String,Object>) recordObj;
-				for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
-					String header = headers.get(j).toString();
-					Object value = record.containsKey(header) ? record.get(header) : "";
-					if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
-						FacilioField field = headerFields.get(header);
-	    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-	    						Object val = getFormattedValue(modVsData, field, value);
-	    	    	    				if(val!=null) {
-	    	    	    					value=val;
-	    	    	    				}
-	    					}
-					}
-					if(value instanceof Double) {
-						value = BigDecimal.valueOf((Double)value).toPlainString();
-					}
-					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
-	    			}
+				rowhead.createCell((short) i).setCellValue(header);
 			}
 			
-			rowCount++;
-		}
+			List<List> records = (ArrayList<List>) table.get("records");
+			int rowCount = 1;
+			for(int i = 0, len = records.size(); i < len; i++) {
+				HSSFRow row = sheet.createRow(rowCount);
+				Object recordObj = records.get(i);
+				if (recordObj instanceof List) {
+					List<Object> record = (List<Object>) recordObj;
+					for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+						Object value = record.get(j);
+						if(value instanceof Double) {
+							value = BigDecimal.valueOf((Double)value).toPlainString();
+						}
+						row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
+					}
+				}
+				else if (recordObj instanceof Map) {
+					Map<String,Object> record = (Map<String,Object>) recordObj;
+					for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
+						String header = headers.get(j).toString();
+						Object value = record.containsKey(header) ? record.get(header) : "";
+						if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
+							FacilioField field = headerFields.get(header);
+		    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+		    						Object val = getFormattedValue(modVsData, field, value);
+		    	    	    				if(val!=null) {
+		    	    	    					value=val;
+		    	    	    				}
+		    					}
+						}
+						if(value instanceof Double) {
+							value = BigDecimal.valueOf((Double)value).toPlainString();
+						}
+						row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
+		    			}
+				}
+				
+				rowCount++;
+			}
+			
+			autoSizeColumns(sheet);
 		
-		autoSizeColumns(sheet);
+			String fileName = name + ".xls";
+			String filePath = getRootFilePath(fileName);
+			
+			try(FileOutputStream fileOut = new FileOutputStream(filePath);) {
+				workbook.write(fileOut);
+			}
 	
-		String fileName = name + ".xls";
-		String filePath = getRootFilePath(fileName);
-		
-		FileOutputStream fileOut = new FileOutputStream(filePath);
-		workbook.write(fileOut);
-		fileOut.close();
-
-		File file = new File(filePath);
-		FileStore fs = FacilioFactory.getFileStore();
-		long fileId = fs.addFile(fileName, file, "application/xls");
-		
-		if (isS3Url) {
-			return fs.getOrgiDownloadUrl(fileId);
+			File file = new File(filePath);
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = fs.addFile(fileName, file, "application/xls");
+			
+			if (isS3Url) {
+				return fs.getOrgiDownloadUrl(fileId);
+			}
+	
+			return fs.getDownloadUrl(fileId);
 		}
-
-		return fs.getDownloadUrl(fileId);
 	}
 	
 	private static void autoSizeColumns(HSSFSheet sheet) {
@@ -260,69 +266,70 @@ public class ExportUtil {
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
 		String filePath = getRootFilePath(fileName);
-        	FileWriter writer = new FileWriter(filePath, false);
+        	try(FileWriter writer = new FileWriter(filePath, false);) {
         	
-        	StringBuilder str = new StringBuilder();
-        	for(ViewField vf : fields)
-    		{
-    			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
-        		str.append(displayName);
-        		str.append(',');
-        	}
-        	writer.append(StringUtils.stripEnd(str.toString(), ","));
-        	writer.append('\n');
-        	
-        	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
-    		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
-    		
-    		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-    		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-    		for (BaseSpaceContext site : siteList) {
-    			siteIdVsSiteMap.put(site.getId(), site);
-    		}
-        
-        	for(ModuleBaseWithCustomFields record : records)
-        	{
-        		str = new StringBuilder();
-	    		for(ViewField vf : fields)
-			{
-	    			FacilioField field = vf.getField();
-				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
-				Object value = null;
-				if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
-					value = siteIdVsSiteMap.get(record.getSiteId()).getName();
+	        	StringBuilder str = new StringBuilder();
+	        	for(ViewField vf : fields)
+	    		{
+	    			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
+	        		str.append(displayName);
+	        		str.append(',');
+	        	}
+	        	writer.append(StringUtils.stripEnd(str.toString(), ","));
+	        	writer.append('\n');
+	        	
+	        	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
+	    		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
+	    		
+	    		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
+	    		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
+	    		for (BaseSpaceContext site : siteList) {
+	    			siteIdVsSiteMap.put(site.getId(), site);
+	    		}
+	        
+	        	for(ModuleBaseWithCustomFields record : records)
+	        	{
+	        		str = new StringBuilder();
+		    		for(ViewField vf : fields)
+				{
+		    			FacilioField field = vf.getField();
+					Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
+					Object value = null;
+					if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
+						value = siteIdVsSiteMap.get(record.getSiteId()).getName();
+					}
+					else {
+						value =	getValue(recordProp, vf);
+					}
+		    			if(value != null)
+		    			{
+		    				Object val = getFormattedValue(modVsData, field, value);
+		    				if(val!=null) {
+		    					value=val;
+		    				}
+		    				str.append(value.toString());
+		    			}
+		    			else
+		    			{
+		    				str.append("");
+		    			}
+		    			str.append(',');
 				}
-				else {
-					value =	getValue(recordProp, vf);
-				}
-	    			if(value != null)
-	    			{
-	    				Object val = getFormattedValue(modVsData, field, value);
-	    				if(val!=null) {
-	    					value=val;
-	    				}
-	    				str.append(value.toString());
-	    			}
-	    			else
-	    			{
-	    				str.append("");
-	    			}
-	    			str.append(',');
+		    		writer.append(StringUtils.stripEnd(str.toString(), ","));
+		    		writer.append('\n');
+	        	}
+	        	writer.flush();
+	        	writer.close();
+	        	
+	        	File file = new File(filePath);
+		    FileStore fs = FacilioFactory.getFileStore();
+		    long fileId = fs.addFile(fileName, file, "application/csv");
+	
+		    if (isS3Url) {
+		    	return fs.getOrgiDownloadUrl(fileId);
 			}
-	    		writer.append(StringUtils.stripEnd(str.toString(), ","));
-	    		writer.append('\n');
+		    return fs.getDownloadUrl(fileId);
         	}
-        	writer.flush();
-        	writer.close();
-        	
-        	File file = new File(filePath);
-	    FileStore fs = FacilioFactory.getFileStore();
-	    long fileId = fs.addFile(fileName, file, "application/csv");
-
-	    if (isS3Url) {
-	    	return fs.getOrgiDownloadUrl(fileId);
-		}
-	    return fs.getDownloadUrl(fileId);
     }
 	
 	@SuppressWarnings("unchecked")
@@ -330,86 +337,86 @@ public class ExportUtil {
     {
 		String fileName = name + ".csv";
 		String filePath = getRootFilePath(fileName);
-        	FileWriter writer = new FileWriter(filePath, false);
-        	
-        	StringBuilder str = new StringBuilder();
-        	List<String> headers = (ArrayList<String>) table.get("headers");
-        	Map<String, FacilioField> headerFields = new HashMap<>();
-        	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
-        	if (table.containsKey("modVsIds")) {
-        		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
-        		if (modVsIds != null) {
-        			modVsData = getModuleData(modVsIds);
-        		}
-        		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
+        	try(FileWriter writer = new FileWriter(filePath, false);) {
+	        	StringBuilder str = new StringBuilder();
+	        	List<String> headers = (ArrayList<String>) table.get("headers");
+	        	Map<String, FacilioField> headerFields = new HashMap<>();
+	        	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
+	        	if (table.containsKey("modVsIds")) {
+	        		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
+	        		if (modVsIds != null) {
+	        			modVsData = getModuleData(modVsIds);
+	        		}
+	        		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
+	        	}
+	    		for(int i = 0, len = headers.size(); i < len; i++) {
+	    			String header = headers.get(i).toString();
+	    			if (i != 0 && headerFields.containsKey(header)) {
+	    				FacilioField field = headerFields.get(header);
+	    				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+	    					Object val = getFormattedValue(modVsData, field, header);
+	        				if(val!=null) {
+	        					header=(String) val;
+	        				}
+	    				}
+	    			}
+	    			str.append(header);
+	    			str.append(',');
+	    		}
+	        	writer.append(StringUtils.stripEnd(str.toString(), ","));
+	        	writer.append('\n');
+	        	
+	        	List<Object> records = (ArrayList<Object>) table.get("records");
+	       
+	    		for(int i = 0, len = records.size(); i < len; i++) {
+	    			str = new StringBuilder();
+	    			Object recordObj = records.get(i);
+	    			if (recordObj instanceof List) {
+	    				List<Object> record = (List<Object>) recordObj;
+	    				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+	        				Object value = record.get(j);
+	        				if(value instanceof Double) {
+	    						value = BigDecimal.valueOf((Double)value).toPlainString();
+	    					}
+	        				str.append(value != null ? value.toString() : "").append(',');
+	        			}
+	    			}
+	    			else if (recordObj instanceof Map) {
+	    				Map<String,Object> record = (Map<String,Object>) recordObj;
+	    				for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
+	    					String header = headers.get(j).toString();
+	    					Object value = record.containsKey(header) ? record.get(header) : "";
+	    					if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
+	    						FacilioField field = headerFields.get(header);
+	    	    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+	    	    						Object val = getFormattedValue(modVsData, field, value);
+		    	    	    				if(val!=null) {
+		    	    	    					value=val;
+		    	    	    				}
+	    	    					}
+	    					}
+	    					if(value instanceof Double) {
+	    						value = BigDecimal.valueOf((Double)value).toPlainString();
+	    					}
+	    					str.append("\""+value+"\"").append(',');
+	    	    			}
+	    			}
+	    			
+	    			writer.append(StringUtils.stripEnd(str.toString(), ","));
+		    		writer.append('\n');
+	    		}
+	        	writer.flush();
+	        	writer.close();
+	        	
+	        	File file = new File(filePath);
+		    FileStore fs = FacilioFactory.getFileStore();
+		    long fileId = fs.addFile(fileName, file, "application/csv");
+		    
+		    if (isS3Url) {
+				return fs.getOrgiDownloadUrl(fileId);
+			}
+		    return fs.getDownloadUrl(fileId);
         	}
-    		for(int i = 0, len = headers.size(); i < len; i++) {
-    			String header = headers.get(i).toString();
-    			if (i != 0 && headerFields.containsKey(header)) {
-    				FacilioField field = headerFields.get(header);
-    				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-    					Object val = getFormattedValue(modVsData, field, header);
-        				if(val!=null) {
-        					header=(String) val;
-        				}
-    				}
-    			}
-    			str.append(header);
-    			str.append(',');
-    		}
-        	writer.append(StringUtils.stripEnd(str.toString(), ","));
-        	writer.append('\n');
-        	
-        	List<Object> records = (ArrayList<Object>) table.get("records");
-       
-    		for(int i = 0, len = records.size(); i < len; i++) {
-    			str = new StringBuilder();
-    			Object recordObj = records.get(i);
-    			if (recordObj instanceof List) {
-    				List<Object> record = (List<Object>) recordObj;
-    				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
-        				Object value = record.get(j);
-        				if(value instanceof Double) {
-    						value = BigDecimal.valueOf((Double)value).toPlainString();
-    					}
-        				str.append(value != null ? value.toString() : "").append(',');
-        			}
-    			}
-    			else if (recordObj instanceof Map) {
-    				Map<String,Object> record = (Map<String,Object>) recordObj;
-    				for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
-    					String header = headers.get(j).toString();
-    					Object value = record.containsKey(header) ? record.get(header) : "";
-    					if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
-    						FacilioField field = headerFields.get(header);
-    	    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-    	    						Object val = getFormattedValue(modVsData, field, value);
-	    	    	    				if(val!=null) {
-	    	    	    					value=val;
-	    	    	    				}
-    	    					}
-    					}
-    					if(value instanceof Double) {
-    						value = BigDecimal.valueOf((Double)value).toPlainString();
-    					}
-    					str.append("\""+value+"\"").append(',');
-    	    			}
-    			}
-    			
-    			writer.append(StringUtils.stripEnd(str.toString(), ","));
-	    		writer.append('\n');
-    		}
-        	writer.flush();
-        	writer.close();
-        	
-        	File file = new File(filePath);
-	    FileStore fs = FacilioFactory.getFileStore();
-	    long fileId = fs.addFile(fileName, file, "application/csv");
-	    
-	    if (isS3Url) {
-			return fs.getOrgiDownloadUrl(fileId);
-		}
-	    return fs.getDownloadUrl(fileId);
     }
 
 	private static Object getFormattedValue(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) {

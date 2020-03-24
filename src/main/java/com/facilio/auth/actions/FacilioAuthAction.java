@@ -721,24 +721,25 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 
 			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(body);
-			wr.flush();
-			wr.close();
+			try(DataOutputStream wr = new DataOutputStream(con.getOutputStream()); BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));) {
+				wr.writeBytes(body);
+				wr.flush();
+				wr.close();
+				
+				int responseCode = con.getResponseCode();
+				LOGGER.info("\nSending 'POST' request to URL : " + url);
+				LOGGER.info("Post parameters : " + body);
+				LOGGER.info("Response Code : " + responseCode);
 
-			int responseCode = con.getResponseCode();
-			LOGGER.info("\nSending 'POST' request to URL : " + url);
-			LOGGER.info("Post parameters : " + body);
-			LOGGER.info("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			LOGGER.info("response code is " + con.getResponseCode());
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+				LOGGER.info("response code is " + con.getResponseCode());
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
 			}
-			in.close();
 			LOGGER.info("issue response in freshrelease" + response.toString());
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Error while posting post issue response", e);

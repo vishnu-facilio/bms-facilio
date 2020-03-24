@@ -20,11 +20,9 @@ public class CommandExecutor {
             Process process = builder.start();
             process.waitFor();
             
-            BufferedReader br;
             String line = null;
             StringBuilder sb = new StringBuilder();
-            try (InputStream stdout = process.getInputStream()){
-            		br = new BufferedReader(new InputStreamReader(stdout));
+            try (InputStream stdout = process.getInputStream(); BufferedReader br = new BufferedReader(new InputStreamReader(stdout));){
                 while ((line = br.readLine()) != null) {
                 		sb.append(line);
                 }
@@ -34,8 +32,7 @@ public class CommandExecutor {
             		log.info("Exception occurred ", e);
 			}
             
-            try (InputStream stderr = process.getErrorStream()){
-            		br = new BufferedReader(new InputStreamReader(stderr));
+            try (InputStream stderr = process.getErrorStream(); BufferedReader br = new BufferedReader(new InputStreamReader(stderr));){
                 line = null;
                 sb = new StringBuilder();
                 while ((line = br.readLine()) != null) {

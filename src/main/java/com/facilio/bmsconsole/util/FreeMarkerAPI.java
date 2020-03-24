@@ -16,9 +16,10 @@ public class FreeMarkerAPI {
 	private static final Configuration DEFAULT_CONFIG = initConfig(); 
 	
 	public static String processTemplate (String template, Map<String, Object> params) throws Exception {
-		Template temp = new Template("Temp", new StringReader(template), DEFAULT_CONFIG);
-		StringWriter output = new StringWriter();
-		temp.process(params, output);
-		return output.toString();
+		try(StringReader sr = new StringReader(template); StringWriter output = new StringWriter();) {
+			Template temp = new Template("Temp", sr, DEFAULT_CONFIG);
+			temp.process(params, output);
+			return output.toString();
+		}
 	}
 }
