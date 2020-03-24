@@ -147,7 +147,7 @@
 		</action>
 	<action name="deleteportaluser" class="com.facilio.bmsconsole.actions.UserAction" method="deletePortalUser">
 		<param name="moduleName">setup</param>
-		<param name="permission">USER_ACCESS_ADMINISTER,REQUESTERS</param>
+		<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
 		<param name="cache">org</param>
 		<result name = "success" type="json">
 				<param name ="includeProperties">userId</param>

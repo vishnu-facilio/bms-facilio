@@ -3947,19 +3947,19 @@
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="addLabour">
 			<param name="moduleName">setup</param>
-			<param name="permission">LABOUR</param>
+			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="updateLabour">
 			<param name="moduleName">setup</param>
-			<param name="permission">LABOUR</param>
+			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="deleteLabour">
 			<param name="moduleName">setup</param>
-			<param name="permission">LABOUR</param>
+			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="labourList"
 			class="com.facilio.bmsconsole.actions.LabourAction"
@@ -3972,13 +3972,13 @@
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourDetails">
 			<param name="moduleName">setup</param>
-			<param name="permission">LABOUR</param>
+			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 			<param name="labourId">{1}</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemCount">
-			<param name="moduleName">setup</param>
-			<param name="permission">LABOUR</param>
+<!--			<param name="moduleName">setup</param>-->
+<!--			<param name="permission">USER_MANAGEMENT,LABOUR</param>-->
 		</action>
 	</package>
 
