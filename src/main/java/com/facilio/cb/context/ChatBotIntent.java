@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -85,6 +86,13 @@ public class ChatBotIntent {
 
 				JSONObject result = new JSONObject();
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, cbaction.getResponseType());
+				
+				if(cbaction.getModuleName() != null) {
+					result.put(FacilioConstants.ContextNames.MODULE_NAME, cbaction.getModuleName());
+				}
+				if(cbaction.getViewName() != null) {
+					result.put(FacilioConstants.ContextNames.VIEW_NAME, cbaction.getViewName());
+				}
 				
 				if(context.get(WorkflowV2Util.WORKFLOW_RESPONSE) != null) {
 					Map<String, Object> resultMap = (Map<String,Object>) context.get(WorkflowV2Util.WORKFLOW_RESPONSE);

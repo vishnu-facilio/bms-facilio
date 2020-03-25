@@ -7887,7 +7887,8 @@ public class FieldFactory {
         fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
         fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
         fields.add(getField("responseType", "RESPONSE_TYPE", module, FieldType.NUMBER));
-        
+        fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+        fields.add(getField("viewName", "VIEW_NAME", module, FieldType.STRING));
         return fields;
     }
     

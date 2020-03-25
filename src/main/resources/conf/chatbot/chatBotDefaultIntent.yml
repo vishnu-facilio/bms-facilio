@@ -678,3 +678,28 @@
     -
         sampleLocalId : 3
         sample: "help me"
+        
+- 
+   name: "system_get_my_work_request_intent"
+   displayName: "System get my work request Intent"
+   type: 1
+   localId : 17
+   actions:
+    - 
+        responseType : 3
+        moduleName : 'workorder'
+        viewName : 'open'
+        action: 
+            actionType: 29
+            status: 1
+        
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "get my work requests"
+    -
+        sampleLocalId : 2
+        sample: "get my work requests list"
+    -
+        sampleLocalId : 3
+        sample: "get my problems list"

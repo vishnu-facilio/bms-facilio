@@ -59,9 +59,13 @@ public class AddChatBotIntentCommand extends FacilioCommand {
 			
 			for(ChatBotIntentAction cbaction :chatBotIntent.getActions()) {
 				
-				List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(cbaction.getAction()), null);
+				if(cbaction.getAction() != null) {
+					
+					List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(cbaction.getAction()), null);
+					
+					cbaction.setActionId(actions.get(0).getId());
+				}
 				
-				cbaction.setActionId(actions.get(0).getId());
 				cbaction.setIntentId(chatBotIntent.getId());
 				cbaction.setOrgId(AccountUtil.getCurrentOrg().getId());
 				ChatBotUtil.addChatbotIntentAction(cbaction);

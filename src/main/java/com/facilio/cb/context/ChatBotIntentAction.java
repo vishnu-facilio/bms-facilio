@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.cb.context.ChatBotIntent.Intent_Type;
 
 public class ChatBotIntentAction {
 
@@ -16,6 +15,22 @@ public class ChatBotIntentAction {
 	String response;
 	
 	ActionContext action;
+	
+	String moduleName;
+	String ViewName;
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	public String getViewName() {
+		return ViewName;
+	}
+	public void setViewName(String viewName) {
+		ViewName = viewName;
+	}
 	public ActionContext getAction() {
 		return action;
 	}

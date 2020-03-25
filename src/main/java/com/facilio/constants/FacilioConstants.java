@@ -909,6 +909,8 @@ public class FacilioConstants {
 		public static final String VIEW_LIST = "views";
 		public static final String GROUP_VIEWS = "groupViews";
 
+		public static final String VIEW_NAME = "viewName";
+		
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
 		public static final String VIEW_COUNT = "viewCount";
