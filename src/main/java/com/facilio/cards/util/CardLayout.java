@@ -27,6 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.net.URL;
@@ -224,7 +225,9 @@ public enum CardLayout {
 	PHOTOS_LAYOUT_1("photos_layout_1") {
 		@Override
 		public Object execute(WidgetCardContext cardContext) throws Exception {
-			JSONObject cardParams = cardContext.getCardParams();
+			String cardParamsString = cardContext.getCardParams().toJSONString();
+			JSONParser parser = new JSONParser();
+			JSONObject cardParams = (JSONObject) parser. parse(cardParamsString);
 			JSONObject returnValue = new JSONObject();
 
 			String title = (String) cardParams.get("title");
