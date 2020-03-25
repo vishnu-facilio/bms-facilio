@@ -664,6 +664,7 @@
       - "system_add_invite_intent"
    actions:
     - 
+        responseType : 8
         action: 
             actionType: 29
             status: 1

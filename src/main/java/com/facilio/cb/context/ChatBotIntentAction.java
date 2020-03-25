@@ -77,6 +77,7 @@ public class ChatBotIntentAction {
 		GRAPH(5,"Graph"),
 		CONFIRMATION_CARD(6,"Confirmation Card"),
 		LOOKUP(7,"Lookup"),
+		INTENT_LIST(8,"Intent List"),
 		;
 
 		int intVal;
