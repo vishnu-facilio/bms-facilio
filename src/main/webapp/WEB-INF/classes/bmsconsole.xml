@@ -801,7 +801,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getEnergyMeterList">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="permission">ENERGY_ANALYTICS,ENERGY_METERS</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="root">energyMeters</param>

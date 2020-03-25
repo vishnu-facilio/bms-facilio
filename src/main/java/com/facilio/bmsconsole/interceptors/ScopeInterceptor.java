@@ -209,8 +209,10 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						AccountUtil.setTimeZone(timezoneVar);
 						
 						Parameter action = ActionContext.getContext().getParameters().get("permission"); 
-	                    Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName"); 
-	                    if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) { 
+	                    Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
+						Parameter isNewPermission = ActionContext.getContext().getParameters().get("isNewPermission");
+						boolean isNewPerm  = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
+	                    if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm)) {
 	                        return "unauthorized"; 
 	                    } 
 						
@@ -321,7 +323,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		return null;
 	}
 
-	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
+	private boolean isAuthorizedAccess(String moduleName, String action, boolean isNewPermission) throws Exception {
 
 		if (action == null || "".equals(action.trim())) {
 			return true;
@@ -338,6 +340,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				return PermissionUtil.currentUserHasPermission(tabId, moduleName, action);
 			}
 		} else {
+			if(isNewPermission) {
+				return true;
+			}
 			return PermissionUtil.currentUserHasPermission(moduleName, action);
 		}
 		return false;
