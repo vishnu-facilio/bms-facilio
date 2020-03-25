@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(stateFlowId, currentState.getId(), moduleName,
 						moduleData, (FacilioContext) context);
 				removeUnwantedTranstions(availableState);
+
+				if (ruleType == WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW) {
+					if (CollectionUtils.isNotEmpty(availableState) && availableState.size() != 2) {
+						availableState = new ArrayList<>();
+					}
+				}
 				LOGGER.debug("### time taken inside getAvailableState: " + this.getClass().getSimpleName() + ": " + (System.currentTimeMillis() - currentTime));
 				context.put("availableStates", availableState);
 			}

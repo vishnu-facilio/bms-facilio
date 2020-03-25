@@ -32,6 +32,8 @@ public class ChangeApprovalStatusForModuleDataCommand extends FacilioCommand {
             if (approvalTransition == null) {
                 throw new IllegalArgumentException("Invalid approval transition");
             }
+            // skip approval check for update, if approvalTransition is valid
+            context.put(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, true);
 
             for (String moduleName : recordMap.keySet()) {
                 List<ModuleBaseWithCustomFields> list = recordMap.get(moduleName);

@@ -52,9 +52,12 @@ public class VerifyApprovalCommand extends FacilioCommand {
 					}
 
 					if (wo.getApprovalFlowId() > 0 && wo.getApprovalStatus() != null) {
-						FacilioStatus status = TicketAPI.getStatus(wo.getApprovalStatus().getId());
-						if (status.isRequestedState()) {
-							throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
+						boolean skipChecking = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
+						if (!skipChecking) {
+							FacilioStatus status = TicketAPI.getStatus(wo.getApprovalStatus().getId());
+							if (status.isRequestedState()) {
+								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
+							}
 						}
 					}
 				}

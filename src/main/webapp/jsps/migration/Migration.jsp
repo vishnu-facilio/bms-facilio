@@ -1,20 +1,11 @@
-<%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
-<%@ page import="org.apache.commons.chain.Context" %>
-<%@ page import="org.apache.log4j.Logger" %>
-<%@ page import="org.apache.log4j.LogManager" %>
 <%@ page import="com.facilio.accounts.dto.Organization" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
+<%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
-<%@ page import="com.facilio.fw.BeanFactory" %>
-<%@ page import="com.facilio.beans.ModuleBean" %>
-<%@ page import="com.facilio.constants.FacilioConstants" %>
-<%@ page import="com.facilio.modules.FacilioModule" %>
-<%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.modules.FieldFactory" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.facilio.modules.FieldType" %>
-<%@ page import="com.facilio.modules.fields.LookupField" %>
+<%@ page import="org.apache.commons.chain.Context" %>
+<%@ page import="org.apache.log4j.LogManager" %>
+<%@ page import="org.apache.log4j.Logger" %>
+<%@ page import="java.util.List" %>
 
 <%--
 
@@ -37,17 +28,7 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-            FacilioModule ticketstatusModule = modBean.getModule("ticketstatus");
-            if (ticketModule != null && ticketstatusModule != null) {
-                FacilioField approvalStateFlowId = FieldFactory.getField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", ticketModule, FieldType.NUMBER);
-                modBean.addField(approvalStateFlowId);
-
-                LookupField approvalStatus = (LookupField) FieldFactory.getField("approvalStatus", "Approval State", "ARRPOVAL_STATE", ticketModule, FieldType.LOOKUP);
-                approvalStatus.setLookupModule(ticketstatusModule);
-                modBean.addField(approvalStatus);
-            }
+            
 
             return false;
         }
