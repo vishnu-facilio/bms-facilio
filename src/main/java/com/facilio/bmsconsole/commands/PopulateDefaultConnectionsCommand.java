@@ -27,26 +27,16 @@ public class PopulateDefaultConnectionsCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		
 		Yaml yaml = new Yaml();
-        InputStream inputStream = null;
         List<Object> connections = null;
-        try {
+        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_CONNECTIONS);) {
         	
-        	inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_CONNECTIONS);
+        	
         	connections = yaml.load(inputStream);
         	addConnections(connections);
         }
         catch (Exception e) {
             LOGGER.error("Error occurred while reading default connection conf file. "+e.getMessage(), e);
         }
-		finally {
-			if(inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while clossing stream. "+e.getMessage(), e);
-				}
-			}
-		}
 		
 		return false;
 	}

@@ -372,16 +372,16 @@ public class WorkflowContext implements Serializable {
 	
 	public void fillFunctionHeaderFromScript() throws Exception {
 		
-		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
-		
-		WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-        
-		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
-        ParseTree tree = parser.parse();
-        
-        WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
-        visitor.setWorkflowContext(this);
-        visitor.visitFunctionHeader(tree);
+		try(InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));) {
+			WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+	        
+			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+	        ParseTree tree = parser.parse();
+	        
+	        WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
+	        visitor.setWorkflowContext(this);
+	        visitor.visitFunctionHeader(tree);
+		}
 	}
 	
 	/**
@@ -579,18 +579,19 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	private WorkflowV2Parser getParser(String script) throws Exception {
-		InputStream stream = new ByteArrayInputStream(script.getBytes(StandardCharsets.UTF_8));
 		
-		WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-        
-		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
-		
-		if(this.errorListener == null) {
-			this.errorListener = new ErrorListener();
+		try(InputStream stream = new ByteArrayInputStream(script.getBytes(StandardCharsets.UTF_8));) {
+			WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+	        
+			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+			
+			if(this.errorListener == null) {
+				this.errorListener = new ErrorListener();
+			}
+			parser.addErrorListener(this.getErrorListener());
+			
+			return parser;
 		}
-		parser.addErrorListener(this.getErrorListener());
-		
-		return parser;
 	}
 	
 	public enum WorkflowUIMode {

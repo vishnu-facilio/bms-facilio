@@ -26,11 +26,10 @@ public class ParseDefaultChatBotIntentCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		
 		Yaml yaml = new Yaml();
-        InputStream inputStream = null;
         List<Object> cbIntent = null;
-        try {
+        try(InputStream inputStream = ParseDefaultChatBotIntentCommand.class.getClassLoader().getResourceAsStream(DEFAULT_INTENT);) {
         	
-        	inputStream = ParseDefaultChatBotIntentCommand.class.getClassLoader().getResourceAsStream(DEFAULT_INTENT);
+        	
         	cbIntent = yaml.load(inputStream);
         	List<ChatBotIntent> intents = getCBIntent(cbIntent);
         	context.put(ChatBotConstants.CHAT_BOT_INTENT_LIST, intents);
@@ -39,15 +38,6 @@ public class ParseDefaultChatBotIntentCommand extends FacilioCommand{
         	e.printStackTrace();
             LOGGER.error("Error occurred while reading default chat bot conf file. "+e.getMessage(), e);
         }
-		finally {
-			if(inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while clossing stream. "+e.getMessage(), e);
-				}
-			}
-		}
 		
 		return false;
 	}

@@ -129,31 +129,31 @@ public class WorkflowV2Util {
         // reading defaultWorkflow.json file       
         JSONParser jsonParser = new JSONParser();
         
-        FileReader reader = new FileReader(classLoader.getResource(DEFAULT_WORKFLOW_FILE_NAME).getFile());
-        
-        defaultWorkflows = (JSONObject)jsonParser.parse(reader);
-        
-// 		  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$     CODE TO VALIDATE DEFAULT WORKFLOWS         &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-        
-//        for(Object key :defaultWorkflows.keySet()) {
-//        	JSONObject wf = (JSONObject)defaultWorkflows.get(key);
-//        	String wfString = (String)wf.get("workflow");
-//        	
-//        	WorkflowContext workflowContext = new WorkflowContext();
-//        	workflowContext.setWorkflowV2String(wfString);
-//        	workflowContext.setIsV2Script(true);
-//        	
-//        	if(workflowContext.validateWorkflow()) {
-//        		System.out.println("NO ERROR IN ---- "+key);
-//        	}
-//        	else {
-//        		System.out.println("ERROR IN ---- "+key);
-//        	}
-//        }
-        
-        FileReader reader1 = new FileReader(classLoader.getResource(WORKFLOW_TEMPLATE_FILE_NAME).getFile());
-        
-        workflowTemplates = (JSONObject)jsonParser.parse(reader1);
+        try(FileReader reader = new FileReader(classLoader.getResource(DEFAULT_WORKFLOW_FILE_NAME).getFile());) {
+        	
+        	 defaultWorkflows = (JSONObject)jsonParser.parse(reader);
+             
+//    		  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$     CODE TO VALIDATE DEFAULT WORKFLOWS         &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+           
+//           for(Object key :defaultWorkflows.keySet()) {
+//           	JSONObject wf = (JSONObject)defaultWorkflows.get(key);
+//           	String wfString = (String)wf.get("workflow");
+//           	
+//           	WorkflowContext workflowContext = new WorkflowContext();
+//           	workflowContext.setWorkflowV2String(wfString);
+//           	workflowContext.setIsV2Script(true);
+//           	
+//           	if(workflowContext.validateWorkflow()) {
+//           		System.out.println("NO ERROR IN ---- "+key);
+//           	}
+//           	else {
+//           		System.out.println("ERROR IN ---- "+key);
+//           	}
+//           }
+           try (FileReader reader1 = new FileReader(classLoader.getResource(WORKFLOW_TEMPLATE_FILE_NAME).getFile());) {
+        	   workflowTemplates = (JSONObject)jsonParser.parse(reader1);
+           }
+        }
 	}
 
 	public static String getModuleClassNameFromModuleName(String moduleName) {

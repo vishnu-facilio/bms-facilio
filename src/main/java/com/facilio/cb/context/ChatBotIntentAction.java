@@ -17,7 +17,7 @@ public class ChatBotIntentAction {
 	ActionContext action;
 	
 	String moduleName;
-	String ViewName;
+	String viewName;
 	
 	public String getModuleName() {
 		return moduleName;
@@ -26,10 +26,10 @@ public class ChatBotIntentAction {
 		this.moduleName = moduleName;
 	}
 	public String getViewName() {
-		return ViewName;
+		return viewName;
 	}
 	public void setViewName(String viewName) {
-		ViewName = viewName;
+		this.viewName = viewName;
 	}
 	public ActionContext getAction() {
 		return action;

@@ -76,13 +76,15 @@ public class FacilioHttpUtils {
             LOGGER.info("\nSending 'POST' request to URL : " + url);
             LOGGER.info("Post parameters : " + post.getEntity());
             LOGGER.info("Response Code : " + status);
-
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
+            
+            try(BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));) {
+            	String line = "";
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+                LOGGER.info("result : " + result);
             }
-            LOGGER.info("result : " + result);
+
         } catch (Exception e) {
             LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
         } finally {
@@ -127,13 +129,16 @@ public class FacilioHttpUtils {
             LOGGER.info("\nSending 'GET' request to URL : " + url);
             LOGGER.info("get parameters : " + params);
             LOGGER.info("Response Code : " + status);
-
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
+            
+            try(BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));) {
+            	
+            	String line = "";
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+                LOGGER.info("result : " + result);
             }
-            LOGGER.info("result : " + result);
+
         } catch (Exception e) {
             LOGGER.info("Executing doHttpGet ::::url:::" + url, e);
         } finally {
