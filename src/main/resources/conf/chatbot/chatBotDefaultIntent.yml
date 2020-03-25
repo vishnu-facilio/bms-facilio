@@ -117,7 +117,7 @@
        
 - 
    name: "system_create_wo_intent"
-   displayName: "System create wo Intent"
+   displayName: "Create service request"
    type: 1
    localId : 7
    withParams : true
@@ -523,7 +523,7 @@
        
 - 
    name: "system_add_invite_intent"
-   displayName: "System Add Invite Intent"
+   displayName: "Add invite"
    type: 1
    localId : 15
    withParams : true
