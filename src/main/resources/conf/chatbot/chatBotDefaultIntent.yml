@@ -656,7 +656,7 @@
        
 - 
    name: "system_what_can_you_do_intent"
-   displayName: "System Terminate Session Intent"
+   displayName: "System what can yo do Intent"
    type: 1
    localId : 16
    childIntentNames:
