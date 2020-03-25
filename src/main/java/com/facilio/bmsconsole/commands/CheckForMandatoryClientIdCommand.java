@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ClientContactContext;
+import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.constants.FacilioConstants;
 
 public class CheckForMandatoryClientIdCommand extends FacilioCommand{
@@ -17,6 +18,7 @@ public class CheckForMandatoryClientIdCommand extends FacilioCommand{
 		
 		if(CollectionUtils.isNotEmpty(clientContacts)) {
 			for(ClientContactContext cc : clientContacts) {
+				cc.setPeopleType(PeopleType.CLIENT_CONTACT);
 				if(cc.getClient() == null || cc.getClient().getId() <=0 ) {
 					throw new IllegalArgumentException("Client Contact must have a client id associated");
 				}

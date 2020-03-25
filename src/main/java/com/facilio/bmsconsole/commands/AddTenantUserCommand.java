@@ -7,12 +7,15 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -34,6 +37,9 @@ public class AddTenantUserCommand extends FacilioCommand {
 		if(eventType == EventType.CREATE) {
 			ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+				PeopleAPI.addTenantPrimaryContactAsPeople(primarycontact);
+			}
 		}
 		else {
 			if(StringUtils.isNotEmpty(tenant.getPrimaryContactPhone())) {
@@ -47,8 +53,12 @@ public class AddTenantUserCommand extends FacilioCommand {
 					existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
 					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
 				}
+				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					PeopleAPI.addTenantPrimaryContactAsPeople(existingcontactForPhone);
+				}
 			}
 		}
+		
 		
 
 //		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {

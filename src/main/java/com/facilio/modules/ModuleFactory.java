@@ -121,6 +121,9 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.SITE, getSiteModule());
 		moduleMap.put(ContextNames.BUILDING, getBuildingModule());
 		moduleMap.put(ContextNames.FLOOR, getFloorModule());
+		moduleMap.put(ContextNames.TENANT_CONTACT, getTenantContactModule());
+		moduleMap.put(ContextNames.PEOPLE, getPeopleModule());
+
 
 		return moduleMap;
 	}
@@ -3461,6 +3464,15 @@ public class ModuleFactory {
 		module.setDisplayName("Building");
 		module.setTableName("Building");
 		module.setExtendModule(getResourceModule());
+		return module;
+	}
+	
+	public static FacilioModule getTenantContactModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.TENANT_CONTACT);
+		module.setDisplayName("Tenant Contact");
+		module.setTableName("Tenant_Contacts");
+		module.setExtendModule(getPeopleModule());
 		return module;
 	}
 

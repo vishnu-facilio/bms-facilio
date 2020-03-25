@@ -7,12 +7,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -50,6 +52,13 @@ public class TenantPageFactory extends PageFactory{
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
+				if(subModule.getName().equals(FacilioConstants.ContextNames.CONTACT) && AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					continue;
+				}
+				
+				if(subModule.getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT) && !AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					continue;
+				}
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 				if ((CollectionUtils.isNotEmpty(fields)) && (!subModule.getName().equals("tenantspaces"))) {

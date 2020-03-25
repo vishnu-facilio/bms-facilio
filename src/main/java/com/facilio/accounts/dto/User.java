@@ -208,6 +208,16 @@ public class User extends IAMUser {
 		this.iamOrgUserId = iamOrgUserId;
 	}
 
+	private int appType;
+
+	public int getAppType() {
+		return appType;
+	}
+
+	public void setAppType(int appType) {
+		this.appType = appType;
+	}
+	
 	
 	
 }

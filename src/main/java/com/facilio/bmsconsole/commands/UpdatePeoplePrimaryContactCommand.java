@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -21,14 +22,21 @@ public class UpdatePeoplePrimaryContactCommand extends FacilioCommand{
 		List<PeopleContext> peopleList = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(peopleList)) {
 			for(PeopleContext people : peopleList) {
-				if(people.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)people).isPrimaryContact()) {
-					PeopleAPI.unMarkPrimaryContact(people, ((TenantContactContext)people).getTenant().getId());
+				long parentId = -1;
+				if(people instanceof TenantContactContext && ((TenantContactContext) people).getTenant() != null && ((TenantContactContext)people).isPrimaryContact()) {
+					parentId = ((TenantContactContext)people).getTenant().getId();
+					PeopleAPI.unMarkPrimaryContact(people, parentId);
+					PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.TENANT, people.getName(), people.getEmail(), people.getPhone());
 				}
-				else if(people.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)people).isPrimaryContact()) {
-					PeopleAPI.unMarkPrimaryContact(people, ((VendorContactContext)people).getVendor().getId());
+				else if(people instanceof VendorContactContext && ((VendorContactContext) people).getVendor() != null && ((VendorContactContext)people).isPrimaryContact()) {
+					parentId = ((VendorContactContext)people).getVendor().getId();
+					PeopleAPI.unMarkPrimaryContact(people, parentId);
+					PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, people.getName(), people.getEmail(), people.getPhone());
 				}
-				else if(people.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT && ((ClientContactContext)people).isPrimaryContact()) {
-					PeopleAPI.unMarkPrimaryContact(people, ((ClientContactContext)people).getClient().getId());
+				else if(people instanceof ClientContactContext && ((ClientContactContext) people).getClient() != null && ((ClientContactContext)people).isPrimaryContact()) {
+					parentId = ((ClientContactContext)people).getClient().getId();
+					PeopleAPI.unMarkPrimaryContact(people, parentId);
+					PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.CLIENT, people.getName(), people.getEmail(), people.getPhone());
 				}
 			}
 		}

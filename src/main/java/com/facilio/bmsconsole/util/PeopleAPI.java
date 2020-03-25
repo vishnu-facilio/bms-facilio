@@ -16,11 +16,13 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ClientContactContext;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -537,7 +539,7 @@ public class PeopleAPI {
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		com.facilio.db.criteria.Condition condition = null;
 		
-		if(person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT) {
+		if(person instanceof TenantContactContext) {
 			module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT));
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -547,7 +549,7 @@ public class PeopleAPI {
 			
 			
 		}
-		else if(person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT) {
+		else if(person instanceof VendorContactContext) {
 			module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT));
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -555,7 +557,7 @@ public class PeopleAPI {
 			updatedfields.add(primaryContactField);
 			condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(parentId), NumberOperators.EQUALS);
 		}
-		else if(person.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT) {
+		else if(person instanceof ClientContactContext) {
 			module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
 			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT));
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -580,5 +582,68 @@ public class PeopleAPI {
 		return count;
 			
 	}
+	
+	public static void addTenantPrimaryContactAsPeople(ContactsContext contact) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
+		
+		TenantContactContext tc = new TenantContactContext();
+		tc.setName(contact.getName());
+		tc.setEmail(contact.getEmail());
+		tc.setPhone(contact.getPhone());
+		tc.setPeopleType(PeopleType.TENANT_CONTACT);
+		tc.setTenant(contact.getTenant());
+		tc.setIsPrimaryContact(true);
+		
+		PeopleContext peopleExisiting = getPeople(tc.getEmail());
+		if(peopleExisiting != null) {
+			tc.setId(peopleExisiting.getId());
+			RecordAPI.updateRecord(tc, module, fields);
+		}
+		else {
+			RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+		}
+		PeopleAPI.unMarkPrimaryContact(tc, tc.getTenant().getId());
+	}
+	
+	public static TenantContext getTenantForUser(long ouId) throws Exception {
+		long pplId = PeopleAPI.getPeopleIdForUser(ouId);
+		if(pplId <= 0) {
+			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
+		}
+		TenantContactContext tc = (TenantContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId);
+		return tc.getTenant();
+	
+	}
+	
+	public static void rollUpModulePrimarycontactFields(long id, String moduleName, String name, String email, String phone) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		
+		FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
+		FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
+		FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
+		
+		updatedfields.add(primaryEmailField);
+		updatedfields.add(primaryPhoneField);
+		updatedfields.add(primaryNameField);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+											.table(module.getTableName())
+											.fields(fields)
+											.andCondition(CriteriaAPI.getIdCondition(id, module));
+									
+		Map<String, Object> value = new HashMap<>();
+		value.put("primaryContactEmail", email);
+		value.put("primaryContactPhone", phone);
+		value.put("primaryContactName", name);
+		updateBuilder.update(value);
+
+	}
+
 
 }

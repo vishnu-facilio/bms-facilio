@@ -706,7 +706,13 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllFloors().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.FLOOR, views);
-
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllHiddenTenantContacts().setOrder(order++));
+		views.put("all-contacts", getAllTenantContacts().setOrder(order++));
+		
+		viewsMap.put(FacilioConstants.ContextNames.TENANT_CONTACT, views);
 
 		return viewsMap;
 	}
@@ -907,6 +913,54 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Sites");
 		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+	
+	private static FacilioView getAllHiddenTenantContacts() {
+
+		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Tenant Contacts");
+		allView.setModuleName(tenantContactModule.getName());
+		allView.setSortFields(sortFields);
+		
+		allView.setHidden(true);
+
+		return allView;
+	}
+	
+	private static FacilioView getAllTenantContacts() {
+
+		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all-contacts");
+		allView.setDisplayName("All Tenant Contacts");
+		allView.setModuleName(tenantContactModule.getName());
+		allView.setSortFields(sortFields);
+		
+		
+		return allView;
+	}
+	
+	private static FacilioView getAllTenantContactsForRelatedList() {
+
+		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("hidden-all");
+		allView.setDisplayName("All Tenant Contacts");
+		allView.setSortFields(sortFields);
+		allView.setHidden(true);
 
 		return allView;
 	}

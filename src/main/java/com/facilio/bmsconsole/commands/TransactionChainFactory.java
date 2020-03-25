@@ -4807,6 +4807,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new CheckForMandatoryTenantIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		
 		return c;
 	}
@@ -4817,6 +4818,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new CheckForMandatoryVendorIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		
 		return c;
 	}
 	
@@ -4824,6 +4827,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}
@@ -5089,6 +5093,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new CheckForMandatoryClientIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		
 		return c;
 	}
 	

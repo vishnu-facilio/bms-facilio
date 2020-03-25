@@ -937,6 +937,7 @@ public class UserBeanImpl implements UserBean {
 			AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication((long)prop.get("applicationId"));
 			user.setAppDomain(appDomainObj);
 			user.setApplicationId((long)prop.get("applicationId"));
+			user.setAppType(appDomainObj.getAppType());
 		}
 		
 		

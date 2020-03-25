@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -16,6 +17,7 @@ public class CheckForMandatoryTenantIdCommand extends FacilioCommand{
 		List<TenantContactContext> tenantContacts = (List<TenantContactContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(tenantContacts)) {
 			for(TenantContactContext tc : tenantContacts) {
+				tc.setPeopleType(PeopleType.TENANT_CONTACT);
 				if(tc.getTenant() == null || tc.getTenant().getId() <=0 ) {
 					throw new IllegalArgumentException("Tenant Contact must have a tenant id associated");
 				}

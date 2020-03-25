@@ -10,12 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -39,9 +42,14 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
 					vL.setRequestedBy(AccountUtil.getCurrentUser());
 				}
-				ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-				if(contact != null && contact.getTenant() != null) {
-					vL.setTenant(contact.getTenant());
+				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					vL.setTenant(PeopleAPI.getTenantForUser(vL.getRequestedBy().getId()));
+				}
+				else {
+					ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+					if(contact != null && contact.getTenant() != null) {
+						vL.setTenant(contact.getTenant());
+					}
 				}
 			
 				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
