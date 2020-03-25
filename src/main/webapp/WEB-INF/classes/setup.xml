@@ -405,7 +405,7 @@
 		</action>
 		<action name="updateWebTabRole" class="com.facilio.bmsconsole.actions.RoleAction" method="updateWebTabRole">
 			<param name="moduleName">setup</param>
-			<param name="permission">USER_MANAGEMENT</param>
+			<param name="permission">USER_MANAGEMENT,ROLES</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
