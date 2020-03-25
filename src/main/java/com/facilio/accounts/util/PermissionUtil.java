@@ -439,7 +439,7 @@ public class PermissionUtil {
 			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
 			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
 			if (!moduleNames.isEmpty()) {
-				if (moduleNames.contains(moduleName)) {
+				if (moduleNames.contains(moduleName) || moduleName.equalsIgnoreCase("setup")) {
 					return hasPermission(rolePermissionVal, action, tabId);
 				}
 			}
@@ -494,6 +494,9 @@ public class PermissionUtil {
 		if (perm == 0) {
 			return true;
 		}
+		if (perm < 0) {
+			return false;
+		}
 		return (perm & permission) == permission;
 	}
 
@@ -513,9 +516,9 @@ public class PermissionUtil {
 					if (permVal > 0) {
 						hasAccess = hasPermission(perm, permVal);
 					}
-					else {
+					/*else {
 						throw new Exception("Invalid permission type: "+action);
-					}
+					}*/
 					if (hasAccess) {
 						break;
 					}

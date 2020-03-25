@@ -407,8 +407,8 @@ public class NewPermissionUtil {
                 return dashboardTabType.get(action);
             case 8:
                 return customTabType.get(action);
-            case 9:
-                return settingsTabType.get(action);
+            case 10:
+                return settingsTabType.containsKey(action) ? settingsTabType.get(action) : -1;
             default:
                 return -1;
         }
