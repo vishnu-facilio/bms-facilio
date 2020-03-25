@@ -7887,6 +7887,8 @@ public class FieldFactory {
         fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
         fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
         fields.add(getField("responseType", "RESPONSE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        
         return fields;
     }
     
@@ -7929,7 +7931,8 @@ public class FieldFactory {
         fields.add(getField("fillableByParent", "IS_FILLABLE_BY_PARENT", module, FieldType.BOOLEAN));
         fields.add(getField("addParamTriggerText", "ADD_PARAM_TRIGGER_TEXT", module, FieldType.STRING));
         fields.add(getField("updateParamTriggerText", "UPDATE_PARAM_TRIGGER_TEXT", module, FieldType.STRING));
-
+        fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
         return fields;
     }
 

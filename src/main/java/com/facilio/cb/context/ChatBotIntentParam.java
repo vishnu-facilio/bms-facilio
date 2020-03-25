@@ -27,7 +27,15 @@ public class ChatBotIntentParam {
 	boolean fillableByParent;
 	String addParamTriggerText;
 	String updateParamTriggerText;
+	long criteriaId = -1;
 	
+	public long getCriteriaId() {
+		return criteriaId;
+	}
+
+	public void setCriteriaId(long criteriaId) {
+		this.criteriaId = criteriaId;
+	}
 	
 	public String getAddParamTriggerText() {
 		return addParamTriggerText;
