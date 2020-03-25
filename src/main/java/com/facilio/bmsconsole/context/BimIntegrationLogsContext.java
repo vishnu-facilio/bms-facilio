@@ -9,6 +9,7 @@ public class BimIntegrationLogsContext{
 	private long fileId;
 	private long uploadedBy;
     private int noOfModules;
+    private long importedTime;
     
 	public int getNoOfModules() {
 		return noOfModules;
@@ -40,6 +41,14 @@ public class BimIntegrationLogsContext{
 
 	public void setUploadedBy(long uploadedBy) {
 		this.uploadedBy = uploadedBy;
+	}
+	
+	public long getImportedTime() {
+		return importedTime;
+	}
+
+	public void setImportedTime(long importedTime) {
+		this.importedTime = importedTime;
 	}
 
 	private Status status;

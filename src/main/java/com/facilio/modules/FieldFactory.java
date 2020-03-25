@@ -8126,7 +8126,7 @@ public class FieldFactory {
  		fields.add(getField("noOfModules","No of Modules","NO_OF_MODULES",module,FieldType.NUMBER));
  		fields.add(getField("status","Status","STATUS",module,FieldType.NUMBER));
  		fields.add(getField("uploadedBy","Uploaded By","UPLOADED_BY",module,FieldType.NUMBER));
-
+ 		fields.add(getField("importedTime","Imported Time","IMPORTED_TIME",module,FieldType.NUMBER));
  		return fields;
 	}
 	
