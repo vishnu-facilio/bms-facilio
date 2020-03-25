@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
@@ -45,7 +47,7 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 			case ContextNames.NEW_READING_ALARM:	
 				BaseAlarmContext readingAlarm = NewAlarmAPI.getAlarm(recordId);
 				AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(readingAlarm);
-
+				((ReadingAlarm)readingAlarm).setReadingFieldName(((ModuleBean)BeanFactory.lookup("ModuleBean")).getField(((ReadingAlarm)readingAlarm).getReadingFieldId()).getDisplayName());
 				readingAlarm.setLastOccurrence(latestAlarmOccurance);
 				context.put(ContextNames.RECORD, readingAlarm);
 				break;
@@ -60,7 +62,6 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
 				break;
 			case ContextNames.READING_TEMPLATE_MODULE:
-				System.out.println("HELLOOO");
 				DefaultTemplate templatejson=TemplateAPI.getDefaultTemplate(DefaultTemplate.DefaultTemplateType.RULE,(int) recordId);
 				System.out.println(templatejson);
 				context.put(ContextNames.RECORD,templatejson);

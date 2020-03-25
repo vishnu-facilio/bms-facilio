@@ -36,4 +36,11 @@ public class ReadingAlarm extends BaseAlarmContext {
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
 	}
+	private String readingFieldName;
+	public String getReadingFieldName() {
+		return readingFieldName;
+	}
+	public void setReadingFieldName(String readingFieldName) {
+		this.readingFieldName = readingFieldName;
+	}
 }
