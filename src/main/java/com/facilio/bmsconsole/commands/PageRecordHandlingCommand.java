@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
-
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -26,6 +25,7 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
+		boolean isApproval = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_APPROVAL, false);
 		
 		switch(moduleName) {
 			case ContextNames.MV_PROJECT_MODULE:
@@ -63,11 +63,11 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				break;
 			case ContextNames.READING_TEMPLATE_MODULE:
 				DefaultTemplate templatejson=TemplateAPI.getDefaultTemplate(DefaultTemplate.DefaultTemplateType.RULE,(int) recordId);
-				System.out.println(templatejson);
 				context.put(ContextNames.RECORD,templatejson);
 				break;
 				
 		}
+		
 
 		if (context.containsKey(ContextNames.RECORD)) {
 			context.put(ContextNames.ID, -1l);

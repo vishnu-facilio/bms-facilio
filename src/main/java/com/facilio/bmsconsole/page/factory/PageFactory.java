@@ -26,7 +26,11 @@ import java.util.List;
 public class PageFactory {
 
 
-	public static Page getPage(FacilioModule module, Object record) throws Exception {
+	public static Page getPage(FacilioModule module, Object record, boolean isApproval) throws Exception {
+		if (isApproval) {
+			return ApprovalPageFactory.getApprovalPage(module, (ModuleBaseWithCustomFields) record);
+		}
+		
 		switch(module.getName()) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
@@ -73,6 +77,7 @@ public class PageFactory {
 				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record);
 			case ContextNames.READING_TEMPLATE_MODULE:
 				return TemplatePageFactory.getTemplatePage((DefaultTemplate) record);
+				
 		}
 		if (module.getExtendModule() == null) {	// temp
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
@@ -154,7 +159,7 @@ public class PageFactory {
 	
 	protected static void addDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 6);
+		pageWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(pageWidget);
 	}
 	
@@ -162,6 +167,14 @@ public class PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
 		cardWidget.addToLayoutParams(0, yPos, 16, 4);
 		section.addWidget(cardWidget);
+	}
+	
+	protected static void addSecondaryDetailWidget(Section section) {
+		// col1Sec2.setName("overview");
+		// col1Sec2.setDisplayName("common.page.overview");
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+		detailsWidget.addToLayoutParams(section, 24, 5);
+		section.addWidget(detailsWidget);
 	}
 	
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName, long aggregateFunc, long dateOperator, long xAggr) {

@@ -15,6 +15,7 @@ public class PageAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
 		FacilioChain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		
@@ -51,5 +52,19 @@ public class PageAction extends FacilioAction {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	
+	private Boolean approval;
+	public Boolean getApproval() {
+		return approval;
+	}
+	private boolean isApproval() {
+		if (approval == null) {
+			return false;
+		}
+		return approval;
+	}
+	public void setApproval(Boolean approval) {
+		this.approval = approval;
 	}
 }
