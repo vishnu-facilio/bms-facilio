@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -20,6 +13,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ImportItemCommand extends FacilioCommand {
 
@@ -76,28 +75,30 @@ public class ImportItemCommand extends FacilioCommand {
 				}
 				item.setItemType(itemType);
 				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
-				List<PurchasedItemContext> purItem = new ArrayList<>();
-				purItem.add(purchasedItem);
-				item.setPurchasedItems(purItem);
+
 				if (purchasedItem.getQuantity() > 0) {
-					if (itemNameVsIndexMap.containsKey(purchasedItem.getItemType().getName())) {
-						int itemIndex = itemNameVsIndexMap.get(purchasedItem.getItemType().getName()).intValue();
-						ItemContext exisItem = new ItemContext();
-						exisItem = itemsList.get(itemIndex);
-						List<PurchasedItemContext> curPurchasedItem = exisItem.getPurchasedItems();
+					List<PurchasedItemContext> purItem = new ArrayList<>();
+					purItem.add(purchasedItem);
+					item.setPurchasedItems(purItem);
+				}
+				if (itemNameVsIndexMap.containsKey(purchasedItem.getItemType().getName())) {
+					int itemIndex = itemNameVsIndexMap.get(purchasedItem.getItemType().getName()).intValue();
+					ItemContext exisItem = itemsList.get(itemIndex);
+					List<PurchasedItemContext> curPurchasedItem = exisItem.getPurchasedItems();
+					if (purchasedItem.getQuantity() > 0) {
 						if (curPurchasedItem == null) {
 							curPurchasedItem = new ArrayList<>();
 							curPurchasedItem.add(purchasedItem);
 						} else {
 							curPurchasedItem.add(purchasedItem);
 						}
-						exisItem.setPurchasedItems(curPurchasedItem);
-						itemsList.set(itemIndex, exisItem);
-					} else {
-						itemsList.add(item);
-						itemNameVsIndexMap.put(purchasedItem.getItemType().getName(), itemIndexCounter);
-						itemIndexCounter++;
 					}
+					exisItem.setPurchasedItems(curPurchasedItem);
+					itemsList.set(itemIndex, exisItem);
+				} else {
+					itemsList.add(item);
+					itemNameVsIndexMap.put(purchasedItem.getItemType().getName(), itemIndexCounter);
+					itemIndexCounter++;
 				}
 			}
 			context.put(FacilioConstants.ContextNames.ITEMS, itemsList);
