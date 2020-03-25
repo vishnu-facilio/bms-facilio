@@ -160,6 +160,7 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	
     	this.visit(ctx.criteria().condition());
     	
+    	
     	fieldCriteria.setPattern(WorkflowV2Util.adjustCriteriaPattern(fieldCriteria.getPattern()));
     	
     	Value criteriaVal = new Value(fieldCriteria);
@@ -263,7 +264,11 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
 		
 		dbParamContext = new DBParamContext();
 		
-		Value criteriaValue = this.visit(ctx.db_param_criteria().criteria());
+		Value criteriaValue = this.visit(ctx.db_param_criteria().expr());
+		
+		if(!(criteriaValue.asObject() instanceof Criteria)) {
+			throw new RuntimeException(ctx.db_param_criteria().expr().getText()+" IS NOT A CRITERIA");
+		}
 		
 		dbParamContext.setCriteria(criteriaValue.asCriteria());
 		

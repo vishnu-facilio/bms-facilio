@@ -150,7 +150,7 @@ db_param_group
  ;
  
 db_param_criteria
- : 'criteria' COLON criteria (COMMA)*
+ : 'criteria' COLON expr (COMMA)*
  ;
  
 db_param_field_criteria
