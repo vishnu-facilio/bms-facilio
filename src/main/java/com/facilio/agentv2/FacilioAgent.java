@@ -4,7 +4,9 @@ import com.facilio.agent.AgentKeys;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.json.simple.JSONObject;
 
-public class FacilioAgent {
+import java.io.Serializable;
+
+public class FacilioAgent implements Serializable {
 
 
     @JsonInclude

@@ -17,6 +17,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.kafka.common.metrics.Stat;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,18 +37,18 @@ public class AgentUtilV2
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
-    private Map<Long,FacilioAgent> idVsAgentMap = new HashMap<>();
 
-
-    public Map<Long, FacilioAgent> getIdVsAgentMap() {
-        return idVsAgentMap;
-    }
     public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds){
-        List<FacilioAgent> agents = (List<FacilioAgent>) getAgentMap().values();
-        if (CollectionUtils.isNotEmpty(agents)) {
-            return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+        List<FacilioAgent> allAgents = (List<FacilioAgent>) getAgentMap().values();
+        Map<Long,FacilioAgent> agentMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(allAgents)) {
+            for (FacilioAgent agent : allAgents){
+                if(agentIds.contains(agent.getId())){
+                    agentMap.put(agent.getId(),agent);
+                }
+            }
         }
-        return null;
+        return agentMap;
     }
 
     public static JSONObject getOverview() {
@@ -132,25 +133,23 @@ public class AgentUtilV2
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
+                    raiseAgentAlarm(agent);
                 }else if (containsValueCheck(AgentConstants.COUNT,payload)){
                     LOGGER.info(" CONNECTED ");
                     agent.setConnected(true);
+                    dropAgentAlarm( agent);
                     connectionCount = (long) payload.get(AgentConstants.COUNT);
                 }else {
                     LOGGER.info("SUBSCRIBED");
                     agent.setConnected(true);
+                    dropAgentAlarm( agent);
                 }
                     LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
                 int status = Integer.parseInt(payload.get(AgentConstants.STATUS).toString());
-                if (status == 0) {
-                    raiseAgentAlarm(agent);
-                }
-                if (status == 1) {
-                    dropAgentAlarm( agent);
-                }
+
             }
             agent.setConnected(true);
             return updateAgent(agent, payload);
@@ -210,7 +209,6 @@ public class AgentUtilV2
         boolean isDone = AgentApiV2.editAgent(agent, jsonObject);
         if (isDone) {
             agentMap.replace(agent.getName(), agent);
-            idVsAgentMap.replace(agent.getId(),agent);
         }
         return isDone;
     }
@@ -222,7 +220,6 @@ public class AgentUtilV2
             agent = AgentApiV2.getAgent(agentName);
             if (agent != null) {
                 agentMap.put(agentName, agent);
-                idVsAgentMap.put(agent.getId(),agent);
             }
         }
         return agent;
