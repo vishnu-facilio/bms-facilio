@@ -42,7 +42,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 					
 					chatBotSuggestionContext.setSuggestion("Edit "+(editableIntextParam.getDisplayName() == null ? editableIntextParam.getName() : editableIntextParam.getDisplayName()));
 					chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.EDITABLE_PARAM.getIntVal());
-					chatBotSuggestionContext.setIntentParamId(editableIntextParam.getId());
 					
 					chatBotSuggestionContexts.add(chatBotSuggestionContext);
 				}
@@ -56,7 +55,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 						
 						chatBotSuggestionContext.setSuggestion("Add "+(optionalIntextParam.getDisplayName() == null ? optionalIntextParam.getName() : optionalIntextParam.getDisplayName()));
 						chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OPTIONAL_PARAM.getIntVal());
-						chatBotSuggestionContext.setIntentParamId(optionalIntextParam.getId());
 						
 						chatBotSuggestionContexts.add(chatBotSuggestionContext);
 					}
@@ -84,7 +82,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 					
 					chatBotSuggestionContext.setSuggestion(intentChild.getChildIntent().getDisplayName());
 					chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.CHAINED_INTENT.getIntVal());
-					chatBotSuggestionContext.setParentSessionId(session.getId());
 					
 					chatBotSuggestionContexts.add(chatBotSuggestionContext);
 				}

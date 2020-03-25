@@ -8,17 +8,7 @@ public class ChatBotSuggestionContext {
 	
 	String suggestion;
 	Type type;
-	long intentParamId = -1;
-	long parentSessionId = -1;
 	
-
-	public long getParentSessionId() {
-		return parentSessionId;
-	}
-
-	public void setParentSessionId(long parentSessionId) {
-		this.parentSessionId = parentSessionId;
-	}
 
 	public String getSuggestion() {
 		return suggestion;
@@ -37,14 +27,6 @@ public class ChatBotSuggestionContext {
 
 	public void setType(int type) {
 		this.type = Type.getAllTypes().get(type);
-	}
-
-	public long getIntentParamId() {
-		return intentParamId;
-	}
-
-	public void setIntentParamId(long paramId) {
-		this.intentParamId = paramId;
 	}
 
 	public enum Type {
