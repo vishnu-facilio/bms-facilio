@@ -750,6 +750,9 @@ public abstract class FileStore {
 	public abstract boolean isSecretFileExists(String fileName);
 	
 	public byte[] writeCompressedFile(long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+		if (file != null) {
+			return null;		// temp  disabling
+		}
 		if (contentType.contains("image/")) {
 			try(FileInputStream fis = new FileInputStream(file);) {
 				
@@ -777,6 +780,9 @@ public abstract class FileStore {
 				addResizedFileEntry(Collections.singletonList(info));*/
 				
 				return imageInByte;
+			}
+			catch (Exception e) {
+				LOGGER.error("Error while compressing", e);
 			}
 		}
 		return null;
