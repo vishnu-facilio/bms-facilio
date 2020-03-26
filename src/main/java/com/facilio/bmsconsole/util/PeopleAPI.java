@@ -92,7 +92,7 @@ public class PeopleAPI {
 		PeopleContext peopleExisiting = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
-		
+		long pplId = 1;
 		if(peopleExisiting == null) {
 			EmployeeContext people = new EmployeeContext();
 			people.setIsAssignable(false);
@@ -108,14 +108,16 @@ public class PeopleAPI {
 				people.setLocalId(1);
 			}
 			RecordAPI.addRecord(!isSignup, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
-			updatePeopleIdInOrgUsers(people.getId(), user.getOuid());
-			
+			pplId = people.getId();
 		}
 		else {
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsAppAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
+			pplId =emp.getId();
 		}
+		updatePeopleIdInOrgUsers(pplId, user.getOuid());
+		
 	}
 	
 	
@@ -124,7 +126,7 @@ public class PeopleAPI {
 		PeopleContext peopleExisiting = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
-		
+		long pplId = -1;
 		if(peopleExisiting == null) {
 			EmployeeContext people = new EmployeeContext();
 			people.setIsAssignable(false);
@@ -139,13 +141,16 @@ public class PeopleAPI {
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			
 			RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
-			updatePeopleIdInOrgUsers(people.getId(), user.getOuid());
+			pplId = people.getId();
 			}
 		else {
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsOccupantPortalAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
+			pplId = emp.getId();
 		}
+		updatePeopleIdInOrgUsers(pplId, user.getOuid());
+		
 	}
 	
 	private static void updatePeopleIdInOrgUsers(long pplId, long ouId) throws Exception {
