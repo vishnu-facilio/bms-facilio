@@ -1,10 +1,14 @@
 package com.facilio.cb.action;
 
+import java.io.File;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSuggestionContext;
@@ -24,6 +28,34 @@ public class ChatBotAction extends FacilioAction {
 	
 	JSONObject chatMessage;
 	ChatBotSuggestionContext suggestion;
+	
+	private File fileContent;
+	private String fileContentFileName;
+	private String fileContentContentType;
+
+	public File getFileContent() {
+		return fileContent;
+	}
+
+	public void setFileContent(File fileContent) {
+		this.fileContent = fileContent;
+	}
+
+	public String getFileContentFileName() {
+		return fileContentFileName;
+	}
+
+	public void setFileContentFileName(String fileContentFileName) {
+		this.fileContentFileName = fileContentFileName;
+	}
+
+	public String getFileContentContentType() {
+		return fileContentContentType;
+	}
+
+	public void setFileContentContentType(String fileContentContentType) {
+		this.fileContentContentType = fileContentContentType;
+	}
 	
 	public ChatBotSuggestionContext getSuggestion() {
 		return suggestion;
@@ -81,6 +113,27 @@ public class ChatBotAction extends FacilioAction {
 	}
 
 	public String chat() throws Exception {
+		
+		if(fileContent != null) {
+			
+			FacilioChain addFileChain = FacilioChainFactory.getAddFileChain();
+				
+			FacilioContext context = addFileChain.getContext();
+			
+	 		context.put(FacilioConstants.ContextNames.FILE, this.fileContent);
+	 		context.put(FacilioConstants.ContextNames.FILE_NAME, this.fileContentFileName);
+	 		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, this.fileContentContentType);
+	 		
+			addFileChain.execute();
+			
+			FileContext newFile = (FileContext) context.get(FacilioConstants.ContextNames.FILE_CONTEXT_LIST);
+			
+			if(chatMessage == null) {
+				chatMessage = new JSONObject();
+			}
+			
+			chatMessage.put(ChatBotConstants.CHAT_BOT_ID, newFile.getFileId());
+		}
 		
 		if(chatMessage != null) {
 			
