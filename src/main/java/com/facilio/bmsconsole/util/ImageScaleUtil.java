@@ -2,10 +2,26 @@ package com.facilio.bmsconsole.util;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Iterator;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.ImageOutputStream;
 
 import org.imgscalr.Scalr;
 
 public class ImageScaleUtil {
+	
+	private static final int MAX_WIDTH = 1280;
+	private static final int MAX_HEIGHT = 960;
+	private static final double MAX_RATIO = MAX_WIDTH/ (double) MAX_HEIGHT;
+	private static final float COMPRESS_QUALITY = 0.9f;
 	
 	/**
 	 * Resizes an image to a specific size and adds black lines in respect to
@@ -98,5 +114,59 @@ public class ImageScaleUtil {
 	    
 	    // return the final image
 	    return outputImage;
+	}
+	
+	private static BufferedImage rescale(BufferedImage inputImage) throws IOException {
+        int originalWidth = inputImage.getWidth();
+        int originalHeight = inputImage.getHeight();
+        double imgRatio = originalWidth/ (double) originalHeight;
+        
+        if ((originalWidth > MAX_WIDTH || originalHeight > MAX_HEIGHT) && !(originalHeight == MAX_WIDTH && originalWidth == MAX_HEIGHT) ) {
+	        	if(imgRatio < MAX_RATIO){
+	                //adjust width according to maxHeight
+	                imgRatio = MAX_HEIGHT / (double) originalHeight;
+	                originalWidth = (int) (imgRatio * originalWidth);
+	                originalHeight = MAX_HEIGHT;
+            }
+            else if(imgRatio > MAX_RATIO){
+                //adjust height according to maxWidth
+                imgRatio = MAX_WIDTH / (double) originalWidth;
+                originalHeight = (int) (imgRatio * originalHeight);
+                originalWidth = MAX_WIDTH;
+            }else{
+            		originalHeight = MAX_HEIGHT;
+            		originalWidth = MAX_WIDTH;
+            }
+        }
+        else {
+        		return inputImage;
+        }
+        
+        BufferedImage resizedImage = Scalr.resize(inputImage, Scalr.Method.QUALITY, originalWidth, originalHeight);
+        return resizedImage;
+    }
+	
+	public static void compressImage(BufferedImage inputImage, OutputStream outputStream) throws IOException {
+		
+		inputImage = rescale(inputImage);
+
+        Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName("jpg");
+        ImageWriter imageWriter = (ImageWriter) imageWriters.next();
+        try(ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream);) {
+	        	imageWriter.setOutput(imageOutputStream);
+	        	
+	        	ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
+	        	
+	        	imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+	        	imageWriteParam.setCompressionQuality(COMPRESS_QUALITY);
+	        	
+	        	ImageTypeSpecifier type = new ImageTypeSpecifier(inputImage);
+	        	IIOMetadata imgMetadata = imageWriter.getDefaultImageMetadata(type, imageWriteParam);
+	        	
+	        	imageWriter.write(null, new IIOImage(inputImage, null, imgMetadata), imageWriteParam);
+	        	
+	        	imageWriter.dispose();
+        }
+        
 	}
 }

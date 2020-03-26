@@ -1,6 +1,9 @@
 package com.facilio.services.filestore;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,6 +26,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.FileJWTUtil;
+import com.facilio.bmsconsole.util.ImageScaleUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -32,6 +38,7 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -39,7 +46,7 @@ public abstract class FileStore {
 	
 	
 	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
-
+	
 	private long orgId;
 	private long userId;
 	public FileStore(long orgId, long userId) {
@@ -84,6 +91,31 @@ public abstract class FileStore {
 		}
 		finally {
 			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	protected boolean updateFileEntry(long fileId, String compressedFilePath, long fileSize) throws Exception {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE FacilioFile SET COMPRESSED_FILE_PATH=?, COMPRESSED_FILE_SIZE=? WHERE FILE_ID=? AND ORGID=?");
+			pstmt.setString(1, compressedFilePath);
+			pstmt.setLong(2, fileSize);
+			pstmt.setLong(3, fileId);
+			pstmt.setLong(4, getOrgId());
+			
+			if(pstmt.executeUpdate() < 1) {
+				throw new RuntimeException("Unable to update file");
+			}
+			return true;
+		}
+		catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -297,7 +329,14 @@ public abstract class FileStore {
 
 	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
 	
+	public abstract void addComppressedFile(long fileId, String fileName, File file, String contentType) throws Exception;
+	
 	public FileInfo getFileInfo(long fileId) throws Exception {
+		return getFileInfo(fileId, false);
+	}
+	
+	public FileInfo getFileInfo(long fileId, boolean fetchOriginal) throws Exception {
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -310,7 +349,7 @@ public abstract class FileStore {
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs);
+				FileInfo fileInfo = getFileInfoFromRS(rs, fetchOriginal);
 				return fileInfo;
 			}
 		}
@@ -322,6 +361,7 @@ public abstract class FileStore {
 		}
 		return null;
 	}
+	
 	
 	public FileInfo getResizedFileInfo(long fileId, int width, int height) throws Exception {
 		Connection conn = null;
@@ -353,44 +393,10 @@ public abstract class FileStore {
 		return null;
 	}
 	
-	public List<FileInfo> getFileInfo(List<Long> fileId) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			
-			String sql = "SELECT * FROM FacilioFile WHERE FILE_ID IN (";
-			for (int i=0; i< fileId.size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				sql += fileId.get(i);
-			}
-			sql += ") AND ORGID=? ORDER BY FILE_NAME";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, getOrgId());
-			
-			List<FileInfo> fileList = new ArrayList<FileInfo>();
-			
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs);
-				fileList.add(fileInfo);
-			}
-			return fileList;
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
-		}	
-	}
-	
 	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId, Connection conn) throws Exception {
+		
+		// TODO return compressed file by default
+		
 		Map<Long, FileInfo> fileMap = new HashMap<Long, FileInfo>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -415,7 +421,7 @@ public abstract class FileStore {
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs);
+				FileInfo fileInfo = getFileInfoFromRS(rs, true);
 				fileMap.put(fileInfo.getFileId(), fileInfo);
 			}
 		}
@@ -472,6 +478,10 @@ public abstract class FileStore {
 	}
 	
 	private FileInfo getFileInfoFromRS(ResultSet rs) throws Exception {
+		return getFileInfoFromRS(rs, false);
+	}
+	
+	private FileInfo getFileInfoFromRS(ResultSet rs, boolean fetchOriginal) throws Exception {
 		
 		ResizedFileInfo fileInfo = new ResizedFileInfo();
 		fileInfo.setOrgId(rs.getLong("ORGID"));
@@ -479,10 +489,17 @@ public abstract class FileStore {
 		if (rs.getString("FILE_NAME") != null) {
 			fileInfo.setFileName(rs.getString("FILE_NAME").trim());
 		}
-		if (rs.getString("FILE_PATH") != null) {
-			fileInfo.setFilePath(rs.getString("FILE_PATH").trim());
+		String compressedFilePath = rs.getString("COMPRESSED_FILE_PATH");
+		if (compressedFilePath != null && !fetchOriginal) {
+			fileInfo.setFilePath(compressedFilePath.trim());
+			fileInfo.setFileSize(rs.getLong("COMPRESSED_FILE_SIZE"));
 		}
-		fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
+		else {
+			if (rs.getString("FILE_PATH") != null) {
+				fileInfo.setFilePath(rs.getString("FILE_PATH").trim());
+			}
+			fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
+		}
 		fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
 		fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
 		fileInfo.setUploadedTime(rs.getLong("UPLOADED_TIME"));
@@ -639,6 +656,8 @@ public abstract class FileStore {
 	}
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
+	public abstract InputStream readFile(long fileId, boolean fetchOriginal) throws Exception;
+	
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
 		
 	public abstract boolean deleteFile(long fileId) throws Exception;
@@ -729,4 +748,45 @@ public abstract class FileStore {
 
 
 	public abstract boolean isSecretFileExists(String fileName);
+	
+	public byte[] writeCompressedFile(long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+		if (contentType.contains("image/")) {
+			try(FileInputStream fis = new FileInputStream(file);) {
+				
+				BufferedImage imBuff = ImageIO.read(fis);
+				ImageScaleUtil.compressImage(imBuff, baos);
+				
+				byte[] imageInByte = baos.toByteArray();
+				if (imageInByte.length > file.length()) {	// Small files may be compressed to more size bcz of metadata
+					return null;
+				}
+				
+				updateFileEntry(fileId, compressedFilePath, imageInByte.length);
+				
+				baos.flush();
+				imBuff.flush();
+				
+				/*ResizedFileInfo info = new ResizedFileInfo();
+				info.setFileId(fileId);
+				info.setQuality(COMPRESS_QUALITY);
+				info.setFilePath(compressedFilePath);
+				info.setFileSize(imageInByte.length);
+				info.setContentType("image/png");
+				info.setGeneratedTime(System.currentTimeMillis());
+				
+				addResizedFileEntry(Collections.singletonList(info));*/
+				
+				return imageInByte;
+			}
+		}
+		return null;
+	}
+	
+	protected int addResizedFileEntry(List<ResizedFileInfo> rfileInfos) throws Exception {
+		new GenericInsertRecordBuilder().table(ModuleFactory.getResizedFilesModule().getTableName())
+		.fields(FieldFactory.getResizedFileFields())
+		.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
+		return rfileInfos.size();
+	}
+	
 }

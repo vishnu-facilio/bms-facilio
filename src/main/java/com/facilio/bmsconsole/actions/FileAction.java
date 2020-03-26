@@ -94,6 +94,23 @@ public class FileAction extends FacilioAction {
 	public void setHeight(int height) {
 		this.height = height;
 	}
+	
+	private Boolean fetchOriginal;
+	public Boolean getFetchOriginal() {
+		return fetchOriginal;
+	}
+	public void setFetchOriginal(Boolean fetchOriginal) {
+		this.fetchOriginal = fetchOriginal;
+	}
+	private boolean isFetchOriginal() {
+		if (this.getIsDownload() == true) {
+			return true;
+		}
+		if (this.fetchOriginal == null) {
+			return false;
+		}
+		return this.fetchOriginal;
+	}
 
 	String publicFileKey;
 	
@@ -168,7 +185,7 @@ public class FileAction extends FacilioAction {
 					}
 				}
 				if (fileInfo == null) {
-					fileInfo = fs.getFileInfo(fileID);
+					fileInfo = fs.getFileInfo(fileID, isFetchOriginal());
 				}
 				if (fileInfo != null) {
 					

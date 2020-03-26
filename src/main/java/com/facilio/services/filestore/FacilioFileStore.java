@@ -52,6 +52,7 @@ public class FacilioFileStore extends FileStore {
 		long fileId = addDummyFileEntry(fileName);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
+			addComppressedFile(fileId, fileName, file, contentType);
 			return addFile(fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
 			return -1;
@@ -77,21 +78,8 @@ public class FacilioFileStore extends FileStore {
 					baos.close();
 
 					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
-					HttpUtil httpConn;
-
-					httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
-					httpConn.addFormField("orgId", getOrgId() + "");
-
-
-					httpConn.addFormField("fileId", fileId + "");
-					httpConn.addFormField("fileName", fileName);
-					httpConn.addFormField("contentType", contentType);
-
-					httpConn.addFilePart("fileContent", fileName, imageInByte);
-
-					Map<String, Object> response = httpConn.finish();
-
-					Integer statusCode = (Integer) response.get("status");
+					
+					Integer statusCode = postFile(fileId, fileName, contentType, imageInByte); 
 					if (statusCode == 200) {
 						addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 					}
@@ -149,22 +137,8 @@ public class FacilioFileStore extends FileStore {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		HttpUtil httpConn;
-
-			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
-			httpConn.addFormField("orgId", getOrgId() + "");
-
-
-		httpConn.addFormField("fileId", fileId + "");
-		httpConn.addFormField("fileName", fileName);
-		httpConn.addFormField("contentType", contentType);
 		
-		httpConn.addFilePart("fileContent", fileName, content);
-		
-		Map<String, Object> response = httpConn.finish();
-		
-		Integer statusCode = (Integer) response.get("status");
-		
+		Integer statusCode = postFile(fileId, fileName, contentType, content);
 		if (statusCode == 200) {
 			String filePath;
 
@@ -183,10 +157,15 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-			FileInfo fileInfo = getFileInfo(fileId);
-			return readFile(fileInfo);
-
+		return readFile(fileId, false);
 	}
+	
+	@Override
+	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
+		return readFile(fileInfo);
+	}
+	
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		// TODO Auto-generated method stub
@@ -396,4 +375,38 @@ public class FacilioFileStore extends FileStore {
 	public boolean isSecretFileExists(String fileName) {
 		return false;
 	}
+	
+	@Override
+	public void addComppressedFile(long fileId, String fileName, File file, String contentType) throws Exception {
+		if (contentType.contains("image/")) {
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+				String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed";
+				byte[] imageInByte = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+				if (imageInByte != null) {
+					postFile(fileId, fileName, contentType, imageInByte);
+				}
+			} 
+		}
+	}
+	
+	private int postFile(long fileId, String fileName, String contentType, byte[] imageInByte) throws Exception {
+		HttpUtil httpConn;
+
+		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
+		httpConn.addFormField("orgId", getOrgId() + "");
+
+
+		httpConn.addFormField("fileId", fileId + "");
+		httpConn.addFormField("fileName", fileName);
+		httpConn.addFormField("contentType", contentType);
+
+		httpConn.addFilePart("fileContent", fileName, imageInByte);
+
+		Map<String, Object> response = httpConn.finish();
+
+		Integer statusCode = (Integer) response.get("status");
+		return statusCode;
+		
+	}
+	
 }

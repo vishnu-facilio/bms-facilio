@@ -1,26 +1,28 @@
 package com.facilio.services.filestore;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.math.raw.Mod;
 
 public class LocalFileStore extends FileStore {
 
@@ -100,6 +102,9 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	        os.flush();
 	        
 	        updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	        
+	        addComppressedFile(fileId, fileName, file, contentType);
+	        
 	    } catch (IOException ioe) {
 	    	deleteFileEntry(fileId);
 	    	throw ioe;
@@ -140,6 +145,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	        os.flush();
 	        
 	        updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	        
 	    } catch (IOException ioe) {
 	    	deleteFileEntry(fileId);
 	    	throw ioe;
@@ -156,8 +162,12 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-		
-		FileInfo fileInfo = getFileInfo(fileId);
+		return readFile(fileId, false);
+	}
+	
+	@Override
+	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
 	
@@ -275,5 +285,20 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	@Override
 	public boolean isSecretFileExists(String fileName) {
 		return false;
+	}
+
+	@Override
+	public void addComppressedFile(long fileId, String fileName, File file,String contentType) throws Exception {
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+			String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed" +".jpg";
+			byte[] imageInBytes = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+			if (imageInBytes != null) {
+				File createFile = new File(resizedFilePath);
+				createFile.createNewFile();
+				try(OutputStream outputStream = new FileOutputStream(createFile)) {
+					baos.writeTo(outputStream);
+				}
+			}
+		}
 	}
 }

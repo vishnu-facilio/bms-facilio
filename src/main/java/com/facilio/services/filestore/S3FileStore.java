@@ -17,9 +17,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.fs.FileInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -27,6 +24,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
 import com.amazonaws.services.cloudfront.util.SignerUtils;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -34,7 +32,9 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
+import com.facilio.fs.FileInfo;
 
 public class S3FileStore extends FileStore {
 	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
@@ -76,6 +76,9 @@ public class S3FileStore extends FileStore {
 	    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
 	    	if (rs != null) {
 	    		updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	    		
+	    		addComppressedFile(fileId, fileName, file, contentType);
+	    		
 	    		return fileId;
 	    	}
 	    	else {
@@ -151,12 +154,18 @@ public class S3FileStore extends FileStore {
 	public String getDownloadUrl(long fileId) throws Exception {
 		return super.getDownloadUrl(fileId);
 	}
-
+	
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
+		return readFile(fileId, false);
+	}
+	
+	@Override
+	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
+	
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
 				if (fileInfo == null) {
@@ -416,5 +425,19 @@ public class S3FileStore extends FileStore {
 		return so.getObjectContent();
 	}
 
-
+	@Override
+	public void addComppressedFile(long fileId,  String fileName, File file, String contentType) throws Exception {
+		if (contentType.contains("image/")) {
+			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
+				String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed";
+				byte[] imageInByte = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+				if (imageInByte != null) {
+					try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
+						AwsUtil.getAmazonS3Client().putObject(getBucketName(), resizedFilePath, bis, null);
+					}
+				}
+			} 
+		}
+	}
+	
 }
