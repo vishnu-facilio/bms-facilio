@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -31,7 +32,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		}
 		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
 		user.setAppDomain(appDomain);
-		
+		user.setUserType(UserType.USER.getValue());
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true);
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
