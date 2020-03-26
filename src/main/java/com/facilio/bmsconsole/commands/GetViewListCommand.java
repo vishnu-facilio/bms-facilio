@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -128,21 +131,42 @@ public class GetViewListCommand extends FacilioCommand {
 						groupViews.add(2, groupDetails);
 
 					}
+					
+					if (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment()) {
+						List cadViews = new ArrayList<>();
+						if (customViews != null) {
+							// Temp handling for qualityfm
+							List<FacilioView> tempCustom = new ArrayList<>();
+							for(FacilioView cv: customViews) {
+								if (cv.getName().endsWith("cadview")) {
+									cadViews.add(cv);
+								}
+								else {
+									tempCustom.add(cv);
+								}
+							}
+							customViews = tempCustom;
+						}
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "cleaning");
+						groupDetails1.put("displayName", "Cleaning and Disinfection");
+						groupDetails1.put("views", cadViews);
+						groupViews.add(4, groupDetails1);
+					}
 						
-					int groupSize = groupViews.size();
-					Map<String, Object> group1 = groupViews.get(groupSize - 1);
-					if (group1.containsKey("type") && group1.get("type").equals("custom")) {
+					int customGroupIdx = getCustomGroupIdx(groupViews);
+					if (customGroupIdx != -1) {
 						if (!customViews.isEmpty()) {
-							Map<String, Object> mutatedDetail = new HashMap<>(group1);
+							Map<String, Object> mutatedDetail = new HashMap<>(groupViews.get(customGroupIdx));
 							mutatedDetail.remove("type");
 							mutatedDetail.put("views", customViews);
-							groupViews.set(groupSize - 1, mutatedDetail);
+							groupViews.set(customGroupIdx, mutatedDetail);
 						}
 						else {
-							groupViews.remove(groupSize - 1);
+							groupViews.remove(customGroupIdx);
 						}
 					}
-
+					
 					if (upcomingView.isPresent()) {
 						Map<String, Object> groupDetails1 = new HashMap<>();
 						groupDetails1.put("name", "upcoming");
@@ -215,6 +239,13 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		
 		return false;
+	}
+	
+	private int getCustomGroupIdx(List<Map<String, Object>> groupViews ) {
+		return IntStream.range(0, groupViews.size())
+		.filter(i -> groupViews.get(i).containsKey("type") && groupViews.get(i).get("type").equals("custom"))
+		.findFirst()
+		.orElse(-1);
 	}
 
 }

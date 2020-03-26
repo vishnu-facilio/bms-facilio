@@ -146,27 +146,38 @@ public class ImageScaleUtil {
         return resizedImage;
     }
 	
-	public static void compressImage(BufferedImage inputImage, OutputStream outputStream) throws IOException {
-		
+	public static void compressImage(BufferedImage inputImage, OutputStream outputStream, String contentType) throws IOException {
+
 		inputImage = rescale(inputImage);
 
-        Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName("jpg");
-        ImageWriter imageWriter = (ImageWriter) imageWriters.next();
-        try(ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream);) {
-	        	imageWriter.setOutput(imageOutputStream);
-	        	
-	        	ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
-	        	
-	        	imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-	        	imageWriteParam.setCompressionQuality(COMPRESS_QUALITY);
-	        	
-	        	ImageTypeSpecifier type = new ImageTypeSpecifier(inputImage);
-	        	IIOMetadata imgMetadata = imageWriter.getDefaultImageMetadata(type, imageWriteParam);
-	        	
-	        	imageWriter.write(null, new IIOImage(inputImage, null, imgMetadata), imageWriteParam);
-	        	
-	        	imageWriter.dispose();
-        }
-        
+		Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName("jpeg");
+		ImageWriter imageWriter = (ImageWriter) imageWriters.next();
+		try(ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream);) {
+
+			if (contentType.equals("image/png")) {
+				BufferedImage tempImage = new BufferedImage(inputImage.getWidth(), inputImage.getHeight(),BufferedImage.TYPE_INT_RGB);
+				tempImage.createGraphics().drawImage(inputImage, 0, 0, Color.WHITE, null);
+				inputImage = tempImage;
+			}
+
+			imageWriter.setOutput(imageOutputStream);
+
+			ImageWriteParam imageWriteParam = imageWriter.getDefaultWriteParam();
+
+			imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			imageWriteParam.setCompressionQuality(COMPRESS_QUALITY);
+
+			ImageTypeSpecifier type = new ImageTypeSpecifier(inputImage);
+			IIOMetadata imgMetadata = imageWriter.getDefaultImageMetadata(type, imageWriteParam);
+
+			imageWriter.write(null, new IIOImage(inputImage, null, imgMetadata), imageWriteParam);
+
+			imageWriter.dispose();
+		}
+
+	}
+
+	private void getJpegImage() {
+
 	}
 }

@@ -750,17 +750,14 @@ public abstract class FileStore {
 	public abstract boolean isSecretFileExists(String fileName);
 	
 	public byte[] writeCompressedFile(long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
-		if (file != null) {
-			return null;		// temp  disabling
-		}
 		if (contentType.contains("image/")) {
 			try(FileInputStream fis = new FileInputStream(file);) {
 				
 				BufferedImage imBuff = ImageIO.read(fis);
-				ImageScaleUtil.compressImage(imBuff, baos);
+				ImageScaleUtil.compressImage(imBuff, baos, contentType);
 				
 				byte[] imageInByte = baos.toByteArray();
-				if (imageInByte.length > file.length()) {	// Small files may be compressed to more size bcz of metadata
+				if (imageInByte.length >= file.length()) {	// Small files may be compressed to more size bcz of metadata
 					return null;
 				}
 				

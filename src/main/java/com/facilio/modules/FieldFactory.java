@@ -3575,6 +3575,8 @@ public class FieldFactory {
     public static List<FacilioField> getFileFields() {
         FacilioModule module = ModuleFactory.getFilesModule();
         List<FacilioField> fields = new ArrayList<>();
+        
+        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
 
         FacilioField fileName = new FacilioField();
         fileName.setName("fileName");
@@ -3610,6 +3612,10 @@ public class FieldFactory {
         contentType.setColumnName("CONTENT_TYPE");
         contentType.setModule(module);
         fields.add(contentType);
+        
+        fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));
+        fields.add(getField("compressedFilePath", "COMPRESSED_FILE_PATH", module, FieldType.STRING));
+        fields.add(getField("compressedFileSize", "COMPRESSED_FILE_SIZE", module, FieldType.NUMBER));
 
         fields.add(getField("fileId", "FILE_ID", module, FieldType.ID));
         fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
