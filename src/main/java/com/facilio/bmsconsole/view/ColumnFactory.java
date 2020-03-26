@@ -1224,7 +1224,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Building Name"));
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("managedBy", "Mananged By"));
-		columns.add(new ViewField("noOfFloors", "Floors"));
 		columns.add(new ViewField("area", "Total Area"));
 
 		return columns;
