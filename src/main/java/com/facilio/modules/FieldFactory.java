@@ -8126,6 +8126,7 @@ public class FieldFactory {
  		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
  		fields.add(getIdField());
  		fields.add(getField("fileId","File Id","FILEID",module,FieldType.NUMBER));
+ 		fields.add(getField("fileName","File Name","FILE_NAME",module,FieldType.STRING));
  		fields.add(getField("noOfModules","No of Modules","NO_OF_MODULES",module,FieldType.NUMBER));
  		fields.add(getField("status","Status","STATUS",module,FieldType.NUMBER));
  		fields.add(getField("uploadedBy","Uploaded By","UPLOADED_BY",module,FieldType.NUMBER));

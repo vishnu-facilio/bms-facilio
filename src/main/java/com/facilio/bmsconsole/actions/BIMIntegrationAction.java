@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BimAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -27,9 +29,7 @@ public class BIMIntegrationAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 
 	public String uploadBim() throws Exception {
-		
-		fileUploadFileName = fileUpload.getName();
-		
+				
 		FacilioChain uploadFileChain = TransactionChainFactory.uploadBimFileChain();
 		FacilioContext context = uploadFileChain.getContext();
 		
@@ -78,6 +78,14 @@ public class BIMIntegrationAction extends FacilioAction{
 		List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
 		List<BimIntegrationLogsContext> bimIntegrationList  = new ArrayList<>();
 		bimIntegrationList = BimAPI.getBimIntegrationLog(module, fields);
+		for(BimIntegrationLogsContext bim:bimIntegrationList){
+			HashMap<String, Object> defaultValues = BimAPI.getBimDefaultValues(bim.getId(), "asset");
+			if(defaultValues != null && defaultValues.get("site") != null){
+				Long siteId = Long.parseLong(defaultValues.get("site").toString());
+				SiteContext site = SpaceAPI.getSiteSpace(siteId);
+				bim.setSiteName(site.getName());
+			}
+		}
 		setResult("bimIntegrationList" , bimIntegrationList);
 		
 		return SUCCESS;

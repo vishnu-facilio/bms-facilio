@@ -10,7 +10,25 @@ public class BimIntegrationLogsContext{
 	private long uploadedBy;
     private int noOfModules;
     private long importedTime;
-    
+    private String fileName;
+	private String siteName;
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getSiteName() {
+		return siteName;
+	}
+
+	public void setSiteName(String siteName) {
+		this.siteName = siteName;
+	}
+
 	public int getNoOfModules() {
 		return noOfModules;
 	}

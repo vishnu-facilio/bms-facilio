@@ -79,7 +79,8 @@ public class BimAPI {
 		List<BimIntegrationLogsContext> bimIntegrationList = new ArrayList<>();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-                .table(module.getTableName());
+                .table(module.getTableName())
+                .orderBy("ID desc");
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 	        for (Map<String, Object> prop : props) {

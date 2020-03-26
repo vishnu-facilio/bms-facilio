@@ -23,6 +23,7 @@ public class AddBimIntegrationLogCommand extends FacilioCommand {
 		
 		BimIntegrationLogsContext bimIntegrationLog=new BimIntegrationLogsContext();
 		bimIntegrationLog.setFileId((long) context.get(FacilioConstants.ContextNames.FILE_ID));
+		bimIntegrationLog.setFileName((String) context.get(FacilioConstants.ContextNames.FILE_NAME));
 		bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.INPROGRESS);
 		bimIntegrationLog.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
 		long bimId = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
