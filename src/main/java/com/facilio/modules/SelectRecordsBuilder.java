@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.db.builder.*;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.modules.fields.FetchSupplementHandler;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,10 +26,6 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.JoinBuilderIfc;
-import com.facilio.db.builder.SelectBuilderIfc;
-import com.facilio.db.builder.WhereBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -47,6 +44,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private Collection<FacilioField> select;
+	private Set<FacilioField> actualSelectFields;
 	private List<FacilioField> aggrFields = null;
 	private List<LookupField> fetchLookup = null;
 	private List<SupplementRecord> fetchSupplements;
@@ -308,74 +306,90 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		isAggregation = true;
 		return this;
 	}
-	
-	@Override
-	public List<E> get() throws Exception {
-		checkForNull(true);
-		try {
-			long getStartTime = System.currentTimeMillis();
-			List<Map<String, Object>> propList = getAsJustProps(false);
-			long getTimeTaken = System.currentTimeMillis() - getStartTime;
-			LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
 
-
-			long startTime = System.currentTimeMillis();
-			List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
-			//FieldUtil.getAsBeanListFromMapList(propList, beanClass);
-			if (CollectionUtils.isNotEmpty(lookupFields) && CollectionUtils.isNotEmpty(beans)) {
-				for (E bean : beans) {
-					Map<String, Object> data = bean.getData();
-					if (MapUtils.isNotEmpty(data)) {
-						for (LookupField lookupField : lookupFields) {
-							String lookupName = lookupField.getName();
-							Map<String, Object> map = (Map<String, Object>) data.get(lookupName);
-							if (map != null) {
-								if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-									Object lookupObject = LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), -1);
-									data.put(lookupName, FieldUtil.getAsBeanFromMap(map, lookupObject.getClass()));
-								}
-								else {
-									Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule());
-									data.put(lookupName, FieldUtil.getAsBeanFromMap(map, classFromModule));
-								}
+	private List<E> convertPropsToBeans(List<Map<String, Object>> propList) throws Exception {
+		long startTime = System.currentTimeMillis();
+		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		//FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+		if (CollectionUtils.isNotEmpty(lookupFields) && CollectionUtils.isNotEmpty(beans)) {
+			for (E bean : beans) {
+				Map<String, Object> data = bean.getData();
+				if (MapUtils.isNotEmpty(data)) {
+					for (LookupField lookupField : lookupFields) {
+						String lookupName = lookupField.getName();
+						Map<String, Object> map = (Map<String, Object>) data.get(lookupName);
+						if (map != null) {
+							if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+								Object lookupObject = LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), -1);
+								data.put(lookupName, FieldUtil.getAsBeanFromMap(map, lookupObject.getClass()));
+							}
+							else {
+								Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule());
+								data.put(lookupName, FieldUtil.getAsBeanFromMap(map, classFromModule));
 							}
 						}
 					}
 				}
 			}
-			long timeTaken = System.currentTimeMillis() - startTime;
-			LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
-			return beans;
+		}
+		long timeTaken = System.currentTimeMillis() - startTime;
+		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
+		return beans;
+	}
+	
+	@Override
+	public List<E> get() throws Exception {
+		checkForNull(false);
+		try {
+			long getStartTime = System.currentTimeMillis();
+			List<Map<String, Object>> propList = getAsJustProps(false);
+			long getTimeTaken = System.currentTimeMillis() - getStartTime;
+			LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+			return convertPropsToBeans(propList);
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred in selecting records for module : "+module);
 			throw e;
 		}
 	}
-	
-	public Map<Long, E> getAsMap() throws Exception {
+
+	@Override
+	public BatchResult<E> getInBatches(String orderBy, int batchSize) throws Exception {
+		checkForNull(false);
+		constructBuilderProps(false);
+		return new BatchResult<>(this, builder.getInBatches(orderBy, batchSize), false);
+	}
+
+	public BatchResult<Map<String, Object>> getAsPropsInBatches(String orderBy, int batchSize) throws Exception {
 		checkForNull(true);
+		constructBuilderProps(false);
+		return new BatchResult<>(this, builder.getInBatches(orderBy, batchSize), true);
+	}
+
+	private Map<Long, E> convertPropsToBeanMap(List<Map<String, Object>> propList) throws Exception {
+		Map<Long, E> beanMap = new HashMap<>();
+		if(propList != null && propList.size() > 0) {
+			for(Map<String, Object> props : propList) {
+				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
+				beanMap.put(bean.getId(), bean);
+			}
+		}
+		return beanMap;
+	}
+
+	public Map<Long, E> getAsMap() throws Exception {
+		checkForNull(false);
 		try {
 			List<Map<String, Object>> propList = getAsJustProps(false);
-			Map<Long, E> beanMap = new HashMap<>();
-			if(propList != null && propList.size() > 0) {
-				for(Map<String, Object> props : propList) {
-					E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-					beanMap.put(bean.getId(), bean);
-				}
-			}
-			return beanMap;
+			return convertPropsToBeanMap(propList);
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred in selecting records as map for module : "+module);
 			throw e;
 		}
 	}
-	
-	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
-		checkForNull(false);
-		List<Map<String, Object>> propList = getAsJustProps(true);
-		
+
+	private Map<Long, Map<String, Object>> convertPropsToMapProps(List<Map<String, Object>> propList) {
 		Map<Long, Map<String, Object>> mapProps = new HashMap<>();
 		if(propList != null && propList.size() > 0) {
 			for(Map<String, Object> props : propList) {
@@ -384,21 +398,29 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		return mapProps;
 	}
-	
-	public List<Map<String, Object>> getAsProps() throws Exception {
-		checkForNull(false);
-		List<Map<String, Object>> propList = getAsJustProps(true);
-		return propList;
+
+	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
+		checkForNull(true);
+		try {
+			List<Map<String, Object>> propList = getAsJustProps(true);
+			return convertPropsToMapProps(propList);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records as map props for module : "+module);
+			throw e;
+		}
 	}
 	
-	private Map<String, LookupField> getLookupFields(Collection<FacilioField> selectFields) {
-		Map<String, LookupField> lookupFields = new HashMap<>();
-		for(FacilioField field : selectFields) {
-			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-				lookupFields.put(field.getName(), (LookupField) field);
-			}
+	public List<Map<String, Object>> getAsProps() throws Exception {
+		checkForNull(true);
+		try {
+			List<Map<String, Object>> propList = getAsJustProps(true);
+			return propList;
 		}
-		return lookupFields;
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records as props for module : "+module);
+			throw e;
+		}
 	}
 
 	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, List<FacilioField> deleteFields) {
@@ -455,11 +477,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 
 		if (module.isTrashEnabled() && !fetchDeleted) {
-//			if (isDeletedField != null) {
 			whereCondition.andCondition(CriteriaAPI.getCondition(isDeletedField, String.valueOf(false), BooleanOperators.IS));
-//			} else {
-//				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
-//			}
 		}
 
 		if (CollectionUtils.isNotEmpty(criteriaJoinTables)) {
@@ -495,21 +513,23 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 	}
-	
-	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
-		Set<FacilioField> selectFields = constructQuery(false);
 
-		List<Map<String, Object>> props = builder.get();
+	void populateExtras (List<Map<String, Object>> props, boolean isMap) throws Exception {
 		if (CollectionUtils.isNotEmpty(props)) {
-//		handleLookup(selectFields, props, isMap);
-			handleLookup(selectFields, props, isMap);
+			handleLookup(props, isMap);
 			handleSupplements(props, isMap);
 		}
+	}
+	
+	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
+		constructBuilderProps(false);
+		List<Map<String, Object>> props = builder.get();
+		populateExtras(props, isMap);
 		return props;
 	}
 
-	private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> props, boolean isMap) {
-		lookupFields = selectFields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList());
+	private void handleLookup (List<Map<String, Object>> props, boolean isMap) {
+		lookupFields = actualSelectFields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
 			for (Map<String, Object> record : props) {
 				for (LookupField field : lookupFields) {
@@ -531,17 +551,17 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	public String constructQueryString() {
-		constructQuery(true);
+		constructBuilderProps(true);
 		return builder.constructSelectStatement();
 	}
 
-	public Object[] getWhereValues() {
-		return builder.getWhereValue();
+	@Override
+	public Object[] paramValues() {
+		return builder.paramValues();
 	}
 
 	private boolean queryConstructed = false;
-
-	private Set<FacilioField> constructQuery(boolean isJustQueryConstruction) {
+	private void constructBuilderProps(boolean isJustQueryConstruction) {
 		if (!queryConstructed) {
 			queryConstructed = true;
 			FacilioField orgIdField = AccountConstants.getOrgIdField(module);
@@ -586,7 +606,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				extendedModule = extendedModule.getExtendModule();
 			}
 			builder.getJoinBuilder().append(joinBuilder.toString());
-			return selectFields;
+			actualSelectFields = selectFields;
 		}
 		else {
 			throw new IllegalArgumentException("Query already constructed");
@@ -594,11 +614,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	private void handleSupplements(List<Map<String, Object>> propList, boolean isMap) throws Exception {
-//			if (level < maxLevel && CollectionUtils.isNotEmpty(selectFields)) {
-//				fetchLookups(select.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList()));
-//			}
-
-
 		if (CollectionUtils.isNotEmpty(fetchSupplements)) {
 			List<Pair<SupplementRecord, FetchSupplementHandler>> handlers = new ArrayList<>();
 			for (SupplementRecord fetchExtra : fetchSupplements) {
@@ -622,52 +637,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 	}
-
-	/*private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> propList, boolean isMap) throws Exception {
-		if(propList != null && propList.size() > 0) {
-			lookupFields = getLookupFields(selectFields);
-			if(lookupFields.size() > 0) {
-				Map<String, LookupField> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupField::getName, Function.identity()));
-				lookupFields.putAll(lookups);
-				Map<String, Set<Long>> lookupIds = new HashMap<>();
-				for(Map<String, Object> props : propList) {
-					for(LookupField lookupField : lookupFields.values()) {
-						Long recordId = (Long) props.get(lookupField.getName());
-						if (recordId != null) {
-							if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
-								addToLookupIds(lookupField, recordId, lookupIds);
-							}
-							else {
-//								Object val = isMap || !lookupField.isDefault() ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal(lookupField, recordId);
-//								props.put(lookupField.getName(), val);
-
-							}
-						}
-					}
-				}
-				
-				if (!lookupIds.isEmpty()) {
-					Map<String, Map<Long, ? extends Object>> lookedUpVals = new HashMap<>();
-					for (Map.Entry<String, Set<Long>> entry : lookupIds.entrySet()) {
-						lookedUpVals.put(entry.getKey(), FieldUtil.getLookupProps(lookupFields.get(entry.getKey()), entry.getValue(), isMap, level + 1));
-					}
-					
-					for(Map<String, Object> props : propList) {
-						for(String fieldName : lookupIds.keySet()) {
-							LookupField lookupField = lookupFields.get(fieldName);
-							Long recordId = (Long) props.get(lookupField.getName());
-							if (recordId != null) {
-								if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
-									props.put(lookupField.getName(), getLookupVal(lookupField, recordId, lookedUpVals));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	 */
 	
 	private Object getLookupVal (LookupField field, long recordId, Map<String, Map<Long, ? extends Object>> lookedUpVals) {
 		Map<Long, ? extends Object> valueMap = lookedUpVals.get(field.getName());
@@ -690,8 +659,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		ids.add(recordId);
 	}
 	
-	private void checkForNull(boolean checkBean) throws Exception {
-		if(checkBean) {
+	private void checkForNull(boolean isProps) throws Exception {
+		if(!isProps) {
 			if(beanClass == null) {
 				throw new IllegalArgumentException("Bean class object cannot be null");
 			}
@@ -714,6 +683,60 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	public String toString() {
 		// TODO Auto-generated method stub
 		return builder.toString();
+	}
+
+	public static class BatchResult<E> implements BatchResultIfc<E> {
+		private SelectRecordsBuilder parentBuilder;
+		private GenericSelectRecordBuilder.GenericBatchResult bs;
+		private boolean isProps;
+
+		private BatchResult(SelectRecordsBuilder parentBuilder, GenericSelectRecordBuilder.GenericBatchResult bs, boolean isProps) {
+			this.parentBuilder = parentBuilder;
+			this.bs = bs;
+			this.isProps = isProps;
+		}
+
+		@Override
+		public boolean hasNext() throws Exception {
+			return bs.hasNext();
+		}
+
+		private List<Map<String, Object>> getAsJustProps() throws Exception {
+			List<Map<String, Object>> props = bs.get();
+			parentBuilder.populateExtras(props, isProps);
+			return props;
+		}
+
+		@Override
+		public List<E> get() throws Exception {
+			try {
+				List<Map<String, Object>> props = getAsJustProps();
+				if (isProps) {
+					return (List<E>) props;
+				} else {
+					return (List<E>) parentBuilder.convertPropsToBeans(props);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.error("Error occurred in selecting records" + (isProps ? " (as props)" : "") + " in batches for module : " + parentBuilder.module);
+				throw e;
+			}
+		}
+
+		public Map<Long, E> getAsMap() throws Exception {
+			try {
+				List<Map<String, Object>> props = getAsJustProps();
+				if (isProps) {
+					return (Map<Long, E>) parentBuilder.convertPropsToMapProps(props);
+				} else {
+					return (Map<Long, E>) parentBuilder.convertPropsToBeanMap(props);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.error("Error occurred in selecting records" + (isProps ? " (as props)" : "") + " as map in batches for module : " + parentBuilder.module);
+				throw e;
+			}
+		}
 	}
 
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<SelectRecordsBuilder<E>> {

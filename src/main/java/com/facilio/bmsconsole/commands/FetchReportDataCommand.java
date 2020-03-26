@@ -481,7 +481,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
-			newSelect.addWhereValue(Arrays.asList(newSelectBuilder.getWhereValues()), 0);
+			newSelect.addWhereValue(Arrays.asList(newSelectBuilder.paramValues()), 0);
 			if (CollectionUtils.isNotEmpty(dp.getOrderBy()) && (dp.getOrderByFuncEnum() != null && dp.getOrderByFuncEnum() != OrderByFunction.NONE)) {
 				newSelect.orderBy(countField.getCompleteColumnName() + " " + dp.getOrderByFuncEnum().getStringValue());
 			}
