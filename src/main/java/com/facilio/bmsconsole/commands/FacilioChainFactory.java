@@ -964,6 +964,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getAddAttachmentFromFileIdsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AttachmentContextCommand());
+		c.addCommand(new AddAttachmentRelationshipCommand());
+		c.addCommand(new AddAttachmentTicketActivityCommand());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+		c.addCommand(new AddActivitiesCommand());
+		return c;
+	}
+	
 	public static FacilioChain getAddFileChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddFileCommand());

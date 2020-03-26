@@ -59,6 +59,9 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_RESPONSE_TYPE = "chatBotResponseType";
 	public static final String CHAT_BOT_RESPONSE_OPTIONS = "chatBotResponseOptions";
 	
+	public static final String CHAT_BOT_PARAM_TYPE = "chatBotParamType";
+	public static final String CHAT_BOT_PARAM_IS_MULTIPLE_ALLOWED = "chatBotParamIsMultipleAlowed";
+	
 	public static final String CHAT_BOT_INTENT = "chatBotIntent";
 	
 	public static final String CHAT_BOT_LABEL = "label";
@@ -76,7 +79,7 @@ public class ChatBotConstants {
 	
 	public static final Double DEFAULT_ACCURACY_RATE = 0.4d;
 	
-	public static final Long LAST_INVALID_SESSION_BUFFER_TIME = 300000l;												// 5 mins to millisec
+	public static final Long LAST_INVALID_SESSION_BUFFER_TIME = 300000l;													// 5 mins to millisec
 	
 	public static final Long LAST_SESSION_WAITING_FOR_PARAM_BUFFER_TIME = 1800000l;											// 30 mins to millisec
 	

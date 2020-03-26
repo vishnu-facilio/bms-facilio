@@ -656,6 +656,8 @@ public class ChatBotUtil {
 			}
 			
 			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, param.getAskAs());
+			result.put(ChatBotConstants.CHAT_BOT_PARAM_TYPE, param.getDataType());
+			result.put(ChatBotConstants.CHAT_BOT_PARAM_IS_MULTIPLE_ALLOWED, param.isMultipleAllowed());
 		}
 		
 		chatBotSessionConversation1.setQuery(resArray.toJSONString());

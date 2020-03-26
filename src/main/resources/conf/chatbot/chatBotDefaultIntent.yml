@@ -703,3 +703,91 @@
     -
         sampleLocalId : 3
         sample: "get my problems list"
+        
+- 
+   name: "system_update_wo_photo_intent"
+   displayName: "Add photo to work request"
+   type: 1
+   localId : 13
+   withParams : true
+   params:
+   -
+      name : 'woId'
+      askAs : "Select your workrequest"
+      dataType : 2
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+      fillableByParent : true
+   -
+      name : 'photo'
+      askAs : "Add your photo"
+      dataType : 9
+      multipleAllowed : true
+      localId : 2
+      typeConfig : 1
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.woId == null) {
+                             
+                                db = {
+								    criteria : [sourceType != 7],
+								    limit : 10,
+								    orderBy: "createdTime" desc
+							    };
+                                
+                              	wos = WorkOrder().fetch(db);
+                                
+                                woMapList = [];
+                               
+                                for each index,wo in wos {
+                                    woMap = {};
+                                    woMap.id = wo.id;
+                                    woMap.label = wo.subject;
+                                    
+                                    woMapList.add(woMap);
+                                }
+                                
+                                return chatBot().param("woId","Select your workrequest",woMapList);
+                             }
+                             if(data.woId != null && data.photo == null) {
+                                return chatBot().param("photo","Add your photos");
+                             }
+                             if(data.woId != null && data.photo != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+                   
+                                         photoIds = data.photo; 
+    
+                                         WorkOrder().addAttachements(data.woId,photoIds);
+                                         
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Photo added successfully.");
+                                         
+                                         return resultMap;
+                                         
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "Add photo to work request"
+    -
+       sampleLocalId : 2
+       sample: "Add photo"
+    -
+       sampleLocalId : 3
+       sample: "update photo"

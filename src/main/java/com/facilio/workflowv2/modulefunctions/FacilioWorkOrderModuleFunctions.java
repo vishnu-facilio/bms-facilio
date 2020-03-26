@@ -2,11 +2,13 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -117,6 +119,28 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
 		context.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
+
+		addNote.execute();
+	}
+	
+	public void addAttachements(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		
+		Long woId = (Long) objects.get(1);
+		List<Long> fileIds = null;
+		if(objects.get(2) instanceof List) {
+			fileIds = (List<Long>) objects.get(2);
+		}
+		else {
+			fileIds = Collections.singletonList((Long) objects.get(2));
+		}
+		
+		FacilioChain addNote = FacilioChainFactory.getAddAttachmentFromFileIdsChain();
+		
+		FacilioContext context = addNote.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, woId);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, fileIds);
 
 		addNote.execute();
 	}
