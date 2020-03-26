@@ -548,14 +548,14 @@ public class AwsUtil
 
 	public static void sendEmailViaMimeMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
 		MimeMessage message = getEmailMessage(mailJson, files);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		message.writeTo(outputStream);
-		RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-		SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
-
-		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-				.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-		client.sendRawEmail(request);
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			message.writeTo(outputStream);
+			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
+			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
+			client.sendRawEmail(request);
+		}
 	}
 
 	private static AWSCredentials getBasicAwsCredentials() {

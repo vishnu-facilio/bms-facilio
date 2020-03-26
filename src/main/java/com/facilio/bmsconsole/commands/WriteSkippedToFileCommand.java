@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportTemplateContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.modules.FieldUtil;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import org.apache.commons.chain.Context;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -7,29 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Context;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportTemplateContext;
-import com.facilio.bmsconsole.context.ImportRowContext;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.modules.FieldUtil;
-
 public class WriteSkippedToFileCommand extends FacilioCommand {
 
-	Workbook workbook = new XSSFWorkbook();
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -60,42 +51,41 @@ public class WriteSkippedToFileCommand extends FacilioCommand {
 				}
 			}
 		}
-	
-		
-		if(!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
+
+
+		if (!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
 			FileStore fs = FacilioFactory.getFileStore();
-			CreationHelper createHelper = workbook.getCreationHelper();
-			StringBuilder emailMessage = (StringBuilder) context.get(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE);
-			
-			if(!nullUniqueFields.isEmpty()) {
-				writeToSheet("Identity field data is mandatory",nullUniqueFields, createHelper);
+			try (Workbook workbook = new XSSFWorkbook()) {
+				StringBuilder emailMessage = (StringBuilder) context.get(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE);
+
+				if (!nullUniqueFields.isEmpty()) {
+					writeToSheet("Identity field data is mandatory", nullUniqueFields, workbook);
+				}
+				if (!nullResources.isEmpty()) {
+					writeToSheet(importTemplateContext.getModuleMapping().get("baseModule") + "not found in the system", nullResources, workbook);
+				}
+				String[] oldFileNameArray = fs.getFileInfo(importProcessContext.getFileId()).getFileName().split("[.]");
+				String newFileName = oldFileNameArray[0] + "_skipLog";
+				File newFile = File.createTempFile(newFileName, "." + oldFileNameArray[(oldFileNameArray.length) - 1]);
+				try (FileOutputStream newFileStream = new FileOutputStream(newFile)) {
+					workbook.write(newFileStream);
+				}
+
+				long fileId = fs.addFile(newFileName + "." + oldFileNameArray[(oldFileNameArray.length) - 1], newFile, "application/xls");
+
+				String fileUrl = fs.getPrivateUrl(fileId);
+				emailMessage.append("<a href=" + fileUrl + "Click here to view skipped entries</a>");
+				JSONObject meta = importProcessContext.getImportJobMetaJson();
+				newFile.delete();
+				if (meta == null || meta.isEmpty()) {
+					meta = new JSONObject();
+					meta.put("skippedLogFileLink", fileUrl);
+				} else {
+					meta.put("skippedLogFileLink", fileUrl);
+				}
+				importProcessContext.setImportJobMeta(meta.toJSONString());
+				return false;
 			}
-			if(!nullResources.isEmpty()) {
-				writeToSheet(importTemplateContext.getModuleMapping().get("baseModule")+ "not found in the system", nullResources, createHelper);
-			}
-			String[] oldFileNameArray = fs.getFileInfo(importProcessContext.getFileId()).getFileName().split("[.]");
-			String newFileName = oldFileNameArray[0] + "_skipLog" ;
-			File newFile = File.createTempFile(newFileName, "." + oldFileNameArray[(oldFileNameArray.length) -1]);
-			FileOutputStream newFileStream = new FileOutputStream(newFile);
-			workbook.write(newFileStream);
-			newFileStream.close();
-			
-			//File newFile = new File(fs.getFileInfo(importProcessContext.getFileId()).getFilePath() + File.separator + newFileName);
-			long fileId = fs.addFile(newFileName+"." + oldFileNameArray[(oldFileNameArray.length) -1] , newFile, "application/xls");
-			
-			String fileUrl= fs.getPrivateUrl(fileId);
-			emailMessage.append("<a href="+fileUrl+"Click here to view skipped entries</a>");
-			JSONObject meta = importProcessContext.getImportJobMetaJson();
-			newFile.delete();
-			if(meta == null || meta.isEmpty()) {
-				meta = new JSONObject();
-				meta.put("skippedLogFileLink", fileUrl);
-			}
-			else {
-				meta.put("skippedLogFileLink", fileUrl);
-			}
-			importProcessContext.setImportJobMeta(meta.toJSONString());
-			return false;	
 		}
 		else {
 			return false;
@@ -103,7 +93,7 @@ public class WriteSkippedToFileCommand extends FacilioCommand {
 		
 	}
 	
-	public void writeToSheet(String Header,List<ImportRowContext> data, CreationHelper createHelper){
+	public void writeToSheet(String Header,List<ImportRowContext> data, Workbook workbook){
 		Sheet sheet = null;
 		if(workbook.getSheet("Error report") != null) {
 			sheet = workbook.getSheet("Error report");
