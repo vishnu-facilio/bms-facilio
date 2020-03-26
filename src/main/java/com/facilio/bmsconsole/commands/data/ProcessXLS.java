@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands.data;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -18,6 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
@@ -408,7 +411,8 @@ public class ProcessXLS extends FacilioCommand {
 				case "assignedBy":
 				case "assignedTo":
 				case "requester": {
-					User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
+					AppDomain appDomain = IAMAppUtil.getAppDomain(FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com");
+					User user = AccountUtil.getUserBean().getUser(value.toString(), appDomain.getIdentifier());
 					Map<String, Object> prop = FieldUtil.getAsProperties(user);
 					return prop;
 					

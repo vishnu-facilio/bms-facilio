@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 
 public class GetPermaLinkTokenCommand extends FacilioCommand{
 	
-	private static final Logger LOGGER = Logger.getLogger(GetTotalConsumptionBySiteCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GetPermaLinkTokenCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -26,7 +26,7 @@ public class GetPermaLinkTokenCommand extends FacilioCommand{
 			
 		String url = (String) context.get(FacilioConstants.ContextNames.PERMALINK_FOR_URL);
 		String email = (String) context.get(FacilioConstants.ContextNames.USER_EMAIL);
-		Long identifier = (Long) context.get(FacilioConstants.ContextNames.IDENTIFIER);
+		String identifier = (String) context.get(FacilioConstants.ContextNames.IDENTIFIER);
 		
 		User user = AccountUtil.getUserBean().getUser(email, identifier);
 		

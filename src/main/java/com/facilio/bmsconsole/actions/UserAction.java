@@ -122,7 +122,7 @@ public class UserAction extends FacilioAction {
 				this.users.addAll(memberList);
 			}
 		} else {
-			setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
+			setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
 		}
 		return SUCCESS;
 	}
@@ -134,14 +134,14 @@ public class UserAction extends FacilioAction {
 	}
 	public String userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
 		
 		return SUCCESS;
 	}
 	
 	public String v2userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
 		setResult("users", getUsers());
 		return SUCCESS;
 	}
@@ -153,7 +153,7 @@ public class UserAction extends FacilioAction {
 		List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
 		if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
 			if(servicePortalDomain.size() == 1) {
-				setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), servicePortalDomain.get(0).getDomain()));
+				setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0))));
 				return SUCCESS;
 			}
 		}
@@ -289,7 +289,7 @@ public class UserAction extends FacilioAction {
 			user.setApplicationId(getAppId());
 			user.setAppDomain(appDomain);
 			
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, 1, true) > 0) {
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain.getIdentifier(), true) > 0) {
 				setUserId(user.getId());
 			}
 			else {
@@ -300,12 +300,12 @@ public class UserAction extends FacilioAction {
 			if (e instanceof AccountException) {
 				AccountException ae = (AccountException) e;
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
-					addFieldError("error", "This user already exists in your organization.");
+					addFieldError("error", "This user already exists in this app of your organization.");
 				}
 			}
 			else {
 				log.info("Exception occurred ", e);
-				addFieldError("error", "This user already exists in your organization.");
+				addFieldError("error", "This user already exists in this app of your organization.");
 			}
 			return ERROR;
 		}

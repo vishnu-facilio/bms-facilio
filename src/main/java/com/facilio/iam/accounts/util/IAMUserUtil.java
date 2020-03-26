@@ -36,7 +36,7 @@ public class IAMUserUtil {
 	public static final String JWT_DELIMITER = "#";
 	private static Logger log = LogManager.getLogger(IAMUserUtil.class.getName());
 	
-	public static long addUser(IAMUser user, long orgId, long identifier) throws Exception {
+	public static long addUser(IAMUser user, long orgId, String identifier) throws Exception {
 		if ((user != null) && orgId > 0) {
 			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier));
 		} else {
@@ -214,15 +214,15 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUidsv3(uids, orgId, shouldFetchDeleted));
 	}
 	
-	public static Map<String, Object> getUserForPhone(String phone, long identifier, long orgId) throws Exception {
+	public static Map<String, Object> getUserForPhone(String phone, String identifier, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForPhone(phone, orgId, identifier));
 	}
 	
-	public static Map<String, Object> getUserForEmail(String email, long identifier, long orgId) throws Exception {
+	public static Map<String, Object> getUserForEmail(String email, String identifier, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmail(email, orgId, identifier));
 	}
 	
-	public static Map<String, Object> getUserForUsername(String username, long orgId, long identifier) throws Exception {
+	public static Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
 	}
 	
@@ -284,7 +284,7 @@ public class IAMUserUtil {
 		return getUserDatav3(userIds, orgId, shouldFetchDeleted);
 	}
 	
-	public static Map<String, Object> getUserFromPhone(String phone, long identifier) throws Exception {
+	public static Map<String, Object> getUserFromPhone(String phone, String identifier) throws Exception {
 		return getUserForPhone(phone, identifier, -1);
 	}
 	

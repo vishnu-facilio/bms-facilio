@@ -104,5 +104,4 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		this.roleId = roleId;
 	}
 	
-	
 }

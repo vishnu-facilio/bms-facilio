@@ -19,6 +19,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportBuildingAction;
 import com.facilio.bmsconsole.actions.ImportFloorAction;
@@ -776,7 +777,8 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 			switch (moduleName) {
 			case "workorder": {
-				User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
+				AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+				User user = AccountUtil.getUserBean().getUser(value.toString(), appDomain != null ? appDomain.getIdentifier() : null);
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
 			}
@@ -799,20 +801,21 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				User user = AccountUtil.getUserBean().getUser(value.toString(), 1);
+				
+				String appDomain = AccountUtil.getCurrentOrg().getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com");
+				AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+			    User user = AccountUtil.getUserBean().getUser(value.toString(), appDomain != null ? appDomainObj.getIdentifier() : null);
 				if(user == null) {
 					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
 						throw new Exception("Value not found");
 					}
 					user = new User();
 					user.setEmail(value.toString());
-					String appDomain = AccountUtil.getCurrentOrg().getDomain() + ".facilioportal.com";
-					AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
 					long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 					user.setApplicationId(appId);
 					user.setAppDomain(appDomainObj);
 					
-					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false, 1, true);
+					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false,appDomainObj.getIdentifier(), true);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;

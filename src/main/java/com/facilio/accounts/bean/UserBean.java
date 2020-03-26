@@ -17,9 +17,9 @@ import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
-	public void createUser(long orgId, User user, long identifier) throws Exception;
+	public void createUser(long orgId, User user, String identifier) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, long identifier, boolean addPeople) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople) throws Exception;
 
 	User verifyEmail(String token) throws Exception;
 
@@ -43,7 +43,7 @@ public interface UserBean {
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
-	public User getUserFromPhone(String phone, long identifier) throws Exception;
+	public User getUserFromPhone(String phone, String identifier) throws Exception;
 	
 	public List<User> getUsers(Criteria criteria, boolean fetchOnlyActiveUsers, boolean fetchDeleted, Collection<Long>... ouids) throws Exception;
 	
@@ -63,7 +63,7 @@ public interface UserBean {
 
     public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
     
-    public User getUser(String email, long identifier) throws Exception;
+    public User getUser(String email, String identifier) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
 
@@ -100,7 +100,7 @@ public interface UserBean {
 	
 	public int deletePeopleForUser(User user) throws Exception;
 	
-	public User getUserFromEmail(String email, long identifier) throws Exception;
+	public User getUserFromEmail(String email, String identifier) throws Exception;
 	
 	
 	

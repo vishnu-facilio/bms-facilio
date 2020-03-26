@@ -1,3 +1,4 @@
+<%@page import="com.facilio.iam.accounts.util.IAMAppUtil"%>
 <%@page import="com.facilio.logging.SysOutLogger"%>
 <%@page import="com.facilio.accounts.util.AccountUtil, 
 java.util.List, 
@@ -14,13 +15,14 @@ java.sql.Timestamp,
        List<Map<String, Object>> sessions = null;
        User usr = null;
        			if (email != null) {
-      		usr = AccountUtil.getUserBean().getUser(email, 1);//for now only identifier 1 users
+       		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+      		usr = AccountUtil.getUserBean().getUser(email, appDomain.getIdentifier());//for now only main app  users
       		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
       		long orgId = usr.getOrgId();
       		long roleId = usr.getRoleId();
       		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-      			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, null, false);
+      			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
       		}
       	}
    %>

@@ -12,6 +12,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -277,10 +278,10 @@ public class ApplicationApi {
 		
 		public static void addDefaultAppDomains(long orgId) throws Exception {
 			Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), 1, orgId);
-			AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), 2, orgId);
-			AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), 1, orgId);
-			AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), 1, orgId);
+			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
+			AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId);
+			AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
+			AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId);
 			
 			List<AppDomain> appDomains = new ArrayList<AppDomain>();
 			appDomains.add(servicePortalAppDomain);

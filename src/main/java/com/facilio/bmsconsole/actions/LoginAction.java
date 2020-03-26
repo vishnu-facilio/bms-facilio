@@ -316,7 +316,7 @@ public class LoginAction extends FacilioAction {
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("portalInfo", AccountUtil.getPortalInfo());
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
@@ -365,7 +365,7 @@ public class LoginAction extends FacilioAction {
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
@@ -456,7 +456,7 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
@@ -550,7 +550,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -831,7 +831,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getDefaultAppDomain(), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));

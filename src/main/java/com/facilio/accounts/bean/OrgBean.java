@@ -26,9 +26,9 @@ public interface OrgBean {
 	
 	public PortalInfoContext getPortalInfo(long id, boolean isPortalID) throws Exception;
 	
-	public List<User> getOrgPortalUsers(long orgId, String appDomain) throws Exception;
+	public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception;
 
-	public List<User> getAppUsers(long orgId, String appDomain, boolean checkAccessibleSites) throws Exception;
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
 	

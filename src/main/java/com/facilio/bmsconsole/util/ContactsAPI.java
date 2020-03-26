@@ -148,7 +148,7 @@ public class ContactsAPI {
 		
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomain);
-		long id = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false);
+		long id = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain.getIdentifier(), false);
 		user.setId(id);
 		contact.setRequester(user);
 	}

@@ -128,6 +128,7 @@ public class UserBeanImpl implements UserBean {
 	
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getOrgUserAppsFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -140,8 +141,11 @@ public class UserBeanImpl implements UserBean {
 				
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
-			Map<String, Object> map = props.get(0);
-			return (long)map.get("id");
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				Map<String, Object> map = props.get(0);
+				return (long)map.get("id");
+			}
 		}
 		return -1;
 	
@@ -149,7 +153,7 @@ public class UserBeanImpl implements UserBean {
 	
 	
 	@Override
-	public void createUser(long orgId, User user, long identifier) throws Exception {
+	public void createUser(long orgId, User user, String identifier) throws Exception {
 		try {
 			user.setUserStatus(true);
 		
@@ -262,6 +266,7 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = new HashMap<String, Object>();
 		props.put("ouid", user.getOuid());
 		props.put("applicationId", user.getApplicationId());
+		props.put("orgId", user.getOrgId());
 		
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
@@ -348,7 +353,7 @@ public class UserBeanImpl implements UserBean {
 
 	public void addUserDetail(User user) throws Exception {
 		
-		if (user.getAccessibleSpace() != null) {
+		if (CollectionUtils.isNotEmpty(user.getAccessibleSpace())) {
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 		}
 		if(user.getAppDomain() != null && user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
@@ -531,7 +536,6 @@ public class UserBeanImpl implements UserBean {
 		IAMUser iamUser = IAMUserUtil.getFacilioUser(orgId, userId);
 		if (iamUser != null) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 			
 			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, criteria, orgId, null);
@@ -578,7 +582,7 @@ public class UserBeanImpl implements UserBean {
 
 
 	@Override
-	public User getUserFromPhone(String phone, long identifier) throws Exception {
+	public User getUserFromPhone(String phone, String identifier) throws Exception {
 
 		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, identifier);
 		if (props != null && !props.isEmpty()) {
@@ -588,7 +592,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public User getUserFromEmail(String email, long identifier) throws Exception {
+	public User getUserFromEmail(String email, String identifier) throws Exception {
 
 		Map<String, Object> props = IAMUserUtil.getUserForEmail(email, identifier , -1);
 		if (props != null && !props.isEmpty()) {
@@ -783,7 +787,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, long identifier, boolean addPeople) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople) throws Exception {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
@@ -1116,7 +1120,7 @@ public class UserBeanImpl implements UserBean {
 				.table("ORG_Users")
 		;
 		if(orgId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
 		if(appId > 0) {
 			fields.add(AccountConstants.getApplicationIdField());
@@ -1138,7 +1142,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(String emailOrPhone, long identifier) throws Exception {
+	public User getUser(String emailOrPhone, String identifier) throws Exception {
 		// TODO Auto-generated method stub
 		Organization currentOrg = AccountUtil.getCurrentOrg();
 		if (currentOrg == null) {

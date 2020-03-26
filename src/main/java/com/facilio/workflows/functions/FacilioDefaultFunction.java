@@ -394,7 +394,10 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			User user = AccountUtil.getUserBean().getUser((String) objects[5], 1);
+			
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+				
+			User user = AccountUtil.getUserBean().getUser((String) objects[5], appDomain.getIdentifier());
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
@@ -410,7 +413,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			User user = AccountUtil.getUserBean().getUser((String) objects[5], 1);
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+			User user = AccountUtil.getUserBean().getUser((String) objects[5], appDomain.getIdentifier());
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
 			if(dashboard == null) {
@@ -637,6 +641,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			// TODO Auto-generated method stub
 			
 			FacilioChain chain = FacilioChainFactory.getPermaLinkTokenChain();
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
 			
 			FacilioContext context = chain.getContext();
 			
@@ -649,7 +654,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL,url);
 			context.put(FacilioConstants.ContextNames.SESSION,sessionObjectJson);
 			context.put(FacilioConstants.ContextNames.USER_EMAIL,email);
-			context.put(FacilioConstants.ContextNames.IDENTIFIER,1);
+			context.put(FacilioConstants.ContextNames.IDENTIFIER, appDomain.getIdentifier());
 			
 			chain.execute();
 			

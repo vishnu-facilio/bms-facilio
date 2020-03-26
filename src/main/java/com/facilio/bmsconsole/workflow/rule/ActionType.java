@@ -1580,13 +1580,13 @@ public enum ActionType {
 	
 	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-		User user = userBean.getUserFromEmail(email, -1);
+		User user = userBean.getUserFromEmail(email, null);
 		return (user == null || (user != null && user.getUserStatus()));
 	}
 
 	private static boolean checkIfActiveUserFromPhone(String phone) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-		User user = userBean.getUserFromPhone(phone, -1);
+		User user = userBean.getUserFromPhone(phone, null);
 		return (user == null || (user != null && user.getUserStatus()));
 	}
 

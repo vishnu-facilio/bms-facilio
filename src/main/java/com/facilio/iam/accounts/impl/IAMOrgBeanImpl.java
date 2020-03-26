@@ -10,9 +10,11 @@ import java.util.TimeZone;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -25,6 +27,7 @@ import com.facilio.iam.accounts.bean.IAMOrgBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldType;
@@ -280,7 +283,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 			user.setUserVerified(true);
 		}
 	//	IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);
-		IAMUtil.getUserBean().signUpSuperAdminUserv3(orgId, user, 1);
+	    AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+		IAMUtil.getUserBean().signUpSuperAdminUserv3(orgId, user, appDomain.getIdentifier());
 		
 		return user;
 	}

@@ -16,7 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {
 	
-	public long addUserv3(long orgId, IAMUser user, long identifier) throws Exception;
+	public long addUserv3(long orgId, IAMUser user, String identifier) throws Exception;
 		
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
@@ -65,7 +65,7 @@ public interface IAMUserBean {
 
 	public IAMAccount getPermalinkAccount(String token, List<String> url) throws Exception ;
 
-	public long signUpSuperAdminUserv3(long orgId, IAMUser user, int identifier) throws Exception;
+	public long signUpSuperAdminUserv3(long orgId, IAMUser user, String identifier) throws Exception;
 		
 	public boolean verifyUser(long userId) throws Exception;
 	
@@ -92,15 +92,15 @@ public interface IAMUserBean {
 	
     public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
-    public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId, long identifier) throws Exception;
+    public Map<String, Object> getUserForEmail(String emailOrPhone, long orgId, String identifier) throws Exception;
     
-    public Map<String, Object> getUserForPhone(String phone, long orgId, long identifier) throws Exception;
+    public Map<String, Object> getUserForPhone(String phone, long orgId, String identifier) throws Exception;
     
     public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception;
     
-    public Map<String, Object> getUserForUsername(String username, long orgId, long identifier) throws Exception;
+    public Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception;
 
-	public IAMUser getFacilioUserV3(String username, long identifier) throws Exception;
+	public IAMUser getFacilioUserV3(String username, String identifier) throws Exception;
 	
 	public boolean disableUser(long orgId, long userId) throws Exception;
 	

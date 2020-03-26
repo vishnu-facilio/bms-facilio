@@ -22,7 +22,7 @@
     	OrgBean orgBean =  AccountUtil.getOrgBean();
   	  org =orgBean.getOrg(Long.parseLong(orgid));
   	  result = AccountUtil.getOrgBean(orgId).orgInfo();
-  	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, null, false);
+  	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
 		;
   	  roles =AccountUtil.getRoleBean(orgId).getRoles();
   	  

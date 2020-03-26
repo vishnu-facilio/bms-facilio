@@ -389,7 +389,7 @@ public class IAMAccountConstants {
 
 			FacilioField identifier = new FacilioField();
 			identifier.setName("identifier");
-			identifier.setDataType(FieldType.NUMBER);
+			identifier.setDataType(FieldType.STRING);
 			identifier.setColumnName("IDENTIFIER");
 			identifier.setModule(module);
 			fields.add(identifier);

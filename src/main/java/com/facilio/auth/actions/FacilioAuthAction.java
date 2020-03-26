@@ -965,12 +965,8 @@ public class FacilioAuthAction extends FacilioAction {
 				long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 				user.setApplicationId(applicationId);
 				user.setAppDomain(appDomainObj);
-				long identifier = 1l;
-				if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
-					identifier = appDomainObj.getId();
-				}
 				
-				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, identifier, true);
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomainObj.getIdentifier(), true);
 				
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {

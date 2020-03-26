@@ -1,6 +1,7 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,27 +92,24 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
     @Override
-	public List<User> getAppUsers(long orgId, String appDomain, boolean checkAccessibleSites) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception {
 		
-    	if(StringUtils.isEmpty(appDomain)) {
-    		appDomain = AccountUtil.getDefaultAppDomain();
+    	if(appId <= 0) {
+    		appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
     	}
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
-		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 	
-		if(applicationId > 0) {
-			fields.add(AccountConstants.getApplicationIdField());
-			selectBuilder.innerJoin("ORG_User_Apps")
+		fields.add(AccountConstants.getApplicationIdField());
+		selectBuilder.innerJoin("ORG_User_Apps")
 			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
-		}
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
 					
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -187,7 +185,7 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getDefaultAppUsers(long orgId) throws Exception {
-		return getAppUsers(orgId, AccountUtil.getDefaultAppDomain(), false);
+		return getAppUsers(orgId, ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), false);
 	}
 	
 	@Override
@@ -219,7 +217,7 @@ public class OrgBeanImpl implements OrgBean {
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
 		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		if(CollectionUtils.isNotEmpty(applicationIds)) {
 			StringJoiner idString = new StringJoiner(",");
 			for(long id : applicationIds) {
@@ -338,34 +336,8 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override 
-    public List<User> getOrgPortalUsers(long orgId, String appDomain) throws Exception { 
-       List<Long> applicationIds = new ArrayList<Long>();
-		if(StringUtils.isNotEmpty(appDomain)) {
-			AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-			applicationIds.add(ApplicationApi.getApplicationIdForApp(appDomainObj));
-		}
-		else {
-			List<AppDomain> appDomains = IAMAppUtil.getPortalAppDomains();
-			if(CollectionUtils.isNotEmpty(appDomains)) {
-				for(AppDomain ad : appDomains) {
-					applicationIds.add(ApplicationApi.getApplicationIdForApp(ad));
-				}
-			}
-		}
-		if(CollectionUtils.isNotEmpty(applicationIds)) {
-			List<Map<String, Object>> props = fetchOrgUserProps(orgId, null, applicationIds);
-			
-			if (props != null && !props.isEmpty()) {
-				List<User> users = new ArrayList<>();
-				IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-				for(Map<String, Object> prop : props) {
-					User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-					users.add(user);
-				}
-				return users;
-			}
-		}
-		return null;
+    public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception { 
+      	return getAppUsers(orgId, appId, false);
     }
 
 	@Override
