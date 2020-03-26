@@ -74,6 +74,21 @@ public class BimAPI {
 		return null;
 
 	}
+	
+	public static List<BimIntegrationLogsContext> getBimIntegrationLog(FacilioModule module,List<FacilioField> fields) throws Exception {
+		List<BimIntegrationLogsContext> bimIntegrationList = new ArrayList<>();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+                .table(module.getTableName());
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+	        for (Map<String, Object> prop : props) {
+	        	BimIntegrationLogsContext bimIntegrationLogsContext = FieldUtil.getAsBeanFromMap(prop, BimIntegrationLogsContext.class);
+	        	bimIntegrationList.add(bimIntegrationLogsContext);
+	        }
+		}
+		return bimIntegrationList;
+	}
 
 	public static ImportProcessContext getColumnHeadings(Sheet sheet, ImportProcessContext importProcessContext) throws Exception{
 

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
+import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.chain.FacilioChain;
@@ -28,7 +29,6 @@ public class BIMIntegrationAction extends FacilioAction{
 	public String uploadBim() throws Exception {
 		
 		fileUploadFileName = fileUpload.getName();
-//		fileUploadContentType = URLConnection.guessContentTypeFromName(fileUploadFileName);
 		
 		FacilioChain uploadFileChain = TransactionChainFactory.uploadBimFileChain();
 		FacilioContext context = uploadFileChain.getContext();
@@ -69,6 +69,16 @@ public class BIMIntegrationAction extends FacilioAction{
 			}
 		}
 		setResult("bimImportProcessList" , bimImportProcessList);
+		
+		return SUCCESS;
+	}
+	
+	public String getBimIntegrationLogs() throws Exception {
+		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
+		List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
+		List<BimIntegrationLogsContext> bimIntegrationList  = new ArrayList<>();
+		bimIntegrationList = BimAPI.getBimIntegrationLog(module, fields);
+		setResult("bimIntegrationList" , bimIntegrationList);
 		
 		return SUCCESS;
 	}

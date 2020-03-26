@@ -5660,6 +5660,10 @@
 			method="checkStatus"
 		/>
 		
+		<action name="get" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="getBimIntegrationLogs"
+		/>
+		
 	</package>
 	
 </struts>
