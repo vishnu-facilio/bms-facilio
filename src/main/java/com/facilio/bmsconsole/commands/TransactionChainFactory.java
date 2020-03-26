@@ -2664,6 +2664,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getAvailableApprovalState() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(getAvailableState());
+			c.addCommand(new GetAvailableApproverListCommand());
+			return c;
+		}
+
 		public static FacilioChain getAvailableState() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());

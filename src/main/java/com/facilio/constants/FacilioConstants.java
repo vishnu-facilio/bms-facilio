@@ -1269,6 +1269,7 @@ public class FacilioConstants {
 
 		public static final String APPROVAL_TRANSITION_ID = "approvalTransitionId";
 		public static final String SKIP_APPROVAL_CHECK = "approvalMandatorySuccess";
+		public static final String PENDING_APPROVAL_LIST = "pendingApprovalList";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +35,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				ruleType = WorkflowRuleContext.RuleType.STATE_FLOW;
 			}
 			FacilioStatus currentState = getStatus(moduleData, ruleType);
+			currentState = TicketAPI.getStatus(currentState.getId());
 			long stateFlowId = getStateFlowId(moduleData, ruleType);
 			context.put("currentState", currentState);
 			if (currentState != null) {
@@ -43,7 +45,8 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				removeUnwantedTranstions(availableState);
 
 				if (ruleType == WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW) {
-					if (CollectionUtils.isNotEmpty(availableState) && availableState.size() != 2) {
+					// if the status is in current state, list count should be 2
+					if (currentState.isRequestedState() && CollectionUtils.isNotEmpty(availableState) && availableState.size() != 2) {
 						availableState = new ArrayList<>();
 					}
 				}

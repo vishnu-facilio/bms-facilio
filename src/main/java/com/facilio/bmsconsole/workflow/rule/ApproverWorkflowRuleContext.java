@@ -176,7 +176,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         return deleteBuilder.delete();
     }
 
-    private List<SingleSharingContext> checkAnyPendingApprovers(ModuleBaseWithCustomFields moduleRecord, List<SingleSharingContext> matching) throws Exception {
+    public List<SingleSharingContext> checkAnyPendingApprovers(ModuleBaseWithCustomFields moduleRecord, List<SingleSharingContext> matching) throws Exception {
         if (isAllApprovalRequired()) {
             List<Long> previousApprovers = fetchPreviousApprovers(moduleRecord.getId(), getId());
             Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
