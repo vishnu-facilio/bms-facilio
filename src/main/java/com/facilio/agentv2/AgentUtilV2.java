@@ -22,10 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,17 +35,14 @@ public class AgentUtilV2
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
 
-    public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds){
-        List<FacilioAgent> allAgents = (List<FacilioAgent>) getAgentMap().values();
-        Map<Long,FacilioAgent> agentMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(allAgents)) {
-            for (FacilioAgent agent : allAgents){
-                if(agentIds.contains(agent.getId())){
-                    agentMap.put(agent.getId(),agent);
-                }
-            }
+    public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds) throws Exception {
+        List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
+        Map<Long, FacilioAgent> map = new HashMap<>();
+        for (FacilioAgent agent :
+                agents) {
+            map.put(agent.getId(), agent);
         }
-        return agentMap;
+        return map;
     }
 
     public static JSONObject getOverview() {
@@ -144,7 +138,7 @@ public class AgentUtilV2
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
                 }
-                    LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
+                   // LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
@@ -199,7 +193,7 @@ public class AgentUtilV2
         //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
-        //event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setSiteId(AccountUtil.getCurrentSiteId());
         event.setAgent(agent);
         return event;
     }
