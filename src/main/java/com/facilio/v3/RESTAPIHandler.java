@@ -84,23 +84,20 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     private  void handleSummaryRequest(String moduleName, long id) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
-        V3Config.SummaryHandler summaryHandler = null;
 
-        if (!module.isCustom()) {
-            if (v3Config == null) {
-                throw new IllegalArgumentException("not a valid module");
-            }
-            summaryHandler = v3Config.getSummaryHandler();
-            if (summaryHandler == null) {
-                //TODO unsupported operation
-                throw new IllegalArgumentException("unsupported operation");
+        Command afterFetchCommand = null;
+        if (v3Config != null) {
+            V3Config.SummaryHandler summaryHandler = v3Config.getSummaryHandler();
+            if (summaryHandler != null) {
+                afterFetchCommand = summaryHandler.getAfterFetchCommand();
             }
         }
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new SummaryCommand(module));
-        if (summaryHandler != null && summaryHandler.getAfterFetchCommand() != null) {
-            nonTransactionChain.addCommand(summaryHandler.getAfterFetchCommand());
+
+        if (afterFetchCommand != null) {
+            nonTransactionChain.addCommand(afterFetchCommand);
         }
 
         FacilioContext context = nonTransactionChain.getContext();
@@ -129,28 +126,27 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
 
+        Command beforeFetchCommand = null;
+        Command afterFetchCommand = null;
+
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
 
-        if (!module.isCustom()) {
-            if (v3Config.getListHandler() == null) {
-                throw new IllegalArgumentException("unsupported operation");
-            }
-
-            if (v3Config.getListHandler().getBeforeFetchCommand() != null) {
-                nonTransactionChain.addCommand(v3Config.getListHandler().getBeforeFetchCommand());
+        if (v3Config != null) {
+            V3Config.ListHandler listHandler = v3Config.getListHandler();
+            if (listHandler != null) {
+                beforeFetchCommand = listHandler.getBeforeFetchCommand();
+                afterFetchCommand = listHandler.getAfterFetchCommand();
             }
         }
+
+        addIfNotNull(nonTransactionChain, beforeFetchCommand);
 
         nonTransactionChain.addCommand(new ListCommand(module));
 
-        if (!module.isCustom()) {
-            if (v3Config.getListHandler().getAfterFetchCommand() != null) {
-                nonTransactionChain.addCommand(v3Config.getListHandler().getAfterFetchCommand());
-            }
-        }
+        addIfNotNull(nonTransactionChain, afterFetchCommand);
 
         FacilioContext context = nonTransactionChain.getContext();
 
@@ -214,33 +210,30 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     private static void createHandler(String moduleName, Map<String, Object> createObj) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
-        V3Config.CreateHandler createHandler = null;
+        Command initCommand = new DefaultInit();
+        Command beforeSaveCommand = null;
+        Command afterSaveCommand = null;
+        Command afterTransactionCommand = null;
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
-        if (!module.isCustom()) {
-            if (v3Config == null) {
-                throw new IllegalArgumentException("not a valid module");
+
+        if (v3Config != null) {
+            V3Config.CreateHandler createHandler = v3Config.getCreateHandler();
+            if (createHandler != null) {
+                initCommand = createHandler.getInitCommand();
+                beforeSaveCommand = createHandler.getBeforeSaveCommand();
+                afterSaveCommand = createHandler.getAfterSaveCommand();
+                afterTransactionCommand = createHandler.getAfterTransactionCommand();
             }
-
-            createHandler = v3Config.getCreateHandler();
-
-            if (createHandler == null) {
-                //TODO unsupported operation
-                throw new IllegalArgumentException("unsupported operation");
-            }
-
-            addIfNotNull(transactionChain, createHandler.getInitCommand());
-            addIfNotNull(transactionChain, createHandler.getBeforeSaveCommand());
-        } else {
-            addIfNotNull(transactionChain, new DefaultInit());
         }
+
+        addIfNotNull(transactionChain, initCommand);
+        addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new SaveCommand(module));
 
-        if (createHandler != null) {
-            addIfNotNull(transactionChain, createHandler.getAfterSaveCommand());
-            addIfNotNull(transactionChain, createHandler.getAfterTransactionCommand());
-        }
+        addIfNotNull(transactionChain, afterSaveCommand);
+        addIfNotNull(transactionChain, afterTransactionCommand);
 
         FacilioContext context = transactionChain.getContext();
 
@@ -252,36 +245,30 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     private static void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
+        Command initCommand = new DefaultInit();
+        Command beforeSaveCommand = null;
+        Command afterSaveCommand = null;
+        Command afterTransactionCommand = null;
 
-        V3Config.UpdateHandler updateHandler = null;
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
-        if (!module.isCustom()) {
-            if (v3Config == null) {
-                throw new IllegalArgumentException("not a valid module");
-            }
-
-            updateHandler = v3Config.getUpdateHandler();
-
+        if (v3Config != null) {
+            V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
             if (updateHandler != null) {
-                addIfNotNull(transactionChain, updateHandler.getInitCommand());
-                addIfNotNull(transactionChain, updateHandler.getBeforeSaveCommand());
+                initCommand = updateHandler.getInitCommand();
+                beforeSaveCommand = updateHandler.getBeforeSaveCommand();
+                afterSaveCommand = updateHandler.getAfterSaveCommand();
+                afterTransactionCommand = updateHandler.getAfterTransactionCommand();
             }
-
-            if (updateHandler == null) {
-                //TODO unsupported operation
-                throw new IllegalArgumentException("unsupported operation");
-            }
-        } else {
-            addIfNotNull(transactionChain, new DefaultInit());
         }
+
+        addIfNotNull(transactionChain, initCommand);
+        addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new UpdateCommand(module));
 
-        if (updateHandler != null) {
-            addIfNotNull(transactionChain, updateHandler.getAfterSaveCommand());
-            addIfNotNull(transactionChain, updateHandler.getAfterTransactionCommand());
-        }
+        addIfNotNull(transactionChain, afterSaveCommand);
+        addIfNotNull(transactionChain, afterTransactionCommand);
 
         FacilioContext context = transactionChain.getContext();
 
