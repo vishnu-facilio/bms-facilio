@@ -247,8 +247,9 @@ public class PageWidget {
 		TEMPLATE_SUMMARY_DETAILS("templateSummaryDetails"),
 		TEMPALTE_CONDITIONS("templateConditions"),
 		TEMPLATE_ALARM_DETAILS("templateAlarmDetails"),
-		
+
 		APPROVERS("approvers"),
+		APPROVAL_FIELDS_WIDGET("approvalFields"),
  		;
 		
 		private String name;

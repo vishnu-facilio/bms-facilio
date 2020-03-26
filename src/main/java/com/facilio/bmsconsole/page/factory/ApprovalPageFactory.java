@@ -19,7 +19,7 @@ public class ApprovalPageFactory extends PageFactory {
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         
-        addDetailsWidget(tab1Sec1);
+        addApprovalFieldsWidget(tab1Sec1);
         addApproversWidget(tab1Sec1);
         addSecondaryDetailWidget(tab1Sec1);
         addCommonSubModuleGroup(tab1Sec1);
@@ -27,6 +27,12 @@ public class ApprovalPageFactory extends PageFactory {
         return page;
 	}
 	
+	private static void addApprovalFieldsWidget(Section section) {
+		PageWidget pageWidget = new PageWidget(WidgetType.APPROVAL_FIELDS_WIDGET);
+		pageWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(pageWidget);
+	}
+
 	private static void addApproversWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.APPROVERS);
 		pageWidget.addToLayoutParams(section, 24, 6);
