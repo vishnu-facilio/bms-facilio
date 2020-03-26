@@ -4,6 +4,7 @@ Map cardLayout(Map params) {
     moduleName = params.moduleName;
     assetCategoryId = params.assetCategoryId;
     buildingId = params.buildingId;
+  	filterCriteria = params.filterCriteria;
     columns = params.columns;
     excludeEmptyReadings = true;
     if (params.excludeEmptyReadings != null) {
@@ -13,19 +14,51 @@ Map cardLayout(Map params) {
     if (params.dateRange != null) {
         dateRange = params.dateRange;
     }
+  	sorting = params.sorting;
+  	if (sorting == null) {
+      sorting = {};
+      sorting["fieldName"] = "name";
+	  sorting["order"] = "asc";
+    }
+  	perPage = params.perPage;
+  	if (perPage == null) {
+      perPage = 100;
+    }
 
     date = NameSpace("date");
     month = date.getDateRange(dateRange);
 
+  	criteriaObj = null;
+  	assetCategoryCriteria = [category == assetCategoryId];
+  	if (buildingId != null && buildingId > 0) {
+      bs = resource().getBaseSpace(buildingId);
+      assetCategoryCriteria = [category == assetCategoryId && space == bs];
+    }
+  	if (filterCriteria == null) {
+      criteriaObj = assetCategoryCriteria;
+    }
+	else {
+      criteriaObj = NameSpace("criteria").get(filterCriteria);
+      criteriaObj.and(assetCategoryCriteria);
+    }
+  
+  	assetDb = null;
+  	if (sorting.order == "asc") {
+      assetDb = {
+          criteria : criteriaObj,
+          orderBy : sorting.fieldName asc,
+          limit : perPage
+      };
+    }
+  	else {
+      assetDb = {
+          criteria : criteriaObj,
+          orderBy : sorting.fieldName desc,
+          limit : perPage
+      };
+    }
     assetModule = Module(moduleName);
-    assetList = null;
-    if (buildingId != null && buildingId > 0) {
-        bs = resource().getBaseSpace(buildingId);
-        assetList = assetModule.fetch([category == assetCategoryId && space == bs]);
-    }
-    else {
-        assetList = assetModule.fetch([category == assetCategoryId]);
-    }
+    assetList = assetModule.fetch(assetDb);
 
     rows = [];
     if (assetList != null) {
