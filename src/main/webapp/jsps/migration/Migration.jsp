@@ -1,3 +1,5 @@
+<%@page import="java.net.URL"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder"%>
 <%@page import="com.facilio.modules.FieldUtil"%>
@@ -62,15 +64,10 @@
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             long orgId = AccountUtil.getCurrentOrg().getOrgId();
             try{
-            long paramOrgId = -1;
-	        	if (orgParam != null) {
-	        		paramOrgId = Long.parseLong(orgParam);
-	        	}
-            if (paramOrgId != -1 && orgId != paramOrgId) {
+            long paramOrgId = Long.parseLong(orgParam);
+            if (orgId != paramOrgId) {
             		return false;
             }
-            
-            System.out.print("ss" + paramOrgId);
             
             LOGGER.info("Mig for file started");
             
@@ -91,7 +88,6 @@
 	    					if (fileInfo != null && fileInfo.getContentType().contains("image/")) {
 	    						try(InputStream downloadStream = fs.readFile(fileInfo);) {
 	    							if (downloadStream != null) {
-		    							String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-compressed";
 		    							
 		    							try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
 		    								
@@ -106,10 +102,11 @@
 	    										
 	    										FileInfo info = new FileInfo();
 	    										info.setFileId(fileInfo.getFileId());
-    											info.setCompressedFilePath(resizedFilePath);
     											info.setCompressedFileSize(imageInByte.length);
     											
     											if (!FacilioProperties.isDevelopment()) {
+    												String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-compressed";
+    												info.setCompressedFilePath(resizedFilePath);
     												try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
 	    												PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(bucketName, resizedFilePath, bis, null);
 		    			    								if (rs != null) {
@@ -118,6 +115,15 @@
 	    											}
     											}
     											else {
+    												rootPath = FacilioProperties.getLocalFileStorePath();
+    												if (StringUtils.isEmpty(rootPath)) {
+    													ClassLoader classLoader = OrgLevelMigrationCommand.class.getClassLoader();
+    													URL fcDataFolder = classLoader.getResource("");
+    													rootPath = fcDataFolder.getFile();
+    												}
+    												rootPath += File.separator + "facilio-data" + File.separator + orgId + File.separator + "files";
+    												String resizedFilePath = rootPath + File.separator + fileInfo.getFileId()+"-compressed";
+    												info.setCompressedFilePath(resizedFilePath);
 	    			    								File createFile = new File(resizedFilePath);
 	    			    								createFile.createNewFile();
 	    			    								try(OutputStream outputStream = new FileOutputStream(createFile)) {
@@ -137,12 +143,13 @@
 	    				}									
 	    			}
 	            	
-	            	int count = updateCompressedEntries(fileInfos, orgId);
+	            	int count = updateCompressedEntries(compressedInfos, orgId);
 	            	LOGGER.info("file mig done for org - " + orgId + " :: " + count);
             }
             }
             catch(Exception e) {
             		LOGGER.error("error migrating org - " + orgId, e);
+            		e.printStackTrace();
             }
             return false;
         }
@@ -153,7 +160,7 @@
 	    		ResultSet rs = null;
 	    		List<FileInfo> fileInfos = new ArrayList<>();
 	    		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection();) {
-	    			pstmt = conn.prepareStatement("SELECT * FROM FacilioFile WHERE ORGID=? AND COMPRESSED_FILE_PATH IS NULL AND CONTENT_TYPE LIKE 'image/%' ORDER BY FILE_ID");
+	    			pstmt = conn.prepareStatement("SELECT * FROM FacilioFile WHERE ORGID=? AND (IS_DELETED IS NULL OR IS_DELETED = 0) AND COMPRESSED_FILE_PATH IS NULL AND CONTENT_TYPE LIKE 'image/%' ORDER BY FILE_ID");
 	    			pstmt.setLong(1, orgId);
 	    			
 	    			rs = pstmt.executeQuery();
@@ -177,6 +184,7 @@
 	    		}
 	    		catch(SQLException e) {
 	    			LOGGER.error("Error in migration while fetching files for org " + orgId, e);
+	    					e.printStackTrace();
 	    		}
 	    		finally {
 	    			DBUtil.closeAll(pstmt, rs);
