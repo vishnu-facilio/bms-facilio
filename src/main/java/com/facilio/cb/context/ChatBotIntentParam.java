@@ -207,8 +207,8 @@ public class ChatBotIntentParam {
 
 	public enum ML_Type {
 		
-		PERSON(1, "Person",""),
-		TIME(2, "Time",""),
+		PERSON(1, "Person","person"),
+		TIME(2, "Time","time"),
 		SUBJECT(3, "Time","message_subject"),
 		;
 

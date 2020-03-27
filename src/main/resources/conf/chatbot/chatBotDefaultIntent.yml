@@ -131,7 +131,7 @@
       displayName : "Subject"
       askAs : 'Enter the Subject?'
       dataType : 1
-      mlType : 1
+      mlType : 3
       localId : 1
       editable : true
       typeConfig : 1
@@ -261,6 +261,9 @@
     -
        sampleLocalId : 24
        sample: "I have a problem"
+    -
+       sampleLocalId : 24
+       sample: "create a work order with problem [Tap not working](message_subject)"
        
 - 
    name: "system_what_is_workorder_question_intent"
@@ -653,6 +656,9 @@
     -
        sampleLocalId : 4
        sample: "invite people"
+    -
+       sampleLocalId : 5
+       sample: "[san](person) and [john](person) are coming tomorrow"
        
 - 
    name: "system_what_can_you_do_intent"
