@@ -153,13 +153,13 @@ public class UserBeanImpl implements UserBean {
 	
 	
 	@Override
-	public void createUser(long orgId, User user, String identifier) throws Exception {
+	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded) throws Exception {
 		try {
 			user.setUserStatus(true);
 		
 			if(IAMUserUtil.addUser(user, orgId, identifier) > 0) {
 				if(checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) <= 0) {
-					createUserEntry(orgId, user, false);
+					createUserEntry(orgId, user, false, isEmailVerificationNeeded);
 				}
 				else {
 					throw new IllegalArgumentException("User already exists in app");
@@ -174,9 +174,9 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public void createUserEntry(long orgId, User user, boolean isSignUp) throws Exception {
+	public void createUserEntry(long orgId, User user, boolean isSignUp, boolean isEmailVerificationNeeded) throws Exception {
 
-		if (isSignUp) {
+		if (isSignUp && !user.getUserVerified()) {
 			sendEmailRegistration(user);
 		}
 		user.setOrgId(orgId);
@@ -189,7 +189,7 @@ public class UserBeanImpl implements UserBean {
 			user.setApplicationId(appId);
 		
 		}
-		addToORGUsersApps(user, true);
+		addToORGUsersApps(user, isEmailVerificationNeeded);
 		addUserDetail(user);
 		
 	}
@@ -272,11 +272,13 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 		
 		if(props.get("id") != null) {
-			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-				sendInvitation(user, false, true);
-			}
-			else {
-				sendInvitation(user, false, false);
+			if(isEmailVerificationNeeded) {
+				if(!user.isUserVerified() && !user.isInviteAcceptStatus()) {
+					sendInvitation(user, false, true);
+				}
+				else {
+					sendInvitation(user, false, false);
+				}
 			}
 			return (long)props.get("id");
 		}
@@ -796,7 +798,7 @@ public class UserBeanImpl implements UserBean {
 				user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 				user.setUserStatus(true);
 				
-				createUser(orgId, user, user.getIdentifier());
+				createUser(orgId, user, user.getIdentifier(), isEmailVerificationNeeded);
 				if(addPeople) {
 					PeopleAPI.addPeopleForRequester(user);
 				}

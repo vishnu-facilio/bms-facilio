@@ -447,7 +447,7 @@ public class PeopleAPI {
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomainObj);
 		
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier());
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true);
 		return user;
 		
 	}

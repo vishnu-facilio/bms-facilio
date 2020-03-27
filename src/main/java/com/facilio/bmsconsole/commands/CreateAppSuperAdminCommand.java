@@ -33,7 +33,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
 		user.setAppDomain(appDomain);
 		user.setUserType(UserType.USER.getValue());
-		AccountUtil.getUserBean().createUserEntry(orgId, user, true);
+		AccountUtil.getUserBean().createUserEntry(orgId, user, true, false);
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
 	}

@@ -289,7 +289,7 @@ public class UserAction extends FacilioAction {
 			user.setApplicationId(getAppId());
 			user.setAppDomain(appDomain);
 			
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain.getIdentifier(), true) > 0) {
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, isEmailVerificationNeeded(), true, appDomain.getIdentifier(), true) > 0) {
 				setUserId(user.getId());
 			}
 			else {
@@ -359,6 +359,7 @@ public class UserAction extends FacilioAction {
 		}
 		user.setUserType(UserType.USER.getValue());
 		context.put(FacilioConstants.ContextNames.USER, user);
+		context.put(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, emailVerificationNeeded);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {

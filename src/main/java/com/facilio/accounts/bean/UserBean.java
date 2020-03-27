@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
-	public void createUser(long orgId, User user, String identifier) throws Exception;
+	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded) throws Exception;
 	
 	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople) throws Exception;
 
@@ -86,7 +86,7 @@ public interface UserBean {
 
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
 
-	public void createUserEntry(long orgId, User user, boolean isSignup) throws Exception;
+	public void createUserEntry(long orgId, User user, boolean isSignup, boolean isEmailVerificationNeeded) throws Exception;
 
 	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
 	

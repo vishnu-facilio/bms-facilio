@@ -19,6 +19,7 @@ public class AddUserCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
+		boolean isEmailverificationNeeded = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, true);
 		if ( (user != null) && (AccountUtil.getCurrentOrg() != null)) {
 			user.setUserType(AccountConstants.UserType.USER.getValue());
 			AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
@@ -30,7 +31,7 @@ public class AddUserCommand extends FacilioCommand {
 			user.setAppDomain(appDomainObj);
 			
 			
-			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier());
+			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailverificationNeeded);
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");
