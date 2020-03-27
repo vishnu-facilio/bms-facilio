@@ -71,7 +71,7 @@
             //add default app domains and applications
 
             migrate();
-//            addPeopleMigration();
+            addPeopleMigration();
 
 
             return false;
