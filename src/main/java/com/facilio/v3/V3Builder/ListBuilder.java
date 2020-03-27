@@ -15,5 +15,5 @@ public interface ListBuilder {
 
     SummaryBuilder summary();
 
-    V3Builder build();
+    V3Config build();
 }

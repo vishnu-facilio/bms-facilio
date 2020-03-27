@@ -19,5 +19,5 @@ public interface CreateBuilder {
 
     SummaryBuilder summary();
 
-    V3Builder build();
+    V3Config build();
 }

@@ -1,16 +1,38 @@
 package com.facilio.apiv3;
 
+import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.commands.DefaultInit;
 
 @Config
 public class APIv3Config {
 
-    @Module("workorder")
-    public static V3Config workorder() {
-        return new V3Config(WorkOrderContext.class);
+    @Module("custom_test")
+    public static V3Config customTest() {
+        return new V3Config(ModuleBaseWithCustomFields.class)
+                .create()
+                    .init(new DefaultInit())
+                    .beforeSave(new SampleBeforeSaveCommand())
+                    .afterSave(new SampleAfterSaveCommand())
+                    .afterTransaction(new SampleAfterTransactionCommand())
+                .summary()
+                    .afterFetch(new SampleAfterFetchCommand())
+                .list()
+                    .afterFetch(new SampleAfterFetchCommand())
+                .update()
+                    .init(new DefaultInit())
+                    .beforeSave(new SampleBeforeSaveCommand())
+                    .afterSave(new SampleAfterSaveCommand())
+                    .afterTransaction(new SampleAfterTransactionCommand())
+                .delete()
+                    .beforeDelete(new SampleBeforeDeleteCommand())
+                    .afterDelete(new SampleAfterDeleteCommand())
+                    .afterTransaction(new SampleAfterTransactionCommand())
+                .build();
     }
 
 }

@@ -5,9 +5,9 @@ import org.apache.commons.chain.Command;
 public interface DeleteBuilder {
     DeleteBuilder init(Command initCommand);
 
-    DeleteBuilder beforeDelete(Command beforeSaveCommand);
+    DeleteBuilder beforeDelete(Command beforeDelete);
 
-    DeleteBuilder afterDelete(Command afterSaveCommand);
+    DeleteBuilder afterDelete(Command afterDeleteCommand);
 
     DeleteBuilder afterTransaction(Command afterTransactionCommand);
 
@@ -19,6 +19,6 @@ public interface DeleteBuilder {
 
     SummaryBuilder summary();
 
-    V3Builder build();
+    V3Config build();
 
 }

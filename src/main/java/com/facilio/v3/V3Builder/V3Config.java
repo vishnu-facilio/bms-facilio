@@ -86,7 +86,7 @@ public class V3Config implements V3Builder {
         return this.listHandler;
     }
 
-    public V3Builder build() {
+    public V3Config build() {
         return this;
     }
 
@@ -162,7 +162,7 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public V3Builder build() {
+        public V3Config build() {
             return this.parent.build();
         }
 
@@ -256,7 +256,7 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public V3Builder build() {
+        public V3Config build() {
             return this.parent.build();
         }
 
@@ -351,7 +351,7 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public V3Builder build() {
+        public V3Config build() {
             return this.parent.build();
         }
 
@@ -432,7 +432,7 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public V3Builder build() {
+        public V3Config build() {
             return this.parent.build();
         }
 
@@ -488,7 +488,7 @@ public class V3Config implements V3Builder {
         }
 
         @Override
-        public V3Builder build() {
+        public V3Config build() {
             return this.parent.build();
         }
 
