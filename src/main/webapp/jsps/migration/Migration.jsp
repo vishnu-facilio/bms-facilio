@@ -429,6 +429,7 @@
         //vendor contact
 
         FacilioModule vendorModule = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
+        if(vendorModule != null && vendorModule.getModuleId() > 0){
         FacilioModule vc = new FacilioModule();
         vc.setName("vendorcontact");
         vc.setDisplayName("Vendor Contact");
@@ -483,9 +484,11 @@
         ((BooleanField)isLabour).setTrueVal("Yes");
         ((BooleanField)isLabour).setFalseVal("No");
         modBean.addField(isLabour);
+        }
 
 
         FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+        if(tenantModule != null && tenantModule.getModuleId() > 0){
         FacilioModule tc = new FacilioModule();
         tc.setName("tenantcontact");
         tc.setDisplayName("Tenant Contact");
@@ -540,6 +543,7 @@
         ((BooleanField)occupantPortalAccess).setTrueVal("Enabled");
         ((BooleanField)occupantPortalAccess).setFalseVal("Disabled");
         modBean.addField(occupantPortalAccess);
+        }
 
         //employee
 
@@ -598,6 +602,7 @@
         modBean.addField(isLabour2);
 
         FacilioModule clientModule = modBean.getModule(FacilioConstants.ContextNames.CLIENT);
+        if(clientModule != null && clientModule.getModuleId() > 0){
         FacilioModule cc = new FacilioModule();
         cc.setName("clientcontact");
         cc.setDisplayName("Client Contact");
@@ -645,6 +650,8 @@
         ((BooleanField)clientPortalAccess).setTrueVal("Enabled");
         ((BooleanField)clientPortalAccess).setFalseVal("Disabled");
         modBean.addField(clientPortalAccess);
+        
+        }
 
 
     }
@@ -655,7 +662,7 @@
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     
     ArrayList<Long> prodOrgIds = new ArrayList<Long>(Arrays.asList(1L,2L,53L,58L,60L,63L,75L,78L,81L,88L,90L,92L,93L,95L,99L,104L,107L));
-    ArrayList<Long> stageOrgIds = new ArrayList<Long>(Arrays.asList(1L,2L,53L,58L,60L,63L,75L,78L,81L,88L,90L,92L,93L,95L,99L));
+    ArrayList<Long> stageOrgIds = new ArrayList<Long>(Arrays.asList(1L,2L,53L,58L,60L,63L,75L,78L,81L,88L,90L,92L,93L,95L,99L,104L,107L,108L,109L,111L,112L,113L,114L,116L,120L,122L,125L,129L,133L,134L,135L,136L,137L,138L,139L,140L,141L,142L,143L,144L,145L,146L,147L,148L,149L,150L,151L,152L,153L,154L,155L,156L,157L,158L,163L,164L,165L,168L,169L,170L,171L,172L,173L,174L,176L,177L,178L,179L,180L,181L,182L,183L,184L,185L,186L,187L,188L,190L,191L,192L,193L,194L,195L,196L,197L,198L,199L,200L,201L,203L,204L,205L,206L,207L,208L,209L,210L,211L,212L,213L,214L,218L,219L,220L,223L,224L,225L,226L,227L,228L,231L,232L,233L,236L,237L,238L,239L,240L,241L,242L,243L,244L,245L,246L,247L,248L,249L,250L,251L,252L,253L,254L,255L,256L,257L,258L,259L,260L,261L,262L,263L,264L,265L,266L,267L,268L,269L,270L,271L,272L,273L,274L,275L,276L,277L,278L,279L,280L,281L,282L,283L,284L,285L,286L,287L,288L,290L,291L));
     
     for (Organization org : orgs) {
         if(FacilioProperties.isProduction() && prodOrgIds.contains(org.getOrgId())){
