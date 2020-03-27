@@ -176,7 +176,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public void createUserEntry(long orgId, User user, boolean isSignUp, boolean isEmailVerificationNeeded) throws Exception {
 
-		if (isSignUp && !user.getUserVerified()) {
+		if (isSignUp && !user.isUserVerified()) {
 			sendEmailRegistration(user);
 		}
 		user.setOrgId(orgId);
