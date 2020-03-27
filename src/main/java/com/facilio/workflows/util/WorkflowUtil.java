@@ -86,6 +86,7 @@ import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
 import com.facilio.workflows.functions.FacilioFieldFunctions;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
+import com.facilio.workflows.functions.FacilioHTTPFunctions;
 import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
@@ -2081,6 +2082,9 @@ public class WorkflowUtil {
 				case CHAT_BOT:
 					facilioWorkflowFunction = FacilioChatBotFunctions.getFacilioChatBotFunctions(functionName);
 					break;
+				case HTTP:
+					facilioWorkflowFunction = FacilioHTTPFunctions.getFacilioHTTPFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2170,6 +2174,9 @@ public class WorkflowUtil {
 					break;
 				case CHAT_BOT:
 					facilioWorkflowFunction = new ArrayList<>( FacilioChatBotFunctions.getAllFunctions().values());
+					break;
+				case HTTP:
+					facilioWorkflowFunction = new ArrayList<>( FacilioHTTPFunctions.getAllFunctions().values());
 					break;
 			}
 		}
