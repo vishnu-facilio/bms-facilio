@@ -163,7 +163,7 @@ public class ImportFieldFactory {
 	public static JSONObject getImportOptions(FacilioModule module){
 		JSONObject options = new JSONObject();
 
-		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
+		if(module.getName().equals(FacilioConstants.ContextNames.ASSET) || module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
 				if (setting.toString() != ImportSetting.BOTH.toString() && setting.toString() != ImportSetting.INSERT_SKIP.toString()) {
 					options.put(setting.toString(), setting.getValue());

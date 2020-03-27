@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
@@ -25,6 +16,14 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SwitchToAddResourceChain extends FacilioCommand {
 
@@ -120,7 +119,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, tools);
 			c.execute(context);
 		} 
-		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER) && ImportAPI.isInsertImport(importProcessContext)) {
 			
 			context.put(ImportAPI.ImportProcessConstants.READINGS_CONTEXT_LIST, readingsContext);
 			Long siteId = importProcessContext.getSiteId();

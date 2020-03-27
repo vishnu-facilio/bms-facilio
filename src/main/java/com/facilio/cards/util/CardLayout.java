@@ -262,7 +262,7 @@ public enum CardLayout {
 					.select(fields)
 					.orderBy("ID DESC");
 			if (criteria != null) {
-				selectRecordBuilder.andCriteria(criteria)
+				selectRecordBuilder.andCriteria(criteria).limit(500)
 				;
 			} else {
 				selectRecordBuilder.limit(50);
