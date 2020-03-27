@@ -150,15 +150,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioContext context = nonTransactionChain.getContext();
 
-        List<FacilioField> fieldsByAccessType = FieldUtil.getFieldsByAccessType((long) FacilioField.AccessType.CRITERIA.getIntVal(), moduleName);
-        String search = this.getSearch();
-        if (search != null && !CollectionUtils.isEmpty(fieldsByAccessType)) {
-            JSONObject searchObj = new JSONObject();
-            searchObj.put("fields", fieldsByAccessType.stream().map(field -> moduleName + "." + field.getName()).collect(Collectors.joining(",")));
-            searchObj.put("query", search);
-            context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
-        }
-
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
