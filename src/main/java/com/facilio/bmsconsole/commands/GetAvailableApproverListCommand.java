@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
@@ -26,6 +27,9 @@ public class GetAvailableApproverListCommand extends FacilioCommand {
                 Map<String, Long> map = new HashMap<>();
                 map.put("fromState", currentState.getId());
                 map.put("stateFlowId", moduleData.getApprovalFlowId());
+
+                WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(moduleData.getApprovalFlowId());
+                context.put(FacilioConstants.ContextNames.APPROVAL_RULE, workflowRule);
                 List<WorkflowRuleContext> stateTransitions = StateFlowRulesAPI.getStateTransitions(Collections.singletonList(map), AbstractStateTransitionRuleContext.TransitionType.NORMAL);
                 if (CollectionUtils.isNotEmpty(stateTransitions)) {
                     ApproverWorkflowRuleContext approverWorkflowRuleContext = (ApproverWorkflowRuleContext) stateTransitions.get(0);

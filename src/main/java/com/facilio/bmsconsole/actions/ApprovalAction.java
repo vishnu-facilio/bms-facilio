@@ -109,6 +109,7 @@ public class ApprovalAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, context.get("availableStates"));
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
 		setResult(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST, context.get(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST));
+		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
 
 		return SUCCESS;
 	}
