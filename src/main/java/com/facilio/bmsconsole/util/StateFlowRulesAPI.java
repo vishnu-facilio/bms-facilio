@@ -429,21 +429,22 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 
 		Criteria stateCriteria = new Criteria();
+		if (criteria != null && !criteria.isEmpty()) {
+			stateCriteria.andCriteria(criteria);
+		}
 		for(Map<String, Long> ids: stateIds) {
 			Long fromStateId = ids.get("fromStateId");
 			long stateFlowId = ids.get("stateFlowId");
 			Long toStateId = ids.get("toStateId");
-			if (criteria == null) {
-				criteria = new Criteria();
-			}
-			criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
+			Criteria c = new Criteria();
+			c.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
 			if (fromStateId != null && fromStateId > 0) {
-				criteria.addAndCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
+				c.addAndCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
 			}
 			if (toStateId != null && toStateId > 0) {
-				criteria.addAndCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(toStateId), NumberOperators.EQUALS));
+				c.addAndCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(toStateId), NumberOperators.EQUALS));
 			}
-			stateCriteria.orCriteria(criteria);
+			stateCriteria.orCriteria(c);
 		}
 
 		if (types != null && types.length > 0) {
@@ -485,7 +486,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		List<Map<String, Long>> stateIds = new ArrayList<>();
 		for(ModuleBaseWithCustomFields record: records) {
-			if(record.getModuleState() != null) {
+			if (record.getApprovalStatus() != null) {
+				Map<String, Long> ids = new HashMap<>();
+				ids.put("fromStateId", record.getApprovalStatus().getId());
+				ids.put("stateFlowId", record.getApprovalFlowId());
+				stateIds.add(ids);
+			}
+			else if(record.getModuleState() != null) {
 				Map<String, Long> ids = new HashMap<>();
 				ids.put("fromStateId", record.getModuleState().getId());
 				ids.put("stateFlowId", record.getStateFlowId());
@@ -500,7 +507,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		Map<String, List<WorkflowRuleContext>> stateFlowMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
 			for(WorkflowRuleContext flow: stateFlows) {
-				StateflowTransitionContext stateFlowTransition = (StateflowTransitionContext)flow;
+				AbstractStateTransitionRuleContext stateFlowTransition = (AbstractStateTransitionRuleContext)flow;
 				String key = stateFlowTransition.getStateFlowId() + "_" + stateFlowTransition.getFromStateId();
 				List<WorkflowRuleContext> transitions = stateFlowMap.get(key);
 				if (transitions == null) {

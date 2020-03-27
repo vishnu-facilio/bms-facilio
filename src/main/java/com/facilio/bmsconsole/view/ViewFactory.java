@@ -1773,13 +1773,25 @@ public class ViewFactory {
 		statusField.setModule(module);
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
+		Criteria requestedStateCriteria = getRequestedStateCriteria(true);
 		Condition requested = new Condition();
 		requested.setField(statusField);
 		requested.setOperator(LookupOperator.LOOKUP);
-		requested.setCriteriaValue(getRequestedStateCriteria(true));
+		requested.setCriteriaValue(requestedStateCriteria);
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(requested);
+
+		LookupField approvalStatusField = new LookupField();
+		approvalStatusField.setName("approvalStatus");
+		approvalStatusField.setColumnName("ARRPOVAL_STATE");
+		approvalStatusField.setDataType(FieldType.LOOKUP);
+		approvalStatusField.setModule(module);
+		approvalStatusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+		Criteria c = new Criteria();
+		c.addAndCondition(CriteriaAPI.getCondition(approvalStatusField, CommonOperators.IS_NOT_EMPTY));
+		c.addAndCondition(CriteriaAPI.getCondition(approvalStatusField, requestedStateCriteria, LookupOperator.LOOKUP));
+		criteria.orCriteria(c);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
