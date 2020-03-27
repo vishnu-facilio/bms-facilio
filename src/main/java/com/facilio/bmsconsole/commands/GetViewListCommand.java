@@ -132,7 +132,7 @@ public class GetViewListCommand extends FacilioCommand {
 
 					}
 					
-					if (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment()) {
+					if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
 						List cadViews = new ArrayList<>();
 						if (customViews != null) {
 							// Temp handling for qualityfm
