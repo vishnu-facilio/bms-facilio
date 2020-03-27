@@ -28,6 +28,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
@@ -112,7 +113,7 @@ public class S3FileStore extends FileStore {
 					byte[] imageInByte = baos.toByteArray();
 					try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
 						String resizedFilePath = getRootPath() + File.separator + fileId + "-resized-" + resizeVal + "x" + resizeVal;
-						PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), resizedFilePath, bis, null);
+						PutObjectResult rs = writeStreamToS3(imageInByte, resizedFilePath);
 						if (rs != null) {
 							addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 						}
@@ -432,11 +433,17 @@ public class S3FileStore extends FileStore {
 				String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed";
 				byte[] imageInByte = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
 				if (imageInByte != null) {
-					try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
-						AwsUtil.getAmazonS3Client().putObject(getBucketName(), resizedFilePath, bis, null);
-					}
+					writeStreamToS3(imageInByte, resizedFilePath);
 				}
 			} 
+		}
+	}
+	
+	private PutObjectResult writeStreamToS3(byte[] imageInByte, String filePath) throws IOException {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
+			ObjectMetadata metaData = new ObjectMetadata();
+			metaData.setContentLength(imageInByte.length);
+			return AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, bis, metaData);
 		}
 	}
 	
