@@ -61,7 +61,6 @@
 
 
 <%
-	final String orgParam = request.getParameter("orgId");
     final class OrgLevelMigrationCommand extends FacilioCommand {
         private final Logger LOGGER = LogManager.getLogger(OrgLevelMigrationCommand.class.getName());
         @Override
@@ -72,81 +71,10 @@
             //add default app domains and applications
 
             migrate();
-            addPeopleMigration();
+//            addPeopleMigration();
 
 
             return false;
-        }
-        
-        List<FileInfo> getFileInfos(long orgId) throws Exception {
-    		
-	    		PreparedStatement pstmt = null;
-	    		ResultSet rs = null;
-	    		List<FileInfo> fileInfos = new ArrayList<>();
-	    		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection();) {
-	    			pstmt = conn.prepareStatement("SELECT * FROM FacilioFile WHERE ORGID=? AND (IS_DELETED IS NULL OR IS_DELETED = 0) AND COMPRESSED_FILE_PATH IS NULL AND CONTENT_TYPE LIKE 'image/%' ORDER BY FILE_ID");
-	    			pstmt.setLong(1, orgId);
-	    			
-	    			rs = pstmt.executeQuery();
-	    			while(rs.next()) {
-	    				FileInfo fileInfo = new FileInfo();
-	    				fileInfo.setOrgId(rs.getLong("ORGID"));
-	    				fileInfo.setFileId(rs.getLong("FILE_ID"));
-	    				if (rs.getString("FILE_NAME") != null) {
-	    					fileInfo.setFileName(rs.getString("FILE_NAME").trim());
-	    				}
-	    				if (rs.getString("FILE_PATH") != null) {
-    						fileInfo.setFilePath(rs.getString("FILE_PATH").trim());
-    					}
-    					fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
-	    				fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
-	    				fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
-	    				fileInfo.setUploadedTime(rs.getLong("UPLOADED_TIME"));
-	    				fileInfos.add(fileInfo);
-	    			}
-	    			return fileInfos;
-	    		}
-	    		catch(SQLException e) {
-	    			LOGGER.error("Error in migration while fetching files for org " + orgId, e);
-	    					e.printStackTrace();
-	    		}
-	    		finally {
-	    			DBUtil.closeAll(pstmt, rs);
-	    		}
-	    		return null;
-	    	}
-        
-        int updateCompressedEntries(List<FileInfo> fileInfos, long orgId) throws Exception {
-        		if (fileInfos.isEmpty()) {
-        			return 0;
-        		}
-        	
-	        	FacilioModule module = ModuleFactory.getFilesModule();
-	    		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFileFields());
-	    		
-	    		List<FacilioField> updateFields = new ArrayList<>();
-	    		updateFields.add(fieldMap.get("compressedFilePath"));
-	    		updateFields.add(fieldMap.get("compressedFileSize"));
-	
-	    		List<FacilioField> whereFields = new ArrayList<>();
-	    		whereFields.add(fieldMap.get("orgId"));
-	    		whereFields.add(fieldMap.get("fileId"));
-	    		
-	    		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = fileInfos.stream().map(fileInfo -> {
-	    			GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
-	    			updateVal.addUpdateValue("compressedFilePath", fileInfo.getCompressedFilePath());
-	    			updateVal.addUpdateValue("compressedFileSize", fileInfo.getCompressedFileSize());
-
-	    			updateVal.addWhereValue("orgId", orgId);
-	    			updateVal.addWhereValue("fileId", fileInfo.getFileId());
-	    			return updateVal;
-	    		}).collect(Collectors.toList());
-
-	    		return new GenericUpdateRecordBuilder()
-	    				.table(module.getTableName())
-	    				.fields(updateFields)
-	    				.batchUpdate(whereFields, batchUpdateList)
-	    				;
         }
     }
 %>
@@ -773,7 +701,7 @@
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
 
-        FacilioChain c = FacilioChain.getTransactionChain(7200_000);
+        FacilioChain c = FacilioChain.getTransactionChain();
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();
 
