@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -299,6 +300,18 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 				&& rule.getApprovalOrderEnum() == null) {
 			throw new IllegalArgumentException("Approval Order is mandatory when everyone's approval is required.");
 		}
+	}
+
+	public static List<Map<String, Object>> getPreviousSteps(Long ruleId, Long recordId) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("APPROVER_GROUP", "approverGroup", String.valueOf(""), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(ruleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(recordId), NumberOperators.EQUALS));
+		return selectBuilder.get();
 	}
 	
 	public static Map<Long, List<Long>> fetchPreviousSteps(List<Pair<Long, Long>> recordAndRuleIdPairs) throws Exception {

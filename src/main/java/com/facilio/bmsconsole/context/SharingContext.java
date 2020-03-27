@@ -124,6 +124,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 			permissionList.add(map);
 			SingleSharingContext.SharingType sharingType = sharingContext.getTypeEnum();
 			map.put("type", sharingType);
+			map.put("approverGroup", sharingContext.getId());
 			switch (sharingType) {
 				case USER:
 					map.put("permissionId", sharingContext.getUserId());

@@ -2255,4 +2255,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetApprovalRuleCommand());
 		return chain;
 	}
+
+	public static FacilioChain getApprovalDetails() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetApprovalDetailsCommand());
+		chain.addCommand(new GetApprovalRuleCommand());
+		chain.addCommand(new GetApproversListCommand());
+		return chain;
+	}
 }

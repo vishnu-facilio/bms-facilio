@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
 
 import java.util.List;
 
@@ -109,6 +110,18 @@ public class ApprovalAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
 		setResult(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST, context.get(FacilioConstants.ContextNames.PENDING_APPROVAL_LIST));
 
+		return SUCCESS;
+	}
+
+	public String getApprovalDetails() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApprovalDetails();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
+		setResult(FacilioConstants.ContextNames.APPROVAL_LIST, context.get(FacilioConstants.ContextNames.APPROVAL_LIST));
 		return SUCCESS;
 	}
 }

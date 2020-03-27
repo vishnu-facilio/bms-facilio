@@ -887,6 +887,8 @@ public class FacilioConstants {
 		public static final String PM_JOBS = "pmjobs";
 		public static final String GROUP_STATUS = "groupStatus";
 
+		public static final String APPROVAL_LIST = "approvalList";
+
 		public static final String SLA_RULE_MODULE = "slaRuleModule";
 		public static final String SLA_RULE_MODULE_LIST = "slaRuleModuleList";
 		public static final String SLA_ENTITY = "slaEntity";
