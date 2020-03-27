@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldUtil;
@@ -445,6 +446,7 @@ public class WorkflowContext implements Serializable {
 			        visitor.setWorkflowContext(this);
 			        visitor.visitFunctionHeader(tree);
 			        visitor.setParams(params);
+			        fillDefaultGlobalVariables(globalParameters);
 			        visitor.setGlobalParams(globalParameters);
 			        visitor.visit(tree);
 		        }
@@ -495,6 +497,13 @@ public class WorkflowContext implements Serializable {
 		return result;
 	}
 	
+	private void fillDefaultGlobalVariables(Map<String, Object> globalParameters) throws Exception {
+		globalParameters = globalParameters == null ? new HashMap<>() : globalParameters;
+		
+		globalParameters.put("currentOrg", FieldUtil.getAsJSON(AccountUtil.getCurrentOrg()));
+		globalParameters.put("currentUser", FieldUtil.getAsJSON(AccountUtil.getCurrentUser()));
+		
+	}
 	//	old workflow methods starts
 	// only from client
 	public void setExpressions(JSONArray workflowExpressions) throws Exception {
