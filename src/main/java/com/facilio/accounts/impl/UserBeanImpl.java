@@ -757,30 +757,7 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public List<Organization> getOrgs(long uId) throws Exception {
-		List<FacilioField> fields = new ArrayList<>();
-		List<FacilioField> orgUserFields = AccountConstants.getAppOrgUserFields();
-		fields.addAll(orgUserFields);
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
-		fields.add(AccountConstants.getApplicationIdField());
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("ORG_Users")
-				.innerJoin("ORG_User_Apps")
-				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-		;
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
-		List<Map<String, Object>> map = selectBuilder.get();
-		
-		if(CollectionUtils.isNotEmpty(map)) {
-			List<Organization> orgs = new ArrayList<Organization>();
-		  for(Map<String, Object> m : map) {	
-			 long orgId = (long)m.get("orgId");
-			  orgs.add(IAMOrgUtil.getOrg(orgId));
-		  }
-			return orgs;
-		}
-		return null;
+		return IAMUserUtil.getOrgsForUser(uId);
 	}
 
 	@Override
