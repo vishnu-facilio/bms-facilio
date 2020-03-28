@@ -2706,6 +2706,12 @@ public class TransactionChainFactory {
 			c.addCommand(new GetAccessTokenForConnectionCommand());
 			return c;
 		}
+		
+		public static FacilioChain getInvalidateConnectionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new InvalidateConnectionCommand());
+			return c;
+		}
 
 		public static FacilioChain getDeleteConnectionChain() {
 			FacilioChain c = getDefaultChain();

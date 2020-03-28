@@ -4146,6 +4146,13 @@
 			<param name="isNewPermission">true</param>
 		</action>
 		
+		<action name="invalidateConnection"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="invalidateConnection">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTORS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
 			<param name="moduleName">setup</param>

@@ -13,8 +13,10 @@ public class UpdateConnectionCommand extends FacilioCommand  {
 		
 		ConnectionContext connectionContext = (ConnectionContext) context.get(FacilioConstants.ContextNames.CONNECTION);
 		
-		
-		ConnectionUtil.updateConnectionContext(connectionContext);
+		if(connectionContext != null) {
+			
+			ConnectionUtil.updateConnectionContext(connectionContext);
+		}
 		
 		return false;
 	}

@@ -80,6 +80,18 @@ public class ConnectionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String invalidateConnection() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.getInvalidateConnectionChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+		
+		chain.execute();
+		
+		setResult("connection", connectionContext);
+		return SUCCESS;
+	}
+	
 	public String updateConnection() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
