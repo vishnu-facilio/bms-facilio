@@ -130,6 +130,8 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				; //No where condition because Old records are specified
 		
 		
+		CommonCommandUtil.handleLookupFormData(fields, workOrder.getData());
+		
 		rowsUpdated = updateBuilder.update(workOrder);
 		if (updateBuilder.getChangeSet() != null) {
 			changeSets.putAll(updateBuilder.getChangeSet());

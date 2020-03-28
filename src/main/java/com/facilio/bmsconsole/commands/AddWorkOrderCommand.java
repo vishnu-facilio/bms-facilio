@@ -78,6 +78,8 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			TicketAPI.updateTicketStatus(workOrder);
 			
+			CommonCommandUtil.handleLookupFormData(fields, workOrder.getData());
+			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.fields(fields)

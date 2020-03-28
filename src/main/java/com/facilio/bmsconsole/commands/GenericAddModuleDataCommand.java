@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -28,6 +29,8 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 			if (fields == null) {
 				fields = modBean.getAllFields(moduleName);
 			}
+			
+			CommonCommandUtil.handleLookupFormData(fields, record.getData());
 			
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
