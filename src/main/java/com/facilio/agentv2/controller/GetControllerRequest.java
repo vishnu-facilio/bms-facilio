@@ -3,7 +3,7 @@ package com.facilio.agentv2.controller;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.device.Device;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -15,7 +15,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -142,7 +141,7 @@ public class GetControllerRequest
         getControllerChain.execute();
 
         List<Controller> controllers = new ArrayList<>((List<Controller>) chainContext.get(FacilioConstants.ContextNames.RECORD_LIST));
-        if(containsCheck("query", chainContext)){
+        if(containsCheck("query", chainContext) && FacilioProperties.isDevelopment()){
             LOGGER.info(" get controller query --"+ chainContext.get("query"));
         }
         return controllers;

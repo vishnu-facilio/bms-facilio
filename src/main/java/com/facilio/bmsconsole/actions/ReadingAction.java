@@ -1,49 +1,27 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.Point;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
-import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ResetCounterMetaContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
-import com.facilio.bmsconsole.util.LoggerAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.RollUpFieldUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -55,6 +33,15 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReadingAction extends FacilioAction {
 	
@@ -1390,7 +1377,10 @@ public class ReadingAction extends FacilioAction {
 	public void setFetchInputValues(Boolean fetchInputValues) {
 		this.fetchInputValues = fetchInputValues;
 	}
-	
+
+	private static final Logger LOGGER = LogManager.getLogger(ReadingAction.class.getName());
+
+
 	public String setReading () throws Exception {
 		Map<String, Object> instance = TimeSeriesAPI.getMappedInstance(assetId,fieldId);
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
@@ -1398,7 +1388,25 @@ public class ReadingAction extends FacilioAction {
 			instance.put("fieldId", fieldId);
 			PublishData data = IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
 			setResult("data", data);
-			
+		}else {
+			if(AccountUtil.getCurrentOrg()!= null){
+				Criteria criteria = new Criteria();
+				FacilioModule pointModule = ModuleFactory.getPointModule();
+				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(resourceId), NumberOperators.EQUALS));
+				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointAssetCategoryIdField(pointModule), String.valueOf(assetId), NumberOperators.EQUALS));
+				GetPointRequest getPointRequest = new GetPointRequest()
+						.withCriteria(criteria);
+				List<Point> points = getPointRequest.getPoints();
+				if ((points != null) && ( ! points.isEmpty())){
+					Point point = points.get(0);
+					point.setValue(value);
+					ControllerMessenger.setValue(point);
+				}else {
+					LOGGER.info("No point for assetid "+assetId+" and fieldId "+fieldId+" for set vlaue "+value);
+				}
+			}else {
+				LOGGER.info("Exception occurred current org is null");
+			}
 		}
 		return SUCCESS;
 	}

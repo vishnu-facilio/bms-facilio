@@ -1,18 +1,8 @@
 package com.facilio.agentv2.point;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -24,6 +14,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class GetPointRequest {
     private static final Logger LOGGER = LogManager.getLogger(GetPointRequest.class.getName());
@@ -141,7 +137,9 @@ public class GetPointRequest {
                     }
                     selectRecordBuilder.limit(30);
                     data.addAll(selectRecordBuilder.get());
-                    LOGGER.info(controllerType.asString()+" Query "+selectRecordBuilder.toString());
+                    if(FacilioProperties.isDevelopment()){
+                        LOGGER.info(controllerType.asString()+" Query "+selectRecordBuilder.toString());
+                    }
                 }catch (Exception e){
                     LOGGER.info("Exceptio  while getting points for type "+controllerType.asString()+" "+e);
                 }

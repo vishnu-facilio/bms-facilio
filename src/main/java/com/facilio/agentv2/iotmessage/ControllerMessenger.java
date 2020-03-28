@@ -97,9 +97,14 @@ public class ControllerMessenger {
                 //
                 case SET:
                     JSONArray pointsData = MessengerUtil.getPointsData(points);
-                    JSONObject pointData = (JSONObject) pointsData.get(0);
-                    pointData.put(AgentConstants.VALUE, points.get(0).getPresentValue());
-                    object.put(AgentConstants.POINTS, pointData);
+                    for (Object pointsDatumObject : pointsData) {
+                        JSONObject pointdatum = (JSONObject) pointsDatumObject;
+                        pointdatum.put(AgentConstants.VALUE,points.get(pointsData.indexOf(pointdatum)).getValue());
+                        if(pointdatum.containsKey(AgentConstants.DEVICE_ID)){
+                            pointdatum.remove(AgentConstants.DEVICE_ID);
+                        }
+                    }
+                    object.put(AgentConstants.POINTS, pointsData);
                     break;
                 case CONFIGURE:
                 case REMOVE:

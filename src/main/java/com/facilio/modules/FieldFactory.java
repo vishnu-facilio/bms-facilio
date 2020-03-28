@@ -5928,9 +5928,9 @@ public class FieldFactory {
         //fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
         fields.add(getControllerIdField(module));
         fields.add(getFieldDeviceId(module));
-        fields.add(getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.RESOURCE_ID, "RESOURCE_ID", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getPointAssetCategoryIdField(module));
+        fields.add(getPointResourceIdField(module));
+        fields.add(getPointFieldIdField(module));
         fields.add(getField(AgentConstants.WRITABLE, "WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
@@ -5945,6 +5945,18 @@ public class FieldFactory {
         subscribeStatusfield.setEnumName("SubscribeStatus");
         fields.add(subscribeStatusfield);
         return fields;
+    }
+
+    public static FacilioField getPointFieldIdField(FacilioModule module) {
+        return getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getPointAssetCategoryIdField(FacilioModule module) {
+        return getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getPointResourceIdField(FacilioModule module) {
+        return getField(AgentConstants.RESOURCE_ID, "RESOURCE_ID", module, FieldType.NUMBER);
     }
 
     public static FacilioField getControllerTypeField() {
