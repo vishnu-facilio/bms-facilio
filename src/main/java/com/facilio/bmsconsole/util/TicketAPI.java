@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -56,6 +55,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -1595,9 +1595,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	public static void associateTenant (TicketContext ticket) throws Exception {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 ) {
-				List<TenantContext> tenants = TenantsAPI.getAllTenantsForResource(ticket.getResource().getId());
-				if (tenants == null || tenants.stream().noneMatch(tenant -> tenant.getId() == ticket.getTenant().getId())) {
-					throw new IllegalArgumentException("The tenant associated doesn't belong to the workorder space/asset");
+				if (AccountUtil.getCurrentOrg().getOrgId() != 320l) {
+					List<TenantContext> tenants = TenantsAPI.getAllTenantsForResource(ticket.getResource().getId());
+					if (tenants == null || tenants.stream().noneMatch(tenant -> tenant.getId() == ticket.getTenant().getId())) {
+						throw new IllegalArgumentException("The tenant associated doesn't belong to the workorder space/asset");
+					}
 				}
 			}
 			else {

@@ -469,7 +469,7 @@ private Map<String, Double> readingData;
 	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
-//	         tenant.parseFormData();
+	         tenant.parseFormData();
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 	         context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
