@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -65,6 +66,9 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
+		}
+		else if (moduleName.equals(ContextNames.TICKET_PRIORITY)) {
+			builder.orderBy("SEQUENCE_NUMBER");
 		}
 		
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
