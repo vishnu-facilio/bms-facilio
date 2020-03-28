@@ -28,6 +28,16 @@ public class TicketPriorityContext extends ModuleBaseWithCustomFields {
 		this.priority = priority;
 	}
 	
+
+	private String description;
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	private int sequenceNumber;
 	public int getSequenceNumber() {
 		return sequenceNumber;
