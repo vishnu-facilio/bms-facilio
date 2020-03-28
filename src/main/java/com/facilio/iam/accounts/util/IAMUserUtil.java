@@ -288,8 +288,8 @@ public class IAMUserUtil {
 		return getUserDatav3(userIds, orgId, shouldFetchDeleted);
 	}
 	
-	public static Map<String, Object> getUserFromPhone(String phone, String identifier) throws Exception {
-		return getUserForPhone(phone, identifier, -1);
+	public static Map<String, Object> getUserFromPhone(String phone, String identifier, long orgId) throws Exception {
+		return getUserForPhone(phone, identifier, orgId);
 	}
 	
 	

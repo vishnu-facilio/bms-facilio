@@ -584,9 +584,9 @@ public class UserBeanImpl implements UserBean {
 
 
 	@Override
-	public User getUserFromPhone(String phone, String identifier) throws Exception {
+	public User getUserFromPhone(String phone, String identifier, long orgId) throws Exception {
 
-		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, identifier);
+		Map<String, Object> props = IAMUserUtil.getUserFromPhone(phone, identifier, orgId);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(-1, props, true, true, false);
 		}
@@ -594,9 +594,9 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public User getUserFromEmail(String email, String identifier) throws Exception {
+	public User getUserFromEmail(String email, String identifier, long orgId) throws Exception {
 
-		Map<String, Object> props = IAMUserUtil.getUserForEmail(email, identifier , -1);
+		Map<String, Object> props = IAMUserUtil.getUserForEmail(email, identifier , orgId);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(-1, props, true, true, false);
 		}

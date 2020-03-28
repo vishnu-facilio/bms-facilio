@@ -43,7 +43,7 @@ public interface UserBean {
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
-	public User getUserFromPhone(String phone, String identifier) throws Exception;
+	public User getUserFromPhone(String phone, String identifier, long orgId) throws Exception;
 	
 	public List<User> getUsers(Criteria criteria, boolean fetchOnlyActiveUsers, boolean fetchDeleted, Collection<Long>... ouids) throws Exception;
 	
@@ -100,7 +100,7 @@ public interface UserBean {
 	
 	public int deletePeopleForUser(User user) throws Exception;
 	
-	public User getUserFromEmail(String email, String identifier) throws Exception;
+	public User getUserFromEmail(String email, String identifier, long orgId) throws Exception;
 	
 	
 	
