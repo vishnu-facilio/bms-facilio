@@ -35,7 +35,7 @@ public class AddRequesterCommand extends FacilioCommand {
 					requester.setId(portalUser.getOuid());
 				}
 				else {
-					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, appDomain.get(0).getIdentifier(), true));
+					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, appDomain.get(0).getIdentifier(), true, false));
 				}
 				
 				if (isPublicRequest != null && isPublicRequest) {

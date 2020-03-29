@@ -13,6 +13,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
+import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
+import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -37,8 +39,9 @@ public class AddTenantUserCommand extends FacilioCommand {
 		if(eventType == EventType.CREATE) {
 			ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-				PeopleAPI.addTenantPrimaryContactAsPeople(primarycontact);
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(tenant.getPrimaryContactEmail())) {
+				TenantContactContext tc = getDefaultTenantContact(tenant);
+				PeopleAPI.addTenantPrimaryContactAsPeople(tc);
 			}
 		}
 		else {
@@ -53,9 +56,10 @@ public class AddTenantUserCommand extends FacilioCommand {
 					existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
 					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
 				}
-				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-					PeopleAPI.addTenantPrimaryContactAsPeople(existingcontactForPhone);
-				}
+			}
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(tenant.getPrimaryContactEmail())) {
+				TenantContactContext tc = getDefaultTenantContact(tenant);
+				PeopleAPI.addTenantPrimaryContactAsPeople(tc);
 			}
 		}
 		
@@ -91,5 +95,17 @@ public class AddTenantUserCommand extends FacilioCommand {
 		contact.setIsPrimaryContact(true);
 		contact.setIsPortalAccessNeeded(false);
 		return contact;
+	}
+	
+	private TenantContactContext getDefaultTenantContact(TenantContext tenant) throws Exception {
+		TenantContactContext tc = new TenantContactContext();
+		tc.setName(tenant.getPrimaryContactName());
+		tc.setEmail(tenant.getPrimaryContactEmail());
+		tc.setPhone(tenant.getPrimaryContactPhone());
+		tc.setPeopleType(PeopleType.TENANT_CONTACT);
+		tc.setTenant(tenant);
+		tc.setIsPrimaryContact(true);
+		
+		return tc;
 	}
 }

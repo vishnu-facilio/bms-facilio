@@ -29,6 +29,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.builder.mssql.DeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -175,21 +176,19 @@ public class PeopleAPI {
 	
 	}
 	
-	public static List<Map<String,Object>> getTenantContacts(List<Long> tenantIds) throws Exception {
+	public static List<TenantContactContext> getTenantContacts(Long tenantId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField tenantId = fieldMap.get("tenant");
 		
 		SelectRecordsBuilder<TenantContactContext> builder = new SelectRecordsBuilder<TenantContactContext>()
 														.module(module)
 														.beanClass(TenantContactContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition(tenantId, tenantIds, PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(tenantId), NumberOperators.EQUALS));
 														;
 		
-		List<Map<String,Object>> records = builder.getAsProps();
+		List<TenantContactContext> records = builder.get();
 		return records;
 		
 	}
@@ -272,7 +271,7 @@ public class PeopleAPI {
 		       }
 		}
 		PeopleContext existingPeople = getPeopleForId(person.getId());
-    	if(appDomain != null) {
+		if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
         	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
 				if(user != null) {
@@ -447,7 +446,7 @@ public class PeopleAPI {
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomainObj);
 		
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true);
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true, false);
 		return user;
 		
 	}
@@ -476,7 +475,7 @@ public class PeopleAPI {
 		user.setAppDomain(appDomainObj);
 		
 		
-		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false);
+		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
 		return user;
 	}
 	
@@ -578,19 +577,10 @@ public class PeopleAPI {
 			
 	}
 	
-	public static void addTenantPrimaryContactAsPeople(ContactsContext contact) throws Exception {
+	public static void addTenantPrimaryContactAsPeople(TenantContactContext tc) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
-		
-		TenantContactContext tc = new TenantContactContext();
-		tc.setName(contact.getName());
-		tc.setEmail(contact.getEmail());
-		tc.setPhone(contact.getPhone());
-		tc.setPeopleType(PeopleType.TENANT_CONTACT);
-		tc.setTenant(contact.getTenant());
-		tc.setIsPrimaryContact(true);
-		
 		PeopleContext peopleExisiting = getPeople(tc.getEmail());
 		if(peopleExisiting != null) {
 			tc.setId(peopleExisiting.getId());

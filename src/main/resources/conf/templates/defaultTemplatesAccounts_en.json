@@ -18,6 +18,10 @@
 	"7" : {
 		"name": "ADDED_TO_APP_EMAIL",
 		"message_ftl": "appAddition"
+	},
+	"8" : {
+		"name": "PORTAL_SELF_SIGNUP",
+		"message_ftl": "portalSignup"
 	}
 	
 }

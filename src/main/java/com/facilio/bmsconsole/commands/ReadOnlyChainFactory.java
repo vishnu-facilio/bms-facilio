@@ -2345,6 +2345,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new AddTenantContactLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	

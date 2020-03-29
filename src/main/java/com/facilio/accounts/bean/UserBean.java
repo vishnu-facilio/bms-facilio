@@ -17,9 +17,9 @@ import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
-	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded) throws Exception;
+	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded, boolean isSelfSignup) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople, boolean isSelfSignup) throws Exception;
 
 	User verifyEmail(String token) throws Exception;
 

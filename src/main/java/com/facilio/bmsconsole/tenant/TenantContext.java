@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -324,9 +325,13 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	}
 	
 	
-	
-	
-	
+	private List<TenantContactContext> peopleTenantContacts;
+	public List<TenantContactContext> getPeopleTenantContacts() {
+		return peopleTenantContacts;
+	}
+	public void setPeopleTenantContacts(List<TenantContactContext> peopleTenantContacts) {
+		this.peopleTenantContacts = peopleTenantContacts;
+	}
 	
 	
 }

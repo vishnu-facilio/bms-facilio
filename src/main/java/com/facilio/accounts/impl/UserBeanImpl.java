@@ -124,42 +124,17 @@ public class UserBeanImpl implements UserBean {
 		builder.delete();
 	}
 	
-	private long checkIfUserAlreadyPresentInApp(long userId, long applicationId, long orgId) throws Exception {
 	
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getOrgUserAppsFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("ORG_User_Apps")
-				.innerJoin("ORG_Users")
-				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID","applicationId" , String.valueOf(applicationId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID","orgId" , String.valueOf(orgId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID","userId" , String.valueOf(userId), NumberOperators.EQUALS));
-				
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(props)) {
-			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-			if(CollectionUtils.isNotEmpty(props)) {
-				Map<String, Object> map = props.get(0);
-				return (long)map.get("id");
-			}
-		}
-		return -1;
-	
-	}
 	
 	
 	@Override
-	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded) throws Exception {
+	public void createUser(long orgId, User user, String identifier, boolean isEmailVerificationNeeded, boolean isSelfSignup) throws Exception {
 		try {
 			user.setUserStatus(true);
 		
 			if(IAMUserUtil.addUser(user, orgId, identifier) > 0) {
-				if(checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) <= 0) {
-					createUserEntry(orgId, user, false, isEmailVerificationNeeded);
+				if(ApplicationApi.checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), orgId) <= 0) {
+					createUserEntry(orgId, user, isSelfSignup, isEmailVerificationNeeded);
 				}
 				else {
 					throw new IllegalArgumentException("User already exists in app");
@@ -318,7 +293,7 @@ public class UserBeanImpl implements UserBean {
 			if (registration) {
 				inviteLink = getUserLink(user, "/emailregistration/", appDomainObj.getDomain());
 			}
-			String portalType = "Service Portal";
+			String portalType = "Occupant Portal";
 			if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.TENANT_PORTAL) {
 				portalType = "Tenant Portal" ;
 			}
@@ -766,7 +741,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String identifier, boolean addPeople, boolean isSelfSignup) throws Exception {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
@@ -775,7 +750,7 @@ public class UserBeanImpl implements UserBean {
 				user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 				user.setUserStatus(true);
 				
-				createUser(orgId, user, user.getIdentifier(), isEmailVerificationNeeded);
+				createUser(orgId, user, user.getIdentifier(), isEmailVerificationNeeded, isSelfSignup);
 				if(addPeople) {
 					PeopleAPI.addPeopleForRequester(user);
 				}
@@ -1058,13 +1033,21 @@ public class UserBeanImpl implements UserBean {
 		placeholders.put("toUser",user);
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
+		if(user.getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
+				addBrandPlaceHolders("brandName", placeholders);
+				addBrandPlaceHolders("brandUrl", placeholders);
+				addBrandPlaceHolders("brandLogo", placeholders);
+				AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders, true);
+			} else {
+				AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders, true);
+			}
+		}
+		else {
 			addBrandPlaceHolders("brandName", placeholders);
 			addBrandPlaceHolders("brandUrl", placeholders);
 			addBrandPlaceHolders("brandLogo", placeholders);
-			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders, true);
-		} else {
-			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders, true);
+			AccountEmailTemplate.PORTAL_SELF_SIGNUP.send(placeholders, true);
 		}
 
 	}
@@ -1136,6 +1119,7 @@ public class UserBeanImpl implements UserBean {
 			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(-1, criteria, currentOrg.getOrgId(), null);
 			List<Map<String , Object>> mapList = selectRecordBuilder.get();
 			if(CollectionUtils.isNotEmpty(mapList)) {
+				IAMUserUtil.setIAMUserPropsv3(mapList, currentOrg.getOrgId(), false);
 				mapList.get(0).putAll(props);
 				User user = createUserFromProps(mapList.get(0), true, true, false);
 				return user;

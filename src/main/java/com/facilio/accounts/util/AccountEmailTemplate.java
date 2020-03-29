@@ -26,7 +26,8 @@ public enum AccountEmailTemplate {
 	RESET_PASSWORD(4),
 	ALERT_EMAIL_VERIFICATION(5),
 	PORTAL_SIGNUP(6),
-	ADDED_TO_APP_EMAIL(7)
+	ADDED_TO_APP_EMAIL(7),
+	PORTAL_SELF_SIGNUP(8)
 	;
 	
 	private static Logger log = LogManager.getLogger(AccountEmailTemplate.class.getName());
@@ -207,6 +208,22 @@ public enum AccountEmailTemplate {
 			}
 			catch(Exception e) {
 				json.put("message", "Hi ${toUser.name}, Please note that you are now a part of the ${org.name} and have access to the ${appType} of the organization." );
+				json.put("mailType", "text");
+			}
+			break;
+		case 8:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject","[${org.name}] Welcome!" );
+			try {
+				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				template.setFtl(true);
+				json.put("message",template.getOriginalTemplate().get("message"));
+				json.put("mailType", "html");
+				
+			}
+			catch(Exception e) {
+				json.put("message", "Hi ${toUser.name}, Please note that you have signed up to the ${appType} of the organization ${org.name}. Please click the below link to verify your email address. ${invitelink}" );
 				json.put("mailType", "text");
 			}
 			break;

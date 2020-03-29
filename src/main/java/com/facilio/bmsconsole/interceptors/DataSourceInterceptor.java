@@ -72,7 +72,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
 				}
-				else {
+				if(organization == null) {
 					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);

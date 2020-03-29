@@ -781,7 +781,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					user.setApplicationId(appId);
 					user.setAppDomain(appDomainObj);
 					
-					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false,appDomainObj.getIdentifier(), true);
+					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false,appDomainObj.getIdentifier(), true, false);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;

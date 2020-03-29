@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.AppDomain.GroupType;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -28,6 +29,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -187,108 +189,140 @@ public class ApplicationApi {
 	}
 	
 	public static long addUserInApp(User user) throws Exception {
+		if(checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId()) <= 0) {
 		   return AccountUtil.getUserBean().addToORGUsersApps(user, true);
 		}
-		
-		public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
-			long applicationId = getApplicationIdForApp(appDomain);
-		   return AccountUtil.getUserBean().deleteUserFromApps(user, applicationId);
+		else {
+			throw new IllegalArgumentException("User already exists in app");
 		}
+	}
 		
-		public static int deleteUserFromApp(User user, long appId) throws Exception {
-		   return AccountUtil.getUserBean().deleteUserFromApps(user, appId);
+	public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
+		long applicationId = getApplicationIdForApp(appDomain);
+	   return AccountUtil.getUserBean().deleteUserFromApps(user, applicationId);
+	}
+	
+	public static int deleteUserFromApp(User user, long appId) throws Exception {
+	   return AccountUtil.getUserBean().deleteUserFromApps(user, appId);
+	}
+	
+	public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
+		List<FacilioField> fields = FieldFactory.getApplicationFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+									.select(fields)
+									.table(ModuleFactory.getApplicationModule().getTableName())
+									;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return (long)list.get(0).get("id");
 		}
+		return -1;
+	}
+	
+	public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
 		
-		public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
-			List<FacilioField> fields = FieldFactory.getApplicationFields();
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-										.select(fields)
-										.table(ModuleFactory.getApplicationModule().getTableName())
-										;
-			selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> list = selectBuilder.get();
-			if(CollectionUtils.isNotEmpty(list)) {
-				return (long)list.get(0).get("id");
-			}
-			return -1;
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new IllegalArgumentException("Invalid app domain");
 		}
+		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		return appId;
+	}
+	
+	public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getApplicationFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+									.select(fields)
+									.table(ModuleFactory.getApplicationModule().getTableName())
+									;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(applicationId), NumberOperators.EQUALS));
 		
-		public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
-			
-			AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-			if(appDomainObj == null) {
-				throw new IllegalArgumentException("Invalid app domain");
-			}
-			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
-			return appId;
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			long appDomainId = (long)list.get(0).get("appDomainId");
+			return IAMAppUtil.getAppDomain(appDomainId);
 		}
-		
-		public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {
-			List<FacilioField> fields = FieldFactory.getApplicationFields();
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-										.select(fields)
-										.table(ModuleFactory.getApplicationModule().getTableName())
-										;
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(applicationId), NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> list = selectBuilder.get();
-			if(CollectionUtils.isNotEmpty(list)) {
-				long appDomainId = (long)list.get(0).get("appDomainId");
-				return IAMAppUtil.getAppDomain(appDomainId);
-			}
-			return null;
-		}
-		
-		public static void addDefaultApps(long orgId) throws Exception {
-			List<FacilioField> fields = FieldFactory.getApplicationFields();
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getApplicationModule().getTableName())
-					.fields(fields);
+		return null;
+	}
+	
+	public static void addDefaultApps(long orgId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getApplicationFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getApplicationModule().getTableName())
+				.fields(fields);
 
-			Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
-			AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-			ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId());
+		Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
+		AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId());
 
-			
-			AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
-			ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", false, servicePortalApp.getId());
-			
-			AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
-			ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId());
-			
-			AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliovendors.com");
-			ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId());
-			
-			AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".facilioclients.com");
-			ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId());
-			
-			List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
-			applicationsDefault.add(facilioApplication);
-			applicationsDefault.add(servicePortalapplication);
-			applicationsDefault.add(tenantPortalapplication);
-			applicationsDefault.add(vendorPortalapplication);
-			applicationsDefault.add(clientPortalapplication);
-			
-			List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
-
-			insertBuilder.addRecords(props);
-			insertBuilder.save();
-		}
 		
-		public static void addDefaultAppDomains(long orgId) throws Exception {
-			Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-			AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
-			AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId);
-			AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
-			AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId);
-			
-			List<AppDomain> appDomains = new ArrayList<AppDomain>();
-			appDomains.add(servicePortalAppDomain);
-			appDomains.add(vendorPortalAppDomain);
-			appDomains.add(tenantPortalAppDomain);
-			appDomains.add(clientPortalAppDomain);
-			
-			IAMAppUtil.addAppDomains(appDomains);
+		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
+		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", false, servicePortalApp.getId());
+		
+		AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
+		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId());
+		
+		AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliovendors.com");
+		ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId());
+		
+		AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".facilioclients.com");
+		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId());
+		
+		List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
+		applicationsDefault.add(facilioApplication);
+		applicationsDefault.add(servicePortalapplication);
+		applicationsDefault.add(tenantPortalapplication);
+		applicationsDefault.add(vendorPortalapplication);
+		applicationsDefault.add(clientPortalapplication);
+		
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
+
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+	}
+	
+	public static void addDefaultAppDomains(long orgId) throws Exception {
+		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+		AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
+		AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId);
+		AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
+		AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId);
+		
+		List<AppDomain> appDomains = new ArrayList<AppDomain>();
+		appDomains.add(servicePortalAppDomain);
+		appDomains.add(vendorPortalAppDomain);
+		appDomains.add(tenantPortalAppDomain);
+		appDomains.add(clientPortalAppDomain);
+		
+		IAMAppUtil.addAppDomains(appDomains);
+	}
+	
+	public static long checkIfUserAlreadyPresentInApp(long userId, long applicationId, long orgId) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getOrgUserAppsFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_User_Apps")
+				.innerJoin("ORG_Users")
+				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID","applicationId" , String.valueOf(applicationId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID","orgId" , String.valueOf(orgId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID","userId" , String.valueOf(userId), NumberOperators.EQUALS));
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				Map<String, Object> map = props.get(0);
+				return (long)map.get("id");
+			}
 		}
+		return -1;
+	
+	}
 }

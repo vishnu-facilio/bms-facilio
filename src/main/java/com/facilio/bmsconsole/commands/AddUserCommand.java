@@ -31,7 +31,7 @@ public class AddUserCommand extends FacilioCommand {
 			user.setAppDomain(appDomainObj);
 			
 			
-			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailverificationNeeded);
+			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailverificationNeeded, false);
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");

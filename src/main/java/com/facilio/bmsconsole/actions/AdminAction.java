@@ -118,7 +118,7 @@ public class AdminAction extends ActionSupport {
 			newUser.setApplicationId(appId);
 			newUser.setAppDomain(appDomainObj);
 			
-			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, appDomainObj.getIdentifier(), false);
+			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, appDomainObj.getIdentifier(), false, false);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

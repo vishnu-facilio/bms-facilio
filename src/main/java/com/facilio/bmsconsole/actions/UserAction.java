@@ -289,7 +289,7 @@ public class UserAction extends FacilioAction {
 			user.setApplicationId(getAppId());
 			user.setAppDomain(appDomain);
 			
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, isEmailVerificationNeeded(), true, appDomain.getIdentifier(), true) > 0) {
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, isEmailVerificationNeeded(), true, appDomain.getIdentifier(), true, false) > 0) {
 				setUserId(user.getId());
 			}
 			else {
