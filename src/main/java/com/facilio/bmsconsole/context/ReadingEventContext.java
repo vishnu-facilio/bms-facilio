@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
@@ -8,6 +10,8 @@ import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.util.List;
 
 public class ReadingEventContext extends BaseEventContext {
 	private static final long serialVersionUID = 1L;
@@ -62,6 +66,8 @@ public class ReadingEventContext extends BaseEventContext {
 		if (readingFieldId != -1) {
 			readingOccurrence.setReadingFieldId(readingFieldId);
 		}
+		createRuleRollUpEvent(this, context);
+		createAssetRollUpEvent(this, context);
 		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
 	}
 
@@ -122,4 +128,94 @@ public class ReadingEventContext extends BaseEventContext {
 			setSubRule(ruleContext);
 		}
 	}
+	@Override
+	public void setBaseAlarm(BaseAlarmContext baseAlarm) {
+		super.setBaseAlarm(baseAlarm);
+		if (assetRollUpEvent != null) {
+			baseAlarm.addAdditionalEvent(assetRollUpEvent);
+		}
+		if (ruleRollUpEvent != null) {
+			baseAlarm.addAdditionalEvent(ruleRollUpEvent);
+		}
+	}
+	public void createRuleRollUpEvent(ReadingEventContext readingEvent, Context context) throws  Exception {
+		this.ruleRollUpEvent = constructRuleRollUpEvent(readingEvent);
+
+	}
+
+	public void createAssetRollUpEvent(ReadingEventContext readingEvent, Context context) throws  Exception {
+		this.assetRollUpEvent = constructAssetRollUpEvent(readingEvent);
+	}
+
+
+	private AssetRollUpEvent constructAssetRollUpEvent (ReadingEventContext readingEvent) throws Exception {
+
+		AssetRollUpEvent assetEvent = new AssetRollUpEvent();
+		assetEvent.setMessage(readingEvent.getMessage());
+		assetEvent.setCreatedTime(readingEvent.getCreatedTime());
+		assetEvent.setResource(readingEvent.getResource());
+		assetEvent.setDescription(readingEvent.getDescription());
+		assetEvent.setSiteId(readingEvent.getSiteId());
+		assetEvent.setDescription(readingEvent.getDescription());
+		assetEvent.setReadingFieldId(readingEvent.getReadingFieldId());
+		AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(readingEvent.getSeverity().getId());
+		assetEvent.setSeverity(alarmSeverity);
+		assetEvent.setRule(readingEvent.getRule());
+		assetEvent.setSubRule(readingEvent.getSubRule());
+		return assetEvent;
+
+	}
+
+	public AssetRollUpEvent constructClearAssetRollUpEvent (ReadingEventContext readingEvent) throws Exception {
+		AssetRollUpEvent assetClearEvent = new AssetRollUpEvent();
+		assetClearEvent.setResource(readingEvent.getResource());
+		assetClearEvent.setReadingFieldId(readingEvent.getReadingFieldId());
+		assetClearEvent.setRule(readingEvent.getRule());
+		assetClearEvent.setSubRule(readingEvent.getSubRule());
+		assetClearEvent.setEventMessage(readingEvent.getMessage());
+		assetClearEvent.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+		assetClearEvent.setCreatedTime(readingEvent.getCreatedTime());
+		assetClearEvent.setAutoClear(true);
+		assetClearEvent.setSiteId(readingEvent.getSiteId());
+		assetClearEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		return assetClearEvent;
+	}
+
+
+	private RuleRollUpEvent constructRuleRollUpEvent (ReadingEventContext readingEvent) throws Exception {
+
+		RuleRollUpEvent ruleEvent = new RuleRollUpEvent();
+		ruleEvent.setMessage(readingEvent.getMessage());
+		ruleEvent.setCreatedTime(readingEvent.getCreatedTime());
+		ruleEvent.setResource(readingEvent.getResource());
+		ruleEvent.setDescription(readingEvent.getDescription());
+		ruleEvent.setSiteId(readingEvent.getSiteId());
+		ruleEvent.setDescription(readingEvent.getDescription());
+		ruleEvent.setReadingFieldId(readingEvent.getReadingFieldId());
+		AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(readingEvent.getSeverity().getId());
+		ruleEvent.setSeverity(alarmSeverity);
+		ruleEvent.setRule(readingEvent.getRule());
+		ruleEvent.setSubRule(readingEvent.getSubRule());
+		return ruleEvent;
+
+	}
+
+	public RuleRollUpEvent constructClearRuleRollUpEvent (ReadingEventContext readingEvent) throws Exception {
+		RuleRollUpEvent ruleEvent = new RuleRollUpEvent();
+		ruleEvent.setResource(readingEvent.getResource());
+		ruleEvent.setReadingFieldId(readingEvent.getReadingFieldId());
+		ruleEvent.setRule(readingEvent.getRule());
+		ruleEvent.setSubRule(readingEvent.getSubRule());
+		ruleEvent.setEventMessage(readingEvent.getMessage());
+		ruleEvent.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+		ruleEvent.setCreatedTime(readingEvent.getCreatedTime());
+		ruleEvent.setAutoClear(true);
+		ruleEvent.setSiteId(readingEvent.getSiteId());
+		ruleEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		return ruleEvent;
+	}
+
+	private AssetRollUpEvent assetRollUpEvent;
+
+	private RuleRollUpEvent ruleRollUpEvent;
 }
