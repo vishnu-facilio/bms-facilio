@@ -489,16 +489,60 @@
        sampleLocalId : 6
        sample: "Can you attach a photo to the service request"
        
-
+       
+       
 - 
-   name: "system_show_open_workorder_count_intent"
-   displayName: "System show open workorder count Intent"
+   name: "system_get_my_work_request_intent"
+   displayName: "Manage service request"
    type: 1
-   localId : 14
-   withParams : false
+   localId : 17
+   withParams : true
+   params:
+   -
+      name : 'woId'
+      askAs : "Select your workrequest"
+      dataType : 2
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+      fillableByParent : true
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data) {
+                             if(data.woId == null) {
+                             
+                                module = Module("workorder").asMap();
+                                
+                                db = {
+   	                                    criteria : [parentModuleId == module.moduleId && typeCode == 1],
+                                    	field : "id"
+                                     };
+                                     
+                                openStatusIds = Module("ticketstatus").fetch(db);
+                                
+                                criteria1 = [requester == currentUser.id && status == openStatusIds];
+                                
+                                woList = Module("workorder").fetch(criteria1);
+                                
+                                if(woList != null && woList.size() == 1) {
+                                   
+                                   wo = woList[0];
+                                   data.woId = wo.id;
+                                   
+                                   return chatBot().execute();
+                                } 
+                                
+                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                               
+                             }
+                             if(data.woId != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   
    actions:
     - 
-        responseType : 2
         action: 
             actionType: 30
             status: 1
@@ -508,44 +552,23 @@
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
                    
-                                         db = {
-								             criteria : [id != null],
-								             field : "subject",
-								             aggregation : "count",
-							             };
-    
-                                         wos = WorkOrder().fetch(db);
+                                         wo = WorkOrder().fetch([id == data.woId])[0];
+                                       	
+                                         status = Module("ticketstatus").fetch([id == wo.status.id])[0];
                                          
-                                         count = 0;
-                                         if(wos != null) {
-                                            count = wos;
+                                         resString = "This service request __[#"+wo.id+"](https://app.facilio.com/app/wo/orders/summary/"+wo.id+")__ is currently "+status.status;
+                                         
+                                         if(wo.assignedTo != null && wo.assignedTo.id != null) {
+                                             users = Module("users").fetch([ouid == wo.assignedTo.id]);
+                                          	 user = users[0];
+                                            resString = resString + " and is assigned to "+user.name+".";
                                          }
-                                         resMap = {};
-                                         resMap.label = "My Open Workorder";
-                                         resMap.value = count;
-                                         resMap.subLabel = "This Year";
-                                         return resMap;
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "show open wo count"
-    -
-       sampleLocalId : 2
-       sample: "give me open wo count"
-- 
-   name: "system_get_my_work_request_intent"
-   displayName: "Manage service request"
-   type: 1
-   localId : 17
-   actions:
-    - 
-        responseType : 3
-        moduleName : 'workorder'
-        viewName : 'open'
-        action: 
-            actionType: 29
-            status: 1
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText",resString);
+                                         
+                                         return resultMap;
+                                       }' 
         
    invokeSamples:
     -
@@ -630,6 +653,53 @@
        sampleLocalId : 27
        sample: "what is the progress now"
 
+
+
+       
+- 
+   name: "system_show_open_workorder_count_intent"
+   displayName: "System show open workorder count Intent"
+   type: 1
+   localId : 14
+   withParams : false
+   actions:
+    - 
+        responseType : 2
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+                   
+                                         db = {
+								             criteria : [id != null],
+								             field : "subject",
+								             aggregation : "count",
+							             };
+    
+                                         wos = WorkOrder().fetch(db);
+                                         
+                                         count = 0;
+                                         if(wos != null) {
+                                            count = wos;
+                                         }
+                                         resMap = {};
+                                         resMap.label = "My Open Workorder";
+                                         resMap.value = count;
+                                         resMap.subLabel = "This Year";
+                                         return resMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "show open wo count"
+    -
+       sampleLocalId : 2
+       sample: "give me open wo count"
+       
        
        
        

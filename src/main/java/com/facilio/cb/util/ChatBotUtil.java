@@ -245,6 +245,9 @@ public class ChatBotUtil {
 		newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, contextWorkflow);
 		
 		chain.execute();
+		
+		updateParamsChangedByContextworkflow(props,intent,session);
+		
 		Object value = contextWorkflow.getReturnValue();
 		
 		if(value instanceof ChatBotParamContext) {
@@ -283,6 +286,21 @@ public class ChatBotUtil {
 		
 	}
 	
+	private static void updateParamsChangedByContextworkflow(Map<String, Object> currentProps, ChatBotIntent intent, ChatBotSession session) throws Exception {
+		
+		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
+		
+		if(intent.getChatBotIntentParamList() != null) {
+			for(ChatBotIntentParam paramList : intent.getChatBotIntentParamList()) {
+				if(currentProps.containsKey(paramList.getName()) && currentProps.get(paramList.getName()) != null) {
+					if(props.get(paramList.getName()) == null || !currentProps.get(paramList.getName()).equals(props.get(paramList.getName()))) {
+						deleteAndAddSessionParam(paramList.getId(), session.getId(), currentProps.get(paramList.getName()).toString());
+					}
+				}
+			}
+		}
+	}
+
 	public static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getCBIntentParamFields();
