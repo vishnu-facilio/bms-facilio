@@ -69,7 +69,7 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
 		}
 		
-		if(session.getState() == ChatBotSession.State.RESPONDED.getIntVal()) {
+		if(session.getState() == ChatBotSession.State.RESPONDED.getIntVal() || session.getState() == ChatBotSession.State.INVALID_QUERY.getIntVal()) {
 			
 			ChatBotIntent intent = session.getIntent();
 			
@@ -109,13 +109,13 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 		
 		ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
 		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
-		chatBotSuggestionContext.setSuggestion("yes");
+		chatBotSuggestionContext.setSuggestion("Confirm");
 		
 		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
 		
 		chatBotSuggestionContext = new ChatBotSuggestionContext();
 		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
-		chatBotSuggestionContext.setSuggestion("no");
+		chatBotSuggestionContext.setSuggestion("Cancel");
 		
 		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
 		

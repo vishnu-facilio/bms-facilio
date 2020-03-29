@@ -54,6 +54,7 @@ public class HandleInvalidQueryForSessionMessage extends FacilioCommand {
 				JSONArray response = intent.executeActions(context, null);
 				
 				session.setResponse(response.toJSONString());
+				session.setIntent(intent);
 				
 				ChatBotUtil.addChatBotSession(session);
 				

@@ -3,6 +3,11 @@
    displayName: "System Greeting Intent"
    type: 1
    localId : 1
+   childIntentNames:
+      - "system_create_wo_intent"
+      - "system_get_my_work_request_intent"
+      - "system_add_invite_intent"
+      - "system_get_my_visitor_intent"
    actions:
     - 
         action: 
@@ -11,13 +16,59 @@
    invokeSamples:
     -
         sampleLocalId : 1
-        sample: "hi"
+        sample: "Hola"
     -
         sampleLocalId : 2
-        sample: "hello"
+        sample: "Namaste"
     -
         sampleLocalId : 3
-        sample: "Hai"
+        sample: "Howdy"
+    -
+        sampleLocalId : 4
+        sample: "Whats up"
+    -
+        sampleLocalId : 5
+        sample: "Hi"
+    -
+        sampleLocalId : 6
+        sample: "Hello"
+    -
+        sampleLocalId : 7
+        sample: "What can you do"
+    -
+        sampleLocalId : 8
+        sample: "how can you help"
+    -
+        sampleLocalId : 9
+        sample: "what are you useful for"
+    -
+        sampleLocalId : 10
+        sample: "what is your capability"
+    -
+        sampleLocalId : 11
+        sample: "can you help me"
+    -
+        sampleLocalId : 12
+        sample: "I need help"
+    -
+        sampleLocalId : 13
+        sample: "what do I do"
+        
+- 
+   name: "system_intent_not_fount_intent"
+   displayName: "System Intent not Fount Intent"
+   type: 3
+   localId : 4
+   childIntentNames:
+      - "system_create_wo_intent"
+      - "system_get_my_work_request_intent"
+      - "system_add_invite_intent"
+      - "system_get_my_visitor_intent"
+   actions:
+      - 
+        action: 
+            actionType: 29
+            status: 1
         
 - 
    name: "system_greet_question_1_intent"
@@ -47,109 +98,90 @@
         sample: "Whazzup"
         
         
-- 
-   name: "system_name_query_intent"
-   displayName: "System Name Query Intent"
-   type: 1
-   localId : 3
-   withParams : true
-   params:
-   -
-      name : 'myname'
-      askAs : "I don't have a name, can you suggest a name for me?"
-      dataType : 1
-      mlType : 1
-      localId : 1
-      typeConfig : 1
-   actions:
-    - 
-        action: 
-            actionType: 29
-            status: 1
-   invokeSamples:
-    -
-        sampleLocalId : 1
-        sample: "what is your name"
-    -
-        sampleLocalId : 2
-        sample: "What do you call yourself"
-    -
-        sampleLocalId : 3
-        sample: "What are you named"
-    -
-        sampleLocalId : 4
-        sample: "may i have your name"
-    -
-        sampleLocalId : 5
-        sample: "How may I address you"
-         
-- 
-   name: "system_intent_not_fount_intent"
-   displayName: "System Intent not Fount Intent"
-   type: 3
-   localId : 4
-   actions:
-      - 
-        action: 
-            actionType: 29
-            status: 1
-            
-- 
-   name: "system_terminate_session_intent"
-   displayName: "System Terminate Session Intent"
-   type: 1
-   localId : 5
-   actions:
-    - 
-        action: 
-            actionType: 29
-            status: 1
-   invokeSamples:
-    -
-        sampleLocalId : 1
-        sample: "exit"
-    -
-        sampleLocalId : 2
-        sample: "stop it"
-    -
-        sampleLocalId : 3
-        sample: "terminate"
+        
+        
+        
+        
        
 - 
    name: "system_create_wo_intent"
-   displayName: "Create service request"
+   displayName: "Raise service request"
    type: 1
    localId : 7
    withParams : true
    confirmationNeeded : true
    childIntentNames:
    - "system_update_wo_note_intent"
-   - "system_show_open_workorder_count_intent"
+   - "system_update_wo_photo_intent"
    params:
    -
       name : 'subject'
-      displayName : "Subject"
-      askAs : 'Enter the Subject?'
+      displayName : "subject"
+      askAs : 'Hey there, I will help you submit a service request. Can you provide me with some details?'
       dataType : 1
       mlType : 3
       localId : 1
       editable : true
       typeConfig : 1
-      updateParamTriggerText : 'Edit Subject'
+      updateParamTriggerText : 'Edit subject'
    -
       name : 'description'
-      displayName : "Description"
+      displayName : "more information"
       askAs : 'Tell us something more about the problem'
       dataType : 1
       mlType : 1
       localId : 2
       typeConfig : 2
-      addParamTriggerText : 'Add Description'
+      addParamTriggerText : 'Add more information'
+   -
+      name : 'urgency'
+      displayName : "urgency"
+      askAs : 'select urgency'
+      dataType : 1
+      mlType : 1
+      localId : 3
+      typeConfig : 1
+      editable : true
+      addParamTriggerText : 'Edit urgency'
    -
       name : 'woId'
       dataType : 2
-      localId : 3
+      localId : 4
       typeConfig : 3
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.subject == null) {
+                             
+                                return chatBot().param("subject","Hey there, I will help you submit a service request. Can you provide me with some details?");
+                             }
+                             if(data.urgency == null) {
+                             
+                                woUrgencyList = [];
+                                
+                                 woMap = {};
+                                 woMap.id = 1;
+                                 woMap.label = "Not Urgent";
+                                 woUrgencyList.add(woMap);
+                                 
+                                 woMap = {};
+                                 woMap.id = 2;
+                                 woMap.label = "Urgent";
+                                 woUrgencyList.add(woMap);
+                                 
+                                 woMap = {};
+                                 woMap.id = 3;
+                                 woMap.label = "Emergency";
+                                 woUrgencyList.add(woMap);
+                                
+                                return chatBot().param("urgency","Select your urgency",woUrgencyList);
+                             
+                             }
+                             if(data.subject != null && data.urgency != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }'
    actions:
     - 
         action: 
@@ -163,10 +195,12 @@
     
                                          wo = {};
                                          wo.subject = data.subject;
+                                         wo.urgency = data.urgency;
                                          if(data.description != null) {
                                             wo.description = data.description;
                                          }
-                                         wo.sourceType = 7; 
+                                         wo.sourceType = 7;
+                                         wo.requester.id = currentUser.id; 
                                            
                                          cri = {
                                            criteria : [id != 0],
@@ -182,16 +216,17 @@
                                          
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Workorder created Successfully __[#"+wo.id+"](https://app.facilio.com/app/wo/orders/summary/"+wo.id+")__.");
+                                         resultMap.put("returnText","Your service request has been submitted successfully with ID __[#"+wo.id+"](https://app.facilio.com/app/wo/orders/summary/"+wo.id+")__.You can ask me to check on the status or add more details to this request at any time");
                                          extraParmas = {};
                                          extraParmas.put("woId",wo.id);
                                          resultMap.put("extraParams",extraParmas);
                                          return resultMap;
                                        }'   
    invokeSamples:
+   
     -
        sampleLocalId : 1
-       sample: "I need to raise a complaint"
+       sample: "Raise Service request"
     -
        sampleLocalId : 2
        sample: "I need to submit a work order"
@@ -262,9 +297,546 @@
        sampleLocalId : 24
        sample: "I have a problem"
     -
-       sampleLocalId : 24
+       sampleLocalId : 25
        sample: "create a work order with problem [Tap not working](message_subject)"
+    -
+       sampleLocalId : 26
+       sample: "I need to raise a complaint"
+        
+- 
+   name: "system_update_wo_note_intent"
+   displayName: "Add Note"
+   type: 1
+   localId : 13
+   withParams : true
+   params:
+   -
+      name : 'woId'
+      askAs : "Select your workrequest"
+      dataType : 2
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+      fillableByParent : true
+   -
+      name : 'note'
+      askAs : "Enter your note"
+      dataType : 1
+      mlType : 1
+      localId : 2
+      typeConfig : 1
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.woId == null) {
+                             
+                                module = Module("workorder").asMap();
+                                
+                                db = {
+   	                                    criteria : [parentModuleId == module.moduleId && typeCode == 1],
+                                    	field : "id"
+                                     };
+                                     
+                                openStatusIds = Module("ticketstatus").fetch(db);
+                                
+                                criteria1 = [requester == currentUser.id && status == openStatusIds];
+                                
+                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                               
+                             }
+                             if(data.woId != null && data.note == null) {
+                                return chatBot().param("note","Enter your note");
+                             }
+                             if(data.woId != null && data.note != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+    
+                                         WorkOrder().addNote(data.woId,data.note);
+                                         
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Note updated Successfully.");
+                                         
+                                         return resultMap;
+                                         
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "Add Note"
+    -
+       sampleLocalId : 2
+       sample: "add note to a wo"
+    -
+       sampleLocalId : 3
+       sample: "add note workorder"
+    -
+       sampleLocalId : 4
+       sample: "add note to workorder"
+    -
+       sampleLocalId : 5
+       sample: "I want to add a comment"
+    -
+       sampleLocalId : 6
+       sample: "I want to add information to my complaint"
+    -
+       sampleLocalId : 7
+       sample: "I want to post to the FM team"
+    -
+       sampleLocalId : 8
+       sample: "Add a comment to the service request"
        
+- 
+   name: "system_update_wo_photo_intent"
+   displayName: "Attach Photo"
+   type: 1
+   localId : 13
+   withParams : true
+   params:
+   -
+      name : 'woId'
+      askAs : "Select your workrequest"
+      dataType : 2
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+      fillableByParent : true
+   -
+      name : 'photo'
+      askAs : "Add your photo"
+      dataType : 9
+      multipleAllowed : true
+      localId : 2
+      typeConfig : 1
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.woId == null) {
+                             
+                                module = Module("workorder").asMap();
+                                
+                                db = {
+   	                                    criteria : [parentModuleId == module.moduleId && typeCode == 1],
+                                    	field : "id"
+                                     };
+                                     
+                                openStatusIds = Module("ticketstatus").fetch(db);
+                                
+                                criteria1 = [requester == currentUser.id && status == openStatusIds];
+                                
+                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                               
+                             }
+                             if(data.woId != null && data.photo == null) {
+                                return chatBot().param("photo","Add your photos");
+                             }
+                             if(data.woId != null && data.photo != null) {
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+                   
+                                         photoIds = data.photo; 
+    
+                                         WorkOrder().addAttachements(data.woId,photoIds);
+                                         
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Photo added successfully.");
+                                         
+                                         return resultMap;
+                                         
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "Attach Photo"
+    -
+       sampleLocalId : 2
+       sample: "Add photo"
+    -
+       sampleLocalId : 3
+       sample: "update photo"
+    -
+       sampleLocalId : 4
+       sample: "Can I add a photo to my work order"
+    -
+       sampleLocalId : 5
+       sample: "I forgot to add a photo to the service request"
+    -
+       sampleLocalId : 6
+       sample: "Can you attach a photo to the service request"
+       
+
+- 
+   name: "system_show_open_workorder_count_intent"
+   displayName: "System show open workorder count Intent"
+   type: 1
+   localId : 14
+   withParams : false
+   actions:
+    - 
+        responseType : 2
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+                   
+                                         db = {
+								             criteria : [id != null],
+								             field : "subject",
+								             aggregation : "count",
+							             };
+    
+                                         wos = WorkOrder().fetch(db);
+                                         
+                                         count = 0;
+                                         if(wos != null) {
+                                            count = wos;
+                                         }
+                                         resMap = {};
+                                         resMap.label = "My Open Workorder";
+                                         resMap.value = count;
+                                         resMap.subLabel = "This Year";
+                                         return resMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "show open wo count"
+    -
+       sampleLocalId : 2
+       sample: "give me open wo count"
+- 
+   name: "system_get_my_work_request_intent"
+   displayName: "Manage service request"
+   type: 1
+   localId : 17
+   actions:
+    - 
+        responseType : 3
+        moduleName : 'workorder'
+        viewName : 'open'
+        action: 
+            actionType: 29
+            status: 1
+        
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "What is the status of my complaint?"
+    -
+       sampleLocalId : 2
+       sample: "What is happening on the issue I raised?"
+    -
+       sampleLocalId : 3
+       sample: "Is the work done?"
+    -
+       sampleLocalId : 4
+       sample: "Why is taking it so long?"
+    -
+       sampleLocalId : 5
+       sample: "What is the situation now?"
+    -
+       sampleLocalId : 6
+       sample: "Is it done yet?"
+    -
+       sampleLocalId : 7
+       sample: "Is it over?"
+    -
+       sampleLocalId : 8
+       sample: "Is it completed?"
+    -
+       sampleLocalId : 9
+       sample: "How long will it take?"
+    -
+       sampleLocalId : 10
+       sample: "What stage is the work order in?"
+    -
+       sampleLocalId : 11
+       sample: "Has the work started?"
+    -
+       sampleLocalId : 12
+       sample: "What is being done so far?"
+    -
+       sampleLocalId : 13
+       sample: "When can I expect it to be done?"
+    -
+       sampleLocalId : 14
+       sample: "What is the next step?"
+    -
+       sampleLocalId : 15
+       sample: "When will it be resolved?"
+    -
+       sampleLocalId : 16
+       sample: "When will it be completed?"
+    -
+       sampleLocalId : 17
+       sample: "How long will I have to wait?"
+    -
+       sampleLocalId : 18
+       sample: "whats the situation of my work request"
+    -
+       sampleLocalId : 19
+       sample: "what has done so far?"
+    -
+       sampleLocalId : 20
+       sample: "what are the steps taken for my complaint"
+    -
+       sampleLocalId : 21
+       sample: "What are the steps taken for my request"
+    -
+       sampleLocalId : 22
+       sample: "Whats the situation of my work order"
+    -
+       sampleLocalId : 23
+       sample: "what is the latest update"
+    -
+       sampleLocalId : 24
+       sample: "what is the latest on my request"
+    -
+       sampleLocalId : 25
+       sample: "do you have any updates"
+    -
+       sampleLocalId : 26
+       sample: "are there any updates"
+    -
+       sampleLocalId : 27
+       sample: "what is the progress now"
+
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+- 
+   name: "system_add_invite_intent"
+   displayName: "Invite Visitors"
+   type: 1
+   localId : 15
+   withParams : true
+   editable : true
+   params:
+   -
+      name : 'visitorType'
+      askAs : "Select visitor type"
+      dataType : 2
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+   -
+      name : 'name'
+      askAs : "Enter name"
+      dataType : 1
+      mlType : 1
+      localId : 2
+      typeConfig : 1
+   -
+      name : 'phone'
+      askAs : "Enter phone number"
+      dataType : 1
+      mlType : 1
+      localId : 3
+      typeConfig : 1
+   -
+      name : 'email'
+      askAs : "Enter email"
+      dataType : 1
+      mlType : 1
+      localId : 4
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit email'
+   -
+      name : 'host'
+      askAs : "Select host"
+      dataType : 2
+      mlType : 1
+      localId : 5
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit host'
+      
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                             if(data.visitorType == null) {
+                             
+                                db = {
+								    criteria : [id > 0]
+							    };
+                                
+                              	types = Module("visitorType").fetch(db);
+                                
+                                typeList = [];
+                                
+                                for each index,type in types {
+                                    typeMap = {};
+                                    typeMap.id = type.id;
+                                    typeMap.label = type.name;
+                                    
+                                    typeList.add(typeMap);
+                                }
+                                
+                                return chatBot().param("visitorType","Select visitor type",typeList);
+                             }
+                             else if(data.name == null) {
+                                return chatBot().param("name","Enter name");
+                             }
+                             else if(data.phone == null) {
+                                return chatBot().param("phone","Enter phone number");
+                             }
+                             else if(data.email == null) {
+                                return chatBot().param("email","Enter email");
+                             }
+                             else if(data.host == null) {
+                                
+								criteria1 = [id > 0];
+                                
+                                return chatBot().param("host","Select host",criteria1,"contact");
+                             }
+                             else{
+                             
+                                return chatBot().execute();
+                             }
+                           }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+    
+                                         invite = {};
+                                         invite.visitorType.id = data.visitorType;
+                                         invite.visitorPhone = data.phone;
+                                         invite.visitorName = data.name;
+                                         invite.visitorEmail = data.email;
+                                         invite.host.id= data.host;		
+                                         invite.purposeOfVisit = 3;	
+                                         invite.isPreregistered = true;
+                                         
+                                         VisitorLogging().add(invite);
+                                         
+                                         resultMap = {};
+                                         
+                                         resultMap.put("returnText","Invited successfully.");
+                                        
+                                         return resultMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "Invite Visitors"
+    -
+       sampleLocalId : 2
+       sample: "create invite"
+    -
+       sampleLocalId : 3
+       sample: "invite user"
+    -
+       sampleLocalId : 4
+       sample: "invite people"
+    -
+       sampleLocalId : 5
+       sample: "[san](person) and [john](person) are coming tomorrow"
+       
+- 
+   name: "system_get_my_visitor_intent"
+   displayName: "Manage visitors list"
+   type: 1
+   localId : 17
+   actions:
+    - 
+        responseType : 3
+        moduleName : 'workorder'
+        viewName : 'open'
+        action: 
+            actionType: 29
+            status: 1
+        
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "Manage visitors list"
+    -
+        sampleLocalId : 2
+        sample: "get my visitors list"
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+- 
+   name: "system_terminate_session_intent"
+   displayName: "System Terminate Session Intent"
+   type: 1
+   localId : 5
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "exit"
+    -
+        sampleLocalId : 2
+        sample: "stop it"
+    -
+        sampleLocalId : 3
+        sample: "terminate"
+        
 - 
    name: "system_what_is_workorder_question_intent"
    displayName: "System what is workorder question Intent"
@@ -390,410 +962,3 @@
     -
         sampleLocalId : 2
         sample: "may i have your gender"
-        
-- 
-   name: "system_update_wo_note_intent"
-   displayName: "add note to workorder"
-   type: 1
-   localId : 13
-   withParams : true
-   params:
-   -
-      name : 'woId'
-      askAs : "Select your workrequest"
-      dataType : 2
-      mlType : 1
-      localId : 1
-      typeConfig : 1
-      fillableByParent : true
-   -
-      name : 'note'
-      askAs : "Enter your note"
-      dataType : 1
-      mlType : 1
-      localId : 2
-      typeConfig : 1
-   contextWorkflow :
-       isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
-                             if(data.woId == null) {
-                             
-                                db = {
-								    criteria : [sourceType != 7],
-								    limit : 10,
-								    orderBy: "createdTime" desc
-							    };
-                                
-                              	wos = WorkOrder().fetch(db);
-                                
-                                woMapList = [];
-                               
-                                for each index,wo in wos {
-                                    woMap = {};
-                                    woMap.id = wo.id;
-                                    woMap.label = wo.subject;
-                                    
-                                    woMapList.add(woMap);
-                                }
-                                
-                                return chatBot().param("woId","Select your workrequest",woMapList);
-                             }
-                             if(data.woId != null && data.note == null) {
-                                return chatBot().param("note","Enter your note");
-                             }
-                             if(data.woId != null && data.note != null) {
-                             
-                                return chatBot().execute();
-                             }
-                           }' 
-   actions:
-    - 
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'Map test(Map data){
-    
-                                         WorkOrder().addNote(data.woId,data.note);
-                                         
-                                         resultMap = {};
-                                         
-                                         resultMap.put("returnText","Note updated Successfully.");
-                                         
-                                         return resultMap;
-                                         
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "add note to wo"
-    -
-       sampleLocalId : 2
-       sample: "add note to a wo"
-    -
-       sampleLocalId : 3
-       sample: "add note workorder"
-    -
-       sampleLocalId : 4
-       sample: "add note to workorder"
-
-- 
-   name: "system_show_open_workorder_count_intent"
-   displayName: "System show open workorder count Intent"
-   type: 1
-   localId : 14
-   withParams : false
-   actions:
-    - 
-        responseType : 2
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'Map test(Map data){
-                   
-                                         db = {
-								             criteria : [id != null],
-								             field : "subject",
-								             aggregation : "count",
-							             };
-    
-                                         wos = WorkOrder().fetch(db);
-                                         
-                                         count = 0;
-                                         if(wos != null) {
-                                            count = wos;
-                                         }
-                                         resMap = {};
-                                         resMap.label = "My Open Workorder";
-                                         resMap.value = count;
-                                         resMap.subLabel = "This Year";
-                                         return resMap;
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "show open wo count"
-    -
-       sampleLocalId : 2
-       sample: "give me open wo count"
-       
-- 
-   name: "system_add_invite_intent"
-   displayName: "Add invite"
-   type: 1
-   localId : 15
-   withParams : true
-   editable : true
-   params:
-   -
-      name : 'visitorType'
-      askAs : "Select visitor type"
-      dataType : 2
-      mlType : 1
-      localId : 1
-      typeConfig : 1
-   -
-      name : 'name'
-      askAs : "Enter name"
-      dataType : 1
-      mlType : 1
-      localId : 2
-      typeConfig : 1
-   -
-      name : 'phone'
-      askAs : "Enter phone number"
-      dataType : 1
-      mlType : 1
-      localId : 3
-      typeConfig : 1
-   -
-      name : 'email'
-      askAs : "Enter email"
-      dataType : 1
-      mlType : 1
-      localId : 4
-      typeConfig : 1
-      editable : true
-      updateParamTriggerText : 'Edit email'
-   -
-      name : 'host'
-      askAs : "Select host"
-      dataType : 2
-      mlType : 1
-      localId : 5
-      typeConfig : 1
-      editable : true
-      updateParamTriggerText : 'Edit host'
-      
-   contextWorkflow :
-       isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
-                             if(data.visitorType == null) {
-                             
-                                db = {
-								    criteria : [id > 0]
-							    };
-                                
-                              	types = Module("visitorType").fetch(db);
-                                
-                                typeList = [];
-                                
-                                for each index,type in types {
-                                    typeMap = {};
-                                    typeMap.id = type.id;
-                                    typeMap.label = type.name;
-                                    
-                                    typeList.add(typeMap);
-                                }
-                                
-                                return chatBot().param("visitorType","Select visitor type",typeList);
-                             }
-                             else if(data.name == null) {
-                                return chatBot().param("name","Enter name");
-                             }
-                             else if(data.phone == null) {
-                                return chatBot().param("phone","Enter phone number");
-                             }
-                             else if(data.email == null) {
-                                return chatBot().param("email","Enter email");
-                             }
-                             else if(data.host == null) {
-                                
-								criteria1 = [id > 0];
-                                
-                                return chatBot().param("host","Select host",criteria1,"contact");
-                             }
-                             else{
-                             
-                                return chatBot().execute();
-                             }
-                           }' 
-   actions:
-    - 
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'Map test(Map data){
-    
-                                         invite = {};
-                                         invite.visitorType.id = data.visitorType;
-                                         invite.visitorPhone = data.phone;
-                                         invite.visitorName = data.name;
-                                         invite.visitorEmail = data.email;
-                                         invite.host.id= data.host;		
-                                         invite.purposeOfVisit = 3;	
-                                         invite.isPreregistered = true;
-                                         
-                                         VisitorLogging().add(invite);
-                                         
-                                         resultMap = {};
-                                         
-                                         resultMap.put("returnText","Invited successfully.");
-                                        
-                                         return resultMap;
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "add invite"
-    -
-       sampleLocalId : 2
-       sample: "create invite"
-    -
-       sampleLocalId : 3
-       sample: "invite user"
-    -
-       sampleLocalId : 4
-       sample: "invite people"
-    -
-       sampleLocalId : 5
-       sample: "[san](person) and [john](person) are coming tomorrow"
-       
-- 
-   name: "system_what_can_you_do_intent"
-   displayName: "System what can yo do Intent"
-   type: 1
-   localId : 16
-   childIntentNames:
-      - "system_create_wo_intent"
-      - "system_add_invite_intent"
-   actions:
-    - 
-        responseType : 8
-        action: 
-            actionType: 29
-            status: 1
-   invokeSamples:
-    -
-        sampleLocalId : 1
-        sample: "what can you do"
-    -
-        sampleLocalId : 2
-        sample: "how can you help me"
-    -
-        sampleLocalId : 3
-        sample: "help me"
-        
-- 
-   name: "system_get_my_work_request_intent"
-   displayName: "System get my work request Intent"
-   type: 1
-   localId : 17
-   actions:
-    - 
-        responseType : 3
-        moduleName : 'workorder'
-        viewName : 'open'
-        action: 
-            actionType: 29
-            status: 1
-        
-   invokeSamples:
-    -
-        sampleLocalId : 1
-        sample: "get my work requests"
-    -
-        sampleLocalId : 2
-        sample: "get my work requests list"
-    -
-        sampleLocalId : 3
-        sample: "get my problems list"
-        
-- 
-   name: "system_update_wo_photo_intent"
-   displayName: "Add photo to work request"
-   type: 1
-   localId : 13
-   withParams : true
-   params:
-   -
-      name : 'woId'
-      askAs : "Select your workrequest"
-      dataType : 2
-      mlType : 1
-      localId : 1
-      typeConfig : 1
-      fillableByParent : true
-   -
-      name : 'photo'
-      askAs : "Add your photo"
-      dataType : 9
-      multipleAllowed : true
-      localId : 2
-      typeConfig : 1
-   contextWorkflow :
-       isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
-                             if(data.woId == null) {
-                             
-                                db = {
-								    criteria : [sourceType != 7],
-								    limit : 10,
-								    orderBy: "createdTime" desc
-							    };
-                                
-                              	wos = WorkOrder().fetch(db);
-                                
-                                woMapList = [];
-                               
-                                for each index,wo in wos {
-                                    woMap = {};
-                                    woMap.id = wo.id;
-                                    woMap.label = wo.subject;
-                                    
-                                    woMapList.add(woMap);
-                                }
-                                
-                                return chatBot().param("woId","Select your workrequest",woMapList);
-                             }
-                             if(data.woId != null && data.photo == null) {
-                                return chatBot().param("photo","Add your photos");
-                             }
-                             if(data.woId != null && data.photo != null) {
-                             
-                                return chatBot().execute();
-                             }
-                           }' 
-   actions:
-    - 
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'Map test(Map data){
-                   
-                                         photoIds = data.photo; 
-    
-                                         WorkOrder().addAttachements(data.woId,photoIds);
-                                         
-                                         resultMap = {};
-                                         
-                                         resultMap.put("returnText","Photo added successfully.");
-                                         
-                                         return resultMap;
-                                         
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "Add photo to work request"
-    -
-       sampleLocalId : 2
-       sample: "Add photo"
-    -
-       sampleLocalId : 3
-       sample: "update photo"

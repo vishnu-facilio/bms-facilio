@@ -1,7 +1,10 @@
 system_greet_intent: 
-    - "Hi"
-    - "Hello"
-    - "Hey"
+    - "Hi There, I am Facilio bot. I can help you"
+    
+system_intent_not_fount_intent: 
+    - "Sorry, I’m not sure if I understood you correctly. Please select one of the following to proceed"
+    - "I am sorry, I don’t understand what you’re looking for. I can help you"
+    - "I am sorry I don’t understand what you’re looking for. But, I will remember it the next time for you. Do you want to"
     
 system_greet_question_1_intent: 
     - "Fine, thank you"
@@ -20,11 +23,6 @@ system_name_query_intent:
     - "Cool"
     - "Awesome"
     - "Alright"
-    
-system_intent_not_fount_intent: 
-    - "I can't understand"
-    - "Please rephrase your sentence"
-    - "Try some other word"
     
 system_terminate_session_intent:
    - "OK, I've cancelled your request"
