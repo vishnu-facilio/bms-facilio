@@ -1524,11 +1524,17 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false); //check deleted ?
 				if (asset.getSpaceId() > 0) {
 					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId(), true);
-					if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
-						resourceSiteId = baseSpace.getId();
-					} else {
-						resourceSiteId = baseSpace.getSiteId();
+					try {
+						if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
+							resourceSiteId = baseSpace.getId();
+						} else {
+							resourceSiteId = baseSpace.getSiteId();
+						}
+					} catch (NullPointerException ex) {
+						LOGGER.error("Base space id is " + asset.getSpaceId(), ex);
+						throw ex;
 					}
+
 				}
 			}
 			
