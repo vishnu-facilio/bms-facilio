@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.GetApplicationDetails;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
@@ -324,5 +325,17 @@ public class ApplicationApi {
 		}
 		return -1;
 	
+	}
+	
+	public static String getApplicationName(long appId) throws Exception {
+		
+		String appDomainName = "Facilio";
+		if(appId > 0) {
+			ApplicationContext app = getApplicationForId(appId);
+			if(app != null) {
+				return app.getName();
+			}
+		}
+		return appDomainName;
 	}
 }

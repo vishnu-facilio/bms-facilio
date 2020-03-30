@@ -157,13 +157,6 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setUserStatus(true);
 		addToORGUsers(user);
-		if(isSignUp) {
-			ApplicationApi.addDefaultAppDomains(orgId);
-			ApplicationApi.addDefaultApps(orgId);
-			long appId = ApplicationApi.getApplicationIdForApp(user.getAppDomain());
-			user.setApplicationId(appId);
-		
-		}
 		addToORGUsersApps(user, isEmailVerificationNeeded);
 		addUserDetail(user);
 		
@@ -293,18 +286,8 @@ public class UserBeanImpl implements UserBean {
 			if (registration) {
 				inviteLink = getUserLink(user, "/emailregistration/", appDomainObj.getDomain());
 			}
-			String portalType = "Occupant Portal";
-			if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.TENANT_PORTAL) {
-				portalType = "Tenant Portal" ;
-			}
-			else if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
-				portalType = "Vendor Portal" ;
-			}
-			else if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.CLIENT_PORTAL) {
-				portalType = "Client Portal" ;
-			}
 			placeholders.put("invitelink", inviteLink);
-			placeholders.put("appType", portalType);
+			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			
 			if(isInvitation) {
 				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders, true);
@@ -1044,8 +1027,10 @@ public class UserBeanImpl implements UserBean {
 			}
 		}
 		else {
+			placeholders.put("org",AccountUtil.getCurrentOrg());
 			addBrandPlaceHolders("brandName", placeholders);
 			addBrandPlaceHolders("brandUrl", placeholders);
+			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			addBrandPlaceHolders("brandLogo", placeholders);
 			AccountEmailTemplate.PORTAL_SELF_SIGNUP.send(placeholders, true);
 		}
