@@ -17,6 +17,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -234,7 +235,11 @@ public enum CardLayout {
 			String moduleName = (String) cardParams.get("moduleName");
 			String subModuleName = (String) cardParams.get("attachmentModule");
 			JSONObject criteriaObj = (JSONObject) cardParams.get("criteria");
-			Criteria criteria = FieldUtil.getAsBeanFromMap(criteriaObj, Criteria.class);
+			Long limit = (Long)cardParams.get("limit");
+			Criteria criteria = null;
+			if (criteriaObj != null) {
+				criteria = FieldUtil.getAsBeanFromMap(criteriaObj, Criteria.class);
+			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> allFields = modBean.getAllFields(moduleName);
@@ -287,15 +292,22 @@ public enum CardLayout {
 						List<FacilioField> fileFields = FieldFactory.getFileFields();
 						subModuleFields.addAll(fileFields);
 						Map<String, FacilioField> subModuleFieldsMap = FieldFactory.getAsMap(subModuleFields);
-						SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> attachmentBuilder = new SelectRecordsBuilder<>();
-						attachmentBuilder
-								.select(subModuleFields)
-								.module(subModule)
-								.beanClass(className)
-								.innerJoin("FacilioFile")
-								.on("FacilioFile.FILE_ID = " + subModule.getTableName() + ".FILE_ID")
-								.orderBy("ID DESC").limit(100)
-						;
+					Map<String, FacilioField> fileFieldsMap = FieldFactory.getAsMap(subModuleFields);
+					SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> attachmentBuilder = new SelectRecordsBuilder<>();
+					attachmentBuilder
+							.select(subModuleFields)
+							.module(subModule)
+							.beanClass(className)
+							.innerJoin("FacilioFile")
+							.on("FacilioFile.FILE_ID = " + subModule.getTableName() + ".FILE_ID")
+							.andCondition(CriteriaAPI.getCondition(fileFieldsMap.get("contentType"), "image", StringOperators.CONTAINS))
+							.orderBy("FacilioFile.UPLOADED_TIME DESC")
+					;
+					if (limit != null) {
+						attachmentBuilder.limit(limit.intValue());
+					} else {
+						attachmentBuilder.limit(100);
+					}
 						if (subModuleName.equals(ContextNames.TASK_ATTACHMENTS)) {
 							List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false, false);
 							List<Long> taskIds = new ArrayList<>();
