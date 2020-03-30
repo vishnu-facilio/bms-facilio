@@ -2,6 +2,8 @@ package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseEventContext;
@@ -244,10 +246,10 @@ public class AgentUtil {
                 if (jsonObject.containsKey(AgentKeys.STATUS)) {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
                     if (status == 0) {
-                      //  raiseAgentAlarm(agent);
+                        AgentUtilV2.raiseAgentAlarm(AgentApiV2.getAgent(agent.getId()));
                     }
                     if (status == 1) {
-                      //  dropAgentAlarm( agent);
+                        AgentUtilV2.dropAgentAlarm(AgentApiV2.getAgent(agent.getId()));
                     }
                 }
 
