@@ -143,7 +143,7 @@
       localId : 3
       typeConfig : 1
       editable : true
-      addParamTriggerText : 'Edit urgency'
+      updateParamTriggerText : 'Edit urgency'
    -
       name : 'woId'
       dataType : 2

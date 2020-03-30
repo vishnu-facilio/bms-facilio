@@ -28,7 +28,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 			answer = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
 			accuracy = 0.6789;
 			
-			if(answer.contains("exit") || answer.contains("cancel")) {
+			if(answer.toLowerCase().contains("exit") || answer.toLowerCase().contains("cancel")) {
 				intent = "system_terminate_session_intent";
 				accuracy = 0.6789;
 			}
@@ -58,12 +58,12 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 						context.put(ChatBotConstants.CHAT_BOT_EDIT_ACTION_INTENT_PARAM, intentParam);
 					}
 				}
-				else if(answer.contains("yes") || answer.contains("ok") || answer.contains("confirm")) { 
+				else if(answer.toLowerCase().contains("yes") || answer.toLowerCase().contains("ok") || answer.toLowerCase().contains("confirm")) { 
 					intent = "system_affirmative_intent";
 					accuracy = 0.6789;
 					chatBotSessionConversation.getChatBotSession().setConfirmed(Boolean.TRUE);
 				}
-				else if(answer.contains("no")) {
+				else if(answer.toLowerCase().contains("no")) {
 					intent = "system_terminate_session_intent";
 					accuracy = 0.6789;
 					chatBotSessionConversation.getChatBotSession().setConfirmed(Boolean.FALSE);
