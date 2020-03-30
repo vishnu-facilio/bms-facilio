@@ -2363,7 +2363,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
-	
-	
-	
+
+
+	public static FacilioChain getApprovalModuleDataListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetApprovalModuleDataListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new GetStateflowsForModuleDataListCommand());
+		return chain;
+	}
 }

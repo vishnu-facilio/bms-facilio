@@ -125,4 +125,16 @@ public class ApprovalAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.APPROVAL_LIST, context.get(FacilioConstants.ContextNames.APPROVAL_LIST));
 		return SUCCESS;
 	}
+
+	public String getApprovalModuleDataList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApprovalModuleDataListChain();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		constructListContext((FacilioContext) context);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		setResult("stateFlows", context.get("stateFlows"));
+		return SUCCESS;
+	}
 }

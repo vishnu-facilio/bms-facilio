@@ -402,6 +402,8 @@
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="reorderApprovalRule" />
 		<action name="approvalDetails"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalDetails" />
+		<action name="moduleList"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleDataList" />
 	</package>
 
 	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">
