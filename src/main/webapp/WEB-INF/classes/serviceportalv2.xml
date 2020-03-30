@@ -322,6 +322,15 @@
 		</action>
 	</package>
 	
+	<package name="chatbot" namespace="/api/service/v2/cb" extends="newServicePortalApiV2">
+		<action name="chat"
+				class="com.facilio.cb.action.ChatBotAction" method="chat" />
+		<action name="getChatMessages"
+				class="com.facilio.cb.action.ChatBotAction" method="getChatMessages" />
+		<action name="flushIntentAndModel"
+				class="com.facilio.cb.action.ChatBotAction" method="flushIntentAndModel" />
+	</package>
+	
 	<package name="controlActionModule" namespace="/api/service/v2/controlAction"
 		extends="newServicePortalApiV2">
 		<action name="setReadingValue"
