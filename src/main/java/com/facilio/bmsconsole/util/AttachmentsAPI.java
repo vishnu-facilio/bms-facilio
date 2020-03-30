@@ -24,6 +24,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -31,6 +32,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 ;
 
@@ -38,11 +41,14 @@ public class AttachmentsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AttachmentsAPI.class.getName());
 	
 	
-	public static final AttachmentContext getAttachmentContentFromFileContext(FileContext file) throws Exception {
+	public static final AttachmentContext getAttachmentContentFromFileContext(long fileId) throws Exception {
 		AttachmentContext attachments = new AttachmentContext();
-		attachments.setFileId(file.getFileId());
+		FileStore fs = FacilioFactory.getFileStore();
+		FileInfo fileinfo = fs.getFileInfo(fileId);
+		attachments.setFileId(fileId);
 		attachments.setOrgId(AccountUtil.getCurrentOrg().getId());
-		attachments.setFileName(file.getFileName());
+		attachments.setFileName(fileinfo.getFileName());
+		attachments.setFileSize(fileinfo.getFileSize());
 		return attachments;
 	}
 	

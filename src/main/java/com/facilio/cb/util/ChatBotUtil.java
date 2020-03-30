@@ -434,9 +434,7 @@ public class ChatBotUtil {
 						long typeInt = (long) object.get(ChatBotConstants.CHAT_BOT_PARAM_TYPE);
 						if(typeInt == FieldType.FILE.getTypeAsInt()) {
 							long fileId = (long) chatBotSessionConversation.getResponseJson().get(ChatBotConstants.CHAT_BOT_ID);
-							FileContext file = new FileContext();
-							file.setFileId(fileId);
-							chatBotSessionConversation.setAttachment(AttachmentsAPI.getAttachmentContentFromFileContext(file));
+							chatBotSessionConversation.setAttachment(AttachmentsAPI.getAttachmentContentFromFileContext(fileId));
 						}
 					}
 				}

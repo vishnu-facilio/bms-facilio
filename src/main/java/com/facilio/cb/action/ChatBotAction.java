@@ -139,7 +139,7 @@ public class ChatBotAction extends FacilioAction {
 			
 			chatMessage.put(ChatBotConstants.CHAT_BOT_ID, newFile.getFileId());
 			
-			context.put(ChatBotConstants.CHAT_BOT_ATTACHMENT, AttachmentsAPI.getAttachmentContentFromFileContext(newFile));
+			context.put(ChatBotConstants.CHAT_BOT_ATTACHMENT, AttachmentsAPI.getAttachmentContentFromFileContext(newFile.getFileId()));
 		}
 		
 		if(chatMessage != null) {
