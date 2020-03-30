@@ -51,4 +51,7 @@ system_what_can_you_do_intent:
 system_get_my_work_request_intent:
    - "Here is your open workorders."
    
+system_get_my_visitor_intent:
+   - "Here is your upcoming visits."
+   
    

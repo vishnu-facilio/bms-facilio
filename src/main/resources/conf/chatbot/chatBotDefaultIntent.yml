@@ -858,8 +858,8 @@
    actions:
     - 
         responseType : 3
-        moduleName : 'workorder'
-        viewName : 'open'
+        moduleName : 'visitorlogging'
+        viewName : 'upcoming'
         action: 
             actionType: 29
             status: 1
