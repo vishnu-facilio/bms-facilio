@@ -29,7 +29,7 @@ public class ApprovalPageFactory extends PageFactory {
 	
 	private static void addApprovalFieldsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.APPROVAL_FIELDS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 6);
+		pageWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(pageWidget);
 	}
 
