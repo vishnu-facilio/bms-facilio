@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.eclipse.milo.opcua.sdk.client.model.types.objects.FileType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.cb.context.ChatBotConfirmContext;
 import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotIntent;
@@ -423,6 +426,20 @@ public class ChatBotUtil {
 			
 			for(Map<String, Object> prop :props) {
 				ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(prop, ChatBotSessionConversation.class);
+				
+				if(chatBotSessionConversation.getQuery() != null) {
+					JSONArray jsonArray = FacilioUtil.parseJsonArray(chatBotSessionConversation.getQuery());
+					JSONObject object = (JSONObject) jsonArray.get(0);
+					if(object.containsKey(ChatBotConstants.CHAT_BOT_PARAM_TYPE)) {
+						long typeInt = (long) object.get(ChatBotConstants.CHAT_BOT_PARAM_TYPE);
+						if(typeInt == FieldType.FILE.getTypeAsInt()) {
+							long fileId = (long) chatBotSessionConversation.getResponseJson().get(ChatBotConstants.CHAT_BOT_ID);
+							FileContext file = new FileContext();
+							file.setFileId(fileId);
+							chatBotSessionConversation.setAttachment(AttachmentsAPI.getAttachmentContentFromFileContext(file));
+						}
+					}
+				}
 				
 				if(sessionConversationMap.containsKey(chatBotSessionConversation.getSessionId())) {
 					sessionConversationMap.get(chatBotSessionConversation.getSessionId()).add(chatBotSessionConversation);
