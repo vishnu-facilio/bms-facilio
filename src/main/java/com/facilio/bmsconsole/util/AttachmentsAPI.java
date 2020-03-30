@@ -41,7 +41,7 @@ public class AttachmentsAPI {
 	public static final AttachmentContext getAttachmentContentFromFileContext(FileContext file) throws Exception {
 		AttachmentContext attachments = new AttachmentContext();
 		attachments.setFileId(file.getFileId());
-		attachments.setOrgId(file.getOrgId());
+		attachments.setOrgId(AccountUtil.getCurrentOrg().getId());
 		attachments.setFileName(file.getFileName());
 		return attachments;
 	}

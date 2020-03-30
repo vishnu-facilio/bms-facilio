@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +29,16 @@ public class ChatBotSessionConversation implements Cloneable {
 	State state;
 	ChatBotSession chatBotSession;
 	long intentParamId = -1;
+	
+	AttachmentContext attachment;
+
+	public AttachmentContext getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(AttachmentContext attachment) {
+		this.attachment = attachment;
+	}
 
 	long requestedTime;
 	long respondedTime;
