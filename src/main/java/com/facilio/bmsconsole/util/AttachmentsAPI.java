@@ -15,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -35,6 +36,15 @@ import com.facilio.modules.fields.FacilioField;
 
 public class AttachmentsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AttachmentsAPI.class.getName());
+	
+	
+	public static final AttachmentContext getAttachmentContentFromFileContext(FileContext file) throws Exception {
+		AttachmentContext attachments = new AttachmentContext();
+		attachments.setFileId(file.getFileId());
+		attachments.setOrgId(file.getOrgId());
+		attachments.setFileName(file.getFileName());
+		return attachments;
+	}
 	
 	public static final void addAttachments(List<AttachmentContext> attachments, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

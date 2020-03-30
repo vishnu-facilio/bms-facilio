@@ -39,6 +39,7 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_ADD_ACTION_INTENT_PARAM = "chatBotaddActionIntentParam";
 	public static final String CHAT_BOT_EDIT_ACTION_INTENT_PARAM = "chatBotEditActionIntentParam";
 	
+	public static final String CHAT_BOT_ATTACHMENT = "chatbotAttachment";
 	
 	public static final String CHAT_BOT_WORKFLOW_RETURN_TEXT = "returnText";
 	public static final String CHAT_BOT_WORKFLOW_RETURN_EXTRA_PARAM = "extraParams";

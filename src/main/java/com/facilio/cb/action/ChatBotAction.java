@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSuggestionContext;
@@ -114,32 +115,35 @@ public class ChatBotAction extends FacilioAction {
 
 	public String chat() throws Exception {
 		
+		FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
+		
+		FacilioContext context = chain.getContext();
+		
 		if(fileContent != null) {
 			
 			FacilioChain addFileChain = FacilioChainFactory.getAddFileChain();
 				
-			FacilioContext context = addFileChain.getContext();
+			FacilioContext fileContext = addFileChain.getContext();
 			
-	 		context.put(FacilioConstants.ContextNames.FILE, this.fileContent);
-	 		context.put(FacilioConstants.ContextNames.FILE_NAME, this.fileContentFileName);
-	 		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, this.fileContentContentType);
+			fileContext.put(FacilioConstants.ContextNames.FILE, this.fileContent);
+			fileContext.put(FacilioConstants.ContextNames.FILE_NAME, this.fileContentFileName);
+			fileContext.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, this.fileContentContentType);
 	 		
 			addFileChain.execute();
 			
-			FileContext newFile = (FileContext) context.get(FacilioConstants.ContextNames.FILE_CONTEXT_LIST);
+			FileContext newFile = (FileContext) fileContext.get(FacilioConstants.ContextNames.FILE_CONTEXT_LIST);
 			
 			if(chatMessage == null) {
 				chatMessage = new JSONObject();
 			}
 			
 			chatMessage.put(ChatBotConstants.CHAT_BOT_ID, newFile.getFileId());
+			
+			context.put(ChatBotConstants.CHAT_BOT_ATTACHMENT, AttachmentsAPI.getAttachmentContentFromFileContext(newFile));
 		}
 		
 		if(chatMessage != null) {
 			
-			FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
-			
-			FacilioContext context = chain.getContext();
 			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatMessage);
 			context.put(ChatBotConstants.CHAT_BOT_SUGGESTION, suggestion);
 			
@@ -149,7 +153,7 @@ public class ChatBotAction extends FacilioAction {
 			
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotReplyMessage);
 			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-			
+			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT));
 		}
 		
 		return SUCCESS;
