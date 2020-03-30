@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
@@ -21,6 +13,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ImportToolCommand extends FacilioCommand {
 
@@ -33,8 +31,9 @@ public class ImportToolCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Map<String, Long> toolNameVsIdMap = ToolsApi.getToolTypesMap();
 			Map<String, Long> categoryNameVsIdMap = InventoryCategoryApi.getAllInventoryCategories();
-			
 			List<ToolContext> toolsList = new ArrayList<>();
+			Map<String, Long> toolNameVsIndexMap = new HashMap<>();
+			Long indexCounter = 0l;
 			for (PurchasedToolContext purchasedTool : purchasedToolList) {
 				ToolTypesContext toolType = new ToolTypesContext();
 				ToolContext tool = new ToolContext();
@@ -45,11 +44,9 @@ public class ImportToolCommand extends FacilioCommand {
 					if ((purchasedTool.getSerialNumber() == null
 							|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
 						toolType.setIsRotating(false);
-						// tool.setPurchasedTools(null);
 					} else if (purchasedTool.getSerialNumber() != null
 							&& !purchasedTool.getSerialNumber().equalsIgnoreCase("null")) {
 						toolType.setIsRotating(true);
-						// tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 					}
 					InventoryCategoryContext category = new InventoryCategoryContext();
 					if (toolType.getCategory() != null) {
@@ -75,16 +72,27 @@ public class ImportToolCommand extends FacilioCommand {
 					toolNameVsIdMap.put(toolType.getName(), insertToolTypeId);
 					toolType.setId(insertToolTypeId);
 				}
-				if ((purchasedTool.getSerialNumber() == null
-						|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
-					tool.setQuantity(purchasedTool.getTool().getQuantity());
-					tool.setPurchasedTools(null);
-				} else {
-					tool.setPurchasedTools(Collections.singletonList(purchasedTool));
-				}
 				tool.setToolType(toolType);
 				tool.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
-				toolsList.add(tool);
+				if (toolNameVsIndexMap.containsKey(purchasedTool.getToolType().getName())) {
+					int toolIndex = toolNameVsIndexMap.get(purchasedTool.getToolType().getName()).intValue();
+					ToolContext existingTool = toolsList.get(toolIndex);
+					if (purchasedTool.getTool().getQuantity() > 0) {
+						if (existingTool.getQuantity() > 0) {
+							existingTool.setQuantity(existingTool.getQuantity() + purchasedTool.getTool().getQuantity());
+						} else {
+							existingTool.setQuantity(purchasedTool.getTool().getQuantity());
+						}
+					}
+					toolsList.set(toolIndex, existingTool);
+				} else {
+					if (purchasedTool.getTool().getQuantity() > 0) {
+						tool.setQuantity(purchasedTool.getTool().getQuantity());
+					}
+					toolsList.add(tool);
+					toolNameVsIndexMap.put(purchasedTool.getToolType().getName(), indexCounter);
+					indexCounter++;
+				}
 			}
 			context.put(FacilioConstants.ContextNames.TOOLS, toolsList);
 			context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);

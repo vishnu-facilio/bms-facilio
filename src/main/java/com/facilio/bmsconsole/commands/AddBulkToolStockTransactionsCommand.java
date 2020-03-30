@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
@@ -24,6 +18,11 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 ;
 
@@ -87,21 +86,22 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 							}
 						}
 					} else {
-						transaction.setQuantity(tool.getQuantity());
-						transaction.setTransactionState(TransactionState.ADDITION.getValue());
-						transaction.setTool(tool);
-						transaction.setParentId(tool.getId());
-						transaction.setIsReturnable(false);
-						if(shipment != null) {
-							transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
-							transaction.setShipment(shipment.getId());
+						if (tool.getQuantity() > 0) {
+							transaction.setQuantity(tool.getQuantity());
+							transaction.setTransactionState(TransactionState.ADDITION.getValue());
+							transaction.setTool(tool);
+							transaction.setParentId(tool.getId());
+							transaction.setIsReturnable(false);
+							if (shipment != null) {
+								transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+								transaction.setShipment(shipment.getId());
+							} else {
+								transaction.setTransactionType(TransactionType.STOCK.getValue());
+							}
+							transaction.setToolType(tool.getToolType());
+							transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+							toolTransaction.add(transaction);
 						}
-						else {
-							transaction.setTransactionType(TransactionType.STOCK.getValue());
-						}
-						transaction.setToolType(tool.getToolType());
-						transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
-						toolTransaction.add(transaction);
 					}
 				}
 			}
