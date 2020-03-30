@@ -3476,6 +3476,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getVendorContactModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.VENDOR_CONTACT);
+		module.setDisplayName("Vendor Contact");
+		module.setTableName("Vendor_Contacts");
+		module.setExtendModule(getPeopleModule());
+		return module;
+	}
+
 	public static FacilioModule getFloorModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.FLOOR);

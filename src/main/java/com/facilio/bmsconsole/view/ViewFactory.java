@@ -714,6 +714,13 @@ public class ViewFactory {
 		
 		viewsMap.put(FacilioConstants.ContextNames.TENANT_CONTACT, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllHiddenVendorContacts().setOrder(order++));
+		views.put("all-contacts", getAllVendorContacts().setOrder(order++));
+
+		viewsMap.put(FacilioConstants.ContextNames.VENDOR_CONTACT, views);
+
 		return viewsMap;
 	}
 
@@ -947,6 +954,39 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 		
 		
+		return allView;
+	}
+
+	private static FacilioView getAllHiddenVendorContacts() {
+
+		FacilioModule vendorContactModule = ModuleFactory.getVendorContactModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Vendor Contacts");
+		allView.setModuleName(vendorContactModule.getName());
+		allView.setSortFields(sortFields);
+
+		allView.setHidden(true);
+
+		return allView;
+	}
+
+	private static FacilioView getAllVendorContacts() {
+
+		FacilioModule vendorContactModule = ModuleFactory.getVendorContactModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all-contacts");
+		allView.setDisplayName("All Vendor Contacts");
+		allView.setModuleName(vendorContactModule.getName());
+		allView.setSortFields(sortFields);
+
+
 		return allView;
 	}
 	

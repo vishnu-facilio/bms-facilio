@@ -93,6 +93,7 @@ public class FormFactory {
 		forms.put("portalvendorDocumentForm",getPortalVendorDocumentForm());
 		forms.put("client_form", getClientForm());
 		forms.put("tenant_contact_form", getTenantContactForm());
+		forms.put("vendor_contact_form", getNewVendorContactForm());
 
 		return forms;
 	}
@@ -130,6 +131,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.HAZARD, getHazardForm())
 						.put(FacilioConstants.ContextNames.CLIENT, getClientForm())
 						.put(FacilioConstants.ContextNames.TENANT_CONTACT, getTenantContactForm())
+						.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getNewVendorContactForm())
 							
 						.build())
         			
@@ -328,6 +330,7 @@ public class FormFactory {
 		List<FacilioForm> precautionFormsList = Arrays.asList(getPrecautionForm());
 		List<FacilioForm> clientFormsList = Arrays.asList(getClientForm());
 		List<FacilioForm> tenantcontactFormsList = Arrays.asList(getTenantContactForm());
+		List<FacilioForm> vendorContactFormsList = Arrays.asList(getNewVendorContactForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -350,6 +353,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.PRECAUTION,getFormMap(precautionFormsList))
 				.put(FacilioConstants.ContextNames.CLIENT, getFormMap(clientFormsList))
 				.put(FacilioConstants.ContextNames.TENANT_CONTACT, getFormMap(tenantcontactFormsList))
+				.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getFormMap(vendorContactFormsList))
 					
 				.build();
 	}
@@ -703,6 +707,17 @@ public class FormFactory {
 		return form;
 	}
 
+	public static FacilioForm getNewVendorContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW VENDOR CONTACT");
+		form.setName("default_vendorcontact_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getVendorContactsFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -1018,6 +1033,17 @@ public class FormFactory {
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.REQUIRED, "tenant", 4, 1));
 		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Primary Contact", Required.OPTIONAL, 5, 1));
 		
+		return fields;
+	}
+
+	private static List<FormField> getVendorContactsFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 4, 1));
+		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Primary Contact", Required.OPTIONAL, 5, 1));
+
 		return fields;
 	}
 
