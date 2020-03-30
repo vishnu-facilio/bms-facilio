@@ -260,7 +260,7 @@ public class ApplicationApi {
 
 		
 		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
-		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", false, servicePortalApp.getId(),"portal", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getId(),"portal", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
 		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId(),"tenant", ApplicationContext.AppLayoutType.SINGLE.getIndex());
