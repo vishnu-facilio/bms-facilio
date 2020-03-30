@@ -101,6 +101,9 @@ public class WorkflowRuleResourceLoggerContext {
 		ALARM_PROCESSING_STATE(3),
 		RESOLVED(4),
 		FAILED(5),
+		PARTIALLY_PROCESSED_STATE(6),
+		PARTIALLY_COMPLETED_STATE(7),
+		RESCHEDULED(8),
 		;
 
 		int intVal;

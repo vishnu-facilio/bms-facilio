@@ -673,6 +673,8 @@ public class FacilioConstants {
 		public static final String HISTORICAL_EVENT_RULE_JOB_ID = "historicalRuleJobId";
 		public static final String HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID="historicalAlarmOccurrenceDeletionJobId";
 		public static final String HISTORICAL_ALARM_PROCESSING_JOB_ID="historicalAlarmProcessingJobId";
+		public static final String HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_RETRY_COUNT="historicalAlarmOccurrenceDeletionJobRetryCount";
+		public static final String HISTORICAL_ALARM_PROCESSING_JOB_RETRY_COUNT="historicalAlarmProcessingJobRetryCount";
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
 		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	private Long jobId;
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
-	boolean isManualFailed = false;
+	boolean isManualFailed = false, isFailed = false;
 	
 	@Override
 	public boolean executeCommand(Context jobContext) throws Exception {
@@ -211,18 +212,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					eventInsertEndTime = System.currentTimeMillis();
 							
 					LOGGER.info("Process Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				
-				}			
-			}
-
-			if(workflowRuleHistoricalLogsContext.getStatus() == WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()) {  //In retry case, reverting back parentResourceLogger's status from Failed to Event Generating state and setting event job errorMessage to null
-				workflowRuleHistoricalLogsContext.setErrorMessage(null);;
-				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
-				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-				if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal()) 
-				{	
-					parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal());				
-					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
-				}	
+				}
 			}
 			
 			LOGGER.info("Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime) + " and isReadingsEmpty -- " +isReadingsEmpty+
@@ -230,13 +220,24 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					" Event processing time will be -- " +(eventSpecialCaseStartTime - eventProcessingStartTime)+ " Event special handling time -- " +(eventInsertStartTime- eventSpecialCaseStartTime) +
 					" Event insertion time will be -- " +(eventInsertEndTime - eventInsertStartTime));
 			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
-			
 		}		
 	}
 	
 	catch (Exception historicalRuleException) {
 		exceptionMessage = historicalRuleException.getMessage();
 		stack = historicalRuleException.getStackTrace();
+		isFailed = true;
+
+		if(exceptionMessage != null && isManualFailed) {
+			workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
+		}
+		else if(historicalRuleException instanceof SQLException && !isManualFailed) {
+			workflowRuleHistoricalLogsContext.setErrorMessage("Sorry there seems to be a connectivity issue with our system right now. Please try re-running the rule for the current timeline.");
+		}	
+		else if(!isManualFailed) {
+			workflowRuleHistoricalLogsContext.setErrorMessage("Sorry there seems to be a technical problem. Check your configurations and try re-running the rule for the current timeline.");
+		}
+		
 		throw historicalRuleException;
 	}	
 	return false;
@@ -250,7 +251,12 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		if(activeRuleResourceGroupedLoggerIds.size() == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-			parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
+			if(isFailed && !isManualFailed) {
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
+			}
+			else {
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
+			}			
 			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)
 			{
@@ -271,23 +277,33 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			if (stack != null) {
 				mailExp.setStackTrace(stack);
 			}
-			CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
-			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
-			LOGGER.log(Level.SEVERE, exceptionMessage);
 			
-			if(workflowRuleHistoricalLogsContext != null)	{				
-//				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
-//				WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-//				
-//				if(parentRuleResourceLoggerContext != null) {		
-//					WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());	
-//					workflowRuleHistoricalLogsContext.setErrorMessage("Error propagated to the current Rule_Resource Parent Job");
-//				}
-				if(exceptionMessage != null && isManualFailed) {
-					workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
-				}
-				
-				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
+			if(!isManualFailed) {
+				CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
+				LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
+				LOGGER.log(Level.SEVERE, exceptionMessage);		
+			}
+			
+			if(workflowRuleHistoricalLogsContext != null)	{	
+				NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
+			
+				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
+				List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
+				if(activeRuleResourceGroupedLoggerIds.size() == 0)
+				{
+					WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
+					if(isFailed && !isManualFailed) {
+						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
+					}
+					else {
+						parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());
+					}
+					int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
+					if(rowsUpdated == 1)
+					{
+						FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalAlarmProcessingJob", 30, "history");
+					}
+				}			
 			}
 			else  {
 				LOGGER.severe("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
@@ -493,7 +509,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					if(canConstructErrorMessage){
 						isManualFailed = true;
 						supportingValues.put(rdmKey, null);
-						throw new Exception("Data is not present for the supporting field (" + field.getField().getDisplayName() + ") for the above mentioned date interval");				
+						ResourceContext currentResource = ResourceAPI.getResource(resourceId);
+						throw new Exception("Selected asset (" +currentResource.getName()+ ") seems to have no data for the configured field (" + field.getField().getDisplayName() + ") in this timeline.");				
 					}
 //					selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 //										.select(selectFields)

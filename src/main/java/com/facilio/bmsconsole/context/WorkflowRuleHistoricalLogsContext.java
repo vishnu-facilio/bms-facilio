@@ -122,6 +122,7 @@ public class WorkflowRuleHistoricalLogsContext {
 		IN_PROGRESS(1),
 		RESOLVED(2),
 		FAILED(3),
+		YET_TO_BE_SCHEDULED(4),
 		;
 
 		int intVal;

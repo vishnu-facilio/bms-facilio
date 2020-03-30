@@ -106,17 +106,6 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				}
 			}
 				
-			int alarmCount = 0;   //For HistoricalReadingRule
-			if(alarmOccurrenceMap.values() != null && !alarmOccurrenceMap.values().isEmpty() && alarmOccurrenceMap.size() <= 2)
-			{
-				for (PointedList<AlarmOccurrenceContext> uniqueAlarmOccurrenceList : alarmOccurrenceMap.values()) {
-					if(uniqueAlarmOccurrenceList != null && !uniqueAlarmOccurrenceList.isEmpty() && uniqueAlarmOccurrenceList.get(0) instanceof ReadingAlarmOccurrenceContext) {
-						alarmCount = uniqueAlarmOccurrenceList.size();
-					}	
-				}	
-				context.put(FacilioConstants.ContextNames.ALARM_COUNT, alarmCount);
-			}
-				
 			for (AlarmOccurrenceContext.Type type : occurrenceMap.keySet()) {
 				List<FacilioField> allFields = modBean.getAllFields(NewAlarmAPI.getOccurrenceModuleName(type));
 				InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
@@ -149,6 +138,13 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				}
 				builder.addRecords(records);
 				builder.save();
+				
+				int readingAlarmOccurrenceCount = 0;   //For HistoricalReadingRule
+				if(type != null && type == AlarmOccurrenceContext.Type.READING && records != null && !records.isEmpty() && records.get(0) instanceof ReadingAlarmOccurrenceContext)
+				{
+					readingAlarmOccurrenceCount = records.size();
+					context.put(FacilioConstants.ContextNames.ALARM_COUNT, readingAlarmOccurrenceCount);
+				}
 			}
 		}
 		

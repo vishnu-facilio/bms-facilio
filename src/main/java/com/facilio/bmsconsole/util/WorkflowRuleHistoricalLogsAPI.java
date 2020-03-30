@@ -120,7 +120,7 @@ public class WorkflowRuleHistoricalLogsAPI {
 	{
 		WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 		workflowRuleHistoricalLogsContext.setParentRuleResourceId(parentRuleResourceId);
-		workflowRuleHistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleHistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal());
 		workflowRuleHistoricalLogsContext.setSplitStartTime(splitRange.getStartTime());
 		workflowRuleHistoricalLogsContext.setSplitEndTime(splitRange.getEndTime());
 		if(logState != null)

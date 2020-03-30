@@ -17,23 +17,11 @@ public class HistoricalAlarmProcessingJob extends FacilioJob {
 	
 	long jobId = -1;
 	public void execute(JobContext jc) throws Exception {
-		
-		try {
-			jobId = jc.getJobId();
-			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRuleAlarmProcessing();
-			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_ALARM_PROCESSING_JOB_ID, jc.getJobId());
-			chain.execute();
-		}
-		catch(Exception historicalRuleAlarmProcessingException) {
-			try {
-				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-				LOGGER.error("Error occurred while doing Historical Rule Alarm Processing Job" +historicalRuleAlarmProcessingException.toString());
-				throw historicalRuleAlarmProcessingException;
-			}
-			catch(Exception transactionException) {
-				LOGGER.error(transactionException.toString());
-			}
-		}
+		jobId = jc.getJobId();
+		FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRuleAlarmProcessing();
+		chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_ALARM_PROCESSING_JOB_ID, jc.getJobId());
+		chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_ALARM_PROCESSING_JOB_RETRY_COUNT, jc.getJobExecutionCount());
+		chain.execute();		
 	}
 
 	@Override

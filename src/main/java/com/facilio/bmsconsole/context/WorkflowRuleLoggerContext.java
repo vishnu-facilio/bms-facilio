@@ -115,6 +115,8 @@ public class WorkflowRuleLoggerContext {
 		IN_PROGRESS(1),
 		RESOLVED(2),
 		FAILED(3),
+		PARTIALLY_COMPLETED(4),
+		RESCHEDULED(5),
 		;
 
 		int intVal;

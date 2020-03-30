@@ -14,6 +14,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.BmsAggregateOperators;
@@ -86,12 +87,37 @@ public class WorkflowRuleResourceLoggerAPI {
 		selectFields.add(countField);
 		selectFields.add(sumField);
 		
+		Criteria subCriteria = new Criteria();
+		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal(), NumberOperators.EQUALS));
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(selectFields)
 				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleLoggerId"), "" +parentRuleLoggerId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleLoggerId"), "" +parentRuleLoggerId, NumberOperators.EQUALS))	
+				.andCriteria(subCriteria)
 				.groupBy("PARENT_RULE_LOGGER_ID, STATUS");
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		return props;
+	}
+	
+	public static List<Map<String, Object>> getWorkflowRuleResourceLogsStatusCountByParentRuleLoggerId(long parentRuleLoggerId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
+
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("status"));
+		countField.setName("count");
+		List<FacilioField> selectFields = new ArrayList<FacilioField>();
+		selectFields.add(fieldMap.get("parentRuleLoggerId"));
+		selectFields.add(fieldMap.get("status"));
+		selectFields.add(countField);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleLoggerId"), "" +parentRuleLoggerId, NumberOperators.EQUALS))	
+				.groupBy("STATUS");
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		return props;
@@ -108,8 +134,10 @@ public class WorkflowRuleResourceLoggerAPI {
 				.on("Workflow_Rule_Resource_Logger.PARENT_RULE_LOGGER_ID = Workflow_Rule_Logger.ID")
 				.andCondition(CriteriaAPI.getCondition("Workflow_Rule_Logger.RULE_ID", "ruleId", "" +ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS));
+
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<WorkflowRuleResourceLoggerContext> workflowRuleResourceLoggerContext = new ArrayList<WorkflowRuleResourceLoggerContext>();
