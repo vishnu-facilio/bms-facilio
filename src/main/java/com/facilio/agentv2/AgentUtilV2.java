@@ -33,13 +33,23 @@ public class AgentUtilV2
     private String orgDomainName;
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
+    private Map<Long, FacilioAgent> idVsAgentMap = new HashMap<>();
 
 
     public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds) throws Exception {
-        List<FacilioAgent> agents = AgentApiV2.getAgents(agentIds);
         Map<Long, FacilioAgent> map = new HashMap<>();
+        List<Long> idsNotInMap = new ArrayList<>();
+        for (Long id:agentIds){
+            if (idVsAgentMap.containsKey(id)){
+                map.put(id,idVsAgentMap.get(id));
+            }else{
+                idsNotInMap.add(id);
+            }
+        }
+        List<FacilioAgent> agentsFromDb = AgentApiV2.getAgents(idsNotInMap);
         for (FacilioAgent agent :
-                agents) {
+                agentsFromDb) {
+            idVsAgentMap.put(agent.getId(),agent);
             map.put(agent.getId(), agent);
         }
         return map;
