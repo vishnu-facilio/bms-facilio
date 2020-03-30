@@ -1211,6 +1211,14 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;	
 	}
 	
+	public String addRollUpFieldMig() throws Exception
+	{
+		RollUpFieldUtil.addRollUpForBaseSpaceFields();
+		RollUpFieldUtil.addRollUpForSubSpaceFields();
+		setResult("success", "Rollup Fields added for the current org");	
+		return SUCCESS;	
+	}
+	
 	public String runRollUpFieldRule() throws Exception
 	{
 		RollUpFieldUtil.runInternalBulkRollUpFieldRules(internalRuleIds);

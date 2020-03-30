@@ -216,6 +216,63 @@ public class RollUpFieldUtil {
 		return childModuleRecordIds;
 	}
 	
+	public static List<List<Long>> getDistinctChildModuleRecordIdsInBatch(RollUpField triggeringChildField, Criteria criteria, int offsetCount) throws Exception {
+		
+		FacilioField selectDistinctField = new FacilioField();
+		selectDistinctField.setName(triggeringChildField.getChildField().getName()+"distinct");
+		selectDistinctField.setDisplayName(triggeringChildField.getChildField().getDisplayName());
+		selectDistinctField.setColumnName("DISTINCT("+triggeringChildField.getChildField().getCompleteColumnName()+")");
+		
+		List<FacilioField> selectFields = new ArrayList<>();
+		selectFields.add(selectDistinctField);
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.table(triggeringChildField.getChildModule().getTableName())
+				.beanClass(ModuleBaseWithCustomFields.class)
+				.module(triggeringChildField.getChildModule())
+				.select(selectFields)
+				.setAggregation();
+		
+		if(triggeringChildField.getChildCriteria() != null) {
+			selectBuilder.andCriteria(triggeringChildField.getChildCriteria());
+		}
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
+		
+		SelectRecordsBuilder.BatchResult<Map<String, Object>> bs = selectBuilder.getAsPropsInBatches(triggeringChildField.getChildModule().getTableName()+ "." +triggeringChildField.getChildField().getColumnName(), offsetCount);
+		List<List<Long>> childModuleRecordIdsList = new ArrayList<List<Long>>();
+		while (bs.hasNext()) 
+		{
+		   List<Map<String, Object>> propsList = bs.get();
+		   List<Long> childModuleRecordIds = new ArrayList<Long>();
+
+		   if(propsList != null && !propsList.isEmpty())
+		   {
+				for(Map<String, Object> prop :propsList)
+				{
+					Long parentLookUpId = null;	
+					if(prop.get(selectDistinctField.getName()) instanceof Map && selectDistinctField instanceof LookupField) {
+						Map<String, Object> lookUpObject = (Map<String, Object>) prop.get(selectDistinctField.getName());
+						if(lookUpObject.get("id") != null) {
+							parentLookUpId = (Long) lookUpObject.get("id");
+						}
+					}
+					else {
+						parentLookUpId = (Long) prop.get(selectDistinctField.getName());
+					}
+					
+					if(parentLookUpId != null) {
+						childModuleRecordIds.add(parentLookUpId);	
+					}
+				}
+			}
+		   childModuleRecordIdsList.add(childModuleRecordIds);
+		}
+
+		return childModuleRecordIdsList;
+	}
+	
 	public static void aggregateFieldAndAddRollUpFieldData(RollUpField triggeringChildField, List<Long> triggerChildGroupedIds, List<ReadingDataMeta> rollUpFieldData) throws Exception {
 		
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
