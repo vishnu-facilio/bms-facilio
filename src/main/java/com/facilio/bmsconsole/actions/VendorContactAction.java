@@ -101,6 +101,8 @@ public class VendorContactAction extends FacilioAction{
 			FacilioChain c = TransactionChainFactory.addVendorContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}

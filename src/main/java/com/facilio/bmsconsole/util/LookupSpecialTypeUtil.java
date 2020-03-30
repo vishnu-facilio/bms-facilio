@@ -17,6 +17,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
@@ -101,9 +102,7 @@ public class LookupSpecialTypeUtil {
 			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<AppDomain> appdomainObj = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
-			
-			List<User> users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForApp(appdomainObj.get(0)));
+			List<User> users = AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
 			Map<Long, String> userMap = new HashMap<Long, String>();
 			if (users != null) {
 				for (User usr : users) {

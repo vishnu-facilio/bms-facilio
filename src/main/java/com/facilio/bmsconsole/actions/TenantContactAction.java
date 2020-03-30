@@ -101,6 +101,7 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(tenantContacts)) {
 			FacilioChain c = TransactionChainFactory.addTenantContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -339,6 +339,51 @@ public class OrgBeanImpl implements OrgBean {
     public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception { 
       	return getAppUsers(orgId, appId, false);
     }
+	
+	@Override 
+    public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception { 
+      	List<AppDomain> portalAppDomains = IAMAppUtil.getPortalAppDomains();
+      	
+      	if(CollectionUtils.isNotEmpty(portalAppDomains)) {
+      		StringJoiner appIds = new StringJoiner(",");
+      		for(AppDomain portalDomain : portalAppDomains) {
+      			long appId = ApplicationApi.getApplicationIdForApp(portalDomain);
+      			appIds.add(String.valueOf(appId));
+      		}
+			List<FacilioField> fields = new ArrayList<>();
+			fields.addAll(AccountConstants.getAppOrgUserFields());
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table("ORG_Users")
+			;
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		
+			fields.add(AccountConstants.getApplicationIdField());
+			selectBuilder.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
+				selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", appIds.toString(), NumberOperators.EQUALS));
+						
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<User> users = new ArrayList<>();
+				IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+				for(Map<String, Object> prop : props) {
+					User user = UserBeanImpl.createUserFromProps(prop, false, false, false);
+					if(status) {
+						if(user.isActive()) {
+							users.add(user);
+						}
+					}
+					else {
+						users.add(user);
+					}
+				}
+				return users;
+			}
+      	}
+		return null;
+    }
 
 	@Override
 	public void updateLoggerLevel(int level, long orgId) throws Exception {

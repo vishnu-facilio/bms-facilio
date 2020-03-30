@@ -928,13 +928,17 @@ public class ViewFactory {
 
 		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
-
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(tenantContactModule);
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Tenant Contacts");
 		allView.setModuleName(tenantContactModule.getName());
-		allView.setSortFields(sortFields);
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		allView.setHidden(true);
 
@@ -945,13 +949,18 @@ public class ViewFactory {
 
 		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
-
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(tenantContactModule);
+		
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("all-contacts");
 		allView.setDisplayName("All Tenant Contacts");
 		allView.setModuleName(tenantContactModule.getName());
-		allView.setSortFields(sortFields);
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		
 		return allView;
@@ -990,21 +999,7 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getAllTenantContactsForRelatedList() {
 
-		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
-
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
-
-		FacilioView allView = new FacilioView();
-		allView.setName("hidden-all");
-		allView.setDisplayName("All Tenant Contacts");
-		allView.setSortFields(sortFields);
-		allView.setHidden(true);
-
-		return allView;
-	}
-	
 	private static FacilioView getEvents(String category) {
 
 		FacilioField createdTime = new FacilioField();

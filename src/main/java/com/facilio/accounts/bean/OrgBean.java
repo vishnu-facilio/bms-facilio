@@ -28,6 +28,8 @@ public interface OrgBean {
 	
 	public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception;
 
+	public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception;
+	 
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;

@@ -93,6 +93,8 @@ public class PeopleAction extends FacilioAction{
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
