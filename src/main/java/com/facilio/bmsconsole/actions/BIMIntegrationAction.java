@@ -83,7 +83,9 @@ public class BIMIntegrationAction extends FacilioAction{
 			if(defaultValues != null && defaultValues.get("site") != null){
 				Long siteId = Long.parseLong(defaultValues.get("site").toString());
 				SiteContext site = SpaceAPI.getSiteSpace(siteId);
-				bim.setSiteName(site.getName());
+				if(site != null){
+					bim.setSiteName(site.getName());
+				}
 			}
 		}
 		setResult("bimIntegrationList" , bimIntegrationList);
