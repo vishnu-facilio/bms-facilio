@@ -114,7 +114,8 @@ public class WebTabContext implements Serializable {
         DASHBOARD ("Dashboard", false),
         CUSTOM ("Custom",false),
         APPS ("Apps",false),
-        SETTINGS("Settings",true)
+        SETTINGS("Settings",true),
+        AGENT("Agent", true)
         ;
 
         private String name;

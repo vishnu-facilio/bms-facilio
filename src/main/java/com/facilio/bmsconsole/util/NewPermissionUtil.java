@@ -347,11 +347,14 @@ public class NewPermissionUtil {
 
     public static List<Permission> getPermissions(int tabType, String moduleName) {
         Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
-        if (stringListMap.containsKey(moduleName)) {
-            return stringListMap.get(moduleName);
-        } else {
-            return stringListMap.get("*");
+        if(stringListMap!=null && !stringListMap.isEmpty()) {
+            if (stringListMap.containsKey(moduleName)) {
+                return stringListMap.get(moduleName);
+            } else {
+                return stringListMap.get("*");
+            }
         }
+        return null;
     }
 
     public static List<Permission> getPermissionFromConfig(int tabType, JSONObject configJSON) {

@@ -256,20 +256,20 @@ public class ApplicationApi {
 
 		Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
 		AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId());
+		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId(), "newapp", ApplicationContext.AppLayoutType.DUAL.getIndex());
 
 		
 		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
-		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", false, servicePortalApp.getId());
+		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "SERVICE PORTAL", false, servicePortalApp.getId(),"portal", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
-		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId());
+		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId(),"tenant", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliovendors.com");
-		ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId());
+		ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId(),"vendor", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".facilioclients.com");
-		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId());
+		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId(),"client", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
 		applicationsDefault.add(facilioApplication);
