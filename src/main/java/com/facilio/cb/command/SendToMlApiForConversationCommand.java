@@ -32,7 +32,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 				intent = "system_terminate_session_intent";
 				accuracy = 0.6789;
 			}
-			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
+			else if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal()) {
 				
 				String chatMeg = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
 				
