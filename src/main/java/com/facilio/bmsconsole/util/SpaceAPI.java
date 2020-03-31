@@ -777,7 +777,7 @@ public class SpaceAPI {
 				.beanClass(FloorContext.class)
 				.andCondition(CriteriaAPI.getCondition("BUILDING_ID","building",String.valueOf(buildingId),NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS))
-				.orderBy("Resources.NAME DESC")
+				.orderBy("Resources.NAME ASC")
 		;
 
 		List<FloorContext> floors = selectBuilder.get();
@@ -827,7 +827,7 @@ public class SpaceAPI {
 				.module(module)
 				.beanClass(BuildingContext.class)
 				.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?", siteId, BaseSpaceContext.SpaceType.BUILDING.getIntVal())
-				.orderBy("Resources.NAME DESC");
+				.orderBy("Resources.NAME ASC");
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
@@ -1725,7 +1725,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space1"), CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space2"), CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space3"), CommonOperators.IS_EMPTY))
-				.orderBy("Resources.NAME DESC");
+				.orderBy("Resources.NAME ASC");
 		;
 		BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
 
