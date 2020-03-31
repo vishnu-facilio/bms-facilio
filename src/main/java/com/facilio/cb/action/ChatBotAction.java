@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -17,8 +18,10 @@ import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.message.WmsChatMessage;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.util.WmsApi;
 
 public class ChatBotAction extends FacilioAction {
 
@@ -115,6 +118,8 @@ public class ChatBotAction extends FacilioAction {
 
 	public String chat() throws Exception {
 		
+		sendToWMS(chatMessage);
+		
 		FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
 		
 		FacilioContext context = chain.getContext();
@@ -154,11 +159,24 @@ public class ChatBotAction extends FacilioAction {
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotReplyMessage);
 			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
 			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT));
+			
+			sendToWMS(getResult());
 		}
 		
 		return SUCCESS;
 	}
 	
+	private void sendToWMS(JSONObject chatMessage2) throws Exception {
+		
+		WmsEvent event = new WmsEvent();
+		event.setNamespace("chatbot");
+		event.setAction("newChatMessage");
+		event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
+		event.setContent(chatMessage2);
+		
+		WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), event);
+	}
+
 	public String flushIntentAndModel() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.FlushIntentAndModelChain();

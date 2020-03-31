@@ -18,4 +18,8 @@ public interface WmsEventType {
 	public static enum VisitorKiosk implements WmsEventType {
 		CHECK_PRINTER_STATUS;
 	}
+	
+	public static enum ChatBot implements WmsEventType {
+		NEW_MESSAGE;
+	}
 }
