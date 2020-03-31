@@ -21,6 +21,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -637,11 +638,15 @@ public class TenantsAPI {
 //		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		CommonCommandUtil.handleLookupFormData(fields, tenant.getData());
+		
+		
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 	    //updateContactDetails(tenant.getContact(),tenant.getId());
 		UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
 														   .module(module)
-														   .fields(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														   .fields(fields)
 //														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														   .andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
 		int count = updateBuilder.update(tenant);
