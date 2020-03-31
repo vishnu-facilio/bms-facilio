@@ -133,8 +133,13 @@ public class ApprovalAction extends FacilioAction {
 		constructListContext((FacilioContext) context);
 		chain.execute();
 
-		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
-		setResult("stateFlows", context.get("stateFlows"));
+		if (isFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,
+					chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		} else {
+			setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult("stateFlows", context.get("stateFlows"));
+		}
 		return SUCCESS;
 	}
 }
