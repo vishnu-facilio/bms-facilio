@@ -22,14 +22,14 @@ public class GetAvailableApproverListCommand extends FacilioCommand {
         FacilioStatus currentState = (FacilioStatus) context.get("currentState");
         if (currentState != null && currentState.isRequestedState()) {
             List<WorkflowRuleContext> availableStates = (List<WorkflowRuleContext>) context.get("availableStates");
+            ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
+            WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(moduleData.getApprovalFlowId());
+            context.put(FacilioConstants.ContextNames.APPROVAL_RULE, workflowRule);
             if (CollectionUtils.isEmpty(availableStates)) {
-                ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
                 Map<String, Long> map = new HashMap<>();
                 map.put("fromState", currentState.getId());
                 map.put("stateFlowId", moduleData.getApprovalFlowId());
 
-                WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(moduleData.getApprovalFlowId());
-                context.put(FacilioConstants.ContextNames.APPROVAL_RULE, workflowRule);
                 List<WorkflowRuleContext> stateTransitions = StateFlowRulesAPI.getStateTransitions(Collections.singletonList(map), AbstractStateTransitionRuleContext.TransitionType.NORMAL);
                 if (CollectionUtils.isNotEmpty(stateTransitions)) {
                     ApproverWorkflowRuleContext approverWorkflowRuleContext = (ApproverWorkflowRuleContext) stateTransitions.get(0);
