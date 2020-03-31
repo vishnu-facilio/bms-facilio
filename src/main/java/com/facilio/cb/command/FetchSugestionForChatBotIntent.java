@@ -14,6 +14,7 @@ import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.modules.FieldUtil;
 
 public class FetchSugestionForChatBotIntent extends FacilioCommand {
 
@@ -67,6 +68,10 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 					chatBotSuggestionContexts.add(chatBotSuggestionContext);
 				}
 				
+				chatBotSessionConversation.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
+				
+				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
+				
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
 				
 				return false;
@@ -74,6 +79,10 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 			else if(session.getState() == ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal()) {
 				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConversation());
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
+				
+				chatBotSessionConversation.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
+				
+				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
 				
 				return false;
 			}
@@ -99,6 +108,10 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 					chatBotSuggestionContexts.add(chatBotSuggestionContext);
 				}
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
+				
+				session.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
+				
+				ChatBotUtil.updateChatBotSession(session);
 			}
 		}
 		

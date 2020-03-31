@@ -31,7 +31,16 @@ public class ChatBotIntent {
 	WorkflowContext contextWorkflow;
 	boolean confirmationNeeded;
 	List<String> childIntentNames;
+	String confirmationText;
 	
+	public String getConfirmationText() {
+		return confirmationText;
+	}
+
+	public void setConfirmationText(String confirmationText) {
+		this.confirmationText = confirmationText;
+	}
+
 	public List<String> getChildIntentNames() {
 		return childIntentNames;
 	}

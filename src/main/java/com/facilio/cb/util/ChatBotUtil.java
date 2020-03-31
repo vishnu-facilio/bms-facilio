@@ -768,16 +768,27 @@ public class ChatBotUtil {
 		chatBotSessionConversation1.setRequestedTime(DateTimeUtil.getCurrenTime());
 		
 		JSONArray resArray = new JSONArray();
+		
 		JSONObject result = new JSONObject();
+		
+		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+		
+		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, session.getIntent().getConfirmationText() == null ? ChatBotConstants.CHAT_BOT_DEFAULT_CONFIRMATION_TEXT :  session.getIntent().getConfirmationText());
+		
 		resArray.add(result);
+		
+		
+		result = new JSONObject();
 		
 		List<ChatBotSessionConversation> conversations = ChatBotUtil.getSessionConversationMapForConfirmationCard(session.getId(),session.getIntentId());
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
 		
-		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, "Please confirm the changes");
+		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, ChatBotConstants.CHAT_BOT_DEFAULT_SUBMIT_CONFIRMATION_TEXT);
 		
 		result.put(ChatBotConstants.CHAT_BOT_CONFIRMATION_RESPONSE, FieldUtil.getAsJSONArray(conversations, ChatBotSessionConversation.class));
+		
+		resArray.add(result);
 		
 		chatBotSessionConversation1.setQuery(resArray.toJSONString());
 		

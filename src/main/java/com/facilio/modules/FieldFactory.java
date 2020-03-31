@@ -7895,7 +7895,7 @@ public class FieldFactory {
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("withParams", "IS_WITH_PARAMS", module, FieldType.BOOLEAN));
         fields.add(getField("confirmationNeeded", "IS_CONFIRMATION_NEEDED", module, FieldType.BOOLEAN));
-
+        fields.add(getField("confirmationText", "CONFIRMATION_TEXT", module, FieldType.STRING));
         return fields;
     }
 
@@ -7973,6 +7973,7 @@ public class FieldFactory {
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         fields.add(getField("parentSessionId", "PARENT_SESSION_ID", module, FieldType.NUMBER));
         fields.add(getField("confirmed", "IS_CONFIRMED", module, FieldType.BOOLEAN));
+        fields.add(getField("suggestion", "SUGGESTION", module, FieldType.STRING));
 
         return fields;
     }
@@ -7990,6 +7991,7 @@ public class FieldFactory {
         fields.add(getField("intentParamId", "INTENT_PARAM_ID", module, FieldType.NUMBER));
         fields.add(getField("requestedTime", "REQUESTED_TIME", module, FieldType.NUMBER));
         fields.add(getField("respondedTime", "RESPONDED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("suggestion", "SUGGESTION", module, FieldType.STRING));
 
         return fields;
     }

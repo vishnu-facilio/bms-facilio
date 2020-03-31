@@ -26,6 +26,16 @@ public class ChatBotSession {
 	long parentSessionId = -1;
 	Boolean confirmed;
 	
+	String suggestion;
+	
+	public String getSuggestion() {
+		return suggestion;
+	}
+
+	public void setSuggestion(String suggestion) {
+		this.suggestion = suggestion;
+	}
+
 	List<ChatBotSessionConversation> chatBotSessionConversations;
 	
 	public List<ChatBotSessionConversation> getChatBotSessionConversations() {

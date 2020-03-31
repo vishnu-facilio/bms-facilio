@@ -111,6 +111,7 @@
    localId : 7
    withParams : true
    confirmationNeeded : true
+   confirmationText : "Thanks for providing me with the information. I have created a service request for you."
    childIntentNames:
    - "system_update_wo_note_intent"
    - "system_update_wo_photo_intent"

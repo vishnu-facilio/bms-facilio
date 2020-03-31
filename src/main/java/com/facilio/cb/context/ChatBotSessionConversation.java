@@ -31,6 +31,16 @@ public class ChatBotSessionConversation implements Cloneable {
 	long intentParamId = -1;
 	
 	AttachmentContext attachment;
+	
+	String suggestion;
+	
+	public String getSuggestion() {
+		return suggestion;
+	}
+
+	public void setSuggestion(String suggestion) {
+		this.suggestion = suggestion;
+	}
 
 	public AttachmentContext getAttachment() {
 		return attachment;
