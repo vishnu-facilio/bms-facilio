@@ -322,7 +322,7 @@
 		</action>
 	</package>
 	
-	<package name="chatbot" namespace="/api/service/v2/cb" extends="newServicePortalApiV2">
+	<package name="servicePortalChatbot" namespace="/api/service/v2/cb" extends="newServicePortalApiV2">
 		<action name="chat"
 				class="com.facilio.cb.action.ChatBotAction" method="chat" />
 		<action name="getChatMessages"
