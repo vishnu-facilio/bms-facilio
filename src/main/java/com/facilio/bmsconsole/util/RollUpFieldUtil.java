@@ -31,6 +31,7 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
@@ -222,6 +223,10 @@ public class RollUpFieldUtil {
 		selectDistinctField.setName(triggeringChildField.getChildField().getName()+"distinct");
 		selectDistinctField.setDisplayName(triggeringChildField.getChildField().getDisplayName());
 		selectDistinctField.setColumnName("DISTINCT("+triggeringChildField.getChildField().getCompleteColumnName()+")");
+		selectDistinctField.setDisplayType(triggeringChildField.getChildField().getDisplayTypeInt());
+		selectDistinctField.setDisplayType(triggeringChildField.getChildField().getDisplayType());
+		selectDistinctField.setDataType(triggeringChildField.getChildField().getDataType());
+		selectDistinctField.setDataType(triggeringChildField.getChildField().getDataTypeEnum());;
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(selectDistinctField);
