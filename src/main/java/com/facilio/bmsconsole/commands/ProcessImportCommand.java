@@ -44,6 +44,7 @@ public class ProcessImportCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(ProcessImportCommand.class.getName());
 	private static ArrayListMultimap<String, String> groupedFields;
 	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
+	private static ArrayList addedSpaceIdsList = new ArrayList<>();
 	
 	@Override
 	public boolean executeCommand(Context c) throws Exception {
@@ -109,7 +110,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 					if ((importProcessContext.getModule()!=null && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) || (importProcessContext.getModule()!=null && importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 						if(ImportAPI.canUpdateAssetBaseSpace(importProcessContext)) {
-							Long spaceId = getSpaceID(importProcessContext, colVal, fieldMapping);
+							Long spaceId = getSpaceID(importProcessContext, colVal, fieldMapping, row_no, true);
 							props.put("purposeSpace", spaceId);
 							
 							lookupHolder = new HashMap<>();
@@ -174,7 +175,7 @@ public class ProcessImportCommand extends FacilioCommand {
 								if(!sendToSpaceID.containsKey(fieldMapping.get(spaceFields.get(k)))) {
 									continue;
 								}
-								Long id = getSpaceID(importProcessContext, sendToSpaceID, fieldMapping);
+								Long id = getSpaceID(importProcessContext, sendToSpaceID, fieldMapping, row_no,true);
 								if(Ids[k].contains("space")) {
 									props.put(Ids[k], id);
 								}
@@ -199,7 +200,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							fieldMapping.put("space__building", "BuildingName");
 							colVal.put("BuildingName", building.getName());
 							
-							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
+							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping, row_no, true);
 							props.put("floor", floorId);
 							props.put("siteId", Long.parseLong(props.get("site").toString()));
 						}
@@ -212,7 +213,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					else if (module.equals(FacilioConstants.ContextNames.BUILDING)) {
 						long buildingId = -1;
 						if(!isBim){
-							buildingId = getSpaceID(importProcessContext,colVal, fieldMapping);
+							buildingId = getSpaceID(importProcessContext,colVal, fieldMapping, row_no, true);
 						}else{
 							buildingId = Long.parseLong(props.get("site").toString());
 						}
@@ -232,11 +233,11 @@ public class ProcessImportCommand extends FacilioCommand {
 								fieldMapping.get(module + "__site"),
 								colVal.get(fieldMapping.get(module+ "__site")));
 						
-						Long siteId = getSpaceID(importProcessContext, col, fieldMapping);
+						Long siteId = getSpaceID(importProcessContext, col, fieldMapping, row_no, true);
 						props.put("siteId", siteId);
 						
 						if(!isBim){
-							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping);
+							Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping,row_no, true);
 							lookupHolder = new HashMap<>();
 							lookupHolder.put("id", floorId);
 							props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
@@ -567,7 +568,8 @@ public class ProcessImportCommand extends FacilioCommand {
 					groupedContext.put(module, tempList);
 				}
 			}
-		
+
+		c.put(ImportAPI.ImportProcessConstants.ADDED_BASE_SPACE_IDS, addedSpaceIdsList);
 		c.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 		c.put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 		c.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
@@ -871,41 +873,40 @@ public class ProcessImportCommand extends FacilioCommand {
 				throw new ImportLookupModuleValueNotFoundException(colVal.get(fieldMapping.get(moduleName + "__asset")).toString(), row_no, fieldMapping.get(moduleName + "__asset"), new Exception());
 			}
 		} else {
-			return getSpaceID(importProcessContext, colVal, fieldMapping);
+			return getSpaceID(importProcessContext, colVal, fieldMapping, row_no, false);
 		}
 	}
 
-	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
+	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping, int row_no ,boolean canAddNew) throws Exception {
 
 		String siteName,buildingName,floorName,spaceName;
 		
-		ArrayList<String> additionalSpaces = new ArrayList<>();
+		ArrayList<JSONObject> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();
 		siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
 		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
 		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
 		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
-		int start = 0;
-		if(spaceName != null || 
-				importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) 
+		int start = 1;
+
+		if (spaceName != null ||
+				importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
 				|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
-				) {
-			
-			
-			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+		) {
+			if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
 					|| importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
-				
+
 				spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__space1"));
-				start = 1;
+				start = 2;
 			}
-			
-			for(int i =start; i <= 3; i++)
-			{
-				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__space" + (i+1)));
-				if(temp != null && temp != "") {
-					additionalSpaces.add(temp);
-				}
-				else {
+			for (int i = start; i <= 4; i++) {
+				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__space" + (i)));
+				if (temp != null && temp != "") {
+					JSONObject additionalSpace = new JSONObject();
+					additionalSpace.put("level", i);
+					additionalSpace.put("name", temp);
+					additionalSpaces.add(additionalSpace);
+				} else {
 					break;
 				}
 			}
@@ -932,10 +933,13 @@ public class ProcessImportCommand extends FacilioCommand {
 			 {
 				siteId = siteMap.get(siteName.trim().toLowerCase());
 			 }
-			 else
+			 else if (canAddNew)
 			 {
 				 siteId = siteMeta.addSite(siteName);
 				 recordsList.put("site", siteId);
+				 addedSpaceIdsList.add(siteId);
+			 } else {
+				 throw new ImportLookupModuleValueNotFoundException(siteName, row_no, fieldMapping.get(moduleName + "__site"), new Exception());
 			 }
 			 if(siteId != null) {
 				 spaceId = 
@@ -964,10 +968,14 @@ public class ProcessImportCommand extends FacilioCommand {
 					 buildingId = buildingMap.get(buildingName.trim().toLowerCase());
 				 }
 			 }
-			 if(buildingId == null)
-			 {
-				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
-				 recordsList.put("building", buildingId);
+			 if (buildingId == null) {
+				 if (canAddNew) {
+					 buildingId = buildingMeta.addBuilding(buildingName, siteId);
+					 recordsList.put("building", buildingId);
+					 addedSpaceIdsList.add(buildingId);
+				 } else {
+					 throw new ImportLookupModuleValueNotFoundException(buildingName, row_no, fieldMapping.get(moduleName + "__building"), new Exception());
+				 }
 			 }
 			 
 			 if(buildingId != null) {
@@ -983,52 +991,57 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 		    if(floorId == null)
 		    {
-		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
-		    	recordsList.put("floor", floorId);
+		    	if (canAddNew) {
+					floorId = floorMeta.addFloor(floorName, siteId, buildingId);
+					recordsList.put("floor", floorId);
+					addedSpaceIdsList.add(floorId);
+				} else {
+					throw new ImportLookupModuleValueNotFoundException(floorName, row_no, fieldMapping.get(moduleName + "__floor"), new Exception());
+				}
 		    }
 		    if(floorId != null) {
 				 spaceId = floorId;
 			 }
 		 }
 
-		 if(spaceName != null && !spaceName.equals("")) {
-			 spaceId = null;
-			 if(floorId != null) {
-				 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
-			 }
-			 else if (buildingId != null) {
-				 spaceId = spaceMeta.getSpaceIdFromBuilding(buildingId,spaceName);
-			 }
-			 else if (siteId != null) {
-				 spaceId = spaceMeta.getSpaceIdFromSite(siteId,spaceName);
-			 }
-			if(spaceId == null) {
-				 if (floorName == null)
-				 {
-					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
-				 }
-				 else
-				 {
-				 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
-				 }
-				 recordsList.put("space", spaceId);
-			 }
+		if (spaceName != null && !spaceName.equals("")) {
+			spaceId = null;
+			if (floorId != null) {
+				spaceId = spaceMeta.getSpaceId(floorId, spaceName);
+			} else if (buildingId != null) {
+				spaceId = spaceMeta.getSpaceIdFromBuilding(buildingId, spaceName);
+			} else if (siteId != null) {
+				spaceId = spaceMeta.getSpaceIdFromSite(siteId, spaceName);
 			}
-		 
-		 if(additionalSpaces.size()>0) {
-			 
-				Long tempSpaceId;
-				for(String additionalSpace : additionalSpaces) {
-						tempSpaceId= SpaceAPI.getDependentSpaceId(additionalSpace, spaceId, additionalSpaces.indexOf(additionalSpace)+1);
-						if(tempSpaceId != null) {
-							spaceId = tempSpaceId;
-						}
-						else {
-							spaceId = SpaceAPI.addDependentSpace(additionalSpace, spaceId);
-							recordsList.put("space", spaceId);
-						}
+			if (spaceId == null) {
+				if (canAddNew) {
+					if (floorName == null) {
+						spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
+					} else {
+						spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
 					}
+					recordsList.put("space", spaceId);
+					addedSpaceIdsList.add(spaceId);
+				} else {
+					throw new ImportLookupModuleValueNotFoundException(spaceName, row_no, fieldMapping.get(moduleName + "__spaceName"), new Exception());
+				}
 			}
+		}
+		if (additionalSpaces.size() > 0) {
+			Long tempSpaceId;
+			for (JSONObject additionalSpace : additionalSpaces) {
+				tempSpaceId = SpaceAPI.getDependentSpaceId((String) additionalSpace.get("name"), spaceId, (int)additionalSpace.get("level"));
+				if (tempSpaceId != null) {
+					spaceId = tempSpaceId;
+				} else if (canAddNew) {
+					spaceId = SpaceAPI.addDependentSpace((String) additionalSpace.get("name"), spaceId);
+					recordsList.put("space", spaceId);
+					addedSpaceIdsList.add(spaceId);
+				} else {
+					throw new ImportLookupModuleValueNotFoundException((String) additionalSpace.get("name"), row_no, fieldMapping.get(moduleName + "__space" + additionalSpace.get("level")), new Exception());
+				}
+			}
+		}
 		return spaceId;
 	
 	}

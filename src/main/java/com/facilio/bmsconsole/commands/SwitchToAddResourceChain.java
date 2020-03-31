@@ -62,10 +62,22 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
 				) {
-			FacilioChain c = TransactionChainFactory.getGenericImportChain();
-			Long siteId = importProcessContext.getSiteId();
-			context.put(FacilioConstants.ContextNames.SITE, siteId);
-			c.execute(context);	
+
+			if (!ImportAPI.isInsertImport(importProcessContext)) {
+				FacilioChain c = TransactionChainFactory.getGenericImportChain();
+				Long siteId = importProcessContext.getSiteId();
+				c.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+				c.getContext().put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+				c.getContext().put(FacilioConstants.ContextNames.SITE, siteId);
+				c.execute();
+			} else {
+				FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
+				bulkAssetImportChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+				bulkAssetImportChain.getContext().put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
+				bulkAssetImportChain.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+				bulkAssetImportChain.execute();
+			}
 		}
 		
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE) 

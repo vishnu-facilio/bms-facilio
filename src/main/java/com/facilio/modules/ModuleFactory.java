@@ -1,9 +1,5 @@
 package com.facilio.modules;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
@@ -12,6 +8,10 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModuleFactory {
 
@@ -121,6 +121,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.SITE, getSiteModule());
 		moduleMap.put(ContextNames.BUILDING, getBuildingModule());
 		moduleMap.put(ContextNames.FLOOR, getFloorModule());
+		moduleMap.put(ContextNames.BASE_SPACE, getBaseSpaceModule());
 		moduleMap.put(ContextNames.TENANT_CONTACT, getTenantContactModule());
 		moduleMap.put(ContextNames.PEOPLE, getPeopleModule());
 		moduleMap.put(ContextNames.VENDOR_CONTACT, getVendorContactModule());
@@ -3566,6 +3567,15 @@ public class ModuleFactory {
 		module.setName("bimDefaultValues");
 		module.setDisplayName("Bim Default Values");
 		module.setTableName("Bim_Default_Values");
+		return module;
+	}
+
+	public static FacilioModule getBaseSpaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.BASE_SPACE);
+		module.setDisplayName("BaseSpace");
+		module.setTableName("BaseSpace");
+		module.setExtendModule(getResourceModule());
 		return module;
 	}
 

@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -20,13 +12,19 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ImportDataCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -77,32 +75,10 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			}else{
 				moduleName = importProcessContext.getModule().getName();
 			}
-			if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+
 				FacilioChain importChain = TransactionChainFactory.getImportChain();
 				importChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
 				importChain.execute();
-			} else {
-				if (importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()
-						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE
-								.getValue()
-						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL
-								.getValue()
-						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH.getValue()
-						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH_NOT_NULL
-								.getValue()) {
-					FacilioChain importChain = TransactionChainFactory.getImportChain();
-					importChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-					importChain.execute();
-				} else {
-					FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
-					bulkAssetImportChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-					bulkAssetImportChain.execute();
-				}
-			}
-
-//			if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-//				ReadingsAPI.updateReadingDataMeta(true);
-//			}
 
 		} catch (Exception exception) {
 			if (exception instanceof ImportParseException) {

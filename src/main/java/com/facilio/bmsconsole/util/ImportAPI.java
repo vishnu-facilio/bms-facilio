@@ -846,6 +846,7 @@ public class ImportAPI {
 		public static final String MODULE_META = "moduleMeta";
 		public static final String CHOOSEN_MODULE = "choosenModule";
 		public static final String IS_FROM_IMPORT = "isFromImport";
+		public static final String ADDED_BASE_SPACE_IDS = "baseSpaceIds";
 		
 	}
 	
