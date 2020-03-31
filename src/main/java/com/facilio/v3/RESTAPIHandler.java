@@ -211,7 +211,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         if (v3Config != null) {
             V3Config.CreateHandler createHandler = v3Config.getCreateHandler();
             if (createHandler != null) {
-                initCommand = createHandler.getInitCommand();
+                if (createHandler.getInitCommand() != null) {
+                    initCommand = createHandler.getInitCommand();
+                }
                 beforeSaveCommand = createHandler.getBeforeSaveCommand();
                 afterSaveCommand = createHandler.getAfterSaveCommand();
                 afterTransactionCommand = createHandler.getAfterTransactionCommand();
