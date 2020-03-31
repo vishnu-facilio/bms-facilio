@@ -34,7 +34,8 @@ public class ColumnFactory {
 //		columnMap.put("asset-energy", getDefaultAssetsColumns());
 		
 		// For getting default columns for a module
-		columnMap.put("workorder-default", getDefaultViewColumns());
+		columnMap.put("approval-default", getWoApprovalDefaultViewColumns());
+		columnMap.put("workorder-default", getWorkorderDefaultViewColumns());
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
@@ -238,7 +239,7 @@ public class ColumnFactory {
 	}
 	
 	
-	private static List<ViewField> getDefaultViewColumns() {
+	private static List<ViewField> getWorkorderDefaultViewColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("subject", "Subject"));
@@ -251,6 +252,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfTasks", "Tasks"));
 		columns.add(new ViewField("modifiedTime", "Last Updated Time"));
 		columns.add(new ViewField("actualWorkEnd", "Closed Time"));
+		return columns;
+	}
+	
+	private static List<ViewField> getWoApprovalDefaultViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("serialNumber", "ID"));
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("requester", "Requester"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("createdTime", "Created Time"));
 		return columns;
 	}
 	
