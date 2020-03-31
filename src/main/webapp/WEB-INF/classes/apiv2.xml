@@ -5794,7 +5794,7 @@
 	<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ClientContactAction" method="employeeList" >
+			class="com.facilio.bmsconsole.actions.ClientContactAction" method="clientContactList" >
 			<param name="viewName">{1}</param>
 		</action>
 	</package>

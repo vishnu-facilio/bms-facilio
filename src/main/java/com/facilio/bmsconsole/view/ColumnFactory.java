@@ -149,6 +149,9 @@ public class ColumnFactory {
 
 		columnMap.put("vendorcontact-default", getVendorContactv2Columns());
 		columnMap.put("vendorcontact-all", getHiddenVendorContactv2Columns());
+
+		columnMap.put("clientcontact-default", getClientContactColumns());
+		columnMap.put("clientcontact-all", getHiddenClientContactColumns());
 		
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		columnMap.put("task-all", getAllTasksColumns());
@@ -1169,8 +1172,27 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("email", "Email"));
-//		columns.add(new ViewField("isTenantPortalAccess", "Tenant Portal Access"));
-//		columns.add(new ViewField("isOccupantPortalAccess", "Occupant Portal Access"));
+		columns.add(new ViewField("isVendorPortalAccess", "Vendor Portal Access"));
+
+		return columns;
+	}
+
+	public static List<ViewField> getClientContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("client", "Client"));
+		columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
+		return columns;
+	}
+
+	public static List<ViewField> getHiddenClientContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
 
 		return columns;
 	}
