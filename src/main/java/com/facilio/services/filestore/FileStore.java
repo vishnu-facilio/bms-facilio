@@ -489,7 +489,12 @@ public abstract class FileStore {
 		if (rs.getString("FILE_NAME") != null) {
 			fileInfo.setFileName(rs.getString("FILE_NAME").trim());
 		}
-		String compressedFilePath = rs.getString("COMPRESSED_FILE_PATH");
+		String compressedFilePath = null;
+		try {
+			compressedFilePath = rs.getString("COMPRESSED_FILE_PATH");
+		}
+		catch(SQLException e) {
+		}
 		if (compressedFilePath != null && !fetchOriginal) {
 			fileInfo.setFilePath(compressedFilePath.trim());
 			fileInfo.setFileSize(rs.getLong("COMPRESSED_FILE_SIZE"));
