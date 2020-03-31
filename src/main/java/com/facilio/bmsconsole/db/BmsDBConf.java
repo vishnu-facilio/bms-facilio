@@ -472,9 +472,9 @@ public class BmsDBConf extends DBConf {
 	}
 
 	@Override
-	public long addFile(String msg) throws Exception {
+	public long addFile(String msg, String fileName,String contentType) throws Exception {
 		// TODO Auto-generated method stub
-		return FacilioFactory.getFileStore().addFile("Queue_Data", msg, "text/plain");
+		return FacilioFactory.getFileStore().addFile(fileName, msg,contentType );
 	}
 
 	@Override
