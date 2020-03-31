@@ -132,6 +132,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
