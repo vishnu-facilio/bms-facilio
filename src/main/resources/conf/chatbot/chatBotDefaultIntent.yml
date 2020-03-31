@@ -408,7 +408,7 @@
    invokeSamples:
     -
        sampleLocalId : 1
-       sample: "Add Note"
+       sample: "Add Comment"
     -
        sampleLocalId : 2
        sample: "add note to a wo"
