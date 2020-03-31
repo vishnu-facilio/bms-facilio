@@ -225,8 +225,8 @@ public class RollUpFieldUtil {
 		selectDistinctField.setColumnName("DISTINCT("+triggeringChildField.getChildField().getCompleteColumnName()+")");
 		selectDistinctField.setDisplayType(triggeringChildField.getChildField().getDisplayTypeInt());
 		selectDistinctField.setDisplayType(triggeringChildField.getChildField().getDisplayType());
-		selectDistinctField.setDataType(triggeringChildField.getChildField().getDataType());
-		selectDistinctField.setDataType(triggeringChildField.getChildField().getDataTypeEnum());;
+		selectDistinctField.setDataType(FieldType.NUMBER.getTypeAsInt());
+		selectDistinctField.setDataType(FieldType.NUMBER);
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(selectDistinctField);
