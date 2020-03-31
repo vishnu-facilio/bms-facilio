@@ -1,0 +1,52 @@
+package com.facilio.fw.filter;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class FacilioUriFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    private static final Pattern URL_PATTERN = Pattern.compile("\\/(.+)(\\/api\\/.+)");
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+
+        if (StringUtils.isEmpty((CharSequence) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME))) {
+            String reqUri = request.getRequestURI();
+            Matcher matcher = URL_PATTERN.matcher(reqUri);
+            if (matcher.matches()) {
+                String appName = matcher.group(1);
+                String newUri = matcher.group(2);
+                System.out.println("Facilio filter called : " + newUri);
+                request.setAttribute(IAMAppUtil.REQUEST_APP_NAME, appName);
+                req.getRequestDispatcher(newUri).forward(request, response);
+                System.out.println("Req completed");
+            } else {
+                chain.doFilter(request, response);
+            }
+        }
+        else {
+            System.out.println("Else of facilio filter : "+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
+            chain.doFilter(request, response);
+        }
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+}

@@ -40,19 +40,20 @@
     </filter-mapping> -->
 
     <filter-mapping>
+        <filter-name>facilio-url</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
         <filter-name>AccessLogFilter</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
     
     <filter>
         <filter-name>AccessLogFilter</filter-name>
         <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
     </filter>
-
-    <filter-mapping>
-        <filter-name>AccessLogFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 
 
     <filter>
@@ -86,10 +87,16 @@
     <filter-name>struts2</filter-name>
     <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
 </filter>
+<filter>
+    <filter-name>facilio-url</filter-name>
+    <filter-class>com.facilio.fw.filter.FacilioUriFilter</filter-class>
+</filter>    
 
 <filter-mapping>
   <filter-name>CorsFilter</filter-name>
   <url-pattern>/api/*</url-pattern>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
 </filter-mapping>
 
 <filter-mapping>
@@ -118,11 +125,11 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/vendor/*</url-pattern>
     </filter-mapping>
-	
-
 <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/api/*</url-pattern>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
 </filter-mapping>
     <filter-mapping>
         <filter-name>struts2</filter-name>

@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
@@ -60,6 +61,7 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        System.out.println("Access log filter called : "+request.getRequestURI()+"::"+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
 
         if( ENABLE_FHR) {
             response = new FacilioHttpResponse(response);
