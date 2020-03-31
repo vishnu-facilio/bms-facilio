@@ -389,6 +389,15 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
 	</package>
 
+	<package name="assetDepreciation" extends="v2Api" namespace="/api/v2/asset/depreciation">
+		<action name="chart"
+				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="getDepreciationChart" />
+		<action name="activate"
+				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="activate" />
+		<action name="deactivate"
+				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="deactivate" />
+	</package>
+
 	<package name="approvalTransition" extends="v2Api" namespace="/api/v2/approval">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="addOrUpdateApprovalRule" />

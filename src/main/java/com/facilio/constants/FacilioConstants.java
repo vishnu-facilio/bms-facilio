@@ -702,7 +702,7 @@ public class FacilioConstants {
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
 		public static final String HISTORICAL_OPERATIONAL_ALARM_PROCESSING_JOB_ID = "historicalOperationalAlarmProcessingJobId";
 		public static final String HISTORICAL_OPERATIONAL_EVENT_JOB_ID = "historicalOperationalEventJobId";
-		
+
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
 		public static final String LAST_ASSET_BD_SOURCE_DETAILS_ID = "lastAssetBDSourceDetailId";
 
@@ -731,6 +731,8 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
 		public static final String BASE_ALARM_NOTES = "basealarmnotes";
 
+		public static final String ASSET_DEPRECIATION = "assetdepreciation";
+		public static final String ACTIVATE = "activate";
 
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";
 
@@ -1596,7 +1598,7 @@ public class FacilioConstants {
 	
 		public static final String TENANT_UNIT_SPACE = "tenantunit";
 		public static final String ALARM_TYPE = "alarmType";
-		
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1812,9 +1814,11 @@ public class FacilioConstants {
 			classMap.put(CLIENT_CONTACT, ClientContactContext.class);
 			classMap.put(VENDOR_CONTACT, VendorContactContext.class);
 			classMap.put(TENANT_SPACES, TenantSpaceContext.class);
-			
+
 			classMap.put(TENANT_UNIT_SPACE, TenantUnitSpaceContext.class);
-			
+
+			classMap.put(ASSET_DEPRECIATION, AssetDepreciationContext.class);
+
 			return classMap;
 		}
 		

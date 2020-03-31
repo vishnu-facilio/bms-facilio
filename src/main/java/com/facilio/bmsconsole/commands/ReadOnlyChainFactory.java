@@ -13,6 +13,7 @@ import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceComman
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCommand;
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.v3.commands.SummaryCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Context;
@@ -933,8 +934,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
-		
+
+
 		return chain;
 	}
 
@@ -945,7 +946,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchPurchaseContractDetailsCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
+
 		return c;
 	}
 	public static FacilioChain getLabourContractListChain() {
@@ -958,7 +959,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
+
 		return chain;
 	}
 	
@@ -969,7 +970,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchLabourContractDetailsCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
+
 		return c;
 	}
 
@@ -1272,7 +1273,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
+
 		return chain;
 	}
 
@@ -1283,7 +1284,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchWarrantyContractDetailsCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
-	
+
 		return c;
 	}
 
@@ -1314,7 +1315,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
-		
+
 		return chain;
 	}
 
@@ -1325,7 +1326,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRentalLeaseContractDetailsCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
-		
+
 		return c;
 	}
 
@@ -2432,7 +2433,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSpaceDirectChildrenCommand());
 		return chain;
 	}
-	
+
+	public static FacilioChain getDepreciationChartChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DepreciationChartCommand());
+		return chain;
+	}
+
 	public static FacilioChain getApplicationUsersChain () {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUsersCommand());

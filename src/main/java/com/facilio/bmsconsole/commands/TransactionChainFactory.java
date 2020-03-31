@@ -257,7 +257,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DisassociateTenantSpaceRelationCommand());
 			c.addCommand(new DisassociateTenantUnitSpaceRelationCommand());
-			
+
 			return c;
 		}
 
@@ -4293,7 +4293,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 		return c;
 	}
 	
@@ -4854,7 +4854,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
-		
+
 		return c;
 	}
 	
@@ -4866,7 +4866,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
-		
+
 		return c;
 	}
 	
@@ -4990,21 +4990,21 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	
+
 	public static FacilioChain deleteFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new deleteFloorPlanCommand());
 
 		return c;
 	}
-	
+
 	public static FacilioChain getAllFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new getAllFloorPlanCommand());
 
 		return c;
 	}
-	
+
 
 	public static FacilioChain disassociateClientFromSiteChain() {
 		FacilioChain c = getDefaultChain();
@@ -5175,7 +5175,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
 		return chain;
-	
+
 	}
 	public static FacilioChain getExecuteOperationAlarm()
 	{
@@ -5183,7 +5183,7 @@ public class TransactionChainFactory {
 		// c.addCommand(new OperationAlarmCommand());
 		c.addCommand(new ExecuteOperationalEventCommand());
 		return c;
-	}	
+	}
 	public static FacilioChain addClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
@@ -5192,7 +5192,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
-		
+
 		return c;
 	}
 	
@@ -5240,19 +5240,25 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	
+
+	public static FacilioChain getActivateAssetDepreciationChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ActivateOrDeActivateAssetDepreciationCommand());
+		return c;
+	}
+
 	public static FacilioChain addApplicationUsersChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddApplicationUsersCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
-		
+
 		return c;
 	}
-	
+
 	public static FacilioChain deleteApplicationUsersChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteApplicationUsersCommand());
-		
+
 		return c;
 	}
 	
