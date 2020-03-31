@@ -19,6 +19,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
@@ -172,6 +173,7 @@ public class ChatBotAction extends FacilioAction {
 		event.setNamespace("chatbot");
 		event.setAction("newChatMessage");
 		event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
+		event.setSessionType(LiveSessionType.TENANT_PORTAL);
 		event.setContent(chatMessage2);
 		
 		WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), event);
