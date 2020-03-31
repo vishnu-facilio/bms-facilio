@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -14,6 +9,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class BaseSpaceAction extends FacilioAction {
@@ -172,6 +171,8 @@ public class BaseSpaceAction extends FacilioAction {
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
 	}
+
+	private long baseSpaceId;
 	
 	private String spaceType;
 
@@ -235,6 +236,22 @@ public class BaseSpaceAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.BASE_SPACE_LIST, basespaces);
 		return SUCCESS;
 	}
+
+	public String getBaseSpaceDirectChildren() throws Exception {
+		/*
+			Input  -  BaseSpace ID (Supported only for Site and Building)
+			Output -  Site => List of Independent Spaces and Buildings
+					  Building => List of Independent Spaces and Floors
+		 */
+
+		FacilioChain chain = ReadOnlyChainFactory.getSpaceDirectChildrenChain();
+		chain.getContext().put(ContextNames.BASE_SPACE_ID, getBaseSpaceId());
+		chain.execute();
+
+		setResult(ContextNames.BASE_SPACE_LIST, chain.getContext().get(ContextNames.BASE_SPACE_LIST));
+
+		return SUCCESS;
+	}
 	
 	public String basespaceDetailsWithHierarchy() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -244,5 +261,13 @@ public class BaseSpaceAction extends FacilioAction {
 		basespace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
 		setResult(FacilioConstants.ContextNames.BASE_SPACE, basespace);
 		return SUCCESS;
+	}
+
+	public long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+
+	public void setBaseSpaceId(long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
 	}
 }

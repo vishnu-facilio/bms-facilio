@@ -5651,6 +5651,13 @@
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
 	</package>
+	<package name="baseSpaceApiv2" namespace="/api/v2/basespace" extends="v2Api">
+		<action name="getBaseSpaceChildren"
+				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="getBaseSpaceDirectChildren">
+		</action>
+	</package>
+
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />

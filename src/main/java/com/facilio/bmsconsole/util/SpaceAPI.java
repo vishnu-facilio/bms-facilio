@@ -766,6 +766,24 @@ public class SpaceAPI {
 
 		return floors.get(0).getId();
 	}
+
+	public static List<FloorContext> getBuildingsFloorsContext(long buildingId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+				.module(module)
+				.select(fields)
+				.beanClass(FloorContext.class)
+				.andCondition(CriteriaAPI.getCondition("BUILDING_ID","building",String.valueOf(buildingId),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS))
+				.orderBy("Resources.NAME DESC")
+		;
+
+		List<FloorContext> floors = selectBuilder.get();
+
+		return floors;
+	}
 	
 	public static List<BaseSpaceContext> getSiteBuildingsWithFloors(long sitedId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -803,14 +821,13 @@ public class SpaceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
-		
+
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
-																	.select(fields)
-																	.module(module)
-																	.maxLevel(0)
-																	.beanClass(BuildingContext.class)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+				.select(fields)
+				.module(module)
+				.beanClass(BuildingContext.class)
+				.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?", siteId, BaseSpaceContext.SpaceType.BUILDING.getIntVal())
+				.orderBy("Resources.NAME DESC");
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
@@ -1316,33 +1333,7 @@ public static long getSitesCount() throws Exception {
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
-	public static long getIndependentSpacesCount(long siteId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Site")
-				.innerJoin("BaseSpace")
-				.on("Site.ID = BaseSpace.ID")
-				.andCustomWhere("Site.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.SITE_ID = ? AND BaseSpace.BUILDING_ID = -1 AND BaseSpace.FLOOR_ID = -1", orgId, orgId, siteId);
-		
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
-			return 0;
-		}
-		else {
-			return ((Number) rs.get(0).get("count")).longValue();
-		}
-	}
 	
 	public static long getSpacesCountForBuilding(long buildingId) throws Exception {
 		
@@ -1683,7 +1674,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		return builder.get();
 	}
 
-	public static long getIndependentSpaces(long baseSpaceId) throws Exception {
+	public static long getIndependentSpacesCount(long baseSpaceId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -1719,5 +1710,41 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		}
 		return count;
 	}
-	
+
+	public static List<SpaceContext> getIndependentSpaces(long baseSpaceId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(SpaceContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(SpaceType.SPACE.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space1"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space2"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space3"), CommonOperators.IS_EMPTY))
+				.orderBy("Resources.NAME DESC");
+		;
+		BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
+
+		if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.SITE.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(baseSpaceId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), CommonOperators.IS_EMPTY))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY));
+		} else if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.BUILDING.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), String.valueOf(baseSpaceId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY));
+		} else if (baseSpace.getSpaceTypeEnum().getIntVal() == SpaceType.FLOOR.getIntVal()) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), String.valueOf(baseSpaceId), NumberOperators.EQUALS));
+		}
+
+
+		List<SpaceContext> spaceList = builder.get();
+		if (CollectionUtils.isNotEmpty(spaceList)) {
+			 return spaceList;
+		}
+		return null;
+	}
 }

@@ -2372,4 +2372,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
 	}
+
+	public static FacilioChain getSpaceDirectChildrenChain () {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSpaceDirectChildrenCommand());
+		return chain;
+	}
 }

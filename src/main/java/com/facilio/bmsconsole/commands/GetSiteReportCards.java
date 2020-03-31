@@ -32,7 +32,7 @@ public class GetSiteReportCards extends FacilioCommand {
 		if(campusId > 0) {
 			
 			JSONObject reports = new JSONObject();
-			reports.put("independent_spaces", SpaceAPI.getIndependentSpaces(campusId));
+			reports.put("independent_spaces", SpaceAPI.getIndependentSpacesCount(campusId));
 			reports.put("allSpaces", getAllSpaces(campusId, SpaceType.SPACE.getIntVal()));
 			reports.put("buildings", getAllSpaces(campusId, SpaceType.BUILDING.getIntVal()));
 			
