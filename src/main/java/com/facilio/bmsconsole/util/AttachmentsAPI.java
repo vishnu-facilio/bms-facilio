@@ -49,6 +49,7 @@ public class AttachmentsAPI {
 		attachments.setOrgId(AccountUtil.getCurrentOrg().getId());
 		attachments.setFileName(fileinfo.getFileName());
 		attachments.setFileSize(fileinfo.getFileSize());
+		attachments.setContentType(fileinfo.getContentType());
 		return attachments;
 	}
 	
