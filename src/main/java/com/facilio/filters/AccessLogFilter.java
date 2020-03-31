@@ -61,7 +61,7 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        System.out.println("Access log filter called : "+request.getRequestURI()+"::"+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
+//        System.out.println("Access log filter called : "+request.getRequestURI()+"::"+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
 
         if( ENABLE_FHR) {
             response = new FacilioHttpResponse(response);
