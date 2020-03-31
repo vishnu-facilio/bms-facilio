@@ -23,6 +23,10 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 		
 		if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && intentParam != null) {
 			
+			ChatBotSessionConversation prevoiusConversation = ChatBotUtil.getSessionConversationForParam(chatBotSessionConversation.getChatBotSession().getId(), intentParam.getId());
+			
+			context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, prevoiusConversation);
+			
 			if(chatBotSessionConversation.getChatBotSession().getIntent().getContextWorkflow() != null) {
 				
 				ChatBotUtil.deleteSessionParam(intentParam.getId(), chatBotSessionConversation.getSessionId());
@@ -46,6 +50,7 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
 			
 			context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
+			
 		}
 		return false;
 	}

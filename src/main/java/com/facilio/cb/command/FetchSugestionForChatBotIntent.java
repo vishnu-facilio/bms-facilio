@@ -34,32 +34,45 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 				
 				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConfirmationCard());
 				
-				List<ChatBotIntentParam> editableIntextParams = getEditableParamList(session.getIntent().getChatBotIntentParamList());
-				
-				for(ChatBotIntentParam editableIntextParam :editableIntextParams) {
-					
-					ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
-					
-					chatBotSuggestionContext.setSuggestion("Edit "+(editableIntextParam.getDisplayName() == null ? editableIntextParam.getName() : editableIntextParam.getDisplayName()));
-					chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.EDITABLE_PARAM.getIntVal());
-					
-					chatBotSuggestionContexts.add(chatBotSuggestionContext);
-				}
-				
 				List<ChatBotIntentParam> optionalIntextParams = ChatBotUtil.fetchRemainingOptionalChatBotIntentParams(session.getIntentId(), session.getId());
 				
+				List<Long> optionalIntentParamIds = new ArrayList<>();
 				if(optionalIntextParams != null) {
 					for(ChatBotIntentParam optionalIntextParam :optionalIntextParams) {
 						
+						optionalIntentParamIds.add(optionalIntextParam.getId());
+						
 						ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
 						
-						chatBotSuggestionContext.setSuggestion("Add "+(optionalIntextParam.getDisplayName() == null ? optionalIntextParam.getName() : optionalIntextParam.getDisplayName()));
+						chatBotSuggestionContext.setSuggestion(optionalIntextParam.getAddParamTriggerText());
 						chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OPTIONAL_PARAM.getIntVal());
 						
 						chatBotSuggestionContexts.add(chatBotSuggestionContext);
 					}
 				}
 				
+				List<ChatBotIntentParam> editableIntextParams = getEditableParamList(session.getIntent().getChatBotIntentParamList());
+				
+				for(ChatBotIntentParam editableIntextParam :editableIntextParams) {
+					
+					if(optionalIntentParamIds.contains(editableIntextParam.getId())) {
+						continue;
+					}
+					
+					ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
+					
+					chatBotSuggestionContext.setSuggestion(editableIntextParam.getUpdateParamTriggerText());
+					chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.EDITABLE_PARAM.getIntVal());
+					
+					chatBotSuggestionContexts.add(chatBotSuggestionContext);
+				}
+				
+				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
+				
+				return false;
+			}
+			else if(session.getState() == ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal()) {
+				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConversation());
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
 				
 				return false;
@@ -114,6 +127,19 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
 		
 		chatBotSuggestionContext = new ChatBotSuggestionContext();
+		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
+		chatBotSuggestionContext.setSuggestion("Cancel");
+		
+		ChatBotSuggestionContexts.add(chatBotSuggestionContext);
+		
+		return ChatBotSuggestionContexts;
+	}
+	
+	private List<ChatBotSuggestionContext> getDefaultSuggestionForConversation() {
+		
+		List<ChatBotSuggestionContext> ChatBotSuggestionContexts = new ArrayList<ChatBotSuggestionContext>();
+		
+		ChatBotSuggestionContext chatBotSuggestionContext = new ChatBotSuggestionContext();
 		chatBotSuggestionContext.setType(ChatBotSuggestionContext.Type.OTHERS.getIntVal());
 		chatBotSuggestionContext.setSuggestion("Cancel");
 		

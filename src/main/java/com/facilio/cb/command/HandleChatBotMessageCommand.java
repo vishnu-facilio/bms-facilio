@@ -51,6 +51,7 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				}
 				
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
+				context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 			}
 			else {
 				ChatBotSessionConversation lastWaitingForConfirmationConversation = ChatBotUtil.getLastWaitingForConfirmationConversation(waitingForConfirmationSession.getId());
@@ -80,6 +81,7 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 						context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
 					}
 					context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
+					context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 					return false;
 				}
 			}
@@ -114,6 +116,8 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				}
 				
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
+				
+				context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 				
 				return false;
 			}

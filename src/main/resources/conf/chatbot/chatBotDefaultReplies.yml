@@ -2,9 +2,8 @@ system_greet_intent:
     - "Hi There, I am Facilio bot. I can help you"
     
 system_intent_not_fount_intent: 
-    - "Sorry, I'm not sure if I understood you correctly. Please select one of the following to proceed"
-    - "I am sorry, I don’t understand what you’re looking for. I can help you"
-    - "I am sorry I don’t understand what you’re looking for. But, I will remember it the next time for you. Do you want to"
+    - "I am sorry, I don't understand what you're looking for. I can help you:"
+    - "I am sorry, I don't understand what you're looking for. You can ask me to:"
     
 system_greet_question_1_intent: 
     - "Fine, thank you"
@@ -25,8 +24,7 @@ system_name_query_intent:
     - "Alright"
     
 system_terminate_session_intent:
-   - "OK, I've cancelled your request"
-   - "Fine, I will cancel your request"
+   - "I have cancelled your request"
 
 system_what_is_workorder_question_intent:
    - "A work order is usually a task or a job for a customer, that can be scheduled or assigned to someone. Such an order may be from a customer request or created internally within the organization"

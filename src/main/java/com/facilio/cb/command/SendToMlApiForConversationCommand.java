@@ -47,7 +47,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 						context.put(ChatBotConstants.CHAT_BOT_ADD_ACTION_INTENT_PARAM, intentParam);
 					}
 				}
-				if(chatMeg.startsWith("Edit")) {
+				else if(chatMeg.startsWith("Edit")) {
 					ChatBotIntentParam intentParam = ChatBotUtil.getIntentParamWithUpdateTriggerText(chatMeg);
 					if(intentParam == null) {
 						intent = "dummy_intent";

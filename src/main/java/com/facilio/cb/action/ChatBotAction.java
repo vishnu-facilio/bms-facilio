@@ -161,6 +161,8 @@ public class ChatBotAction extends FacilioAction {
 			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
 			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT));
 			
+			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
+			
 			sendToWMS(getResult());
 		}
 		

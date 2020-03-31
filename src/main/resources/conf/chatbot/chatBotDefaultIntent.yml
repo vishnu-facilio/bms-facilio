@@ -106,7 +106,7 @@
        
 - 
    name: "system_create_wo_intent"
-   displayName: "Raise service request"
+   displayName: "Raise a service request"
    type: 1
    localId : 7
    withParams : true
@@ -118,7 +118,7 @@
    -
       name : 'subject'
       displayName : "subject"
-      askAs : 'Hey there, I will help you submit a service request. Can you provide me with some details?'
+      askAs : 'I will help you submit a service request. Can you provide me with some details?'
       dataType : 1
       mlType : 3
       localId : 1
@@ -126,12 +126,20 @@
       typeConfig : 1
       updateParamTriggerText : 'Edit subject'
    -
+      name : 'attachment'
+      askAs : "Add your attachment"
+      dataType : 9
+      multipleAllowed : true
+      localId : 2
+      typeConfig : 2
+      addParamTriggerText : 'Add attachment'
+   -
       name : 'description'
-      displayName : "more information"
-      askAs : 'Tell us something more about the problem'
+      displayName : "aditional information"
+      askAs : 'What more would you like to add to this request?\nYou can add information such as location of the problem or add something specific'
       dataType : 1
       mlType : 1
-      localId : 2
+      localId : 3
       typeConfig : 2
       addParamTriggerText : 'Add more information'
    -
@@ -140,23 +148,33 @@
       askAs : 'select urgency'
       dataType : 1
       mlType : 1
-      localId : 3
-      typeConfig : 1
+      localId : 4
+      typeConfig : 2
       editable : true
+      addParamTriggerText : 'Add urgency'
       updateParamTriggerText : 'Edit urgency'
    -
       name : 'woId'
       dataType : 2
-      localId : 4
+      localId : 5
       typeConfig : 3
    contextWorkflow :
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data){
                              if(data.subject == null) {
-                             
-                                return chatBot().param("subject","Hey there, I will help you submit a service request. Can you provide me with some details?");
+                                if(data.client_message != null && data.client_message == "Edit subject") {
+                                   return chatBot().param("subject","please edit your message for the request");
+                                }
+                                else {
+                                   return chatBot().param("subject","I will help you submit a service request. Can you provide me with some details?");
+                                }
                              }
-                             if(data.urgency == null) {
+                             if(data.client_message != null && data.client_message == "Add attachment") {
+                                
+                                return chatBot().param("attachment","Add your attachment");
+                             
+                             }
+                             if(data.client_message != null && (data.client_message == "Add urgency" || data.client_message == "Edit urgency")) {
                              
                                 woUrgencyList = [];
                                 
@@ -175,10 +193,15 @@
                                  woMap.label = "Emergency";
                                  woUrgencyList.add(woMap);
                                 
-                                return chatBot().param("urgency","Select your urgency",woUrgencyList);
+                                return chatBot().param("urgency","Select urgency",woUrgencyList);
                              
                              }
-                             if(data.subject != null && data.urgency != null) {
+                             if(data.client_message != null && data.client_message == "Add more information") {
+                                
+                                return chatBot().param("description","What more would you like to add to this request?\nYou can add information such as location of the problem or add something specific");
+                             
+                             }
+                             if(data.subject != null) {
                              
                                 return chatBot().execute();
                              }
@@ -196,7 +219,9 @@
     
                                          wo = {};
                                          wo.subject = data.subject;
-                                         wo.urgency = data.urgency;
+                                         if(data.urgency != null) {
+                                            wo.urgency = data.urgency;
+                                         }
                                          if(data.description != null) {
                                             wo.description = data.description;
                                          }
@@ -214,6 +239,12 @@
                                          wo.site = site.id;
                                          
                                          WorkOrder().add(wo);
+                                         
+                                         if(data.attachment != null) {
+                                            photoIds = data.attachment; 
+       
+                                            WorkOrder().addAttachements(wo.id,photoIds);
+                                         }
                                          
                                          resultMap = {};
                                          
@@ -306,22 +337,22 @@
         
 - 
    name: "system_update_wo_note_intent"
-   displayName: "Add Note"
+   displayName: "Add Comment"
    type: 1
    localId : 13
    withParams : true
    params:
    -
       name : 'woId'
-      askAs : "Select your workrequest"
+      askAs : "Select the work request to add the comment to"
       dataType : 2
       mlType : 1
       localId : 1
       typeConfig : 1
       fillableByParent : true
    -
-      name : 'note'
-      askAs : "Enter your note"
+      name : 'comment'
+      askAs : "Enter your comment"
       dataType : 1
       mlType : 1
       localId : 2
@@ -342,13 +373,13 @@
                                 
                                 criteria1 = [requester == currentUser.id && status == openStatusIds];
                                 
-                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                                return chatBot().param("woId","Select the work request to add the comment to",criteria1,"workorder");
                                
                              }
-                             if(data.woId != null && data.note == null) {
-                                return chatBot().param("note","Enter your note");
+                             if(data.woId != null && data.comment == null) {
+                                return chatBot().param("comment","Please enter the comment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
                              }
-                             if(data.woId != null && data.note != null) {
+                             if(data.woId != null && data.comment != null) {
                              
                                 return chatBot().execute();
                              }
@@ -364,11 +395,11 @@
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
     
-                                         WorkOrder().addNote(data.woId,data.note);
+                                         WorkOrder().addNote(data.woId,data.comment);
                                          
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Note updated Successfully.");
+                                         resultMap.put("returnText","Your comment has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
                                          
                                          return resultMap;
                                          
@@ -401,22 +432,22 @@
        
 - 
    name: "system_update_wo_photo_intent"
-   displayName: "Attach Photo"
+   displayName: "Add Attachment"
    type: 1
    localId : 13
    withParams : true
    params:
    -
       name : 'woId'
-      askAs : "Select your workrequest"
+      askAs : "Select the work request to add the attachment to"
       dataType : 2
       mlType : 1
       localId : 1
       typeConfig : 1
       fillableByParent : true
    -
-      name : 'photo'
-      askAs : "Add your photo"
+      name : 'attachment'
+      askAs : "Add your attachment"
       dataType : 9
       multipleAllowed : true
       localId : 2
@@ -437,13 +468,13 @@
                                 
                                 criteria1 = [requester == currentUser.id && status == openStatusIds];
                                 
-                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                                return chatBot().param("woId","Select the work request to add the attachment to",criteria1,"workorder");
                                
                              }
-                             if(data.woId != null && data.photo == null) {
-                                return chatBot().param("photo","Add your photos");
+                             if(data.woId != null && data.attachment == null) {
+                                return chatBot().param("attachment","Please add the attachment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
                              }
-                             if(data.woId != null && data.photo != null) {
+                             if(data.woId != null && data.attachment != null) {
                              
                                 return chatBot().execute();
                              }
@@ -459,13 +490,13 @@
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
                    
-                                         photoIds = data.photo; 
+                                         photoIds = data.attachment; 
     
                                          WorkOrder().addAttachements(data.woId,photoIds);
                                          
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Photo added successfully.");
+                                         resultMap.put("returnText","Your attachment has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
                                          
                                          return resultMap;
                                          
@@ -494,14 +525,17 @@
        
 - 
    name: "system_get_my_work_request_intent"
-   displayName: "Manage service request"
+   displayName: "Manage your service requests"
    type: 1
    localId : 17
    withParams : true
+   childIntentNames:
+      - "system_update_wo_note_intent"
+      - "system_update_wo_photo_intent"
    params:
    -
       name : 'woId'
-      askAs : "Select your workrequest"
+      askAs : "Select the work request"
       dataType : 2
       mlType : 1
       localId : 1
@@ -533,7 +567,7 @@
                                    return chatBot().execute();
                                 } 
                                 
-                                return chatBot().param("woId","Select your workrequest",criteria1,"workorder");
+                                return chatBot().param("woId","Select the work request",criteria1,"workorder");
                                
                              }
                              if(data.woId != null) {
@@ -852,7 +886,7 @@
        
 - 
    name: "system_get_my_visitor_intent"
-   displayName: "Manage visitors list"
+   displayName: "Manage visitors"
    type: 1
    localId : 17
    actions:

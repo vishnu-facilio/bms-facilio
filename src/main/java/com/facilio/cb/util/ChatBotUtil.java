@@ -31,6 +31,7 @@ import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSessionParam;
+import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -234,9 +235,34 @@ public class ChatBotUtil {
 		updateChatBotSession(session);
 	}
 	
+	private static void fillClientMessageProp(Map<String, Object> props, Context context) {
+		
+		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
+		
+		JSONObject messageJSON = null;
+		if(chatBotSessionConversation != null) {
+			messageJSON = chatBotSessionConversation.getResponseJson();
+		}
+		else {
+			ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
+			if(session != null) {
+				messageJSON = session.getQueryJson();
+			}
+		}
+		
+		if(messageJSON != null && messageJSON.containsKey(ChatBotConstants.CHAT_BOT_LABEL) && messageJSON.get(ChatBotConstants.CHAT_BOT_LABEL) != null && messageJSON.get(ChatBotConstants.CHAT_BOT_ID) == null) {
+			String value = messageJSON.get(ChatBotConstants.CHAT_BOT_LABEL).toString();
+			
+			props.put("client_message", value);
+		}
+		
+	}
+	
 	public static void executeContextWorkflow(ChatBotIntent intent,ChatBotSession session,Context context) throws Exception {
 		
 		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
+		
+		fillClientMessageProp(props,context);
 		
 		WorkflowContext contextWorkflow = intent.getContextWorkflow();
 		
@@ -261,6 +287,7 @@ public class ChatBotUtil {
 			intentParam.setOptions(params.getOptions());
 			intentParam.setModuleName(params.getModuleName());
 			intentParam.setCriteria(params.getCriteria());
+			intentParam.setAskAs(params.getMessage());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
@@ -493,6 +520,32 @@ public class ChatBotUtil {
 			}
 		}
 		return returnList;
+	}
+	
+	public static ChatBotSessionConversation getSessionConversationForParam(Long sessionId,Long intentParamId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionConversationFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBSessionConversationModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentParamId"), intentParamId+"", NumberOperators.EQUALS))
+				.orderBy("RESPONDED_TIME desc")
+				.limit(1)
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSessionConversation.class);
+			
+			return chatBotSessionConversation;
+		}
+		return null;
 	}
 	
 	public static List<ChatBotIntentAction> getIntentActions(long intentId) throws Exception {
