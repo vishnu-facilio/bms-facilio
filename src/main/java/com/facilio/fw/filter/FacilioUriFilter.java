@@ -18,7 +18,7 @@ public class FacilioUriFilter implements Filter {
 
     }
 
-    private static final Pattern URL_PATTERN = Pattern.compile("\\/(.+)(\\/api\\/.+)");
+    private static final String URL_PATTERN = "/api/";
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -27,10 +27,10 @@ public class FacilioUriFilter implements Filter {
 
         if (StringUtils.isEmpty((CharSequence) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME))) {
             String reqUri = request.getRequestURI();
-            Matcher matcher = URL_PATTERN.matcher(reqUri);
-            if (matcher.matches()) {
-                String appName = matcher.group(1);
-                String newUri = matcher.group(2);
+            int idx = reqUri.indexOf(URL_PATTERN);
+            if (idx > 0) {
+                String appName = reqUri.substring(1, idx);
+                String newUri = reqUri.substring(idx);
                 System.out.println("Facilio filter called : " + newUri);
                 request.setAttribute(IAMAppUtil.REQUEST_APP_NAME, appName);
                 req.getRequestDispatcher(newUri).forward(request, response);
