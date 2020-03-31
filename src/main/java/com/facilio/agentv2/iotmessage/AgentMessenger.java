@@ -16,10 +16,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class AgentMessenger {
 
@@ -29,23 +32,27 @@ public class AgentMessenger {
 
 
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
-        LOGGER.info(" context to construct message " + extraMsgContent);
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
-        if (agent != null) {
-            if ((command != FacilioCommand.PING) && (!agent.getConnected())) {
-                throw new Exception("Agent is not connected");
+        Objects.requireNonNull(agent, "Agent can't be null");
+        return constructNewIotAgentMessage(agent, command, extraMsgContent, type);
+    }
+
+    private static IotData constructNewIotAgentMessage(FacilioAgent agent, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
+        LOGGER.info(" context to construct message " + extraMsgContent);
+        if ((command != FacilioCommand.PING) && (!agent.getConnected())) {
+            throw new Exception("Agent is not connected");
+        }
+        JSONObject messageBody = new JSONObject();
+        IotData iotData = new IotData();
+        iotData.setAgentId(agent.getId());
+        iotData.setCommand(command.asInt());
+        messageBody.put(AgentConstants.AGENT, agent.getName());
+        if (type != null) {
+            messageBody.put(AgentConstants.CONTROLLER_TYPE, type.asInt());
             }
-            JSONObject messageBody = new JSONObject();
-            IotData iotData = new IotData();
-            iotData.setAgentId(agentId);
-            iotData.setCommand(command.asInt());
-            messageBody.put(AgentConstants.AGENT, agent.getName());
-            if (type != null) {
-                messageBody.put(AgentConstants.CONTROLLER_TYPE, type.asInt());
-            }
-            messageBody.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
-            messageBody.put(AgentConstants.AGENT_ID, agentId);
-            messageBody.put(AgentConstants.COMMAND, command.asInt());
+        messageBody.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
+        messageBody.put(AgentConstants.AGENT_ID, agent.getId());
+        messageBody.put(AgentConstants.COMMAND, command.asInt());
 
             switch (command) {
                 case PING:
@@ -77,9 +84,6 @@ public class AgentMessenger {
             iotData.setMessages(messages);
             LOGGER.info(" iot data generated is " + iotData);
             return iotData;
-        } else {
-            throw new Exception(" Agent can't be null ");
-        }
     }
 
     private static void alterMessageForRtu(JSONObject object, FacilioContext context) {
@@ -107,7 +111,7 @@ public class AgentMessenger {
     }
 
     private static IotData constructAgentPing(long agentId) throws Exception {
-        return constructNewIotAgentMessage(agentId, FacilioCommand.PING, null, null);
+        return constructNewIotAgentMessage(agentId, FacilioCommand.PING, (FacilioContext) null, (FacilioControllerType) null);
     }
 
 
@@ -126,13 +130,13 @@ public class AgentMessenger {
     }
 
     private static IotData constructAgentShutDown(long agentId) throws Exception {
-        return constructNewIotAgentMessage(agentId, FacilioCommand.SHUTDOWN, null, null);
+        return constructNewIotAgentMessage(agentId, FacilioCommand.SHUTDOWN, (FacilioContext) null, (FacilioControllerType) null);
     }
 
     public static boolean getJVMStatus(Long agentId) {
         try {
             if (agentId > 0) {
-                IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.STATS, null, null);
+                IotData data = constructNewIotAgentMessage((long) agentId, FacilioCommand.STATS, (FacilioContext) null, (FacilioControllerType) null);
                 MessengerUtil.addAndPublishNewAgentData(data);
                 return true;
             }
@@ -145,7 +149,7 @@ public class AgentMessenger {
     public static boolean getThreadDump(Long agentId) {
         try {
             if (agentId > 0) {
-                IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.THREAD_DUMP, null, null);
+                IotData data = constructNewIotAgentMessage((long) agentId, FacilioCommand.THREAD_DUMP, (FacilioContext) null, (FacilioControllerType) null);
                 MessengerUtil.addAndPublishNewAgentData(data);
                 return true;
             }
@@ -157,7 +161,7 @@ public class AgentMessenger {
 
     public static boolean discoverController(Long agentId, FacilioControllerType controllerType) throws Exception {
         if (agentId > 0) {
-            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, null, controllerType);
+            IotData data = constructNewIotAgentMessage((long) agentId, FacilioCommand.DISCOVER_CONTROLLERS, (FacilioContext) null, controllerType);
             MessengerUtil.addAndPublishNewAgentData(data);
             return true;
         }
@@ -195,7 +199,7 @@ public class AgentMessenger {
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.DATA, networkJson);
             context.put(AgentConstants.CONFIGURE, AgentConstants.MODBUS_NETWORK);
-            IotData data = constructNewIotAgentMessage(rtuNetwork.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.MODBUS_RTU);
+            IotData data = constructNewIotAgentMessage((long) rtuNetwork.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.MODBUS_RTU);
             MessengerUtil.addAndPublishNewAgentData(data);
             return true;
         } else {
@@ -211,34 +215,43 @@ public class AgentMessenger {
         return sendControllerConfig(controllerContext);
     }
 
-    private static boolean sendControllerConfig(Controller controllerContext) throws Exception {
-        if (controllerContext != null) {
-            if (controllerContext.getControllerType() >= 0) {
-
-                if (controllerContext.getAgentId() > 0) {
-                    FacilioContext context = new FacilioContext();
-                    JSONObject controllerData = controllerContext.getChildJSON();
-                    context.put(AgentConstants.DATA, controllerData);
-                    IotData data;
-                    //if (controllerContext.getControllerType()== ControllerType.OPC_DA.getKey() || controllerContext.getControllerType() == ControllerType.OPC_UA.getKey()){
-                    controllerData.put(AgentConstants.NAME, controllerContext.getName());
-                    context.put(AgentConstants.CONFIGURE, AgentConstants.CONTROLLER);
-                    data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
-
-                    //}/*else{
-                    //  data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
-                    //}*/
-                    MessengerUtil.addAndPublishNewAgentData(data);
-                    return true;
-                } else {
-                    throw new Exception(" agentId not set ");
-                }
-            } else {
-                throw new Exception(" controller type not set ");
-            }
-        } else {
-            throw new Exception(" opcxmlda controller context can't be null");
+    public static void sendConfigureModbusIpControllers(List<Controller> controllersToAdd) throws Exception {
+        Objects.requireNonNull(controllersToAdd, "controllers can't be null");
+        if (controllersToAdd.isEmpty()) {
+            throw new Exception("controllers empty");
         }
+        IotData iotDataForControllerContext = getIotDataForControllerContext(controllersToAdd, controllersToAdd.get(0).getAgent());
+        MessengerUtil.addAndPublishNewAgentData(iotDataForControllerContext);
+    }
+
+    private static boolean sendControllerConfig(Controller controllerContext) throws Exception {
+        IotData iotDataforControllerContext = getIotDataForControllerContext(controllerContext);
+        MessengerUtil.addAndPublishNewAgentData(iotDataforControllerContext);
+        return true;
+    }
+
+    private static IotData getIotDataForControllerContext(Controller controllerContext) throws Exception {
+        Objects.requireNonNull(controllerContext, "controller cant be null");
+        long agentId = controllerContext.getAgentId();
+        FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        return getIotDataForControllerContext(Collections.singletonList(controllerContext), agent);
+    }
+
+    private static IotData getIotDataForControllerContext(List<Controller> controllerList, FacilioAgent agent) throws Exception {
+        Objects.requireNonNull(controllerList, "controller can't be empty");
+        if (controllerList.isEmpty()) {
+            throw new Exception(" controller list can't be empty");
+        }
+        FacilioContext context = new FacilioContext();
+        JSONArray controllerArray = new JSONArray();
+        for (Controller controller : controllerList) {
+            JSONObject controllerData = controller.getChildJSON();
+            controllerData.put(AgentConstants.NAME, controller.getName());
+            controllerArray.add(controllerData);
+            context.put(AgentConstants.CONFIGURE, AgentConstants.CONTROLLER);
+        }
+        context.put(AgentConstants.DATA, controllerArray);
+        return constructNewIotAgentMessage(agent, FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerList.get(0).getControllerType()));
     }
 
     public static boolean sendConfigureModbusRtuControllerCommand(ModbusRtuControllerContext controllerContext) throws Exception {
@@ -255,6 +268,8 @@ public class AgentMessenger {
         context.put(AgentConstants.HEADER, authKey);
         context.put(AgentConstants.VERSION, "v" + version);
         context.put(AgentConstants.URL, url);
-        return constructNewIotAgentMessage(agentId, FacilioCommand.UPGRADE, context, null);
+        return constructNewIotAgentMessage(agentId, FacilioCommand.UPGRADE, context, (FacilioControllerType) null);
     }
+
+
 }

@@ -305,7 +305,13 @@
                 method="getCommissionedPoints"> <!--DONE-->
         </action>
 
+        <action name="makeWritable" class="com.facilio.agentv2.actions.IdsAction"
+                method="makeWritable"> <!--DONE-->
+        </action>
 
+        <action name="disableWritable" class="com.facilio.agentv2.actions.IdsAction"
+                method="disableWritable"> <!--DONE-->
+        </action>
     </package>
 
     <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
@@ -342,6 +348,7 @@
         </action>
     </package>
 
+
     <package name="dbMigration" namespace="/api/v2/db" extends="agent">
         <action name="getSqlite" class="com.facilio.agentv2.actions.AgentIdAction" method="getSqlite">
         </action>
@@ -361,6 +368,12 @@
 
         <action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
         </action>
+
+        <action name="addBulkDevices" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusDevice">
+        </action>
+
+        <action name="addBulkPoints" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusPoint">
+        </action>
     </package>
 
     <package name="opcDa" namespace="/api/v2/opcda" extends="agent">
@@ -376,6 +389,11 @@
 
     <package name="agentMetrics" namespace="/api/v2/agent/metrics" extends="agent">
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentMetrics">
+        </action>
+    </package>
+
+    <package name="test" namespace="/api/v2/agent/test" extends="agent">
+        <action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
         </action>
     </package>
 

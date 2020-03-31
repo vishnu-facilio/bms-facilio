@@ -5,12 +5,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.actions.AgentActionV2;
-import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
-import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
@@ -20,9 +17,8 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.AdminAction;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.DevicesAPI;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -542,15 +538,37 @@ public class AgentAction extends AgentActionV2 {
         try{
             IotMessage iotMessage = IotMessageApiV2.getIotMessage(id);
             setResult(AgentConstants.DATA,iotMessage.getMessageData());
-        }catch (Exception e) {
-            LOGGER.info("Exception occurred while getting iot message",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting iot message", e);
             internalError();
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
         }
         return SUCCESS;
     }
     //__________________________________________________
     // general utilities
 
-
+    public String addModbusControllers() {
+        try {
+            if (FacilioProperties.isDevelopment()) {
+                ModbusTcpControllerContext controllerContext = new ModbusTcpControllerContext();
+                FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                Objects.requireNonNull(agent);
+                controllerContext.setAgentId(getAgentId());
+                controllerContext.setSlaveId(1);
+                controllerContext.setIpAddress("1.1.1.1");
+                controllerContext.setSiteId(agent.getSiteId());
+                controllerContext.setName(controllerContext.getIdentifier());
+                FieldDeviceApi.addControllerAsDevice(controllerContext);
+                ControllerApiV2.addController(controllerContext);
+                ok();
+            } else {
+                internalError();
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception while adding device and controller ", e);
+            internalError();
+        }
+        return SUCCESS;
+    }
 }

@@ -575,6 +575,36 @@ public class PointsAPI {
         return false;
     }
 
+    public static boolean makePoinWritable(Long pointId) throws Exception {
+        return makePoinsWritable(Collections.singletonList(pointId));
+    }
+
+    public static boolean disablePoinWritable(Long pointId) throws Exception {
+        return disablePoinsWritable(Collections.singletonList(pointId));
+    }
+
+    public static boolean makePoinsWritable(List<Long> pointIds) throws Exception {
+        return editWritable(pointIds, true);
+    }
+
+    public static boolean disablePoinsWritable(List<Long> pointIds) throws Exception {
+        return editWritable(pointIds, false);
+    }
+
+    private static boolean editWritable(List<Long> pointIds, boolean writable) throws Exception {
+        Objects.requireNonNull(pointIds, "point ids can't be null");
+        if (!pointIds.isEmpty()) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.WRITABLE, writable));
+            editChain.execute();
+            return true;
+        } else {
+            throw new Exception("point ids can't be null");
+        }
+    }
+
     public static boolean UpdatePointUnConfigured(Long pointId) throws Exception {
         return UpdatePointsUnConfigured(Collections.singletonList(pointId));
     }
@@ -741,11 +771,8 @@ public class PointsAPI {
     }
 
     public static boolean setValue(long pointid, FacilioControllerType type, Object value) throws Exception {
-        LOGGER.info(" getting point "+pointid);
         Point point = getpoint(pointid, type);
-        LOGGER.info(" point ->" + point.getName());
         if (point != null) {
-            LOGGER.info(" point's cid ->" + point.getControllerId());
             point.setValue(value);
             ControllerMessenger.setValue(point);
             return true;

@@ -219,18 +219,30 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void subscribeUnscbscribePoints(List<Point> points, FacilioCommand command) throws Exception {
-        LOGGER.info(" iot message to "+command.toString());
-        IotData iotData = constructNewIotMessage(points,command);
+        LOGGER.info(" iot message to " + command.toString());
+        IotData iotData = constructNewIotMessage(points, command);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
     public static void sendConfigureModbusTcpPoint(ModbusTcpPointContext tcpPointContext) throws Exception {
-        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)),FacilioCommand.CONFIGURE);
+        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.CONFIGURE);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void sendConfigureModbusTcpPoint(ModbusTcpPointContext tcpPointContext, Controller controller) throws Exception {
+        ArrayList<Point> points = new ArrayList<>(Arrays.asList(tcpPointContext));
+        sendConfigureModbusTcpPoints(controller, points);
+        return;
+    }
+
+    public static void sendConfigureModbusTcpPoints(Controller controller, List<Point> points) throws Exception {
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE, controller);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
     public static void sendConfigureModbusRtuPoint(ModbusRtuPointContext tcpPointContext) throws Exception {
-        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)),FacilioCommand.CONFIGURE);
+        IotData iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.CONFIGURE);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
+
 }

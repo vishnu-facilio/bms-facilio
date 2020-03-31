@@ -5,6 +5,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -132,17 +133,39 @@ public class IdsAction extends AgentActionV2
                 setResult(AgentConstants.RESULT,SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             }
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting agentDevices count",e);
-            setResult(AgentConstants.RESULT,ERROR);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting agentDevices count", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
         }
         return SUCCESS;
     }
 
+    public String makeWritable() {
+        try {
+            PointsAPI.makePoinsWritable(getRecordIds());
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while editing point writable", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+        }
+        return SUCCESS;
+    }
 
-
-
+    public String disableWritable() {
+        try {
+            PointsAPI.disablePoinsWritable(getRecordIds());
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while editing point writable", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+        }
+        return SUCCESS;
+    }
 
 }

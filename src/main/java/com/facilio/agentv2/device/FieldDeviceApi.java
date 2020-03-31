@@ -299,4 +299,16 @@ public class FieldDeviceApi {
         constructListContext.put(AgentConstants.AGENT_ID, agentId);
         return getDeviceData(constructListContext);
     }
+
+    public static void addControllerAsDevice(Controller controllerContext) throws Exception {
+        Device device = new Device();
+        device.setIdentifier(controllerContext.getIdentifier());
+        device.setControllerProps(controllerContext.toJSON());
+        device.setAgentId(controllerContext.getAgentId());
+        device.setSiteId(controllerContext.getSiteId());
+        device.setName(controllerContext.getName());
+        device.setControllerType(controllerContext.getControllerType());
+        FieldDeviceApi.addFieldDevice(device);
+        controllerContext.setDeviceId(device.getId());
+    }
 }

@@ -174,4 +174,5 @@ public class AgentConstants
     public static final String UPDATED_TIME = "updatedTime";
     public static final String AUTH_KEY = "authKey";
     public static final String HEADER = "header";
+    public static final String IP = "ip";
 }
