@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 
 //import com.facilio.bmsconsole.commands.FacilioContext;
 
@@ -48,6 +49,9 @@ public class PickListAction extends FacilioAction {
 		}
 		else {
 			Context context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
+			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 			if (getSearch() != null) {
 				context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
@@ -74,6 +78,16 @@ public class PickListAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
+	Criteria criteria;
 	
 	
 	String search;

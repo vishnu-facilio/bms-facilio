@@ -49,6 +49,12 @@ public class GetPickListCommand extends FacilioCommand {
 																	.select(fields)
 																	;
 				
+				Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
+				
+				if(clientFilterCriteria != null) {
+					builder.andCriteria(clientFilterCriteria);
+				}
+				
 				if (search != null) {
 					FacilioField primaryField = modBean.getPrimaryField(moduleName);
 					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
