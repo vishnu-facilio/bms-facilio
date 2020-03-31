@@ -59,7 +59,13 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
 
         for (int i = 0; i < workOrders.size(); i++) {
             WorkOrderContext workOrder = workOrders.get(i);
-            TicketAPI.validateSiteSpecificData(workOrder);
+            try {
+                TicketAPI.validateSiteSpecificData(workOrder);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "affected PM " + workOrder.getPm().getId());
+                throw e;
+            }
+
             Boolean isFromImport = (Boolean) context.get(ImportAPI.ImportProcessConstants.IS_FROM_IMPORT);
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
             workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
