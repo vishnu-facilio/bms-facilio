@@ -123,7 +123,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.FLOOR, getFloorModule());
 		moduleMap.put(ContextNames.TENANT_CONTACT, getTenantContactModule());
 		moduleMap.put(ContextNames.PEOPLE, getPeopleModule());
-
+		moduleMap.put(ContextNames.VENDOR_CONTACT, getVendorContactModule());
 
 		return moduleMap;
 	}

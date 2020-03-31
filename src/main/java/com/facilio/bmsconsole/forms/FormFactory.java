@@ -93,7 +93,7 @@ public class FormFactory {
 		forms.put("portalvendorDocumentForm",getPortalVendorDocumentForm());
 		forms.put("client_form", getClientForm());
 		forms.put("tenant_contact_form", getTenantContactForm());
-		forms.put("vendor_contact_form", getNewVendorContactForm());
+		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 
 		return forms;
 	}
