@@ -5789,6 +5789,10 @@
 			method="getBimIntegrationLogs"
 		/>
 		
+		<action name="assetJsonImport" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="addAssetsJSONImport"
+		/>
+		
 	</package>
 	
 	<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
