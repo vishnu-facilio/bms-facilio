@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -29,6 +30,7 @@ public class ImportFieldRollupCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         ArrayList addedBaseSpaceIds = (ArrayList) context.get(ImportAPI.ImportProcessConstants.ADDED_BASE_SPACE_IDS);
+        ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
         if (CollectionUtils.isNotEmpty(addedBaseSpaceIds)) {
             FacilioContext jobContext = new FacilioContext();
             FacilioField idField = FieldFactory.getIdField(ModuleFactory.getBaseSpaceModule());
@@ -41,11 +43,13 @@ public class ImportFieldRollupCommand extends FacilioCommand {
             FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
             LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(addedBaseSpaceIds, ","));
         }
-        ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-        if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_CONTACT)) {
-            FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
-            c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
-            c.execute();
+        if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+            ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+                FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
+                c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
+                c.execute();
+            }
         }
         return false;
     }
