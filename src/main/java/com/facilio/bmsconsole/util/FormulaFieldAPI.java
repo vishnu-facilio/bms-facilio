@@ -805,7 +805,7 @@ public class FormulaFieldAPI {
 		LOGGER.debug("Time taken to fetch resource params : "+(System.currentTimeMillis() - resourceParamsStarttime));
 		params.put("xValues", currentxValues);
 		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
-		LOGGER.debug("Optimised wfXmlString -- "+wfXmlString);
+		LOGGER.error("Optimised wfXmlString -- "+wfXmlString);
 		LOGGER.debug("Meta -- "+workflow.getMetas());
 		LOGGER.debug("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
@@ -818,7 +818,7 @@ public class FormulaFieldAPI {
 			for (Map.Entry<Object, Object> entry : result.entrySet()) {
 				ReadingContext reading = new ReadingContext();
 				reading.setParentId(resourceId);
-				reading.setTtime((long) entry.getKey());
+				reading.setTtime(Long.parseLong(entry.getKey().toString()));
 				reading.addReading(fieldName, entry.getValue());
 				readings.add(reading);
 			}
