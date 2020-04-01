@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -202,6 +201,7 @@ public class BuildingAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		context.put(FacilioConstants.ContextNames.REPORT_CARDS_META, fetchReportCardsMeta);
 		
 		FacilioChain getReportCardsChain = FacilioChainFactory.getBuildingReportCardsChain();
 		getReportCardsChain.execute(context);
@@ -211,11 +211,7 @@ public class BuildingAction extends FacilioAction {
 		
 		setReports(reports);
 		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
-		
-		List<EnergyMeterContext> energyMeters = DashboardUtil.getMainEnergyMeter(getBuildingId()+"");
-		if(energyMeters != null && !energyMeters.isEmpty()) {
-			setMainEnergyMeter(energyMeters.get(0));
-		}
+
 		return SUCCESS;
 	}
 	
@@ -369,4 +365,14 @@ public class BuildingAction extends FacilioAction {
 	{
 		return building;
 	}
+
+	public List<String> getFetchReportCardsMeta() {
+		return fetchReportCardsMeta;
+	}
+
+	public void setFetchReportCardsMeta(List<String> fetchReportCardsMeta) {
+		this.fetchReportCardsMeta = fetchReportCardsMeta;
+	}
+
+	private List<String> fetchReportCardsMeta;
 }

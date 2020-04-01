@@ -29,42 +29,39 @@ public class GetBuildingReportCards extends FacilioCommand {
 
 		long buildingId = (long) context.get(FacilioConstants.ContextNames.ID);
 
-		if(buildingId > 0) {
-			
+		if (buildingId > 0) {
+			List<String> fetchReportMeta = (List<String>) context.get(FacilioConstants.ContextNames.REPORT_CARDS_META);
 			JSONObject reports = new JSONObject();
-			reports.put("spaces", getBuildingsAllSpacesCount(buildingId));
-			reports.put("independent_spaces", SpaceAPI.getIndependentSpacesCount(buildingId));
-			reports.put("floors", SpaceAPI.getBuildingsFloorsCount(buildingId));
-			
-			JSONObject woCount = new JSONObject();
-			woCount.put("type", "count");
-			woCount.put("name", "work_orders");
-			woCount.put("label", "Work Orders");
-			woCount.put("data", SpaceAPI.getWorkOrdersCount(buildingId));
-			
-			JSONObject faCount = new JSONObject();
-			faCount.put("type", "count");
-			faCount.put("name", "fire_alarms");
-			faCount.put("label", "Alarms");
-			faCount.put("data", SpaceAPI.getV2AlarmCount(buildingId));
-			
-			JSONObject assetCount = new JSONObject();
-			assetCount.put("type", "count");
-			assetCount.put("name", "assets");
-			assetCount.put("label", "Assets");
-			assetCount.put("data", SpaceAPI.getAssetsCount(buildingId));
-			
-			JSONObject energyUsage= new JSONObject();
-			energyUsage.put("type", "count");
-			energyUsage.put("name", "energy");
-			energyUsage.put("label", "ENERGY CONSUMED");
-			energyUsage.put("data", "--");
-			
 			JSONArray reportCards = new JSONArray();
-			reportCards.add(woCount);
-			reportCards.add(faCount);
-			reportCards.add(assetCount);
-			reportCards.add(energyUsage);
+			if (fetchReportMeta == null || (CollectionUtils.isNotEmpty(fetchReportMeta) && fetchReportMeta.contains("spaceCount"))) {
+				reports.put("spaces", getBuildingsAllSpacesCount(buildingId));
+				reports.put("independent_spaces", SpaceAPI.getIndependentSpacesCount(buildingId));
+				reports.put("floors", SpaceAPI.getBuildingsFloorsCount(buildingId));
+			}
+
+			if (fetchReportMeta == null || (CollectionUtils.isNotEmpty(fetchReportMeta) && fetchReportMeta.contains("moduleCount"))) {
+				JSONObject woCount = new JSONObject();
+				woCount.put("type", "count");
+				woCount.put("name", "work_orders");
+				woCount.put("label", "Work Orders");
+				woCount.put("data", SpaceAPI.getWorkOrdersCount(buildingId));
+
+				JSONObject faCount = new JSONObject();
+				faCount.put("type", "count");
+				faCount.put("name", "fire_alarms");
+				faCount.put("label", "Alarms");
+				faCount.put("data", SpaceAPI.getV2AlarmCount(buildingId));
+
+				JSONObject assetCount = new JSONObject();
+				assetCount.put("type", "count");
+				assetCount.put("name", "assets");
+				assetCount.put("label", "Assets");
+				assetCount.put("data", SpaceAPI.getAssetsCount(buildingId));
+
+				reportCards.add(woCount);
+				reportCards.add(faCount);
+				reportCards.add(assetCount);
+			}
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);

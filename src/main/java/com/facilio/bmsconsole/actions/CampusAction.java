@@ -158,7 +158,8 @@ public class CampusAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getCampusId());
-		
+
+		context.put(FacilioConstants.ContextNames.REPORT_CARDS_META, fetchReportCardsMeta);
 		FacilioChain getReportCardsChain = FacilioChainFactory.getSiteReportCardsChain();
 		getReportCardsChain.execute(context);
 		
@@ -312,6 +313,16 @@ public class CampusAction extends FacilioAction {
 	}
 
 	private List<SiteContext> sites;
+
+	public List<String> getFetchReportCardsMeta() {
+		return fetchReportCardsMeta;
+	}
+
+	public void setFetchReportCardsMeta(List<String> fetchReportCardsMeta) {
+		this.fetchReportCardsMeta = fetchReportCardsMeta;
+	}
+
+	private List<String> fetchReportCardsMeta;
 	
 	@SuppressWarnings("unchecked")
 	public void setError(String key, Object error) {

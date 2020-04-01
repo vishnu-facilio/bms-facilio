@@ -29,50 +29,47 @@ public class GetSiteReportCards extends FacilioCommand {
 
 		long campusId = (long) context.get(FacilioConstants.ContextNames.ID);
 
-		if(campusId > 0) {
-			
+		if (campusId > 0) {
+			List<String> fetchReportMeta = (List<String>) context.get(FacilioConstants.ContextNames.REPORT_CARDS_META);
 			JSONObject reports = new JSONObject();
-			reports.put("independent_spaces", SpaceAPI.getIndependentSpacesCount(campusId));
-			reports.put("allSpaces", getAllSpaces(campusId, SpaceType.SPACE.getIntVal()));
-			reports.put("buildings", getAllSpaces(campusId, SpaceType.BUILDING.getIntVal()));
-			
-			JSONObject woCount = new JSONObject();
-			woCount.put("type", "count");
-			woCount.put("name", "work_orders");
-			woCount.put("label", "Work Orders");
-			woCount.put("data", SpaceAPI.getWorkOrdersCount(campusId));
-			
-			JSONObject faCount = new JSONObject();
-			faCount.put("type", "count");
-			faCount.put("name", "fire_alarms");
-			faCount.put("label", "Alarms");
-			faCount.put("data", SpaceAPI.getV2AlarmCount(campusId));
-			
-			JSONObject assetCount = new JSONObject();
-			assetCount.put("type", "count");
-			assetCount.put("name", "assets");
-			assetCount.put("label", "Assets");
-			assetCount.put("data", SpaceAPI.getAssetsCount(campusId));
-			
-			JSONObject energyUsage= new JSONObject();
-			energyUsage.put("type", "count");
-			energyUsage.put("name", "energy");
-			energyUsage.put("label", "ENERGY CONSUMED");
-			energyUsage.put("data", "--");
-			
 			JSONArray reportCards = new JSONArray();
-			reportCards.add(woCount);
-			reportCards.add(faCount);
-			reportCards.add(assetCount);
-			reportCards.add(energyUsage);
-			
+			if (fetchReportMeta == null || (CollectionUtils.isNotEmpty(fetchReportMeta) && fetchReportMeta.contains("spaceCount"))) {
+				reports.put("independent_spaces", SpaceAPI.getIndependentSpacesCount(campusId));
+				reports.put("allSpaces", getAllSpaces(campusId, SpaceType.SPACE.getIntVal()));
+				reports.put("buildings", getAllSpaces(campusId, SpaceType.BUILDING.getIntVal()));
+			}
+
+			if (fetchReportMeta == null || (CollectionUtils.isNotEmpty(fetchReportMeta) && fetchReportMeta.contains("moduleCount"))) {
+				JSONObject woCount = new JSONObject();
+				woCount.put("type", "count");
+				woCount.put("name", "work_orders");
+				woCount.put("label", "Work Orders");
+				woCount.put("data", SpaceAPI.getWorkOrdersCount(campusId));
+
+				JSONObject faCount = new JSONObject();
+				faCount.put("type", "count");
+				faCount.put("name", "fire_alarms");
+				faCount.put("label", "Alarms");
+				faCount.put("data", SpaceAPI.getV2AlarmCount(campusId));
+
+				JSONObject assetCount = new JSONObject();
+				assetCount.put("type", "count");
+				assetCount.put("name", "assets");
+				assetCount.put("label", "Assets");
+				assetCount.put("data", SpaceAPI.getAssetsCount(campusId));
+
+
+				reportCards.add(woCount);
+				reportCards.add(faCount);
+				reportCards.add(assetCount);
+			}
+
+
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);
+		} else {
+			throw new IllegalArgumentException("Invalid Campus ID : " + campusId);
 		}
-		else {
-			throw new IllegalArgumentException("Invalid Campus ID : "+campusId);
-		}
-
 		return false;
 	}
 

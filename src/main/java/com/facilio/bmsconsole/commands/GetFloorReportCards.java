@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
 
 public class GetFloorReportCards extends FacilioCommand {
 
@@ -36,18 +35,12 @@ public class GetFloorReportCards extends FacilioCommand {
 			assetCount.put("name", "assets");
 			assetCount.put("label", "Assets");
 			assetCount.put("data", SpaceAPI.getAssetsCount(floorId));
-			
-			JSONObject energyUsage= new JSONObject();
-			energyUsage.put("type", "count");
-			energyUsage.put("name", "energy");
-			energyUsage.put("label", "ENERGY CONSUMED");
-			energyUsage.put("data", "--");
+
 			
 			JSONArray reportCards = new JSONArray();
 			reportCards.add(woCount);
 			reportCards.add(faCount);
 			reportCards.add(assetCount);
-			reportCards.add(energyUsage);
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);
