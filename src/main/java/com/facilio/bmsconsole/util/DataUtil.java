@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -16,6 +13,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
+import java.util.Map;
 
 public class DataUtil {
 	
@@ -53,7 +53,7 @@ public class DataUtil {
 				return result;
 			}
 		}
-		return null;
+		return -1d;
 	}
 
 }

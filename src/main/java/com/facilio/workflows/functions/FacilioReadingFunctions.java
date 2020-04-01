@@ -1,19 +1,9 @@
 package com.facilio.workflows.functions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DataUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -32,13 +22,13 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
 import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
+import org.apache.commons.collections4.CollectionUtils;
 
-import freemarker.template.utility.DateUtil;
+import java.util.*;
 
 public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface  {
 
@@ -82,7 +72,9 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 								buildingMeters.add(energyMeters.get(0).getId());
 							}
 						}
-						return DataUtil.getSumOfEnergyData(buildingMeters,range.getStartTime(),range.getEndTime());
+						if (CollectionUtils.isNotEmpty(buildingMeters)) {
+							return DataUtil.getSumOfEnergyData(buildingMeters, range.getStartTime(), range.getEndTime());
+						}
 					}
 				case BUILDING:
 				case FLOOR:
