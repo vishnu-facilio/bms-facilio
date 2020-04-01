@@ -153,7 +153,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			long processStartTime = System.currentTimeMillis();
 			List<ReadingContext> readings = null;
 			List<BaseEventContext> events = new ArrayList<>();
-			BaseEventContext previousEventMeta = new ReadingEventContext();
+			BaseEventContext previousEventMeta = new BaseEventContext();
 
 			if(isFirstIntervalJob)
 			{
@@ -163,7 +163,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				if(previousFetchStartReading != null)
 				{
 					Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
-					executeWorkflows(readingRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new ReadingEventContext());
+					executeWorkflows(readingRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext());
 					if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 					{
 						previousEventMeta = beforeFetchFirstEvent.get(0);
