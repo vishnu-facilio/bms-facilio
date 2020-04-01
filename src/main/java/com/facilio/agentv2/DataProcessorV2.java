@@ -1,8 +1,10 @@
 package com.facilio.agentv2;
 
+import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
@@ -22,6 +24,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
@@ -141,6 +144,12 @@ public class DataProcessorV2
                     processStatus = processTimeSeries(timeSeriesPayload, controller, false);
                     break;
                     //processTimeSeries(payload,)
+                case AGENT_EVENTS:
+                    AgentEvent eventType = getEventType(payload);
+                    if (eventType!=null){
+                        processAgentEvents(payload, agent, eventType);
+                    }
+                    break;
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
             }
@@ -149,6 +158,48 @@ public class DataProcessorV2
         }
         LOGGER.info(" process status " + processStatus);
         return processStatus;
+    }
+
+    private void processAgentEvents(JSONObject payload, FacilioAgent agent, AgentEvent eventType) throws Exception {
+        if (eventType==AgentEvent.CONTROLLERS_MISSING){
+            processControllerMissingEvent(payload, agent);
+        }
+    }
+
+    private void processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {
+        if (payload.containsKey(AgentConstants.DATA)){
+            JSONArray controllerArray = (JSONArray) payload.get(AgentConstants.DATA);
+            if (controllerArray.size()==0){
+                agentUtil.dropControllerAlarm(agent);
+            }
+            else{
+                JSONArray arrayOfControllers = new JSONArray();
+                for (Object controllerObj: controllerArray){
+                    JSONObject controllerObject = (JSONObject) controllerObj;
+                    if (controllerObject.containsKey(AgentConstants.CONTROLLER_TYPE)) {
+                        int type = Integer.parseInt(controllerObject.get(AgentConstants.CONTROLLER_TYPE).toString());
+                        FacilioControllerType controllerType = FacilioControllerType.valueOf(type);
+                        Controller controllr = controllerUtil.getCachedController(controllerObject, controllerType);
+                        if (controllr!=null) {
+                            arrayOfControllers.add(controllr.getId());
+                        }else {
+                            LOGGER.info("Controller is Null while processing event");
+                        }
+                    }
+                }
+                if (arrayOfControllers.size()>0){
+                    agentUtil.raiseControllerAlarm(agent,arrayOfControllers.toJSONString());
+                }
+            }
+        }
+    }
+
+    private AgentEvent getEventType(JSONObject payload) {
+        AgentEvent eventType = null;
+        if (payload.containsKey("event")){
+            eventType = AgentEvent.initTypeMap().get(Integer.parseInt(payload.get("event").toString()));
+        }
+        return eventType;
     }
 
     private void markMetrices(FacilioAgent agent, JSONObject payload) {

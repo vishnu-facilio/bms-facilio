@@ -96,7 +96,7 @@ public class IoTMessageAPI {
 			object.put("agent", agent.getName());
 			// Temp...till it is handled in agent
 			if (command == IotCommandType.PING) {
-				object.put(EventUtil.DATA_TYPE, PublishType.ack.getValue());
+				object.put(EventUtil.DATA_TYPE, PublishType.ACK.getValue());
 				object.put("pingAgent", agent.getName());
 			}
 			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.

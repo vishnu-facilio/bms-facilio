@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.bmsconsole.context.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -50,7 +51,8 @@ public class NewEventAPI {
 
 			case AGENT_ALARM:
 				return AgentEventContext.class;
-
+			case CONTROLLER_ALARM:
+				return ControllerEventContext.class;
 			case PRE_ALARM:
 				return PreEventContext.class;
 			case OPERATION_ALARM:
@@ -87,6 +89,8 @@ public class NewEventAPI {
 				return "violationevent";
 			case AGENT_ALARM:
 				return "agentAlarmEvent";
+			case CONTROLLER_ALARM:
+				return "controllerAlarmEvent";
 			case  PRE_ALARM:
 				return "preevent";
 			case OPERATION_ALARM:

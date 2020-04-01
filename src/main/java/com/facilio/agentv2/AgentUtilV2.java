@@ -2,9 +2,9 @@ package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -16,15 +16,11 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.kafka.common.metrics.Stat;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class AgentUtilV2
 {
@@ -110,17 +106,6 @@ public class AgentUtilV2
         //populateAgentContextMap();
     }
 
-
-    /**
-     * This method populates the agents from database and maps them to their name
-     */
-   /* public void populateAgentContextMap() {
-            List<FacilioAgent> agentList = AgentApiV2.getAgents();
-            LOGGER.info(" getting all agents "+agentList);
-            agentList.forEach(agent -> agentMap.put(agent.getName(),agent));
-            LOGGER.info("\n-\n-\n- after populating new agents" + agentMap + "\n-\n-\n-");
-    }*/
-
     /**
      * This method processes the {@link JSONObject} and creates or updates the agent in the database
      *
@@ -138,6 +123,7 @@ public class AgentUtilV2
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
                     raiseAgentAlarm(agent);
+                    raiseControllerAlarm(agent,"test-string");
                 }else if (containsValueCheck(AgentConstants.COUNT,payload)){
                     LOGGER.info(" CONNECTED ");
                     agent.setConnected(true);
@@ -161,6 +147,7 @@ public class AgentUtilV2
             throw new Exception("Agent can't be null");
         }
     }
+
     public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
@@ -185,6 +172,54 @@ public class AgentUtilV2
         addEventToDB(event);
         LOGGER.info("Added Agent Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
 
+    }
+
+    /**
+     * This method populates the agents from database and maps them to their name
+     */
+   /* public void populateAgentContextMap() {
+            List<FacilioAgent> agentList = AgentApiV2.getAgents();
+            LOGGER.info(" getting all agents "+agentList);
+            agentList.forEach(agent -> agentMap.put(agent.getName(),agent));
+            LOGGER.info("\n-\n-\n- after populating new agents" + agentMap + "\n-\n-\n-");
+    }*/
+
+    public void dropControllerAlarm(FacilioAgent agent) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        ControllerEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,null);
+        addControllerEventToDB(event);
+        LOGGER.info("Added controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+
+    }
+
+    public void raiseControllerAlarm(FacilioAgent agent,String controllerList) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        ControllerEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,controllerList);
+        addControllerEventToDB(event);
+        LOGGER.info("Added controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+
+    }
+
+    private ControllerEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, String controllerIdList) {
+        ControllerEventContext event = new ControllerEventContext();
+        event.setMessage("message");
+        event.setDescription("description");
+        //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
+        event.setSeverityString(severity);
+        event.setCreatedTime(currentTime);
+        event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setAgent(agent);
+        event.setControllerList(controllerIdList);
+        return event;
+    }
+
+    private void addControllerEventToDB(ControllerEventContext event) throws Exception {
+        List<ControllerEventContext> eventList = new ArrayList<ControllerEventContext>();
+        eventList.add(event);
+        FacilioContext context = new FacilioContext();
+        context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
+        FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
+        chain.execute(context);
     }
 
     private static AgentEventContext getAgentEventContext(FacilioAgent agent, long currentTime, String severity) {
@@ -235,6 +270,5 @@ public class AgentUtilV2
         }
         return false;
     }
-
 
 }

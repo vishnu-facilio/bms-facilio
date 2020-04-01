@@ -2,6 +2,7 @@ package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agent.alarms.ControllerAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.metrics.AgentMetrics;
@@ -960,7 +961,7 @@ public class FacilioConstants {
 		public static final String SCHEDULED_ACTION = "scheduledAction";
 		public static final String FREQUENCY = "frequency";
 		public static final String IS_HISTORICAL= "isHistorical";
-		
+
 		public static final String DATE_OPERATOR = "dateOperator";
 		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
 		
@@ -1740,6 +1741,7 @@ public class FacilioConstants {
 			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
+			classMap.put("controllerAlarm", ControllerAlarmContext.class);
 			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
 			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
 			classMap.put(VISITOR, VisitorContext.class);

@@ -200,6 +200,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		BMS_ALARM,
 		VIOLATION_ALARM,
 		AGENT_ALARM,
+		CONTROLLER_ALARM,
 		PRE_ALARM,
 		OPERATION_ALARM;
 		;

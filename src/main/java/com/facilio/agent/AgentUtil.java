@@ -1,12 +1,10 @@
 package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -19,7 +17,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -140,8 +137,8 @@ public class AgentUtil {
 
         if (payload.containsKey(AgentKeys.NAME)) {
             agent.setAgentName(payload.get(AgentKeys.NAME).toString().trim());
-        } else if (payload.containsKey(PublishType.agent.getValue())) {
-            agent.setAgentName(payload.get(PublishType.agent.getValue()).toString().trim());
+        } else if (payload.containsKey(PublishType.AGENT.getValue())) {
+            agent.setAgentName(payload.get(PublishType.AGENT.getValue()).toString().trim());
         } else {
             agent.setAgentName(orgDomainName);
         }

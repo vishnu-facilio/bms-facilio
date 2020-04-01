@@ -96,7 +96,7 @@ public class ControllerAction extends FacilioAction {
 
 	public String editAgent() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(PublishType.agent.getValue(), getAgentContext());
+		context.put(PublishType.AGENT.getValue(), getAgentContext());
 		FacilioChain createAgentChain = TransactionChainFactory.editAgent();
 		if (createAgentChain.execute(context)) {
 			 setResult("msg", SUCCESS);

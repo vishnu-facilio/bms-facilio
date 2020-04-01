@@ -9,10 +9,9 @@ import java.util.stream.Collectors;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.AgentContent;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.alarms.*;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agent.alarms.AgentAlarmContext;
-import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -125,6 +124,8 @@ public class NewAlarmAPI {
 				return ViolationAlarmOccurrenceContext.class;
 			case AGENT:
 				return AgentAlarmOccurrenceContext.class;
+			case CONTROLLER:
+				return ControllerOccurrenceContext.class;
 			case PRE_OCCURRENCE:
 				return PreAlarmOccurrenceContext.class;
 			case OPERATION_OCCURRENCE:
@@ -149,6 +150,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.VIOLATION_ALARM_OCCURRENCE;
 			case AGENT:
 				return FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE;
+			case CONTROLLER:
+				return "controllerAlarmOccurrence";
 			case PRE_OCCURRENCE:
 				return FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE;
 			case OPERATION_OCCURRENCE:
@@ -178,6 +181,8 @@ public class NewAlarmAPI {
 				return ViolationAlarmContext.class;
 			case AGENT_ALARM:
 				return AgentAlarmContext.class;
+			case CONTROLLER_ALARM:
+				return ControllerAlarmContext.class;
 			case PRE_ALARM:
 				return PreAlarmContext.class;
 			case OPERATION_ALARM:
@@ -238,6 +243,8 @@ public class NewAlarmAPI {
 				return "violationalarm";
 			case AGENT_ALARM:
 				return "agentAlarm";
+			case CONTROLLER_ALARM:
+				return "controllerAlarm";
 			case PRE_ALARM:
 				return "prealarm";
 			case OPERATION_ALARM:
@@ -339,7 +346,6 @@ public class NewAlarmAPI {
 
 	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
-
 		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence, context);
 
