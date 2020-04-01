@@ -75,7 +75,7 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 					newSortField.setFieldName(field.getName());
 					newSortField.setIsAscending("asc".equalsIgnoreCase(orderType));
 					ViewAPI.customizeViewSortColumns(view.getId(), Arrays.asList(newSortField));
-					List<SortField> savedFields = ViewAPI.getSortFields(view.getId());
+					List<SortField> savedFields = ViewAPI.getSortFields(view.getId(), moduleName);
 					context.put(FacilioConstants.ContextNames.SORT_FIELDS_OBJECT, savedFields);
 				}
 			}

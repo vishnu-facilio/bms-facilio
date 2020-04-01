@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.db;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
 
@@ -30,6 +24,6 @@ public class ResponseCacheUtil {
 	}
 	
 	public static void removeOrgCache(long orgId) {
-		LRUCache.getResponseCache().removeStartsWith(String.valueOf(orgId));
+		LRUCache.getResponseCache().removeStartsWith(CacheUtil.ORG_KEY(orgId));
 	}
 }

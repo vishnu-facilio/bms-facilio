@@ -152,7 +152,7 @@ public class ViewAPI {
 				}
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
-				view.setSortFields(getSortFields(view.getId()));
+				view.setSortFields(getSortFields(view.getId(), moduleName));
 				return view;
 			}
 			
@@ -181,11 +181,11 @@ public class ViewAPI {
 				}
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
-				view.setSortFields(getSortFields(view.getId()));
 				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
 				}
+				view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
 				return view;
 			}
 			
@@ -216,11 +216,11 @@ public class ViewAPI {
 				}
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
-				view.setSortFields(getSortFields(view.getId()));
 				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
 				}
+				view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
 				return view;
 			}
 			
@@ -482,7 +482,7 @@ public class ViewAPI {
 		return columns;
 	}
 	
-	public static List<SortField> getSortFields(long viewID) throws Exception {
+	public static List<SortField> getSortFields(long viewID, String moduleName) throws Exception {
 		List<SortField> sortFields = new ArrayList<>();
 		
 		try {
@@ -504,7 +504,12 @@ public class ViewAPI {
 					field = modBean.getField(sortField.getFieldId());					
 				}
 				else {
-					field = FieldFactory.getSystemField(sortField.getFieldName(), null);
+					if (FieldFactory.isSystemField(sortField.getFieldName())) {
+						field = FieldFactory.getSystemField(sortField.getFieldName(), null);
+					}
+					else  {
+						field = modBean.getField(sortField.getFieldName(), moduleName);
+					}
 				}
 				sortField.setSortField(field);
 				sortFields.add(sortField);
