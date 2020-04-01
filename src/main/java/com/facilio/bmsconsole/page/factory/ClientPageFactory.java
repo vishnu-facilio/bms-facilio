@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -32,6 +33,11 @@ public class ClientPageFactory extends PageFactory{
         tab1.addSection(tab1Sec2);
         addSiteListWidget(tab1Sec2, "site", client.getModuleId(), "Sites");
         addRelatedListWidget(tab1Sec2, "contact", client.getModuleId(), "Contacts");
+       /* if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+            addRelatedListWidget(tab1Sec2, "clientcontact", client.getModuleId(), "Client Contacts");
+        } else {
+            addRelatedListWidget(tab1Sec2, "contact", client.getModuleId(), "Contacts");
+        }*/
         addRelatedListWidget(tab1Sec2, "workorder", client.getModuleId(), "Workorders");
 //        addSafetyPlanHazardsWidget(tab1Sec2);
 
