@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -11,6 +12,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +41,12 @@ public class ImportFieldRollupCommand extends FacilioCommand {
             FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
             LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(addedBaseSpaceIds, ","));
         }
-
+        ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+        if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+            FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
+            c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
+            c.execute();
+        }
         return false;
     }
 }

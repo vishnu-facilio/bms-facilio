@@ -5119,6 +5119,15 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
 		return c;
 	}
+
+	public static FacilioChain getUpdatePeoplePrimaryContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchPeopleModuleRecordsCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+
+		return c;
+	}
+
 }
 
 

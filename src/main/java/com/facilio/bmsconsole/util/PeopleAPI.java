@@ -1,47 +1,29 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ClientContactContext;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.EmployeeContext;
-import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.builder.mssql.DeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 public class PeopleAPI {
 
@@ -191,6 +173,23 @@ public class PeopleAPI {
 		List<TenantContactContext> records = builder.get();
 		return records;
 		
+	}
+
+	public static List<TenantContactContext> getTenantContactsList(List<Long> idList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
+
+		SelectRecordsBuilder<TenantContactContext> builder = new SelectRecordsBuilder<TenantContactContext>()
+				.module(module)
+				.beanClass(TenantContactContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), idList, NumberOperators.EQUALS));
+		;
+
+		List<TenantContactContext> records = builder.get();
+		return records;
+
 	}
 	
 	public static List<VendorContactContext> getVendorContacts(long vendorId) throws Exception {

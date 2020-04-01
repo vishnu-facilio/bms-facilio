@@ -681,10 +681,11 @@ public class ProcessImportCommand extends FacilioCommand {
 							throw new Exception("Value not found");
 						}
 					}
-					if (lookupModuleName.equals("ticketstatus")) {
+					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus");
+					if (lookupModuleList.contains("ticketstatus")) {
 						throw new Exception("Value not found");
 					}
-					
+
 					GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 							.table(lookupField.getLookupModule().getTableName()).fields(fieldsList);
 
