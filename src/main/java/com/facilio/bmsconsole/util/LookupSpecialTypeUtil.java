@@ -71,6 +71,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_TEMPLATE_MODULE.equals(specialType)
+				|| FacilioConstants.ContextNames.AGENT.equals(specialType)
 				;
 	}
 	
@@ -650,6 +651,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(ContextNames.READING_TEMPLATE_MODULE.equals(specialType)) {
 			return ModuleFactory.getTemplateModule();
+		}
+		else if(ContextNames.AGENT.equals(specialType)){
+			return ModuleFactory.getNewAgentDataModule();
 		}
 		return null;
 	}
