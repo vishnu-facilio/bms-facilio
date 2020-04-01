@@ -1,7 +1,7 @@
 demoRollUpTableList : 
    
        
-   - tableName: Energy_Data_2
+   - tableName: Energy_Data
      columns: [ACTUAL_TTIME , TTIME , CREATED_TIME]
      primaryColumn: TTIME
       
