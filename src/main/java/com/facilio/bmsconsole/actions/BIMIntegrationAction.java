@@ -56,7 +56,7 @@ public class BIMIntegrationAction extends FacilioAction{
 		
 		uploadFileChain.execute();
 		setResult(FacilioConstants.ContextNames.BIM_IMPORT_ID ,(Long)context.get(FacilioConstants.ContextNames.BIM_IMPORT_ID));
-		setResult(FacilioConstants.ContextNames.VALID_SHEETS ,(JSONArray)context.get(FacilioConstants.ContextNames.VALID_SHEETS));
+		setResult(FacilioConstants.ContextNames.VALID_SHEETS ,(org.json.simple.JSONArray)context.get(FacilioConstants.ContextNames.VALID_SHEETS));
 		return SUCCESS;
 	}
 	
