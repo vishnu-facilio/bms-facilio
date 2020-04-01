@@ -591,6 +591,36 @@ public class PeopleAPI {
 		}
 		PeopleAPI.unMarkPrimaryContact(tc, tc.getTenant().getId());
 	}
+
+	public static void addVendorPrimaryContactAsPeople(VendorContactContext vendorContact) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT);
+		PeopleContext peopleExisiting = getPeople(vendorContact.getEmail());
+		if(peopleExisiting != null) {
+			vendorContact.setId(peopleExisiting.getId());
+			RecordAPI.updateRecord(vendorContact, module, fields);
+		}
+		else {
+			RecordAPI.addRecord(true, Collections.singletonList(vendorContact), module, fields);
+		}
+		PeopleAPI.unMarkPrimaryContact(vendorContact, vendorContact.getVendor().getId());
+	}
+
+	public static void addClientPrimaryContactAsPeople(ClientContactContext clientContact) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT);
+		PeopleContext peopleExisiting = getPeople(clientContact.getEmail());
+		if(peopleExisiting != null) {
+			clientContact.setId(peopleExisiting.getId());
+			RecordAPI.updateRecord(clientContact, module, fields);
+		}
+		else {
+			RecordAPI.addRecord(true, Collections.singletonList(clientContact), module, fields);
+		}
+		PeopleAPI.unMarkPrimaryContact(clientContact, clientContact.getClient().getId());
+	}
 	
 	public static TenantContext getTenantForUser(long ouId) throws Exception {
 		long pplId = PeopleAPI.getPeopleIdForUser(ouId);

@@ -3,12 +3,13 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
@@ -35,6 +36,10 @@ public class AddClientUserCommand extends FacilioCommand {
 				if (eventType == EventType.CREATE) {
 					ContactsContext primarycontact = addDefaultClientPrimaryContact(client);
 					RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(client.getPrimaryContactEmail())) {
+						ClientContactContext clientContact = getDefaultClientContact(client);
+						PeopleAPI.addClientPrimaryContactAsPeople(clientContact);
+					}
 				} else {
 					if (StringUtils.isNoneEmpty(client.getPrimaryContactPhone())) {
 						ContactsContext existingcontactForPhone = ContactsAPI
@@ -47,6 +52,10 @@ public class AddClientUserCommand extends FacilioCommand {
 							existingcontactForPhone.setName(client.getPrimaryContactName());
 							existingcontactForPhone.setEmail(client.getPrimaryContactEmail());
 							RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+						}
+						if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(client.getPrimaryContactEmail())) {
+							ClientContactContext clientContact = getDefaultClientContact(client);
+							PeopleAPI.addClientPrimaryContactAsPeople(clientContact);
 						}
 					}
 				}
@@ -69,4 +78,15 @@ public class AddClientUserCommand extends FacilioCommand {
 		return contact;
 	}
 
+	private ClientContactContext getDefaultClientContact(ClientContext client) throws Exception {
+		ClientContactContext tc = new ClientContactContext();
+		tc.setName(client.getPrimaryContactName());
+		tc.setEmail(client.getPrimaryContactEmail());
+		tc.setPhone(client.getPrimaryContactPhone());
+		tc.setPeopleType(PeopleContext.PeopleType.CLIENT_CONTACT);
+		tc.setClient(client);
+		tc.setIsPrimaryContact(true);
+
+		return tc;
+	}
 }

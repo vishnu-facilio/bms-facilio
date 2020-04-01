@@ -3,14 +3,16 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
-import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -37,6 +39,10 @@ public class AddVendorContactsCommand extends FacilioCommand{
 		if(eventType == EventType.CREATE) {
 			ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(vendor.getPrimaryContactEmail())) {
+				VendorContactContext vendorContact = getDefaultVendorContact(vendor);
+				PeopleAPI.addVendorPrimaryContactAsPeople(vendorContact);
+			}
 		}
 		else {
 			if(StringUtils.isNotEmpty(vendor.getPrimaryContactPhone())) {
@@ -49,6 +55,10 @@ public class AddVendorContactsCommand extends FacilioCommand{
 					existingcontactForPhone.setName(vendor.getPrimaryContactName());
 					existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
 					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+				}
+				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(vendor.getPrimaryContactEmail())) {
+					VendorContactContext vendorContact = getDefaultVendorContact(vendor);
+					PeopleAPI.addVendorPrimaryContactAsPeople(vendorContact);
 				}
 			}
 		}
@@ -86,5 +96,15 @@ public class AddVendorContactsCommand extends FacilioCommand{
 		contact.setIsPortalAccessNeeded(false);
 		return contact;
 	}
+	private VendorContactContext getDefaultVendorContact(VendorContext vendor) throws Exception {
+		VendorContactContext tc = new VendorContactContext();
+		tc.setName(vendor.getPrimaryContactName());
+		tc.setEmail(vendor.getPrimaryContactEmail());
+		tc.setPhone(vendor.getPrimaryContactPhone());
+		tc.setPeopleType(PeopleContext.PeopleType.VENDOR_CONTACT);
+		tc.setVendor(vendor);
+		tc.setIsPrimaryContact(true);
 
+		return tc;
+	}
 }
