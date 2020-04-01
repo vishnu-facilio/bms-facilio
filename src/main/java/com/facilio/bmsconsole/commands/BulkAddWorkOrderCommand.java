@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -30,6 +19,16 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class BulkAddWorkOrderCommand extends FacilioCommand{
     private static final Logger LOGGER = Logger.getLogger(BulkAddWorkOrderCommand.class.getName());
@@ -62,7 +61,9 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
             try {
                 TicketAPI.validateSiteSpecificData(workOrder);
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "affected PM " + workOrder.getPm().getId());
+                if (workOrder.getPm() != null) {
+                    LOGGER.log(Level.SEVERE, "affected PM " + workOrder.getPm().getId());
+                }
                 throw e;
             }
 
