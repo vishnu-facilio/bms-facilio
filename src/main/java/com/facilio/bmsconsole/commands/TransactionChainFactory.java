@@ -5072,7 +5072,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new DeleteCommissioningCommand());
 		return chain;
 	}
-	
+
 	public  static  FacilioChain migrateFieldDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new MigrateFieldReadingDataCommand());
@@ -5090,8 +5090,15 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
 		return chain;
-	}
 	
+	}
+	public static FacilioChain getExecuteOperationAlarm()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new OperationAlarmCommand());
+		// c.addCommand(new ExecuteOpertionalAlarmCommand);
+		return c;
+	}	
 	public static FacilioChain addClientContactChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClientContact());
@@ -5127,7 +5134,26 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	public static FacilioChain getHistoricalOperationAlarm()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new HistoricalOperationAlarmCommand());
+		c.addCommand(new HistoricalOperationAlarmOccurencesDeletionCommand());
 
+		return c;
+	}
+	public static FacilioChain getExecuteOperatonalAlarm()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new OperationAlarm());
+		return c;
+	}
+	public static FacilioChain getHistoricalOperationAlarmOccurencesDeletion()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new HistoricalOperationAlarmOccurencesDeletionCommand());
+		return c;
+	}
 }
 
 

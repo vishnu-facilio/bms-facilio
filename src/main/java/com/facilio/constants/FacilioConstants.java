@@ -109,6 +109,11 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
+		public static final String OPERATION_ALARM = "operationalarm";
+		public static final String OPERATION_OCCURRENCE = "operationalarmoccurrence";
+		public static final String OPERATION_EVENT = "operationevent";
+		public static final String PREVIOUS_SHORT_OF_EVENT = "previousshotofevent";
+		public static final String PREVIOUS_EXCEED_EVENT = "previousexceedevent";
 		public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
 		public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";
@@ -951,6 +956,7 @@ public class FacilioConstants {
 		public static final String MAX_COUNT = "maxCount";
 		public static final String SCHEDULED_ACTION = "scheduledAction";
 		public static final String FREQUENCY = "frequency";
+		public static final String IS_HISTORICAL= "isHistorical";
 		
 		public static final String DATE_OPERATOR = "dateOperator";
 		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
@@ -1731,6 +1737,8 @@ public class FacilioConstants {
 			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
+			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
+			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
 			classMap.put(VISITOR, VisitorContext.class);
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);

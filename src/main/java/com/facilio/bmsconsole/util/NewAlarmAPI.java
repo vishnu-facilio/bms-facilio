@@ -16,6 +16,7 @@ import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
@@ -126,6 +127,8 @@ public class NewAlarmAPI {
 				return AgentAlarmOccurrenceContext.class;
 			case PRE_OCCURRENCE:
 				return PreAlarmOccurrenceContext.class;
+			case OPERATION_OCCURRENCE:
+				return OperationAlarmOccurenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -148,6 +151,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE;
 			case PRE_OCCURRENCE:
 				return FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE;
+			case OPERATION_OCCURRENCE:
+				return FacilioConstants.ContextNames.OPERATION_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -175,6 +180,8 @@ public class NewAlarmAPI {
 				return AgentAlarmContext.class;
 			case PRE_ALARM:
 				return PreAlarmContext.class;
+			case OPERATION_ALARM:
+				return OperationAlarmContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -233,6 +240,8 @@ public class NewAlarmAPI {
 				return "agentAlarm";
 			case PRE_ALARM:
 				return "prealarm";
+			case OPERATION_ALARM:
+				return "operationalarm";
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -1068,6 +1077,25 @@ public class NewAlarmAPI {
 		}
 		return null;	
 	}
+
+	public static BaseAlarmContext getBaseAlarmByMessageKey(String key) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+
+		SelectRecordsBuilder<BaseAlarmContext> selectEventbuilder = new SelectRecordsBuilder<BaseAlarmContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM))
+				.beanClass(BaseAlarmContext.class)
+				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(key, ','),
+						StringOperators.IS));
+
+		BaseAlarmContext baseAlarmContext = selectEventbuilder.fetchFirst();
+		if (baseAlarmContext != null) {
+			return baseAlarmContext;
+		}
+		return null;
+	}
 	
 	public static void updateBaseAlarmBuilder(BaseAlarmContext baseAlarm) throws Exception {
 		
@@ -1121,5 +1149,21 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME");
 		eventList =  selectEventbuilder.get();
 		return eventList;
+	}
+
+	public static AlarmOccurrenceContext getLatestAlarmOccurrenceWithInTime (BaseAlarmContext baseAlarmContext, Long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
+				.beanClass(AlarmOccurrenceContext.class)
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME DESC").limit(1);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));
+		selectbuilder.andCriteria(criteria);
+		AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();
+		return  newLatestAlarmOccurrence;
 	}
 }

@@ -126,6 +126,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.PEOPLE, getPeopleModule());
 		moduleMap.put(ContextNames.VENDOR_CONTACT, getVendorContactModule());
 		moduleMap.put(ContextNames.CLIENT_CONTACT, getClientContactModule());
+		moduleMap.put(FacilioConstants.ContextNames.OPERATION_ALARM, getOperationAlarmsModule());
 
 		return moduleMap;
 	}
@@ -391,7 +392,7 @@ public class ModuleFactory {
 		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
 		fieldModule.setDisplayName("Assets");
 		fieldModule.setTableName("Assets");
-
+		fieldModule.setExtendModule(getResourceModule());
 		return fieldModule;
 	}
 	
@@ -3569,7 +3570,6 @@ public class ModuleFactory {
 		module.setTableName("Bim_Default_Values");
 		return module;
 	}
-
 	public static FacilioModule getBaseSpaceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.BASE_SPACE);
@@ -3579,4 +3579,31 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getOperationAlarmsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("operationalarm");
+		module.setTableName("Operation_Alarm");
+		module.setDisplayName("Operation Alarm");
+		return module;
+	}
+	public static FacilioModule getOperationAlarmsOccurenceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("operationalarmoccurrence");
+		module.setTableName("Operation_Alarm_Occurrence");
+		module.setDisplayName("Operation Alarm");
+		return module;
+	}
+	public static FacilioModule getOperationEventModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("operationevent");
+		module.setTableName("Operation_Event");
+		module.setDisplayName("Operation Alarm");
+		return module;
+	public static FacilioModule getOperationAlarmHistoricalLogsModule() {
+		FacilioModule operationAlarmHistoricalLogsModule = new FacilioModule();
+		operationAlarmHistoricalLogsModule.setName("operationAlarmHistoricalLogsModule");
+		operationAlarmHistoricalLogsModule.setDisplayName("Operation Alarm Historical Logs Module");
+		operationAlarmHistoricalLogsModule.setTableName("Operation_Alarm_Historical_Logs");
+		return operationAlarmHistoricalLogsModule;
+	}
 }

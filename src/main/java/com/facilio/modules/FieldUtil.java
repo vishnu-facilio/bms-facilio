@@ -358,11 +358,13 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.PRE_EVENT,
 										FacilioConstants.ContextNames.PRE_ALARM,
 										FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE,
+										FacilioConstants.ContextNames.OPERATION_ALARM,
+										FacilioConstants.ContextNames.OPERATION_OCCURRENCE,
+										FacilioConstants.ContextNames.OPERATION_EVENT,
 										FacilioConstants.ContextNames.WORKPERMIT,
 										FacilioConstants.ContextNames.SAFETY_PLAN,
 										FacilioConstants.ContextNames.SERVICE_REQUEST,
 										FacilioConstants.ContextNames.AGENT_METRICS_MODULE
-
 
 			)));
 

@@ -8184,6 +8184,22 @@ public class FieldFactory {
 
  		return fields;
 	}
-	
-	
+	 public static List<FacilioField> getOperationAlarmHistoricalLogFields() {
+	        
+	        List<FacilioField> fields = new ArrayList<>();
+	        FacilioModule module = ModuleFactory.getOperationAlarmHistoricalLogsModule();
+
+	        fields.add(getIdField(module));
+	        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+	        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+	        fields.add(getField("splitStartTime", "SPLIT_START_TIME", module, FieldType.NUMBER));
+	        fields.add(getField("splitEndTime", "SPLIT_END_TIME", module, FieldType.NUMBER));
+	        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+	        fields.add(getField("logState", "LOG_STATE", module, FieldType.NUMBER));
+	        fields.add(getField("errorMessage", "ERROR_MESSAGE", module, FieldType.STRING));
+	        fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+	        fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+	        return fields;
+
+	    }
 }

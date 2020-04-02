@@ -53,6 +53,8 @@ public class NewEventAPI {
 
 			case PRE_ALARM:
 				return PreEventContext.class;
+			case OPERATION_ALARM:
+				return OperationAlarmEventContext.class;
 
 
 			default:
@@ -87,6 +89,8 @@ public class NewEventAPI {
 				return "agentAlarmEvent";
 			case  PRE_ALARM:
 				return "preevent";
+			case OPERATION_ALARM:
+				return "operationevent";
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}

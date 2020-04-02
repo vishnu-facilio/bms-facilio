@@ -351,13 +351,15 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 	public static BaseEventContext createNewEvent(Type typeEnum, ResourceContext resourceContext, AlarmSeverityContext alarmSeverity, String message, String messageKey, long createdTime) {
 		BaseEventContext baseEvent = null;
 		switch (typeEnum) {
-		case READING_ALARM:
-			baseEvent = new ReadingEventContext();
-			break;
-		case PRE_ALARM:
-			baseEvent = new PreEventContext();
-			break;
-
+			case READING_ALARM:
+				baseEvent = new ReadingEventContext();
+				break;
+			case PRE_ALARM:
+				baseEvent = new PreEventContext();
+				break;
+			case OPERATION_ALARM:
+				baseEvent = new OperationAlarmEventContext();
+				break;
 		default:
 			throw new IllegalArgumentException("Invalid type");
 		}

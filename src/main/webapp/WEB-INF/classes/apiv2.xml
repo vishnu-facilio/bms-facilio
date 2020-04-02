@@ -5770,8 +5770,6 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
-	
 	<package name="bimIntegration" namespace="/api/v2/bimIntegration" extends="v2Api">
 		<action name="uploadBim" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
 			method="uploadBim"
@@ -5794,8 +5792,7 @@
 		/>
 		
 	</package>
-	
-	<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
+		<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ClientContactAction" method="clientContactList" >
@@ -5818,5 +5815,25 @@
 			class="com.facilio.bmsconsole.actions.ClientContactAction" method="clientContactList">
 			<param name="viewName">{1}</param>
 		</action>
+	<package name="operationalAlarm" namespace="/api/v2/operationalAlarm" extends="v2Api">
+		<action name="operationalAlarm" class="com.facilio.bmsconsole.actions.OperationalAlarmAction" method="getResource" />
 	</package>
+	<package name="operationAlarm" namespace="/api/v2/operationAlarm" extends="v2Api">
+		<action name="operationAlarm" class="com.facilio.bmsconsole.actions.OperationAlarmAction" method="getResource" />
+	</package>
+	<package name="OperationAlarmHistorical"
+		namespace="/api/v2/reading/operationalarm/historicalrun" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.HistoricalOperationAlarmAction"
+			method="runHistorical">
+		</action>
+	</package>
+	<package name="operationalAlarm" namespace="/api/v2/operationalAlarm" extends="v2Api">
+		<action name="operationalAlarm" class="com.facilio.bmsconsole.actions.OperationalAlarmAction" method="getResource" />
+	</package>
+	
+	<package name="operationAlarm" namespace="/api/v2/operationAlarm" extends="v2Api">
+		<action name="operationAlarm" class="com.facilio.bmsconsole.actions.OperationAlarmAction" method="getResource" />
+	</package>
+
 </struts>
