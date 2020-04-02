@@ -212,6 +212,13 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				if (fetchTriggers) {
 					selectBuilder.fetchSupplement((LookupField) fieldMap.get("trigger"));
 				}
+				List<LookupField> customLookupFields = new ArrayList<>();
+				for (FacilioField field : fields) {
+					if (field.getDataTypeEnum() == FieldType.LOOKUP && (((LookupField) field).getSpecialType() == null) && !field.isDefault()) {
+						customLookupFields.add((LookupField) field);
+					}
+				}
+				selectBuilder.fetchSupplements(customLookupFields);
 
 				// Used for calendar api
 				boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false);
