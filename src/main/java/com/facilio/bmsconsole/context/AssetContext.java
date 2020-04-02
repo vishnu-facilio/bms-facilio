@@ -232,19 +232,16 @@ public class AssetContext extends ResourceContext {
 	}
 	
 	private Boolean geoLocationEnabled;
+	
 	public Boolean getGeoLocationEnabled() {
 		return geoLocationEnabled;
 	}
+
 	public void setGeoLocationEnabled(Boolean geoLocationEnabled) {
 		this.geoLocationEnabled = geoLocationEnabled;
 	}
-	public boolean isGeoLocationEnabled() {
-		if (geoLocationEnabled != null) {
-			return geoLocationEnabled.booleanValue();
-		}
-		return false;
-	}
 	
+
 	private String currentLocation;
 	public String getCurrentLocation() {
 		return currentLocation;

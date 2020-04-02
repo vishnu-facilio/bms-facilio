@@ -35,7 +35,7 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ASSET);
 		String location = (String) context.get(FacilioConstants.ContextNames.LOCATION);
 		
-		if (asset != null && asset.isGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
+		if (asset != null && asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
 			LOGGER.info("Received Location for asset "+asset.getId()+" is "+location);
 			JSONObject info = null;
 			String newLocation = null, geoLocation = null;
