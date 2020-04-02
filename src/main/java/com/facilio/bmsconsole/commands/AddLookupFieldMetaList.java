@@ -18,7 +18,7 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Boolean shouldFetchLookup = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_LOOKUPS);
+		Boolean shouldFetchLookup = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_LOOKUPS, false);
 
 		if (shouldFetchLookup != null && !shouldFetchLookup) {
 			return false;

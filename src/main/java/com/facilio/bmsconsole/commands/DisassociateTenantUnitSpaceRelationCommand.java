@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -16,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
@@ -34,8 +36,8 @@ public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
 		
 		FacilioField tenantField = fieldMap.get("tenant");
 		updatedfields.add(tenantField);
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
+		UpdateRecordBuilder<TenantUnitSpaceContext> updateBuilder = new UpdateRecordBuilder<TenantUnitSpaceContext>()
+				.module(module)
 				.fields(updatedfields)
 				.andCondition(CriteriaAPI.getIdCondition(spaceId, module));
 		
@@ -43,7 +45,8 @@ public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
 		TenantContext tenant = new TenantContext();
 		tenant.setId(-99);
 		value.put("tenant", FieldUtil.getAsProperties(tenant));
-		updateBuilder.update(value);
+		
+		updateBuilder.updateViaMap(value);
 
 		return false;
 	}

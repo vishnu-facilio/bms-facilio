@@ -11,6 +11,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.chargebee.internal.StringJoiner;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
@@ -21,6 +23,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
@@ -28,7 +31,7 @@ public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		TenantContext tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+		TenantContext tenant = (TenantContext)context.get(FacilioConstants.ContextNames.RECORD);
 		Boolean spacesUpdate = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.SPACE_UPDATE, false);
 		
 		if(spacesUpdate && CollectionUtils.isNotEmpty(tenant.getSpaces())) {
@@ -47,14 +50,14 @@ public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
 			
 			FacilioField tenantField = fieldMap.get("tenant");
 			updatedfields.add(tenantField);
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(module.getTableName())
+			UpdateRecordBuilder<TenantUnitSpaceContext> updateBuilder = new UpdateRecordBuilder<TenantUnitSpaceContext>()
+					.module(module)
 					.fields(updatedfields)
 					.andCondition(CriteriaAPI.getIdCondition(idString.toString(), module));
 			
 			Map<String, Object> value = new HashMap<>();
 			value.put("tenant", FieldUtil.getAsProperties(tenant));
-			updateBuilder.update(value);
+			updateBuilder.updateViaMap(value);
 
 		}
 	
