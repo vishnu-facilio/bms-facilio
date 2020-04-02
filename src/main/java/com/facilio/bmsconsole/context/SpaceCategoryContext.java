@@ -38,4 +38,14 @@ public class SpaceCategoryContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 	
+	private long spaceModuleId;
+	public long getSpaceModuleId() {
+		return spaceModuleId;
+	}
+	public void setSpaceModuleId(long spaceModuleId) {
+		this.spaceModuleId = spaceModuleId;
+	}
+	
+	
+	
 }

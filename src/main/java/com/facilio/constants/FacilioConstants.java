@@ -1577,6 +1577,8 @@ public class FacilioConstants {
 
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
 	
+		public static final String TENANT_UNIT_SPACE = "tenantunit";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1791,6 +1793,8 @@ public class FacilioConstants {
 			classMap.put(TENANT_CONTACT, TenantContactContext.class);
 			classMap.put(CLIENT_CONTACT, ClientContactContext.class);
 			classMap.put(VENDOR_CONTACT, VendorContactContext.class);
+			
+			classMap.put(TENANT_UNIT_SPACE, TenantUnitSpaceContext.class);
 			
 			return classMap;
 		}

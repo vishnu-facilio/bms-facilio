@@ -498,6 +498,11 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("clientcontact", "Client_Contacts");
 	}
 	
+	public static SetTableNamesCommand getForTenantUnitSpace() {
+		return new SetTableNamesCommand("tenantunit", "Tenant_Unit_Space");
+	}
+	
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

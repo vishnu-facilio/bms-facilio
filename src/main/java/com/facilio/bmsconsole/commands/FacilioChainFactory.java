@@ -782,7 +782,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getAddSpaceChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ValidateSpaceFieldsCommand());
-		c.addCommand(SetTableNamesCommand.getForSpace());
+		c.addCommand(new SetSpaceCategoryModuleDetailsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
 		c.addCommand(getSpaceReadingsChain());
