@@ -17,6 +17,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -1051,14 +1052,17 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
 			//metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-			BaseEventContext previousEventMeta = (BaseEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
-			if(previousEventMeta != null && previousEventMeta instanceof ReadingEventContext) 
+			BaseEventContext previousBaseEventMeta = (BaseEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
+			if(previousBaseEventMeta != null && previousBaseEventMeta instanceof ReadingEventContext) 
 			{
-				previousEventMeta = (ReadingEventContext)previousEventMeta;
+				ReadingEventContext previousEventMeta = (ReadingEventContext)previousBaseEventMeta;
 				if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 					ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
 					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
 				}				
+			}
+			else if(this != null && resource != null){
+		        LOGGER.log(Level.INFO, " PreviousEvent Meta not a ReadingEvent for rule " + this.getId() + "resource" + resource.getId());
 			}
 			
 		}
