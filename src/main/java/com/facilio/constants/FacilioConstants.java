@@ -453,6 +453,9 @@ public class FacilioConstants {
 		public static final String SPACE_UPDATE = "spacesUpdate";
 		public static final String FETCH_EXTENDED_MODULE_FORMS = "fetchExtendedModuleForms";
 		public static final String FETCH_DISABLED_FORMS = "fetchDisabledForms";
+		public static final String IS_BEFORE = "isbefore";
+		public static final String DURATION = "duration";
+		public static final String TYPE = "type";
 
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";

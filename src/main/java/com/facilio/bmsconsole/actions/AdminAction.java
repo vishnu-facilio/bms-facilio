@@ -349,6 +349,72 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String deleteReadings() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgid"));
+		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+		long fieldId = Long.parseLong(request.getParameter("fieldId"));
+		long assetId = Long.parseLong(request.getParameter("assetId"));
+		String fromdateTtime = request.getParameter("fromTtime");
+		fromdateTtime = fromdateTtime.replace('T', ' ');
+		String todateendTtime = request.getParameter("toTtime");
+		todateendTtime = todateendTtime.replace('T', ' ');
+
+		long startTtime = convertDatetoTTime(fromdateTtime);
+		long endTtime = convertDatetoTTime(todateendTtime);
+
+		long TtimeLimit = TimeUnit.DAYS.convert(endTtime - startTtime, TimeUnit.MILLISECONDS);
+
+		if (TtimeLimit < 61) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			bean.deleteReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId);
+		} else {
+			throw new IllegalArgumentException(
+					"Number of Days Should not be more than 60 days. Your Calculated days : " + TtimeLimit);
+		}
+
+		return SUCCESS;
+
+	}
+
+	public String moveReadings() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgid"));
+		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+		long fieldId = Long.parseLong(request.getParameter("fieldId"));
+		long assetId = Long.parseLong(request.getParameter("assetId"));
+		String fromdateTtime = request.getParameter("fromTtime");
+		fromdateTtime = fromdateTtime.replace('T', ' ');
+		String todateendTtime = request.getParameter("toTtime");
+		todateendTtime = todateendTtime.replace('T', ' ');
+
+		long startTtime = convertDatetoTTime(fromdateTtime);
+		long endTtime = convertDatetoTTime(todateendTtime);
+		long type = Long.parseLong(request.getParameter("type"));
+
+		long TtimeLimit = TimeUnit.DAYS.convert(endTtime - startTtime, TimeUnit.MILLISECONDS);
+
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			bean.moveReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, durations, type);
+
+		return SUCCESS;
+
+	}
+
+	public String fieldMigration() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgid"));
+		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+		long sourceFieldId = Long.parseLong(request.getParameter("sourceField"));
+		long targetFieldId = Long.parseLong(request.getParameter("targetField"));
+		long assetId = Long.parseLong(request.getParameter("assetId"));
+
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.readingFieldsMigration(orgId, sourceFieldId, assetId,  assetCategoryId, targetFieldId);
+
+		return SUCCESS;
+	}
+
 	public String addAgentVersion() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String agentVersion = request.getParameter("version");
@@ -526,6 +592,16 @@ public class AdminAction extends ActionSupport {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
+	private long type;
+
+	public long getType() {
+		return type;
+	}
+
+	public void setType(long type) {
+		this.type = type;
+	}
+
 
 	private long durations;
 

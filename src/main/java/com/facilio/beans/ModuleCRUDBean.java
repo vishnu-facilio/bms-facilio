@@ -102,7 +102,13 @@ public interface ModuleCRUDBean {
 	public List<FacilioModule> getAssetReadings(long parentCategoryId) throws Exception;
 
 	public  void  readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long selectfields)throws Exception;
-	
+
+	public  void  deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long categoryId)throws Exception;
+
+	public  void  moveReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime,long categoryId, long duration, long type)throws Exception;
+
+	public void readingFieldsMigration(long orgId,long sourceFieldId,long assetId, long assetCategoryId,long targetFieldId) throws Exception;
+
 	public void updatePMJob(List<WorkOrderContext> workorders) throws Exception;
 
     public Long addAgentController(Controller controller) throws  Exception;

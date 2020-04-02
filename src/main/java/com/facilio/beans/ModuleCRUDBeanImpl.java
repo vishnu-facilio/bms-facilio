@@ -983,6 +983,54 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			}
 
 	}
+	@Override
+	public void deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId)
+			throws Exception {
+		// TODO Auto-generated method stub
+		FacilioContext context=new FacilioContext();
+		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+		context.put(ContextNames.FIELD_ID,fieldId);
+		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.START_TIME, startTtime);
+		context.put(ContextNames.END_TIME, endTtime);
+		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
+		FacilioChain deleteReading = TransactionChainFactory.deleteAssetReadings();
+		deleteReading.execute(context);
+
+	}
+
+	@Override
+	public void moveReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId, long duration, long type)
+			throws Exception {
+		// TODO Auto-generated method stub
+		FacilioContext context=new FacilioContext();
+		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+		context.put(ContextNames.FIELD_ID,fieldId);
+		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.START_TTIME,startTtime);
+		context.put(ContextNames.END_TTIME,endTtime);
+		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
+		context.put(ContextNames.IS_BEFORE, true);
+		context.put(ContextNames.DURATION, duration);
+		context.put(ContextNames.TYPE, type);
+		FacilioChain deleteReading = TransactionChainFactory.shiftAssetReadings();
+		deleteReading.execute(context);
+
+	}
+
+	@Override
+	public void readingFieldsMigration(long orgId,long sourceFieldId,long assetId, long assetCategoryId,long targetFieldId)
+			throws Exception {
+		FacilioContext context=new FacilioContext();
+		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.CATEGORY_ID, assetCategoryId);
+		context.put(FacilioConstants.ContextNames.SOURCE_ID, sourceFieldId);
+		context.put(FacilioConstants.ContextNames.TARGET_ID, targetFieldId);
+		FacilioChain chain = TransactionChainFactory.addFieldMigrationJob();
+		chain.execute(context);
+	}
+
 
 	@Override
 	public List<AssetCategoryContext> getCategoryList() throws Exception {
@@ -1288,6 +1336,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		MetricsApi.updateMetrics(toUpdate,metricsId);
 		return false;
 	}
+
 }
 
 

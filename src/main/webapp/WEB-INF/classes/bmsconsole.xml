@@ -1171,6 +1171,25 @@
 			<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
 			<result  type="tiles">adminpage/deltacalculation.jsp</result>
 			</action>
+
+			<action name="deleteReadings" class="com.facilio.bmsconsole.actions.AdminAction">
+				<result  type="tiles">adminpage/deleteReadinglayout.jsp</result>
+			</action>
+			<action name="deleteReadingsAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteReadings">
+				<result   type="tiles">adminpage/deleteReadinglayout.jsp</result>
+			</action>
+			<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
+				<result  type="tiles">adminpage/movereadinglayout.jsp</result>
+			</action>
+			<action name="moveReadingAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "moveReadings">
+				<result   type="tiles">adminpage/movereadinglayout.jsp</result>
+			</action>
+			<action name="fieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
+				<result  type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+			</action>
+			<action name="fieldMigrationAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "fieldMigration">
+				<result   type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+			</action>
 			<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/data.jsp</result>
 			</action>					

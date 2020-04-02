@@ -5086,6 +5086,19 @@ public class TransactionChainFactory {
 
 	}
 
+
+	public static FacilioChain deleteAssetReadings () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteAssetReadingCommand());
+		return c;
+	}
+
+	public static FacilioChain shiftAssetReadings() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ShiftAssetReadingCommand());
+		return c;
+	}
+
 	public static FacilioChain getAddOrUpdateApprovalRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
