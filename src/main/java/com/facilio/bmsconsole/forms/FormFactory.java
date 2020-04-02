@@ -95,6 +95,7 @@ public class FormFactory {
 		forms.put("tenant_contact_form", getTenantContactForm());
 		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 		forms.put("client_contact_form", getClientContactForm());
+		forms.put("tenantunit_form", geTenantUnitSpaceForm());
 
 		return forms;
 	}
@@ -134,6 +135,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.TENANT_CONTACT, getTenantContactForm())
 						.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getNewVendorContactForm())
 						.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getClientContactForm())
+						.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, geTenantUnitSpaceForm())
 							
 						.build())
         			
@@ -334,6 +336,7 @@ public class FormFactory {
 		List<FacilioForm> tenantcontactFormsList = Arrays.asList(getTenantContactForm());
 		List<FacilioForm> vendorContactFormsList = Arrays.asList(getNewVendorContactForm());
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
+		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -358,6 +361,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.TENANT_CONTACT, getFormMap(tenantcontactFormsList))
 				.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getFormMap(vendorContactFormsList))
 				.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getFormMap(clientContactFormsList))
+				.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, getFormMap(tenantUnitFormsList))
 					
 				.build();
 	}
@@ -699,7 +703,18 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+
+	public static FacilioForm geTenantUnitSpaceForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW TENANT UNIT");
+		form.setName("default_tenantunit_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getTenantUnitFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
 	public static FacilioForm getTenantContactForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW TENANT CONTACT");
@@ -2015,5 +2030,15 @@ public class FormFactory {
 		return fields;
 	}
 
+	private static List<FormField> getTenantUnitFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("reservable", FieldDisplayType.DECISION_BOX, "Reservable", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 3, 1));
+		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 5, 1));
+
+		return fields;
+	}
 
 }

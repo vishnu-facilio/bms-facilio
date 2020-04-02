@@ -77,6 +77,8 @@ public class PageFactory {
 				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record);
 			case ContextNames.READING_TEMPLATE_MODULE:
 				return TemplatePageFactory.getTemplatePage((DefaultTemplate) record);
+			case ContextNames.TENANT_UNIT_SPACE:
+				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp

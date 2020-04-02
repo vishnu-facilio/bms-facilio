@@ -1337,9 +1337,11 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
 		columns.add(new ViewField("name", "Space Name"));
+		columns.add(new ViewField("building", "Building"));
 		columns.add(new ViewField("site", "Site"));
-		columns.add(new ViewField("area", "Total Area"));
 		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("area", "Total Area"));
+
 
 		return columns;
 	}
