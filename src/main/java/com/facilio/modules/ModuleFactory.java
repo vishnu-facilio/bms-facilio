@@ -127,6 +127,8 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.VENDOR_CONTACT, getVendorContactModule());
 		moduleMap.put(ContextNames.CLIENT_CONTACT, getClientContactModule());
 		moduleMap.put(FacilioConstants.ContextNames.OPERATION_ALARM, getOperationAlarmsModule());
+		moduleMap.put(ContextNames.SPACE, getSpaceModule());
+		moduleMap.put(ContextNames.TENANT_UNIT_SPACE, getTenantUnitSpaceModule());
 
 		return moduleMap;
 	}
@@ -3607,4 +3609,22 @@ public class ModuleFactory {
 		operationAlarmHistoricalLogsModule.setTableName("Operation_Alarm_Historical_Logs");
 		return operationAlarmHistoricalLogsModule;
 	}
+	public static FacilioModule getSpaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.SPACE);
+		module.setDisplayName("Space");
+		module.setTableName("BaseSpace");
+		module.setExtendModule(getBaseSpaceModule());
+		return module;
+	}
+
+	public static FacilioModule getTenantUnitSpaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.TENANT_UNIT_SPACE);
+		module.setDisplayName("Tenant Unit Space");
+		module.setTableName("Tenant_Unit_Space");
+		module.setExtendModule(getSpaceModule());
+		return module;
+	}
+
 }

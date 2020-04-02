@@ -735,6 +735,13 @@ public class ViewFactory {
 
 		viewsMap.put(FacilioConstants.ContextNames.CLIENT_CONTACT, views);
 
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTenantUnitSpace().setOrder(order++));
+
+		viewsMap.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, views);
+
 		return viewsMap;
 	}
 
@@ -1045,6 +1052,7 @@ public class ViewFactory {
 
 		return allView;
 	}
+
 
 	private static FacilioView getEvents(String category) {
 
@@ -6515,4 +6523,18 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllTenantUnitSpace() {
+
+		FacilioModule tenantUnitSpaceModule = ModuleFactory.getTenantUnitSpaceModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Tenant Unit");
+		allView.setModuleName(tenantUnitSpaceModule.getName());
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
 }
