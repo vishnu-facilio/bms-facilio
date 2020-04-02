@@ -126,16 +126,18 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleHistoricalLogsModule().getTableName())
                 .fields(Collections.singletonList(FieldFactory.getField("status", "STATUS", ModuleFactory.getWorkflowRuleHistoricalLogsModule(), FieldType.NUMBER)));
-        updateBuilder.batchUpdateById(batchUpdates);
-		
-		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers)
-		{
-			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalEventRunForReadingRuleJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
-		}				
+        updateBuilder.batchUpdateById(batchUpdates);				
 	}
 	
 	@Override
 	public boolean postExecute() throws Exception {
+		
+		List<WorkflowRuleHistoricalLogsContext> ruleResourceGroupedLoggers = WorkflowRuleHistoricalLogsAPI.getWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId);
+		
+		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers)
+		{
+			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalEventRunForReadingRuleJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
+		}
 		return false;
 	}
 	
