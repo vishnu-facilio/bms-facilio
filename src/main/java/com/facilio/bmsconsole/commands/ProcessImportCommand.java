@@ -771,9 +771,8 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 			case "users": {
 				
-				String appDomain = AccountUtil.getCurrentOrg().getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com");
-				AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-			    User user = AccountUtil.getUserBean().getUser(value.toString(), null);
+				AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+			    User user = AccountUtil.getUserBean().getUser(value.toString(), appDomainObj != null ? appDomainObj.getIdentifier() : null);
 				if(user == null) {
 					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
 						throw new Exception("Value not found");
