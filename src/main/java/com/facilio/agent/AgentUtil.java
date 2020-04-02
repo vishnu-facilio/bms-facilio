@@ -137,8 +137,8 @@ public class AgentUtil {
 
         if (payload.containsKey(AgentKeys.NAME)) {
             agent.setAgentName(payload.get(AgentKeys.NAME).toString().trim());
-        } else if (payload.containsKey(PublishType.AGENT.getValue())) {
-            agent.setAgentName(payload.get(PublishType.AGENT.getValue()).toString().trim());
+        } else if (payload.containsKey(PublishType.agent.getValue())) {
+            agent.setAgentName(payload.get(PublishType.agent.getValue()).toString().trim());
         } else {
             agent.setAgentName(orgDomainName);
         }

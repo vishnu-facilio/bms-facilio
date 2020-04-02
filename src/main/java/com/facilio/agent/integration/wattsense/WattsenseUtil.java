@@ -611,7 +611,7 @@ public class WattsenseUtil
             timeSeriesJson.put(controller,controllerJsonMap.get(controller));
         }
         wattPayload.putAll(timeSeriesJson);
-        wattPayload.put(EventUtil.DATA_TYPE, PublishType.TIMESERIES.getValue());
+        wattPayload.put(EventUtil.DATA_TYPE, PublishType.timeseries.getValue());
         wattPayload.put(AgentKeys.TIMESTAMP,timeStamp);
         LOGGER.info(" wattsense payload "+wattPayload);
         return wattPayload;
@@ -619,7 +619,7 @@ public class WattsenseUtil
 
     public static JSONObject reFormatPayload(JSONObject payload,String dataType){
         JSONObject wattPayload = new JSONObject();
-        String timeseries = PublishType.TIMESERIES.getValue();
+        String timeseries = PublishType.timeseries.getValue();
         if(payload.containsKey(AgentIntegrationKeys.MESSAGE)) {
             JSONObject message = new JSONObject();
             message = (JSONObject) payload.get(AgentIntegrationKeys.MESSAGE);

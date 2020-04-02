@@ -157,20 +157,20 @@ public class DataProcessorUtil {
                 LOGGER.info("Exception occurred while processing new agent's message", e);
             }*/
 
-            String dataType = PublishType.EVENT.getValue();
+            String dataType = PublishType.event.getValue();
             if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
                 dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
             }
 
             // Temp fix - bug: Publish_Type wrongly set to "agents"
             if ("agents".equals(dataType)) {
-                dataType = PublishType.AGENT.getValue();
+                dataType = PublishType.agent.getValue();
             }
             //Temp fix  - bug: Publish_Type wrongly set to "agents"
             PublishType publishType = PublishType.valueOf(dataType);
             String agentName = orgDomainName.trim(); // trim missing
-            if (payLoad.containsKey(PublishType.AGENT.getValue())) {
-                agentName = (String) payLoad.get(PublishType.AGENT.getValue()); // trim missing
+            if (payLoad.containsKey(PublishType.agent.getValue())) {
+                agentName = (String) payLoad.get(PublishType.agent.getValue()); // trim missing
             }
 
             String deviceId = orgDomainName;
@@ -209,29 +209,29 @@ public class DataProcessorUtil {
 
             if (deviceLastMessageTime != lastMessageReceivedTime) {
                 switch (publishType) {
-                	case CUSTOM:
+                	case custom:
                 		
                 		break;
-                    case TIMESERIES:
+                    case timeseries:
                         processTimeSeries(record, payLoad, true); //NC
                         // updateDeviceTable(record.getPartitionKey());
                         break;
-                    case COV:
+                    case cov:
                         processTimeSeries(record, payLoad, false);//NC
                         // updateDeviceTable(record.getPartitionKey());
                         break;
-                    case AGENT:
+                    case agent:
                         i = agentUtil.processAgent(payLoad, agentName);
                         processLog(payLoad, agent.getId());
                         break;
-                    case DEVICE_POINTS:
+                    case devicepoints:
                         devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                         break;
-                    case ACK:
+                    case ack:
                         ackUtil.processAck(payLoad, agentName, orgId);
                         processLog(payLoad, agent.getId());
                         break;
-                    case EVENT:
+                    case event:
                         boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                         if (alarmCreated) {
 

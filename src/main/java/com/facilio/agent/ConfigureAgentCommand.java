@@ -10,7 +10,7 @@ public class ConfigureAgentCommand extends FacilioCommand
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-            JSONObject agentContext = (JSONObject) context.get(PublishType.AGENT.getValue());
+            JSONObject agentContext = (JSONObject) context.get(PublishType.agent.getValue());
             return  AgentUtil.agentEdit(agentContext);
     }
 
