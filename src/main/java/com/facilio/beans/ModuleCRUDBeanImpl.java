@@ -221,6 +221,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 				wo = workorderTemplate.getWorkorder();
 
+				wo.setJobStatus(WorkOrderContext.JobsStatus.COMPLETED);
+
 				int preRequisiteCount= workorderTemplate.getPreRequestSectionTemplates().size();
 				wo.setPrerequisiteEnabled(preRequisiteCount != 0);
 				if (wo.getPrerequisiteEnabled()) {
