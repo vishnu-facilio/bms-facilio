@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.controlaction.util.ControlActionUtil;
@@ -1793,6 +1794,7 @@ public class FacilioConstants {
 			classMap.put(TENANT_CONTACT, TenantContactContext.class);
 			classMap.put(CLIENT_CONTACT, ClientContactContext.class);
 			classMap.put(VENDOR_CONTACT, VendorContactContext.class);
+			classMap.put(TENANT_SPACES, TenantSpaceContext.class);
 			
 			classMap.put(TENANT_UNIT_SPACE, TenantUnitSpaceContext.class);
 			
