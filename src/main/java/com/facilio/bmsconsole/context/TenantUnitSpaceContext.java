@@ -20,4 +20,20 @@ public class TenantUnitSpaceContext extends SpaceContext{
 	}
 	
 
+	private Boolean isVacant;
+
+	public Boolean getIsVacant() {
+		return isVacant;
+	}
+
+	public void setIsVacant(Boolean isVacant) {
+		this.isVacant = isVacant;
+	}
+
+	public boolean isVacant() {
+		if (isVacant != null) {
+			return isVacant.booleanValue();
+		}
+		return false;
+	}
 }

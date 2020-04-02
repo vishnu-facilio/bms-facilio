@@ -35,7 +35,11 @@ public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		FacilioField tenantField = fieldMap.get("tenant");
+		FacilioField isVacantField = fieldMap.get("isVacant");
+		
 		updatedfields.add(tenantField);
+		updatedfields.add(isVacantField);
+		
 		UpdateRecordBuilder<TenantUnitSpaceContext> updateBuilder = new UpdateRecordBuilder<TenantUnitSpaceContext>()
 				.module(module)
 				.fields(updatedfields)
@@ -45,6 +49,7 @@ public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
 		TenantContext tenant = new TenantContext();
 		tenant.setId(-99);
 		value.put("tenant", FieldUtil.getAsProperties(tenant));
+		value.put("isVacant", true);
 		
 		updateBuilder.updateViaMap(value);
 
