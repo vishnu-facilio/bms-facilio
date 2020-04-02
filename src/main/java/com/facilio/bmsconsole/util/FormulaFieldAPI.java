@@ -875,7 +875,7 @@ public class FormulaFieldAPI {
 																	.andCondition(CriteriaAPI.getCondition(valField, CommonOperators.IS_NOT_EMPTY))
 																	;
 		
-		Map<Object, Object> values = new HashMap<>();
+		Map<String, Object> values = new HashMap<>();
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
 		
 		if (props != null && !props.isEmpty()) {
@@ -883,7 +883,7 @@ public class FormulaFieldAPI {
 				Object timeVal = prop.get("ttime");
 				xValues.add(timeVal);
 				Object val = prop.get(meta.getFieldName());
-				values.put(timeVal, val);
+				values.put(timeVal+"", val);
 			}
 		}
 		
