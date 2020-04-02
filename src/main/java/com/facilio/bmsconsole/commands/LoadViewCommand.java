@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -16,7 +18,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -27,11 +31,13 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.google.common.base.Functions;
@@ -147,6 +153,7 @@ public class LoadViewCommand extends FacilioCommand {
 	}
 	
 	private String getOrderClauseForLookupTable(SortField field, String moduleName) throws Exception {
+		List<Long> ids = new ArrayList<>();
 		if (field.getSortField().getDataTypeEnum() == FieldType.LOOKUP) {
 			long fieldID;
 			if (field.getSortField().getFieldId() == -1) {
@@ -163,12 +170,10 @@ public class LoadViewCommand extends FacilioCommand {
 			List<Map<String, Object>> props = null;
 			GenericSelectRecordBuilder builder;
 			FacilioField sortableField;
-			String columnName = null;
 			
 			if ((((LookupField) field.getSortField()).getSpecialType()) == null) {
 			FacilioModule lookupMod = ModuleFactory.getLookupFieldsModule();
 			
-			columnName = field.getSortField().getCompleteColumnName();
 			
 			FacilioField name = new FacilioField();
 			name.setName("name");
@@ -226,20 +231,37 @@ public class LoadViewCommand extends FacilioCommand {
 
 			}
 			
-			
-			List<Long> ids = new ArrayList<>();
 			if (props != null) {
 			
 			for (Map<String, Object> prop : props) {
 				ids.add((Long) prop.get("id"));
 			}
 			}
-				
-			String idString = String.join(",", Lists.transform(ids, Functions.toStringFunction()));
-			if (idString.length() > 0) {
-				return "FIELD("+columnName + "," + idString+")";
+		}
+		else if (field.getFieldName() != null && field.getFieldName().equals("siteId")) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(ContextNames.SITE);
+			FacilioField nameField = modBean.getField("name", ContextNames.RESOURCE);
+			FacilioField idField = FieldFactory.getIdField(module);
+			String order = field.getIsAscending() ? " asc" : " desc";
+			SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>()
+					.moduleName(module.getName()).beanClass(SiteContext.class)
+					.select(Collections.singletonList(nameField))
+					.orderBy(nameField.getColumnName() + order);
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
+			if (scopeCriteria != null) {
+				builder.andCriteria(scopeCriteria);
 			}
-		} 
+			List<Map<String, Object>> sites = builder.getAsProps();
+			if (CollectionUtils.isNotEmpty(sites)) {
+				ids = sites.stream().map(site -> (long)site.get("id")).collect(Collectors.toList());
+			}
+		}
+		String idString = String.join(",", Lists.transform(ids, Functions.toStringFunction()));
+		if (idString.length() > 0) {
+			String columnName = field.getSortField().getCompleteColumnName();
+			return "FIELD("+columnName + "," + idString+")";
+		}
 		return field.getSortField().getCompleteColumnName() + " IS NULL," + field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
 	}
 	

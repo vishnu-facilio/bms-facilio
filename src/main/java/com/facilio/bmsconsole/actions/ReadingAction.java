@@ -1,5 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.point.GetPointRequest;
@@ -8,11 +22,27 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.LoggerContext;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResetCounterMetaContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.bmsconsole.util.LoggerAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.RollUpFieldUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -33,15 +63,6 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ReadingAction extends FacilioAction {
 	
@@ -1546,6 +1567,18 @@ public class ReadingAction extends FacilioAction {
 
 	public void setResetCounterMetaList(List<ResetCounterMetaContext> resetCounterMetaList) {
 		this.resetCounterMetaList = resetCounterMetaList;
+	}
+	
+	public String v2getAssetReadings() throws Exception {
+		setParentCategoryId(id);
+		getAssetReadings();
+		// Temp...needs to move this to reading list command
+		List<FacilioField> fields = new ArrayList<>();
+		if (this.readings != null) {
+			fields = this.readings.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
+		}
+		setResult("readings", fields);
+		return SUCCESS;
 	}
 
 }

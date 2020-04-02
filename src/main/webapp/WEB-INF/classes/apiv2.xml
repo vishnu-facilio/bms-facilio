@@ -2089,6 +2089,10 @@
 	<package name="readingsApiv2" namespace="/api/v2/readings" extends="v2Api">
 		<action name="getSubModuleRel" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSubModuleRel">
 		</action>
+		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAssetReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ASSET_SETTINGS</param>
+		</action>
 	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard"
 		extends="v2Api">
