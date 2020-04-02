@@ -1051,12 +1051,16 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
 			//metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-			
-			ReadingEventContext previousEventMeta = (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
-			if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-				ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
-				context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
+			BaseEventContext previousEventMeta = (BaseEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
+			if(previousEventMeta != null && previousEventMeta instanceof ReadingEventContext) 
+			{
+				previousEventMeta = (ReadingEventContext)previousEventMeta;
+				if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+					ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
+					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
+				}				
 			}
+			
 		}
 		else {
 			metaMap = this.getAlarmMetaMap();

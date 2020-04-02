@@ -263,11 +263,17 @@ public class PreEventContext extends BaseEventContext {
         }
         Map<Long, ReadingRuleAlarmMeta> metaMap = null;
         if (isHistorical) {
-            PreEventContext previousEventMeta = (PreEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
-            if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-                this.setMessage(previousEventMeta.getEventMessage());
-                context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
-            }
+        	
+        	BaseEventContext previousEventMeta = (BaseEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
+			if(previousEventMeta != null && previousEventMeta instanceof PreEventContext) 
+			{
+				previousEventMeta = (PreEventContext)previousEventMeta;
+	            if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+	                this.setMessage(previousEventMeta.getEventMessage());
+	                context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
+	            }
+			}
+            
         }
         else {
             metaMap = fetchPreAlarmMeta(rule);
