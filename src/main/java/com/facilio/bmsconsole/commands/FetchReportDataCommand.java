@@ -354,14 +354,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 			LOGGER.info("Fetch Data X Values : "+xValues);
 		}
 
-		Long parentId = null;
 		if(report.getReportTemplate() != null ) {
 			System.out.println("catergory Filter" + report.getReportTemplate().getCategoryFillter());
 				Long templateType = report.getReportTemplate().getTemplateType();
 				Map<String, ReportTemplateCategoryFilterContext> template = report.getReportTemplate().getCategoryTemplate();
 				if (templateType != null && templateType == 2) {
 					if (template.get(dp.getAliases().get("actual")) != null) {
-						parentId = template.get(dp.getAliases().get("actual")).getParentId();
+						Long parentId = template.get(dp.getAliases().get("actual")).getParentId();
 						ReportTemplateCategoryFilterContext filter = template.get(dp.getAliases().get("actual"));
 						report.getReportTemplate().setParentId(parentId);
 						Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
@@ -374,8 +373,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				else {
 					Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
 					if(templateCriteria != null) {
-						parentId = report.getReportTemplate().getParentId();
-						newSelectBuilder.andCriteria(templateCriteria);
+					newSelectBuilder.andCriteria(templateCriteria);
 					}
 					
 				}
@@ -435,7 +433,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		JSONObject dataFilter = report.getDataFilterJSON();
 		if(dataFilter != null && !dataFilter.isEmpty()) {
-			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder, parentId);
+			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder);
 		}
 
 		List<Map<String, Object>> props;

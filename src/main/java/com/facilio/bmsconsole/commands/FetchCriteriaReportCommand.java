@@ -59,10 +59,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			ReportDataPointContext tfDataPoint = null, cfDataPoint = null;
 			
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-			Long parentId = null;
-			if(report.getReportTemplate() != null) {
-				parentId = report.getReportTemplate().getParentId();
-			}
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
 			Map<String, Object> filters = new HashMap<>();
@@ -75,7 +71,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 					if(conditions != null && !conditions.isEmpty()) {
 						for(Object key : conditions.keySet()) {
 							JSONObject condition = (JSONObject)conditions.get((String)key);
-							List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange(), parentId);
+							List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange());
 							key = "Cri_"+key+".timeline";
 							filters.put((String) key, timeLine);
 						}
@@ -118,7 +114,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		return false;
 	}
 	
-	public List<Map<String, Object>> getDFTimeLine(JSONObject conditionObj, DateRange range, Long templateAssetId) throws Exception{
+	public List<Map<String, Object>> getDFTimeLine(JSONObject conditionObj, DateRange range) throws Exception{
 		List<Map<String, Object>> timeline = new ArrayList<>();
 		List<Map<Long, Long>> timeList = new ArrayList<>();
 		TreeMap<Long, Long> localMap = new TreeMap<>();
@@ -127,9 +123,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
-		if(templateAssetId != null) {
-			parentId = templateAssetId;
-		}
 		
 		FacilioField conditionField = modBean.getField(field);
 		

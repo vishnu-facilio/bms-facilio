@@ -85,7 +85,7 @@ public class FilterUtil {
 		return CriteriaAPI.getCondition(timeField, value, operator);
 	}
 	
-	public static void setDataFilterCriteria(String parrentModuleName, JSONObject criteriaObj, DateRange range, SelectRecordsBuilder<ModuleBaseWithCustomFields> parrentBuilder, Long parentId) throws Exception{
+	public static void setDataFilterCriteria(String parrentModuleName, JSONObject criteriaObj, DateRange range, SelectRecordsBuilder<ModuleBaseWithCustomFields> parrentBuilder) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField timeField = modBean.getField("ttime", parrentModuleName);
 		
@@ -94,21 +94,18 @@ public class FilterUtil {
 			for(Object key : conditions.keySet()) {
 				JSONObject condition = (JSONObject)conditions.get((String)key);
 				
-				GenericSelectRecordBuilder builder = getDFConditionSelectBuilder(condition, range, parentId);
+				GenericSelectRecordBuilder builder = getDFConditionSelectBuilder(condition, range);
 						
 				parrentBuilder.andCustomWhere(timeField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 			}
 		}
 	}
 	
-	public static GenericSelectRecordBuilder getDFConditionSelectBuilder(JSONObject conditionObj, DateRange range, Long templateAssetId) throws Exception{
+	public static GenericSelectRecordBuilder getDFConditionSelectBuilder(JSONObject conditionObj, DateRange range) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
-		if(templateAssetId != null) {
-			parentId = templateAssetId;
-		}
 		
 		FacilioField conditionField = modBean.getField(field);
 		String moduleName = conditionField.getModule().getName();
