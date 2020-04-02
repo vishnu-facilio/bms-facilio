@@ -152,21 +152,23 @@ public class OperationAlarmApi {
                 Map<String,Object> ddd = resourceList.stream().filter(i -> i.get("resourceId").equals(resourceId)).collect(Collectors.toList()).get(0);
                 Long operatingId = (Long) ddd.get("operatingHour");
                 BusinessHoursContext businessHours = resourceBusinessHours.stream().filter(i -> i.getId() == operatingId).collect(Collectors.toList()).get(0);
-                evaluateOutOfSchedule(businessHours, reading, readingField, context);
+                evaluateOutOfSchedule(businessHours, reading, readingField, context,ddd);
             }
 
         }
 
     }
 
-    private static void evaluateOutOfSchedule(BusinessHoursContext businessHoursContext, ReadingContext reading, FacilioField readingField, Context context) throws Exception {
+    private static void evaluateOutOfSchedule(BusinessHoursContext businessHoursContext, ReadingContext reading, FacilioField readingField, Context context,Map<String,Object> resource) throws Exception {
         Boolean value = (Boolean) reading.getData().get(readingField.getName());
         BusinessHoursContext.BusinessHourType type = BusinessHoursContext.BusinessHourType.valueOf(businessHoursContext.getBusinessHourTypeId());
         OperationAlarmEventContext event;
+        reading.setSiteId((long) resource.get("space"));
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
                     raiseAlarm("Expected to run 24/ 7 ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                    break;
                 }
                 checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
                 break;

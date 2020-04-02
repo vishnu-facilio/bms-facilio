@@ -35,6 +35,7 @@ public class OperationAlarmEventContext extends BaseEventContext {
         }
         OperationAlarmOccurenceContext operationAlarmOccurrenceContext = (OperationAlarmOccurenceContext) alarmOccurrence;
         operationAlarmOccurrenceContext.setCoverageType(getCoverageType());
+        operationAlarmOccurrenceContext.setSiteId(getSiteId());
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 	
@@ -47,6 +48,7 @@ public class OperationAlarmEventContext extends BaseEventContext {
 
         OperationAlarmContext alarm = (OperationAlarmContext) baseAlarm;
         alarm.setCoverageType(getCoverageType());
+        alarm.setSiteId(getSiteId());
         return baseAlarm;
     }
     private OperationAlarmContext.CoverageType coverageType;

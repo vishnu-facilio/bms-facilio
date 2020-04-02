@@ -3599,6 +3599,7 @@ public class ModuleFactory {
 		module.setTableName("Operation_Event");
 		module.setDisplayName("Operation Alarm");
 		return module;
+	}
 	public static FacilioModule getOperationAlarmHistoricalLogsModule() {
 		FacilioModule operationAlarmHistoricalLogsModule = new FacilioModule();
 		operationAlarmHistoricalLogsModule.setName("operationAlarmHistoricalLogsModule");

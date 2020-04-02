@@ -5815,9 +5815,7 @@
 			class="com.facilio.bmsconsole.actions.ClientContactAction" method="clientContactList">
 			<param name="viewName">{1}</param>
 		</action>
-	<package name="operationalAlarm" namespace="/api/v2/operationalAlarm" extends="v2Api">
-		<action name="operationalAlarm" class="com.facilio.bmsconsole.actions.OperationalAlarmAction" method="getResource" />
-	</package>
+		</package> 
 	<package name="operationAlarm" namespace="/api/v2/operationAlarm" extends="v2Api">
 		<action name="operationAlarm" class="com.facilio.bmsconsole.actions.OperationAlarmAction" method="getResource" />
 	</package>
@@ -5828,12 +5826,6 @@
 			method="runHistorical">
 		</action>
 	</package>
-	<package name="operationalAlarm" namespace="/api/v2/operationalAlarm" extends="v2Api">
-		<action name="operationalAlarm" class="com.facilio.bmsconsole.actions.OperationalAlarmAction" method="getResource" />
-	</package>
 	
-	<package name="operationAlarm" namespace="/api/v2/operationAlarm" extends="v2Api">
-		<action name="operationAlarm" class="com.facilio.bmsconsole.actions.OperationAlarmAction" method="getResource" />
-	</package>
 
 </struts>
