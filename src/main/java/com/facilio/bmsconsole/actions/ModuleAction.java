@@ -604,7 +604,8 @@ public class ModuleAction extends FacilioAction {
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
- 		dataList.execute();
+ 		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
+		dataList.execute();
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
  		

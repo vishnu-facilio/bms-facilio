@@ -19,7 +19,6 @@ public class SetSpaceCategoryModuleDetailsCommand extends FacilioCommand{
 			if(space.getSpaceCategory() != null) {
 				SpaceCategoryContext spaceCategory = (SpaceCategoryContext) RecordAPI.getRecord(FacilioConstants.ContextNames.SPACE_CATEGORY, space.getSpaceCategory().getId());
 				if(spaceCategory != null && spaceCategory.getSpaceModuleId() > 0 && spaceCategory.getName().equals("Tenant Unit")) {
-					((TenantUnitSpaceContext)space).setSite();
 					SetTableNamesCommand.getForTenantUnitSpace().execute(context);
 					return false;
 				}
