@@ -1342,6 +1342,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("area", "Total Area"));
+		columns.add(new ViewField("isVacant", "Is Vacant"));
 
 
 		return columns;
