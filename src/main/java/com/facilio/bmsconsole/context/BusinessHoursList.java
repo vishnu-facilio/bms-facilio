@@ -46,8 +46,6 @@ public class BusinessHoursList  extends ArrayList<BusinessHourContext>{
 		}
 
 		ZonedDateTime zonedDateTime = DateTimeUtil.getZonedDateTime(time);
-		zonedDateTime.getDayOfWeek();
-
 		DayOfWeek dayOfWeek = zonedDateTime.getDayOfWeek();
 		int hour = zonedDateTime.getHour();
 		int minute = zonedDateTime.getMinute();
@@ -155,7 +153,7 @@ public class BusinessHoursList  extends ArrayList<BusinessHourContext>{
 	}
 
 	private ZonedDateTime getTimeStamp(int dayOfWeek, LocalTime localTime, int addWeeks) {
-		ZonedDateTime instance = ZonedDateTime.now()
+		ZonedDateTime instance = DateTimeUtil.getDateTime()
 			.with(WeekFields.of(DateTimeUtil.getLocale()).dayOfWeek(), dayOfWeek)
 			.plusWeeks(addWeeks)
 			.withHour(localTime.getHour())
