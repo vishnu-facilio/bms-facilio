@@ -346,6 +346,7 @@ public class FieldUtil {
 										"tenant",
 										"labour",
 										"mvproject",
+										FacilioConstants.ContextNames.TENANT_UNIT_SPACE,
 										FacilioConstants.ContextNames.Reservation.RESERVATION,
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
