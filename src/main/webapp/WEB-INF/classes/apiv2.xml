@@ -5634,6 +5634,8 @@
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getListOfFloorPlan" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="updateFloorPlanData" />
+			<action name="delete"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="deleteFloorPlan" />
 	</package>
 	
 	<package name="clientViews" namespace="/api/v2/clients/view"

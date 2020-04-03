@@ -82,4 +82,12 @@ public class FloorPlanAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FLOOR_PLAN, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN));
 		return SUCCESS;
 	}
+	
+	public String deleteFloorPlan() throws Exception {
+		FacilioChain c = TransactionChainFactory.deleteFloorPlanChain();
+		c.getContext().put(FacilioConstants.ContextNames.FLOOR_PLAN,floorPlan);
+		c.execute();
+		setResult(FacilioConstants.ContextNames.FLOOR_PLAN, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN));
+		return SUCCESS;
+	}
 }

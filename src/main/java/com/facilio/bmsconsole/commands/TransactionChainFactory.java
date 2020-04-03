@@ -4935,6 +4935,14 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	
+	public static FacilioChain deleteFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new deleteFloorPlanCommand());
+
+		return c;
+	}
+	
 
 
 	public static FacilioChain disassociateClientFromSiteChain() {
