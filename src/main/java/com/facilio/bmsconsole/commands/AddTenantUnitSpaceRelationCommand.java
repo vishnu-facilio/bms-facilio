@@ -49,7 +49,7 @@ public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
 			}
 			
 			FacilioField tenantField = fieldMap.get("tenant");
-			FacilioField isVacantField = fieldMap.get("isVacant");
+			FacilioField isVacantField = fieldMap.get("isOccupied");
 			
 			updatedfields.add(tenantField);
 			updatedfields.add(isVacantField);
@@ -60,7 +60,7 @@ public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
 			
 			Map<String, Object> value = new HashMap<>();
 			value.put("tenant", FieldUtil.getAsProperties(tenant));
-			value.put("isVacant", false);
+			value.put("isOccupied", true);
 			
 			updateBuilder.updateViaMap(value);
 

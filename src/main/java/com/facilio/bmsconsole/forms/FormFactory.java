@@ -2037,7 +2037,7 @@ public class FormFactory {
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 3, 1));
 		fields.add(new FormField("area", FieldDisplayType.NUMBER, "Area", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("maxOccupancy", FieldDisplayType.NUMBER, "Max Occupancy", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("isVacant", FieldDisplayType.DECISION_BOX, "Is Vacant", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("isOccupied", FieldDisplayType.DECISION_BOX, "Occupied Status", Required.OPTIONAL, 6, 1));
 		return fields;
 	}
 
