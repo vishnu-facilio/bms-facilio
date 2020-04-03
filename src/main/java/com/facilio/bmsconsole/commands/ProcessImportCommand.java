@@ -4,7 +4,6 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
@@ -147,7 +146,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						}
 					}
 
-					else if (module.equals(FacilioConstants.ContextNames.SPACE)) {
+					else if (module.equals(FacilioConstants.ContextNames.SPACE) || module.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
 					
 						if(!isBim){
 							String moduleName = module;
@@ -681,7 +680,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							throw new Exception("Value not found");
 						}
 					}
-					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus");
+					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus", "vendors");
 					if (lookupModuleList.contains("ticketstatus")) {
 						throw new Exception("Value not found");
 					}

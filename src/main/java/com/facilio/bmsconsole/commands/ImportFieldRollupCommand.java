@@ -18,9 +18,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class ImportFieldRollupCommand extends FacilioCommand {
@@ -43,14 +41,21 @@ public class ImportFieldRollupCommand extends FacilioCommand {
             FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
             LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(addedBaseSpaceIds, ","));
         }
-        if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+        List<String> rollupModulesList = Arrays.asList(FacilioConstants.ContextNames.TENANT_CONTACT, FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+        if (rollupModulesList.contains(importProcessContext.getModule().getName())) {
             ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
             if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_CONTACT)) {
                 FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
                 c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
                 c.execute();
             }
+            if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+                FacilioChain c = TransactionChainFactory.getImportRollupTenantSpacesChain();
+                c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
+                c.execute();
+            }
         }
+
         return false;
     }
 }

@@ -265,7 +265,7 @@ public class ImportFieldFactory {
 		case "building":
 		case "floor":
 		case "space":
-		{
+		case "tenantunit": {
 			removedFields.add("site");
 			removedFields.add("building");
 			removedFields.add("floor");

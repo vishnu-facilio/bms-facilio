@@ -574,7 +574,6 @@ public class ImportAPI {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule =  bean.getModule(module);
 			List<FacilioField> fieldsList = bean.getAllFields(module);
-			List<FacilioField> customFields = bean.getAllCustomFields(module);
 			
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
@@ -620,10 +619,8 @@ public class ImportAPI {
 						|| facilioModule.getName().equals(FacilioConstants.ContextNames.BUILDING) ||
 						facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR)
 						|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE)
+						|| facilioModule.getName().equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
 						) {
-					if(customFields != null && !customFields.isEmpty()) {
-						fieldsList.addAll(customFields);
-					}
 					
 					for(FacilioField field : fieldsList) {
 						if((!ImportAPI.isRemovableFieldOnImport(field.getName()))) {
@@ -718,7 +715,7 @@ public class ImportAPI {
 		case "month":
 		case "week":
 		case "day":
-		case "hour":{
+		case "hour": {
 			return true;
 		}
 		}

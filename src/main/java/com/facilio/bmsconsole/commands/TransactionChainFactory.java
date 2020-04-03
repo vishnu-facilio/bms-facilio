@@ -5170,6 +5170,13 @@ public class TransactionChainFactory {
 		c.addCommand(new HistoricalOperationAlarmOccurencesDeletionCommand());
 		return c;
 	}
+
+	public static FacilioChain getImportRollupTenantSpacesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new RollupTenantSpacesCommand());
+
+		return c;
+	}
 }
 
 

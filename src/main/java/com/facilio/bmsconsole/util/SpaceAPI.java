@@ -1747,4 +1747,20 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		}
 		return null;
 	}
+	public static List<TenantUnitSpaceContext> getTenantUnitSpaceList(List<Long> idList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+
+		SelectRecordsBuilder<TenantUnitSpaceContext> builder = new SelectRecordsBuilder<TenantUnitSpaceContext>()
+				.module(module)
+				.beanClass(TenantUnitSpaceContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), idList, NumberOperators.EQUALS));
+		;
+
+		List<TenantUnitSpaceContext> records = builder.get();
+		return records;
+
+	}
 }

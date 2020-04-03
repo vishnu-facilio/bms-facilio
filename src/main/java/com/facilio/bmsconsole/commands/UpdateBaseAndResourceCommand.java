@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -20,8 +10,16 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.google.common.collect.ArrayListMultimap;
-
 import nl.basjes.shaded.org.springframework.util.StringUtils;
+import org.apache.commons.chain.Context;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class UpdateBaseAndResourceCommand extends FacilioCommand implements Serializable {
 	/**
@@ -61,7 +59,7 @@ public class UpdateBaseAndResourceCommand extends FacilioCommand implements Seri
 						break;
 					}
 				}
-				if(facilioModule !=null && facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+				if(facilioModule !=null && facilioModule.getExtendModule() != null && (facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) || facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.SPACE))) {
 					for(int done= 0 ;done< readingsList.size();) {
 						String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
 						String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";
