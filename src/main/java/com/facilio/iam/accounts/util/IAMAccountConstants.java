@@ -10,6 +10,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 
 public class IAMAccountConstants {
@@ -254,6 +255,13 @@ public class IAMAccountConstants {
 			timeFormat.setModule(module);
 			timeFormat.setEnumName("TimeFormat");
 			fields.add(timeFormat);
+
+			FacilioField businessHourField = new NumberField();
+			businessHourField.setName("businessHour");
+			businessHourField.setDataType(FieldType.NUMBER);
+			businessHourField.setColumnName("BUSINESS_HOUR");
+			businessHourField.setModule(module);
+			fields.add(businessHourField);
 
 			return fields;
 		}

@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
@@ -38,7 +40,8 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
-        if (moduleRecord.getSlaPolicyId() != getParentRuleId()) {
+        // If the record is matched in another sla policy, execute false
+        if (moduleRecord.getSlaPolicyId() > 0 && moduleRecord.getSlaPolicyId() != getParentRuleId()) {
             return false;
         }
 
@@ -76,7 +79,14 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 if (timeValue == null) {
                     continue;
                 }
-                timeValue += slaEntityDuration.getAddDuration() * 1000;
+                if (slaEntityDuration.getTypeOrDefault() == 1) {
+                    timeValue += slaEntityDuration.getAddDuration() * 1000;
+                }
+                else {
+                    // retrieve from business hour
+                    BusinessHoursList businessHours = BusinessHoursAPI.getCorrespondingBusinessHours(getSiteId());
+                    timeValue = businessHours.getNextPossibleTime(timeValue, (int) slaEntityDuration.getAddDuration());
+                }
 
                 Long oldTime = (Long) FieldUtil.getValue(moduleRecord, dueField);
                 addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue);
@@ -182,6 +192,20 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         }
         public void setAddDuration(long addDuration) {
             this.addDuration = addDuration;
+        }
+
+        private int type = -1;
+        public int getType() {
+            return type;
+        }
+        public void setType(int type) {
+            this.type = type;
+        }
+        public int getTypeOrDefault() {
+            if (type == -1) {
+                return 1;
+            }
+            return type;
         }
     }
 }

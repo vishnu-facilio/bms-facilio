@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Organization;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -72,6 +73,24 @@ public class BusinessHoursAPI {
 		}
 
 		return parentId;
+	}
+
+	public static BusinessHoursList getCorrespondingBusinessHours(long siteId) throws Exception {
+		Organization organization = AccountUtil.getCurrentOrg();
+		BusinessHoursList businessHoursList = null;
+		if (organization.getBusinessHour() > 0) {
+			businessHoursList = getBusinessHours(organization.getBusinessHour());
+		}
+
+		if (businessHoursList == null) {
+			businessHoursList = new BusinessHoursList();
+			for (int i = 1; i <= 7; i++) {
+				BusinessHourContext businessHourContext = new BusinessHourContext();
+				businessHourContext.setDayOfWeek(i);
+				businessHoursList.add(businessHourContext);
+			}
+		}
+		return businessHoursList;
 	}
 
 	public static BusinessHoursList getBusinessHours(long id) throws Exception {

@@ -1831,6 +1831,7 @@ public class FieldFactory {
         fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
         fields.add(getField("slaCommitmentId", "SLA_COMMITMENT_ID", module, FieldType.NUMBER));
         fields.add(getField("addDuration", "ADD_DURATION", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
 
         return fields;
     }
