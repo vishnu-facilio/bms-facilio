@@ -5,7 +5,6 @@ import java.util.*;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -58,7 +57,6 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 					baseEvents.addAll(events);
 				}
 			}
-			System.out.println("occurrence map "+alarmOccurrenceMap);
 			context.put("alarmOccurrenceMap", alarmOccurrenceMap);
 			context.put("alarmMap", alarmMap);
 		}
@@ -74,9 +72,6 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 		clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
-		for (AlarmOccurrenceContext co :
-				latestAlarmOccurance) {
-		}
 		for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
 			String key = alarmOccurrenceContext.getAlarm().getKey();
 			PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);

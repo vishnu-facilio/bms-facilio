@@ -522,7 +522,7 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("controllerAll", getControllerAlarmOccurrenceViews().setOrder(order++));
 
-		viewsMap.put("controllerAlarm", views);
+		viewsMap.put(FacilioConstants.ContextNames.CONTROLLER_ALARM, views);
 
 
 		order = 1;

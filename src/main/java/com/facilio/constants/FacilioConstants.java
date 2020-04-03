@@ -333,6 +333,8 @@ public class FacilioConstants {
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String AGENT_ALARM = "agentAlarm";
 		public static final String AGENT_ALARM_OCCURRENCE = "agentAlarmOccurrence";
+		public static final String CONTROLLER_ALARM = "controllerAlarm";
+		public static final String CONTROLLER_ALARM_OCCURRENCE = "controllerAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
 		public static final String NEW_READING_ALARM = "newreadingalarm";
@@ -1744,7 +1746,7 @@ public class FacilioConstants {
 			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
-			classMap.put("controllerAlarm", ControllerAlarmContext.class);
+			classMap.put(CONTROLLER_ALARM, ControllerAlarmContext.class);
 			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
 			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
 			classMap.put(VISITOR, VisitorContext.class);
