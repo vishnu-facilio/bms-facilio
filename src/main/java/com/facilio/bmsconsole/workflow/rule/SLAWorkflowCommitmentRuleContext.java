@@ -84,7 +84,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 }
                 else {
                     // retrieve from business hour
-                    BusinessHoursList businessHours = BusinessHoursAPI.getCorrespondingBusinessHours(getSiteId());
+                    BusinessHoursList businessHours = BusinessHoursAPI.getCorrespondingBusinessHours(moduleRecord.getSiteId());
                     timeValue = businessHours.getNextPossibleTime(timeValue, (int) slaEntityDuration.getAddDuration());
                 }
 

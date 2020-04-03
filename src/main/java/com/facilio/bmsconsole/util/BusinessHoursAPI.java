@@ -9,12 +9,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BusinessHourContext;
-import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -22,10 +23,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 public class BusinessHoursAPI {
 
@@ -76,10 +73,27 @@ public class BusinessHoursAPI {
 	}
 
 	public static BusinessHoursList getCorrespondingBusinessHours(long siteId) throws Exception {
-		Organization organization = AccountUtil.getCurrentOrg();
 		BusinessHoursList businessHoursList = null;
-		if (organization.getBusinessHour() > 0) {
-			businessHoursList = getBusinessHours(organization.getBusinessHour());
+		if (siteId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+			SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>()
+					.module(module)
+					.beanClass(SiteContext.class)
+					.select(modBean.getAllFields(module.getName()))
+					.andCondition(CriteriaAPI.getIdCondition(siteId, module));
+			SiteContext siteContext = builder.fetchFirst();
+			if (siteContext != null && siteContext.getOperatingHour() > 0) {
+				long id = siteContext.getOperatingHour();
+				businessHoursList = getBusinessHours(id);
+			}
+		}
+
+		if (businessHoursList == null) {
+			Organization organization = AccountUtil.getCurrentOrg();
+			if (organization.getBusinessHour() > 0) {
+				businessHoursList = getBusinessHours(organization.getBusinessHour());
+			}
 		}
 
 		if (businessHoursList == null) {
