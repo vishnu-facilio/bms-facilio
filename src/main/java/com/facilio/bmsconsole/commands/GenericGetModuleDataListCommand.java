@@ -117,7 +117,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			builder.andCriteria(clientFilterCriteria);
 		}
 
-		if (!fetchCount && module.isCustom()) {
+		if (!fetchCount && module.isCustom() && CollectionUtils.isEmpty(fetchLookup)) {
 			List<LookupField> lookupFields = new ArrayList<>();
 			for (FacilioField f : fields) {
 				if (f instanceof LookupField) {
