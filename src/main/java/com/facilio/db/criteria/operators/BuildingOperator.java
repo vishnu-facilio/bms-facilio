@@ -137,6 +137,7 @@ public enum BuildingOperator implements Operator<String> {
 				.module(resourceModule)
 				.setAggregation()
 				.innerJoin(baseSpaceModule.getTableName()).on("Resources.SPACE_ID = BaseSpace.ID")
+				.beanClass(ResourceContext.class)
 				;
 
 		List<FacilioField> spaceFields = moduleBean.getAllFields(baseSpaceModule.getName());
