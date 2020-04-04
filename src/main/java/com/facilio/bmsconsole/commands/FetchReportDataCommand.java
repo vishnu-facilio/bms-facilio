@@ -53,6 +53,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -64,8 +65,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
 	private FacilioModule baseModule;
 	private ModuleBean modBean;
-	private JSONObject timeFilter;
-	private JSONObject dataFilter;
+	private Boolean enableFutureData = false;
 	private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
 	
 	@Override
@@ -100,21 +100,11 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		
 		
-		Boolean enableFutureData = false;
+		
 		if(report!=null && report.getReportState() != null && !report.getReportState().isEmpty()) {
 			if(report.getReportState().containsKey(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA)
 				&& (Boolean) report.getReportState().get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA) == true) {
 				enableFutureData = true;
-			}
-		}
-		
-		if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
-			DateRange dateRange = report.getDateRange();
-			if (dateRange != null) {
-				long currentTimeMillis = System.currentTimeMillis();
-				if (currentTimeMillis < dateRange.getEndTime()) {
-					dateRange.setEndTime(currentTimeMillis);
-				}
 			}
 		}	
 
@@ -347,6 +337,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues) throws Exception {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
+		if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
+			DateRange dateRange = report.getDateRange();
+			if (dateRange != null) {
+				Long endTine = DemoHelperUtil.getEndTime(dp.getxAxis().getModule(), dateRange);
+				dateRange.setEndTime(endTine);
+			}
+		}
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
 
 
