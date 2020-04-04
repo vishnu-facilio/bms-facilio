@@ -2038,6 +2038,10 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingDataForSpaces">
 		</action>
+		<action name="getLastValue"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLastValue">
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">

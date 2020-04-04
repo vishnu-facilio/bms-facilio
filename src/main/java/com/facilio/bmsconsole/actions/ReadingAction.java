@@ -1399,6 +1399,17 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2GetLastValue() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		field = modBean.getField(fieldId);
+		
+		setResult(FacilioConstants.ContextNames.READING_DATA_META, ReadingsAPI.getReadingDataMeta(resourceId, field));
+		
+		return SUCCESS;
+	}
+	
 	private Boolean fetchInputValues;
 	public Boolean getFetchInputValues() {
 		return fetchInputValues;
