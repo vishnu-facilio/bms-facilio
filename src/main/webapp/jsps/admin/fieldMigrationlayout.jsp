@@ -45,7 +45,6 @@
         long orgId = Long.parseLong(orgid);
         bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
         org = orgBean.getOrg(Long.parseLong(orgid));
-
         assetcategory = bean.getCategoryList();
     }
 
@@ -140,13 +139,14 @@
             <option value="" disabled selected>Select</option>
             <%
                 for (Organization domain : orgs) {
-
+                    if (domain.getId() == 321) {
             %>
             <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
                 -
                 <%=domain.getDomain()%>
             </option>
             <%
+                    }
                 }
             %>
         </select><br><br><br>
@@ -271,14 +271,14 @@
                     reading = bean.getAssetReadings(parentCategoryId);
                     for (FacilioModule list : reading) {
                         for (FacilioField fields : list.getFields()) {
-                            if ((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))) {
+//                            if ((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))) {
                                 if (fields.getDefault() == false) {
             %>
             <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
             </option>
 
             <%
-                }
+              //  }
             } else {%>
 <%--            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>--%>
 <%--            </option>--%>
@@ -292,7 +292,7 @@
         <br>
         <br>
         <br>
-        <input type="submit" style="margin-left: 200px" name="fieldMigration" value="Submit"/>
+            <input type="submit" style="margin-left: 200px" name="fieldMigration" value="Submit"/>
         <br>
         <br>
         <br>

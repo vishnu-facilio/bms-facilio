@@ -394,7 +394,6 @@ public class ModuleFactory {
 		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
 		fieldModule.setDisplayName("Assets");
 		fieldModule.setTableName("Assets");
-		fieldModule.setExtendModule(getResourceModule());
 		return fieldModule;
 	}
 	

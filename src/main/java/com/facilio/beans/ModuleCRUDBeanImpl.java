@@ -1009,10 +1009,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
 		context.put(ContextNames.FIELD_ID,fieldId);
 		context.put(ContextNames.ASSET_ID,assetId);
-		context.put(ContextNames.START_TTIME,startTtime);
-		context.put(ContextNames.END_TTIME,endTtime);
+		context.put(ContextNames.START_TIME,startTtime);
+		context.put(ContextNames.END_TIME,endTtime);
 		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
-		context.put(ContextNames.IS_BEFORE, true);
 		context.put(ContextNames.DURATION, duration);
 		context.put(ContextNames.TYPE, type);
 		FacilioChain deleteReading = TransactionChainFactory.shiftAssetReadings();

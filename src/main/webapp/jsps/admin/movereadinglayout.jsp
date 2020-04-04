@@ -140,13 +140,14 @@
             <option value="" disabled selected>Select</option>
             <%
                 for (Organization domain : orgs) {
-
+                    if (domain.getId() == 321) {
             %>
             <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
                 -
                 <%=domain.getDomain()%>
             </option>
             <%
+                    }
                 }
             %>
         </select><br><br><br>
@@ -271,23 +272,23 @@
         <%--        <br>--%>
         <div>
 
-<%--            <label for="fromTtime">--%>
-<%--                <h5>Start TTIME:</h5>--%>
-<%--            </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;--%>
+            <label for="fromTtime">
+                <h5>Start TTIME:</h5>
+            </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;
 
-<%--            <input type="datetime-local" id="fromTtime"--%>
-<%--                   value="<%=request.getParameter("fromTtime")==null?"": request.getParameter("fromTtime") %>"--%>
-<%--                   name="fromTtime" onChange="changestartTTimePage()">--%>
-<%--            <label for="toTtime">--%>
-<%--                <h5>End TTIME:</h5>--%>
-<%--            </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;--%>
+            <input type="datetime-local" id="fromTtime"
+                   value="<%=request.getParameter("fromTtime")==null?"": request.getParameter("fromTtime") %>"
+                   name="fromTtime" onChange="changestartTTimePage()">
+            <label for="toTtime">
+                <h5>End TTIME:</h5>
+            </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;
 
-<%--            <input type="datetime-local" id="toTtime"--%>
-<%--                   value="<%=request.getParameter("toTtime")==null?"": request.getParameter("toTtime")%>" name="toTtime">--%>
-<%--            <br>--%>
-<%--            <br>--%>
-<%--            <br>--%>
-<%--            <br>--%>
+            <input type="datetime-local" id="toTtime"
+                   value="<%=request.getParameter("toTtime")==null?"": request.getParameter("toTtime")%>" name="toTtime">
+            <br>
+            <br>
+            <br>
+            <br>
             <label for="shiftType"><h5>
                 Type:</h5></label>&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;<select
                 name="shiftType" id="shiftType">+

@@ -382,7 +382,10 @@ public class AdminAction extends ActionSupport {
 		long orgId = Long.parseLong(request.getParameter("orgid"));
 		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
 		long fieldId = Long.parseLong(request.getParameter("fieldId"));
-		long assetId = Long.parseLong(request.getParameter("assetId"));
+		long assetId = -1;
+		if (request.getParameterMap().containsKey("assetId")) {
+			assetId = Long.parseLong(request.getParameter("assetId"));
+		}
 		String fromdateTtime = request.getParameter("fromTtime");
 		fromdateTtime = fromdateTtime.replace('T', ' ');
 		String todateendTtime = request.getParameter("toTtime");
@@ -390,12 +393,11 @@ public class AdminAction extends ActionSupport {
 
 		long startTtime = convertDatetoTTime(fromdateTtime);
 		long endTtime = convertDatetoTTime(todateendTtime);
-		long type = Long.parseLong(request.getParameter("type"));
+		long type = Long.parseLong(request.getParameter("shiftType"));
 
-		long TtimeLimit = TimeUnit.DAYS.convert(endTtime - startTtime, TimeUnit.MILLISECONDS);
 
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.moveReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, durations, type);
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.moveReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, durations, type);
 
 		return SUCCESS;
 

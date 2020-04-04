@@ -154,6 +154,27 @@ if (buildinfo == null) {
 <%--                    <span class="nav-title">Move Readings</span>--%>
 <%--                </a>--%>
 <%--            </li>--%>
+            <li>
+                <a href="fieldMigration">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">Field Migration</span>
+                </a>
+            </li>
+            <li>
+                <a href="deleteReadings">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">Delete Readings</span>
+                </a>
+            </li>
+            <li>
+                <a href="moveReadings">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">Move Readings</span>
+                </a>
+            </li>
          </ul>
         
       <div class="nav  sidebar-footer-btn  ">

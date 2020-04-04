@@ -140,6 +140,7 @@
             <option value="" disabled selected>Select</option>
             <%
                 for (Organization domain : orgs) {
+                    if (domain.getId() == 321) {
 
             %>
             <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
@@ -147,6 +148,7 @@
                 <%=domain.getDomain()%>
             </option>
             <%
+                    }
                 }
             %>
         </select><br><br><br>
