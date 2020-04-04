@@ -465,20 +465,18 @@ public class AwsUtil
 	private static void logEmail (JSONObject mailJson) throws Exception {
 
 		try {
-			if (AccountUtil.getCurrentOrg() != null) {
-				String toAddress = (String) mailJson.get("to");
-				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
-					toAddress = toAddress == null ? "" : toAddress;
-					JSONObject info = new JSONObject();
-					info.put("subject", mailJson.get("subject"));
-					if (mailJson.get("cc") != null) {
-						info.put("cc", mailJson.get("cc"));
-					}
-					if (mailJson.get("bcc") != null) {
-						info.put("bcc", mailJson.get("bcc"));
-					}
-					CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+			String toAddress = (String) mailJson.get("to");
+			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
+				toAddress = toAddress == null ? "" : toAddress;
+				JSONObject info = new JSONObject();
+				info.put("subject", mailJson.get("subject"));
+				if (mailJson.get("cc") != null) {
+					info.put("cc", mailJson.get("cc"));
 				}
+				if (mailJson.get("bcc") != null) {
+					info.put("bcc", mailJson.get("bcc"));
+				}
+				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
 			}
 		}
 		catch (Exception e) {

@@ -144,27 +144,25 @@ public abstract class EmailClient {
     }
     void logEmail(JSONObject mailJson) {
         try {
-            if (AccountUtil.getCurrentOrg() != null) {
-                String toAddress = (String) mailJson.get("to");
-                String ccAddress = null, bccAddress = null;
-                if (mailJson.get("cc") != null) {
-                    ccAddress = (String) mailJson.get("cc");
+            String toAddress = (String) mailJson.get("to");
+            String ccAddress = null, bccAddress = null;
+            if (mailJson.get("cc") != null) {
+                ccAddress = (String) mailJson.get("cc");
+            }
+            if (mailJson.get("bcc") != null) {
+                bccAddress = (String) mailJson.get("bcc");
+            }
+            if (!ERROR_AND_ALERT_AT_FACILIO.equals(toAddress) && !ERROR_AT_FACILIO.equals(toAddress)) {
+                toAddress = toAddress == null ? "" : toAddress;
+                JSONObject info = new JSONObject();
+                info.put(SUBJECT, mailJson.get(SUBJECT));
+                if (mailJson.get(CC) != null) {
+                    info.put("cc", mailJson.get(CC));
                 }
-                if (mailJson.get("bcc") != null) {
-                    bccAddress = (String) mailJson.get("bcc");
+                if (mailJson.get(BCC) != null) {
+                    info.put("bcc", mailJson.get(BCC));
                 }
-                if (!ERROR_AND_ALERT_AT_FACILIO.equals(toAddress) && !ERROR_AT_FACILIO.equals(toAddress)) {
-                    toAddress = toAddress == null ? "" : toAddress;
-                    JSONObject info = new JSONObject();
-                    info.put(SUBJECT, mailJson.get(SUBJECT));
-                    if (mailJson.get(CC) != null) {
-                        info.put("cc", mailJson.get(CC));
-                    }
-                    if (mailJson.get(BCC) != null) {
-                        info.put("bcc", mailJson.get(BCC));
-                    }
-                    CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, info);
-                }
+                CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, info);
             }
         }
         catch (Exception e) {
@@ -180,7 +178,9 @@ public abstract class EmailClient {
     }
 
     boolean canSendEmail(JSONObject mailJson) {
-
+        if (FacilioProperties.isDevelopment()) {
+            return false;
+        }
         return (getEmailAddresses(mailJson, TO).size() >0 );
     }
     HashSet<String> getEmailAddresses(JSONObject mailJson, String key){
