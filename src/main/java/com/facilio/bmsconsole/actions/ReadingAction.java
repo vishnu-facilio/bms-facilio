@@ -1404,8 +1404,9 @@ public class ReadingAction extends FacilioAction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		field = modBean.getField(fieldId);
-		
-		setResult(FacilioConstants.ContextNames.READING_DATA_META, ReadingsAPI.getReadingDataMeta(resourceId, field));
+		ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, field);
+		ReadingsAPI.convertUnitForRdmData(rdm);
+		setResult(FacilioConstants.ContextNames.READING_DATA_META, rdm);
 		
 		return SUCCESS;
 	}
