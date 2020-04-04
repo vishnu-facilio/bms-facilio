@@ -374,7 +374,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	
 	private void addVendorAssignmentActivity(WorkOrderContext workOrder, long parentId, WorkOrderContext oldWo, Context context) throws Exception{
 		JSONObject info = new JSONObject();
-		if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
+		if (workOrder.getVendor() != null && workOrder.getVendor().getId() > 0) {
 			VendorContext vendor = InventoryApi.getVendor(workOrder.getVendor().getId());
 			info.put("vendor", vendor.getName());
 			JSONObject newinfo = new JSONObject();
