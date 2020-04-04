@@ -154,11 +154,11 @@ public class BusinessHoursList  extends ArrayList<BusinessHourContext>{
 
 	private ZonedDateTime getTimeStamp(int dayOfWeek, LocalTime localTime, int addWeeks) {
 		ZonedDateTime instance = DateTimeUtil.getDateTime()
-			.with(WeekFields.of(DateTimeUtil.getLocale()).dayOfWeek(), dayOfWeek)
-			.plusWeeks(addWeeks)
-			.withHour(localTime.getHour())
-			.withMinute(localTime.getMinute())
-			.withSecond(localTime.getSecond());
+				.with(WeekFields.of(DayOfWeek.MONDAY, 1).dayOfWeek(), dayOfWeek)
+				.plusWeeks(addWeeks)
+				.withHour(localTime.getHour())
+				.withMinute(localTime.getMinute())
+				.withSecond(localTime.getSecond());
 		return instance;
 	}
 }
