@@ -374,6 +374,15 @@
 
         <action name="addBulkPoints" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusPoint">
         </action>
+
+        <action name="retry" class="com.facilio.agentv2.AgentAction" method="retry">
+        </action>
+
+        <action name="pendingDevImports" class="com.facilio.agentv2.actions.AgentIdAction" method="getPendingControllerImports">
+        </action>
+
+        <action name="pendingPtImports" class="com.facilio.agentv2.actions.DeviceIdActions" method="getPenfingPointImports">
+        </action>
     </package>
 
     <package name="opcDa" namespace="/api/v2/opcda" extends="agent">

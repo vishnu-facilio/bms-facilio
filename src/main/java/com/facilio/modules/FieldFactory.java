@@ -5949,6 +5949,32 @@ public class FieldFactory {
         return fields;
     }
 
+    public static  List<FacilioField> getModbusImportFields(){
+        FacilioModule module = ModuleFactory.getModbusImportModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getIdxField(module));
+        fields.add(getTypeField(module));
+        fields.add(getField(AgentConstants.FILE_ID,"FILEID",module,FieldType.NUMBER));
+        fields.add(getImportStatusField(module));
+        fields.add(getCreatedTime(module));
+        fields.add(getLastModifiedTimeField(module));
+        return fields;
+    }
+
+    public static FacilioField getImportStatusField(FacilioModule module) {
+        return getField(AgentConstants.STATUS,"STATUS",module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getTypeField(FacilioModule module) {
+        return getField(AgentConstants.TYPE,"TYPE",module,FieldType.NUMBER);
+    }
+
+    public static FacilioField getIdxField(FacilioModule module) {
+        return getField(AgentConstants.IDX,"IDX",module,FieldType.NUMBER);
+    }
+
+
     public static FacilioField getPointFieldIdField(FacilioModule module) {
         return getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER);
     }

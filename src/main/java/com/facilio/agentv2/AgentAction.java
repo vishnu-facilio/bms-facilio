@@ -11,6 +11,7 @@ import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
+import com.facilio.agentv2.modbusrtu.ModbusImportUtils;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
@@ -20,11 +21,14 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.*;
 
@@ -567,6 +571,58 @@ public class AgentAction extends AgentActionV2 {
             }
         } catch (Exception e) {
             LOGGER.info("Exception while adding device and controller ", e);
+            internalError();
+        }
+        return SUCCESS;
+    }
+
+    public String retry(){
+        try{
+            if(id < 0){
+                throw new Exception("id cant be less than 1");
+            }
+            Map<String, Object> anImport = ModbusImportUtils.getImport(getId());
+            if(! anImport.isEmpty()){
+                LOGGER.info(" import data "+anImport);
+                if((anImport.containsKey(AgentConstants.STATUS))){
+                    long status = ((Number) anImport.get(AgentConstants.STATUS)).longValue();
+                    if(status == 0){
+                        LOGGER.info(" contains check "+anImport.containsKey(AgentConstants.FILE_ID));
+                        LOGGER.info(anImport+" contains check "+anImport.containsKey("fileId"));
+                        if(anImport.containsKey(AgentConstants.FILE_ID)){
+                            long fileId = ((Number)anImport.get(AgentConstants.FILE_ID)).longValue();
+                            LOGGER.info(" file id "+fileId);
+                            long idx = ((Number) anImport.get(AgentConstants.IDX)).longValue();
+                            if(fileId > 0){
+                                long type = ((Number)anImport.get(AgentConstants.TYPE)).longValue();
+                                FileStore fileStore = FacilioFactory.getFileStore();
+                                InputStream inputStream = fileStore.readFile(fileId);
+                                if(type == ModbusImportUtils.CONTROLLER_IMPORT){
+                                    ModbusImportUtils.processFileAndSendAddControllerCommand(idx,inputStream);
+                                    ModbusImportUtils.markImportComplete(getId());
+                                }else {
+                                    ModbusImportUtils.processFileAndSendConfigureModbusPointsCommand(idx,inputStream);
+                                    ModbusImportUtils.markImportComplete(getId());
+                                }
+                            }else {
+                                throw new Exception("file is cant be less than 1");
+                            }
+                        }else {
+                            throw new Exception("import data is missing file id");
+                        }
+                    }else {
+                        throw new Exception("this import is processed already");
+                    }
+                }else {
+                    throw new Exception("status missing from import data");
+                }
+            }else {
+                throw new Exception("No such import");
+            }
+            ok();
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while retruing import "+getId()+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
             internalError();
         }
         return SUCCESS;

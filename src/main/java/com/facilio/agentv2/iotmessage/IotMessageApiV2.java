@@ -47,7 +47,6 @@ public class IotMessageApiV2 {
         iotMessage.setStatus(status.asInt());
         iotMessage.setAckTime(currTime);
         rowUpdated = updateIotMessage(iotMessage);
-        LOGGER.info(" updating message for ack ->" + rowUpdated);
         if (rowUpdated > 0) {
             handleSuccessNotification(iotMessage);
             //updatePointAcks(iotMessage);
@@ -90,7 +89,6 @@ public class IotMessageApiV2 {
     private static void updatePointAcks(IotMessage iotMessage) throws Exception {
         // {"identifier":"1_#_1002_#_0_#_192.168.1.2","agent":"iamcvijay","agentId":1,"networkNumber":0,"ipAddress":"192.168.1.2","id":3,"instanceNumber":1002,"type":1,"command":255,"timestamp":1577086482410,"points":
         // [{"controllerId":3,"instanceType":8,"id":1,"instanceNumber":1002},{"controllerId":3,"instanceType":10,"id":2,"instanceNumber":1},{"controllerId":3,"instanceType":16,"id":3,"instanceNumber":1}]}
-        LOGGER.info("updating pointAcks iot message ->" + iotMessage);
         if (iotMessage != null) {
             FacilioCommand command = FacilioCommand.valueOf(iotMessage.getCommand());
             if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
@@ -152,7 +150,6 @@ public class IotMessageApiV2 {
 
 
     public static long addIotData(IotData data) throws Exception {
-        LOGGER.info(" adding iot data");
         data.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
         data.setCreatedTime(System.currentTimeMillis());
         long id = new GenericInsertRecordBuilder()
@@ -321,27 +318,23 @@ public class IotMessageApiV2 {
         }
         List<Long> ids = new ArrayList<>();
         List<Map<String, Object>> data = builder.get();
-        LOGGER.info(" query "+builder.toString());
         if (data != null && (! data.isEmpty()) ) {
             for (Map<String, Object> datum : data) {
                 ids.add((Long) datum.get(idField.getName()));
             }
         }
-        LOGGER.info(" iotData ids "+ids);
         return ids;
     }
 
     public static long getCount(Long agentId) throws Exception {
         FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
         List<Long> iotDataIds = getIotDataIds(agentId);
-        LOGGER.info("iot data ids "+iotDataIds);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(iotMessageModule.getTableName())
                 .select(new ArrayList<>())
                 .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(iotMessageModule))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishMessageParentIdField(iotMessageModule),iotDataIds,NumberOperators.EQUALS));
         List<Map<String, Object>> result = selectRecordBuilder.get();
-        LOGGER.info(" query "+selectRecordBuilder.toString());
         return (long) result.get(0).get(AgentConstants.ID);
     }
 }

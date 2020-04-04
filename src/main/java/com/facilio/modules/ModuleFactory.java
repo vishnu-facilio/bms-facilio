@@ -3627,4 +3627,11 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getModbusImportModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("modbus import module");
+		module.setDisplayName("Modbus Import Module");
+		module.setTableName("Modbus_Import");
+		return module;
+	}
 }

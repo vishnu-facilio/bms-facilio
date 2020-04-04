@@ -11,6 +11,7 @@ import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
+import com.facilio.agentv2.modbusrtu.ModbusImportUtils;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
@@ -440,5 +441,17 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getPendingControllerImports(){
+        try{
+            List<Map<String, Object>> maps = ModbusImportUtils.getpendingControllerImports(getAgentId());
+            setResult(AgentConstants.DATA,maps);
+            ok();
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting pending controller imports for agentId "+getAgentId()+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
 
 }

@@ -9,6 +9,7 @@ public class AgentConstants
     public static final String ID = "id";
     public static final String AGENT_TYPE = "type";
 
+    public static final String TYPE = "type";
 
     //controller constants
     public static final String NAME = "name";
@@ -175,4 +176,7 @@ public class AgentConstants
     public static final String AUTH_KEY = "authKey";
     public static final String HEADER = "header";
     public static final String IP = "ip";
+    public static final String IDX = "idx";
+
+
 }
