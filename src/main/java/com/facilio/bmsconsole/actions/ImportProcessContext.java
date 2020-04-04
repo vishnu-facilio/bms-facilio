@@ -326,22 +326,25 @@ public class ImportProcessContext implements Serializable,Cloneable
 				String moduleName = getModule().getName();
 				List<FacilioField> fieldsList= bean.getAllFields(moduleName);
 				List<String> removeFields = ImportFieldFactory.getFieldsTobeRemoved(getModule().getName());
-				fieldsList.addAll(FieldFactory.getImportFieldMappingDisplayFields(getModule()));
+				if (moduleName != FacilioConstants.ContextNames.TENANT_UNIT_SPACE) {
+					fieldsList.addAll(FieldFactory.getImportFieldMappingDisplayFields(getModule()));
+				}
 				for(FacilioField field : fieldsList)
 				{
 					if(!ImportAPI.isRemovableFieldOnImport(field.getName()) && !removeFields.contains(field.getName()))
 					{
-						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false && 
-								
+						if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false &&
+
 								(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false)
 								&& getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
-								&&(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
+								&& (getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
 								&& getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)
-								
-								) {
+								&& getModule().getName().equals(FacilioConstants.ContextNames.SPACE) == false
+								&& (getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.SPACE) == false)
+						) {
 							LookupField lookupField = (LookupField) field;
 							List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
-							for(FacilioField lookup : lookupFields) {
+							for (FacilioField lookup : lookupFields) {
 								facilioFieldMapping.put(lookup.getName(), lookup);
 							}
 						}

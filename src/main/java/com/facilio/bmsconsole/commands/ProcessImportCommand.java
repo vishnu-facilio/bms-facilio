@@ -151,15 +151,21 @@ public class ProcessImportCommand extends FacilioCommand {
 						if(!isBim){
 							String moduleName = module;
 							ArrayList<String> spaceFields = new ArrayList<>();
-							spaceFields.add(moduleName+"__site");
+							if (moduleName.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+								spaceFields.add("basespace"+"__site");
+							} else {
+								spaceFields.add(moduleName + "__site");
+							}
 							spaceFields.add(moduleName+"__building");
 							spaceFields.add(moduleName+"__floor");
 							spaceFields.add(moduleName + "__space1");
 							spaceFields.add(moduleName + "__space2");
 							spaceFields.add(moduleName + "__space3");
 							spaceFields.add(moduleName + "__space4");
+							String name = (String) colVal.get(fieldMapping.get("resource__name"));
 
 							String [] Ids = {"site","building","floor", "space1", "space2", "space3", "space4"};
+							SpaceCategoryContext tenantUnitSpaceCategory = SpaceAPI.getSpaceCategoryContext("Tenant Unit");
 
 							for(int k =0 ;k<Ids.length ;k++) {
 								HashMap<String, Object> sendToSpaceID = new HashMap<>();
@@ -186,7 +192,14 @@ public class ProcessImportCommand extends FacilioCommand {
 									}
 									props.put(Ids[k],lookupHolder);
 								}
+							}
 
+							if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+								props.put(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD, tenantUnitSpaceCategory);
+								SpaceContext space = SpaceAPI.getSpaceFromHierarchy(props, name);
+								if (space != null && !(space.getSpaceCategory() != null  && space.getSpaceCategory().getName().equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE))) {
+									SpaceAPI.addTenantUnitExtentedModuleEntry(space);
+								}
 							}
 						}else{
 							Long siteId = Long.parseLong(props.get("site").toString());
@@ -203,7 +216,6 @@ public class ProcessImportCommand extends FacilioCommand {
 							props.put("floor", floorId);
 							props.put("siteId", Long.parseLong(props.get("site").toString()));
 						}
-							
 							props.put("spaceType",BaseSpaceContext.SpaceType.SPACE.getIntVal());
 							props.put("resourceType", ResourceType.SPACE.getValue());
 				
@@ -556,6 +568,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					}	
 						
 				LOGGER.info("props -- " + props);
+
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 				if(groupedContext.containsKey(module)) {
 					List<ReadingContext> existingList = groupedContext.get(module);
@@ -882,7 +895,11 @@ public class ProcessImportCommand extends FacilioCommand {
 		
 		ArrayList<JSONObject> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();
-		siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
+		if (moduleName.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+			siteName = (String) colVal.get(fieldMapping.get("basespace" + "__site"));
+		} else {
+			siteName = (String) colVal.get(fieldMapping.get(moduleName + "__site"));
+		}
 		buildingName = (String) colVal.get(fieldMapping.get(moduleName + "__building"));
 		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
 		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));

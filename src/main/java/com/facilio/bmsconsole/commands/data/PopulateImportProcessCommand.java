@@ -513,10 +513,10 @@ public static ReadingContext getAssetNames(ImportProcessContext importProcessCon
 	
 	for(FacilioField field: fields) {
 		String columnName = field.getColumnName();
-		if(field.getDataTypeEnum().equals(FieldType.LOOKUP) ) {
-			Map<String,Object> lookupField = (Map<String,Object>) readingContext.getData().get(field.getName());
+		if (field.getDataTypeEnum().equals(FieldType.LOOKUP)) {
+			Map<String, Object> lookupField = (Map<String, Object>) readingContext.getData().get(field.getName());
 			Long Id = (Long) lookupField.get("id");
-			selectBuilder.andCustomWhere(columnName+"= ?", Id);
+			selectBuilder.andCondition(CriteriaAPI.getCondition(field, String.valueOf(Id), NumberOperators.EQUALS));
 		}
 		else {
 		selectBuilder.andCustomWhere(columnName+"= ?", readingContext.getData().get(field.getName()));

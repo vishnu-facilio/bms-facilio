@@ -1763,4 +1763,78 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		return records;
 
 	}
+
+	public static long addTenantUnitExtentedModuleEntry(SpaceContext space) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+
+		Map<String, Object> record = new HashMap<>();
+		record.put("id", space.getId());
+		record.put("siteId", space.getSiteId());
+		record.put("moduleId", module.getModuleId());
+
+		List<FacilioField> fieldsList = new ArrayList<>();
+		fieldsList.add(FieldFactory.getIdField(module));
+		fieldsList.add(FieldFactory.getSiteIdField(module));
+		fieldsList.add(FieldFactory.getModuleIdField(module));
+		GenericInsertRecordBuilder builder =new GenericInsertRecordBuilder()
+				.fields(fieldsList).table(module.getTableName());
+		return builder.insert(record);
+
+	}
+
+	public static SpaceCategoryContext getSpaceCategoryContext(String name) throws Exception
+	{
+		SpaceCategoryContext spaceCategory = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module  = modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE_CATEGORY);
+
+		SelectRecordsBuilder<SpaceCategoryContext> builder = new SelectRecordsBuilder<SpaceCategoryContext>()
+				.module(module)
+				.beanClass(SpaceCategoryContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getNameCondition(name ,module));
+		List<SpaceCategoryContext> spaceCategories = builder.get();
+		if(spaceCategories.size() > 0)
+		{
+			spaceCategory = spaceCategories.get(0);
+		}
+		return spaceCategory;
+	}
+
+	public static SpaceContext getSpaceFromHierarchy(HashMap<String,Object> props, String name) throws Exception
+	{
+		SpaceContext space = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module  = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+
+		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
+				.module(module)
+				.beanClass(SpaceContext.class)
+				.select(fields);
+		List<String> propFields =  Arrays.asList("site","building","floor", "space1", "space2", "space3", "space4");
+		for (String propField: propFields) {
+			if (props.containsKey(propField)) {
+				HashMap<String, Object> value = (HashMap<String, Object>) props.get(propField);
+				if (value != null && value.containsKey("id")) {
+					Long id = (Long) value.get("id");
+					builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(propField), String.valueOf(id), StringOperators.IS));
+				}
+			}
+		}
+		if (StringUtils.isNotEmpty(name)) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), String.valueOf(name), StringOperators.IS));
+		}
+
+		List<SpaceContext> spaceList = builder.get();
+		if(CollectionUtils.isNotEmpty(spaceList))
+		{
+			space = spaceList.get(0);
+		}
+		return space;
+	}
 }

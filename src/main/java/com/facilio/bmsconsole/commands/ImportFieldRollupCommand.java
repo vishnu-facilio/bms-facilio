@@ -41,9 +41,27 @@ public class ImportFieldRollupCommand extends FacilioCommand {
             FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
             LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(addedBaseSpaceIds, ","));
         }
+        List<String> spaceModules = Arrays.asList(FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.BASE_SPACE);
+        if (spaceModules.contains(importProcessContext.getModule().getName()) || (importProcessContext.getModule().getExtendModule() != null && spaceModules.contains(importProcessContext.getModule().getExtendModule().getName()))) {
+            ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+
+            if (recordList != null && CollectionUtils.isNotEmpty(recordList.values())) {
+                FacilioContext jobContext = new FacilioContext();
+                FacilioField idField = FieldFactory.getIdField(ModuleFactory.getBaseSpaceModule());
+                Condition condition = CriteriaAPI.getCondition(idField, StringUtils.join(recordList.values(), ","), NumberOperators.EQUALS);
+                Criteria criteria = new Criteria();
+                criteria.addAndCondition(condition);
+                Map<String, Criteria> moduleCriteriaMap = new HashMap<>();
+                moduleCriteriaMap.put(FacilioConstants.ContextNames.BASE_SPACE, criteria);
+                jobContext.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP, moduleCriteriaMap);
+                FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
+                LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(recordList.values(), ","));
+            }
+        }
         List<String> rollupModulesList = Arrays.asList(FacilioConstants.ContextNames.TENANT_CONTACT, FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
         if (rollupModulesList.contains(importProcessContext.getModule().getName())) {
             ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+
             if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_CONTACT)) {
                 FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
                 c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
