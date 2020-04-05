@@ -4943,7 +4943,13 @@ public class TransactionChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getAllFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new getAllFloorPlanCommand());
 
+		return c;
+	}
+	
 
 	public static FacilioChain disassociateClientFromSiteChain() {
 		FacilioChain c = getDefaultChain();

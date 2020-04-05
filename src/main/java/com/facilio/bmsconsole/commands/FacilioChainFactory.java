@@ -2273,4 +2273,9 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
+	public static FacilioChain getFloorPlanChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new getFloorPlanCommand());
+		return c;
+	}
 }

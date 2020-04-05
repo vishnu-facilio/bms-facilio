@@ -90,4 +90,10 @@ public class FloorPlanAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FLOOR_PLAN, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN));
 		return SUCCESS;
 	}
+	public String getAllFloorPlanData() throws Exception {
+		FacilioChain c = TransactionChainFactory.getAllFloorPlanChain();
+		c.execute();
+		setResult(FacilioConstants.ContextNames.FLOOR_PLANS, c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLANS));
+		return SUCCESS;
+	}
 }

@@ -12,9 +12,11 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -343,6 +345,38 @@ public enum CardLayout {
 			return returnValue;
 		}
 	},
+	FLOORPLAN_LAYOUT_1 ("floorplan_layout_1") {
+		@Override
+		public Object execute(WidgetCardContext cardContext) throws Exception {
+			JSONObject cardParams = cardContext.getCardParams();
+			
+			String title = (String) cardParams.get("title");
+			Long floorPlanId = (Long) cardParams.get("floorPlanId");
+
+
+			
+		      GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+	                  .table(ModuleFactory.getFloorPlanModule().getTableName())
+	                  .select(FieldFactory.getFloorPlanFields())
+	  					.andCondition(CriteriaAPI.getCondition("Floor_Plan.ID", "id", String.valueOf(floorPlanId), NumberOperators.EQUALS));
+				List<Map<String, Object>> props = selectRecordBuilder.get();
+			
+				JSONObject returnValue = new JSONObject();
+				returnValue.put("title", title);
+				
+				if (props != null && !props.isEmpty()) {
+					returnValue.put("value", props.get(0));
+				}
+				else {
+					returnValue.put("value", null);
+
+				}
+
+
+			return returnValue;
+		}
+	},
+	
 	TABLE_LAYOUT_1("table_layout_1");
 	
 	private static final Logger LOGGER = Logger.getLogger(CardLayout.class.getName());
@@ -422,4 +456,18 @@ public enum CardLayout {
 	public static Map<String, CardLayout> getAllCardLayouts() {
 		return cardLayoutMap;
 	}
+	private JSONObject result;
+
+	public JSONObject getResult() {
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setResult(String key, Object result) {
+		if (this.result == null) {
+			this.result = new JSONObject();
+		}
+		this.result.put(key, result);			
+	}
+
 }
