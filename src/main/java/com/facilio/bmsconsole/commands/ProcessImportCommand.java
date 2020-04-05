@@ -693,8 +693,8 @@ public class ProcessImportCommand extends FacilioCommand {
 							throw new Exception("Value not found");
 						}
 					}
-					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus", "vendors");
-					if (lookupModuleList.contains("ticketstatus")) {
+					List<String> lookupModuleList = Arrays.asList("tenant", "ticketstatus", "vendors", "site");
+					if (lookupModuleList.contains(lookupField.getName())) {
 						throw new Exception("Value not found");
 					}
 
@@ -948,12 +948,6 @@ public class ProcessImportCommand extends FacilioCommand {
 			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
 			 {
 				siteId = siteMap.get(siteName.trim().toLowerCase());
-			 }
-			 else if (canAddNew)
-			 {
-				 siteId = siteMeta.addSite(siteName);
-				 recordsList.put("site", siteId);
-				 addedSpaceIdsList.add(siteId);
 			 } else {
 				 throw new ImportLookupModuleValueNotFoundException(siteName, row_no, fieldMapping.get(moduleName + "__site"), new Exception());
 			 }
