@@ -73,9 +73,9 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		}
 
 		Boolean constructHistoricalAutoClearEvent = (Boolean) context.get(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT);
-		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : false;
+		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : constructHistoricalAutoClearEvent;
 		
-		if(!constructHistoricalAutoClearEvent) //Not the last batch to be processed
+		if(!constructHistoricalAutoClearEvent) //Not the last eventsBatch to be processed for historical
 		{ 
 			HashMap<String,AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) context.get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
 			if(lastOccurrenceOfPreviousBatchMap != null && MapUtils.isNotEmpty(lastOccurrenceOfPreviousBatchMap)) { 

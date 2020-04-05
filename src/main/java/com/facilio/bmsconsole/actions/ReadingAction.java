@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -1183,7 +1184,26 @@ public class ReadingAction extends FacilioAction {
 	public void setInternalRuleIds(List<Long> internalRuleIds) {
 		this.internalRuleIds = internalRuleIds;
 	}
+	
+	private String internalRuleId;
 
+	public String getInternalRuleId() {
+		return internalRuleId;
+	}
+
+	public void setInternalRuleId(String internalRuleId) {
+		this.internalRuleId = internalRuleId;
+	}
+
+	public List<Long> getIdListFromInternalRuleId() {
+		List<String> listofStringNumbers = Arrays.asList(internalRuleId.split(","));
+		List<Long> listofRuleIds = new ArrayList<>();
+		for (String number : listofStringNumbers) {
+			listofRuleIds.add(Long.valueOf(number.trim()));
+		}
+		return listofRuleIds;
+	}
+	
 	public String runThroughRule() throws Exception {
 		
 		try {
@@ -1222,13 +1242,26 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
 
-		for(long ruleId:internalRuleIds)
-		{
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
-			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
-			runThroughRuleChain.execute(context);
-		}	
-		setResult("success", "Historical rule evaluation in the given period has been started for all the given rules");	
+		List<Long> ruleIds = null;
+		if(internalRuleIds != null && !internalRuleIds.isEmpty()) {
+			ruleIds = internalRuleIds;
+		}
+		else if(internalRuleId != null && !internalRuleId.isEmpty() && StringUtils.isNotEmpty(internalRuleId)) {
+			ruleIds = getIdListFromInternalRuleId();
+		}
+		
+		if(ruleIds != null && !ruleIds.isEmpty()) {
+			for(long ruleId:ruleIds)
+			{
+				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
+				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+				runThroughRuleChain.execute(context);
+			}	
+			setResult("success", "Historical rule evaluation in the given period has been started for all the given rules");
+		}
+		else {
+			setResult("success", "Requested RuleId List is Empty");			
+		}
 		return SUCCESS;	
 	}
 	
@@ -1242,8 +1275,21 @@ public class ReadingAction extends FacilioAction {
 	
 	public String runRollUpFieldRule() throws Exception
 	{
-		RollUpFieldUtil.runInternalBulkRollUpFieldRules(internalRuleIds);
-		setResult("success", "Rollup Field bulk execution has been started for the given rules");	
+		List<Long> ruleIds = null;
+		if(internalRuleIds != null && !internalRuleIds.isEmpty()) {
+			ruleIds = internalRuleIds;
+		}
+		else if(internalRuleId != null && !internalRuleId.isEmpty() && StringUtils.isNotEmpty(internalRuleId)) {
+			ruleIds = getIdListFromInternalRuleId();
+		}
+		
+		if(ruleIds != null && !ruleIds.isEmpty()) {
+			RollUpFieldUtil.runInternalBulkRollUpFieldRules(ruleIds);	
+			setResult("success", "Rollup Field bulk execution has been started for the given rules");
+		}
+		else {
+			setResult("success", "Requested RuleId List is Empty");			
+		}
 		return SUCCESS;	
 	}
 	

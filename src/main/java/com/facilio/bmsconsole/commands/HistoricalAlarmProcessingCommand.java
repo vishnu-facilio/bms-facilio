@@ -110,6 +110,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			{
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
+				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
 				addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 				addEvent.execute();
@@ -129,10 +130,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		{
 			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 			addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
+			addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 			addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
 			addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 			addEvent.execute();
-			
+		
 			Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 			if(alarmOccurrenceCount != null) {
 				totalAlarmOccurrenceCount += alarmOccurrenceCount;

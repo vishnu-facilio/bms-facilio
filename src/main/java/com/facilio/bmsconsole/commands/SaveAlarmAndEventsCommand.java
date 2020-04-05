@@ -147,15 +147,20 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				}
 			}
 			
-			HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
-			for (String key : alarmOccurrenceMap.keySet()) {
-				PointedList<AlarmOccurrenceContext> alarmOccurrenceList = alarmOccurrenceMap.get(key);
-				if(alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty() && alarmOccurrenceList.size() > 1) {
-					AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = alarmOccurrenceList.get(alarmOccurrenceList.size() - 2);
-					lastOccurrenceOfPreviousBatchMap.put(key, lastOccurrenceOfPreviousBatch);	
+			Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+			isHistorical = (isHistorical == null) ? false : isHistorical;
+			if(isHistorical) 
+			{
+				HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
+				for (String key : alarmOccurrenceMap.keySet()) {
+					PointedList<AlarmOccurrenceContext> alarmOccurrenceList = alarmOccurrenceMap.get(key);
+					if(alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty() && alarmOccurrenceList.size() > 1) {
+						AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = alarmOccurrenceList.get(alarmOccurrenceList.size() - 2);
+						lastOccurrenceOfPreviousBatchMap.put(key, lastOccurrenceOfPreviousBatch);	
+					}
 				}
-			}
-			context.put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
+				context.put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);		
+			}	
 		}
 		
 		if (MapUtils.isNotEmpty(alarmMap)) {
