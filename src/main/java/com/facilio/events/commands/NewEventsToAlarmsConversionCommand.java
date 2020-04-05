@@ -72,15 +72,28 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			eventKeys.add(messageKey);
 		}
 
+		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
+		
 		Boolean constructHistoricalAutoClearEvent = (Boolean) context.get(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT);
 		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : constructHistoricalAutoClearEvent;
 		
-		if(!constructHistoricalAutoClearEvent) //Not the last eventsBatch to be processed for historical
+		HashMap<String,AlarmOccurrenceContext> latestAlarmOccuranceMap = new HashMap<String,AlarmOccurrenceContext>();
+		for(AlarmOccurrenceContext latestAlarmOccuranceContext:latestAlarmOccurance) {
+			latestAlarmOccuranceMap.put(latestAlarmOccuranceContext.getAlarm().getKey(), latestAlarmOccuranceContext);
+		}
+		
+		if(!constructHistoricalAutoClearEvent) //If not the last eventsBatch to be processed for historical
 		{ 
 			HashMap<String,AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) context.get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
 			if(lastOccurrenceOfPreviousBatchMap != null && MapUtils.isNotEmpty(lastOccurrenceOfPreviousBatchMap)) { 
 				for (String key : lastOccurrenceOfPreviousBatchMap.keySet()) {
 					AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = lastOccurrenceOfPreviousBatchMap.get(key);
+					AlarmOccurrenceContext latestAlarmOccuranceContext = latestAlarmOccuranceMap.get(key);
+					
+					if(latestAlarmOccuranceContext != null && latestAlarmOccuranceContext.getId() == lastOccurrenceOfPreviousBatch.getId()) {
+						continue;
+					}
+					
 					PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
 					if (pointedList == null) { // adding previousBatch lastOccurrence as the first element in the list, preceding latestAlarmOccurrence
 						pointedList = new PointedList<>();
@@ -92,7 +105,6 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		}
 		
 		clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
-		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
 		for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
 			String key = alarmOccurrenceContext.getAlarm().getKey();
 			PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);

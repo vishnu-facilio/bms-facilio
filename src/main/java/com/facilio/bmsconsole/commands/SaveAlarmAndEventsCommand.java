@@ -158,6 +158,10 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 						AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = alarmOccurrenceList.get(alarmOccurrenceList.size() - 2);
 						lastOccurrenceOfPreviousBatchMap.put(key, lastOccurrenceOfPreviousBatch);	
 					}
+					else if(alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty() && alarmOccurrenceList.size() == 1){
+						AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
+						lastOccurrenceOfPreviousBatchMap.put(key, lastOccurrenceOfPreviousBatch);
+					}
 				}
 				context.put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);		
 			}	
