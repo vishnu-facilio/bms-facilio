@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,7 +37,9 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 	@SuppressWarnings("null")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
+		
+		final long maximumDailyEventRuleJobsPerOrg = 10000l; 
+
 		long id = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
@@ -49,12 +52,12 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		}
 		
 		if (id == -1 || range == null || range.getStartTime() == -1 || range.getEndTime() == -1) {
-			throw new IllegalArgumentException("In sufficient params for running historical reading rule");
+			throw new IllegalArgumentException("In sufficient params for running historical reading rule.");
 		}
 		
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
 		if (rule == null || !(rule instanceof ReadingRuleContext)) {
-			throw new IllegalArgumentException("Invalid alarm rule id to run through historical data");
+			throw new IllegalArgumentException("Invalid alarm rule id to run through historical data.");
 		}
 		
 		List<Long> finalResourceIds = new ArrayList<Long>();
@@ -84,7 +87,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		}
 		if(finalResourceIds == null || finalResourceIds.isEmpty())
 		{
-			throw new Exception("Not a valid Inclusion/Exclusion of Resources for the given rule ");
+			throw new IllegalArgumentException("Not a valid Inclusion/Exclusion of Resources for the given rule.");
 		}
 		
 		if(isScaledFlow)
@@ -94,10 +97,28 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			DateRange firstInterval = intervals.get(0);
 			DateRange lastInterval = intervals.get(intervals.size()-1);
 			
-			List<WorkflowRuleResourceLoggerContext> currentRuleResourceLoggerList = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(rule.getId(), finalResourceIds);
-			if(currentRuleResourceLoggerList != null && !currentRuleResourceLoggerList.isEmpty())
+			long activeCurrentRuleResourceLogs = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(rule.getId(), finalResourceIds);
+			if(activeCurrentRuleResourceLogs > 0)
 			{
-				throw new Exception("Historical already In-Progress for the selected rule and resource");
+				throw new Exception("Rule evaluation is already on progress for the selected asset(s).");
+			}
+			
+			long requestedDailyJobsCount = intervals.size() * finalResourceIds.size();
+			long activeDailyEventRuleJobsAtPresent = WorkflowRuleHistoricalLogsAPI.getActiveDailyWorkflowRuleHistoricalLogsCount();	
+			
+			long noOfJobsCanbeCreatedAtPresent = maximumDailyEventRuleJobsPerOrg - activeDailyEventRuleJobsAtPresent;
+			if(noOfJobsCanbeCreatedAtPresent < 0) {
+				LOGGER.log(Level.ERROR, "Already present active historical event jobs are more than expected limit being "+(-1*noOfJobsCanbeCreatedAtPresent));
+				noOfJobsCanbeCreatedAtPresent = maximumDailyEventRuleJobsPerOrg;
+			}
+			
+			if(requestedDailyJobsCount > noOfJobsCanbeCreatedAtPresent) {
+				long assetCountLimitAtPresent = (noOfJobsCanbeCreatedAtPresent/intervals.size()) - 1;
+				long intervalLimitAtPresent = (noOfJobsCanbeCreatedAtPresent/finalResourceIds.size()) - 2;
+				if(assetCountLimitAtPresent <= 0) {
+					throw new Exception("Please reduce the specified time range to stay within a period of " +intervalLimitAtPresent+ " days.");
+				}
+				throw new Exception("Please reduce the number of selected assets to " +assetCountLimitAtPresent+ " or the time range within " +intervalLimitAtPresent+ " days.");
 			}
 					
 			WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.setWorkflowRuleLoggerContext(rule.getId(), finalResourceIds.size(), range);

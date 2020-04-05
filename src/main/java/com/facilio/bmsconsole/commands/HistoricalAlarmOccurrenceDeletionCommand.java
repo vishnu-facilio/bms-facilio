@@ -93,7 +93,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		catch (Exception historicalRuleDeletionException) {
 			exceptionMessage = historicalRuleDeletionException.getMessage();
 			stack = historicalRuleDeletionException.getStackTrace();
-			LOGGER.severe("HISTORICAL RULE ALARM OCCURRENCE DELETION COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +  parentRuleResourceLoggerContext + " Exception -- " + exceptionMessage + " Trace -- " + stack);			
+			LOGGER.severe("HISTORICAL RULE ALARM OCCURRENCE DELETION COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +  parentRuleResourceLoggerContext + " Exception -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));			
 			throw historicalRuleDeletionException;		
 		}
 		return false;

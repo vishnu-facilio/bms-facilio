@@ -34,6 +34,8 @@ public class EventConstants {
 		public static final String EVENT_LIST = "events";
 		public static final String IS_HISTORICAL_EVENT = "isHistoricalEvent";
 		public static final String PREVIOUS_EVENT_META = "previousEventMeta";
+		public static final String CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT = "constructHistoricalAutoClearEvent";
+		public static final String LAST_OCCURRENCE_OF_PREVIOUS_BATCH = "lastOccurrenceOfPreviousBatch";
 		public static final String READING_VALUES = "readingValue";
 		public static final String FILEURL = "fileurl";
 		public static final String EVENT_PROPERTY = "eventProperty";

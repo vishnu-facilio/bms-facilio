@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
+import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -69,26 +72,49 @@ public class WorkflowRuleHistoricalLogsAPI {
 		return workflowRuleHistoricalLogsContextList;
 	}
 	
-	public static List<Long> getActiveWorkflowRuleHistoricalLogsByParentRuleResourceId(long parentRuleResourceId) throws Exception {
+	public static long getActiveWorkflowRuleHistoricalLogsCountByParentRuleResourceId(long parentRuleResourceId) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleHistoricalLogsFields());
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
+
+		Criteria subCriteria = new Criteria();
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+		subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal(), NumberOperators.EQUALS));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(Collections.singletonList(fieldMap.get("id")))
+				.select(Collections.singletonList(countField))
 				.table(ModuleFactory.getWorkflowRuleHistoricalLogsModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
+				.andCriteria(subCriteria)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleResourceId"), "" +parentRuleResourceId, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<Long> workflowRuleHistoricalLogIds = new ArrayList<Long>();
+		long activeWorkflowRuleHistoricalLogsCount = 0l;
 		
 		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop : props ) {
-				Long workflowRuleHistoricalLogContextId = (Long) prop.get("id");
-				workflowRuleHistoricalLogIds.add(workflowRuleHistoricalLogContextId);
-			}
+			activeWorkflowRuleHistoricalLogsCount = (long) props.get(0).get("id");
 		}
-		return workflowRuleHistoricalLogIds;
+		return activeWorkflowRuleHistoricalLogsCount;
+	}
+	
+	public static long getActiveDailyWorkflowRuleHistoricalLogsCount() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleHistoricalLogsFields());
+		
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("status"));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(countField))
+				.table(ModuleFactory.getWorkflowRuleHistoricalLogsModule().getTableName())
+				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
+				.orCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal(), NumberOperators.EQUALS));		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		long activeDailyEventRuleJobsCountForCurrentOrg = 0l;
+		
+		if (props != null && !props.isEmpty()) {
+			activeDailyEventRuleJobsCountForCurrentOrg = (long) props.get(0).get("status");
+		}
+		return activeDailyEventRuleJobsCountForCurrentOrg;
 	}
 	
 	public static void updateWorkflowRuleHistoricalLogsContext(WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext) throws Exception {

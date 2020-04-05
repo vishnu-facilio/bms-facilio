@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
@@ -70,6 +72,25 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			eventKeys.add(messageKey);
 		}
 
+		Boolean constructHistoricalAutoClearEvent = (Boolean) context.get(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT);
+		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : false;
+		
+		if(!constructHistoricalAutoClearEvent) //Not the last batch to be processed
+		{ 
+			HashMap<String,AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) context.get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
+			if(lastOccurrenceOfPreviousBatchMap != null && MapUtils.isNotEmpty(lastOccurrenceOfPreviousBatchMap)) { 
+				for (String key : lastOccurrenceOfPreviousBatchMap.keySet()) {
+					AlarmOccurrenceContext lastOccurrenceOfPreviousBatch = lastOccurrenceOfPreviousBatchMap.get(key);
+					PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
+					if (pointedList == null) { // adding previousBatch lastOccurrence as the first element in the list, preceding latestAlarmOccurrence
+						pointedList = new PointedList<>();
+						alarmOccurrenceMap.put(key, pointedList);
+					}
+					pointedList.add(lastOccurrenceOfPreviousBatch);
+				}
+			}
+		}
+		
 		clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
 		for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
@@ -82,40 +103,43 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			}
 			pointedList.add(alarmOccurrenceContext);
 		}
-
+		
 		List<BaseEventContext> additionEventsCreated = new ArrayList<>();
 		for (BaseEventContext baseEvent : baseEvents) {
 			processEventToAlarm(baseEvent, context, additionEventsCreated);
 		}
 		baseEvents.addAll(additionEventsCreated);
 
-		for (String key : eventKeys) {
-			PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
-			if (CollectionUtils.isEmpty(pointedList)) {
-				continue;
-			}
-
-			List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
-			for (AlarmOccurrenceContext alarmOccurrence : list) {
-				if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
-					BaseAlarmContext alarm = alarmOccurrence.getAlarm();
-					alarm = NewAlarmAPI.getAlarm(alarm.getId());
-					BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
-							AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
-					JSONObject info = new JSONObject();
-					info.put("field", "Severity");
-					info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
-					if (alarmOccurrence.getPreviousSeverity() != null){
-						info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
-					}
-					if (alarmOccurrence.getAlarm() != null && alarmOccurrence.getAlarm().getId() > 0) {
-						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
-					}
-					baseEvents.add(createdEvent);
-					processEventToAlarm(createdEvent, context, additionEventsCreated);
+		if(constructHistoricalAutoClearEvent) {
+			for (String key : eventKeys) {
+				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
+				if (CollectionUtils.isEmpty(pointedList)) {
+					continue;
 				}
-			}
+
+				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
+				for (AlarmOccurrenceContext alarmOccurrence : list) {
+					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
+						alarm = NewAlarmAPI.getAlarm(alarm.getId());
+						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
+								AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
+						JSONObject info = new JSONObject();
+						info.put("field", "Severity");
+						info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+						if (alarmOccurrence.getPreviousSeverity() != null){
+							info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
+						}
+						if (alarmOccurrence.getAlarm() != null && alarmOccurrence.getAlarm().getId() > 0) {
+							CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
+						}
+						baseEvents.add(createdEvent);
+						processEventToAlarm(createdEvent, context, additionEventsCreated);
+					}
+				}
+			}	
 		}
+		
 	}
 
 	private void processEventToAlarm(BaseEventContext baseEvent, Context context, List<BaseEventContext> additionEventsCreated) throws Exception {
@@ -171,6 +195,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 			// for first historical event
 			if (baseEvent.getCreatedTime() < alarmOccurrence.getCreatedTime()) {
+				mostRecent = false;
 				int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
 				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
 				pointedList.add(oldObjectIndex, alarmOccurrence);

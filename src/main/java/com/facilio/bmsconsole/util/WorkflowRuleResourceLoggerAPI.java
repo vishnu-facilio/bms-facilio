@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,12 +124,13 @@ public class WorkflowRuleResourceLoggerAPI {
 		return props;
 	}
 	
-	public static List<WorkflowRuleResourceLoggerContext> getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds) throws Exception {
+	public static long getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowRuleResourceLoggerFields())
+				.select(Collections.singletonList(countField))
 				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
 				.innerJoin("Workflow_Rule_Logger")
 				.on("Workflow_Rule_Resource_Logger.PARENT_RULE_LOGGER_ID = Workflow_Rule_Logger.ID")
@@ -138,13 +140,13 @@ public class WorkflowRuleResourceLoggerAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS));
 
-		
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<WorkflowRuleResourceLoggerContext> workflowRuleResourceLoggerContext = new ArrayList<WorkflowRuleResourceLoggerContext>();
-		if (props != null && !props.isEmpty()) {		
-			workflowRuleResourceLoggerContext  = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleResourceLoggerContext.class);		
-		}	
-		return workflowRuleResourceLoggerContext;
+		long activeResourceLevelJobsCountForCurrentRule = 0l;
+		
+		if (props != null && !props.isEmpty()) {
+			activeResourceLevelJobsCountForCurrentRule = (long) props.get(0).get("id");
+		}
+		return activeResourceLevelJobsCountForCurrentRule;
 	}
 	
 	public static void updateWorkflowRuleResourceLoggerContext(WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext) throws Exception {

@@ -247,8 +247,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	public boolean postExecute() throws Exception {
 		
 		long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
-		List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
-		if(activeRuleResourceGroupedLoggerIds.size() == 0)
+		long activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsCountByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
+		if(activeRuleResourceGroupedLoggerIds == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 			if(isFailed && !isManualFailed) {
@@ -280,7 +280,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			
 			if(!isManualFailed) {
 				CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
-				LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
+				LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" Exception -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));
 				LOGGER.log(Level.SEVERE, exceptionMessage);		
 			}
 			
@@ -288,8 +288,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
 			
 				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
-				List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
-				if(activeRuleResourceGroupedLoggerIds.size() == 0)
+				long activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsCountByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
+				if(activeRuleResourceGroupedLoggerIds == 0)
 				{
 					WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 					if(isFailed && !isManualFailed) {
