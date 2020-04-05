@@ -331,7 +331,6 @@ public class AgentApiV2 {
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsmap.get(AgentConstants.ID))
                     .andCondition(getDeletedTimeNullCondition(agentDataModule));
             List<Map<String, Object>> result = builder.get();
-            LOGGER.info(" count is " + result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent count ",e);

@@ -369,19 +369,32 @@
         <action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
         </action>
 
-        <action name="addBulkDevices" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusDevice">
-        </action>
+    </package>
 
-        <action name="addBulkPoints" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusPoint">
+    <package name="modbusDeviceImport" namespace="/api/v2/modbus/deviceImport" extends="agent">
+        <action name="import" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusDevice">
         </action>
-
         <action name="retry" class="com.facilio.agentv2.AgentAction" method="retry">
         </action>
-
-        <action name="pendingDevImports" class="com.facilio.agentv2.actions.AgentIdAction" method="getPendingControllerImports">
+        <action name="getPending" class="com.facilio.agentv2.actions.AgentIdAction" method="getPendingControllerImports">
+        </action>
+        <action name="ignore" class="com.facilio.agentv2.AgentAction" method="ignoreImport">
+        </action>
+        <action name="pendingCount" class="com.facilio.agentv2.actions.AgentIdAction" method="pendingDeviceImportCount">
         </action>
 
-        <action name="pendingPtImports" class="com.facilio.agentv2.actions.DeviceIdActions" method="getPenfingPointImports">
+    </package>
+
+    <package name="modbusPointImport" namespace="/api/v2/modbus/pointImport" extends="agent">
+        <action name="retry" class="com.facilio.agentv2.AgentAction" method="retry">
+        </action>
+        <action name="import" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusPoint">
+        </action>
+        <action name="getPending" class="com.facilio.agentv2.actions.DeviceIdActions" method="getPenfingPointImports">
+        </action>
+        <action name="pendingCount" class="com.facilio.agentv2.actions.DeviceIdActions" method="penfingPointImportsCount">
+        </action>
+        <action name="ignore" class="com.facilio.agentv2.AgentAction" method="ignoreImport">
         </action>
     </package>
 

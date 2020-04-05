@@ -44,4 +44,14 @@ public class DeviceIdActions extends AgentActionV2 {
         }
         return SUCCESS;
     }
+    public String penfingPointImportsCount(){
+        try{
+            setResult(AgentConstants.DATA,ModbusImportUtils.getPendingPointImportCount(deviceId));
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting pending point imports count for agentId "+deviceId+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
 }

@@ -627,4 +627,16 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+    public String ignoreImport(){
+        try{
+            ModbusImportUtils.ignoreImport(getId());
+            ok();
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while ignoring import "+getId()+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
 }
