@@ -225,6 +225,9 @@ public class PeopleAPI {
 		}
 	
 		PeopleContext existingPeople = getPeopleForId(person.getId());
+		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+			throw new IllegalArgumentException("Email Id associated with this employee is empty");
+		}
     	
         if(appDomain != null) {
 			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
@@ -270,6 +273,9 @@ public class PeopleAPI {
 		       }
 		}
 		PeopleContext existingPeople = getPeopleForId(person.getId());
+		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+			throw new IllegalArgumentException("Email Id associated with this contact is empty");
+		}
 		if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
         	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
@@ -310,6 +316,9 @@ public class PeopleAPI {
 		       }
 		}
 		PeopleContext existingPeople = getPeopleForId(person.getId());
+		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+			throw new IllegalArgumentException("Email Id associated with this contact is empty");
+		}
     	
         if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
@@ -351,6 +360,9 @@ public class PeopleAPI {
 		       }
 		}
 	    PeopleContext existingPeople = getPeopleForId(person.getId());
+	    if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+			throw new IllegalArgumentException("Email Id associated with this contact is empty");
+		}
 		if(appDomain != null) {
         	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
         	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {

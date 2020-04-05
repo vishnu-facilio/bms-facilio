@@ -573,6 +573,8 @@ public class FacilioAuthAction extends FacilioAction {
 			invitation.put("email", user.getEmail());
 			invitation.put("orgname", org.getName());
 			invitation.put("userid", user.getOuid());
+			invitation.put("isVerified", user.isUserVerified());
+			
 		} else {
 			invitation.put("error", "link_expired");
 		}

@@ -34,7 +34,7 @@ public class AddTenantUnitSpaceRelationCommand extends FacilioCommand{
 		TenantContext tenant = (TenantContext)context.get(FacilioConstants.ContextNames.RECORD);
 		Boolean spacesUpdate = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.SPACE_UPDATE, false);
 		
-		if(spacesUpdate && CollectionUtils.isNotEmpty(tenant.getSpaces())) {
+		if(spacesUpdate != null && spacesUpdate && CollectionUtils.isNotEmpty(tenant.getSpaces())) {
 	     
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);

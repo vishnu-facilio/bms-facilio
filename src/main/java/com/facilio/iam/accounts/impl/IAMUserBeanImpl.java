@@ -193,11 +193,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public IAMUser acceptInvitev2(String token, String password) throws Exception {
 		IAMUser user = getUserFromToken(token);
-		user.setPassword(password);
-		long orgId=(user.getOrgId());
-		
-		if(IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
-			return user;
+		if(user != null) {
+			 if(!user.isUserVerified()) {
+				user.setPassword(password);
+				if(IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
+					return user;
+				}
+				return null;
+			 }
+			 return user;
 		}
 		return null;
 	}
@@ -954,6 +958,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMUser appUser = getFacilioUserV3(user.getUserName(), identifier);
 		if (appUser != null) {
 			user.setUid(appUser.getUid());
+			user.setUserVerified(appUser.getUserVerified());
 		}
 		else {
 			addUserEntryV3(user, orgId);

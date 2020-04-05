@@ -29,6 +29,8 @@ public class User extends IAMUser {
 		setAppDomain(user.getAppDomain());
 		setIamOrgUserId(user.getIamOrgUserId());
 		setUserName(user.getUserName());
+		setUserVerified(user.isUserVerified());
+		setUserStatus(user.isActive());
 	
 	}
 
