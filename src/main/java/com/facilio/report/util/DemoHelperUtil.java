@@ -10,8 +10,10 @@ public class DemoHelperUtil {
 	
 	public static Long getEndTime(FacilioModule module, DateRange dateRange) {
 		Long endTime = System.currentTimeMillis();
-		if (endTime < dateRange.getEndTime()) {
-			endTime = dateRange.getEndTime();
+		if(dateRange != null) {
+		if (endTime >= dateRange.getEndTime()) {
+			return dateRange.getEndTime();
+		}
 		}
 		return endTime;
 	}
