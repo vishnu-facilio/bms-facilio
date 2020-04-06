@@ -1837,4 +1837,38 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		}
 		return space;
 	}
+	
+	public static Set<Long> getBaseSpaceParentIds(List<Long> spaceIds) throws Exception {
+		Set<Long> parentIds = new HashSet<>();
+		List<BaseSpaceContext> baseSpaces = getBaseSpaces(spaceIds);
+		for(BaseSpaceContext baseSpace: baseSpaces) {
+			addParentIds(baseSpace, parentIds);
+		}
+		return parentIds;
+	}
+	
+	public static void addParentIds(BaseSpaceContext space, Set<Long> parentIds) throws Exception {
+		if(space.getSiteId() > 0 && space.getSpaceTypeEnum() != SpaceType.SITE){
+			parentIds.add(space.getSiteId());
+		}
+		if(space.getBuildingId() > 0 && space.getSpaceTypeEnum() != SpaceType.BUILDING){
+			parentIds.add(space.getBuildingId());
+		}
+		if(space.getFloorId() > 0 && space.getSpaceTypeEnum() != SpaceType.FLOOR){
+			parentIds.add(space.getFloorId());
+		}
+		if(space.getSpaceId1() > 0){
+			parentIds.add(space.getSpaceId1());
+		}
+		if(space.getSpaceId2() > 0){
+			parentIds.add(space.getSpaceId2());
+		}
+		if(space.getSpaceId3() > 0){
+			parentIds.add(space.getSpaceId3());
+		}
+		if(space.getSpaceId4() > 0){
+			parentIds.add(space.getSpaceId4());
+		}
+	}
+	
 }

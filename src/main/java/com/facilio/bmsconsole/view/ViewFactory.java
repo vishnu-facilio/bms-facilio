@@ -142,8 +142,8 @@ public class ViewFactory {
 //		views.put("approval_approved", getApprovedApproval().setOrder(order++));
 //		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
 //		views.put("approval_all", getAllApproval().setOrder(order++));
-		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
-		views.put("approval_requested", getRequestedStateApproval().setOrder(order++));
+		views.put("approval_myrequests", getMyRequestWorkorders("myrequests").setOrder(order++));
+		views.put("approval_requested", getRequestedStateApproval("requested").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 
 		order = 1;
@@ -163,11 +163,13 @@ public class ViewFactory {
 		views.put("resolved", getAllResolvedWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
-		views.put("myrequests", getMyRequestWorkorders().setOrder(order++));
+		views.put("myrequests", getMyRequestWorkorders("myrequests").setOrder(order++));
 		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
-		views.put("tenantWorkorder", getMyRequestWorkorders().setOrder(order++));
+		views.put("tenantWorkorder", getMyRequestWorkorders("tenantWorkorder").setOrder(order++));
+		views.put("pendingapproval", getRequestedStateApproval("pendingapproval").setOrder(order++));
+		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
 		order = 1;
@@ -1897,7 +1899,7 @@ public class ViewFactory {
 		return rejectedApproval;
 	}
 	
-	public static FacilioView getRequestedStateApproval() {
+	public static FacilioView getRequestedStateApproval(String viewName) {
 		
 		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();
@@ -1934,9 +1936,10 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
 		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("requested");
+		rejectedApproval.setName(viewName);
 		rejectedApproval.setDisplayName("Pending Approval");
 		rejectedApproval.setCriteria(criteria);
+		rejectedApproval.setHidden(true);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
 	}
@@ -2914,7 +2917,7 @@ public class ViewFactory {
 		return reportView;
 	}
 
-	private static FacilioView getMyRequestWorkorders() {
+	private static FacilioView getMyRequestWorkorders(String viewName) {
 
 		Criteria criteria = new Criteria();
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
@@ -2929,7 +2932,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
 		FacilioView myAllWorkordersView = new FacilioView();
-		myAllWorkordersView.setName("myall");
+		myAllWorkordersView.setName(viewName);
 		myAllWorkordersView.setDisplayName("My Work Orders");
 		myAllWorkordersView.setCriteria(criteria);
 		myAllWorkordersView.setSortFields(sortFields);

@@ -1,17 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class DisassociateTenantSpaceRelationCommand extends FacilioCommand {
 
@@ -21,11 +24,15 @@ public class DisassociateTenantSpaceRelationCommand extends FacilioCommand {
 		Long tenantId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		Long spaceId = (Long) context.get(FacilioConstants.ContextNames.SPACE);
 		 if (tenantId != null && tenantId > 0 && spaceId != null && spaceId >0) {
-	            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-	                    .table(ModuleFactory.getTenantSpacesModule().getTableName())
-	                    .andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenantId", String.valueOf(tenantId), NumberOperators.EQUALS))
-	            		.andCondition(CriteriaAPI.getCondition("SPACE", "space", String.valueOf(spaceId), NumberOperators.EQUALS));
-	            context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
+			 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
+				Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		        DeleteRecordBuilder<? extends ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
+						.module(module)
+						.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), String.valueOf(spaceId), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"),  String.valueOf(tenantId), NumberOperators.EQUALS))
+						;
+	            context.put(FacilioConstants.ContextNames.ROWS_UPDATED, deleteBuilder.delete());
 	        }
 		
 		return false;

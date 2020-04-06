@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +51,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -1176,30 +1174,11 @@ public class TenantsAPI {
 
 }
 	
-	
-	public static void checkSpaceOccupancy(long siteId, List<BaseSpaceContext> spaces) throws Exception {
-		List<Long> childrenIds = spaces.stream().map(space -> space.getId()).collect(Collectors.toList());
-		FacilioModule module = ModuleFactory.getTenantSpacesModule();
-		List<FacilioField> fields = FieldFactory.getTenantSpacesFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(new HashSet<>())
-				.table(module.getTableName())
-				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), childrenIds, BuildingOperator.BUILDING_IS))
-				;
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
-			long count = (long) props.get(0).get("count");
-			if (count > 0) {
-				throw new IllegalArgumentException(childrenIds.size() == 1 ? "One" : "Some" + " of the space is already occupied by another tenant");
-			}
-		}
-		
+	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId) throws Exception {
+		return fetchTenantSpaces(tenantId, true);
 	}
 	
-	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId) throws Exception {
+	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId, boolean fetchSpaceDetails) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
 		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -1208,8 +1187,11 @@ public class TenantsAPI {
 				  .beanClass(TenantSpaceContext.class)
 				  .select(Collections.singletonList(tenantSpaceFieldMap.get("space")))
 				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), NumberOperators.EQUALS))
-				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("space"))
 				  ;
+		
+		if (fetchSpaceDetails) {
+			builder.fetchSupplement((LookupField)tenantSpaceFieldMap.get("space"));
+		}
 		
 		List<TenantSpaceContext> tenantSpaces = builder.get();
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {

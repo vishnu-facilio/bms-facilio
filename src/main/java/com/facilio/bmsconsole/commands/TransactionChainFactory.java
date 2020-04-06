@@ -209,6 +209,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain v2AddTenantChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateTenantSpaceCommand());
 			c.addCommand(SetTableNamesCommand.getForTenants());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTenantCommand());
@@ -222,9 +223,9 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain v2UpdateTenantChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateTenantSpaceCommand());
 			c.addCommand(new UpdateTenantCommand());
 			c.addCommand(new AddTenantUserCommand());
-			c.addCommand(new DeleteTenantSpaceRelationCommand());
 			c.addCommand(new AddTenantSpaceRelationCommand());
 			c.addCommand(new AddTenantUnitSpaceRelationCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
