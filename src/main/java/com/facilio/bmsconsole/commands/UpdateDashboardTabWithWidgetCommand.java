@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
+import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -16,6 +10,12 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 
@@ -24,10 +24,13 @@ public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 		
 		// TODO Auto-generated method stub
 		DashboardTabContext dashboardTabContext = (DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
+		DashboardContext dashboardContext = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboardTabContext != null) {
+			if (dashboardContext != null && dashboardContext.getId() > 0) {
+				DashboardUtil.updateDashboard(dashboardContext);
+			}
 			
 			DashboardUtil.updateDashboardTab(dashboardTabContext);
-			
 			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(null,dashboardTabContext.getId());
 			
 			JSONObject widgetMapping = new JSONObject();
