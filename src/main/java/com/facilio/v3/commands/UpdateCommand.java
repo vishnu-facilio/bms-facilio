@@ -42,7 +42,7 @@ public class UpdateCommand extends FacilioCommand {
         int totalCount = 0;
 
         for (ModuleBaseWithCustomFields record: recordMap.get(module.getName())) {
-            if(record != null && record.getId() > 0) {
+            if(record == null || record.getId() < 0) {
                 continue;
             }
 
