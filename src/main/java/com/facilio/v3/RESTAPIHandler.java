@@ -1,9 +1,9 @@
 package com.facilio.v3;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
-import com.facilio.bmsconsole.commands.GenerateSearchConditionCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +16,7 @@ import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -228,11 +229,21 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
+        addWorkflowChain(transactionChain);
+
         FacilioContext context = transactionChain.getContext();
 
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, createObj);
         transactionChain.execute();
+    }
+
+    private static void addWorkflowChain(Chain chain) {
+        chain.addCommand(new ExecuteStateFlowCommand());
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+        chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
     }
 
     private static void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
@@ -262,6 +273,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
+
+        addWorkflowChain(transactionChain);
 
         FacilioContext context = transactionChain.getContext();
 
