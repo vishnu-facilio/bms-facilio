@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -17,7 +18,7 @@ public class CheckForPeopleDuplicationCommand extends FacilioCommand {
 		List<PeopleContext> peopleList = (List<PeopleContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(peopleList)) {
 			for (PeopleContext people : peopleList) {
-				if(PeopleAPI.checkForDuplicatePeople(people)) {
+				if(StringUtils.isNotEmpty(people.getEmail()) && PeopleAPI.checkForDuplicatePeople(people)) {
 					throw new IllegalArgumentException("People with the same email id already exists");
 				}
 			}

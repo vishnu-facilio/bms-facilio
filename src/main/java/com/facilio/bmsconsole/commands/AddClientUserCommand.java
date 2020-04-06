@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -30,16 +32,16 @@ public class AddClientUserCommand extends FacilioCommand {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 				List<FacilioField> fields = modBean.getAllFields(module.getName());
+				
+				FacilioModule ccModule = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+				List<FacilioField> ccFields = modBean.getAllFields(ccModule.getName());
+			
 				EventType eventType = (EventType) context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE,
 						EventType.CREATE);
 
 				if (eventType == EventType.CREATE) {
 					ContactsContext primarycontact = addDefaultClientPrimaryContact(client);
 					RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(client.getPrimaryContactEmail())) {
-						ClientContactContext clientContact = getDefaultClientContact(client);
-						PeopleAPI.addClientPrimaryContactAsPeople(clientContact);
-					}
 				} else {
 					if (StringUtils.isNoneEmpty(client.getPrimaryContactPhone())) {
 						ContactsContext existingcontactForPhone = ContactsAPI
@@ -53,11 +55,16 @@ public class AddClientUserCommand extends FacilioCommand {
 							existingcontactForPhone.setEmail(client.getPrimaryContactEmail());
 							RecordAPI.updateRecord(existingcontactForPhone, module, fields);
 						}
-						if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(client.getPrimaryContactEmail())) {
-							ClientContactContext clientContact = getDefaultClientContact(client);
-							PeopleAPI.addClientPrimaryContactAsPeople(clientContact);
-						}
 					}
+				}
+				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					ClientContactContext cc = getDefaultClientContact(client);
+					List<ClientContactContext> primarycontatsIfAny = PeopleAPI.getClientContacts(cc.getClient().getId(), true);
+					ClientContactContext clientPrimaryContact = null;
+					if(CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
+						clientPrimaryContact = primarycontatsIfAny.get(0);
+					}
+					PeopleAPI.addParentPrimaryContactAsPeople(cc, ccModule, ccFields, cc.getClient().getId(), clientPrimaryContact);
 				}
 			}
 		}

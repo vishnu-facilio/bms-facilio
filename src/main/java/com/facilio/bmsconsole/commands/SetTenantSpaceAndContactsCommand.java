@@ -27,7 +27,7 @@ public class SetTenantSpaceAndContactsCommand extends FacilioCommand {
 			tenant.setSpaces(spaces);
 		}
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-		  List<TenantContactContext> tenantContacts = PeopleAPI.getTenantContacts(tenant.getId());
+		  List<TenantContactContext> tenantContacts = PeopleAPI.getTenantContacts(tenant.getId(), false);
 		  tenant.setPeopleTenantContacts(tenantContacts);
 		}
 		else {

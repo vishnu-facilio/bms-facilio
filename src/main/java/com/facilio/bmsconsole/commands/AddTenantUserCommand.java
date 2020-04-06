@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -34,15 +36,15 @@ public class AddTenantUserCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		
+		FacilioModule tcModule = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+		List<FacilioField> tcFields = modBean.getAllFields(tcModule.getName());
+		
 		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
 		if(eventType == EventType.CREATE) {
 			ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(tenant.getPrimaryContactEmail())) {
-				TenantContactContext tc = getDefaultTenantContact(tenant);
-				PeopleAPI.addTenantPrimaryContactAsPeople(tc);
-			}
 		}
 		else {
 			if(StringUtils.isNotEmpty(tenant.getPrimaryContactPhone())) {
@@ -57,10 +59,15 @@ public class AddTenantUserCommand extends FacilioCommand {
 					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
 				}
 			}
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(tenant.getPrimaryContactEmail())) {
-				TenantContactContext tc = getDefaultTenantContact(tenant);
-				PeopleAPI.addTenantPrimaryContactAsPeople(tc);
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+			TenantContactContext tc = getDefaultTenantContact(tenant);
+			List<TenantContactContext> primarycontatsIfAny = PeopleAPI.getTenantContacts(tc.getTenant().getId(), true);
+			TenantContactContext tenantPrimaryContact = null;
+			if(CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
+				tenantPrimaryContact = primarycontatsIfAny.get(0);
 			}
+			PeopleAPI.addParentPrimaryContactAsPeople(tc, tcModule, tcFields, tc.getTenant().getId(), tenantPrimaryContact);
 		}
 		
 		

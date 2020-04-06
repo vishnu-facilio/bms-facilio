@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -35,14 +36,14 @@ public class AddVendorContactsCommand extends FacilioCommand{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		
+		FacilioModule vcModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+		List<FacilioField> vcFields = modBean.getAllFields(vcModule.getName());
+	
 		 		
 		if(eventType == EventType.CREATE) {
 			ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(vendor.getPrimaryContactEmail())) {
-				VendorContactContext vendorContact = getDefaultVendorContact(vendor);
-				PeopleAPI.addVendorPrimaryContactAsPeople(vendorContact);
-			}
 		}
 		else {
 			if(StringUtils.isNotEmpty(vendor.getPrimaryContactPhone())) {
@@ -56,30 +57,19 @@ public class AddVendorContactsCommand extends FacilioCommand{
 					existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
 					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
 				}
-				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && StringUtils.isNotEmpty(vendor.getPrimaryContactEmail())) {
-					VendorContactContext vendorContact = getDefaultVendorContact(vendor);
-					PeopleAPI.addVendorPrimaryContactAsPeople(vendorContact);
-				}
 			}
 		}
+		
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+			VendorContactContext vc = getDefaultVendorContact(vendor);
+			List<VendorContactContext> primarycontatsIfAny = PeopleAPI.getVendorContacts(vc.getVendor().getId(), true);
+			VendorContactContext vendorPrimaryContact = null;
+			if(CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
+				vendorPrimaryContact = primarycontatsIfAny.get(0);
+			}
+			PeopleAPI.addParentPrimaryContactAsPeople(vc, vcModule, vcFields, vc.getVendor().getId(), vendorPrimaryContact);
+		}
 
-//		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
-//			for(ContactsContext contact : contacts) {
-//				
-//				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
-//					contact.setEmail(contact.getPhone());
-//				}
-//				contact.setVendor(vendor);
-//				contact.setContactType(ContactType.VENDOR);
-//				ContactsAPI.updatePortalUserAccess(contact, false);
-//				if(contact.getId() > 0) {
-//					RecordAPI.updateRecord(contact, module, fields);
-//				}
-//				else {
-//					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
-//				}
-//			}
-//		}
 		
 		return false;
 	}
