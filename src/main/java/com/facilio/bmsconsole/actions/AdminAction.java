@@ -61,6 +61,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import com.facilio.fw.TransactionBeanFactory;
+
 
 public class AdminAction extends ActionSupport {
 	/**
@@ -396,7 +398,7 @@ public class AdminAction extends ActionSupport {
 		long type = Long.parseLong(request.getParameter("shiftType"));
 
 
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);
 		bean.moveReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, durations, type);
 
 		return SUCCESS;

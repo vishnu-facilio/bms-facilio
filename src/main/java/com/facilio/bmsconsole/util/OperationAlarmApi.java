@@ -23,6 +23,8 @@ import java.sql.Time;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.facilio.modules.FieldFactory.getSiteIdField;
+
 public class OperationAlarmApi {
     private static final Logger LOGGER = LogManager.getLogger(OperationAlarmApi.class.getName());
     public static  void processOutOfCoverage(long startTime, long endTime) throws Exception {
@@ -50,6 +52,7 @@ public class OperationAlarmApi {
         FacilioModule readingDataMeta = modBean.getModule(FacilioConstants.ContextNames.READING_DATA_META);
         List<FacilioField> selectField = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
         selectField.addAll(FieldFactory.getReadingDataMetaFields());
+        selectField.add(getSiteIdField(resourceModule));
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(resourceModule.getTableName())
                 .select(selectField)
@@ -149,10 +152,10 @@ public class OperationAlarmApi {
         if (readings != null && !readings.isEmpty()) {
             for (ReadingContext reading: readings) {
                 long resourceId = reading.getParentId();
-                Map<String,Object> ddd = resourceList.stream().filter(i -> i.get("resourceId").equals(resourceId)).collect(Collectors.toList()).get(0);
-                Long operatingId = (Long) ddd.get("operatingHour");
+                Map<String,Object> resourcemap = resourceList.stream().filter(i -> i.get("resourceId").equals(resourceId)).collect(Collectors.toList()).get(0);
+                Long operatingId = (Long) resourcemap.get("operatingHour");
                 BusinessHoursContext businessHours = resourceBusinessHours.stream().filter(i -> i.getId() == operatingId).collect(Collectors.toList()).get(0);
-                evaluateOutOfSchedule(businessHours, reading, readingField, context,ddd);
+                evaluateOutOfSchedule(businessHours, reading, readingField, context, resourcemap);
             }
 
         }
@@ -163,7 +166,7 @@ public class OperationAlarmApi {
         Boolean value = (Boolean) reading.getData().get(readingField.getName());
         BusinessHoursContext.BusinessHourType type = BusinessHoursContext.BusinessHourType.valueOf(businessHoursContext.getBusinessHourTypeId());
         OperationAlarmEventContext event;
-        reading.setSiteId((long) resource.get("space"));
+        reading.setSiteId((long) resource.get("siteId"));
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
