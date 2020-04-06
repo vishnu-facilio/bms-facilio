@@ -970,7 +970,9 @@
                                         type = types[0];
                                         newMap.visitorType = type.id;
                                       }
-                                      newMap.host = currentUser.id;
+                                       contact = Module("contact").fetch([requester == currentUser.id])[0];
+                                       
+                                       newMap.host = contact.id;
                                       data.put(name,newMap);
                                     }
                                   }
