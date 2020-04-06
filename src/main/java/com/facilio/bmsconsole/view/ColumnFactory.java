@@ -152,6 +152,8 @@ public class ColumnFactory {
 
 		columnMap.put("clientcontact-default", getClientContactColumns());
 		columnMap.put("clientcontact-all", getHiddenClientContactColumns());
+
+		columnMap.put("employee-default", getEmployeeColumns());
 		
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		columnMap.put("task-all", getAllTasksColumns());
@@ -1195,6 +1197,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
+
+		return columns;
+	}
+
+	public static List<ViewField> getEmployeeColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("isOccupantPortalAccess", "Occupant Portal Access"));
+		columns.add(new ViewField("isAppAccess", "Application Access"));
+		columns.add(new ViewField("isLabour", "Is Labour"));
+		columns.add(new ViewField("isAssignable", "Is Assignable"));
 
 		return columns;
 	}

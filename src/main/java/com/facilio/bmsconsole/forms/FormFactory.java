@@ -95,6 +95,7 @@ public class FormFactory {
 		forms.put("tenant_contact_form", getTenantContactForm());
 		forms.put("new_vendor_contact_form", getNewVendorContactForm());
 		forms.put("client_contact_form", getClientContactForm());
+		forms.put("employee_form", geEmployeeContactForm());
 		forms.put("tenantunit_form", geTenantUnitSpaceForm());
 
 		return forms;
@@ -136,6 +137,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getNewVendorContactForm())
 						.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getClientContactForm())
 						.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, geTenantUnitSpaceForm())
+						.put(FacilioConstants.ContextNames.EMPLOYEE, geEmployeeContactForm())
 							
 						.build())
         			
@@ -337,6 +339,7 @@ public class FormFactory {
 		List<FacilioForm> vendorContactFormsList = Arrays.asList(getNewVendorContactForm());
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
 		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
+		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -362,7 +365,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.VENDOR_CONTACT, getFormMap(vendorContactFormsList))
 				.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getFormMap(clientContactFormsList))
 				.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, getFormMap(tenantUnitFormsList))
-					
+				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
+
 				.build();
 	}
 	
@@ -741,9 +745,20 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW VENDOR CONTACT");
 		form.setName("default_clientcontact_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getClientContactsFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	public static FacilioForm geEmployeeContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW EMPLOYEE");
+		form.setName("default_employee_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.EMPLOYEE));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getEmployeeContactsFormField());
 		form.setFormType(FormType.WEB);
 		return form;
 	}
@@ -1084,6 +1099,18 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.REQUIRED, "client", 4, 1));
 		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Primary Contact", Required.OPTIONAL, 5, 1));
+
+		return fields;
+	}
+
+	private static List<FormField> getEmployeeContactsFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("isAssignable", FieldDisplayType.DECISION_BOX, "Is Assignable", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isLabour", FieldDisplayType.DECISION_BOX, "Is Labour", Required.OPTIONAL, 5, 3));
+
 
 		return fields;
 	}
@@ -2029,6 +2056,7 @@ public class FormFactory {
 		
 		return fields;
 	}
+
 
 	private static List<FormField> getTenantUnitFormFields() {
 		List<FormField> fields = new ArrayList<>();

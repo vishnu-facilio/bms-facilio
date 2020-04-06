@@ -129,6 +129,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.OPERATION_ALARM, getOperationAlarmsModule());
 		moduleMap.put(ContextNames.SPACE, getSpaceModule());
 		moduleMap.put(ContextNames.TENANT_UNIT_SPACE, getTenantUnitSpaceModule());
+		moduleMap.put(ContextNames.EMPLOYEE, getEmployeeModule());
 
 		return moduleMap;
 	}
@@ -3622,6 +3623,14 @@ public class ModuleFactory {
 		module.setName("modbus import module");
 		module.setDisplayName("Modbus Import Module");
 		module.setTableName("Modbus_Import");
+		return module;
+	}
+
+	public static FacilioModule getEmployeeModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.EMPLOYEE);
+		module.setDisplayName("Employee");
+		module.setTableName("Employee");
 		return module;
 	}
 }
