@@ -78,6 +78,14 @@
         }
     </script>
     <script type="text/javascript">
+        function changeModulePage() {
+            var selectedOption = "deleteReadings?orgid=" + $("#orgid").val()
+                + "&" + "assetcategory=" + $("#assetcategory").val() + "&" + "assetId=" + $("#assetId").val() + "&" + "moduleId=" + $("#moduleId").val();
+            location.href = selectedOption;
+
+        }
+    </script>
+    <script type="text/javascript">
         function changeselectPage() {
             var selectedOption = "deleteReadings?orgid=" + $("#orgid").val()
                 + "&" + "assetcategory=" + $("#assetcategory").val() + "&" + "assetId=" + $("#assetId").val() + "&" + "selectfields=" + $("#selectfields").val();
@@ -225,9 +233,9 @@
 
 <%--        <br> <br> <br>--%>
 
-        <label for="fieldId"><h5>
-            Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-        <select name="fieldId" id="fieldId">
+        <label for="moduleId"><h5>
+            Module List :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <select name="moduleId" id="moduleId" onChange="changeModulePage()">
             <option value="" disabled selected>Select</option>
             <%
 
@@ -235,33 +243,50 @@
                     long parentCategoryId = Long.parseLong(request.getParameter("assetcategory"));
                     reading = bean.getAssetReadings(parentCategoryId);
                     for (FacilioModule list : reading) {
-                        for (FacilioField fields : list.getFields()) {
-                            if ((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))) {
-                                if ((fields.getName().equals("totalEnergyConsumption")
-                                        || fields.getName().equals("phaseEnergyR")
-                                        || fields.getName().equals("phaseEnergyY")
-                                        || fields.getName().equals("phaseEnergyB"))
-                                        || (fields.getDataTypeEnum() == FieldType.NUMBER
-                                        || fields.getDataTypeEnum() == FieldType.DECIMAL)
-                                        && ((NumberField) fields).isCounterField()) {
+//                        for (FacilioField fields : list.getFields()) {
             %>
-            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
+            <option value="<%=list.getModuleId()%>"<%=(request.getParameter("moduleId") != null && request.getParameter("moduleId").equals(list.getModuleId() + "")) ? "selected" : " "%>><%=list.getDisplayName()%>
             </option>
-
             <%
-                }
-            } else {%>
-            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
-            </option>
-            <% }
             }
-            }
+           // }
             }
             %>
         </select>
         <br>
         <br>
         <br>
+        <label for="fieldId"><h5>
+            Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <select name="fieldId" id="fieldId">
+            <option value="" disabled selected>Select</option>
+            <%
+
+                if ((request.getParameter("moduleId") != null)) {
+                    long parentCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+                    reading = bean.getAssetReadings(parentCategoryId);
+                    for (FacilioModule list : reading) {
+                        if ((request.getParameter("moduleId") != null && request.getParameter("moduleId").equals(list.getModuleId() + ""))) {
+                        for (FacilioField fields : list.getFields()) {%>
+            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
+            </option>
+            <%
+                        }
+                    }
+                    }
+                }
+            %>
+        </select>
+
+
+        <br>
+        <br>
+        <br>
+
+
+
+
+
 <%--        <label for="email">--%>
 <%--            <h5>Email:</h5>--%>
 <%--        </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;--%>

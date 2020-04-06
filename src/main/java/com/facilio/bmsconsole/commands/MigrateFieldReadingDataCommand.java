@@ -70,7 +70,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                 List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
                 LOGGER.debug("Reading Ids ---> " + readingDataIds.size() );
                 LOGGER.debug("Reading Ids ---> " + readingDataIds );
-                deleteReadings(sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
+                updateReadingsToNull(sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
 //                if (batchParentIds != null && batchParentIds.size() > 0) {
 //                    for (long assetId : batchParentIds) {
 //                        deleteReadings(assetId, sourceField, sourceModule, sourcefields, sourcefieldMap, readingDataIds, true);
@@ -121,7 +121,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
         chain.execute(context);
     }
 
-    public static void deleteReadings(FacilioField targetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
+    public static void updateReadingsToNull(FacilioField targetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
 
         ReadingContext reading = new ReadingContext();
         // assetFields.forEach(field -> {

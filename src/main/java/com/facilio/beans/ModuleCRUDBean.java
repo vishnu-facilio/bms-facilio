@@ -103,7 +103,7 @@ public interface ModuleCRUDBean {
 
 	public  void  readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long selectfields)throws Exception;
 
-	public  void  deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long categoryId)throws Exception;
+	public void deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long categoryId, long moduleId) throws Exception;
 
 	public void moveReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long categoryId, long duration, long type) throws Exception;
 

@@ -986,7 +986,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	}
 	@Override
-	public void deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId)
+	public void deleteReadings(long orgId, long fieldId, long assetId, long startTtime, long endTtime, long assetCatorgryId, long moduleId)
 			throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context=new FacilioContext();
@@ -996,6 +996,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(ContextNames.START_TIME, startTtime);
 		context.put(ContextNames.END_TIME, endTtime);
 		context.put(ContextNames.CATEGORY_ID, assetCatorgryId);
+		context.put(ContextNames.MODULE_ID, moduleId);
 		FacilioChain deleteReading = TransactionChainFactory.deleteAssetReadings();
 		deleteReading.execute(context);
 

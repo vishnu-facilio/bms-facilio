@@ -355,7 +355,10 @@ public class AdminAction extends ActionSupport {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgid"));
 		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
-		long fieldId = Long.parseLong(request.getParameter("fieldId"));
+		long moduleId = Long.parseLong(request.getParameter("moduleId"));
+		if (request.getParameterMap().containsKey("fieldId")) {
+			long fieldId = Long.parseLong(request.getParameter("fieldId"));
+		}
 		long assetId = Long.parseLong(request.getParameter("assetId"));
 		String fromdateTtime = request.getParameter("fromTtime");
 		fromdateTtime = fromdateTtime.replace('T', ' ');
@@ -365,15 +368,8 @@ public class AdminAction extends ActionSupport {
 		long startTtime = convertDatetoTTime(fromdateTtime);
 		long endTtime = convertDatetoTTime(todateendTtime);
 
-		long TtimeLimit = TimeUnit.DAYS.convert(endTtime - startTtime, TimeUnit.MILLISECONDS);
-
-		if (TtimeLimit < 61) {
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.deleteReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId);
-		} else {
-			throw new IllegalArgumentException(
-					"Number of Days Should not be more than 60 days. Your Calculated days : " + TtimeLimit);
-		}
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.deleteReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, moduleId);
 
 		return SUCCESS;
 
