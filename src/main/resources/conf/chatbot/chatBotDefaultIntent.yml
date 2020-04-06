@@ -110,7 +110,6 @@
    type: 1
    localId : 7
    withParams : true
-   confirmationNeeded : true
    confirmationText : "Thanks for providing me with the information. I have created a service request for you."
    childIntentNames:
    - "system_update_wo_note_intent"
@@ -202,7 +201,15 @@
                                    
                                    confirmation = {};
                                    
-                                   confirmation.mainField = "subject";
+                                   confirmation.mainField = "Subject";
+                                   
+                                   fieldNameList = [];
+                                   
+                                   fieldNameList.add("Subject");
+                                   fieldNameList.add("Urgency");
+                                   fieldNameList.add("More Information");
+                                   
+                                   confirmation.fieldNameList = fieldNameList;
                                    
                                    fields = {};
                                    fields.put("Subject",data.subject);
@@ -729,6 +736,7 @@
    localId : 15
    withParams : true
    editable : true
+   confirmationText : "Thanks for providing me the information. Please confirm the details to create and send the invites."
    params:
    -
       name : 'names'
@@ -996,6 +1004,16 @@
                               
                                   confirmation = {};
                                   confirmation.mainField = "Name";
+                                  
+                                  fieldNameList = [];
+                                   
+                                   fieldNameList.add("Name");
+                                   fieldNameList.add("Phone");
+                                   fieldNameList.add("Email");
+                                   fieldNameList.add("Vistor type");
+                                   fieldNameList.add("Host");
+                                   
+                                   confirmation.fieldNameList = fieldNameList;
                               
                                  fieldList = [];
                                  for each index,name in data.names {
@@ -1065,16 +1083,470 @@
        sample: "I want to invite guests"
     -
        sampleLocalId : 3
-       sample: "invite user"
+       sample: "[Mike](PERSON) is coming [tomorrow](DATE)"
     -
        sampleLocalId : 4
        sample: "invite people"
     -
        sampleLocalId : 5
-       sample: "[san](person) and [john](person) are coming tomorrow"
+       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE)"
     -
        sampleLocalId : 6
-       sample: "I want to invite guests"
+       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE) [post lunch](TIME)"
+    -
+       sampleLocalId : 7
+       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE) in the [first half](TIME)"
+    -
+       sampleLocalId : 8
+       sample: "[Mike](PERSON) and [Andrea](PERSON) will be visiting the [coming Monday](DATE) [first half](TIME)"
+    -
+       sampleLocalId : 9
+       sample: "[Andrea](PERSON) is coming for an interview [tomorrow](DATE) [morning at 10](TIME)"
+    -
+       sampleLocalId : 10
+       sample: "[Mike](PERSON) and [Andrea](PERSON) from Caterpillar are coming to fix the leak [tomorrow](DATE) at [11 AM](TIME)"
+    -
+       sampleLocalId : 11
+       sample: "The caterpillar guys are coming [tomorrow](DATE) "
+    -
+       sampleLocalId : 12
+       sample: "Arrange a visitor pass for the IT team [tomorrow](DATE) "
+    -
+       sampleLocalId : 13
+       sample: "Arrange a pass for the Caterpillar team [tomorrow](DATE)  at [11 AM](TIME)"
+    -
+       sampleLocalId : 14
+       sample: "I need to arrange a vendor pass for [Mike](PERSON) and [Andrea](PERSON) from Caterpillar whos coming [tomorrow](DATE)  at [11 AM](TIME)"
+    -
+       sampleLocalId : 15
+       sample: "Create one-day pass for [Mike](PERSON)"
+    -
+       sampleLocalId : 16
+       sample: "Arrange a day pass for [Mike](PERSON)"
+    -
+       sampleLocalId : 17
+       sample: "Arrange a half-day pass for [Mike](PERSON)"
+    -
+       sampleLocalId : 18
+       sample: "Arrange a three hour pass for [Mike](PERSON) at [11 AM](TIME)"
+    -
+       sampleLocalId : 19
+       sample: "Allow the contractor to enter my premises [tomorrow](DATE) "
+    -
+       sampleLocalId : 20
+       sample: "Generate a pass for the contractor to fix the leak [tomorrow](DATE) "
+    -
+       sampleLocalId : 21
+       sample: "Generate a pass for Quality FM [tomorrow](DATE) at [11 AM](TIME)"
+  
+  
+  
+  
+- 
+   name: "system_edit_invite_intent"
+   displayName: "Edit Invites"
+   type: 1
+   localId : 16
+   withParams : true
+   params:
+   -
+      name : 'inviteId'
+      dataType : 2
+      localId : 1
+      typeConfig : 1
+   -
+      name : 'name'
+      dataType : 1
+      localId : 2
+      typeConfig : 2
+      editable : true
+      updateParamTriggerText : 'Edit Visitor Name'
+   -
+      name : 'visitorType'
+      dataType : 2
+      localId : 2
+      typeConfig : 2
+      editable : true
+      updateParamTriggerText : 'Edit type'
+   -
+      name : 'phone'
+      dataType : 1
+      # mlType : 1 will be added later
+      localId : 3
+      typeConfig : 2
+      editable : true
+      updateParamTriggerText : 'Edit phone number'
+   -
+      name : 'email'
+      dataType : 1
+     #mlType : 1 will be added later
+      localId : 4
+      typeConfig : 2
+      editable : true
+      updateParamTriggerText : 'Edit email'
+   -
+      name : 'host'
+      dataType : 2
+      localId : 5
+      typeConfig : 2
+      editable : true
+      updateParamTriggerText : 'Edit host'
+      
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                                
+                                log "data --- "+data;
+                                
+                                visit = null;
+                                if(data.inviteId == null) {
+                                  range1 = date().getDateRange("Today");
+                                  visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
+                                   
+                                   if(visits.size() > 1) {
+                                        visitList = [];
+                                        for each index,visit in visits {
+                                   
+                                             visitMap = {};
+                                             visitMap.id = visit.id;
+                                             visitMap.label = visit.visitorName+"''s Visit";
+                                             visitList.add(visitMap);
+                                        }
+                                        return chatBot().param("inviteId","Here are your invites. Please select the invite you want to update.",visitList);
+                                   }
+                                   else {
+                                      data.inviteId = visits.get(0).id;
+                                      visit = visits.get(0);
+                                   }
+                                }
+                                
+                                if(data.inviteId != null) {
+                                   if(visit == null) {
+                                      visit = Module("visitorlogging").fetch([id == data.inviteId])[0];
+                                   }
+                                   if(data.name == null) {
+                                      data.name = visit.visitorName;
+                                   }
+                                   if(data.visitorType == null) {
+                                      data.visitorType = visit.visitorType.id;
+                                   }
+                                   if(data.phone == null) {
+                                      data.phone = visit.visitorPhone;
+                                   }
+                                   if(data.email == null) {
+                                      data.email = visit.visitorEmail;
+                                   }
+                                   if(data.host == null) {
+                                      data.host = visit.host.id;
+                                   }
+                                }
+                                
+                                if(data.client_message != null) {
+                                  
+                                  if(data.client_message == "Edit host") {
+                                     return chatBot().param("host","Select host",[id > 0],"contact");
+                                  }
+                                  if(data.client_message == "Edit Visitor Name") {
+                                     return chatBot().param("name","Enter the name");
+                                  }
+                                  if(data.client_message == "Edit type") {
+                                     return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
+                                  }
+                                  if(data.client_message == "Edit email") {
+                                    return chatBot().param("email","Enter the email");
+                                  }
+                                  if(data.client_message == "Edit phone number") {
+                                    return chatBot().param("phone","Enter the phone number");
+                                  }
+                                }
+                              
+                                if(data.isConfirmed == true) {
+                                  return chatBot().execute();
+                                }
+                                else {
+                              
+                                  confirmation = {};
+                                  confirmation.mainField = "Name";
+                                  
+                                  fieldNameList = [];
+                                   
+                                   fieldNameList.add("Name");
+                                   fieldNameList.add("Phone");
+                                   fieldNameList.add("Email");
+                                   fieldNameList.add("Vistor type");
+                                   fieldNameList.add("Host");
+                                   
+                                   confirmation.fieldNameList = fieldNameList;
+                              
+                                  fields = {};
+                                  fields.put("Name",data.name);
+                                  fields.put("Phone",data.phone);
+                                  fields.put("Email",data.email);
+                           
+                                  host = Module("contact").fetch([id == data.host])[0];
+                           
+                                  fields.put("Host",host.name);
+                           
+                                  visitorType = Module("visitorType").fetch([id == data.visitorType])[0];
+                                  fields.put("Vistor type",visitorType.name);
+                                   
+                                  confirmation.fields = fields;
+                                  
+                                  return chatBot().confirm(confirmation);
+                                }
+
+                              }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data) {
+    
+                                         resultMap = {};
+                                         
+                                         visit = {};
+                                         visit.visitorName = data.name;
+                                         visit.visitorType.id = data.visitorType;
+                                         visit.visitorPhone = data.phone;
+                                         visit.visitorEmail = data.email; 
+                                         visit.host.id = data.host; 
+                                         
+                                         Module("visitorlogging").update([id == data.inviteId],visit);
+                                         
+                                         resultMap.put("returnText","Invite Updated successfully.");
+                                        
+                                         return resultMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "I need to reschedule an invite"
+    -
+       sampleLocalId : 2
+       sample: "I want to change the checkin times"
+    -
+       sampleLocalId : 3
+       sample: "I want to reschedule today's invite to another day"
+    -
+       sampleLocalId : 4
+       sample: "Change visit to another time"
+    -
+       sampleLocalId : 5
+       sample: "Change visit to another day"
+    -
+       sampleLocalId : 6
+       sample: "Mike is delayed by four hours"
+    -
+       sampleLocalId : 7
+       sample: "Postpone the visit by 4 hours"
+    -
+       sampleLocalId : 8
+       sample: "Push the invite to next week Monday"
+    -
+       sampleLocalId : 9
+       sample: "Edit invites"
+    -
+       sampleLocalId : 10
+       sample: "Edit guest list"
+    -
+       sampleLocalId : 11
+       sample: "Edit visitors coming today"
+    -
+       sampleLocalId : 12
+       sample: "Reschedule an invite"
+    -
+       sampleLocalId : 13
+       sample: "Alter invite"
+    -
+       sampleLocalId : 14
+       sample: "change invite to another time"
+    -
+       sampleLocalId : 15
+       sample: "change invite to another day"
+    -
+       sampleLocalId : 16
+       sample: "make changes to visit"
+    -
+       sampleLocalId : 17
+       sample: "make changes to invite"
+    -
+       sampleLocalId : 18
+       sample: "postpone invite"
+    -
+       sampleLocalId : 19
+       sample: "Modify invite"
+    -
+       sampleLocalId : 20
+       sample: "Modify visitors list"
+    -
+       sampleLocalId : 21
+       sample: "Modify visit list"
+    -
+       sampleLocalId : 16
+       sample: "Modify guest list"
+    -
+       sampleLocalId : 17
+       sample: "edit guest list"
+    -
+       sampleLocalId : 18
+       sample: "edit checkin time"
+    -
+       sampleLocalId : 19
+       sample: "change check-in time"
+    -
+       sampleLocalId : 20
+       sample: "modify visitors name"
+    -
+       sampleLocalId : 21
+       sample: "edit name of visitors"
+       
+       
+       
+       
+- 
+   name: "system_delete_invite_intent"
+   displayName: "Delete Invites"
+   type: 1
+   localId : 17
+   withParams : true
+   params:
+   -
+      name : 'inviteId'
+      dataType : 2
+      localId : 1
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Change Visit'
+      
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                                
+                                log "data --- "+data;
+                                
+                                if(data.client_message != null) {
+                                  
+                                  if(data.client_message == "Change Visit") {
+                                     data.inviteId = null;
+                                  }
+                                }
+                                
+                                visit = null;
+                                if(data.inviteId == null) {
+                                  range1 = date().getDateRange("Today");
+                                  visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
+                                   
+                                   if(visits.size() > 1) {
+                                        visitList = [];
+                                        for each index,visit in visits {
+                                   
+                                             visitMap = {};
+                                             visitMap.id = visit.id;
+                                             visitMap.label = visit.visitorName+"''s Visit";
+                                             visitList.add(visitMap);
+                                        }
+                                        return chatBot().param("inviteId","Here are your invites. Please select the invite you want to delete.",visitList);
+                                   }
+                                   else {
+                                      data.inviteId = visits.get(0).id;
+                                      visit = visits.get(0);
+                                   }
+                                }
+                                
+                                if(data.inviteId != null) {
+                                   if(visit == null) {
+                                      visit = Module("visitorlogging").fetch([id == data.inviteId])[0];
+                                   }
+                                   if(data.name == null) {
+                                      data.name = visit.visitorName;
+                                   }
+                                   if(data.visitorType == null) {
+                                      data.visitorType = visit.visitorType.id;
+                                   }
+                                   if(data.phone == null) {
+                                      data.phone = visit.visitorPhone;
+                                   }
+                                   if(data.email == null) {
+                                      data.email = visit.visitorEmail;
+                                   }
+                                   if(data.host == null) {
+                                      data.host = visit.host.id;
+                                   }
+                                }
+                                
+                                if(data.isConfirmed == true) {
+                                  return chatBot().execute();
+                                }
+                                else {
+                              
+                                  confirmation = {};
+                                  confirmation.mainField = "Name";
+                                  
+                                  fieldNameList = [];
+                                   
+                                   fieldNameList.add("Name");
+                                   fieldNameList.add("Phone");
+                                   fieldNameList.add("Email");
+                                   fieldNameList.add("Vistor type");
+                                   fieldNameList.add("Host");
+                                   
+                                   confirmation.fieldNameList = fieldNameList;
+                              
+                                  fields = {};
+                                  fields.put("Name",data.name);
+                                  fields.put("Phone",data.phone);
+                                  fields.put("Email",data.email);
+                           
+                                  host = Module("contact").fetch([id == data.host])[0];
+                           
+                                  fields.put("Host",host.name);
+                           
+                                  visitorType = Module("visitorType").fetch([id == data.visitorType])[0];
+                                  fields.put("Vistor type",visitorType.name);
+                                   
+                                  confirmation.fields = fields;
+                                  
+                                  return chatBot().confirm(confirmation);
+                                }
+
+                              }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data) {
+    
+                                         resultMap = {};
+                                         Module("visitorlogging").delete([id == data.inviteId]);
+                                         
+                                         resultMap.put("returnText","Invite deleted successfully.");
+                                        
+                                         return resultMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "I need to cancel an invite"
+    -
+       sampleLocalId : 2
+       sample: "Delete invite"
+    -
+       sampleLocalId : 3
+       sample: "Cancel the meeting"
+    -
+       sampleLocalId : 4
+       sample: "Remove an invite"
+  
        
 - 
    name: "system_get_my_visitor_intent"
@@ -1093,19 +1565,15 @@
    invokeSamples:
     -
         sampleLocalId : 1
-        sample: "Manage visitors list"
+        sample: "Manage visitors"
     -
         sampleLocalId : 2
-        sample: "get my visitors list"
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        sample: "Who are coming in today"
+    -
+        sampleLocalId : 2
+        sample: "Who are coming in today"
+
+    
 - 
    name: "system_show_open_workorder_count_intent"
    displayName: "System show open workorder count Intent"
@@ -1149,24 +1617,7 @@
     -
        sampleLocalId : 2
        sample: "give me open wo count"
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+             
 - 
    name: "system_terminate_session_intent"
    displayName: "System Terminate Session Intent"
