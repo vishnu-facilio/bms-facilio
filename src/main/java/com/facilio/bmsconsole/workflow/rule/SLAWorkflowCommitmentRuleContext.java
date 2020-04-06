@@ -113,7 +113,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
     private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
-            SLAWorkflowAPI.getActions(escalations);
             int count = 0;
             for (SLAWorkflowEscalationContext escalation : escalations) {
                 count++;

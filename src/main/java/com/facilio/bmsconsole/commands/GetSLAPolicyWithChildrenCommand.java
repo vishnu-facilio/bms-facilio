@@ -32,8 +32,6 @@ public class GetSLAPolicyWithChildrenCommand extends FacilioCommand {
                 for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalation : slaPolicyEntityEscalations) {
                     allEscalations.addAll(escalation.getLevels());
                 }
-
-                SLAWorkflowAPI.getActions(allEscalations);
             }
             slaPolicyContext.setEscalations(slaPolicyEntityEscalations);
 

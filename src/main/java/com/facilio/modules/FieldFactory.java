@@ -1845,17 +1845,7 @@ public class FieldFactory {
         fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
-
-        return fields;
-    }
-
-    public static List<FacilioField> getSlaWorkflowEscalationActionFields() {
-        List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getSLAWorkflowEscalationActionModule();
-
-        fields.add(getIdField(module));
-        fields.add(getField("escalationId", "ESCALATION_ID", module, FieldType.NUMBER));
-        fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("actionArray", "ACTION_ARRAY", module, FieldType.STRING));
 
         return fields;
     }

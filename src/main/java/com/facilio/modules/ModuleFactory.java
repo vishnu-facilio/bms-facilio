@@ -563,15 +563,6 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getSLAWorkflowEscalationActionModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName("slaWorkflowEscalationAction");
-		module.setDisplayName("SLA Workflow Escalation Action");
-		module.setTableName("SLA_Workflow_Escalation_Action");
-
-		return module;
-	}
-
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();
 		slarule.setName("slarule");

@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.modules.FieldUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +68,24 @@ public class SLAWorkflowEscalationContext implements Serializable {
     }
     public void setActions(List<ActionContext> actions) {
         this.actions = actions;
+    }
+    public String getActionArray() {
+        if (CollectionUtils.isNotEmpty(actions)) {
+            try {
+                return FieldUtil.getAsJSONArray(actions, ActionContext.class).toJSONString();
+            } catch (Exception e) {}
+        }
+        return null;
+    }
+    public void setActionArray(String array) {
+        if (StringUtils.isNotEmpty(array)) {
+            try {
+                JSONParser parser = new JSONParser();
+                JSONArray jsonArray = (JSONArray) parser.parse(array);
+
+                actions = FieldUtil.getAsBeanListFromJsonArray(jsonArray, ActionContext.class);
+            } catch (Exception e) {}
+        }
     }
 
     public void addAction(ActionContext actionContext) {

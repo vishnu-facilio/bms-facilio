@@ -374,6 +374,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -381,7 +382,6 @@ public class TransactionChainFactory {
 				.addCommand(new ClearAlarmOnWOCloseCommand())
 				.addCommand(new ExecuteTaskFailureActionCommand())
 			);
-			c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			c.addCommand(new AddAttachmentCommand());

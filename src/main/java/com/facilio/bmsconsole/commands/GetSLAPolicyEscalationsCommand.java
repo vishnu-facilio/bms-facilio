@@ -22,8 +22,6 @@ public class GetSLAPolicyEscalationsCommand extends FacilioCommand {
                 for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalation : escalations) {
                     allEscalations.addAll(escalation.getLevels());
                 }
-
-                SLAWorkflowAPI.getActions(allEscalations);
             }
             context.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalations);
         }
