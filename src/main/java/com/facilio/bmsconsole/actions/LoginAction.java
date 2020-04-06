@@ -220,6 +220,7 @@ public class LoginAction extends FacilioAction {
 		FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 
 		return SUCCESS;
 	}
