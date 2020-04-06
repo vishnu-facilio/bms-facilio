@@ -1337,7 +1337,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultTenantUnitSpaceColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("name", "Space Name"));
+		columns.add(new ViewField("name", "Units"));
 		columns.add(new ViewField("building", "Building"));
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("tenant", "Tenant"));
