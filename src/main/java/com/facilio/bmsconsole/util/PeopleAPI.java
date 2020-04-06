@@ -683,6 +683,26 @@ public class PeopleAPI {
 		return tc.getTenant();
 	
 	}
+
+	public static VendorContext getVendorForUser(long ouId) throws Exception {
+		long pplId = PeopleAPI.getPeopleIdForUser(ouId);
+		if(pplId <= 0) {
+			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
+		}
+		VendorContactContext tc = (VendorContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
+		return tc.getVendor();
+
+	}
+
+	public static ClientContext getClientForUser(long ouId) throws Exception {
+		long pplId = PeopleAPI.getPeopleIdForUser(ouId);
+		if(pplId <= 0) {
+			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
+		}
+		ClientContactContext tc = (ClientContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, pplId);
+		return tc.getClient();
+
+	}
 	
 	public static void rollUpModulePrimarycontactFields(long id, String moduleName, String name, String email, String phone) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
