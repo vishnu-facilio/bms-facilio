@@ -89,7 +89,11 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 }
 
                 Long oldTime = (Long) FieldUtil.getValue(moduleRecord, dueField);
-                addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue);
+                if (oldTime != null && timeValue != null && oldTime.equals(timeValue)) {
+                    // skip updating
+                    continue;
+                }
+                addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue, slaEntity);
                 FieldUtil.setValue(moduleRecord, dueField, timeValue);
 
                 UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
@@ -144,9 +148,10 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         }
     }
 
-    private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate) throws Exception {
+    private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate, SLAEntityContext slaEntity) throws Exception {
         JSONObject infoJson = new JSONObject();
         infoJson.put("name", slaPolicy.getName());
+        infoJson.put("slaEntityName", slaEntity.getName());
         infoJson.put("oldDate", oldDate);
         infoJson.put("newDate", newDate);
 
