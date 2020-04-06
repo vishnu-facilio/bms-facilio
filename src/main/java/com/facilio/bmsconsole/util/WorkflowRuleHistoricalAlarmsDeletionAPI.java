@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.PreAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -31,6 +33,8 @@ public class WorkflowRuleHistoricalAlarmsDeletionAPI {
 	public static DateRange deleteEntireAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime, AlarmOccurrenceContext.Type type) throws Exception 
 	{		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId, type);
+		
+		deleteAllEventsInExactWindow(ruleId, resourceId, startTime, endTime, type);
 	
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{
@@ -120,5 +124,30 @@ public class WorkflowRuleHistoricalAlarmsDeletionAPI {
 		
 		deleteBuilder.andCriteria(criteria);
 		deleteBuilder.delete();			
+	}
+	
+	public static void deleteAllEventsInExactWindow(long ruleId, long resourceId,long startTime,long endTime, AlarmOccurrenceContext.Type type) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = null;
+		if(AlarmOccurrenceContext.Type.READING == type) {
+			moduleName = "readingevent";
+		}
+		else if(AlarmOccurrenceContext.Type.PRE_OCCURRENCE == type) {
+			moduleName = "preevent";
+		}
+		
+		if(moduleName == null) {
+			return;
+		}
+		FacilioModule eventModule = modBean.getModule(moduleName);
+	
+		DeleteRecordBuilder<AlarmOccurrenceContext> deleteBuilder = new DeleteRecordBuilder<AlarmOccurrenceContext>()
+				.module(eventModule)
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));	
+		
+		deleteBuilder.delete();	
 	}
 }
