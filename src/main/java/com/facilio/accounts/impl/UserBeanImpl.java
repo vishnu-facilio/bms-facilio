@@ -492,21 +492,18 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public User getUser(long appId, long orgId, long userId) throws Exception {
-
-		IAMUser iamUser = IAMUserUtil.getFacilioUser(orgId, userId);
-		if (iamUser != null) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 			
-			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, criteria, orgId, null);
-			List<Map<String , Object>> mapList = selectRecordBuilder.get();
-			if(CollectionUtils.isNotEmpty(mapList)) {
-				mapList.get(0).putAll(FieldUtil.getAsProperties(iamUser));
-				User user = createUserFromProps(mapList.get(0), true, true, false);
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, criteria, orgId, null);
+		List<Map<String , Object>> mapList = selectRecordBuilder.get();
+		if(CollectionUtils.isNotEmpty(mapList)) {
+			IAMUserUtil.setIAMUserPropsv3(mapList, orgId, false);
+			User user = createUserFromProps(mapList.get(0), true, true, false);
+			if(user.isActive()) {
 				return user;
 			}
 		}
-		
 		return null;
 	}
 

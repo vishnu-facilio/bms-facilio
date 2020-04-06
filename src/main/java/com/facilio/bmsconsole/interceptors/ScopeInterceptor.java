@@ -11,8 +11,10 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.audit.AuditData;
 import com.facilio.audit.DBAudit;
 import com.facilio.audit.FacilioAudit;
+import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -83,7 +85,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					AccountUtil.setCurrentAccount(account);
 				}
 				else {
-					LOGGER.log(Level.FATAL, "Invalid remote Screen");
+					LOGGER.log(Level.DEBUG, "Invalid remote Screen");
 					return Action.LOGIN;
 				}
 			}
@@ -101,14 +103,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					AccountUtil.setCurrentAccount(account);
 				}
 				else {
-					LOGGER.log(Level.FATAL, "Invalid Device screen");
+					LOGGER.log(Level.DEBUG, "Invalid Device screen");
 					return Action.LOGIN;
 				}
 			}
 			else {
 				User user = null;
 				if(iamAccount.getOrg() == null) {
-					LOGGER.log(Level.FATAL, "User seems to have been deactivated");
+					LOGGER.log(Level.DEBUG, "User seems to have been deactivated");
 					return Action.LOGIN;
 				}
 				Account tempAccount = new Account(iamAccount.getOrg(), user);
@@ -116,28 +118,28 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			
 				long appId = -1;
 				try {
-					appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
+					String appLinkName = null;
+					if(request.getAttribute("facilio.app.name") != null) {
+						appLinkName = (String)request.getAttribute("facilio.app.name");
+					}
+					if(StringUtils.isNotEmpty(appLinkName)) {
+						ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
+						if(application != null) {
+							appId = application.getId();
+						}
+					}
+					if(appId <= 0) {
+						appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
+					}
 				}
 				catch(Exception e) {
 					throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid appDomain");
 				}
 				if(iamAccount.getUser() != null) {
-					
 					user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-					if (user == null) {
-						Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
-						if(org != null) {
-							user = AccountUtil.getUserBean().getUser(appId, org.getOrgId(), iamAccount.getUser().getUid());
-							if(user == null) {
-								LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
-								return Action.LOGIN;
-								//return "unauthorized"
-							}
-							iamAccount.setOrg(org);
-						}
-						else {
-							throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
-						}
+					if(user == null) {
+						LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
+						return "unauthorized";
 					}
 				}
 				Account account = new Account(iamAccount.getOrg(), user);
@@ -256,7 +258,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				if (currentAccount != null) {
 					String useremail = currentAccount.getUser().getEmail();
 					if (! useremail.endsWith(FacilioProperties.getConfig("admin.domain"))) {
-						LOGGER.log(Level.FATAL, "you are not allowed to access this page from");
+						LOGGER.log(Level.DEBUG, "you are not allowed to access this page from");
 						return Action.LOGIN;
 					}
 				}

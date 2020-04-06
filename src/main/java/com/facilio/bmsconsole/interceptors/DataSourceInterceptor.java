@@ -65,14 +65,13 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				if (currentOrgDomain == null) {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
-				
 				if(appDomain.getOrgId() > 0) {
 					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				}
 				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
 				}
-				if(organization == null) {
+				else {
 					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);

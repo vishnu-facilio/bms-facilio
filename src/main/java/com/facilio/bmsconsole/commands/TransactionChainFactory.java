@@ -2731,6 +2731,7 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			return chain;
 		}
 
@@ -4311,6 +4312,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -4327,6 +4329,7 @@ public class TransactionChainFactory {
 		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());

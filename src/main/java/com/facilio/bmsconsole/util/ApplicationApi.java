@@ -28,6 +28,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -64,6 +65,18 @@ public class ApplicationApi {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getIdCondition(appId, ModuleFactory.getApplicationModule()));
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                ApplicationContext.class);
+        if (applications != null && !applications.isEmpty()) {
+            return applications.get(0);
+        }
+        return null;
+    }
+    
+    public static ApplicationContext getApplicationForLinkName(String appLinkName) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
         if (applications != null && !applications.isEmpty()) {

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,6 +21,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
 public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
@@ -31,6 +33,7 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 		InventoryRequestContext inventoryRequestContext = (InventoryRequestContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (inventoryRequestContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Map<Long, List<UpdateChangeSet>> map = null;
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			
@@ -44,7 +47,7 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 		 	  inventoryRequestContext.setRequestedFor(AccountUtil.getCurrentUser());
 			}
 			if (inventoryRequestContext.getId() > 0) {
-				RecordAPI.updateRecord(inventoryRequestContext, module, fields);
+				map = RecordAPI.updateRecord(inventoryRequestContext, module, fields, true);
 				if(inventoryRequestContext.getLineItems() != null) {
 					DeleteRecordBuilder<InventoryRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<InventoryRequestLineItemContext>()
 							.module(lineModule)
@@ -52,7 +55,6 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 					deleteBuilder.delete();
 					updateLineItems(inventoryRequestContext);
 					RecordAPI.addRecord(false, inventoryRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
-				
 				}
 			} else {
 				if(inventoryRequestContext.getRequestedTime() == -1) {
@@ -60,13 +62,11 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 				}
 				
 				inventoryRequestContext.setStatus(InventoryRequestContext.Status.REQUESTED);
-				RecordAPI.addRecord(true, Collections.singletonList(inventoryRequestContext), module, fields);
+				map = RecordAPI.addRecord(true, Collections.singletonList(inventoryRequestContext), module, fields, true);
 				updateLineItems(inventoryRequestContext);
 				RecordAPI.addRecord(false, inventoryRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
-			
 			}
-			
-			
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, map);
 			context.put(FacilioConstants.ContextNames.RECORD, inventoryRequestContext);
 		}
 		return false;
