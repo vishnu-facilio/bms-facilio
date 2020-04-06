@@ -736,6 +736,9 @@
    withParams : true
    editable : true
    confirmationText : "Thanks for providing me the information. Please confirm the details to create and send the invites."
+   childIntentNames:
+      - "system_edit_invite_intent"
+      - "system_delete_invite_intent"
    params:
    -
       name : 'names'
@@ -1064,6 +1067,7 @@
                                              invite.host.id= invitePerson.host;		
                                              invite.purposeOfVisit = 3;	
                                              invite.isPreregistered = true;
+                                             invite.expectedCheckInTime = date().now() + 10800000;
                                              
                                              VisitorLogging().add(invite);
                                          }
