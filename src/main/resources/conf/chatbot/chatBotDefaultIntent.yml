@@ -153,17 +153,16 @@
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data){
                              if(data.subject == null) {
-                                if(data.client_message != null && data.client_message == "Edit subject") {
-                                   return chatBot().param("subject","please edit your message for the request");
-                                }
-                                else {
-                                   return chatBot().param("subject","I will help you submit a service request. Can you provide me with some details?");
-                                }
+                                 return chatBot().param("subject","I will help you submit a service request. Can you provide me with some details?");
                              }
                              if(data.client_message != null && data.client_message == "Add attachment") {
                                 
                                 return chatBot().param("attachment","Add your attachment");
                              
+                             }
+                             if(data.client_message != null && data.client_message == "Edit subject") {
+                                   data.subject = null;
+                                   return chatBot().param("subject","please edit your message for the request");
                              }
                              if(data.client_message != null && (data.client_message == "Add urgency" || data.client_message == "Edit urgency")) {
                              
