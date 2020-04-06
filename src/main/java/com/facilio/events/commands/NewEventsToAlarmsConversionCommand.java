@@ -74,16 +74,16 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
 		
-		Boolean constructHistoricalAutoClearEvent = (Boolean) context.get(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT);
-		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : constructHistoricalAutoClearEvent;
+		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT); //For Historical Reading rule
+		isHistorical = (isHistorical == null) ? false : isHistorical;
 		
-		HashMap<String,AlarmOccurrenceContext> latestAlarmOccuranceMap = new HashMap<String,AlarmOccurrenceContext>();
-		for(AlarmOccurrenceContext latestAlarmOccuranceContext:latestAlarmOccurance) {
-			latestAlarmOccuranceMap.put(latestAlarmOccuranceContext.getAlarm().getKey(), latestAlarmOccuranceContext);
-		}
-		
-		if(!constructHistoricalAutoClearEvent) //If not the last eventsBatch to be processed for historical
+		if(isHistorical)
 		{ 
+			HashMap<String,AlarmOccurrenceContext> latestAlarmOccuranceMap = new HashMap<String,AlarmOccurrenceContext>();
+			for(AlarmOccurrenceContext latestAlarmOccuranceContext:latestAlarmOccurance) {
+				latestAlarmOccuranceMap.put(latestAlarmOccuranceContext.getAlarm().getKey(), latestAlarmOccuranceContext);
+			}
+			
 			HashMap<String,AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) context.get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
 			if(lastOccurrenceOfPreviousBatchMap != null && MapUtils.isNotEmpty(lastOccurrenceOfPreviousBatchMap)) { 
 				for (String key : lastOccurrenceOfPreviousBatchMap.keySet()) {
@@ -121,6 +121,9 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			processEventToAlarm(baseEvent, context, additionEventsCreated);
 		}
 		baseEvents.addAll(additionEventsCreated);
+		
+		Boolean constructHistoricalAutoClearEvent = (Boolean) context.get(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT);
+		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : constructHistoricalAutoClearEvent;
 
 		if(constructHistoricalAutoClearEvent) {
 			for (String key : eventKeys) {
