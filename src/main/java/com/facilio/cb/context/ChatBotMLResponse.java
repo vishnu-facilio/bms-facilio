@@ -3,25 +3,22 @@ package com.facilio.cb.context;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 public class ChatBotMLResponse {
 
 	String intent;
 	double accuracy;
 	boolean isNotAccurate;
-	
 	String answer;
 	
-	Map<String,String> mlParams;
+	JSONObject entityJson;
 	
-	public Map<String, String> getMlParams() {
-		return mlParams;
+	public JSONObject getEntityJson() {
+		return entityJson;
 	}
-	public void setMlParams(Map<String, String> mlParams) {
-		this.mlParams = mlParams;
-	}
-	public void addMlParams(String key,String value) {
-		this.mlParams = this.mlParams == null ? new HashMap<String, String>() : this.mlParams; 
-		this.mlParams.put(key, value);
+	public void setEntityJson(JSONObject entityJson) {
+		this.entityJson = entityJson;
 	}
 	public String getAnswer() {
 		return answer;

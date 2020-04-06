@@ -17,20 +17,9 @@ public class HandleInvalidQueryForSessionMessage extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		ChatBotModel model = (ChatBotModel) context.get(ChatBotConstants.CHAT_BOT_MODEL);
-		
 		ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
 		
-		ChatBotMLResponse mlResponse = (ChatBotMLResponse) context.get(ChatBotConstants.CHAT_BOT_ML_RESPONSE);
-		
-		if(model.getChatBotModelVersion().getAccuracyRate() > 0) {
-			if(model.getChatBotModelVersion().getAccuracyRate() > mlResponse.getAccuracy()) {
-				setInvalidQuery(mlResponse,session);
-			}
-		}
-		else if(ChatBotConstants.DEFAULT_ACCURACY_RATE > mlResponse.getAccuracy()) {
-			setInvalidQuery(mlResponse,session);
-		}
+		ChatBotIntent intent = (ChatBotIntent) context.get(ChatBotConstants.CHAT_BOT_INTENT);
 		
 		if(session != null) {
 			
@@ -47,8 +36,6 @@ public class HandleInvalidQueryForSessionMessage extends FacilioCommand {
 			
 			if(session.getState() == ChatBotSession.State.INVALID_QUERY.getIntVal()) {
 				
-				ChatBotIntent intent = ChatBotUtil.getIntent(model.getChatBotModelVersion().getId(), mlResponse.getIntent());
-				
 				context.put(ChatBotConstants.CHAT_BOT_INTENT,intent);
 				
 				JSONArray response = intent.executeActions(context, null);
@@ -56,20 +43,11 @@ public class HandleInvalidQueryForSessionMessage extends FacilioCommand {
 				session.setResponse(response.toJSONString());
 				session.setIntent(intent);
 				
-				ChatBotUtil.addChatBotSession(session);
-				
 				context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
 			}
 			
 		}
-		
 		return false;
 	}
 	
-	private void setInvalidQuery(ChatBotMLResponse mlResponse,ChatBotSession session) {
-		
-		mlResponse.setNotAccurate(true);
-		mlResponse.setIntent(ChatBotConstants.CHAT_BOT_INTENT_NOT_FOUND_INTENT);
-		session.setState(ChatBotSession.State.INVALID_QUERY.getIntVal());
-	}
 }

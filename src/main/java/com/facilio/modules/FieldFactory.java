@@ -7982,6 +7982,7 @@ public class FieldFactory {
         fields.add(getField("updateParamTriggerText", "UPDATE_PARAM_TRIGGER_TEXT", module, FieldType.STRING));
         fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("multipleAllowed", "IS_MULTIPLE_ALLOWED", module, FieldType.BOOLEAN));
         return fields;
     }
 
@@ -8002,6 +8003,7 @@ public class FieldFactory {
         fields.add(getField("parentSessionId", "PARENT_SESSION_ID", module, FieldType.NUMBER));
         fields.add(getField("confirmed", "IS_CONFIRMED", module, FieldType.BOOLEAN));
         fields.add(getField("suggestion", "SUGGESTION", module, FieldType.STRING));
+        fields.add(getField("params", "CONTEXT_PARAMS", module, FieldType.STRING));
 
         return fields;
     }

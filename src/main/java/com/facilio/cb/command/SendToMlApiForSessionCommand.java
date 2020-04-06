@@ -45,6 +45,12 @@ public class SendToMlApiForSessionCommand extends FacilioCommand {
 				intentName = (String) intentJson.get(ChatBotMLUtil.ML_INTENT_NAME_STRING);
 				
 				accuracy = (double) intentJson.get(ChatBotMLUtil.ML_INTENT_CONFIDENCE_STRING);
+				
+				JSONObject entityJson = (JSONObject)responseJSON.get(ChatBotWitAIUtil.ENTITY_STRING);
+				
+				if(entityJson != null) {
+					mlResponse.setEntityJson(entityJson);
+				}
 			}
 			else {
 				JSONObject responseJSON = ChatBotWitAIUtil.getIntentFromML(ChatBotUtil.getRequiredFieldFromQueryJson(session.getQueryJson()).toString());

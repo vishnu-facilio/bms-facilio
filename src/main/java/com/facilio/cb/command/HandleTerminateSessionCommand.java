@@ -27,8 +27,6 @@ public class HandleTerminateSessionCommand extends FacilioCommand {
 			
 			chatBotSessionConversation.setState(ChatBotSessionConversation.State.TERMINATE_GRACEFULLY_RISED.getIntVal());
 			
-			ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
-			
 			ChatBotIntent intent = ChatBotUtil.getIntent(model.getChatBotModelVersion().getId(), mlResponse.getIntent());
 			
 			context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
@@ -40,12 +38,11 @@ public class HandleTerminateSessionCommand extends FacilioCommand {
 			session.setState(ChatBotSession.State.TERMINATED_GRACEFULLY.getIntVal());
 			session.setResponse(returnString.toJSONString());
 			
-			ChatBotUtil.updateChatBotSession(session);
-			
 			context.put(ChatBotConstants.CHAT_BOT_SESSION, session);
 			context.put(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED, true);
 			
-			return true;
+			context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION,true);
+			
 		}
 		
 		return false;

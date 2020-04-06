@@ -25,50 +25,19 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			return false;
 		}
 		
-		ChatBotMLResponse chatBotMLResponse = (ChatBotMLResponse) context.get(ChatBotConstants.CHAT_BOT_ML_RESPONSE);
-		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 			
 		if(chatBotSessionConversation.getState() != ChatBotSessionConversation.State.REPLIED_INCORRECTLY.getIntVal()) { 		//correct case
 			
 			chatBotSessionConversation.setState(ChatBotSessionConversation.State.REPLIED_CORRECTLY.getIntVal());
 			
-			ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
-			
-			if(chatBotSessionConversation.getIntentParamId() > 0) {
-				ChatBotUtil.deleteAndAddSessionParam(chatBotSessionConversation.getIntentParamId(),chatBotSessionConversation.getChatBotSession().getId(),chatBotMLResponse.getAnswer());	// even user may enter wrong answer on that case ML will correct it, so answer is taken form mlResponse
-			}
-			
-			chatBotSessionConversation.getChatBotSession().setRecievedParamCount(chatBotSessionConversation.getChatBotSession().getRecievedParamCount()+1);
-			
-			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
-			
 			ChatBotIntent intent = chatBotSessionConversation.getChatBotSession().getIntent();
-			
-			if(intent.getContextWorkflow() != null) {
-				
-				ChatBotUtil.executeContextWorkflow(intent, chatBotSessionConversation.getChatBotSession(), context);
-				
-				return false;
-			}
 			
 			if(chatBotSessionConversation.getChatBotSession().getRequiredParamCount() <= chatBotSessionConversation.getChatBotSession().getRecievedParamCount()) {
 				
 				ChatBotSession session = chatBotSessionConversation.getChatBotSession();
 				
-				if(intent.isConfirmationNeeded() && (session.isConfirmed() == null || !session.isConfirmed())) {
-					
-					session.setState(State.WAITING_FOR_CONFIRMATION.getIntVal());
-					
-					ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddConfirmationCBSessionConversationParams(session);
-					
-					context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
-					
-					ChatBotUtil.updateChatBotSession(session);
-				}
-				else {
-					ChatBotUtil.executeIntentAction(session, intent, context);
-				}
+				ChatBotUtil.executeIntentAction(session, intent, context);
 				
 			}
 			else {
@@ -77,7 +46,7 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 				
 				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(remainingIntentParamList.get(0), chatBotSessionConversation.getChatBotSession(),null,null);
 				
-				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+				context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 			}
 			
 		}

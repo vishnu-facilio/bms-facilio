@@ -19,6 +19,12 @@ public class HandleInvalidQueryMessageForConversations extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		Boolean skipActionExecution = (Boolean) context.get(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION);
+		
+		if(skipActionExecution != null && skipActionExecution) {
+			return false;
+		}
+		
 		ChatBotModel model = (ChatBotModel) context.get(ChatBotConstants.CHAT_BOT_MODEL);
 		
 		ChatBotMLResponse mlResponse = (ChatBotMLResponse) context.get(ChatBotConstants.CHAT_BOT_ML_RESPONSE);
@@ -53,15 +59,13 @@ public class HandleInvalidQueryMessageForConversations extends FacilioCommand {
 			
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.REPLIED_INCORRECTLY.getIntVal()) {
 				
-				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
-				
 				ChatBotSessionConversation clonnedChatBotSessionConversation = chatBotSessionConversation.clone();
 				
 				clonnedChatBotSessionConversation.setState(intitialState);
 				
 				ChatBotUtil.addChatBotSessionConversation(clonnedChatBotSessionConversation);
 				
-				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, clonnedChatBotSessionConversation);
+				context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, clonnedChatBotSessionConversation);
 				
 				context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
 			}

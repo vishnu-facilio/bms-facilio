@@ -23,7 +23,7 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 		
 		ChatBotSession session = null;
 		
-		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
+		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION);
 		
 		List<ChatBotSuggestionContext> chatBotSuggestionContexts = new ArrayList<>();
 		
@@ -35,7 +35,7 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 				
 				chatBotSuggestionContexts.addAll(getDefaultSuggestionForConfirmationCard());
 				
-				List<ChatBotIntentParam> optionalIntextParams = ChatBotUtil.fetchRemainingOptionalChatBotIntentParams(session.getIntentId(), session.getId());
+				List<ChatBotIntentParam> optionalIntextParams = ChatBotUtil.fetchRemainingOptionalChatBotIntentParams(session.getIntentId(), session);
 				
 				List<Long> optionalIntentParamIds = new ArrayList<>();
 				if(optionalIntextParams != null) {
@@ -70,8 +70,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 				
 				chatBotSessionConversation.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
 				
-				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
-				
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
 				
 				return false;
@@ -81,8 +79,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, chatBotSuggestionContexts);
 				
 				chatBotSessionConversation.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
-				
-				ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
 				
 				return false;
 			}
@@ -111,7 +107,6 @@ public class FetchSugestionForChatBotIntent extends FacilioCommand {
 				
 				session.setSuggestion(FieldUtil.getAsJSONArray(chatBotSuggestionContexts, ChatBotSuggestionContext.class).toJSONString());
 				
-				ChatBotUtil.updateChatBotSession(session);
 			}
 		}
 		

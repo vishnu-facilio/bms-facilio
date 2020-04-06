@@ -17,6 +17,12 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		Boolean skipActionExecution = (Boolean) context.get(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION);
+		
+		if(skipActionExecution != null && skipActionExecution) {
+			return false;
+		}
+		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
 		ChatBotIntentParam intentParam = (ChatBotIntentParam) context.get(ChatBotConstants.CHAT_BOT_EDIT_ACTION_INTENT_PARAM);
@@ -29,7 +35,10 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 			
 			if(chatBotSessionConversation.getChatBotSession().getIntent().getContextWorkflow() != null) {
 				
-				ChatBotUtil.deleteSessionParam(intentParam.getId(), chatBotSessionConversation.getSessionId());
+				chatBotSessionConversation.getChatBotSession().addParamsObject("client_message", intentParam.getUpdateParamTriggerText());
+				
+//				chatBotSessionConversation.getChatBotSession().deleteParamObject(intentParam.getName());
+				
 				ChatBotUtil.executeContextWorkflow(chatBotSessionConversation.getChatBotSession().getIntent(), chatBotSessionConversation.getChatBotSession(), context);
 			}
 			else {
@@ -43,13 +52,15 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 				
 				newChatBotSessionConversation.setResponseString(json.toJSONString());
 				
-				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+				context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 				
 			}
 			chatBotSessionConversation.getChatBotSession().setState(ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal());
-			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
+			
+			chatBotSessionConversation.setState(ChatBotSessionConversation.State.REPLIED_CORRECTLY.getIntVal());
 			
 			context.put(ChatBotConstants.CHAT_BOT_SKIP_ACTION_EXECUTION, Boolean.TRUE);
+			
 			
 		}
 		return false;

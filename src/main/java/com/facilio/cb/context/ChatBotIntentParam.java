@@ -28,7 +28,16 @@ public class ChatBotIntentParam {
 	String addParamTriggerText;
 	String updateParamTriggerText;
 	long criteriaId = -1;
+	boolean multipleAllowed;
 	
+	public boolean isMultipleAllowed() {
+		return multipleAllowed;
+	}
+
+	public void setMultipleAllowed(boolean multipleAllowed) {
+		this.multipleAllowed = multipleAllowed;
+	}
+
 	public long getCriteriaId() {
 		return criteriaId;
 	}
@@ -207,14 +216,32 @@ public class ChatBotIntentParam {
 
 	public enum ML_Type {
 		
-		PERSON(1, "Person","person"),
-		TIME(2, "Time","time"),
-		SUBJECT(3, "Time","message_subject"),
+		PERSON(1, "Person","PERSON",true),
+		NORP(2, "Nationalities or religious or political groups","NORP",true),
+		FAC(3, "Facility","FAC",true),
+		ORG(4, "Companies, agencies, institutions","ORG",true),
+		GPE(5, "Countries, cities, states","GPE",true),
+		LOC(6, "Non-GPE locations","LOC",true),
+		PRODUCT(7, "Product","PRODUCT",true),
+		EVENT(8, "Events","EVENT",true),
+		WORK_OF_ART(9, "Titles of books, songs","WORK_OF_ART",true),
+		LAW(10, "Law","LAW",true),
+		LANGUAGE(11, "Language","LANGUAGE",true),
+		DATE(12, "Date","DATE",true),
+		TIME(13, "Time","TIME",true),
+		PERCENT(14, "Percentage","PERCENT",true),
+		MONEY(15, "Money","MONEY",true),
+		QUANTITY(16, "Measurements","QUANTITY",true),
+		ORDINAL(17, "Ordinal","ORDINAL",true),
+		CARDINAL(18, "Cardinal","CARDINAL",true),
+		
+		SUBJECT(19, "Subject","message_subject",false),
 		;
 
 		int intVal;
 		String name;
 		String mlname;
+		boolean systemType;
 
 		public String getMLName() {
 			return mlname;
@@ -227,11 +254,16 @@ public class ChatBotIntentParam {
 		public String getName() {
 			return name;
 		}
+		
+		public boolean isSystemType() {
+			return systemType;
+		}
 
-		private ML_Type(int intVal, String name,String mlname) {
+		private ML_Type(int intVal, String name,String mlname,boolean systemType) {
 			this.intVal = intVal;
 			this.name = name;
 			this.mlname = mlname;
+			this.systemType = systemType;
 		}
 
 		private static final Map<Integer, ML_Type> optionMap = Collections.unmodifiableMap(initTypeMap());
@@ -255,6 +287,7 @@ public class ChatBotIntentParam {
 		MANDATORY(1, "Mandatory"),
 		OPTIONAL(2, "optional"),
 		AFTER_FILL(3, "After fill"),
+		DUMMY(4,"Dummy"),
 		;
 
 		int intVal;

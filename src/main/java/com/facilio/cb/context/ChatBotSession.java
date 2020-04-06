@@ -17,7 +17,9 @@ public class ChatBotSession {
 	long userId = -1;
 	long intentId = -1;
 	JSONObject queryJson;
+	JSONObject params;
 	String response;
+
 	State state;
 	int requiredParamCount = 0;
 	int recievedParamCount = 0;
@@ -148,7 +150,8 @@ public class ChatBotSession {
 	public void setQueryJson(JSONObject queryJson) {
 		this.queryJson = queryJson;
 	}
-
+	
+	
 	public String getResponse() {
 		return response;
 	}
@@ -174,6 +177,35 @@ public class ChatBotSession {
 
 	public void setState(int state) {
 		this.state = State.getAllStates().get(state);
+	}
+	
+	public String getParams() {
+		if(params != null) {
+			return params.toJSONString();
+		}
+		return null;
+	}
+
+	public void setParams(String params) throws ParseException {
+		this.params = FacilioUtil.parseJson(params);
+	}
+	
+	public JSONObject getParamsJson() {
+		if(params == null) {
+			params = new JSONObject();
+		}
+		return params;
+	}
+	public void setParamsJson(JSONObject json) {
+		params = json;
+	}
+	public void addParamsObject(String key,Object value) {
+		params = getParamsJson();
+		params.put(key, value);
+	}
+	public void deleteParamObject(String key) {
+		params = getParamsJson();
+		params.remove(key);
 	}
 
 	public enum State {

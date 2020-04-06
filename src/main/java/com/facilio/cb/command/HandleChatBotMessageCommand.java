@@ -21,7 +21,7 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 		
 		ChatBotSession waitingForParamSession = ChatBotUtil.getLastWaitingForParamSession();
 		
-		
+		FacilioContext newcontext1 = null;
 		if(waitingForParamSession == null) {
 			
 			ChatBotSession waitingForConfirmationSession = ChatBotUtil.getLastWaitingForConfirmationSession();
@@ -40,18 +40,8 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				
 				chain.execute();
 				
-				if(newcontext.containsKey(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION)) {
-					ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
-					context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
-				}
-				else {
-					chatBotSession = (ChatBotSession)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION);
-					
-					context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotSession.getResponse());
-				}
+				newcontext1 = newcontext;
 				
-				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-				context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 			}
 			else {
 				ChatBotSessionConversation lastWaitingForConfirmationConversation = ChatBotUtil.getLastWaitingForConfirmationConversation(waitingForConfirmationSession.getId());
@@ -71,18 +61,8 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 					
 					chain.execute();
 					
-					if(newcontext.containsKey(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED) && (Boolean)newcontext.get(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED)) {
-						ChatBotSession chatBotSession = (ChatBotSession)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION);
-						
-						context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotSession.getResponse());
-					}
-					else {
-						ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
-						context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
-					}
-					context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-					context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
-					return false;
+					newcontext1 = newcontext;
+					
 				}
 			}
 		}
@@ -105,23 +85,21 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				
 				chain.execute();
 				
-				if(newcontext.containsKey(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED) && (Boolean)newcontext.get(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED)) {
-					ChatBotSession chatBotSession = (ChatBotSession)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION);
-					
-					context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotSession.getResponse());
-				}
-				else {
-					ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
-					context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
-				}
-				
-				context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-				
-				context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
-				
-				return false;
+				newcontext1 = newcontext;
 			}
 		}
+		
+		if(newcontext1.containsKey(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED) && (Boolean)newcontext1.get(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED)) {
+			ChatBotSession chatBotSession = (ChatBotSession)newcontext1.get(ChatBotConstants.CHAT_BOT_SESSION);
+			
+			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotSession.getResponse());
+		}
+		else {
+			ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext1.get(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION);
+			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
+		}
+		context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext1.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
+		context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext1.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 		
 		return false;
 	}

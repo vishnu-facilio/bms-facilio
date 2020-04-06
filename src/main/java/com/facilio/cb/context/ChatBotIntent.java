@@ -29,7 +29,7 @@ public class ChatBotIntent {
 	List<ChatBotIntentAction> actions;
 	List<ChatBotIntentInvokeSample> invokeSamples;
 	WorkflowContext contextWorkflow;
-	boolean confirmationNeeded;
+//	boolean confirmationNeeded;
 	List<String> childIntentNames;
 	String confirmationText;
 	
@@ -63,13 +63,13 @@ public class ChatBotIntent {
 		return invokeSamples;
 	}
 	
-	public boolean isConfirmationNeeded() {
-		return confirmationNeeded;
-	}
-
-	public void setConfirmationNeeded(boolean confirmationNeeded) {
-		this.confirmationNeeded = confirmationNeeded;
-	}
+//	public boolean isConfirmationNeeded() {
+//		return confirmationNeeded;
+//	}
+//
+//	public void setConfirmationNeeded(boolean confirmationNeeded) {
+//		this.confirmationNeeded = confirmationNeeded;
+//	}
 
 	public void setInvokeSamples(List<ChatBotIntentInvokeSample> invokeSamples) {
 		this.invokeSamples = invokeSamples;
@@ -121,7 +121,7 @@ public class ChatBotIntent {
 							Object param = extraParam.get(key);
 							ChatBotIntentParam intentParamContext = ChatBotUtil.getIntentParam(session.getIntentId(),key);
 							
-							ChatBotUtil.deleteAndAddSessionParam(intentParamContext.getId(), session.getId(), param.toString());
+							ChatBotUtil.addSessionExtraParam(intentParamContext, session, param.toString());
 						}
 					}
 				}

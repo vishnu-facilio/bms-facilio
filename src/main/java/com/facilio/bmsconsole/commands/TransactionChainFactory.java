@@ -4566,9 +4566,14 @@ public class TransactionChainFactory {
 		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
 		c.addCommand(new SendToMlApiForSessionCommand());
+		c.addCommand(new CheckAccuracyAndFetchIntentCommand());
 		c.addCommand(new HandleInvalidQueryForSessionMessage());
+		c.addCommand(new HandleIntentParamsForSessionCommand());
+		c.addCommand(new HandleContextWorkflowCommand());
 		c.addCommand(new ExecuteActionAndSetResponseForSessionCommand());
 		c.addCommand(new FetchSugestionForChatBotIntent());
+		c.addCommand(new UpdateCBSessionCommand());
+		c.addCommand(new UpdateCBConversationCommand());
 		return c;
 	}
 	
@@ -4579,10 +4584,16 @@ public class TransactionChainFactory {
 		c.addCommand(new SendToMlApiForConversationCommand());
 		c.addCommand(new HandleTerminateSessionCommand());
 		c.addCommand(new HandleInvalidQueryMessageForConversations());
+		c.addCommand(new HandleContextWorkflowFillables());
+		c.addCommand(new HandleIntentParamsForConversationCommand());
 		c.addCommand(new HandleEditParamFromSuggestionForConversations());
 		c.addCommand(new HandleAddParamFromSuggestionForConversations());
+		c.addCommand(new HandleContextWorkflowCommand());
+		c.addCommand(new RemoveContextWorkflowFillables());
 		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
 		c.addCommand(new FetchSugestionForChatBotIntent());
+		c.addCommand(new UpdateCBSessionCommand());
+		c.addCommand(new UpdateCBConversationCommand());
 		return c;
 	}
 	

@@ -118,37 +118,28 @@
    params:
    -
       name : 'subject'
-      displayName : "subject"
-      askAs : 'I will help you submit a service request. Can you provide me with some details?'
       dataType : 1
-      mlType : 3
+      mlType : 19
       localId : 1
       editable : true
       typeConfig : 1
       updateParamTriggerText : 'Edit subject'
    -
       name : 'attachment'
-      askAs : "Add your attachment"
       dataType : 9
-      multipleAllowed : true
       localId : 2
       typeConfig : 2
       addParamTriggerText : 'Add attachment'
    -
       name : 'description'
       displayName : "aditional information"
-      askAs : 'What more would you like to add to this request?\nYou can add information such as location of the problem or add something specific'
       dataType : 1
-      mlType : 1
       localId : 3
       typeConfig : 2
       addParamTriggerText : 'Add more information'
    -
       name : 'urgency'
-      displayName : "urgency"
-      askAs : 'select urgency'
-      dataType : 1
-      mlType : 1
+      dataType : 2
       localId : 4
       typeConfig : 2
       editable : true
@@ -204,7 +195,35 @@
                              }
                              if(data.subject != null) {
                              
-                                return chatBot().execute();
+                                if(data.isConfirmed == true) {
+                                   return chatBot().execute();
+                                }
+                                else {
+                                   
+                                   confirmation = {};
+                                   
+                                   confirmation.mainField = "subject";
+                                   
+                                   fields = {};
+                                   fields.put("Subject",data.subject);
+                                   if(data.description != null) { fields.put("More Information",data.description); }
+                                   if(data.urgency != null) { 
+                                   
+                                      urgencyString = "Not Urgent";
+                                      if(data.urgency == 2) {
+                                         urgencyString = "Urgent";
+                                      }
+                                      else if (data.urgency == 3) {
+                                         urgencyString = "Emergency";
+                                      }
+                                      fields.put("Urgency",urgencyString); 
+                                      
+                                   }
+                                   
+                                   confirmation.fields = fields;
+                                   
+                                   return chatBot().confirm(confirmation);
+                                }
                              }
                            }'
    actions:
@@ -347,7 +366,6 @@
       name : 'woId'
       askAs : "Select the work request to add the comment to"
       dataType : 2
-      mlType : 1
       localId : 1
       typeConfig : 1
       fillableByParent : true
@@ -355,7 +373,6 @@
       name : 'comment'
       askAs : "Enter your comment"
       dataType : 1
-      mlType : 1
       localId : 2
       typeConfig : 1
    contextWorkflow :
@@ -442,7 +459,6 @@
       name : 'woId'
       askAs : "Select the work request to add the attachment to"
       dataType : 2
-      mlType : 1
       localId : 1
       typeConfig : 1
       fillableByParent : true
@@ -526,7 +542,7 @@
        
 - 
    name: "system_get_my_work_request_intent"
-   displayName: "Manage your service requests"
+   displayName: "Manage service requests"
    type: 1
    localId : 17
    withParams : true
@@ -538,10 +554,8 @@
       name : 'woId'
       askAs : "Select the work request"
       dataType : 2
-      mlType : 1
       localId : 1
       typeConfig : 1
-      fillableByParent : true
    contextWorkflow :
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data) {
@@ -602,6 +616,10 @@
                                          resultMap = {};
                                          
                                          resultMap.put("returnText",resString);
+                                         
+                                         extraParmas = {};
+                                         extraParmas.put("woId",wo.id);
+                                         resultMap.put("extraParams",extraParmas);
                                          
                                          return resultMap;
                                        }' 
@@ -692,8 +710,402 @@
        sampleLocalId : 28
        sample: "What is the status of my complaint?"
 
-
        
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+- 
+   name: "system_add_invite_intent"
+   displayName: "Invite Visitors"
+   type: 1
+   localId : 15
+   withParams : true
+   editable : true
+   params:
+   -
+      name : 'names'
+      dataType : 1
+      mlType : 1
+      localId : 1
+      typeConfig : 1
+      multipleAllowed : true
+      editable : true
+      updateParamTriggerText : 'Add people'
+   -
+      name : 'visitorType'
+      dataType : 2
+      localId : 2
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit type'
+   -
+      name : 'phone'
+      dataType : 1
+      # mlType : 1 will be added later
+      localId : 3
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit phone number'
+   -
+      name : 'email'
+      dataType : 1
+     #mlType : 1 will be added later
+      localId : 4
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit email'
+   -
+      name : 'host'
+      dataType : 2
+      localId : 5
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit host'
+   -
+      name : 'editableName'
+      dataType : 1
+      localId : 6
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit Visitor Name'
+   -
+      name : 'name'
+      dataType : 1
+      localId : 6
+      typeConfig : 3
+      
+   contextWorkflow :
+       isV2Script : true
+       workflowV2String : 'ChatBotAction test(Map data){
+                                
+                                log "data --- "+data;
+                                if(data.client_message != null) {
+                                   data.client_message_local = data.client_message;
+                                }
+                                if(data.client_message_local != null) {
+                                  
+                                  if(data.client_message_local == "Edit host") {
+                                    if(data.names.size() == 1) {
+                                       data.client_message_local = null;
+                                       return chatBot().param("host","Select host",[id > 0],"contact");
+                                    }
+                                    else {
+                                       if(data.name != null) {
+                                          data.client_message_local = null;
+                                          return chatBot().param("host","Select host",[id > 0],"contact");
+                                       }
+                                       else {
+                                          askName = true;
+                                       }
+                                    }
+                                  }
+                                  if(data.client_message_local == "Edit Visitor Name") {
+                                    if(data.names.size() == 1) {
+                                       data.client_message_local = null;
+                                       return chatBot().param("editableName","Enter the name");
+                                    }
+                                    else {
+                                       if(data.name != null) {
+                                          data.client_message_local = null;
+                                          return chatBot().param("editableName","Enter the name");
+                                       }
+                                       else {
+                                          askName = true;
+                                       }
+                                    }
+                                  }
+                                  if(data.client_message_local == "Edit type") {
+                              
+                                    if(data.names.size() == 1) {
+                                       data.client_message_local = null;
+                                       return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
+                                    }
+                                    else {
+                                       if(data.name != null) {
+                                          data.client_message_local = null;
+                                          return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
+                                       }
+                                       else {
+                                          askName = true;
+                                       }
+                                    }
+                                  }
+                                  if(data.client_message_local == "Edit email") {
+                              
+                                    if(data.names.size() == 1) {
+                                       data.client_message_local = null;
+                                       return chatBot().param("email","Enter the email");
+                                    }
+                                    else {
+                                       if(data.name != null) {
+                                          data.client_message_local = null;
+                                          return chatBot().param("email","Enter the email");
+                                       }
+                                       else {
+                                          askName = true;
+                                       }
+                                    }
+                                  }
+                                  if(data.client_message_local == "Edit phone number") {
+                              
+                                    if(data.names.size() == 1) {
+                                       data.client_message_local = null;
+                                       return chatBot().param("phone","Enter the phone number");
+                                    }
+                                    else {
+                                       if(data.name != null) {
+                                          data.client_message_local = null;
+                                          return chatBot().param("phone","Enter the phone number");
+                                       }
+                                       else {
+                                          askName = true;
+                                       }
+                                    }
+                                  }
+                                  if(data.client_message_local == "Add people") {
+                                    
+                                       data.client_message_local = null;
+                                       return chatBot().param("names","What is the name of the person?");
+                                  }
+                                }
+                                
+                                if(askName == true) {
+                              
+                                  nameList = [];
+                              
+                                  for each index,name in data.names {
+                                    nameMap = {};
+                                    nameMap.label = name;
+                              
+                                    nameList.add(nameMap);
+                                  }
+                                  nameMap = {};
+                                  nameMap.label = "All";
+                              
+                                  nameList.add(nameMap);
+                              
+                                  return chatBot().param("name","For whome you want to apply this.",nameList);
+                                }
+                                
+                                fillOneOrManyParam = null;
+                                if(data.host != null) {
+                                   fillOneOrManyParam = "host";
+                                }
+                                else if(data.visitorType != null) {
+                                   fillOneOrManyParam = "visitorType";
+                                }
+                                else if(data.email != null) {
+                                   fillOneOrManyParam = "email";
+                                }
+                                else if(data.phone != null) {
+                                  fillOneOrManyParam = "phone";
+                                }
+                                else if(data.editableName != null) {
+                                   if(data.names.size() == 1) {
+                                      data.name = data.names[0];
+                                   }
+                                   for each index,name in data.names {
+                                      if(name == data.name) {
+                                         data.names.set(index,data.editableName);
+                                      }
+                                   }
+                                   editPerson = data.get(data.name);
+                                   data.remove(data.name);
+                                   data.put(data.editableName,editPerson);
+                                   data.editableName = null;
+                                   data.name = null;
+                                }
+                                
+                                if(fillOneOrManyParam != null) {
+                                   if(data.names.size() == 1) {
+                                    data.get(data.names[0]).put(fillOneOrManyParam, data.get(fillOneOrManyParam));
+                                    data.put(fillOneOrManyParam,null);
+                                  }
+                                  else {
+                              
+                                    if(data.name != null) {
+                                      if(data.name == "All") {
+                                        for each index,name in data.names {
+                                          data.get(name).put(fillOneOrManyParam, data.get(fillOneOrManyParam));
+                                        }
+                                      }
+                                      else {
+                                        data.get(data.name).put(fillOneOrManyParam,data.get(fillOneOrManyParam));
+                                      }
+                                      data.name = null;
+                                      data.put(fillOneOrManyParam,null);
+                                    }
+                                  }
+                                  fillOneOrManyParam = null;
+                                }
+                              
+                                if(data.names == null) {
+                                  return chatBot().param("names","What is the name of the person?");
+                                }
+                                else {
+                                  for each index,name in data.names {
+                              
+                                    if(data.get(name) == null) {
+                                      newMap = {};
+                                      types = Module("visitorType").fetch([name == "Guest"]);
+                                      if(types != null) {
+                                        type = types[0];
+                                        newMap.visitorType = type.id;
+                                      }
+                                      newMap.host = currentUser.id;
+                                      data.put(name,newMap);
+                                    }
+                                  }
+                                }
+                              
+                                for each index,name in data.names {
+                              
+                                  if(data.get(name).phone == null) {
+                                    if(data.phone != null) {
+                                      data.get(name).put("phone",data.phone);
+                                      data.phone = null;
+                                    }
+                                    else {
+                                      return chatBot().param("phone","What is "+name+"''s phone number?");
+                                    }
+                                  }
+                              
+                                  if(data.get(name).email == null) {
+                                    if(data.email != null) {
+                                      data.get(name).put("email",data.email);
+                                      data.email = null;
+                                    }
+                                    else {
+                                      return chatBot().param("email","What is "+name+"''s email?");
+                                    }
+                                  }
+                                }
+                              
+                                if(data.isConfirmed == true) {
+                                  return chatBot().execute();
+                                }
+                                else {
+                              
+                                  confirmation = {};
+                                  confirmation.mainField = "Name";
+                              
+                                 fieldList = [];
+                                 for each index,name in data.names {
+                           
+                                   fields = {};
+                                   fields.put("Name",name);
+                                   fields.put("Phone",data.get(name).phone);
+                                   fields.put("Email",data.get(name).email);
+                           
+                                   host = Module("contact").fetch([id == data.get(name).host])[0];
+                           
+                                   fields.put("Host",host.name);
+                           
+                                   visitorType = Module("visitorType").fetch([id == data.get(name).visitorType])[0];
+                                   fields.put("Vistor type",visitorType.name);
+                                   fieldList.add(fields);
+                           
+                                 }
+                                 if(fieldList.size() == 1) {
+                                    confirmation.fields = fieldList[0];
+                                 }
+                                 else {
+                                    confirmation.fields = fieldList;
+                                 }
+                                  return chatBot().confirm(confirmation);
+                                }
+                              }' 
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data){
+    
+                                         resultMap = {};
+                                         
+                                         for each index,name in data.names {
+                                            
+                                             invitePerson = data.get(name);
+                                             invite = {};
+                                             invite.visitorType.id = invitePerson.visitorType;
+                                             invite.visitorPhone = invitePerson.phone;
+                                             invite.visitorName = name;
+                                             invite.visitorEmail = invitePerson.email;
+                                             invite.host.id= invitePerson.host;		
+                                             invite.purposeOfVisit = 3;	
+                                             invite.isPreregistered = true;
+                                             
+                                             VisitorLogging().add(invite);
+                                         }
+                                         
+                                         
+                                         resultMap.put("returnText","Invited successfully.");
+                                        
+                                         return resultMap;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "Invite Visitors"
+    -
+       sampleLocalId : 2
+       sample: "I want to invite guests"
+    -
+       sampleLocalId : 3
+       sample: "invite user"
+    -
+       sampleLocalId : 4
+       sample: "invite people"
+    -
+       sampleLocalId : 5
+       sample: "[san](person) and [john](person) are coming tomorrow"
+    -
+       sampleLocalId : 6
+       sample: "I want to invite guests"
+       
+- 
+   name: "system_get_my_visitor_intent"
+   displayName: "Manage visitors"
+   type: 1
+   localId : 17
+   actions:
+    - 
+        responseType : 3
+        moduleName : 'visitorlogging'
+        viewName : 'upcoming'
+        action: 
+            actionType: 29
+            status: 1
+        
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "Manage visitors list"
+    -
+        sampleLocalId : 2
+        sample: "get my visitors list"
+        
+        
+        
+        
+        
+        
+        
+        
+        
 - 
    name: "system_show_open_workorder_count_intent"
    displayName: "System show open workorder count Intent"
@@ -737,175 +1149,6 @@
     -
        sampleLocalId : 2
        sample: "give me open wo count"
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-- 
-   name: "system_add_invite_intent"
-   displayName: "Invite Visitors"
-   type: 1
-   localId : 15
-   withParams : true
-   editable : true
-   params:
-   -
-      name : 'visitorType'
-      askAs : "Select visitor type"
-      dataType : 2
-      mlType : 1
-      localId : 1
-      typeConfig : 1
-   -
-      name : 'name'
-      askAs : "Enter name"
-      dataType : 1
-      mlType : 1
-      localId : 2
-      typeConfig : 1
-   -
-      name : 'phone'
-      askAs : "Enter phone number"
-      dataType : 1
-      mlType : 1
-      localId : 3
-      typeConfig : 1
-   -
-      name : 'email'
-      askAs : "Enter email"
-      dataType : 1
-      mlType : 1
-      localId : 4
-      typeConfig : 1
-      editable : true
-      updateParamTriggerText : 'Edit email'
-   -
-      name : 'host'
-      askAs : "Select host"
-      dataType : 2
-      mlType : 1
-      localId : 5
-      typeConfig : 1
-      editable : true
-      updateParamTriggerText : 'Edit host'
-      
-   contextWorkflow :
-       isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
-                             if(data.visitorType == null) {
-                             
-                                db = {
-								    criteria : [id > 0]
-							    };
-                                
-                              	types = Module("visitorType").fetch(db);
-                                
-                                typeList = [];
-                                
-                                for each index,type in types {
-                                    typeMap = {};
-                                    typeMap.id = type.id;
-                                    typeMap.label = type.name;
-                                    
-                                    typeList.add(typeMap);
-                                }
-                                
-                                return chatBot().param("visitorType","Select visitor type",typeList);
-                             }
-                             else if(data.name == null) {
-                                return chatBot().param("name","Enter name");
-                             }
-                             else if(data.phone == null) {
-                                return chatBot().param("phone","Enter phone number");
-                             }
-                             else if(data.email == null) {
-                                return chatBot().param("email","Enter email");
-                             }
-                             else if(data.host == null) {
-                                
-								criteria1 = [id > 0];
-                                
-                                return chatBot().param("host","Select host",criteria1,"contact");
-                             }
-                             else{
-                             
-                                return chatBot().execute();
-                             }
-                           }' 
-   actions:
-    - 
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'Map test(Map data){
-    
-                                         invite = {};
-                                         invite.visitorType.id = data.visitorType;
-                                         invite.visitorPhone = data.phone;
-                                         invite.visitorName = data.name;
-                                         invite.visitorEmail = data.email;
-                                         invite.host.id= data.host;		
-                                         invite.purposeOfVisit = 3;	
-                                         invite.isPreregistered = true;
-                                         
-                                         VisitorLogging().add(invite);
-                                         
-                                         resultMap = {};
-                                         
-                                         resultMap.put("returnText","Invited successfully.");
-                                        
-                                         return resultMap;
-                                       }'  
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "Invite Visitors"
-    -
-       sampleLocalId : 2
-       sample: "create invite"
-    -
-       sampleLocalId : 3
-       sample: "invite user"
-    -
-       sampleLocalId : 4
-       sample: "invite people"
-    -
-       sampleLocalId : 5
-       sample: "[san](person) and [john](person) are coming tomorrow"
-       
-- 
-   name: "system_get_my_visitor_intent"
-   displayName: "Manage visitors"
-   type: 1
-   localId : 17
-   actions:
-    - 
-        responseType : 3
-        moduleName : 'visitorlogging'
-        viewName : 'upcoming'
-        action: 
-            actionType: 29
-            status: 1
-        
-   invokeSamples:
-    -
-        sampleLocalId : 1
-        sample: "Manage visitors list"
-    -
-        sampleLocalId : 2
-        sample: "get my visitors list"
         
         
         
@@ -1070,3 +1313,6 @@
     -
         sampleLocalId : 2
         sample: "may i have your gender"
+        
+        
+        

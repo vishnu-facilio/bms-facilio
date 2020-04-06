@@ -1,6 +1,7 @@
 package com.facilio.cb.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -220,7 +221,14 @@ public class ChatBotUtil {
 		
 	
 	public static void executeIntentAction(ChatBotSession session,ChatBotIntent intent,Context context) throws Exception {
-		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
+		
+		Map<String,Object> props = null;
+		if(intent.getContextWorkflow() != null) {
+			props = session.getParamsJson();
+		}
+		else {
+			props = ChatBotUtil.fetchAllSessionParams(session.getId());
+		}
 		
 		context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
 		
@@ -232,37 +240,12 @@ public class ChatBotUtil {
 		context.put(ChatBotConstants.CHAT_BOT_SESSION, session);
 		context.put(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED, true);
 		
-		updateChatBotSession(session);
 	}
 	
-	private static void fillClientMessageProp(Map<String, Object> props, Context context) {
-		
-		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
-		
-		JSONObject messageJSON = null;
-		if(chatBotSessionConversation != null) {
-			messageJSON = chatBotSessionConversation.getResponseJson();
-		}
-		else {
-			ChatBotSession session = (ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION);
-			if(session != null) {
-				messageJSON = session.getQueryJson();
-			}
-		}
-		
-		if(messageJSON != null && messageJSON.containsKey(ChatBotConstants.CHAT_BOT_LABEL) && messageJSON.get(ChatBotConstants.CHAT_BOT_LABEL) != null && messageJSON.get(ChatBotConstants.CHAT_BOT_ID) == null) {
-			String value = messageJSON.get(ChatBotConstants.CHAT_BOT_LABEL).toString();
-			
-			props.put("client_message", value);
-		}
-		
-	}
 	
 	public static void executeContextWorkflow(ChatBotIntent intent,ChatBotSession session,Context context) throws Exception {
 		
-		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
-		
-		fillClientMessageProp(props,context);
+		Map<String,Object> props = session.getParamsJson();
 		
 		WorkflowContext contextWorkflow = intent.getContextWorkflow();
 		
@@ -275,7 +258,7 @@ public class ChatBotUtil {
 		
 		chain.execute();
 		
-		updateParamsChangedByContextworkflow(props,intent,session);
+//		updateParamsChangedByContextworkflow(props,intent,session);
 		
 		Object value = contextWorkflow.getReturnValue();
 		
@@ -291,45 +274,44 @@ public class ChatBotUtil {
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
-			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+			session.setState(State.WAITING_FOR_PARAMS.getIntVal());
+			
+			context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 			
 		}
 		else if (value instanceof ChatBotConfirmContext) {
 			
+			ChatBotConfirmContext botConfirmContext  = (ChatBotConfirmContext) value;
+			
+			session.setState(State.WAITING_FOR_CONFIRMATION.getIntVal());
+			
+			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddConfirmationCBSessionConversationParams(session,botConfirmContext);
+			
+			context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
+			
 		}
 		else if (value instanceof ChatBotExecuteContext) {
 			
-			if(intent.isConfirmationNeeded() && (session.isConfirmed() == null || !session.isConfirmed())) {
-				
-				session.setState(State.WAITING_FOR_CONFIRMATION.getIntVal());
-				
-				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddConfirmationCBSessionConversationParams(session);
-				
-				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
-				
-				ChatBotUtil.updateChatBotSession(session);
-			}
-			else {
-				ChatBotUtil.executeIntentAction(session, intent, context);
-			}
+			ChatBotUtil.executeIntentAction(session, intent, context);
+			context.put(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED,true);
 		}
 		
 	}
 	
-	private static void updateParamsChangedByContextworkflow(Map<String, Object> currentProps, ChatBotIntent intent, ChatBotSession session) throws Exception {
-		
-		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
-		
-		if(intent.getChatBotIntentParamList() != null) {
-			for(ChatBotIntentParam paramList : intent.getChatBotIntentParamList()) {
-				if(currentProps.containsKey(paramList.getName()) && currentProps.get(paramList.getName()) != null) {
-					if(props.get(paramList.getName()) == null || !currentProps.get(paramList.getName()).equals(props.get(paramList.getName()))) {
-						deleteAndAddSessionParam(paramList.getId(), session.getId(), currentProps.get(paramList.getName()).toString());
-					}
-				}
-			}
-		}
-	}
+//	private static void updateParamsChangedByContextworkflow(Map<String, Object> currentProps, ChatBotIntent intent, ChatBotSession session) throws Exception {
+//		
+//		Map<String,Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
+//		
+//		if(intent.getChatBotIntentParamList() != null) {
+//			for(ChatBotIntentParam paramList : intent.getChatBotIntentParamList()) {
+//				if(currentProps.containsKey(paramList.getName()) && currentProps.get(paramList.getName()) != null) {
+//					if(props.get(paramList.getName()) == null || !currentProps.get(paramList.getName()).equals(props.get(paramList.getName()))) {
+//						deleteAndAddSessionParam(paramList, session, currentProps.get(paramList.getName()).toString());
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
 		
@@ -753,7 +735,7 @@ public class ChatBotUtil {
 
 	}
 	
-	public static ChatBotSessionConversation constructAndAddConfirmationCBSessionConversationParams(ChatBotSession session) throws Exception {
+	private static ChatBotSessionConversation constructAndAddConfirmationCBSessionConversationParams(ChatBotSession session, ChatBotConfirmContext botConfirmContext) throws Exception {
 		
 		ChatBotSessionConversation chatBotSessionConversation1 = new ChatBotSessionConversation();
 		
@@ -777,16 +759,15 @@ public class ChatBotUtil {
 		
 		resArray.add(result);
 		
-		
 		result = new JSONObject();
 		
-		List<ChatBotSessionConversation> conversations = ChatBotUtil.getSessionConversationMapForConfirmationCard(session.getId(),session.getIntentId());
+//		List<ChatBotSessionConversation> conversations = ChatBotUtil.getSessionConversationMapForConfirmationCard(session.getId(),session.getIntentId());
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, ChatBotConstants.CHAT_BOT_DEFAULT_SUBMIT_CONFIRMATION_TEXT);
 		
-		result.put(ChatBotConstants.CHAT_BOT_CONFIRMATION_RESPONSE, FieldUtil.getAsJSONArray(conversations, ChatBotSessionConversation.class));
+		result.put(ChatBotConstants.CHAT_BOT_CONFIRMATION_RESPONSE, botConfirmContext.getParamMap());
 		
 		resArray.add(result);
 		
@@ -899,7 +880,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		return null;
 	}
 	
-	public static List<ChatBotIntentParam> fetchRemainingOptionalChatBotIntentParams(long intentId,long sessionId) throws Exception {
+	public static List<ChatBotIntentParam> fetchRemainingOptionalChatBotIntentParams(long intentId,ChatBotSession session) throws Exception {
 		
 		List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
@@ -910,7 +891,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 				.table(ModuleFactory.getCBIntentParamModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(cbIntentFieldsMap.get("typeConfig"),ChatBotIntentParam.Type_Config.OPTIONAL.getIntVal()+"", NumberOperators.EQUALS))
-				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", sessionId)
+				.andCustomWhere("ID NOT IN (select INTENT_PARAM_ID from CB_Session_Params where SESSION_ID = ?)", session.getId())
 				.orderBy("LOCAL_ID")
 				;
 		
@@ -919,6 +900,16 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		if(props != null && !props.isEmpty()) {
 			
 			List<ChatBotIntentParam> intentParams = FieldUtil.getAsBeanListFromMapList(props, ChatBotIntentParam.class);
+			if(session.getIntent().getContextWorkflowId() > 0) {
+				List<ChatBotIntentParam> filledIntentParams = new ArrayList<>();
+				
+				for(ChatBotIntentParam intentParam : intentParams) {
+					if(session.getParamsJson().get(intentParam.getName()) != null) {
+						filledIntentParams.add(intentParam);
+					}
+				}
+				intentParams.removeAll(filledIntentParams);
+			}
 			return intentParams;
 		}
 		return null;
@@ -1003,6 +994,9 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
 		if (props != null && !props.isEmpty()) {
 			ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSessionConversation.class);
+			if(chatBotSessionConversation.getIntentParamId() > 0) {
+				chatBotSessionConversation.setIntentParam(getIntentParam(chatBotSessionConversation.getIntentParamId()));
+			}
 			if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.QUERY_RAISED.getIntVal()) {
 				return chatBotSessionConversation;
 			}
@@ -1136,34 +1130,82 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		
 	}
 	
-	public static void deleteAndAddSessionParam(long intentParamId,long sessionId, String value) throws Exception {
+	public static void deleteAndAddSessionParam(ChatBotIntentParam chatBotParam,ChatBotSession session, Object value) throws Exception {
 		
-		deleteSessionParam(intentParamId, sessionId);
+		if(session.getIntent().getContextWorkflow() != null) {
+			
+			if(chatBotParam.isMultipleAllowed()) {
+				JSONObject paramJson = session.getParamsJson();
+				Object listObject = paramJson.get(chatBotParam.getName());
+				if(listObject != null && listObject instanceof List) {
+					List list = (List) listObject;
+					if(value instanceof List) {
+						list.addAll((Collection) value);
+					}
+					else {
+						list.add(value);
+					}
+					
+				}
+				else {
+					List list = new ArrayList<>();
+					if(value instanceof List) {
+						list.addAll((Collection) value);
+					}
+					else {
+						list.add(value);
+					}
+					session.addParamsObject(chatBotParam.getName(), list);
+				}
+			}
+			else {
+				session.addParamsObject(chatBotParam.getName(), value);
+			}
+		}
+		else {
+			
+			deleteSessionParam(chatBotParam, session);
+			
+			ChatBotSessionParam sessionParam = new ChatBotSessionParam();
+			
+			sessionParam.setOrgId(AccountUtil.getCurrentOrg().getId());
+			sessionParam.setIntentParamId(chatBotParam.getId());
+			sessionParam.setSessionId(session.getId());
+			sessionParam.setValue(value.toString());
+			
+			ChatBotUtil.addSessionParams(sessionParam);
+		}
+	}
+	
+	public static void addSessionExtraParam(ChatBotIntentParam chatBotParam,ChatBotSession session, String value) throws Exception {
 		
 		ChatBotSessionParam sessionParam = new ChatBotSessionParam();
 		
 		sessionParam.setOrgId(AccountUtil.getCurrentOrg().getId());
-		sessionParam.setIntentParamId(intentParamId);
-		sessionParam.setSessionId(sessionId);
+		sessionParam.setIntentParamId(chatBotParam.getId());
+		sessionParam.setSessionId(session.getId());
 		sessionParam.setValue(value);
-		
 		
 		ChatBotUtil.addSessionParams(sessionParam);
 	}
 	
-	public static void deleteSessionParam(long intentParamId,long sessionId) throws Exception {
+	
+	
+	public static void deleteSessionParam(ChatBotIntentParam chatBotParam,ChatBotSession session) throws Exception {
 		
-		List<FacilioField> fields = FieldFactory.getCBSessionParamsFields();
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getCBSessionParamsModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentParamId"), intentParamId+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionId+"", NumberOperators.EQUALS));
-		
-		deleteRecordBuilder.delete();
-		
+		if(session.getIntent().getContextWorkflow() == null) {
+					
+			List<FacilioField> fields = FieldFactory.getCBSessionParamsFields();
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getCBSessionParamsModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("intentParamId"), chatBotParam.getId()+"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), session.getId()+"", NumberOperators.EQUALS));
+			
+			deleteRecordBuilder.delete();
+		}
 	}
 	
 	public static int getRequiredParamCount(List<ChatBotIntentParam> intentParams) throws Exception {

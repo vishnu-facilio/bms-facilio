@@ -1,6 +1,7 @@
 package com.facilio.cb.command;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.cb.context.ChatBotIntentParam;
@@ -10,7 +11,9 @@ import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSuggestionContext;
 import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.cb.util.ChatBotMLUtil;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.cb.util.ChatBotWitAIUtil;
 
 public class SendToMlApiForConversationCommand extends FacilioCommand {
 
@@ -19,7 +22,11 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
+		ChatBotModel model = (ChatBotModel) context.get(ChatBotConstants.CHAT_BOT_MODEL);
+		
 		if(chatBotSessionConversation != null && chatBotSessionConversation.getResponseString() != null) {
+			
+			ChatBotMLResponse mlResponse = new ChatBotMLResponse();
 			
 			String answer = null;
 			String intent = null;
@@ -36,7 +43,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 				
 				String chatMeg = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
 				
-				if(chatMeg.startsWith("Add")) {
+				if(chatMeg.startsWith("Add") && !chatMeg.equals("Add people")) {
 					ChatBotIntentParam intentParam = ChatBotUtil.getIntentParamWithAddTriggerText(chatMeg);
 					if(intentParam == null) {
 						intent = "dummy_intent";
@@ -47,7 +54,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 						context.put(ChatBotConstants.CHAT_BOT_ADD_ACTION_INTENT_PARAM, intentParam);
 					}
 				}
-				else if(chatMeg.startsWith("Edit")) {
+				else if(chatMeg.startsWith("Edit") || chatMeg.equals("Add people")) {
 					ChatBotIntentParam intentParam = ChatBotUtil.getIntentParamWithUpdateTriggerText(chatMeg);
 					if(intentParam == null) {
 						intent = "dummy_intent";
@@ -59,7 +66,7 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 					}
 				}
 				else if(answer.toLowerCase().contains("yes") || answer.toLowerCase().contains("ok") || answer.toLowerCase().contains("confirm")) { 
-					intent = "system_affirmative_intent";
+					intent = ChatBotConstants.CHAT_BOT_AFFERMATIVE_INTENT;
 					accuracy = 0.6789;
 					chatBotSessionConversation.getChatBotSession().setConfirmed(Boolean.TRUE);
 				}
@@ -73,8 +80,22 @@ public class SendToMlApiForConversationCommand extends FacilioCommand {
 					accuracy = 0.01;
 				}
 			}
-			
-			ChatBotMLResponse mlResponse = new ChatBotMLResponse();
+			else if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.QUERY_RAISED.getIntVal()) {
+				
+				ChatBotIntentParam intentParam = chatBotSessionConversation.getIntentParam();
+				
+				if(intentParam.getMlTypeEnum() != null && intentParam.getMlTypeEnum().isSystemType()) {
+					
+					String chatMeg = ChatBotUtil.getRequiredFieldFromQueryJson(chatBotSessionConversation.getResponseJson()).toString();
+					
+					JSONObject responseJSON = ChatBotMLUtil.getIntentFromML(chatMeg, null, model);
+					JSONObject entityJson = (JSONObject)responseJSON.get(ChatBotWitAIUtil.ENTITY_STRING);
+					
+					if(entityJson != null) {
+						mlResponse.setEntityJson(entityJson);
+					}
+				}
+			}
 			
 			mlResponse.setAccuracy(accuracy);
 			mlResponse.setAnswer(answer);

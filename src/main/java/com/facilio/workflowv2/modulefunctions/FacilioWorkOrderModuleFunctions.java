@@ -105,7 +105,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	public void addNote(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		
-		Long woId = (Long) objects.get(1);
+		Long woId = Long.parseLong(objects.get(1).toString());
 		String noteString = (String) objects.get(2);
 		
 		NoteContext note = new NoteContext();
@@ -126,7 +126,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	public void addAttachements(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		
-		Long woId = (Long) objects.get(1);
+		Long woId = Long.parseLong(objects.get(1).toString());
 		List<Long> fileIds = null;
 		if(objects.get(2) instanceof List) {
 			fileIds = (List<Long>) objects.get(2);
