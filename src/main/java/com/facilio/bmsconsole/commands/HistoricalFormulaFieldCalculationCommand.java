@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob;
 import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
@@ -60,14 +61,20 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			long formulaId = (long) historicalFormulaFieldLogger.getParentId();
 			DateRange range = new DateRange(startTime, endTime);
 			
+			JSONObject prop = BmsJobUtil.getJobProps(jobId, "SingleResourceHistoricalFormulaFieldCalculator");
+			
 			boolean skipOptimisedWorkflow = false;
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
 			if(formula.getWorkflow().isV2Script()){
 				skipOptimisedWorkflow = true;
 			}
 			
+			if (prop != null && prop.get("skipOptimisedWorkflow") != null) {
+				skipOptimisedWorkflow = (boolean) prop.get("skipOptimisedWorkflow");
+			}
+			
 			LOGGER.info("Historical formula Job started with Job Logger Id --" +jobId);
-		
+			
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:
 					if(skipOptimisedWorkflow) {						

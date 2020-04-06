@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.constants.FacilioConstants;
@@ -132,6 +133,9 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			uniqueFormulaIdvsHistoricalLoggerMap.put(formulaFieldHistoricalLoggerContext.getParentId(), formulaFieldHistoricalLoggerContext);
 			checkDependentFormulae (formula, formulaFieldHistoricalLoggerContext.getId(), finalResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap, uniqueFormulaIdvsHistoricalLoggerMap);
 			
+			JSONObject props = new JSONObject();
+			props.put("skipOptimisedWorkflow", skipOptimisedWorkflow);
+			BmsJobUtil.addJobProps(formulaFieldHistoricalLoggerContext.getId(), "SingleResourceHistoricalFormulaFieldCalculator", props);
 			FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaFieldHistoricalLoggerContext.getId());
 
 			LOGGER.info("Historical formula Job uniqueFormulaIdvsHistoricalLoggerMap --" + uniqueFormulaIdvsHistoricalLoggerMap + "--formulaId--"+formulaId+ " --formulaLoggerJobId--"+formulaFieldHistoricalLoggerContext.getId());
