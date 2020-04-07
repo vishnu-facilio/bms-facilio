@@ -655,13 +655,24 @@
 								        
 						if(formating.get(\"criteria\") != null && formating.get(\"styles\") != null) {
 							json = formating.get(\"criteria\");
-							criteria1 = NameSpace(\"criteria\").get(json); 
-							res = criteria1.evaluate(variables);
-							if(res) {
-								returnMap = {};
-								returnMap[\"styles\"] = formating.styles;
-								return returnMap;
-							}
+                            conditions = json.get(\"conditions\");
+                          	validCondition = false;
+                          	if (conditions != null && conditions.size() > 0) {
+	                          	for each cidx, condition in conditions {
+    	                          if (condition != null && condition.size() > 0) {
+        	                        validCondition = true;
+            	                  }
+                	            }
+                            }
+                          	if (validCondition) {
+								criteria1 = NameSpace(\"criteria\").get(json); 
+								res = criteria1.evaluate(variables);
+								if(res) {
+									returnMap = {};
+									returnMap[\"styles\"] = formating.styles;
+									return returnMap;
+								}
+                            }
 						}
 					}
 				}
