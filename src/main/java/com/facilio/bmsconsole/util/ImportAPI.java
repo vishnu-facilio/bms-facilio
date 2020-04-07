@@ -740,7 +740,7 @@ public class ImportAPI {
 	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
 		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
 		if (fieldMapping != null) {
-			if (isAssetBaseModule(importProcessContext) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
+			if (isAssetBaseModule(importProcessContext.getModule()) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
 				if (!(fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
 					return false;
 				}
@@ -767,13 +767,33 @@ public class ImportAPI {
 		return false;
 	}
 
-	public static boolean isAssetBaseModule(ImportProcessContext importProcessContext) throws Exception {
-		if (importProcessContext.getModule()!=null && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule() !=null &&importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)))) {
+	public static boolean isAssetBaseModule(FacilioModule module) {
+		if (module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
 			return true;
-		} else {
-			return false;
+		} else if (module.getExtendModule() != null) {
+			return isAssetBaseModule(module.getExtendModule());
 		}
+		return false;
 	}
+
+	public static boolean isResourceExtendedModule(FacilioModule module) {
+		if (module.getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+			return true;
+		} else if (module.getExtendModule() != null) {
+			return isResourceExtendedModule(module.getExtendModule());
+		}
+		return false;
+	}
+
+	public static boolean isBaseSpaceExtendedModule(FacilioModule module) {
+		if (module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+			return true;
+		} else if (module.getExtendModule() != null) {
+			return isBaseSpaceExtendedModule(module.getExtendModule());
+		}
+		return false;
+	}
+
 
 	public static AssetContext getAssetFromName(String assetName, Long siteId) throws Exception {
 

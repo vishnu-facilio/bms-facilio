@@ -159,28 +159,19 @@ public class ImportFieldFactory {
 		
 		return selectedFields;
 	}
-	
-	public static JSONObject getImportOptions(FacilioModule module){
-		JSONObject options = new JSONObject();
 
-		if(module.getName().equals(FacilioConstants.ContextNames.ASSET) || module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
+	public static JSONObject getImportOptions(FacilioModule module) {
+		JSONObject options = new JSONObject();
+		if (module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
+			for (ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
 				if (setting.toString() != ImportSetting.BOTH.toString() && setting.toString() != ImportSetting.INSERT_SKIP.toString()) {
 					options.put(setting.toString(), setting.getValue());
 				}
 			}
-		}
-		else if(
-				module.getExtendModule() != null && 
-				(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) || module.getExtendModule().getName().equals(FacilioConstants.ContextNames.SPACE)
-				)
-				) {
-			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
+		} else {
+			for (ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
 				options.put(setting.toString(), setting.getValue());
 			}
-		}
-		else {
-			options.put(ImportProcessContext.ImportSetting.INSERT.toString(),ImportProcessContext.ImportSetting.INSERT.getValue());
 		}
 		return options;
 	}

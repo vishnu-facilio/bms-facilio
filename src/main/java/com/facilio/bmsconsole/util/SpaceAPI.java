@@ -1857,7 +1857,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			}
 		}
 		if (StringUtils.isNotEmpty(name)) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), String.valueOf(name), StringOperators.IS));
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS));
 		}
 
 		List<SpaceContext> spaceList = builder.get();

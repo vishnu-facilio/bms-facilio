@@ -60,7 +60,7 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 		}
 		
 		
-		if (ImportAPI.isAssetBaseModule(importProcessContext) && !(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
+		if (ImportAPI.isAssetBaseModule(importProcessContext.getModule()) && !(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(modBean.getField("name", "resource"));

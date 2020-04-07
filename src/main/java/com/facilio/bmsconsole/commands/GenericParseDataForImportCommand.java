@@ -1,28 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
@@ -40,6 +17,15 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.InputStream;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class GenericParseDataForImportCommand extends FacilioCommand {
 
@@ -84,12 +70,12 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		
 		FacilioModule module = modBean.getModule(moduleName);
 		if (ImportAPI.isInsertImport(importProcessContext)) {
-			if (module!=null && module.isStateFlowEnabled() && !ImportAPI.isAssetBaseModule(importProcessContext) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			if (module!=null && module.isStateFlowEnabled() && !ImportAPI.isAssetBaseModule(importProcessContext.getModule()) && !moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				if (!fieldMapping.containsKey(moduleName + "__moduleState")) {
 					missingColumns.add("Module State");
 				}
 			}
-			if (module!=null && ImportAPI.isAssetBaseModule(importProcessContext)) {
+			if (module!=null && ImportAPI.isAssetBaseModule(importProcessContext.getModule())) {
 				if (!fieldMapping.containsKey("resource__name")) {
 					missingColumns.add("Asset Name");
 				}

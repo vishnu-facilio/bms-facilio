@@ -27,8 +27,21 @@ public class ImportFieldRollupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        ArrayList addedBaseSpaceIds = (ArrayList) context.get(ImportAPI.ImportProcessConstants.ADDED_BASE_SPACE_IDS);
         ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+        List<Long> addedBaseSpaceIds = new ArrayList();
+        if (ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule()) || ImportAPI.isAssetBaseModule(importProcessContext.getModule())) {
+            ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            List<String> spaceModules = Arrays.asList("building", "floor", "space", "tenantunit");
+            if (recordList != null) {
+                for (String key : recordList.keySet()) {
+                    if (spaceModules.contains(key)) {
+                        if (CollectionUtils.isNotEmpty(recordList.get(key))) {
+                            addedBaseSpaceIds.addAll(recordList.get(key));
+                        }
+                    }
+                }
+            }
+        }
         if (CollectionUtils.isNotEmpty(addedBaseSpaceIds)) {
             FacilioContext jobContext = new FacilioContext();
             FacilioField idField = FieldFactory.getIdField(ModuleFactory.getBaseSpaceModule());
@@ -37,26 +50,9 @@ public class ImportFieldRollupCommand extends FacilioCommand {
             criteria.addAndCondition(condition);
             Map<String, Criteria> moduleCriteriaMap = new HashMap<>();
             moduleCriteriaMap.put(FacilioConstants.ContextNames.BASE_SPACE, criteria);
-            jobContext.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP ,moduleCriteriaMap);
+            jobContext.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP, moduleCriteriaMap);
             FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
             LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(addedBaseSpaceIds, ","));
-        }
-        List<String> spaceModules = Arrays.asList(FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.BASE_SPACE);
-        if (spaceModules.contains(importProcessContext.getModule().getName()) || (importProcessContext.getModule().getExtendModule() != null && spaceModules.contains(importProcessContext.getModule().getExtendModule().getName()))) {
-            ArrayListMultimap<String, Long> recordList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-
-            if (recordList != null && CollectionUtils.isNotEmpty(recordList.values())) {
-                FacilioContext jobContext = new FacilioContext();
-                FacilioField idField = FieldFactory.getIdField(ModuleFactory.getBaseSpaceModule());
-                Condition condition = CriteriaAPI.getCondition(idField, StringUtils.join(recordList.values(), ","), NumberOperators.EQUALS);
-                Criteria criteria = new Criteria();
-                criteria.addAndCondition(condition);
-                Map<String, Criteria> moduleCriteriaMap = new HashMap<>();
-                moduleCriteriaMap.put(FacilioConstants.ContextNames.BASE_SPACE, criteria);
-                jobContext.put(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP, moduleCriteriaMap);
-                FacilioTimer.scheduleInstantJob("ExecuteBulkRollUpFieldJob", jobContext);
-                LOGGER.info("Roll Up Job scheduled for BaseSpaceIds: " + StringUtils.join(recordList.values(), ","));
-            }
         }
         List<String> rollupModulesList = Arrays.asList(FacilioConstants.ContextNames.TENANT_CONTACT, FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
         if (rollupModulesList.contains(importProcessContext.getModule().getName())) {
@@ -66,11 +62,13 @@ public class ImportFieldRollupCommand extends FacilioCommand {
                 FacilioChain c = TransactionChainFactory.getUpdatePeoplePrimaryContactChain();
                 c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
                 c.execute();
+                LOGGER.info("Tenant Contact Roll Up Executed");
             }
             if (recordList != null && recordList.containsKey(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
                 FacilioChain c = TransactionChainFactory.getImportRollupTenantSpacesChain();
                 c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
                 c.execute();
+                LOGGER.info("Tenant Unit Roll Up Executed");
             }
         }
 
