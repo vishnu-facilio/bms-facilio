@@ -173,7 +173,7 @@
 <%
     if (org != null) {
 %>
-<form action="deleteReadingsAction">
+<form action="deleteReadingsAction" target="_blank">
 
     <div class=" col-lg-8 col-md-8">
 

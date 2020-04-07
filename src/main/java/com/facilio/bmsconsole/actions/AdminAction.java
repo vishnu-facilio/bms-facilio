@@ -48,6 +48,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EncodeException;
 import java.io.File;
 import java.io.IOException;
@@ -353,6 +354,7 @@ public class AdminAction extends ActionSupport {
 
 	public String deleteReadings() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 		long orgId = Long.parseLong(request.getParameter("orgid"));
 		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
 		long moduleId = Long.parseLong(request.getParameter("moduleId"));
@@ -370,7 +372,10 @@ public class AdminAction extends ActionSupport {
 
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		bean.deleteReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, moduleId);
+		response.setHeader("result", "deleted");
+		response.sendRedirect("deleteReadings");
 
+//		request.getRequestDispatcher("/WEB-INF/deleteReading");
 		return SUCCESS;
 
 	}

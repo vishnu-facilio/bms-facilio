@@ -45,7 +45,8 @@ public class DeleteAssetReadingCommand extends FacilioCommand {
         FacilioField readingField = null;
         if (readingFieldId > 0) {
              readingField = bean.getField(readingFieldId);
-             readingsFields.add(readingField);
+             // readingsFields.add(readingField);
+            readingsFields.addAll(bean.getAllFields(readingModule.getName()));
              sourcefieldMap= FieldFactory.getAsMap(readingsFields);
         } else {
             readingsFields.addAll(bean.getAllFields(readingModule.getName()));
