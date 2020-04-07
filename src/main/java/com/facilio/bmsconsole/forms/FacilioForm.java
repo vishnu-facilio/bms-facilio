@@ -199,9 +199,6 @@ public class FacilioForm implements Serializable {
 	
 	private Boolean showInMobile;
 	public Boolean getShowInMobile() {
-		if (showInMobile == null) {
-			return true;
-		}
 		return showInMobile;
 	}
 	public void setShowInMobile(Boolean showInMobile) {
