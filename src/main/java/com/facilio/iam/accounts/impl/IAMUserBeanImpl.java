@@ -779,9 +779,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
 		// TODO Auto-generated method stub
-//		if (userMobileSetting.getUserId() == -1) {
-//			userMobileSetting.setUserId(getUserForEmailOrPhone(userMobileSetting.getEmail(), false,).getUid());
-//		}
+		if (userMobileSetting.getUserId() == -1) {
+			Map<String, Object> map = getUserForEmail(userMobileSetting.getEmail(), -1, null);
+			if(MapUtils.isEmpty(map)) {
+				throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Email");
+			}
+			userMobileSetting.setUserId((Long)map.get("uid"));
+		}
 		if (userMobileSetting.getCreatedTime() == -1) {
 			userMobileSetting.setCreatedTime(System.currentTimeMillis());
 		}

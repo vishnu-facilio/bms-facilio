@@ -427,15 +427,15 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
-//		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
+		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
 		IAMUserUtil.addUserMobileSettings(userMobileSetting);
 	}
 
 	
 	@Override
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception {
-//		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
-		IAMUserUtil.removeUserMobileSettings(mobileInstanceId, true);
+		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
+		IAMUserUtil.removeUserMobileSettings(mobileInstanceId, isPortal);
 
 	}
 
