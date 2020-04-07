@@ -1,4 +1,7 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.chain.Context;
 
@@ -36,6 +39,7 @@ public class OperationAlarmEventContext extends BaseEventContext {
         OperationAlarmOccurenceContext operationAlarmOccurrenceContext = (OperationAlarmOccurenceContext) alarmOccurrence;
         operationAlarmOccurrenceContext.setCoverageType(getCoverageType());
         operationAlarmOccurrenceContext.setSiteId(getSiteId());
+        operationAlarmOccurrenceContext.setReadingFieldId(getReadingFieldId());
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 	
@@ -49,6 +53,7 @@ public class OperationAlarmEventContext extends BaseEventContext {
         OperationAlarmContext alarm = (OperationAlarmContext) baseAlarm;
         alarm.setCoverageType(getCoverageType());
         alarm.setSiteId(getSiteId());
+        alarm.setReadingFieldId(getReadingFieldId());
         return baseAlarm;
     }
     private OperationAlarmContext.CoverageType coverageType;
@@ -71,4 +76,31 @@ public class OperationAlarmEventContext extends BaseEventContext {
     public final void setCoverageType(OperationAlarmContext.CoverageType coverageType) {
         this.coverageType = coverageType;
     }
+
+    private FacilioField readingField;
+    public FacilioField getReadingField(){
+        try {
+            if(readingField == null && readingFieldId > 0) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                readingField = modBean.getField(readingFieldId);
+            }
+        }
+        catch(Exception e) {
+//            LOGGER.error("Error while fetching reading fieldid : "+readingFieldId, e);
+        }
+        return readingField;
+    }
+    public void setReadingField(FacilioField readingField) {
+        this.readingField = readingField;
+    }
+
+    private long readingFieldId = -1;
+    public long getReadingFieldId() {
+        return readingFieldId;
+    }
+    public void setReadingFieldId(long readingFieldId) {
+        this.readingFieldId = readingFieldId;
+    }
+
+
 }

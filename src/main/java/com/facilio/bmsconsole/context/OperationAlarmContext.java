@@ -1,7 +1,14 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class OperationAlarmContext extends  BaseAlarmContext {
-	
+	private static final Logger LOGGER = LogManager.getLogger(OperationAlarmContext.class.getName());
+
 	private static final long serialVersionUID = 1L;
 //	private long assetid;
 //
@@ -51,6 +58,31 @@ public class OperationAlarmContext extends  BaseAlarmContext {
 			}
 			return null;
 		}
+	}
+
+	private FacilioField readingField;
+	public FacilioField getReadingField(){
+		try {
+			if(readingField == null && readingFieldId > 0) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				readingField = modBean.getField(readingFieldId);
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Error while fetching reading fieldid : "+readingFieldId, e);
+		}
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
+	}
+
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
 	}
 	
 

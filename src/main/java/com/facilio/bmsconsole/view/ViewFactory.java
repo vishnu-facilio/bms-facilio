@@ -516,6 +516,13 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getOperationalAlarmViews().setOrder(order++));
+		views.put("Active", getOperationalAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("cleared", getOperationalAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
+				.setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.OPERATION_ALARM, views);
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM, views);
@@ -924,6 +931,18 @@ public class ViewFactory {
 		groupVsViews.add(groupDetails);
 
 		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
+
+//		ArrayList<String> operationalAlarms = new ArrayList<String>();
+//		operationalAlarms.add("all");
+//		operationalAlarms.add("active");
+//		operationalAlarms.add("cleared");
+//
+//		groupDetails = new HashMap<>();
+//		groupDetails.put("name", "operationalViews");
+//		groupDetails.put("displayName", "Operational Alarms");
+//		groupDetails.put("moduleName", FacilioConstants.ContextNames.OPERATION_ALARM);
+//		groupDetails.put("views", operationalAlarms);
+//		groupVsViews.add(groupDetails);
 
 		groupVsViews = new ArrayList<>();
 		ArrayList<String> asset = new ArrayList<String>();
@@ -5033,6 +5052,21 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getOperationalAlarmViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Alarms");
+		allView.setModuleName(FacilioConstants.ContextNames.OPERATION_ALARM);
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+
 	private static FacilioView getAgentAlarmOccurrenceViews() {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");
@@ -5122,6 +5156,29 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
 		view.setModuleName("newreadingalarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+
+	private static FacilioView getOperationalAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName(FacilioConstants.ContextNames.OPERATION_ALARM);
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return view;

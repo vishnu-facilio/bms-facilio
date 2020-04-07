@@ -295,6 +295,7 @@ public class PageWidget {
  		COST_BREAKUP("costBreakup"),
  		DEPRECIATION_SCHEDULE("depreciationSchedule"),
  		DEPRECIATION_COST_TREND("depreciationCostTrend"),
+		OPERATION_ALARM_REPORT("operationAlarm"),
 		
 		RANK_RULE("rankRule"),
 		RULE_ASSETS_ALARM("assetsAlarm"),

@@ -89,13 +89,12 @@ public class OperationAlarmApi {
             }
             resourceData.add(resource);
         }
-        LOGGER.info("resourceWithOperatingHour :: " + fieldIdVsResource.size() + fieldIdVsResource );
+        LOGGER.info("resourceWithOperatingHour :: " + fieldIdVsResource.size() );
 
         for (long fieldId : fieldIdsList) {
             if (fieldIdVsResource.containsKey(fieldId)) {
                 List<Map<String,Object>> resourceId = fieldIdVsResource.get(fieldId);
                 List<Long> assetList = resourceId.stream().map(prop -> (long) prop.get("resourceId")).collect(Collectors.toList());
-
                 FacilioField field = modBean.getField(fieldId);
                 Map<Long, List<ReadingContext>> readingMap = fetchReadings(field, assetList,startTime, endTime);
                 for (Long parentID : readingMap.keySet()) {
@@ -113,9 +112,9 @@ public class OperationAlarmApi {
     }
 
 
-    private static void raiseAlarm(String msg, ReadingContext readingContext, OperationAlarmContext.CoverageType type, Context context) throws Exception
+    private static void raiseAlarm(String msg, ReadingContext readingContext, OperationAlarmContext.CoverageType type, Context context, FacilioField readingField) throws Exception
     {
-        OperationAlarmEventContext event = createOperationEvent(msg, readingContext, type);
+        OperationAlarmEventContext event = createOperationEvent(msg, readingContext, type, readingField);
         addEvent(event, context);
     }
 
@@ -170,10 +169,10 @@ public class OperationAlarmApi {
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
-                    raiseAlarm("Expected to run 24/ 7 ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                    raiseAlarm("Asset is operating outside of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     break;
                 }
-                checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                 break;
             case DAYS_24_5:
                 List<BusinessHourContext> hours = businessHoursContext.getSingleDaybusinessHoursList();
@@ -184,18 +183,18 @@ public class OperationAlarmApi {
                 }
                 if(!value) {  //  when result is false and checking whether it should be true
                     if(hoursList.contains(reading.getDay())) {
-                        raiseAlarm("Expected to run 24/5 short", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                        raiseAlarm("Asset is operating outside of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                         break;
                     }
-                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                 }
                 else
                 {
                     if(!hoursList.contains(reading.getDay())) {
-                        raiseAlarm("Expected to run 24/5 exceed", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                        raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     }
-                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                 }
                 break;
             case CUSTOM:
@@ -213,10 +212,10 @@ public class OperationAlarmApi {
                     {
                         BusinessHourContext businessHour = dayWithTime.get(reading.getDay());
 						if ((businessHour.getStartTimeAsLocalTime().getHour() < reading.getHour() && businessHour.getStartTimeAsLocalTime().getMinute() < readingMinutes) && (businessHour.getEndTimeAsLocalTime().getHour() > reading.getHour() && businessHour.getEndTimeAsLocalTime().getMinute() > readingMinutes)) {
-                            raiseAlarm("Custom short", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                            raiseAlarm("Asset is operating outside of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                             break;
                         }
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     }
                 }
                 else
@@ -226,22 +225,22 @@ public class OperationAlarmApi {
                         BusinessHourContext businessHour = dayWithTime.get(reading.getDay());
                         if (businessHour != null) {
                             if ((businessHour.getStartTimeAsLocalTime().getHour() > reading.getHour() && businessHour.getStartTimeAsLocalTime().getMinute() > readingMinutes) || (businessHour.getEndTimeAsLocalTime().getHour() < reading.getHour() && businessHour.getEndTimeAsLocalTime().getMinute() < readingMinutes)) {
-                                raiseAlarm("Custom exceed", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                                raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                                 break;
                             }
                         } else {
-                            raiseAlarm("Custom exceed", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                            raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                     }
                     else
                     {
                     	if(dayWithTime.get(reading.getDay()) == null) {
-	                    	raiseAlarm("Custom exceed", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+	                    	raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
 	                        break;
                     	}
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                     }
 
                 }
@@ -250,10 +249,10 @@ public class OperationAlarmApi {
 
     }
 
-    private static OperationAlarmEventContext createOperationEvent(String message, ReadingContext readingContext, OperationAlarmContext.CoverageType type) {
-        return createOperationEvent(message, readingContext, type, FacilioConstants.Alarm.CRITICAL_SEVERITY);
+    private static OperationAlarmEventContext createOperationEvent(String message, ReadingContext readingContext, OperationAlarmContext.CoverageType type, FacilioField field) {
+        return createOperationEvent(message, readingContext, type, FacilioConstants.Alarm.CRITICAL_SEVERITY,field );
     }
-    private static OperationAlarmEventContext createOperationEvent(String message, ReadingContext readingContext, OperationAlarmContext.CoverageType type,String severity)
+    private static OperationAlarmEventContext createOperationEvent(String message, ReadingContext readingContext, OperationAlarmContext.CoverageType type,String severity, FacilioField readingField)
     {
         OperationAlarmEventContext event=new OperationAlarmEventContext();
         event.setMessage(message);
@@ -261,6 +260,7 @@ public class OperationAlarmApi {
         event.setDescription("description");
         event.setCreatedTime(readingContext.getTtime());
         event.setSiteId(readingContext.getSiteId());
+        event.setReadingFieldId(readingField.getFieldId());
         ResourceContext context = new ResourceContext();
         context.setId(readingContext.getParentId());
         event.setResource(context);;
@@ -280,20 +280,20 @@ public class OperationAlarmApi {
         event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
         return event;
     }
-    private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context) throws Exception {
+    private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField) throws Exception {
         BaseEventContext previousExceedEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
         BaseEventContext previousShortEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT);
             if (previousExceedEvent.getSeverityString() == null && previousShortEvent.getSeverityString() == null) {
                 return;
             }
              if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY), context);
+                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                  return;
              }
 
              if (previousShortEvent.getSeverityString() != null
                      && !previousShortEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY), context);
+                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                  return;
              }
     }
@@ -355,6 +355,11 @@ public class OperationAlarmApi {
         context.put(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT, shortOfPreviousEvent);
         context.put(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT, exceedPreviousEvent);
         return previousEvent;
+    }
+
+    private String setMessage() {
+
+        return  null;
     }
 
 }

@@ -47,6 +47,8 @@ public class PageFactory {
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
+			case ContextNames.OPERATION_ALARM:
+				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record);
 			case ContextNames.AGENT_ALARM:
 				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
 			case ContextNames.WORKPERMIT:

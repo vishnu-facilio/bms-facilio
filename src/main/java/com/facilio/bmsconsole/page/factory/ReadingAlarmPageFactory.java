@@ -159,7 +159,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
 //        return activityWidget;
 //    }
 
-    private static PageWidget addAlarmRankCard(Section section) {
+    public static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
         cardWidget.addToLayoutParams(section, 24, 2);
         cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_RULE.getName());
@@ -167,7 +167,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         return cardWidget;
     }
 
-    private static PageWidget addMeanTimeBetweenCard(Section section) {
+    public static PageWidget addMeanTimeBetweenCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mtba");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ML_MTBA);
@@ -175,21 +175,21 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         return  cardWidget;
 
     }
-    private static PageWidget addMeanTimeToClearCard(Section section) {
+    public static PageWidget addMeanTimeToClearCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mttc");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ML_MTTC);
         section.addWidget(cardWidget);
         return  cardWidget;
     }
-    private  static  PageWidget addAlarmDuration (Section section) {
+    public  static  PageWidget addAlarmDuration (Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ALARM_DUARTION);
         section.addWidget(cardWidget);
         return  cardWidget;
     }
-    private static  PageWidget  addImpactCard (Section section) {
+    public static  PageWidget  addImpactCard (Section section) {
         PageWidget impactCard = new PageWidget(PageWidget.WidgetType.IMPACTS);
         impactCard.addToLayoutParams(section, 24, 8);
         section.addWidget(impactCard);
