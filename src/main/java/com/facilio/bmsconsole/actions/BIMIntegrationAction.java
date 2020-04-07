@@ -10,23 +10,34 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext.AssetCategoryType;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
+import com.facilio.bmsconsole.context.BimIntegrationLogsContext.ThirdParty;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BimAPI;
@@ -109,24 +120,6 @@ public class BIMIntegrationAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
-public static synchronized HttpURLConnection getHttpURLConnection (String requestURL) throws Exception{
-		
-
-		URL request = new URL(requestURL.trim());
-		HttpURLConnection connection = (HttpURLConnection) request.openConnection();
-
-		connection.setRequestMethod("GET");
-		connection.setUseCaches(false);
-		connection.setDoInput(true);
-		connection.setDoOutput(false);
-		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		connection.setRequestProperty("Accept", "application/json");
-		connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-//		connection.setRequestProperty("Authorization:", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU2NzcwNzYsInVzZXJfbmFtZSI6IjkzYmY4NmUzLWM0N2ItNDk5NC1iN2E4LTg3ZDUwMWIxZjNkMiIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJqdGkiOiJiNzZhOWE4Zi03OGM4LTQwMzAtYTM2ZC1mM2RhMzA0OGNhZTciLCJjbGllbnRfaWQiOiJmYWNpbGlvLWFwaSIsInNjb3BlIjpbInJlYWQiLCJ3cml0ZSJdfQ.AGvyrHevpWz5J543-eNeYGMrqFCVY8BY01C6DNGupMM");
-		connection.setConnectTimeout(30000);
-		connection.setReadTimeout(30000);
-		return connection;
-	}
 
 private static InputStream getInputStream(HttpURLConnection connection) throws Exception{
 	
@@ -142,15 +135,29 @@ private static InputStream getInputStream(HttpURLConnection connection) throws E
 	return iStream;
 }
 
-public static String getResponse (HttpURLConnection connection) throws Exception {
-
+public static String getResponse (ThirdParty thirdParty, String requestURL,String accessToken) throws Exception {
+	if(requestURL.contains(" ")){
+		requestURL = requestURL.replace(" ", "%20");
+	}
 	String response = "";
-
+	URL request = new URL(requestURL.trim());
+	HttpURLConnection connection = (HttpURLConnection) request.openConnection();
 	try {
 		
+		connection.setRequestMethod("GET");
+		connection.setUseCaches(false);
+		connection.setDoInput(true);
+		connection.setDoOutput(false);
+		connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+		connection.setConnectTimeout(300000);
+		connection.setReadTimeout(300000);
+		if(thirdParty.equals(ThirdParty.INVICARA)){
+			connection.setRequestProperty ("Authorization", "Bearer "+accessToken);
+		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
+			connection.setRequestProperty ("x-auth-token", accessToken);
+		}
+		
 		connection.connect();
-		String responseTime = connection.getHeaderField("X-Response-Time");
-		System.err.println("response Time: "+responseTime);
 		
 		int responseCode=connection.getResponseCode();
 
@@ -169,7 +176,6 @@ public static String getResponse (HttpURLConnection connection) throws Exception
 			}
 		}
 		
-		
 	} catch (IOException e) {
 		throw e;	
 	} finally {		
@@ -178,63 +184,229 @@ public static String getResponse (HttpURLConnection connection) throws Exception
 	return response;
 }
 
-	public String addAssetsJSONImport() throws Exception {
-		
-//		HttpURLConnection connection= getHttpURLConnection("https://facilio-int.invicara.com/platformapisvc/api/v0.9/assets?nsfilter=5psdproj_O4Z2hIL9&page={\"_pageSize\":800,\"_offset\":0 }&dtCategory=[\"HVAC Air Handling Unit\", \"HVAC Chiller Unit\",\"HVAC Cooling Tower\",\"HVAC Damper\",\"HVAC Valve\",\"HVAC Pump\"]");
-//		String hvacStr= getResponse(connection);
-//		System.out.println("res ::::::: "+hvacStr);
-//		String home = System.getProperty("user.home");
-//		
-        String hvacStr= FileUtils.readFileToString(fileUpload, "UTF-8");
-		
+public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdPartyDetailsMap) throws Exception{
+	CloseableHttpClient client = HttpClientBuilder.create().useSystemProperties().build() ;
 
-		JSONObject resultObj = new JSONObject(hvacStr);
+	URIBuilder uri = new URIBuilder(thirdPartyDetailsMap.get("tokenURL"))
+			.addParameter("grant_type", thirdPartyDetailsMap.get("grant_type"))
+			.addParameter("username", thirdPartyDetailsMap.get("username"))
+			.addParameter("password", thirdPartyDetailsMap.get("password"));
+
+	RequestConfig config = RequestConfig
+	      .custom()
+	      .setConnectTimeout(30000)
+	      .setConnectionRequestTimeout(30000)
+	      .setSocketTimeout(300000)
+	      .build();
+	  HttpPost request = new HttpPost(uri.build());
+	  request.setConfig(config);
+	  request.addHeader("Content-Type", "application/json");
+	  CloseableHttpResponse response = client.execute(request);
+
+	  StringBuilder result = new StringBuilder();
+
+        try(BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));) {
+        	
+        	String line = "";
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+        }
+        JSONParser parser = new JSONParser();
+        
+	if(thirdParty.equals(ThirdParty.INVICARA)){
+		return ((JSONObject) parser.parse(result.toString())).get("access_token").toString();
+	}else if(thirdParty.equals(ThirdParty.YOUBIM)){
+//		return ((JSONObject)parser.parse(((JSONObject)parser.parse(((JSONObject) parser.parse(result.toString())).get("response").toString())).get("data").toString())).get("token").toString();
+		return "4b41407126fa3d8a9f1e709d4d813ccf63685af1";
+	}
+	
+	return "";
+}
+
+	public String bimJsonImport() throws Exception {
+		
+		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
+		List<FacilioField> fields =  FieldFactory.getBimIntegrationLogsFields();
+		
+		BimIntegrationLogsContext bimIntegrationLog=new BimIntegrationLogsContext();
+		bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.INPROGRESS);
+		bimIntegrationLog.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
+		bimIntegrationLog.setThirdParty(thirdParty.getValue());
+		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
+		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
+		if(thirdParty.equals(ThirdParty.INVICARA)){
+			bimIntegrationLog.setNoOfModules(1);
+			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
+			bimIntegrationLog.setId(bimid);
+			
+			importInvicaraAssets(thirdParty,thirdPartyDetailsMap.get("assetURL"),token);
+			bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.COMPLETED);
+			BimAPI.updateBimIntegrationLog(module,fields,bimIntegrationLog);
+		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
+			bimIntegrationLog.setNoOfModules(3);
+			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
+			bimIntegrationLog.setId(bimid);
+
+			importYouBimSitesBuildingAssets(thirdParty,thirdPartyDetailsMap.get("siteURL"),thirdPartyDetailsMap.get("buildingURL"),thirdPartyDetailsMap.get("assetCategoryURL"),thirdPartyDetailsMap.get("assetURL"),token);
+			bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.COMPLETED);
+			BimAPI.updateBimIntegrationLog(module,fields,bimIntegrationLog);
+		}
+		return SUCCESS;
+	}
+	public void importYouBimSitesBuildingAssets(ThirdParty thirdParty,String siteURL,String buildingURL,String assetCategoryURL,String assetURL,String token) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Map<Long,Long> oldNewSiteIds = new HashMap<>();
+		Map<Long,Long> oldNewBuildingIds = new HashMap<>();
+		
+		String sitesJsonString= getResponse(thirdParty,siteURL,token);
+		JSONParser parser = new JSONParser();
+		JSONObject resultObj = (JSONObject) parser.parse(sitesJsonString);
+		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+		for(int i=0;i<arr.length();i++){
+
+			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
+			long oldSiteId = Long.parseLong(result.get("id").toString());
+			String siteName= result.get("name").toString();
+			SiteContext site = new SiteContext();
+			site.setName(siteName);
+			FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
+			FacilioContext context = addCampus.getContext();
+			context.put(FacilioConstants.ContextNames.SITE, site);
+			addCampus.execute();
+			long newSiteId =  site.getId();
+			oldNewSiteIds.put(oldSiteId, newSiteId);
+		}
+		
+		String buildingsJsonString= getResponse(thirdParty,buildingURL,token);
+		resultObj = (JSONObject) parser.parse(buildingsJsonString);
+		arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+		HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
+		
+		for(int i=0;i<arr.length();i++){
+
+			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
+			long oldBuildingId = Long.parseLong(result.get("id").toString());
+			String buildingName= result.get("name").toString();
+			long siteId = Long.parseLong(result.get("site_id").toString());
+			
+			BuildingContext building = new BuildingContext();
+			building.setName(buildingName);
+			building.setSiteId(oldNewSiteIds.get(siteId));
+			FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
+			FacilioContext context = addBuilding.getContext();
+			context.put(FacilioConstants.ContextNames.BUILDING, building);
+			
+			addBuilding.execute();
+			
+			long newBuildingId =  building.getId();
+			oldNewBuildingIds.put(oldBuildingId, newBuildingId);
+			
+			
+			String assetCategorysJsonString= getResponse(thirdParty,assetCategoryURL+String.valueOf(oldBuildingId),token);
+			resultObj = (JSONObject) parser.parse(assetCategorysJsonString);
+			JSONArray arr1 = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+			
+			for(int j=0;j<arr1.length();j++){
+				JSONObject result1 = (JSONObject) parser.parse(arr1.get(j).toString());
+				String moduleName = "";
+				String assetCategoryName= result1.get("name").toString();
+				long oldAssetCategoryId= Long.parseLong(result1.get("id").toString());
+				if(assetCategoryMap.containsKey(assetCategoryName)){
+					assetCategoryName = assetCategoryMap.get(assetCategoryName).toString();
+					AssetCategoryContext assetCategory = AssetsAPI.getCategory(assetCategoryName);
+					if(assetCategory == null){
+						if(assetCategoryName != null && !assetCategoryName.isEmpty()) {
+							assetCategory = new AssetCategoryContext();
+							assetCategory.setName(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+							assetCategory.setType(AssetCategoryType.MISC);
+							FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+							FacilioContext context1 = addAssetCategoryChain.getContext();
+							context1.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+							addAssetCategoryChain.execute();
+						}
+					}
+					
+					FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
+					moduleName = module.getName();
+					
+					String assetsJsonString= getResponse(thirdParty,assetURL+String.valueOf(oldAssetCategoryId),token);
+					resultObj = (JSONObject) parser.parse(assetsJsonString);
+					JSONArray arr2 = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+					
+					for(int k=0;k<arr2.length();k++){
+						JSONObject result2 = (JSONObject) parser.parse(arr2.get(k).toString());
+						String assetName= result2.get("name").toString();
+						String description= result2.get("description").toString();
+						
+						AssetContext asset = new AssetContext();
+						asset.setName(assetName);
+						asset.setDescription(description);
+						asset.setSiteId(building.getSiteId());
+						asset.setCategory(assetCategory);
+						addAsset(asset,moduleName);
+					}
+				}
+			}
+		}
+	}
+	
+	public void importInvicaraAssets(ThirdParty thirdParty,String assetURL,String token) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String assetsJsonString= getResponse(thirdParty,assetURL,token);
+
+		JSONParser parser = new JSONParser();
+
+		JSONObject resultObj = (JSONObject) parser.parse(assetsJsonString);
 		JSONArray arr = new JSONArray(resultObj.get("_list").toString());
 		
 		for(int i=0;i<arr.length();i++){
 
-			JSONObject result = (JSONObject) arr.get(i);
+			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
 			String assetName= result.get("Asset Name").toString();
-			JSONObject properties=  new JSONObject(result.get("properties").toString());
+			JSONObject properties=  (JSONObject) parser.parse(result.get("properties").toString());
 			List<SiteContext> sites = SpaceAPI.getAllSites();
 			Long siteId = sites.get(0).getId();
 			
-			String category = new JSONObject(properties.get("dtCategory").toString()).get("val").toString();
-			JSONObject snoObject = new JSONObject(properties.get("Serial Number").toString());
+			String category = ((JSONObject)parser.parse(properties.get("dtCategory").toString())).get("val").toString();
+			JSONObject snoObject = (JSONObject)parser.parse(properties.get("Serial Number").toString());
 			
 			String serialNumber = "";
-			if(snoObject.has("val")){
+			if(snoObject.containsKey("val")){
 				serialNumber =  snoObject.get("val").toString();
 			}
 			
-			String tag=  new JSONObject(properties.get("Asset Tag").toString()).get("val").toString();
-			JSONObject modelObject = new JSONObject(properties.get("Model").toString());
+			String tag=  ((JSONObject)parser.parse(properties.get("Asset Tag").toString())).get("val").toString();
+			JSONObject modelObject = (JSONObject)parser.parse(properties.get("Model").toString());
 			String model = "";
-			if(modelObject.has("val")){
+			if(modelObject.containsKey("val")){
 				model =  modelObject.get("val").toString();
 			}
-			String description=  new JSONObject(properties.get("COBie Type Description").toString()).get("val").toString();
-			String manufacturer=  new JSONObject(properties.get("Manufacturer").toString()).get("val").toString();
+			String description=  ((JSONObject)parser.parse(properties.get("COBie Type Description").toString())).get("val").toString();
+			String manufacturer=  ((JSONObject)parser.parse(properties.get("Manufacturer").toString())).get("val").toString();
 			String moduleName = "";
 			String categoryName = "";
 			AssetCategoryContext assetCategory = new AssetCategoryContext();
 			
-			if(category.equals("HVAC Air Handling Unit")){
-				categoryName = "AHU";
-			}else if(category.equals("HVAC Chiller Unit")){
-				categoryName = "Chiller";
-			}else if(category.equals("HVAC Cooling Tower")){
-				categoryName = "Cooling Tower";
-			}else if(category.equals("HVAC Damper")){
-				categoryName = "damper";
-			}else if(category.equals("HVAC Valve")){
-				categoryName = "valve";
-			}else if(category.equals("HVAC Pump")){
-				categoryName = "pump";
-			}
+			HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
+			categoryName = assetCategoryMap.get(category).toString();
 			
 			assetCategory = AssetsAPI.getCategory(categoryName);
-			moduleName = assetCategory.getModuleName();
+			if(assetCategory == null){
+				assetCategory = new AssetCategoryContext();
+				if(categoryName != null && !categoryName.isEmpty()) {
+					assetCategory.setName(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+					assetCategory.setType(AssetCategoryType.MISC);
+					FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+					FacilioContext context = addAssetCategoryChain.getContext();
+					context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+					addAssetCategoryChain.execute();	
+				}
+			}
+
+			FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
+			moduleName = module.getName();
 			
 			AssetContext asset = new AssetContext();
 			asset.setName(assetName);
@@ -248,8 +420,6 @@ public static String getResponse (HttpURLConnection connection) throws Exception
 			addAsset(asset,moduleName);
 			
 		}
-		
-		return SUCCESS;
 	}
 	
 	public void addAsset(AssetContext asset,String moduleName) throws Exception {
@@ -295,6 +465,16 @@ public static String getResponse (HttpURLConnection connection) throws Exception
 		assetDetailsChain.execute();
 	}
 	
+	private ThirdParty thirdParty;
+	
+	public ThirdParty getThirdParty() {
+		return thirdParty;
+	}
+
+	public void setThirdParty(ThirdParty thirdParty) {
+		this.thirdParty = thirdParty;
+	}
+
 	private SiteContext site;
 
 	public SiteContext getSite() {

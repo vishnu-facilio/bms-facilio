@@ -8163,6 +8163,7 @@ public class FieldFactory {
  		fields.add(getField("status","Status","STATUS",module,FieldType.NUMBER));
  		fields.add(getField("uploadedBy","Uploaded By","UPLOADED_BY",module,FieldType.NUMBER));
  		fields.add(getField("importedTime","Imported Time","IMPORTED_TIME",module,FieldType.NUMBER));
+ 		fields.add(getField("thirdParty","Third Party","THIRD_PARTY",module,FieldType.NUMBER));
  		return fields;
 	}
 	

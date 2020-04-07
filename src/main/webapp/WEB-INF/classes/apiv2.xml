@@ -5799,8 +5799,8 @@
 			method="getBimIntegrationLogs"
 		/>
 		
-		<action name="assetJsonImport" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
-			method="addAssetsJSONImport"
+		<action name="bimJsonImport" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="bimJsonImport"
 		/>
 		
 	</package>

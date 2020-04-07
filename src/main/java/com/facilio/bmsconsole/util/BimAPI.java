@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BimDefaultValuesContext;
 import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
+import com.facilio.bmsconsole.context.BimIntegrationLogsContext.ThirdParty;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -655,6 +656,53 @@ public class BimAPI {
 		return row_no==0;
 	}
 	
+	public static HashMap<String,String> getThirdPartyDetailsMap(ThirdParty thirdParty){
+		HashMap<String,String> thirdPartyDetailsMap = new HashMap<String,String>();
+		
+		if(thirdParty.equals(ThirdParty.INVICARA)){
+			
+			thirdPartyDetailsMap.put("username", "swathi@facilio.com");
+			thirdPartyDetailsMap.put("password", "Facilio@123");
+			thirdPartyDetailsMap.put("grant_type", "password");
+			thirdPartyDetailsMap.put("tokenURL", "https://facilio-api:5RTyKv4NvVstckcx5E78EM4RyAttoI@facilio-int.invicara.com/passportsvc/api/v1/oauth/token");
+			thirdPartyDetailsMap.put("assetURL", "https://facilio-int.invicara.com/platformapisvc/api/v0.9/assets?nsfilter=5psdproj_O4Z2hIL9&page={\"_pageSize\":800,\"_offset\":0}&dtCategory=[\"HVAC Air Handling Unit\", \"HVAC Chiller Unit\",\"HVAC Cooling Tower\",\"HVAC Damper\",\"HVAC Valve\",\"HVAC Pump\"]");			
+		
+		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
+			
+			thirdPartyDetailsMap.put("username", "swathi@facilio.com");
+			thirdPartyDetailsMap.put("password", "Facilio@123");
+			thirdPartyDetailsMap.put("grant_type","password");
+			thirdPartyDetailsMap.put("tokenURL", "https://api.youbim.com/users/getToken");
+			thirdPartyDetailsMap.put("siteURL", "https://api.youbim.com/sites");
+			thirdPartyDetailsMap.put("buildingURL", "https://api.youbim.com//buildings");
+			thirdPartyDetailsMap.put("assetCategoryURL", "https://api.youbim.com/types?limit=500&FilterBuilding_id=");
+			thirdPartyDetailsMap.put("assetURL", "https://api.youbim.com//assets?FilterType_id=");
+		
+		}
+		return thirdPartyDetailsMap;
+	}
 	
+	public static HashMap<String,String> getThirdPartyAssetCategoryNames(ThirdParty thirdParty){
+		HashMap<String,String> thirdPartyDetailsMap = new HashMap<String,String>();
+		
+		if(thirdParty.equals(ThirdParty.INVICARA)){
+			thirdPartyDetailsMap.put("HVAC Air Handling Unit", "AHU");
+			thirdPartyDetailsMap.put("HVAC Chiller Unit", "Chiller");
+			thirdPartyDetailsMap.put("HVAC Cooling Tower", "Cooling Tower");
+			thirdPartyDetailsMap.put("HVAC Damper", "damper");
+			thirdPartyDetailsMap.put("HVAC Valve", "valve");
+			thirdPartyDetailsMap.put("HVAC Pump", "pump");
+		
+		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
+			
+			thirdPartyDetailsMap.put("AHU", "AHU");
+			thirdPartyDetailsMap.put("Air Cooled Chiller", "Facilio@123");
+			thirdPartyDetailsMap.put("Primary_Pump_Primary_Pump","Primary Pump");
+			thirdPartyDetailsMap.put("Pump- Hot Water", "Secondary Pump");
+			thirdPartyDetailsMap.put("Pump- Cold Water", "Secondary Pump");
+			thirdPartyDetailsMap.put("Pump_Pump", "Secondary Pump");
+		}
+		return thirdPartyDetailsMap;
+	}
 	
 }

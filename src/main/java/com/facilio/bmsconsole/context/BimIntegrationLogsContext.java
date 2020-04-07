@@ -106,4 +106,42 @@ public class BimIntegrationLogsContext{
 			return null;
 		}
 	}
+	
+	private ThirdParty thirdParty;
+
+	public ThirdParty getThirdPartyEnum() {
+		return thirdParty;
+	}
+
+	public void setThirdParty(ThirdParty thirdParty) {
+		this.thirdParty = thirdParty;
+	}
+
+	public int getThirdParty() {
+		if (thirdParty != null) {
+			return thirdParty.getValue();
+		}
+		return -1;
+	}
+
+	public void setThirdParty(int thirdParty) {
+		this.thirdParty = ThirdParty.valueOf(thirdParty);
+	}
+
+	public enum ThirdParty {
+		INTERNAL,
+		INVICARA,
+		YOUBIM;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static ThirdParty valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 }
