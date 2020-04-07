@@ -565,8 +565,6 @@ public class ProcessImportCommand extends FacilioCommand {
 									}
 								}
 					}	
-						
-				LOGGER.info("props -- " + props);
 
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 				if(groupedContext.containsKey(module)) {
