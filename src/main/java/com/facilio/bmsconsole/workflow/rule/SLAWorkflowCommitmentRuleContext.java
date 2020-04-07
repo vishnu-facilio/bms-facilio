@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.AddOrUpdateSLABreachJobCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BusinessHoursList;
@@ -13,12 +14,14 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -106,7 +109,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
                     if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
                         slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord);
+                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
                     }
                 }
             }
@@ -115,11 +118,17 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
+            AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
             int count = 0;
             for (SLAWorkflowEscalationContext escalation : escalations) {
                 count++;
+
+                Long value = (Long) FieldUtil.getValue(moduleRecord, dueField);
+                if (!FacilioUtil.isEmptyOrNull(value) && (value) < System.currentTimeMillis()) {
+                    continue;
+                }
 
                 WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
                 workflowRuleContext.setName(getName() + "_Escalation_" + count);
@@ -141,7 +150,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 if (actions == null) {
                     actions = new ArrayList<>();
                 }
-                actions.add(getDefaultSLAEscalationTriggeredAction(count));
+                actions.add(getDefaultSLAEscalationTriggeredAction(count, slaEntity));
                 recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
                 recordRuleChain.execute();
             }
@@ -159,13 +168,14 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 (FacilioContext) context);
     }
 
-    private ActionContext getDefaultSLAEscalationTriggeredAction(int count) {
+    private ActionContext getDefaultSLAEscalationTriggeredAction(int count, SLAEntityContext slaEntity) {
         ActionContext actionContext = new ActionContext();
         actionContext.setActionType(ActionType.ACTIVITY_FOR_MODULE_RECORD);
         JSONObject json = new JSONObject();
         json.put("activityType", WorkOrderActivityType.SLA_ESCALATION_TRIGGERED.getValue());
         JSONObject infoJson = new JSONObject();
         infoJson.put("stage", count);
+        infoJson.put("slaEntity", slaEntity.getName());
         infoJson.put("message", "Stage " + count + " escalation raised");
         json.put("info", infoJson);
         actionContext.setTemplateJson(json);

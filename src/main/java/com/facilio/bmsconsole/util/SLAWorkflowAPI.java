@@ -101,6 +101,11 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
                 .select(FieldFactory.getSLAEntityFields())
                 .andCondition(CriteriaAPI.getIdCondition(slaEntityId, ModuleFactory.getSLAEntityModule()));
         SLAEntityContext slaEntityContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), SLAEntityContext.class);
+        if (slaEntityContext != null) {
+            if (slaEntityContext.getCriteriaId() > 0) {
+                slaEntityContext.setCriteria(CriteriaAPI.getCriteria(slaEntityContext.getCriteriaId()));
+            }
+        }
         return slaEntityContext;
     }
 

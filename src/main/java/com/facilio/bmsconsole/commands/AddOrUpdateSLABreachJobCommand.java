@@ -3,17 +3,20 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -40,9 +43,11 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
         if (MapUtils.isNotEmpty(recordMap)) {
             for (String moduleName : recordMap.keySet()) {
                 List<ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule module = modBean.getModule(moduleName);
 
                 if (!addMode) {
-                    deleteAllExistingSingleRecordJob(records, moduleName);
+                    deleteAllExistingSLASingleRecordJob(records, "_Breach", StringOperators.ENDS_WITH, module);
                 }
 
                 FacilioChain slaEntityChain = ReadOnlyChainFactory.getAllSLAEntityChain();
@@ -50,9 +55,6 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
                 slaEntityContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
                 slaEntityContext.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
                 slaEntityChain.execute();
-
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(moduleName);
 
                 List<SLAEntityContext> slaEntityList = (List<SLAEntityContext>) slaEntityContext.get(FacilioConstants.ContextNames.SLA_ENTITY_LIST);
                 if (CollectionUtils.isNotEmpty(slaEntityList)) {
@@ -78,12 +80,21 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
         return false;
     }
 
-    private void deleteAllExistingSingleRecordJob(List<ModuleBaseWithCustomFields> records, String moduleName) throws Exception {
-        FacilioChain chain = TransactionChainFactory.getDeleteSingleRecordJobChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()));
-        chain.execute();
+    public static void deleteAllExistingSLASingleRecordJob(List<ModuleBaseWithCustomFields> records,
+                                                           String ruleName, Operator operator, FacilioModule module) throws Exception {
+        for (ModuleBaseWithCustomFields record : records) {
+            long parentId = record.getId();
+
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", ruleName, operator));
+            criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.RECORD_SPECIFIC_RULE, false, criteria, null, null);
+            if (CollectionUtils.isNotEmpty(workflowRules)) {
+                List<Long> workFlowIds = workflowRules.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList());
+                WorkflowRuleAPI.deleteWorkFlowRules(workFlowIds);
+            }
+        }
     }
 
     private void addSLAEntityBreachJob(String name, FacilioModule module, ModuleBaseWithCustomFields moduleRecord, Criteria criteria, FacilioField dueField, SLAEntityContext entity) throws Exception {
