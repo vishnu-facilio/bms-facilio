@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EmployeeContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -195,6 +196,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			//1 - app, 2- Occupant portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
@@ -213,6 +215,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
 			//1 - app, 2- Occupant portal
 			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 2);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);

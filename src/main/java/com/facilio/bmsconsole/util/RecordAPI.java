@@ -112,4 +112,22 @@ public class RecordAPI {
 		return clientContext;
 		
 	}
+	
+	public static boolean checkChangeSet(List<UpdateChangeSet> changes, String fieldName, String moduleName) throws Exception {
+		
+		if(CollectionUtils.isNotEmpty(changes)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			if(field == null) {
+				throw new IllegalArgumentException("Invalid Field");
+			}
+			for(UpdateChangeSet change : changes) {
+				if(change.getFieldId() == field.getFieldId()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

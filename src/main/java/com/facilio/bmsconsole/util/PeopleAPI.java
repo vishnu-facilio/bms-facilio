@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -238,7 +239,8 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType, long appId) throws Exception {
+	
+	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType, long appId, List<UpdateChangeSet> changes) throws Exception {
 	   AppDomain appDomain = null;
 		if(appId > 0) {
 			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
@@ -264,7 +266,9 @@ public class PeopleAPI {
 				if(user != null) {
 					user.setAppDomain(appDomain);
 					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
-				    ApplicationApi.addUserInApp(user);
+					if(RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE)) {
+						ApplicationApi.addUserInApp(user);
+					}
 					if(user.getRoleId() != existingPeople.getRoleId()) {
 						user.setRoleId(existingPeople.getRoleId());
 						AccountUtil.getUserBean().updateUser(user);
