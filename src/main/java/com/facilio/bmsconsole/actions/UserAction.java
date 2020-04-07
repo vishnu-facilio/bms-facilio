@@ -93,13 +93,21 @@ public class UserAction extends FacilioAction {
 		this.groupId = groupId;
 	}
 	
-	private boolean portal = false;
-	public boolean isPortal() {
-		return portal;
+	private Boolean isPortal = false;
+
+	public Boolean getIsPortal() {
+		return isPortal;
 	}
 
-	public void setPortal(boolean portal) {
-		this.portal = portal;
+	public void setIsPortal(Boolean portal) {
+		this.isPortal = portal;
+	}
+
+	public boolean isPortal() {
+		if (isPortal != null) {
+			return isPortal.booleanValue();
+		}
+		return false;
 	}
 
 	private String appDomain;
@@ -388,18 +396,26 @@ public class UserAction extends FacilioAction {
 
 	
 	public String resendInvite() throws Exception {
-		ServletActionContext.getRequest().getParameter("portal");
-		long appId = -1;
 		try {
-			List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(portal ? AppDomainType.SERVICE_PORTAL : AppDomainType.FACILIO, AccountUtil.getCurrentOrg().getOrgId());
-			if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
-				if(servicePortalDomain.size() > 1) {
-					return ERROR;
+			AppDomain appDomain = null;
+			//temp handling
+			if(appId <= 0) {
+				List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(isPortal ? AppDomainType.SERVICE_PORTAL : AppDomainType.FACILIO, AccountUtil.getCurrentOrg().getOrgId());
+				if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
+					if(servicePortalDomain.size() > 1) {
+						return ERROR;
+					}
+					appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
+					appDomain = servicePortalDomain.get(0);
 				}
-				appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
+			}
+			else {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId);
+			}
+			if(appDomain != null) {
 				User appUser = AccountUtil.getUserBean().getUser(userId, false);
 				if(appUser != null) {
-					appUser.setAppDomain(servicePortalDomain.get(0));
+					appUser.setAppDomain(appDomain);
 					appUser.setApplicationId(appId);
 					(new UserBeanImpl()).resendInvite(appUser);
 					setUserId(appUser.getId());

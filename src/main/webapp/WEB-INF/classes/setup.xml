@@ -259,7 +259,6 @@
 			</action>
 			<action name="resendinvite" class="com.facilio.bmsconsole.actions.UserAction" method="resendInvite">
 			<param name="moduleName">setup</param>
-			<param name="portal">true</param>
 			<param name="permission">USER_MANAGEMENT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
