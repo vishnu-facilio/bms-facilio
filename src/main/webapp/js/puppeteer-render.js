@@ -1,4 +1,4 @@
-const pupeteer = require('puppeteer');
+const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
 
 (async () => {
     const browser = await pupeteer.launch({headless: true, devtools: false, defaultViewport: null})
