@@ -696,7 +696,7 @@ public class BimAPI {
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
 			
 			thirdPartyDetailsMap.put("AHU", "AHU");
-			thirdPartyDetailsMap.put("Air Cooled Chiller", "Facilio@123");
+			thirdPartyDetailsMap.put("Air Cooled Chiller", "Chiller");
 			thirdPartyDetailsMap.put("Primary_Pump_Primary_Pump","Primary Pump");
 			thirdPartyDetailsMap.put("Pump- Hot Water", "Secondary Pump");
 			thirdPartyDetailsMap.put("Pump- Cold Water", "Secondary Pump");

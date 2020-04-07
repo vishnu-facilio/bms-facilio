@@ -941,6 +941,36 @@ public class SpaceAPI {
 		return selectBuilder.fetchFirst();
 	}
 	
+	public static BuildingContext getBuilding(String buildingName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(BuildingContext.class)
+																	.andCustomWhere("SPACE_TYPE=? AND NAME=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal(),buildingName);
+		
+		return selectBuilder.fetchFirst();
+	}
+	
+	public static SiteContext getSite(String siteName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ZONE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ZONE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(SiteContext.class)
+																	.andCustomWhere("SPACE_TYPE=? AND NAME=?",BaseSpaceContext.SpaceType.SITE.getIntVal(),siteName);
+		
+		return selectBuilder.fetchFirst();
+	}
+	
 	public static List<SpaceContext> getAllSpaces() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);

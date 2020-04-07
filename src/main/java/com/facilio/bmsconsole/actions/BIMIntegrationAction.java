@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.facilio.bmsconsole.context.BimImportProcessMappingContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext;
 import com.facilio.bmsconsole.context.BimIntegrationLogsContext.ThirdParty;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BimAPI;
@@ -51,6 +53,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class BIMIntegrationAction extends FacilioAction{
 
@@ -234,7 +237,10 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		bimIntegrationLog.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
 		bimIntegrationLog.setThirdParty(thirdParty.getValue());
 		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
+		
 		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
+		addThirdPartyIdCustomFieldInAsset();
+		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
 			bimIntegrationLog.setNoOfModules(1);
 			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
@@ -254,6 +260,27 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		}
 		return SUCCESS;
 	}
+	
+	public void addThirdPartyIdCustomFieldInAsset() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields("asset"));
+		if(!fieldsMap.containsKey("thirdpartyid")){
+			FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+			FacilioContext context = addFieldsChain.getContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+			FacilioField field =  new FacilioField();
+			field.setDataType(1);
+			field.setDisplayName("Third Party Id");
+			field.setDisplayType(FieldDisplayType.TEXTBOX);
+			field.setDisplayTypeInt(1);
+			field.setRequired(false);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+			
+			addFieldsChain.execute();
+		}
+	}
+	
 	public void importYouBimSitesBuildingAssets(ThirdParty thirdParty,String siteURL,String buildingURL,String assetCategoryURL,String assetURL,String token) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -269,12 +296,16 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
 			long oldSiteId = Long.parseLong(result.get("id").toString());
 			String siteName= result.get("name").toString();
-			SiteContext site = new SiteContext();
-			site.setName(siteName);
-			FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
-			FacilioContext context = addCampus.getContext();
-			context.put(FacilioConstants.ContextNames.SITE, site);
-			addCampus.execute();
+			
+			SiteContext site = SpaceAPI.getSite(siteName);
+			if(site != null){
+				site.setName(siteName);
+				updateSite(site);
+			}else{
+				site = new SiteContext();
+				site.setName(siteName);
+				addSite(site);
+			}
 			long newSiteId =  site.getId();
 			oldNewSiteIds.put(oldSiteId, newSiteId);
 		}
@@ -291,18 +322,19 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			String buildingName= result.get("name").toString();
 			long siteId = Long.parseLong(result.get("site_id").toString());
 			
-			BuildingContext building = new BuildingContext();
-			building.setName(buildingName);
-			building.setSiteId(oldNewSiteIds.get(siteId));
-			FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
-			FacilioContext context = addBuilding.getContext();
-			context.put(FacilioConstants.ContextNames.BUILDING, building);
 			
-			addBuilding.execute();
+			BuildingContext building = SpaceAPI.getBuilding(buildingName);
+			if(building != null){
+				updateBuilding(building);
+			}else{
+				building = new BuildingContext();
+				building.setName(buildingName);
+				building.setSiteId(oldNewSiteIds.get(siteId));
+				addBuilding(building);
+			}
 			
 			long newBuildingId =  building.getId();
 			oldNewBuildingIds.put(oldBuildingId, newBuildingId);
-			
 			
 			String assetCategorysJsonString= getResponse(thirdParty,assetCategoryURL+String.valueOf(oldBuildingId),token);
 			resultObj = (JSONObject) parser.parse(assetCategorysJsonString);
@@ -316,15 +348,19 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(assetCategoryMap.containsKey(assetCategoryName)){
 					assetCategoryName = assetCategoryMap.get(assetCategoryName).toString();
 					AssetCategoryContext assetCategory = AssetsAPI.getCategory(assetCategoryName);
+					
 					if(assetCategory == null){
-						if(assetCategoryName != null && !assetCategoryName.isEmpty()) {
-							assetCategory = new AssetCategoryContext();
-							assetCategory.setName(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-							assetCategory.setType(AssetCategoryType.MISC);
-							FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
-							FacilioContext context1 = addAssetCategoryChain.getContext();
-							context1.put(FacilioConstants.ContextNames.RECORD, assetCategory);
-							addAssetCategoryChain.execute();
+						assetCategory = AssetsAPI.getCategory(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+						if(assetCategory == null){
+							if(assetCategoryName != null && !assetCategoryName.isEmpty()) {
+								assetCategory = new AssetCategoryContext();
+								assetCategory.setName(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+								assetCategory.setType(AssetCategoryType.MISC);
+								FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+								FacilioContext context1 = addAssetCategoryChain.getContext();
+								context1.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+								addAssetCategoryChain.execute();
+							}
 						}
 					}
 					
@@ -338,14 +374,28 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 					for(int k=0;k<arr2.length();k++){
 						JSONObject result2 = (JSONObject) parser.parse(arr2.get(k).toString());
 						String assetName= result2.get("name").toString();
+						String thirdPartyId= result2.get("id").toString();
 						String description= result2.get("description").toString();
 						
-						AssetContext asset = new AssetContext();
-						asset.setName(assetName);
-						asset.setDescription(description);
-						asset.setSiteId(building.getSiteId());
-						asset.setCategory(assetCategory);
-						addAsset(asset,moduleName);
+						long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
+						if(assetId > 0){
+							AssetContext asset = AssetsAPI.getAssetInfo(assetId);
+							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setName(assetName);
+							asset.setDescription(description);
+							asset.setSiteId(building.getSiteId());
+							asset.setCategory(assetCategory);
+							updateAsset(asset,moduleName);
+						}else{
+							AssetContext asset = new AssetContext();
+							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setName(assetName);
+							asset.setDescription(description);
+							asset.setSiteId(building.getSiteId());
+							asset.setCategory(assetCategory);
+							addAsset(asset,moduleName);
+						}
+						
 					}
 				}
 			}
@@ -365,6 +415,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 
 			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
 			String assetName= result.get("Asset Name").toString();
+			
+			String thirdPartyId= result.get("_id").toString();
 			JSONObject properties=  (JSONObject) parser.parse(result.get("properties").toString());
 			List<SiteContext> sites = SpaceAPI.getAllSites();
 			Long siteId = sites.get(0).getId();
@@ -385,41 +437,132 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			}
 			String description=  ((JSONObject)parser.parse(properties.get("COBie Type Description").toString())).get("val").toString();
 			String manufacturer=  ((JSONObject)parser.parse(properties.get("Manufacturer").toString())).get("val").toString();
-			String moduleName = "";
-			String categoryName = "";
-			AssetCategoryContext assetCategory = new AssetCategoryContext();
 			
-			HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
-			categoryName = assetCategoryMap.get(category).toString();
 			
-			assetCategory = AssetsAPI.getCategory(categoryName);
-			if(assetCategory == null){
-				assetCategory = new AssetCategoryContext();
-				if(categoryName != null && !categoryName.isEmpty()) {
-					assetCategory.setName(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-					assetCategory.setType(AssetCategoryType.MISC);
-					FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
-					FacilioContext context = addAssetCategoryChain.getContext();
-					context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
-					addAssetCategoryChain.execute();	
+			long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
+			if(assetId > 0){
+				AssetContext asset = AssetsAPI.getAssetInfo(assetId);
+				asset.setDatum("thirdpartyid", thirdPartyId);
+				asset.setName(assetName);
+				asset.setDescription(description);
+				asset.setSiteId(siteId);
+				asset.setManufacturer(manufacturer);
+				asset.setSerialNumber(serialNumber);
+				asset.setTagNumber(tag);
+				asset.setModel(model);
+				asset.setCategory(asset.getCategory());
+				updateAsset(asset, asset.getCategory().getModuleName());
+			}else{
+				String moduleName = "";
+				String categoryName = "";
+				
+				HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
+				categoryName = assetCategoryMap.get(category).toString();
+				
+				AssetCategoryContext assetCategory = AssetsAPI.getCategory(categoryName);
+				
+				if(assetCategory == null){
+					assetCategory = AssetsAPI.getCategory(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+						if(assetCategory == null){
+							assetCategory = new AssetCategoryContext();
+							if(categoryName != null && !categoryName.isEmpty()) {
+								assetCategory.setName(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+								assetCategory.setType(AssetCategoryType.MISC);
+								FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+								FacilioContext context = addAssetCategoryChain.getContext();
+								context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+								addAssetCategoryChain.execute();	
+							}
+						}	
 				}
-			}
 
-			FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
-			moduleName = module.getName();
-			
-			AssetContext asset = new AssetContext();
-			asset.setName(assetName);
-			asset.setDescription(description);
-			asset.setSiteId(siteId);
-			asset.setManufacturer(manufacturer);
-			asset.setSerialNumber(serialNumber);
-			asset.setTagNumber(tag);
-			asset.setModel(model);
-			asset.setCategory(assetCategory);
-			addAsset(asset,moduleName);
-			
+				FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
+				moduleName = module.getName();
+				
+				AssetContext asset = new AssetContext();
+				asset.setDatum("thirdpartyid", thirdPartyId);
+				asset.setName(assetName);
+				asset.setDescription(description);
+				asset.setSiteId(siteId);
+				asset.setManufacturer(manufacturer);
+				asset.setSerialNumber(serialNumber);
+				asset.setTagNumber(tag);
+				asset.setModel(model);
+				asset.setCategory(assetCategory);
+				addAsset(asset,moduleName);
+			}
 		}
+	}
+	
+	public void addSite(SiteContext site) throws Exception {
+		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
+		FacilioContext context = addCampus.getContext();
+		context.put(FacilioConstants.ContextNames.SITE, site);
+		addCampus.execute();
+	}
+	
+	public void updateSite(SiteContext site) throws Exception {
+		FacilioContext context = new FacilioContext();
+		LocationContext location = site.getLocation();
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
+		{
+			location.setName(site.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			if (location.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+				site.setLocation(null);
+			}
+			else {
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
+		}
+		else {
+			site.setLocation(null);
+		}
+		
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+	}
+	
+	public void addBuilding(BuildingContext building) throws Exception {
+		FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
+		FacilioContext context = addBuilding.getContext();
+		context.put(FacilioConstants.ContextNames.BUILDING, building);
+		addBuilding.execute();
+	}
+	
+	public void updateBuilding(BuildingContext building) throws Exception {
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioContext context = updateCampus.getContext();
+		LocationContext location = building.getLocation();
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
+		{
+			location.setName(building.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			if (location.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+				building.setLocation(null);
+			}
+			else {
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
+		}
+		else {
+			building.setLocation(null);
+		}
+		
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
+		
+		updateCampus.execute();
 	}
 	
 	public void addAsset(AssetContext asset,String moduleName) throws Exception {
@@ -447,6 +590,25 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		addAssetChain.execute();
 		assetDetails(asset.getId());
 	}
+	
+	
+	public void updateAsset(AssetContext asset,String moduleName) throws Exception {
+		FacilioChain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
+		FacilioContext context = updateAssetChain.getContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.RECORD, asset);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		// cannot update module state directly
+		if (asset.getModuleState() != null) {
+			asset.setModuleState(null);
+		}
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		
+		updateAssetChain.execute();
+	}
+	
 	
 	public void assetDetails(long assetId) throws Exception {
 		
