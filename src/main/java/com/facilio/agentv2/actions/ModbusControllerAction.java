@@ -96,6 +96,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setIpAddress(getIp());
                 controllerContext.setSlaveId(slaveId.intValue());
+                controllerContext.setName(name);
                 if (AgentMessenger.sendConfigModbusIpControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);

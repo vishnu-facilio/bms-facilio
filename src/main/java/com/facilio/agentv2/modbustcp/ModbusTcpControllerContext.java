@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,14 @@ public class ModbusTcpControllerContext extends Controller {
     }
 
     @JsonInclude
+    @NotNull
     private String ipAddress;
 
     @JsonInclude
     private String identifier;
 
     @JsonInclude
+    @NotNull
     private int slaveId = -1;
 
     public static ModbusTcpControllerContext getModbusTcpControllerFromMap(Map<String, Object> controllerMap) throws Exception {

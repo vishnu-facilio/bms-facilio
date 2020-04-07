@@ -19,6 +19,23 @@ public class AwsPolicyUtils
         updatePolicyStatement(policy,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),connectTopics);
     }
 
+    private static JSONObject getGist(JSONObject policy) throws Exception {
+        if(policy.containsKey("Statement") && (policy.get("Statement") != null)) {
+            JSONArray policyStatements = (JSONArray) policy.get("Statement");
+            JSONObject policyGist = new JSONObject();
+            for (Object policyStatementObject : policyStatements) {
+                JSONObject policyStatement = (JSONObject) policyStatementObject;
+                if((policyStatement.containsKey("Action"))&&(policyStatement.get("Action") != null)) {
+                    String action = (String) policyStatement.get("Action");
+                    policyGist.put(action,getResourcesList(policyStatement));
+                }
+            }
+            return policyGist;
+        }else {
+            throw new Exception("statement missing from polictdoc");
+        }
+    }
+
     private static void updatePolicyStatement( JSONObject policy, List<String> subscribeTopics, List<String> publishTopics, List<String> receiveTopics, List<String> connectTopics) throws Exception {
         if(policy.containsKey("Statement") && (policy.get("Statement") != null)){
             JSONArray policyStatements = (JSONArray) policy.get("Statement");
@@ -284,6 +301,27 @@ public class AwsPolicyUtils
         GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);
         GetPolicyResult result = client.getPolicy(request);
         return result;
+    }
+
+    public static JSONArray getAllPolicyGist(AWSIot iotClient) throws Exception {
+        List<Policy> policies = getAllPolicy(iotClient);
+        LOGGER.info("policy size "+policies.size());
+        JSONArray gists = new JSONArray();
+        for (Policy policy : policies) {
+            String policyName = policy.getPolicyName();
+            JSONObject policyDocumentJson = getPolicyDocumentJson(getPolicy(policyName, iotClient));
+            JSONObject gist = getGist(policyDocumentJson);
+            LOGGER.info("policy name "+policyName+" ---- "+policyDocumentJson+"  --- "+gist);
+            gists.add(gist);
+        }
+        LOGGER.info("gist "+gists);
+        return gists;
+    }
+    private static List<Policy> getAllPolicy(AWSIot client){
+        Objects.requireNonNull(client);
+        ListPoliciesRequest request = new ListPoliciesRequest();
+        ListPoliciesResult listPoliciesResult = client.listPolicies(request);
+        return listPoliciesResult.getPolicies();
     }
     private static boolean checkForPolicy(String policyName, AWSIot client){
         GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);

@@ -53,6 +53,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.crypto.Mac;
@@ -147,6 +148,10 @@ public class AwsUtil
 		else {
 			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
 		}
+	}
+
+	public static JSONArray getPolicyGist() throws Exception {
+		return AwsPolicyUtils.getAllPolicyGist(getIotClient());
 	}
 
 	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild, long userId) throws SystemException {

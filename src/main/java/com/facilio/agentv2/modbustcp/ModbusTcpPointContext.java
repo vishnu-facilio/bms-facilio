@@ -8,6 +8,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public class ModbusTcpPointContext extends Point {
@@ -18,10 +19,12 @@ public class ModbusTcpPointContext extends Point {
         super(agentId, controllerId);
     }
     @Deprecated
-    private ModbusTcpPointContext() { }
+    public ModbusTcpPointContext() { }
+
 
     private long registerNumber = -1;
     private long functionCode = -1;
+    @NotNull
     private Long modbusDataType ;
 
     public long getRegisterNumber() { return registerNumber; }

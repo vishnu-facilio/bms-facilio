@@ -12,13 +12,11 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.modbusrtu.ModbusImportUtils;
-import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
 import com.facilio.services.factory.FacilioFactory;
@@ -552,7 +550,7 @@ public class AgentAction extends AgentActionV2 {
     //__________________________________________________
     // general utilities
 
-    public String addModbusControllers() {
+ /*   public String addModbusControllers() {
         try {
             if (FacilioProperties.isDevelopment()) {
                 ModbusTcpControllerContext controllerContext = new ModbusTcpControllerContext();
@@ -565,6 +563,15 @@ public class AgentAction extends AgentActionV2 {
                 controllerContext.setName(controllerContext.getIdentifier());
                 FieldDeviceApi.addControllerAsDevice(controllerContext);
                 ControllerApiV2.addController(controllerContext);
+                for (int i = 0; i < 20; i++) {
+                    ModbusTcpPointContext modbusTcpPointContext = new ModbusTcpPointContext(agentId,controllerContext.getId());
+                    modbusTcpPointContext.setName("point"+i);
+                    modbusTcpPointContext.setFunctionCode(i);
+                    modbusTcpPointContext.setRegisterNumber(1000+i);
+                    modbusTcpPointContext.setModbusDataType(3L);
+                    modbusTcpPointContext.setDeviceId(controllerContext.getDeviceId());
+                    PointsAPI.addPoint(modbusTcpPointContext);
+                }
                 ok();
             } else {
                 internalError();
@@ -574,7 +581,7 @@ public class AgentAction extends AgentActionV2 {
             internalError();
         }
         return SUCCESS;
-    }
+    }*/
 
     public String retry(){
         try{
@@ -636,6 +643,18 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info("Exception occurred while ignoring import "+getId()+" ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             internalError();
+        }
+        return SUCCESS;
+    }
+    public String getPolicyGist(){
+        try{
+            JSONArray policyGist = AwsUtil.getPolicyGist();
+            setResult(AgentConstants.DATA,policyGist);
+            ok();
+        }catch (Exception e){
+            LOGGER.info("Exception while getting policy gists",e);
+            internalError();
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         return SUCCESS;
     }
