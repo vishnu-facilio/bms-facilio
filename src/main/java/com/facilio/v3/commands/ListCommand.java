@@ -7,12 +7,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +32,51 @@ public class ListCommand extends FacilioCommand {
         String moduleName = module.getName();
         List<FacilioField> fields = modBean.getAllFields(moduleName);
 
+        SelectRecordsBuilder selectRecordsBuilder = getSelectRecordsBuilder(context);
+        selectRecordsBuilder.select(fields);
+
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        if (pagination != null) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page-1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
+            selectRecordsBuilder.offset(offset);
+            selectRecordsBuilder.limit(perPage);
+        }
+
+        List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
+
+        Map<String, List<Map<String, Object>>> recordMap = new HashMap<>();
+        recordMap.put(moduleName, asProps);
+
+        Boolean withCount = (Boolean) context.get(Constants.WITH_COUNT);
+        if (withCount != null && withCount) {
+            SelectRecordsBuilder countSelect = getSelectRecordsBuilder(context);
+
+            FacilioField countFld = new FacilioField();
+            countFld.setName("count");
+            countFld.setColumnName("COUNT(" + module.getTableName() + ".ID)");
+            countFld.setDataType(FieldType.NUMBER);
+
+            countSelect.select(Collections.singletonList(countFld));
+
+            List<Map<String, Object>> countProps = countSelect.getAsProps();
+            context.put(Constants.COUNT, countProps.get(0).get("count"));
+        }
+
+        context.put(Constants.RECORD_MAP, recordMap);
+
+        return false;
+    }
+
+    private SelectRecordsBuilder getSelectRecordsBuilder(Context context) {
         SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder()
-                .module(module)
-                .select(fields);
+                .module(module);
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         Boolean includeParentCriteria = (Boolean) context.get(Constants.INCLUDE_PARENT_CRITERIA);
@@ -61,28 +105,6 @@ public class ListCommand extends FacilioCommand {
         if (orderBy != null && !orderBy.isEmpty()) {
             selectRecordsBuilder.orderBy(orderBy);
         }
-
-        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-        if (pagination != null) {
-            int page = (int) pagination.get("page");
-            int perPage = (int) pagination.get("perPage");
-
-            int offset = ((page-1) * perPage);
-            if (offset < 0) {
-                offset = 0;
-            }
-
-            selectRecordsBuilder.offset(offset);
-            selectRecordsBuilder.limit(perPage);
-        }
-
-        List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
-
-        Map<String, List<Map<String, Object>>> recordMap = new HashMap<>();
-        recordMap.put(moduleName, asProps);
-
-        context.put(Constants.RECORD_MAP, recordMap);
-
-        return false;
+        return selectRecordsBuilder;
     }
 }

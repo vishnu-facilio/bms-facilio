@@ -10,6 +10,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -109,7 +110,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
-        this.setData(FieldUtil.getAsJSON(recordMap));
+        List list = recordMap.get(moduleName);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put(moduleName, list.get(0));
+
+        this.setData(FieldUtil.getAsJSON(result));
     }
 
     private static FacilioModule getModule(String moduleName) throws Exception {
@@ -181,6 +188,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         pagination.put("perPage", this.getPerPage());
 
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(Constants.WITH_COUNT, getWithCount());
+
+        Map<String, Object> meta = new HashMap<>();
+        if (getWithCount()) {
+            meta.put("totalCount", context.get(Constants.COUNT));
+        }
 
         nonTransactionChain.execute();
 
@@ -199,7 +212,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
     }
 
-    private static void createHandler(String moduleName, Map<String, Object> createObj) throws Exception {
+    private void createHandler(String moduleName, Map<String, Object> createObj) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
         Command initCommand = new DefaultInit();
@@ -237,6 +250,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, createObj);
         transactionChain.execute();
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
+        long id = recordMap.get(moduleName).get(0).getId();
+        this.setId(id);
+        summary();
     }
 
     private static void addWorkflowChain(Chain chain) {
@@ -246,7 +264,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
     }
 
-    private static void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
+    private void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
         Command initCommand = new DefaultInit();
@@ -283,6 +301,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(Constants.RAW_INPUT, updateObj);
 
         transactionChain.execute();
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
+        summary();
     }
 
     private static void deleteHandler(String moduleName, long id) {

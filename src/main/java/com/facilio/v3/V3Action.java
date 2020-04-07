@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 
 public class V3Action extends ActionSupport {
     private JSONObject data;
+	private JSONObject meta;
 
 	public JSONObject getData() {
 		return this.data;
@@ -119,5 +120,20 @@ public class V3Action extends ActionSupport {
 		return this.perPage;
 	}
 
+	private boolean withCount;
+	public boolean getWithCount() {
+		return this.withCount;
+	}
 
+	public void setWithCount(boolean withCount) {
+		this.withCount = withCount;
+	}
+
+	public JSONObject getMeta() {
+		return meta;
+	}
+
+	public void setMeta(JSONObject meta) {
+		this.meta = meta;
+	}
 }

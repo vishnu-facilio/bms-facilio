@@ -10,4 +10,6 @@ public class Constants {
     public static final String MODULE_NAME = "moduleName";
     public static final String MODULE_BEAN = "moduleBean";
     public static final String RECORD_ID = "recordId";
+    public static final String WITH_COUNT = "withCount";
+    public static final String COUNT = "count";
 }
