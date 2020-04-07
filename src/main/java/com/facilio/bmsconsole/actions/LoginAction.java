@@ -211,7 +211,8 @@ public class LoginAction extends FacilioAction {
 			}
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
-			return ERROR;
+			setResult("message", "failure");
+			return SUCCESS;
 		}
 
 		HttpSession session = request.getSession();
@@ -221,7 +222,7 @@ public class LoginAction extends FacilioAction {
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
-
+		setResult("message", "success");
 		return SUCCESS;
 	}
 
