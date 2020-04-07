@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,11 +23,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.MLAnomalyAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
@@ -161,6 +157,10 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 				}
 				else if (currentAlarm instanceof ReadingAlarm) {
 					ReadingAlarm alarm = (ReadingAlarm) currentAlarm;
+					readingFieldId = alarm.getReadingFieldId();
+				}
+				else if (currentAlarm instanceof OperationAlarmContext) {
+					OperationAlarmContext alarm = (OperationAlarmContext) currentAlarm;
 					readingFieldId = alarm.getReadingFieldId();
 				}
 				if (occurrenceId == null || occurrenceId == -1) {

@@ -169,7 +169,7 @@ public class OperationAlarmApi {
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
-                    raiseAlarm("Asset is operating outside of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                    raiseAlarm("Asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     break;
                 }
                 checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
@@ -183,7 +183,7 @@ public class OperationAlarmApi {
                 }
                 if(!value) {  //  when result is false and checking whether it should be true
                     if(hoursList.contains(reading.getDay())) {
-                        raiseAlarm("Asset is operating outside of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                        raiseAlarm("Asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                         break;
                     }
                     checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
@@ -212,7 +212,7 @@ public class OperationAlarmApi {
                     {
                         BusinessHourContext businessHour = dayWithTime.get(reading.getDay());
 						if ((businessHour.getStartTimeAsLocalTime().getHour() < reading.getHour() && businessHour.getStartTimeAsLocalTime().getMinute() < readingMinutes) && (businessHour.getEndTimeAsLocalTime().getHour() > reading.getHour() && businessHour.getEndTimeAsLocalTime().getMinute() > readingMinutes)) {
-                            raiseAlarm("Asset is operating outside of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                            raiseAlarm("Asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                             break;
                         }
                         checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);

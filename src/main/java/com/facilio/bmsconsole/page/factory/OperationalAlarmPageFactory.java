@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.OperationAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.page.Page;
@@ -33,9 +34,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
         ReadingAlarmPageFactory.addAlarmDetailsWidget(tab1Sec1);
         ReadingAlarmPageFactory.addAssetAlarmDetailsWidget(tab1Sec1);
 
-//        Criteria breakdownCriteria = new Criteria();
-//        breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-        addOperationalReport(tab1Sec1, alarms);
+        addAlarmReport(tab1Sec1);
 //        addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
         addCommonSubModuleGroup(tab1Sec1);
 
@@ -50,7 +49,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-        ReadingAlarmPageFactory.addAlarmRankCard(tab2Sec1);
+        // ReadingAlarmPageFactory.addAlarmRankCard(tab2Sec1);
         ReadingAlarmPageFactory.addMeanTimeBetweenCard(tab2Sec1);
         ReadingAlarmPageFactory.addMeanTimeToClearCard(tab2Sec1);
         ReadingAlarmPageFactory.addAlarmDuration(tab2Sec1);
@@ -83,17 +82,11 @@ public class OperationalAlarmPageFactory extends PageFactory {
         section.addWidget(occurrenceListWidget);
         return occurrenceListWidget;
     }
-
-    private static void addOperationalReport(Page.Section section, OperationAlarmContext alarm) {
-        Criteria breakdownCriteria = new Criteria();
-        breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(alarm.getReadingField(), String.valueOf(alarm.getResource().getId()), NumberOperators.EQUALS));
-
-        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CHART, "operationAlarm");
-        cardWidget.addToLayoutParams(section, 24, 6);
-        cardWidget.addCardType(PageWidget.CardType.OPERATION_ALARM_REPORT);
-        addChartParams(cardWidget, "fromtime", "duration",  breakdownCriteria);
-
-        section.addWidget(cardWidget);
+    protected static PageWidget addAlarmReport(Page.Section section) {
+        PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
+        alarmReport.addToLayoutParams(section, 24, 15);
+        section.addWidget(alarmReport);
+        return alarmReport;
     }
 }
 

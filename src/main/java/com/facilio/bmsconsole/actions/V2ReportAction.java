@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,25 +21,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
-import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
-import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.MLAlarmContext;
-import com.facilio.bmsconsole.context.MLAnomalyAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.RegressionContext;
-import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -1059,6 +1042,9 @@ public class V2ReportAction extends FacilioAction {
 			else if ( alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
 				 MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
 			}
+			else if (alarmOccurrence.getAlarm() instanceof OperationAlarmContext) {
+				OperationAlarmContext opAlarm = (OperationAlarmContext) alarmOccurrence.getAlarm();
+			}
 			if(ruleId > 0) {
 				ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				readingRules.add(readingruleContext);
@@ -1093,6 +1079,11 @@ public class V2ReportAction extends FacilioAction {
 		   MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
 		   dataPoints.addAll(getDataPointsJSONForMLAnomalyAlarm(mlAnomalyAlarm, resource));
 			
+		}
+		else if ( alarmOccurrence.getAlarm() instanceof OperationAlarmContext) {
+			OperationAlarmContext opAlarm = (OperationAlarmContext) alarmOccurrence.getAlarm();
+			dataPoints.addAll(getDataPointsJSONForOpAlarm(opAlarm, resource));
+
 		}
 		
 		if (newFormat) {
@@ -1383,6 +1374,25 @@ public class V2ReportAction extends FacilioAction {
 		
 		dataPoints.add(dataPoint);
 		
+		return dataPoints;
+
+	}
+
+	private JSONArray getDataPointsJSONForOpAlarm (OperationAlarmContext opAlarm, ResourceContext resource) throws Exception  {
+		JSONArray dataPoints = new JSONArray();
+		JSONObject dataPoint = new JSONObject();
+
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+
+		JSONObject yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", opAlarm.getReadingFieldId());
+		yAxisJson.put("aggr", 0);
+
+		dataPoint.put("yAxis", yAxisJson);
+
+		dataPoint.put("type", 1);
+		dataPoints.add(dataPoint);
+
 		return dataPoints;
 
 	}

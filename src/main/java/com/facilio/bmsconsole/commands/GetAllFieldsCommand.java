@@ -134,7 +134,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 						fields.add(fieldObject);
 					}
 				}
-				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
+				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm") || moduleName.equals(ContextNames.OPERATION_ALARM)) {
 					if(!fieldObject.isDefault()) {
 						fields.add(fieldObject);
 					}
