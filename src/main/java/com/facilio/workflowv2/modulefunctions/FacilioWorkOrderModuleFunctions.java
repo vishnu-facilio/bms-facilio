@@ -132,7 +132,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 			fileIds = (List<Long>) objects.get(2);
 		}
 		else {
-			fileIds = Collections.singletonList((Long) objects.get(2));
+			fileIds = Collections.singletonList(Long.parseLong(objects.get(2).toString()));
 		}
 		
 		FacilioChain addNote = FacilioChainFactory.getAddAttachmentFromFileIdsChain();

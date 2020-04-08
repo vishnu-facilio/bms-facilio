@@ -472,7 +472,6 @@
       name : 'attachment'
       askAs : "Add your attachment"
       dataType : 9
-      multipleAllowed : true
       localId : 2
       typeConfig : 1
    contextWorkflow :
