@@ -302,7 +302,17 @@ public class PreventiveMaintenance extends ResourceContext {
 	}
 
 	private long woCreationOffset = -1L;
-	
+
+	private Boolean markIgnoredWo;
+	public Boolean getMarkIgnoredWo() { return markIgnoredWo; }
+	public void setMarkIgnoredWO(Boolean markIgnoredWO) { this .markIgnoredWo = markIgnoredWO; }
+	public boolean markIgnoredWo() {
+		if(markIgnoredWo != null){
+			return markIgnoredWo.booleanValue();
+		}
+		return false;
+	}
+
 	public String getScheduleMsg() {
 		StringBuilder msg = new StringBuilder();
 		boolean isFirst = true;

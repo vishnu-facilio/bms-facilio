@@ -21,9 +21,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.commands.CorrectPMTriggerSelection;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.GetSpaceCategoriesCommand;
+import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.bmsconsole.jobs.PMNewScheduler;
@@ -44,7 +43,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
@@ -896,9 +894,65 @@ public class PreventiveMaintenanceAPI {
 		return null;
 
 	}
-	
 
+	public static void setPreWorkOrderInactive(PreventiveMaintenance pm,WorkOrderContext wo) throws Exception {
 
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		Boolean markIgnored = pm.getMarkIgnoredWo();
+
+		LOGGER.log(Level.INFO, "Log 1 PM ID "+ pm.getId() + " mark Ignored: "+pm.getMarkIgnoredWo() );
+
+		if( markIgnored != null && markIgnored ) {
+
+			PreventiveMaintenance newPm = wo.getPm();
+			String pmId = Long.toString(newPm.getId());
+			ResourceContext resource = wo.getResource();
+			LOGGER.log(Level.INFO, "Log 2 PM ID "+ newPm.getId() + " Resource: "+wo.getResource() );
+
+			//Criteria jobStatusCriteria = new Criteria();
+			//jobStatusCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), 3+"", NumberOperators.EQUALS));
+			//jobStatusCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"),CommonOperators.IS_EMPTY));
+
+			FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
+			SelectRecordsBuilder<WorkOrderContext> selectNewRecordsBuilder = new SelectRecordsBuilder<>();
+			selectNewRecordsBuilder.select(fields)
+					.module(module)
+					.beanClass(WorkOrderContext.class)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), pmId, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preOpenStatus.getId()), NumberOperators.NOT_EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), Long.toString(resource.getId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), Long.toString(wo.getId()), NumberOperators.NOT_EQUALS))
+					.orderBy("CREATED_TIME desc")
+					.limit(1);
+
+			List<WorkOrderContext> workOrderNewContexts = selectNewRecordsBuilder.get();
+
+			if( !(workOrderNewContexts == null || workOrderNewContexts.isEmpty()) ) {
+				WorkOrderContext wc = workOrderNewContexts.get(0);
+				long actualStartTime = wc.getActualWorkStart();
+				if(actualStartTime == -1 ) {
+					FacilioChain chain = FacilioChain.getTransactionChain();
+					FacilioContext context = chain.getContext();
+					context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+					FacilioStatus preWoStatus = TicketAPI.getStatus(module, "Skipped");
+
+					chain.addCommand(new FacilioCommand() {
+						@Override
+						public boolean executeCommand(Context context) throws Exception {
+							StateFlowRulesAPI.updateState(wc, module, preWoStatus, false, context);
+							return false;
+						}
+					});
+					chain.addCommand(new AddActivitiesCommand());
+					chain.execute();
+				}
+			}
+		}
+	}
 
 	public static Map<Long, List<Map<String, Object>>> getPMScheduledWOsFromPMIds(long startTimeInSeconds, long endTimeInSeconds, Criteria filterCriteria) throws Exception {
 		FacilioStatus facilioStatus = TicketAPI.getStatus("preopen");
@@ -1160,9 +1214,6 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
-
-
-	
 	public static List<PreventiveMaintenance> getAllActivePMs(Criteria filterCriteria) throws Exception {
 		return getActivePMs(null, filterCriteria, null);
 	}

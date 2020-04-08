@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -49,7 +50,6 @@ public class OpenScheduledWO extends FacilioJob {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
             SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
             selectRecordsBuilder.select(fields)
                     .module(module)
@@ -57,7 +57,6 @@ public class OpenScheduledWO extends FacilioJob {
                     .innerJoin("Resources")
                     .on("Resources.ID = Tickets.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)")
                     .andCondition(CriteriaAPI.getIdCondition(woId, module));
-
             List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
             if (workOrderContexts == null || workOrderContexts.isEmpty()) {
                 return;
@@ -70,6 +69,56 @@ public class OpenScheduledWO extends FacilioJob {
             if (!PreventiveMaintenanceAPI.canOpenWorkOrder(pm)) {
                 return;
             }
+
+            PreventiveMaintenanceAPI.setPreWorkOrderInactive(pm,wo);
+            /*
+            Boolean markIgnored = pm.getMarkIgnoredWo();
+
+            if( markIgnored != null && markIgnored ) {
+                PreventiveMaintenance newPm = wo.getPm();
+                String pmId = Long.toString(newPm.getId());
+                ResourceContext resource = wo.getResource();
+                SelectRecordsBuilder<WorkOrderContext> selectNewRecordsBuilder = new SelectRecordsBuilder<>();
+                selectNewRecordsBuilder.select(fields)
+                        .module(module)
+                        .beanClass(WorkOrderContext.class)
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), pmId, NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), 3+"", NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), Long.toString(resource.getId()), NumberOperators.EQUALS))
+                        .orderBy("CREATED_TIME desc")
+                        .limit(1);
+
+                List<WorkOrderContext> workOrderNewContexts = selectNewRecordsBuilder.get();
+
+                if( !(workOrderNewContexts == null || workOrderNewContexts.isEmpty()) ) {
+                    WorkOrderContext wc = workOrderNewContexts.get(0);
+                    String preWoId = Long.toString(wc.getId());
+                    long actualStartTime = wc.getActualWorkStart();
+                    List<FacilioField> woList = new ArrayList<FacilioField> ();
+                    FacilioField markInactive = fieldMap.get("markInactive");
+                    woList.add(markInactive);
+                    if(actualStartTime == -1 ) {
+                        FacilioContext context = new FacilioContext();
+                        List<Long> id = new ArrayList<Long> ();
+                        id.add(wc.getId());
+                        context.put(FacilioConstants.ContextNames.WORK_ORDER, wc);
+                        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+                        context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+                        wc.setMarkInactive(true);
+                        FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
+                        updateWorkOrder.execute(context);
+
+                     //   UpdateRecordBuilder<WorkOrderContext> updateNewRecordBuilder = new UpdateRecordBuilder<>();
+                     //   updateNewRecordBuilder.module(module)
+                     //           .fields(woList)
+                     //           .andCondition(CriteriaAPI.getIdCondition(preWoId, module));
+                     //   wc.setMarkInactive(true);
+                     //   updateNewRecordBuilder.update(wc);
+
+                    }
+                }
+            }  */
 
             if(wo.getTrigger() != null && wo.getTrigger().getId() > 0) {
             	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
@@ -180,7 +229,6 @@ public class OpenScheduledWO extends FacilioJob {
             		CommonCommandUtil.emailException("OpenScheduledWO", "Workorder site different", builder.toString());
                 LOGGER.info("Workorder site different. " + builder.toString());
             }
-            
         } catch (Exception e) {
             CommonCommandUtil.emailException("OpenScheduledWO", ""+jc.getJobId(), e);
             LOGGER.error("WorkOrder Status Change failed: ", e);

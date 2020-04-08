@@ -39,7 +39,6 @@ public class WorkOrderContext extends TicketContext {
 	
 	public String toString(){
 		return this.getId()+"";
-		
 	}
 	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
 	public void setCreatedTime(String createdTime) {
@@ -253,7 +252,15 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return false;
 	}
-	
+	private Boolean markInactive;
+	public Boolean getMarkInactive() { return markInactive; }
+	public void setMarkInactive(Boolean markInactive) { this.markInactive = markInactive; }
+	public boolean markInactive() {
+		if(markInactive != null) {
+			return markInactive.booleanValue();
+		}
+		return false;
+	}
 	private long signatureId;
 	public long getSignatureId() {
 		return signatureId;

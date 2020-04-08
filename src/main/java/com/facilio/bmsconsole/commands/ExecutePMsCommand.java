@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -40,6 +41,7 @@ public class ExecutePMsCommand extends FacilioCommand {
 
 				for(WorkOrderContext wo :wos) {
 					if(wo != null) {
+						PreventiveMaintenanceAPI.setPreWorkOrderInactive(pm,wo);
 						woIds.add(wo.getId());
 						Map<Long,WorkOrderContext> map = pmResourceToWoMap.get(pm.getId()) != null ? pmResourceToWoMap.get(pm.getId()) : new HashMap<>();
 						Long resourceId = wo.getResource() != null ? wo.getResource().getId() : -1l;

@@ -2615,8 +2615,6 @@ public class FieldFactory {
     private static List<FacilioField> getPushNotificationTemplateFields(boolean isIdNeeded) {
         FacilioModule module = ModuleFactory.getPushNotificationTemplateModule();
 
-        List<FacilioField> fields = new ArrayList<>();
-
         if (isIdNeeded) {
             fields.add(getIdField(module));
         }
@@ -2926,6 +2924,7 @@ public class FieldFactory {
         fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", module, FieldType.BOOLEAN));
         fields.add(getField("defaultAllTriggers", "IS_DEFAULT_ALL_TRIGGERS", module, FieldType.BOOLEAN));
         fields.add(getField("woCreationOffset", "WO_CREATION_OFFSET", module, FieldType.NUMBER));
+        fields.add(getField("markIgnoredWo","MARK_IGNORED_WO", module,FieldType.BOOLEAN));
         return fields;
     }
 
