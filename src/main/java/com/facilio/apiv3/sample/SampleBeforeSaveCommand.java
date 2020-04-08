@@ -2,6 +2,7 @@ package com.facilio.apiv3.sample;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -28,13 +29,13 @@ public class SampleBeforeSaveCommand extends FacilioCommand {
         List list = recordMap.get(moduleName);
         ModuleBaseWithCustomFields testContext = (ModuleBaseWithCustomFields) list.get(0);
 
-        String name = (String) testContext.getDatum("name");
+        String name = ((CustomModuleData) testContext).getName();
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("name is mandatory");
         }
 
         name = name.trim();
-        testContext.setDatum("name", name);
+        ((CustomModuleData) testContext).setName(name);
         
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -44,7 +45,8 @@ public class SampleBeforeSaveCommand extends FacilioCommand {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
                 .select(Collections.singleton(FieldFactory.getIdField(module)))
                 .moduleName(moduleName)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS))
+                .beanClass(ModuleBaseWithCustomFields.class);
 
         List<ModuleBaseWithCustomFields> duplicates = selectRecordsBuilder.get();
 

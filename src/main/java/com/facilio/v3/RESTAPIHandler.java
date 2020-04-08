@@ -246,6 +246,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         FacilioContext context = transactionChain.getContext();
 
+        if (module.isCustom()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioField localIdField = modBean.getField("localId", moduleName);
+            if (localIdField != null) {
+                context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+            }
+        }
+
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, createObj);

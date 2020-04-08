@@ -2,6 +2,7 @@ package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -49,6 +50,12 @@ public class SaveCommand extends FacilioCommand {
         insertRecordBuilder.withChangeSet();
 
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
+
+        if (module.isCustom()) {
+            for (ModuleBaseWithCustomFields record: records) {
+                CommonCommandUtil.handleLookupFormData(fields, record.getData());
+            }
+        }
 
         if (CollectionUtils.isEmpty(records)) {
             throw new IllegalArgumentException("Record cannot be null during addition");
