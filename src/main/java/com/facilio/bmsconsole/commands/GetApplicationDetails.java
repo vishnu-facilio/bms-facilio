@@ -26,13 +26,11 @@ public class GetApplicationDetails extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		ApplicationContext application = null;
-		if (appId == -1) {
-			application = ApplicationApi.getDefaultApplication();
-		} else if (appId > 0) {
-			application = ApplicationApi.getApplicationForId(appId);
-		} else {
-			throw new IllegalArgumentException("Invalid Application Id");
+		if (appId <= 0) {
+			appId = AccountUtil.getCurrentUser().getApplicationId();
 		}
+		application = ApplicationApi.getApplicationForId(appId);
+		
 		if (application != null) {
 			List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(application.getId());
 			if (webTabGroups != null && !webTabGroups.isEmpty()) {
