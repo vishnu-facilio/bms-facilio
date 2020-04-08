@@ -149,6 +149,16 @@ public class AwsUtil
 			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
 		}
 	}
+	
+	public static String generateCSRFToken() throws Exception {
+		MessageDigest salt = MessageDigest.getInstance("SHA-256");
+		salt.update(UUID.randomUUID().toString().getBytes("UTF-8"));
+		StringBuilder sb = new StringBuilder();
+		for (byte aDigested : salt.digest()) {
+			sb.append(Integer.toHexString(0xff & aDigested));
+		}
+		return sb.toString();
+	}
 
 	public static JSONArray getPolicyGist() throws Exception {
 		return AwsPolicyUtils.getAllPolicyGist(getIotClient());

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@page import="com.facilio.auth.cookie.FacilioCookie"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Arrays"%>
@@ -6,7 +7,6 @@
 <%@ page import="org.json.simple.JSONObject" %>
 <%
 	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
-	boolean isNewClientBuild=(Boolean)com.facilio.aws.util.AwsUtil.getClientInfo().get("isNewClientBuild");
 	
 	if (clientVersion != null && !clientVersion.startsWith("/")) {
 		clientVersion = "/" + clientVersion;
@@ -38,7 +38,10 @@
 	String copyrightYear =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.year"); 
 	
 	boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
-	String googleAuthClientId =com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid"); 
+	String googleAuthClientId =com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
+	
+	// set csrf token cookie
+	FacilioCookie.setCSRFTokenCookie(request, response, false);
 	
 	JSONObject copyrightInfo = new JSONObject();
 	copyrightInfo.put("name", copyrightName);
@@ -126,7 +129,7 @@
         } 40% {
           -webkit-transform: scale(1.0);
           transform: scale(1.0);
-        }
+        }§
       }
 
   </style>
@@ -202,12 +205,8 @@
         var googleAuthClientId = "<%=googleAuthClientId%>";
   </script>
   
-<% if(isNewClientBuild) {%>
-    <link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
-    <link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
-<% } else {%>
-	  <link href="<%=staticUrl%>/app.css" rel="stylesheet">	
-<% }%>
+<link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
+<link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
   
 </head>
 
@@ -220,15 +219,9 @@
           </div>
       </div>
 
-<% if(isNewClientBuild) {%>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/chunk-vendors.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
-<% } else {%>
-      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
-      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/vendor.js"></script>
-      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
-<% }%> 	
-
+      
   </body>
   <script src="https://apis.google.com/js/api:client.js"></script>
 </html>

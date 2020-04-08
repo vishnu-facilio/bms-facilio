@@ -4,7 +4,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
+
 public class FacilioCookie {
+	
+	public static final String CSRF_TOKEN_COOKIE = "fc.csrfToken";
 
     public static String getUserCookie(HttpServletRequest request, String key) {
         Cookie cookies[] = request.getCookies();
@@ -36,6 +41,23 @@ public class FacilioCookie {
             }
         }
         return false;
+    }
+    
+    public static void setCSRFTokenCookie(HttpServletRequest request, HttpServletResponse response, boolean setOnlyIfNotExists) throws Exception {
+    	
+    	if (setOnlyIfNotExists && getUserCookie(request, CSRF_TOKEN_COOKIE) != null) {
+    		return;
+    	}
+    	
+    	String csrfToken = AwsUtil.generateCSRFToken();
+    	
+    	Cookie cookie = new Cookie(CSRF_TOKEN_COOKIE, csrfToken);
+    	cookie.setDomain(request.getServerName());
+        cookie.setPath("/");
+        if (!FacilioProperties.isDevelopment()) {
+        	cookie.setSecure(true);
+		}
+        response.addCookie(cookie);
     }
 
     public static void addUserCookie(HttpServletResponse response, String key, String value, String domain) {
