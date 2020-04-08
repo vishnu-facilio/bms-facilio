@@ -1117,8 +1117,8 @@
                                    fields.put("Name",name);
                                    fields.put("Phone",data.get(name).phone);
                                    fields.put("Email",data.get(name).email);
-                                   fields.put("Checkin Time",data.get(name).checkinDate);
-                                   fields.put("Checkout Time",data.get(name).checkoutDate);
+                                   fields.put("Checkin Time",date().getFormattedTime(data.get(name).checkinDate,"MMM dd hh:mm a"));
+                                   fields.put("Checkout Time",date().getFormattedTime(data.get(name).checkoutDate,"MMM dd hh:mm a"));
                                    host = Module("contact").fetch([id == data.get(name).host])[0];
                            
                                    fields.put("Host",host.name);
@@ -1161,7 +1161,8 @@
                                              invite.host.id= invitePerson.host;		
                                              invite.purposeOfVisit = 3;	
                                              invite.isPreregistered = true;
-                                             invite.expectedCheckInTime = date().now() + 10800000;
+                                             invite.expectedCheckInTime = invitePerson.checkinDate;
+                                             invite.expectedCheckOutTime = invitePerson.checkoutDate;
                                              
                                              VisitorLogging().add(invite);
                                          }
@@ -1245,6 +1246,9 @@
    type: 1
    localId : 16
    withParams : true
+   childIntentNames:
+      - "system_add_invite_intent"
+      - "system_delete_invite_intent"
    params:
    -
       name : 'inviteId'
@@ -1261,7 +1265,7 @@
    -
       name : 'visitorType'
       dataType : 2
-      localId : 2
+      localId : 3
       typeConfig : 2
       editable : true
       updateParamTriggerText : 'Edit type'
@@ -1269,7 +1273,7 @@
       name : 'phone'
       dataType : 1
       # mlType : 1 will be added later
-      localId : 3
+      localId : 4
       typeConfig : 2
       editable : true
       updateParamTriggerText : 'Edit phone number'
@@ -1277,17 +1281,31 @@
       name : 'email'
       dataType : 1
      #mlType : 1 will be added later
-      localId : 4
+      localId : 5
       typeConfig : 2
       editable : true
       updateParamTriggerText : 'Edit email'
    -
       name : 'host'
       dataType : 2
-      localId : 5
+      localId : 6
       typeConfig : 2
       editable : true
       updateParamTriggerText : 'Edit host'
+   -
+      name : 'checkinDate'
+      dataType : 6
+      localId : 7
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit checkin time'
+   -
+      name : 'checkoutDate'
+      dataType : 6
+      localId : 8
+      typeConfig : 1
+      editable : true
+      updateParamTriggerText : 'Edit checkout time'
       
    contextWorkflow :
        isV2Script : true
@@ -1298,15 +1316,22 @@
                                 visit = null;
                                 if(data.inviteId == null) {
                                   range1 = date().getDateRange("Today");
-                                  visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
-                                   
+                                   visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
+                                   if(visits == null) {
+                                      return chatBot().execute();
+                                   }
                                    if(visits.size() > 1) {
                                         visitList = [];
                                         for each index,visit in visits {
                                    
                                              visitMap = {};
                                              visitMap.id = visit.id;
-                                             visitMap.label = visit.visitorName+"''s Visit";
+                                             labelString = visit.visitorName+"''s Visit";
+                                             if(visit.expectedCheckInTime != null ) {
+                                                
+                                               labelString = labelString +" at " +date().getFormattedTime(visit.expectedCheckInTime,"hh:mm a");
+                                             }
+                                             visitMap.label = labelString;
                                              visitList.add(visitMap);
                                         }
                                         return chatBot().param("inviteId","Here are your invites. Please select the invite you want to update.",visitList);
@@ -1336,6 +1361,12 @@
                                    if(data.host == null) {
                                       data.host = visit.host.id;
                                    }
+                                   if(data.checkinDate == null) {
+                                      data.checkinDate = visit.expectedCheckInTime;
+                                   }
+                                   if(data.checkoutDate == null) {
+                                      data.checkoutDate = visit.expectedCheckOutTime;
+                                   }
                                 }
                                 
                                 if(data.client_message != null) {
@@ -1355,6 +1386,12 @@
                                   if(data.client_message == "Edit phone number") {
                                     return chatBot().param("phone","Enter the phone number");
                                   }
+                                  if(data.client_message == "Edit checkin time") {
+                                    return chatBot().param("checkinDate","Edit the checkin time");
+                                  }
+                                  if(data.client_message == "Edit checkout time") {
+                                    return chatBot().param("checkoutDate","Edit the checkout time");
+                                  }
                                 }
                               
                                 if(data.isConfirmed == true) {
@@ -1371,6 +1408,8 @@
                                    fieldNameList.add("Phone");
                                    fieldNameList.add("Email");
                                    fieldNameList.add("Vistor type");
+                                   fieldNameList.add("Checkin Time");
+                                   fieldNameList.add("Checkout Time");
                                    fieldNameList.add("Host");
                                    
                                    confirmation.fieldNameList = fieldNameList;
@@ -1379,6 +1418,13 @@
                                   fields.put("Name",data.name);
                                   fields.put("Phone",data.phone);
                                   fields.put("Email",data.email);
+                                  
+                                  if(data.checkinDate != null) {
+                                     fields.put("Checkin Time",date().getFormattedTime(data.checkinDate,"MMM dd hh:mm a"));
+                                  }
+                                  if(data.checkoutDate != null) {
+                                     fields.put("Checkout Time",date().getFormattedTime(data.checkoutDate,"MMM dd hh:mm a"));
+                                  }
                            
                                   host = Module("contact").fetch([id == data.host])[0];
                            
@@ -1403,20 +1449,29 @@
                 resultWorkflowContext :
                    isV2Script : true
                    workflowV2String : 'Map test(Map data) {
-    
+                      
                                          resultMap = {};
                                          
-                                         visit = {};
-                                         visit.visitorName = data.name;
-                                         visit.visitorType.id = data.visitorType;
-                                         visit.visitorPhone = data.phone;
-                                         visit.visitorEmail = data.email; 
-                                         visit.host.id = data.host; 
+                                         if(data.inviteId != null) {
+                                            
+                                            visit = {};
+                                            visit.visitorName = data.name;
+                                            visit.visitorType.id = data.visitorType;
+                                            visit.visitorPhone = data.phone;
+                                            visit.visitorEmail = data.email; 
+                                            visit.host.id = data.host; 
+                                            visit.expectedCheckInTime = data.checkinDate;
+                                            visit.expectedCheckOutTime = data.checkoutDate;
+                                            
+                                            Module("visitorlogging").update([id == data.inviteId],visit);
+                                            
+                                            resultMap.put("returnText","Invite Updated successfully.");
                                          
-                                         Module("visitorlogging").update([id == data.inviteId],visit);
+                                         }
+                                         else {
+                                            resultMap.put("returnText","You dont have any upcomming visits for today.");
+                                         }
                                          
-                                         resultMap.put("returnText","Invite Updated successfully.");
-                                        
                                          return resultMap;
                                        }'  
    invokeSamples:
@@ -1511,6 +1566,9 @@
    type: 1
    localId : 17
    withParams : true
+   childIntentNames:
+      - "system_add_invite_intent"
+      - "system_edit_invite_intent"
    params:
    -
       name : 'inviteId'
@@ -1518,33 +1576,42 @@
       localId : 1
       typeConfig : 1
       editable : true
-      updateParamTriggerText : 'Change Visit'
+      updateParamTriggerText : 'Edit Visit'
       
    contextWorkflow :
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data){
                                 
-                                log "data --- "+data;
+                                log "data 1--- "+data;
                                 
                                 if(data.client_message != null) {
                                   
-                                  if(data.client_message == "Change Visit") {
+                                  if(data.client_message == "Edit Visit") {
+                                     data.clear();
                                      data.inviteId = null;
                                   }
                                 }
-                                
+
                                 visit = null;
                                 if(data.inviteId == null) {
                                   range1 = date().getDateRange("Today");
                                   visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
-                                   
+                                   if(visits == null) {
+                                      return chatBot().execute();
+                                   }
                                    if(visits.size() > 1) {
                                         visitList = [];
                                         for each index,visit in visits {
                                    
                                              visitMap = {};
                                              visitMap.id = visit.id;
-                                             visitMap.label = visit.visitorName+"''s Visit";
+                                             labelString = visit.visitorName+"''s Visit";
+                                             if(visit.expectedCheckInTime != null ) {
+                                                
+                                               labelString = labelString +" at " +date().getFormattedTime(visit.expectedCheckInTime,"hh:mm a");
+                                             }
+                                             visitMap.label = labelString;
+                                             
                                              visitList.add(visitMap);
                                         }
                                         return chatBot().param("inviteId","Here are your invites. Please select the invite you want to delete.",visitList);
@@ -1590,6 +1657,8 @@
                                    fieldNameList.add("Phone");
                                    fieldNameList.add("Email");
                                    fieldNameList.add("Vistor type");
+                                   fieldNameList.add("Checkin Time");
+                                   fieldNameList.add("Checkout Time");
                                    fieldNameList.add("Host");
                                    
                                    confirmation.fieldNameList = fieldNameList;
@@ -1598,6 +1667,13 @@
                                   fields.put("Name",data.name);
                                   fields.put("Phone",data.phone);
                                   fields.put("Email",data.email);
+                                  
+                                  if(data.checkinDate != null) {
+                                     fields.put("Checkin Time",date().getFormattedTime(data.checkinDate,"MMM dd hh:mm a"));
+                                  }
+                                  if(data.checkoutDate != null) {
+                                     fields.put("Checkout Time",date().getFormattedTime(data.checkoutDate,"MMM dd hh:mm a"));
+                                  }
                            
                                   host = Module("contact").fetch([id == data.host])[0];
                            
@@ -1608,7 +1684,7 @@
                                    
                                   confirmation.fields = fields;
                                   
-                                  return chatBot().confirm(confirmation);
+                                  return chatBot().confirm(confirmation,"Can I go ahead and delete this?");
                                 }
 
                               }' 
@@ -1624,9 +1700,13 @@
                    workflowV2String : 'Map test(Map data) {
     
                                          resultMap = {};
-                                         Module("visitorlogging").delete([id == data.inviteId]);
-                                         
-                                         resultMap.put("returnText","Invite deleted successfully.");
+                                         if(data.inviteId != null) {
+                                            Module("visitorlogging").delete([id == data.inviteId]);
+                                            resultMap.put("returnText","Invite deleted successfully.");
+                                         }
+                                         else {
+                                            resultMap.put("returnText","You dont have any upcomming visits for today.");
+                                         }
                                         
                                          return resultMap;
                                        }'  

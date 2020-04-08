@@ -765,7 +765,12 @@ public class ChatBotUtil {
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
 		
-		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, ChatBotConstants.CHAT_BOT_DEFAULT_SUBMIT_CONFIRMATION_TEXT);
+		if(botConfirmContext.getMessage() != null) {
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, botConfirmContext.getMessage());
+		}
+		else {
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, ChatBotConstants.CHAT_BOT_DEFAULT_SUBMIT_CONFIRMATION_TEXT);
+		}
 		
 		result.put(ChatBotConstants.CHAT_BOT_CONFIRMATION_RESPONSE, botConfirmContext.getParamMap());
 		

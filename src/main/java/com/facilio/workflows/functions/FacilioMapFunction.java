@@ -121,7 +121,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Map<String,Object> map = (Map<String, Object>) objects[0];
-			map = new HashMap<>();
+			map.clear();
 			return map;
 		};
 		

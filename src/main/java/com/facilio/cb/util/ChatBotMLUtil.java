@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -14,6 +16,8 @@ import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
 
 public class ChatBotMLUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ChatBotMLUtil.class.getName());
 
 	
 	public static final String ML_INTENT_STRING = "intent";
@@ -90,19 +94,28 @@ public class ChatBotMLUtil {
 	public static JSONObject getIntentFromML(String text,ChatBotIntent currentIntent,ChatBotModel model) throws Exception {
 		
 		if (text != null) {
+			
+			long processStarttime = System.currentTimeMillis();
 
 			Map<String, String> params = new HashMap<String, String>();
 
 			params.put(ML_MODEL_NAME_STRING, model.getMlModel());
 			params.put(ML_TEXT_STRING, text);
+			
+			LOGGER.info("params ---- " + params);
 
 			String response = FacilioHttpUtils.doHttpGet("https://chatbot.facilio.com/api/chatbot/findchatintent", null,params);
 
 			System.out.println("respose ---- " + response);
+			
+			LOGGER.info("respose ---- " + response);
+			
 			JSONObject responseJson = FacilioUtil.parseJson(response);
+			
+			LOGGER.info("Time taken for ml api in session is "+(System.currentTimeMillis() - processStarttime));
 
 			return responseJson;
-
+			
 		}
 		return null;
 	}

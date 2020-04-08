@@ -53,6 +53,9 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 			ChatBotConfirmContext params = new ChatBotConfirmContext();
 			
 			params.setParamMap((Map<String, Object>) objects[0]);
+			if(objects.length > 1) {
+				params.setMessage((String)objects[1]);
+			}
 			return params;
 		};
 		
