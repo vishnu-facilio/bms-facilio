@@ -367,11 +367,14 @@ public class AdminAction extends ActionSupport {
 		String todateendTtime = request.getParameter("toTtime");
 		todateendTtime = todateendTtime.replace('T', ' ');
 
-		long startTtime = convertDatetoTTime(fromdateTtime);
-		long endTtime = convertDatetoTTime(todateendTtime);
+		long startTtime = convertDatetoTTimeZone(fromdateTtime);
+		long endTtime = convertDatetoTTimeZone(todateendTtime);
 
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		bean.deleteReadings(orgId, fieldId, assetId, startTtime, endTtime, assetCategoryId, moduleId);
+		request.removeAttribute("orgid");
+		request.removeAttribute("assetcategory");
+		request.removeAttribute("assetId");
 		response.setHeader("result", "deleted");
 		response.sendRedirect("deleteReadings");
 
@@ -449,6 +452,13 @@ public class AdminAction extends ActionSupport {
 
 		LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 		long millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		return millis;
+	}
+
+	public long convertDatetoTTimeZone (String time) {
+		ZoneId timeZone = ZoneId.of(AccountUtil.getCurrentOrg().getTimezone());
+		LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+		long millis = localDateTime.atZone(timeZone.systemDefault()).toInstant().toEpochMilli();
 		return millis;
 	}
 

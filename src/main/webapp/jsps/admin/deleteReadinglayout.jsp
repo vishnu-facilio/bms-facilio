@@ -148,7 +148,7 @@
             <option value="" disabled selected>Select</option>
             <%
                 for (Organization domain : orgs) {
-                    if (domain.getOrgId() == 321 || domain.getOrgId() == 1 || domain.getOrgId() == 155 || domain.getOrgId() == 210) {
+                    if (domain.getOrgId() == 321 || domain.getOrgId() == 1 || domain.getOrgId() == 75 || domain.getOrgId() == 155 || domain.getOrgId() == 210) {
 
             %>
             <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
@@ -173,7 +173,7 @@
 <%
     if (org != null) {
 %>
-<form action="deleteReadingsAction" target="_blank">
+<form action="deleteReadingsAction">
 
     <div class=" col-lg-8 col-md-8">
 
