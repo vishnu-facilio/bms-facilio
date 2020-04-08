@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -35,6 +36,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("space"));
 			moduleList.add(modBean.getModule("alarm"));
 			moduleList.add(modBean.getModule("vendors"));
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+				moduleList.add(modBean.getModule("people"));
+			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		return false;
