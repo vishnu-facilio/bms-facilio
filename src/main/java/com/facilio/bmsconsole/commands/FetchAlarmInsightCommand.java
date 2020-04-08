@@ -208,6 +208,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
 		String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 		FacilioField resourceFieldColumn = fieldMap.get("resource");
+		FacilioField alarmIdField = fieldMap.get("alarm");
 
 		/*
 		 *  Duration fields to get duration only for current ranges
@@ -232,6 +233,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		selectFields.add(ruleField);
 		selectFields.add(durationField);
 		selectFields.add(resourceFieldColumn);
+		selectFields.add(alarmIdField);
 		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
 		FacilioField alarmField = fieldMap.get("alarmId");
 
