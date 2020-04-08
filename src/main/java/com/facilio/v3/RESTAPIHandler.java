@@ -190,12 +190,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(Constants.WITH_COUNT, getWithCount());
 
-        Map<String, Object> meta = new HashMap<>();
-        if (getWithCount()) {
-            meta.put("totalCount", context.get(Constants.COUNT));
-        }
-
         nonTransactionChain.execute();
+
+        if (getWithCount()) {
+            Map<String, Object> meta = new HashMap<>();
+            meta.put("totalCount", context.get(Constants.COUNT));
+            this.setMeta(FieldUtil.getAsJSON(meta));
+        }
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         this.setData(FieldUtil.getAsJSON(recordMap));
