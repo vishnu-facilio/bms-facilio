@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -36,8 +37,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("space"));
 			moduleList.add(modBean.getModule("alarm"));
 			moduleList.add(modBean.getModule("vendors"));
+			moduleList.add(modBean.getModule(ContextNames.TENANT_UNIT_SPACE));
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-				moduleList.add(modBean.getModule("people"));
+				moduleList.add(modBean.getModule(ContextNames.PEOPLE));
 			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
