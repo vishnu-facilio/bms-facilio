@@ -246,13 +246,19 @@ public class PeopleAPI {
 			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 		}
 		else {
-			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-		       if(CollectionUtils.isNotEmpty(appDomains)) {
-		    	   if(appDomains.size() > 1) {
-		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
-		    	   }
-		    	   appDomain = appDomains.get(0);
-		       }
+			//temp handling to be removed when app id is being sent
+			if(appDomainType == AppDomainType.FACILIO) {
+				appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+			}
+			else {
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+			       if(CollectionUtils.isNotEmpty(appDomains)) {
+			    	   if(appDomains.size() > 1) {
+			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    	   }
+			    	   appDomain = appDomains.get(0);
+			       }
+			}
 		}
 	
 		PeopleContext existingPeople = getPeopleForId(person.getId());

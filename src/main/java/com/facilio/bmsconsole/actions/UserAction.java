@@ -400,14 +400,9 @@ public class UserAction extends FacilioAction {
 			AppDomain appDomain = null;
 			//temp handling
 			if(appId <= 0) {
-				List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(isPortal ? AppDomainType.SERVICE_PORTAL : AppDomainType.FACILIO, AccountUtil.getCurrentOrg().getOrgId());
-				if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
-					if(servicePortalDomain.size() > 1) {
-						return ERROR;
-					}
-					appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
-					appDomain = servicePortalDomain.get(0);
-				}
+				String appDomainString = isPortal ? (AccountUtil.getCurrentOrg().getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com")) : AccountUtil.getDefaultAppDomain();
+				appDomain = IAMAppUtil.getAppDomain(appDomainString);
+				appId = ApplicationApi.getApplicationIdForApp(appDomain);
 			}
 			else {
 				appDomain = ApplicationApi.getAppDomainForApplication(appId);
