@@ -309,8 +309,12 @@ public class ActionAPI {
 			TemplateAPI.deleteTemplates(templateIds);
 		}
 	}
-	
+
 	public static List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule) throws Exception {
+		return addActions(actions, rule, true);
+	}
+
+	public static List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule, boolean shouldSave) throws Exception {
 		
 		if (actions != null && !actions.isEmpty()) {
 			List<ActionContext> actionsToBeAdded = new ArrayList<>();
@@ -374,7 +378,9 @@ public class ActionAPI {
 					actionsToBeAdded.add(action);
 				}
 			}
-			ActionAPI.addActions(actionsToBeAdded);
+			if (shouldSave) {
+				ActionAPI.addActions(actionsToBeAdded);
+			}
 		}
 		return actions;
 	}
