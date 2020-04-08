@@ -137,7 +137,7 @@ public class PeopleAPI {
 		
 	}
 	
-	private static void updatePeopleIdInOrgUsers(long pplId, long ouId) throws Exception {
+	public static void updatePeopleIdInOrgUsers(long pplId, long ouId) throws Exception {
 		FacilioField peopleId = new FacilioField();
 		peopleId.setName("peopleId");
 		peopleId.setDataType(FieldType.NUMBER);

@@ -359,8 +359,25 @@ public class ContactsAPI {
 		ContactsContext records = builder.fetchFirst();
 		return records;
 	}
-	
-	
+
+	public static List<ContactsContext> getContactsForType(int type) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+
+		SelectRecordsBuilder<ContactsContext> builder = new SelectRecordsBuilder<ContactsContext>()
+				.module(module)
+				.beanClass(ContactsContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("CONTACT_TYPE", "contactType", String.valueOf(type), NumberOperators.EQUALS))
+				;
+
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+		List<ContactsContext> records = builder.get();
+		return records;
+
+	}
 
 	
 }
