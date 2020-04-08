@@ -193,7 +193,7 @@ public class LoginAction extends FacilioAction {
 			String deviceType = request.getHeader("X-Device-Type");
 			if (!StringUtils.isNullOrEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
-				if(mobileInstanceId == null) {
+				if(org.apache.commons.lang3.StringUtils.isEmpty(mobileInstanceId) || mobileInstanceId.equals("null")) {
 					throw new IllegalArgumentException("Mobile Instance Id cannot be null");
 				}
 			}
