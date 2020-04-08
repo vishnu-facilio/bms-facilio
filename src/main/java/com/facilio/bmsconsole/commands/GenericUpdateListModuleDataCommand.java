@@ -52,7 +52,9 @@ public class GenericUpdateListModuleDataCommand extends FacilioCommand {
 				updateBuilder.update(record);
 				if (withChangeSet != null && withChangeSet) {
 					Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
-					changes.put(record.getId(), recordChanges.get(record.getId()));
+					if (MapUtils.isNotEmpty(recordChanges)) {
+						changes.put(record.getId(), recordChanges.get(record.getId()));
+					}
 				}
 				recordIds.add(record.getId());
 			}	
