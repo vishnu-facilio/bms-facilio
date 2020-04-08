@@ -5402,6 +5402,9 @@
 			method="getAllApplication" />
 		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="markApplicationAsDefault" />
+		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getApplicationDetails">
+			</action>
 	</package>
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"
 		extends="v2Api">
