@@ -891,6 +891,7 @@ public class ReadingsAPI {
 		List<Long> fieldsWithValues = null;
 		
 		List<ReadingInputType> inputTypes = new ArrayList<>();
+		boolean isAvailableFilter = false;
 		if (StringUtils.isNotEmpty(filter)) {
 			if (filter.equals("connected")) {
 				inputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
@@ -899,6 +900,7 @@ public class ReadingsAPI {
 				inputTypes.add(ReadingInputType.FORMULA_FIELD);
 			}
 			else if (filter.equals("available")) {
+				isAvailableFilter = true;
 				inputTypes.add(ReadingInputType.FORMULA_FIELD);
 				inputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
 			}
@@ -920,14 +922,15 @@ public class ReadingsAPI {
 				if (parentId == -1 && types == null) {
 					fieldsToReturn.add(field);
 				}
-				else if (fieldsWithValues != null) {
-					if (StringUtils.isNotEmpty(filter) && filter.equals("available") && !fieldsWithValues.contains(field.getId())) {
-						fieldsToReturn.add(field);
-					}
-					else if (fieldsWithValues.contains(field.getId())){
+				else if (fieldsWithValues != null && fieldsWithValues.contains(field.getId())) {
+					if (!isAvailableFilter) {
 						fieldsToReturn.add(field);
 					}
 				}
+				else if (isAvailableFilter) {
+					fieldsToReturn.add(field);
+				}
+				
 		    }
 	    }
 		return fieldsToReturn;
