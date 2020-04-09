@@ -8,6 +8,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -75,8 +76,11 @@ public class ListCommand extends FacilioCommand {
     }
 
     private SelectRecordsBuilder getSelectRecordsBuilder(Context context) {
-        SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder()
-                .module(module);
+        Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
+
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
+                .module(module)
+                .beanClass(beanClass);
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         Boolean includeParentCriteria = (Boolean) context.get(Constants.INCLUDE_PARENT_CRITERIA);

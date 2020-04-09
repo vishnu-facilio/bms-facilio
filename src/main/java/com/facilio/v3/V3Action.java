@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 public class V3Action extends ActionSupport {
     private JSONObject data;
 	private JSONObject meta;
+	private int code;
+	private String message;
 
 	public JSONObject getData() {
 		return this.data;
@@ -135,5 +137,21 @@ public class V3Action extends ActionSupport {
 
 	public void setMeta(JSONObject meta) {
 		this.meta = meta;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }

@@ -3,6 +3,7 @@ package com.facilio.v3;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -17,10 +18,11 @@ import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.json.simple.JSONObject;
@@ -34,10 +36,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //TODO remove static methods, instantiate as object, better when testing
 public class RESTAPIHandler extends V3Action implements ServletRequestAware {
+    private static final Logger LOGGER = Logger.getLogger(RESTAPIHandler.class.getName());
+
     private static final Map<String, V3Config> MODULE_HANDLER_MAP = new HashMap<>();
 
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
@@ -106,17 +111,37 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         context.put(Constants.RECORD_ID, id);
 
+        Class beanClass = getBeanClass(module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
         nonTransactionChain.execute();
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
         List list = recordMap.get(moduleName);
 
+        if (CollectionUtils.isEmpty(list)) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with " + id + " does not exist.");
+        }
+
         Map<String, Object> result = new HashMap<>();
 
         result.put(moduleName, list.get(0));
 
         this.setData(FieldUtil.getAsJSON(result));
+    }
+
+    private Class getBeanClass(FacilioModule module) {
+        Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+        if (beanClass == null) {
+            if (module.isCustom()) {
+                beanClass = CustomModuleData.class;
+            }
+            else {
+                beanClass = ModuleBaseWithCustomFields.class;
+            }
+        }
+        return beanClass;
     }
 
     private static FacilioModule getModule(String moduleName) throws Exception {
@@ -190,6 +215,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(Constants.WITH_COUNT, getWithCount());
 
+        Class beanClass = getBeanClass(module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
         nonTransactionChain.execute();
 
         if (getWithCount()) {
@@ -258,6 +286,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, createObj);
+
+        Class beanClass = getBeanClass(module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
         transactionChain.execute();
 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
@@ -309,9 +341,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, updateObj);
 
+        Class beanClass = getBeanClass(module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
         transactionChain.execute();
 
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
         summary();
     }
 
@@ -321,22 +355,83 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
 
     public String summary() throws Exception {
-        handleSummaryRequest(this.getModuleName(), this.getId());
+        try {
+            handleSummaryRequest(this.getModuleName(), this.getId());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getErrorCode());
+
+            LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setMessage("Internal Server Error");
+
+            LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
         return SUCCESS;
     }
 
     public String list() throws Exception {
-        handleListRequest(this.getModuleName());
+        try {
+            handleListRequest(this.getModuleName());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getErrorCode());
+
+            LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
+
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setMessage("Internal Server Error");
+
+            LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
+            return "failure";
+        }
+
         return SUCCESS;
     }
 
     public String create() throws Exception {
-        createHandler(this.getModuleName(), this.getData());
+        try {
+            createHandler(this.getModuleName(), this.getData());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getErrorCode());
+
+            LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
+
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setMessage("Internal Server Error");
+
+            LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
+            return "failure";
+        }
         return SUCCESS;
     }
 
     public String update() throws Exception {
-        updateHandler(this.getModuleName(), this.getId(), this.getData());
+        try {
+            updateHandler(this.getModuleName(), this.getId(), this.getData());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getErrorCode());
+
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setMessage("Internal Server Error");
+
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
         return SUCCESS;
     }
 
