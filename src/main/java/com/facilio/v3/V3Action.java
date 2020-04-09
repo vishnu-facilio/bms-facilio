@@ -6,7 +6,7 @@ import org.json.simple.JSONObject;
 public class V3Action extends ActionSupport {
     private JSONObject data;
 	private JSONObject meta;
-	private int code;
+	private int code = 0;
 	private String message;
 
 	public JSONObject getData() {

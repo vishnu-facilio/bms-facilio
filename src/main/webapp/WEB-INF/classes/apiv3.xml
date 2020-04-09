@@ -34,7 +34,7 @@
             <result name="success" type="json">
                 <!-- <param name="excludeNullProperties">true</param> -->
                 <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">^data.*,^meta.*</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*</param>
             </result>
             <result name="failure" type="json">
                 <param name="ignoreHierarchy">false</param>
