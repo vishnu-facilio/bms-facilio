@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.services.filestore.PublicFileUtil;
 import com.twilio.rest.api.v2010.account.Call;
@@ -28,7 +29,7 @@ public class CallUtil extends TwilioUtil {
 		
 		String url = PublicFileUtil.createPublicFile(twilioML, "twilioML", "xml", "text/xml");
 		
-//		String url = publicFileContext.getPublicUrl();
+		url = FacilioProperties.getConfig("clientapp.url") + url;
 		
 		LOGGER.info("url --- "+url);
 
