@@ -2038,10 +2038,6 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingDataForSpaces">
 		</action>
-		<action name="getLastValue"
-			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="v2GetLastValue">
-		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
@@ -2436,8 +2432,6 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
-		
-
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">
@@ -2446,6 +2440,14 @@
 			<param name="assetId">{1}</param>
 		</action>
 
+	</package>
+	
+	<package name="assetClientApiV2" namespace="/api/v2/asset"
+		extends="v2Api">
+		<action name="getLastValue"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLastValue">
+		</action>
 	</package>
 	
 	<package name="relationshipApiV2" namespace="/api/v2/relationship"
