@@ -5,7 +5,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.fw.util.RequestUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
@@ -26,11 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AccessLogFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AccessLogFilter.class.getName());
-    private static final String X_FORWARDED_FOR = "X-Forwarded-For";
-    private static final String DUMMY_REMOTE_IP = "0.0.0.1";
-    private static final String REMOTE_IP = "remoteIp";
+    public static final String REMOTE_IP = "remoteIp";
     private static final String REQUEST_METHOD = "req_method";
-    private static final String REQUEST_URL = "req_uri";
+    public static final String REQUEST_URL = "req_uri";
     private static final String REQUEST_PARAMS = "req_params";
     private static final String DEFAULT_QUERY_STRING = "-";
     private static final String QUERY = "query";
@@ -124,13 +122,7 @@ public class AccessLogFilter implements Filter {
             event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
         }
 
-        String remoteIp = request.getHeader(X_FORWARDED_FOR);
-        if(remoteIp == null) {
-            remoteIp = request.getRemoteAddr();
-        }
-        if(remoteIp == null) {
-            remoteIp = DUMMY_REMOTE_IP;
-        }
+        String remoteIp = RequestUtil.getRemoteAddr(request);
         event.setProperty(REMOTE_IP, remoteIp);
         event.setProperty(REQUEST_METHOD, request.getMethod());
         String requestUrl = request.getRequestURI();

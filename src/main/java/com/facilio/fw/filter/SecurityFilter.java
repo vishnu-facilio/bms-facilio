@@ -1,9 +1,13 @@
 package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.filters.AccessLogFilter;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +71,26 @@ public class SecurityFilter implements Filter {
     }
 
     private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
-        LOGGER.info("send 403 for " + request.getServerName() + request.getRequestURI());
+        String uri = request.getRequestURI();
+        String app = request.getServerName();
+        String appName = (String) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME);
+        if (StringUtils.isNotEmpty(appName)) {
+            app += "/" + appName;
+        }
+        String remoteAddr = request.getRemoteAddr();
+        StringBuilder msg = new StringBuilder("Sending 403 for URL : ")
+                            .append(uri)
+                            .append(" from app ")
+                            .append(app)
+                            ;
+        msg.append(" requested from ")
+                .append(remoteAddr);
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, msg.toString(), null);
+        event.setProperty(AccessLogFilter.REQUEST_URL, uri);
+        event.setProperty("app", app);
+        event.setProperty(AccessLogFilter.REMOTE_IP, remoteAddr);
+
+        LOGGER.callAppenders(event);
 //        response.setContentType("text/plain");
 //        response.setStatus(403);
 //        response.resetBuffer();

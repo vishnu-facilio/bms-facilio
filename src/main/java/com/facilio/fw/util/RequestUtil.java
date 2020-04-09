@@ -8,6 +8,8 @@ public class RequestUtil {
 
 	public static String HOSTNAME = null;
 	public static String MOBILE_HOSTNAME = null;
+	private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+	private static final String DUMMY_REMOTE_IP = "0.0.0.1";
 
 	public static String getDomainName()
 	{
@@ -28,5 +30,16 @@ public class RequestUtil {
 
 		}
 		return requestSubdomain;
+	}
+
+	public static String getRemoteAddr (HttpServletRequest request) {
+		String remoteIp = request.getHeader(X_FORWARDED_FOR);
+		if(remoteIp == null) {
+			remoteIp = request.getRemoteAddr();
+		}
+		if(remoteIp == null) {
+			remoteIp = DUMMY_REMOTE_IP;
+		}
+		return remoteIp;
 	}
 }
