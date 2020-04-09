@@ -1903,6 +1903,14 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="runRollUpFieldForModule">
 		</action>
+		<action name="calculateAggregatedEnergyConsumption"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="calculateAggregatedEnergyConsumption">
+		</action>
+		<action name="runMigForAggregatedEnergyConsumption"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runMigForAggregatedEnergyConsumption">
+		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"
 		namespace="/api/v2/scheduled/rule/historicalrun" extends="v2Api">

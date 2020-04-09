@@ -81,5 +81,14 @@ public class EnergyMeterContext extends AssetContext {
 		this.childMeterIds = childMeterIds;
 	}
 	
+	private long multiplicationFactor = 1;
+	
+	public long getMultiplicationFactor() {
+		return multiplicationFactor;
+	}
+	public void setMultiplicationFactor(long multiplicationFactor) {
+		this.multiplicationFactor = multiplicationFactor;
+	}
+
 	public static final Pattern EXP_FORMAT = Pattern.compile("([1-9]\\d*)|(\\()|(\\))|(\\+)|(-)");
 }
