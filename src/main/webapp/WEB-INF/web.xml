@@ -125,6 +125,12 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/vendor/*</url-pattern>
     </filter-mapping>
+
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/agent/*</url-pattern>
+</filter-mapping>
+
 <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/api/*</url-pattern>
@@ -167,6 +173,10 @@
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/newapp/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/agent/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
