@@ -210,7 +210,9 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					eventInsertStartTime = System.currentTimeMillis();
 					insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
 					eventInsertEndTime = System.currentTimeMillis();
-							
+					
+					LOGGER.info("Events added in daily job: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" Size  -- "+events.size()+ " events -- "+events);				
+
 					LOGGER.info("Process Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				
 				}
 			}

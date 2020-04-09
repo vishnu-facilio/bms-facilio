@@ -34,7 +34,7 @@ public class WorkflowRuleHistoricalAlarmsDeletionAPI {
 	{		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId, type);
 		
-		deleteAllEventsInExactWindow(ruleId, resourceId, startTime, endTime, type);
+		//deleteAllEventsInExactWindow(ruleId, resourceId, startTime, endTime, type);
 	
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{

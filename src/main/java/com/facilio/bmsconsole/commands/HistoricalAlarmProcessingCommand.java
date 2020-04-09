@@ -60,8 +60,8 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
 			
 			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM, totalAlarmOccurrenceCount);
 				WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, lesserStartTime, greaterEndTime, AlarmOccurrenceContext.Type.READING);
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
 			else {	
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime, Type.READING_ALARM, totalAlarmOccurrenceCount);				
@@ -115,6 +115,8 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 				addEvent.execute();
 				
+				LOGGER.info("Events added in alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
+
 				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 				lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) addEvent.getContext().get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
 				if(alarmOccurrenceCount != null) {
@@ -134,6 +136,8 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
 			addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 			addEvent.execute();
+			
+			LOGGER.info("Events added in final alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
 		
 			Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 			if(alarmOccurrenceCount != null) {
