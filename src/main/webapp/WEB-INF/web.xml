@@ -38,9 +38,16 @@
         <filter-name>MultiRequestReadFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping> -->
-
     <filter-mapping>
-        <filter-name>facilio-url</filter-name>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>UrlFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
@@ -49,12 +56,6 @@
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
-    
-    <filter>
-        <filter-name>AccessLogFilter</filter-name>
-        <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
-    </filter>
-
 
     <filter>
         <filter-name>IotFilter</filter-name>
@@ -82,54 +83,22 @@
     <param-value>Access-Control-Allow-Origin</param-value>
   </init-param>
 </filter>
-
+    <filter>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>com.facilio.fw.filter.SecurityFilter</filter-class>
+    </filter>
+<filter>
+    <filter-name>UrlFilter</filter-name>
+    <filter-class>com.facilio.fw.filter.UriFilter</filter-class>
+</filter>
+    <filter>
+        <filter-name>AccessLogFilter</filter-name>
+        <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
+    </filter>
 <filter>
     <filter-name>struts2</filter-name>
     <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
 </filter>
-<filter>
-    <filter-name>facilio-url</filter-name>
-    <filter-class>com.facilio.fw.filter.FacilioUriFilter</filter-class>
-</filter>    
-
-<filter-mapping>
-  <filter-name>CorsFilter</filter-name>
-  <url-pattern>/api/*</url-pattern>
-    <dispatcher>FORWARD</dispatcher>
-    <dispatcher>REQUEST</dispatcher>
-</filter-mapping>
-
-<filter-mapping>
-  <filter-name>CorsFilter</filter-name>
-  <url-pattern>/app/*</url-pattern>
-</filter-mapping>
-
-<filter-mapping>
-  <filter-name>CorsFilter</filter-name>
-  <url-pattern>/newapp/*</url-pattern>
-</filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/internal/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/service/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/tenant/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/vendor/*</url-pattern>
-    </filter-mapping>
-
-<filter-mapping>
-  <filter-name>CorsFilter</filter-name>
-  <url-pattern>/agent/*</url-pattern>
-</filter-mapping>
 
 <filter-mapping>
     <filter-name>struts2</filter-name>

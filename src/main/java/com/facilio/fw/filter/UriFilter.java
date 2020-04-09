@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FacilioUriFilter implements Filter {
+public class UriFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
