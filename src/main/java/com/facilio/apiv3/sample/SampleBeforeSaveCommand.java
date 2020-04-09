@@ -9,6 +9,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +33,7 @@ public class SampleBeforeSaveCommand extends FacilioCommand {
 
         String name = ((CustomModuleData) testContext).getName();
         if (StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException("name is mandatory");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "name is mandatory");
         }
 
         name = name.trim();
@@ -51,7 +53,7 @@ public class SampleBeforeSaveCommand extends FacilioCommand {
         List<ModuleBaseWithCustomFields> duplicates = selectRecordsBuilder.get();
 
         if (!CollectionUtils.isEmpty(duplicates)) {
-            throw new IllegalArgumentException("name already exists");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "name already exists");
         }
 
         return false;

@@ -13,4 +13,5 @@ public class Constants {
     public static final String WITH_COUNT = "withCount";
     public static final String COUNT = "count";
     public static final String BEAN_CLASS = "beanClass";
+    public static final String ROWS_UPDATED = "rowsUpdated";
 }

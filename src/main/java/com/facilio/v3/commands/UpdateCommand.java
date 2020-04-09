@@ -10,6 +10,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class UpdateCommand extends FacilioCommand {
             allChangesets.putAll(changeSet);
         }
 
-        context.put(FacilioConstants.ContextNames.ROWS_UPDATED, totalCount);
+        context.put(Constants.ROWS_UPDATED, totalCount);
         context.put(FacilioConstants.ContextNames.CHANGE_SET, allChangesets);
 
         return false;

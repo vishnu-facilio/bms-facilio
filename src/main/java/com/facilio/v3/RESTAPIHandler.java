@@ -25,13 +25,16 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -40,7 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //TODO remove static methods, instantiate as object, better when testing
-public class RESTAPIHandler extends V3Action implements ServletRequestAware {
+public class RESTAPIHandler extends V3Action implements ServletRequestAware, ServletResponseAware {
     private static final Logger LOGGER = Logger.getLogger(RESTAPIHandler.class.getName());
 
     private static final Map<String, V3Config> MODULE_HANDLER_MAP = new HashMap<>();
@@ -121,7 +124,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         List list = recordMap.get(moduleName);
 
         if (CollectionUtils.isEmpty(list)) {
-            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with " + id + " does not exist.");
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -346,6 +349,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         transactionChain.execute();
 
+        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
+
+        if (count == null || count <= 0) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
+        }
+
         summary();
     }
 
@@ -359,15 +368,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             handleSummaryRequest(this.getModuleName(), this.getId());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getErrorCode());
-
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-
             return "failure";
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
-
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -379,15 +387,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             handleListRequest(this.getModuleName());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getErrorCode());
-
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
-
             return "failure";
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
-
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
             return "failure";
         }
@@ -400,18 +407,18 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             createHandler(this.getModuleName(), this.getData());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getErrorCode());
-
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
-
             return "failure";
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
-
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
             return "failure";
         }
+        this.httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
         return SUCCESS;
     }
 
@@ -420,15 +427,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             updateHandler(this.getModuleName(), this.getId(), this.getData());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
-            this.setCode(ex.getErrorCode().getErrorCode());
-
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
-
             return "failure";
         } catch (Exception ex) {
-            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getErrorCode());
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
-
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -462,5 +468,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     @Override
     public void setServletRequest(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
+    }
+
+    private HttpServletResponse httpServletResponse;
+
+    @Override
+    public void setServletResponse(HttpServletResponse httpServletResponse) {
+        this.httpServletResponse = httpServletResponse;
     }
 }

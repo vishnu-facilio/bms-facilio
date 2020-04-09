@@ -1,32 +1,35 @@
 package com.facilio.v3.exception;
 
 
+import javax.servlet.http.HttpServletResponse;
+
 public enum ErrorCode {
-    RESOURCE_NOT_FOUND(1, 404),
-    UNHANDLED_EXCEPTION(2, 500)
+    RESOURCE_NOT_FOUND(1, HttpServletResponse.SC_NOT_FOUND),
+    UNHANDLED_EXCEPTION(2, HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+    VALIDATION_ERROR(3, HttpServletResponse.SC_BAD_REQUEST)
     ;
 
-    private int errorCode;
-    private int httpCode;
+    private int code;
+    private int httpStatus;
 
-    ErrorCode(int errorCode, int httpCode) {
-        this.errorCode = errorCode;
-        this.httpCode = httpCode;
+    ErrorCode(int code, int httpStatus) {
+        this.code = code;
+        this.httpStatus = httpStatus;
     }
 
-    public int getErrorCode() {
-        return errorCode;
+    public int getCode() {
+        return code;
     }
 
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+    public void setCode(int errorCode) {
+        this.code = errorCode;
     }
 
-    public int getHttpCode() {
-        return httpCode;
+    public int getHttpStatus() {
+        return httpStatus;
     }
 
-    public void setHttpCode(int httpCode) {
-        this.httpCode = httpCode;
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
     }
 }
