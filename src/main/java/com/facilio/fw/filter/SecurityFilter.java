@@ -1,8 +1,6 @@
 package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.filters.AccessLogFilter;
-import com.facilio.fw.util.RequestUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -76,25 +74,20 @@ public class SecurityFilter implements Filter {
         return false;
     }
 
-    private void handleInvalid(HttpServletRequest request, String reason) {
-        String uri = request.getRequestURI();
-        String app = request.getServerName();
+    private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
+        StringBuilder msg = new StringBuilder("Sending 403 for URL : ")
+                            .append(request.getRequestURI())
+                            .append(" from app ")
+                            .append(request.getServerName())
+                            ;
+
         String appName = (String) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME);
         if (StringUtils.isNotEmpty(appName)) {
-            app += "/" + appName;
+            msg.append("/").append(appName);
         }
-        StringBuilder msg = new StringBuilder("Sending 403 for URL : ")
-                            .append(uri)
-                            .append(" from app ")
-                            .append(app)
-                            .append(" because ")
-                            .append(reason)
-                            ;
-        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, msg.toString(), null);
-        RequestUtil.addRequestLogEvents(request, event);
-        event.setProperty("app", app);
-
-        LOGGER.callAppenders(event);
+        msg.append(" requested from ")
+                .append(request.getRemoteAddr());
+        LOGGER.info(msg.toString());
 //        response.setContentType("text/plain");
 //        response.setStatus(403);
 //        response.resetBuffer();
