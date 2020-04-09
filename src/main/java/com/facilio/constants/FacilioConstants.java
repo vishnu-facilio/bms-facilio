@@ -219,6 +219,7 @@ public class FacilioConstants {
 		public static final String REGRESSION_RESULT = "regressionResult";
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
+		public static final String FETCH_SUPPLEMENTS = "fetchSupplement";
 
 		public static final String CONNECTEDAPP_SAML_LIST = "connectedAppSAMLList";
 		
@@ -732,6 +733,7 @@ public class FacilioConstants {
 		public static final String BASE_ALARM_NOTES = "basealarmnotes";
 
 		public static final String ASSET_DEPRECIATION = "assetdepreciation";
+		public static final String ASSET_DEPRECIATION_REL = "assetdepreciationRel";
 		public static final String ACTIVATE = "activate";
 
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";

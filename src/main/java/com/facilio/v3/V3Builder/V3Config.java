@@ -454,11 +454,17 @@ public class V3Config implements V3Builder {
     }
 
     public class SummaryHandler implements SummaryBuilder {
+        private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
 
         private SummaryHandler(V3Builder parent) {
             this.parent = parent;
+        }
+
+        public SummaryHandler beforeFetch(Command beforeFetchCommand) {
+            this.beforeFetchCommand = beforeFetchCommand;
+            return this;
         }
 
         @Override
@@ -492,12 +498,12 @@ public class V3Config implements V3Builder {
             return this.parent.build();
         }
 
-        public Command getAfterFetchCommand() {
-            return afterFetchCommand;
+        public Command getBeforeFetchCommand() {
+            return beforeFetchCommand;
         }
 
-        public void setAfterFetchCommand(Command afterFetchCommand) {
-            this.afterFetchCommand = afterFetchCommand;
+        public Command getAfterFetchCommand() {
+            return afterFetchCommand;
         }
     }
 

@@ -9,8 +9,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,11 @@ public class SummaryCommand extends FacilioCommand {
                 .module(module)
                 .andCondition(CriteriaAPI.getIdCondition(id, module))
                 .beanClass(beanClass);
+
+        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            selectRecordsBuilder.fetchSupplements(supplementFields);
+        }
 
         List<ModuleBaseWithCustomFields> list = selectRecordsBuilder.get();
 

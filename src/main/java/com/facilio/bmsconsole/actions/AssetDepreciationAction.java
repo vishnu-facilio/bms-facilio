@@ -16,10 +16,19 @@ public class AssetDepreciationAction extends FacilioAction {
         this.id = id;
     }
 
+    private Long assetId;
+    public Long getAssetId() {
+        return assetId;
+    }
+    public void setAssetId(Long assetId) {
+        this.assetId = assetId;
+    }
+
     public String getDepreciationChart() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getDepreciationChartChain();
         Context context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
         chain.execute();
 
         setResult("depreciationList", context.get("depreciationList"));

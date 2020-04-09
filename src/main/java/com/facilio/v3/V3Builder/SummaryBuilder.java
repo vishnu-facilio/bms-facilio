@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 
 public interface SummaryBuilder {
     SummaryBuilder afterFetch(Command afterFetchCommand);
+    SummaryBuilder beforeFetch(Command beforeFetchCommand);
 
     UpdateBuilder update();
 

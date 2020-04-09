@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsole.context.AssetDepreciationRelContext;
 import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +13,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.*;
 
@@ -20,11 +23,20 @@ public class DepreciationChartCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long id = (Long) context.get(FacilioConstants.ContextNames.ID);
-        if (id != null && id > 0) {
+        Long assetId = (Long) context.get(FacilioConstants.ContextNames.ASSET_ID);
+        if (id != null && id > 0 && assetId != null && assetId > 0) {
             AssetDepreciationContext assetDepreciation = AssetDepreciationAPI.getAssetDepreciation(id);
 
-            long assetId = assetDepreciation.getAssetId();
-            AssetContext assetContext = AssetsAPI.getAssetInfo(assetId);
+            List<AssetDepreciationRelContext> assetDepreciationRelList = assetDepreciation.getAssetDepreciationRelList();
+            AssetContext assetContext = null;
+            if (CollectionUtils.isNotEmpty(assetDepreciationRelList)) {
+                for (AssetDepreciationRelContext relContext : assetDepreciationRelList) {
+                    if (relContext.getAssetId() == assetId) {
+                        assetContext = AssetsAPI.getAssetInfo(assetId);
+                        break;
+                    }
+                }
+            }
             if (assetContext == null) {
                 throw new IllegalArgumentException("Asset not found");
             }

@@ -1,6 +1,7 @@
 package com.facilio.apiv3;
 
 import com.facilio.apiv3.sample.*;
+import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -41,6 +42,8 @@ public class APIv3Config {
         return new V3Config(AssetDepreciationContext.class)
                 .create()
                     .beforeSave(new ValidateAssetDepreciationCommand())
+                .summary()
+                    .afterFetch(new AssetDepreciationFetchAssetDetailsCommand())
                 .build();
     }
 }

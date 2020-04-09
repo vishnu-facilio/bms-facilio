@@ -397,6 +397,14 @@ public class ModuleFactory {
 		fieldModule.setTableName("Assets");
 		return fieldModule;
 	}
+
+	public static FacilioModule getAssetDepreciationRelModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName(ContextNames.ASSET_DEPRECIATION_REL);
+		fieldModule.setDisplayName("Asset Depreciation Rel");
+		fieldModule.setTableName("Asset_Depreication_Rel");
+		return fieldModule;
+	}
 	
 	public static FacilioModule getEnergyMeterModule() {
 		FacilioModule fieldModule = new FacilioModule();

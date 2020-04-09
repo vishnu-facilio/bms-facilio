@@ -6649,6 +6649,19 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getAssetDepreciationRelFields() {
+        FacilioModule module = ModuleFactory.getCostAssetsModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+        fields.add(getField("depreciationId", "DEPRECIATION_ID", module, FieldType.NUMBER));
+        fields.add(getField("depreciationAmount", "DEPRECIATION_AMOUNT", module, FieldType.NUMBER));
+        fields.add(getField("activated", "ACTIVATED", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getCostAssetsFields() {
         FacilioModule module = ModuleFactory.getCostAssetsModule();
         List<FacilioField> fields = new ArrayList<>();

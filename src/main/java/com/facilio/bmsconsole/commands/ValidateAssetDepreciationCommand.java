@@ -21,9 +21,9 @@ public class ValidateAssetDepreciationCommand extends FacilioCommand {
             if (assetDepreciationContext.getFrequency() < 0 || assetDepreciationContext.getFrequencyTypeEnum() == null) {
                 throw new IllegalArgumentException("Frequency cannot be empty");
             }
-            if (assetDepreciationContext.getAssetId() < 0) {
-                throw new IllegalArgumentException("Asset cannot be empty");
-            }
+//            if (assetDepreciationContext.getAssetId() < 0) {
+//                throw new IllegalArgumentException("Asset cannot be empty");
+//            }
             if (assetDepreciationContext.getDepreciationTypeEnum() == null) {
                 throw new IllegalArgumentException("Depreciation type cannot be empty");
             }

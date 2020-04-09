@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
 
@@ -32,12 +34,12 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         this.depreciationType = depreciationType;
     }
 
-    private long assetId = -1l;
-    public long getAssetId() {
-        return assetId;
+    private List<AssetDepreciationRelContext> assetDepreciationRelList;
+    public List<AssetDepreciationRelContext> getAssetDepreciationRelList() {
+        return assetDepreciationRelList;
     }
-    public void setAssetId(long assetId) {
-        this.assetId = assetId;
+    public void setAssetDepreciationRelList(List<AssetDepreciationRelContext> assetDepreciationRelList) {
+        this.assetDepreciationRelList = assetDepreciationRelList;
     }
 
     private int frequency = -1;
@@ -65,12 +67,12 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         this.frequencyType = frequencyType;
     }
 
-    private long startDate = -1;
-    public long getStartDate() {
-        return startDate;
+    private long startDateFieldId = -1;
+    public long getStartDateFieldId() {
+        return startDateFieldId;
     }
-    public void setStartDate(long startDate) {
-        this.startDate = startDate;
+    public void setStartDateFieldId(long startDateFieldId) {
+        this.startDateFieldId = startDateFieldId;
     }
 
     public Boolean active;
@@ -136,7 +138,11 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         }
     }
 
-    public enum FrequencyType implements FacilioEnum {
+    public interface Frequency {
+
+    }
+
+    public enum FrequencyType implements FacilioEnum, Frequency {
         MONTHLY,
         QUARTERLY,
         HALF_YEARLY,

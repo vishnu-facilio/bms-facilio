@@ -95,14 +95,20 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         V3Config v3Config = getV3Config(moduleName);
 
         Command afterFetchCommand = null;
+        Command beforeFetchCommand = null;
         if (v3Config != null) {
             V3Config.SummaryHandler summaryHandler = v3Config.getSummaryHandler();
             if (summaryHandler != null) {
+                beforeFetchCommand = summaryHandler.getBeforeFetchCommand();
                 afterFetchCommand = summaryHandler.getAfterFetchCommand();
             }
         }
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
+        if (beforeFetchCommand != null) {
+            nonTransactionChain.addCommand(beforeFetchCommand);
+        }
+
         nonTransactionChain.addCommand(new SummaryCommand(module));
 
         if (afterFetchCommand != null) {
