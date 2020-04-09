@@ -319,7 +319,7 @@ public class ReadingAction extends FacilioAction {
 		getCategoryReadingChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		if (getFetchValidatonRules()) {
+		if (getFetchValidationRules()) {
 			fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
 		}
 		
@@ -1639,21 +1639,21 @@ public class ReadingAction extends FacilioAction {
 			fields = this.readings.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
 		}
 		setResult("readings", fields);
-		if (getFetchValidatonRules()) {
+		if (getFetchValidationRules()) {
 			setResult("fieldVsRules", fieldVsRules);
 		}
 		return SUCCESS;
 	}
 	
-	private Boolean fetchValidatonRules;
-	public Boolean getFetchValidatonRules() {
-		if (fetchValidatonRules == null) {
-			fetchValidatonRules = false;
+	private Boolean fetchValidationRules;
+	public Boolean getFetchValidationRules() {
+		if (fetchValidationRules == null) {
+			fetchValidationRules = false;
 		}
-		return fetchValidatonRules;
+		return fetchValidationRules;
 	}
-	public void setFetchValidatonRules(Boolean fetchValidatonRules) {
-		this.fetchValidatonRules = fetchValidatonRules;
+	public void setFetchValidationRules(Boolean fetchValidationRules) {
+		this.fetchValidationRules = fetchValidationRules;
 	}
 
 }
