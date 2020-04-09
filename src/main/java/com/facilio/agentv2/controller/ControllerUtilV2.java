@@ -49,13 +49,12 @@ public class ControllerUtilV2 {
     public static Map<Long, Controller> fieldDeviceToController(Device device) throws Exception {
         Controller controller;
         Map<Long, Controller> deviceIdControllerMap = new HashMap<>();
-        LOGGER.info("device are " + device);
         JSONObject controllerProps = device.getControllerProps();
-        controllerProps.putAll((JSONObject)controllerProps.get(AgentConstants.CONTROLLER));
-        LOGGER.info(" controller props JSON " + controllerProps);
         if ((controllerProps != null) && (!controllerProps.isEmpty())) {
             controllerProps.put(AgentConstants.DEVICE_ID, device.getId());
-            controllerProps.putAll((JSONObject)device.getControllerProps().get(AgentConstants.CONTROLLER));
+            if (controllerProps.containsKey(AgentConstants.CONTROLLER)) {
+                controllerProps.putAll((JSONObject)device.getControllerProps().get(AgentConstants.CONTROLLER));
+            }
             if(controllerProps.containsKey(AgentConstants.AGENT_TYPE)){
                 controllerProps.remove(AgentConstants.AGENT_TYPE);
             }

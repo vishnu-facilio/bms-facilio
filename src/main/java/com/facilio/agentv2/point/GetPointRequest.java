@@ -125,6 +125,10 @@ public class GetPointRequest {
     public List<Point> getPoints() throws Exception {
         return PointsAPI.getPointFromRows(getPointsData());
     }
+    public Point getPoint() throws Exception {
+        List<Point> points = PointsAPI.getPointFromRows(getPointsData());
+        return points.get(0);
+    }
 
     public List<Map<String, Object>> getPointsData() throws Exception {
         List<Map<String, Object>> data = new ArrayList<>();

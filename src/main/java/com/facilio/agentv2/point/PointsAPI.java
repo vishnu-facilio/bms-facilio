@@ -662,10 +662,6 @@ public class PointsAPI {
         return 0;
     }
 
-    public static List<Point> getDevicePoints(Long deviceId, int type) {
-        return getDevicePoints(deviceId, type, null);
-    }
-
     public static List<Point> getDevicePoints(Long deviceId, int type, FacilioContext paginationContext) {
         List<Map<String, Object>> records = getDevicePointsAsMapList(deviceId, type, null);
         if (!records.isEmpty()) {
@@ -684,18 +680,6 @@ public class PointsAPI {
         } else {
             LOGGER.info("Exception while getting points for device->" + deviceId + " and of type->" + type);
         }
-       /* if ((deviceId != null) && (deviceId > 0)) {
-            try {
-                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                        .table(MODULE.getTableName())
-                        .select(FieldFactory.getPointFields())
-                        .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), String.valueOf(deviceId), NumberOperators.EQUALS));
-                return builder.get();
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred while fetching points foe the device ->" + deviceId);
-            }
-        }
-        return new ArrayList<>();*/
         return new ArrayList<>();
     }
 
@@ -741,15 +725,6 @@ public class PointsAPI {
         return false;
     }
 
-    public static boolean deletePointChain(long pointId, FacilioControllerType type) {
-        if (pointId > 0) {
-            return deletePointsChain(Collections.singletonList(pointId), type);
-        } else {
-            LOGGER.info("Exception while deleting point, pointId cant be less than 1");
-        }
-        return false;
-    }
-
     public static boolean executeDeletePoints(List<Long> pointIds) throws SQLException {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         //TODO -
@@ -771,38 +746,15 @@ public class PointsAPI {
     }
 
     public static boolean setValue(long pointid, FacilioControllerType type, Object value) throws Exception {
-        Point point = getpoint(pointid, type);
+        GetPointRequest getPointRequest = new GetPointRequest().withId(pointid)
+                .ofType(type);
+        Point point = getPointRequest.getPoint();
         if (point != null) {
             point.setValue(value);
             ControllerMessenger.setValue(point);
             return true;
         }
         return false;
-    }
-
-    public static Point getpoint(long pointid, FacilioControllerType type) {
-        try {
-            List<Point> points = getpoints(Collections.singletonList(pointid), type);
-            if (!points.isEmpty()) {
-                return points.get(0);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception while getting point ", e);
-        }
-        return null;
-    }
-
-    public static List<Point> getpoints(List<Long> pointids, FacilioControllerType type) {
-        try {
-            List<Map<String, Object>> pointData = getPointData(pointids, type);
-            List<Point> points = getPointFromRows(pointData);
-            if (!points.isEmpty()) {
-                return points;
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception while getting points", e);
-        }
-        return new ArrayList<>();
     }
 
     public static boolean resetConfiguredPoints(Long controllerId) throws SQLException {
@@ -973,29 +925,6 @@ public class PointsAPI {
             return true;
         }
         return false;
-    }
-
-        public static List<Map<String, Object>> getConfiguredPointsData() {
-            List<Map<String,Object>> points = new ArrayList<>();
-            for (FacilioControllerType value : FacilioControllerType.values()) {
-                FacilioContext context = new FacilioContext();
-                context.put(AgentConstants.CONTROLLER_TYPE,value);
-                try {
-                    getPointDataOfType(value);
-                } catch (Exception e) {
-                    LOGGER.info("Exception while fetching points ",e);
-                }
-                List<Map<String, Object>> maps = fetchPoints(context);
-                points.addAll(maps);
-           }
-            return points;
-        }
-
-    private static void getPointDataOfType(FacilioControllerType value) throws Exception {
-        FacilioContext pointTypeBasedConditionAndFields = getPointTypeBasedConditionAndFields(value);
-        List<FacilioField> pointsFields = FieldFactory.getPointsFields();
-        pointsFields.addAll((Collection<? extends FacilioField>) pointTypeBasedConditionAndFields.get(FacilioConstants.ContextNames.FIELDS));
-
     }
 
 }

@@ -310,6 +310,7 @@ public class AwsPolicyUtils
         for (Policy policy : policies) {
             String policyName = policy.getPolicyName();
             JSONObject policyDocumentJson = getPolicyDocumentJson(getPolicy(policyName, iotClient));
+            LOGGER.info("policy json "+policyDocumentJson);
             JSONObject gist = getGist(policyDocumentJson);
             LOGGER.info("policy name "+policyName+" ---- "+policyDocumentJson+"  --- "+gist);
             gists.add(gist);

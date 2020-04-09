@@ -60,7 +60,6 @@ public class AckUtil
     }
 
     public static boolean handleConfigurationAndSubscription(long msgId, Controller controller, JSONObject payload) {
-        LOGGER.info(" msgid->"+msgId);
         try {
             IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId);
             if ( iotMessage != null ) {

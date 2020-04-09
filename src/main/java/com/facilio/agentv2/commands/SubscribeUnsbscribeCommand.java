@@ -4,6 +4,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import org.apache.commons.chain.Context;
@@ -21,7 +22,9 @@ public class SubscribeUnsbscribeCommand extends AgentV2Command {
             }
             FacilioCommand command = (FacilioCommand) context.get(AgentConstants.COMMAND);
             PointsAPI.updatePointsSubscribedOrUnsubscribed(pointIds, command);
-            List<Point> points = PointsAPI.getpoints(pointIds, (FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
+            GetPointRequest getPointRequest = new GetPointRequest().fromIds(pointIds)
+                    .ofType((FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
+            List<Point> points = getPointRequest.getPoints();
             if(FacilioCommand.UNSUBSCRIBE == command){
                 ControllerMessenger.subscribeUnscbscribePoints(points,command);
             }

@@ -66,6 +66,7 @@ public class WmsPublishResponse extends Message {
 			addData("data", jsonData);
 		}
 	}
+
 	private void addJsonData(IotData data) throws Exception {
 		if (data != null) {
 			int count = 0;
@@ -80,7 +81,7 @@ public class WmsPublishResponse extends Message {
 			addData("data", jsonData);
 		}
 	}
-	
+
 	public void send() throws Exception {
 		System.out.println(this.getContent());
 		System.out.println(this.toJson());

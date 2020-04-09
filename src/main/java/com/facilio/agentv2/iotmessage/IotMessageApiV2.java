@@ -18,6 +18,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -47,9 +48,12 @@ public class IotMessageApiV2 {
         iotMessage.setStatus(status.asInt());
         iotMessage.setAckTime(currTime);
         rowUpdated = updateIotMessage(iotMessage);
-        if (rowUpdated > 0) {
+        try {
             handleSuccessNotification(iotMessage);
-            //updatePointAcks(iotMessage);
+        }catch (Exception e){
+            LOGGER.info("Exception while handling success ",e);
+        }
+        if (rowUpdated > 0) {
             return true;
         }
         return false;
@@ -60,10 +64,27 @@ public class IotMessageApiV2 {
         if( ! iotMessages.isEmpty() ){
             long pendingCount = getPendingCount(iotMessages);
             if(pendingCount == 0){
+                WmsPublishResponse wmsPublishResponse = new WmsPublishResponse();
+                wmsPublishResponse.publish(IotMessageApiV2.getIotData(iotMessage.getParentId()),null);
                 // send notification
             }
         }
         //send notification
+    }
+
+    private static IotData getIotData(long parentId) throws Exception {
+        FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(iotDataModule.getTableName())
+                .select(FieldFactory.getIotDataFields())
+                .andCondition(CriteriaAPI.getIdCondition(parentId,iotDataModule));
+        Map<String, Object> map = selectRecordBuilder.fetchFirst();
+        IotData iotData = FieldUtil.getAsBeanFromMap(map, IotData.class);
+        IotMessage iotMessage = new IotMessage();
+        iotMessage.setParentId(parentId);
+        List<IotMessage> siblingIotMessages = getSiblingIotMessages(iotMessage);
+        iotData.setMessages(siblingIotMessages);
+        return iotData;
     }
 
     private static long getPendingCount(List<IotMessage> iotMessages) {
