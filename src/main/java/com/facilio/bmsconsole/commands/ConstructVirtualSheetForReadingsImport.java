@@ -13,9 +13,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.time.Instant;
@@ -122,8 +124,16 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
 								Double cellDoubleValue = Double.parseDouble(cellValueString);
 								props.put(field, cellDoubleValue);
 								isfilled = true;
+								} else if (facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+								EnumField enumField = (EnumField) facilioField;
+								String cellValueString = cellValue.toString();
+								if (StringUtils.isNotEmpty(cellValueString)) {
+									int enumIndex = enumField.getIndex(cellValueString.trim());
+									props.put(field, enumIndex);
 								}
-							} catch (Exception e) {
+								isfilled = true;
+							}
+						} catch (Exception e) {
 								LOGGER.severe("Exception Row Number --" + rowContext.getRowNumber() + "Field Mapping ---" + fieldMapping.get(key));
 								LOGGER.severe("exception ---" + e);
 								throw new ImportParseException(rowContext.getRowNumber(), fieldMapping.get(key).toString(), e);

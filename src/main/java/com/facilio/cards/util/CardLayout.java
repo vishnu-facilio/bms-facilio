@@ -245,7 +245,7 @@ public enum CardLayout {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> allFields = modBean.getAllFields(moduleName);
-
+			Map<String,FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
 			List<FacilioField> photoFields = allFields.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataType() == FieldType.FILE.getTypeAsInt()).collect(Collectors.toList());
 			Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 			if (beanClassName == null) {
@@ -269,10 +269,13 @@ public enum CardLayout {
 					.select(fields)
 					.orderBy("ID DESC");
 			if (criteria != null) {
-				selectRecordBuilder.andCriteria(criteria).limit(500)
+				selectRecordBuilder.andCriteria(criteria)
 				;
+			}
+			if (moduleName.equals(ContextNames.WORK_ORDER) && allFieldsMap.containsKey("noOfAttachments")) {
+				selectRecordBuilder.andCondition(CriteriaAPI.getCondition(allFieldsMap.get("noOfAttachments"), String.valueOf(0), NumberOperators.GREATER_THAN)).limit(100);
 			} else {
-				selectRecordBuilder.limit(50);
+				selectRecordBuilder.limit(1000);
 			}
 
 			List<Map<String, Object>> records = selectRecordBuilder.getAsProps();
