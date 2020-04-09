@@ -8,7 +8,8 @@ public enum SourceType implements FacilioEnum {
     FORMULA,
     SHIFT_READING,
     KINESIS,
-    ML;
+    ML,
+    SCRIPT;
 
     @Override
     public int getIndex() {

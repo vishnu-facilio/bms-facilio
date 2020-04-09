@@ -1,13 +1,19 @@
 package com.facilio.workflows.functions;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DataUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -22,6 +28,7 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
@@ -224,6 +231,52 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
 			
 			return FieldUtil.getAsProperties(ReadingsAPI.getReadingDataMeta(workflowReadingContext.getParentId(), field));
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	ADD(5,"add") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			FacilioChain addCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			
+			ReadingContext reading = new ReadingContext();
+			
+			reading.setParentId(workflowReadingContext.getParentId());
+			
+			Object readingValue = objects[1];
+			
+			reading.addReading(field.getName(), readingValue);
+			
+			long ttime = -1;
+			if(objects.length >2) {
+				ttime = (long) objects[2];
+			}
+			else {
+				ttime = DateTimeUtil.getCurrenTime();
+			}
+			
+			reading.setTtime(ttime);
+			
+			FacilioContext context = addCurrentReading.getContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
+			context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(reading));
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			
+			addCurrentReading.execute();
+			return null;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
