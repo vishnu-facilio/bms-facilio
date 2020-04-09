@@ -365,8 +365,12 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.WORKPERMIT,
 										FacilioConstants.ContextNames.SAFETY_PLAN,
 										FacilioConstants.ContextNames.SERVICE_REQUEST,
-										FacilioConstants.ContextNames.AGENT_METRICS_MODULE
-
+										FacilioConstants.ContextNames.AGENT_METRICS_MODULE,
+										FacilioConstants.ContextNames.PEOPLE,
+										FacilioConstants.ContextNames.TENANT_CONTACT,
+										FacilioConstants.ContextNames.VENDOR_CONTACT,
+										FacilioConstants.ContextNames.CLIENT_CONTACT,
+										FacilioConstants.ContextNames.EMPLOYEE
 			)));
 
 

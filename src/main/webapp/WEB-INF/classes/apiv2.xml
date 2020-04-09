@@ -2096,6 +2096,11 @@
 		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAssetReadings">
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard"
