@@ -12,9 +12,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetGraphicsFolderListCommand extends FacilioCommand {
 
@@ -51,7 +54,19 @@ public class GetGraphicsFolderListCommand extends FacilioCommand {
 			
 			List<GraphicsContext> graphicsContexts = new ArrayList<>();
 			if (graphicsFolderId > 0) {
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getGraphicsFields())
+				FacilioModule module = ModuleFactory.getGraphicsModule();
+				List<FacilioField> fields = new ArrayList<>();
+
+		        fields.add(FieldFactory.getField("id", "ID", module, FieldType.ID));
+		        fields.add(FieldFactory.getField("name", "NAME", module, FieldType.STRING));
+		        fields.add(FieldFactory.getField("description", "DESCRIPTION", module, FieldType.STRING));
+		        fields.add(FieldFactory.getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+		        fields.add(FieldFactory.getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		        fields.add(FieldFactory.getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
+		        fields.add(FieldFactory.getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
+		        fields.add(FieldFactory.getField("applyTo", "APPLY_TO", module, FieldType.STRING));
+		        
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
 					.table(ModuleFactory.getGraphicsModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("PARENT_FOLDER_ID", "parentFolderId", String.valueOf(graphicsFolderId), NumberOperators.EQUALS));
 			
