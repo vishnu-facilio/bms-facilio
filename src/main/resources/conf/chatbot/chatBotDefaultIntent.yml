@@ -966,7 +966,7 @@
                                 else if(data.checkinDate != null && data.checkinDateFilled == true) {
                                   fillOneOrManyParam = "checkinDate";
                                 }
-                                else if(data.checkoutDate != null && data.checkoutDateFilled == true) {
+                                else if(data.checkoutDate != null) {
                                   fillOneOrManyParam = "checkoutDate";
                                 }
                                 else if(data.editableName != null) {
@@ -1067,6 +1067,7 @@
                                       for each index,name in data.names {
                                           if(data.get(name).checkinDate == null) {
                                                data.get(name).put("checkinDate",data.checkinDate);
+                                               data.get(name).put("checkoutDate",(number().longValue(data.checkinDate))+10800000);
                                           }
                                       }
                                       data.checkinDateFilled = true;
@@ -1074,21 +1075,6 @@
                                    }
                                 }
                                 
-                                if(data.checkoutDateFilled == null) {
-                                   if(data.checkoutDate == null) {
-                                      return chatBot().param("checkoutDate","When are they leaving?");
-                                   }
-                                   else {
-                                      for each index,name in data.names {
-                                          if(data.get(name).checkoutDate == null) {
-                                               data.get(name).put("checkoutDate",data.checkoutDate);
-                                          }
-                                      }
-                                      data.checkoutDateFilled = true;
-                                      data.checkoutDate = null;
-                                   }
-                                }
-                              
                                 if(data.isConfirmed == true) {
                                   return chatBot().execute();
                                 }
