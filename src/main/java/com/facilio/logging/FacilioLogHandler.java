@@ -88,7 +88,7 @@ public class FacilioLogHandler extends Handler {
         }
 
         String reqUri = event.getProperty(AccessLogFilter.REQUEST_URL);
-        if (StringUtils.isNotEmpty(reqUri)) {
+        if (StringUtils.isEmpty(reqUri)) {
             if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
                 event.setProperty(AccessLogFilter.REQUEST_URL, AccountUtil.getCurrentAccount().getRequestUri());
             } else {
