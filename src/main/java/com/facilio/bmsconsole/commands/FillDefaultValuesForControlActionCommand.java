@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlActionCommandContext.Control_Action_Execute_Mode;
 import com.facilio.controlaction.util.ControlActionUtil;
@@ -26,6 +28,9 @@ public class FillDefaultValuesForControlActionCommand extends FacilioCommand {
 			command.setExecutedMode(controlActionExecuteMode.getIntVal());
 			command.setStatus(ControlActionCommandContext.Status.SUCCESS.getIntVal());
 		}
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, commands);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		return false;
 	}
 

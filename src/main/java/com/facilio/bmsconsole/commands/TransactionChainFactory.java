@@ -3717,6 +3717,7 @@ public class TransactionChainFactory {
 			c.addCommand(new FillDefaultValuesForControlActionCommand());
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			return c;
 		}
 		
