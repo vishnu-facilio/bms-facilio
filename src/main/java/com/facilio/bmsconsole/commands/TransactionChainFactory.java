@@ -4831,6 +4831,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForMandatoryTenantIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateTenantAppPortalAccessCommand());
 		
 		return c;
 	}
@@ -4842,6 +4843,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForMandatoryVendorIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
 		
 		return c;
 	}
@@ -5151,6 +5153,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForMandatoryClientIdCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateClientAppPortalAccessCommand());
 		
 		return c;
 	}
@@ -5204,6 +5207,21 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new RollupTenantSpacesCommand());
 
+		return c;
+	}
+	
+	public static FacilioChain addApplicationUsersChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddApplicationUsersCommand());
+		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain deleteApplicationUsersChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteApplicationUsersCommand());
+		
 		return c;
 	}
 }

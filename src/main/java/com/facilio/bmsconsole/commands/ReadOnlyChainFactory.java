@@ -2381,4 +2381,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSpaceDirectChildrenCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getApplicationUsersChain () {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetApplicationUsersCommand());
+		return chain;
+	}
 }

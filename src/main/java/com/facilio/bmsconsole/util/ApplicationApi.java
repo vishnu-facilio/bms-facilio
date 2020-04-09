@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.util.AccountConstants;
@@ -351,4 +352,5 @@ public class ApplicationApi {
 		}
 		return appDomainName;
 	}
+	
 }

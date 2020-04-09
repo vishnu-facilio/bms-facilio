@@ -5411,6 +5411,19 @@
 			method="getApplicationDetails">
 			</action>
 	</package>
+	<package name="applicationUsers" namespace="/api/v2/application/users"
+		extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="addApplicationUsers">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="deleteApplicationUsers">
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getApplicationUsers">
+		</action>
+	</package>
+	
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ApplicationAction"
