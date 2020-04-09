@@ -1395,28 +1395,28 @@
 	<package name="serviceCatalog" namespace="/api/v2/servicecatalog" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalog">
-			<param name="moduleName">setup</param>
+			<param name="permissionModuleName">setup</param>
 			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList">
-			<param name="moduleName">setup</param>
+			<param name="permissionModuleName">setup</param>
 			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails">
-			<param name="moduleName">setup</param>
+			<param name="permissionModuleName">setup</param>
 			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="deleteServiceCatalog">
-			<param name="moduleName">setup</param>
+			<param name="permissionModuleName">setup</param>
 			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
 		</action>
 
 		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getModules">
-			<param name="moduleName">setup</param>
+			<param name="permissionModuleName">setup</param>
 			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
 		</action>
 	</package>
