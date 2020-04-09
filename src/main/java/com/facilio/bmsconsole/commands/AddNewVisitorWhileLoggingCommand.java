@@ -42,15 +42,16 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
 					vL.setRequestedBy(AccountUtil.getCurrentUser());
 				}
-				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-					vL.setTenant(PeopleAPI.getTenantForUser(vL.getRequestedBy().getId()));
-				}
-				else {
+				//if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					//need to uncomment when all users are migrated as employees
+				//	vL.setTenant(PeopleAPI.getTenantForUser(vL.getRequestedBy().getId()));
+				//}
+				//else {
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
 					if(contact != null && contact.getTenant() != null) {
 						vL.setTenant(contact.getTenant());
 					}
-				}
+				//}
 			
 				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
 					vL.setIsReturningVisitor(true);
