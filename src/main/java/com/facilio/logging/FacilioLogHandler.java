@@ -6,6 +6,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import com.facilio.filters.AccessLogFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -84,10 +86,14 @@ public class FacilioLogHandler extends Handler {
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
-        if( AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
-            event.setProperty("req_uri", AccountUtil.getCurrentAccount().getRequestUri());
-        } else {
-            event.setProperty("req_uri", "-");
+
+        String reqUri = event.getProperty(AccessLogFilter.REQUEST_URL);
+        if (StringUtils.isNotEmpty(reqUri)) {
+            if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
+                event.setProperty(AccessLogFilter.REQUEST_URL, AccountUtil.getCurrentAccount().getRequestUri());
+            } else {
+                event.setProperty(AccessLogFilter.REQUEST_URL, "-");
+            }
         }
         try {
             ThrowableInformation information = event.getThrowableInformation();

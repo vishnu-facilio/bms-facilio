@@ -2,6 +2,7 @@ package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.filters.AccessLogFilter;
+import com.facilio.fw.util.RequestUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -77,7 +78,7 @@ public class SecurityFilter implements Filter {
         if (StringUtils.isNotEmpty(appName)) {
             app += "/" + appName;
         }
-        String remoteAddr = request.getRemoteAddr();
+        String remoteAddr = RequestUtil.getRemoteAddr(request);
         StringBuilder msg = new StringBuilder("Sending 403 for URL : ")
                             .append(uri)
                             .append(" from app ")
