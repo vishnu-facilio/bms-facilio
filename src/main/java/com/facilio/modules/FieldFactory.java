@@ -198,6 +198,7 @@ public class FieldFactory {
             workOrderFieldsInclude.add("status");
             workOrderFieldsInclude.add("moduleState");
             workOrderFieldsInclude.add("type");
+            workOrderFieldsInclude.add("vendor");
             workOrderFieldsInclude.add("sendForApproval");
             workOrderFieldsInclude.add("prerequisiteEnabled");
             workOrderFieldsInclude.add("preRequestStatus");
