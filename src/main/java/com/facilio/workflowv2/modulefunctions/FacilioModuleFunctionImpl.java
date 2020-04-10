@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -193,11 +194,22 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
-		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(modBean.getAllFields(module.getName()))
-				.andCriteria(criteria);
-		updateRecordBuilder.updateViaMap(updateMap);
+		if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
+			
+			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+					.table(module.getTableName())
+					.fields(modBean.getAllFields(module.getName()))
+					.andCriteria(criteria);
+			updateRecordBuilder.update(updateMap);
+			
+		}
+		else {
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.fields(modBean.getAllFields(module.getName()))
+					.andCriteria(criteria);
+			updateRecordBuilder.updateViaMap(updateMap);
+		}
 	}
 
 	@Override
