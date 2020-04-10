@@ -1360,10 +1360,11 @@ public class ReadingsAPI {
 				}
 			}
 			updateReading(module, fields, secondReading);
+			AggregatedEnergyConsumptionUtil.recalculateAggregatedEnergyConsumption(Collections.singletonList(secondReading));
 		}
 	}
 	
-	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
+	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value) throws Exception{
 		 boolean isDeltaKeyPresent= reading.getReadings().entrySet().stream().filter(rd->rd.getKey().equalsIgnoreCase(fieldName+"Delta")).findFirst().isPresent();
 			if (isDeltaKeyPresent) {
 				reading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(fieldName + "Delta")).findFirst().get().setValue(value);

@@ -101,14 +101,22 @@ public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand 
 		
 		FacilioField readingDeltaField = energyDataFieldMap.get("totalEnergyConsumptionDelta");
 		readingDeltaField.setModule(energyDataModule);
+		FacilioField energyReadingField = energyDataFieldMap.get("totalEnergyConsumption");
+		energyReadingField.setModule(energyDataModule);
 		
 		ReadingDataMeta deltaRdm = readingsMetaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingDeltaField));
-		if(deltaRdm == null || (deltaRdm != null && deltaRdm.getInputType() != ReadingInputType.TASK.getValue())) {
+		ReadingDataMeta energyReadingFieldRdm = readingsMetaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), energyReadingField));
+		
+		if(deltaRdm == null || energyReadingFieldRdm == null) {
 			return;
 		}
 
 		Object readingDeltaVal = reading.getReading(readingDeltaField.getName());
 		if(readingDeltaVal == null) {
+			return;
+		}
+		
+		if(energyReadingFieldRdm != null && energyReadingFieldRdm.getInputType() != ReadingInputType.TASK.getValue()) {
 			return;
 		}
 		
