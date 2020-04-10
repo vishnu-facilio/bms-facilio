@@ -90,6 +90,7 @@ public class SecurityFilter implements Filter {
         event.setProperty(AccessLogFilter.REQUEST_URL, uri);
         event.setProperty("app", app);
         event.setProperty(AccessLogFilter.REMOTE_IP, remoteAddr);
+        event.setProperty(AccessLogFilter.ORIGIN, RequestUtil.getOrigin(request));
 
         LOGGER.callAppenders(event);
 //        response.setContentType("text/plain");

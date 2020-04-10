@@ -2,6 +2,7 @@ package com.facilio.fw.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 public class RequestUtil {
@@ -10,6 +11,7 @@ public class RequestUtil {
 	public static String MOBILE_HOSTNAME = null;
 	private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 	private static final String DUMMY_REMOTE_IP = "0.0.0.1";
+	private static final String ORIGIN_HEADER = "Origin";
 
 	public static String getDomainName()
 	{
@@ -41,5 +43,13 @@ public class RequestUtil {
 			remoteIp = DUMMY_REMOTE_IP;
 		}
 		return remoteIp;
+	}
+
+	public static String getOrigin (HttpServletRequest request) {
+		String origin = request.getHeader(ORIGIN_HEADER);
+		if(StringUtils.isEmpty(origin)) {
+			origin = request.getServerName();
+		}
+		return origin;
 	}
 }

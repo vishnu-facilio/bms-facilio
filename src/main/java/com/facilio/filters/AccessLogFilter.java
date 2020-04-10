@@ -43,6 +43,7 @@ public class AccessLogFilter implements Filter {
     private static final String REFERER = "referer";
     private static final String RESPONSE_SIZE = "res_size";
     private static final boolean ENABLE_FHR = FacilioProperties.enableFacilioResponse();
+    public static final String ORIGIN = "origin";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
@@ -159,11 +160,7 @@ public class AccessLogFilter implements Filter {
             event.setProperty(REQUEST_PARAMS, AccountUtil.getCurrentAccount().getRequestParams());
         }
 
-        String origin = request.getHeader("Origin");
-        if(origin == null) {
-            origin = request.getServerName();
-        }
-        event.setProperty("origin", origin);
+        event.setProperty(ORIGIN, RequestUtil.getOrigin(request));
 
         String deviceType = request.getHeader(X_DEVICE_TYPE);
         if(deviceType == null) {
