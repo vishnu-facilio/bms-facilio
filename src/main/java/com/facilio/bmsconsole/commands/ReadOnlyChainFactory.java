@@ -923,6 +923,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		
 		return chain;
 	}
@@ -933,6 +935,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadContractLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchPurchaseContractDetailsCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		return c;
 	}
 	public static FacilioChain getLabourContractListChain() {
@@ -944,6 +948,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		return chain;
 	}
 	
@@ -953,6 +959,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadContractLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchLabourContractDetailsCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		return c;
 	}
 
@@ -1228,6 +1236,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		return chain;
 	}
 
@@ -1237,6 +1247,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadContractLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchWarrantyContractDetailsCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
+	
 		return c;
 	}
 
@@ -1266,6 +1278,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
+		
 		return chain;
 	}
 
@@ -1275,6 +1289,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadContractLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRentalLeaseContractDetailsCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
+		
 		return c;
 	}
 
