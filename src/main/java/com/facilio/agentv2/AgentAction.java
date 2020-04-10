@@ -648,7 +648,7 @@ public class AgentAction extends AgentActionV2 {
     }
     public String getPolicyGist(){
         try{
-            JSONArray policyGist = AwsUtil.getPolicyGist();
+            JSONObject policyGist = AwsUtil.getPolicyGist();
             setResult(AgentConstants.DATA,policyGist);
             ok();
         }catch (Exception e){

@@ -53,7 +53,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.crypto.Mac;
@@ -149,6 +148,7 @@ public class AwsUtil
 			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
 		}
 	}
+
 	
 	public static String generateCSRFToken() throws Exception {
 		MessageDigest salt = MessageDigest.getInstance("SHA-256");
@@ -160,8 +160,8 @@ public class AwsUtil
 		return sb.toString();
 	}
 
-	public static JSONArray getPolicyGist() throws Exception {
-		return AwsPolicyUtils.getAllPolicyGist(getIotClient());
+	public static JSONObject getPolicyGist() throws Exception {
+		return AwsPolicyUtils.getPolicyGist(getIotClient());
 	}
 
 	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild, long userId) throws SystemException {

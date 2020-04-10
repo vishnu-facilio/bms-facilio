@@ -2,51 +2,58 @@ package com.facilio.aws.util;
 
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.model.*;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
-public class AwsPolicyUtils
-{
+public class AwsPolicyUtils {
     private static final Logger LOGGER = LogManager.getLogger(AwsPolicyUtils.class.getName());
+    public static final String TOPIC = ":topic/";
+    public static final String CLIENT = ":client/";
+    public static final String TOPICFILTER = ":topicfilter/";
 
     private static void addClientToPolicy(JSONObject policy, List<String> connectTopics) throws Exception {
-        updatePolicyStatement(policy,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),connectTopics);
+        updatePolicyStatement(policy, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), connectTopics);
     }
 
     private static JSONObject getGist(JSONObject policy) throws Exception {
-        if(policy.containsKey("Statement") && (policy.get("Statement") != null)) {
+        if (policy.containsKey("Statement") && (policy.get("Statement") != null)) {
             JSONArray policyStatements = (JSONArray) policy.get("Statement");
+            System.out.println("policy statements " + policyStatements);
             JSONObject policyGist = new JSONObject();
             for (Object policyStatementObject : policyStatements) {
                 JSONObject policyStatement = (JSONObject) policyStatementObject;
-                if((policyStatement.containsKey("Action"))&&(policyStatement.get("Action") != null)) {
+                System.out.println("policystatement " + policyStatement);
+                if ((policyStatement.containsKey("Action")) && (policyStatement.get("Action") != null)) {
                     String action = (String) policyStatement.get("Action");
-                    policyGist.put(action,getResourcesList(policyStatement));
+                    policyGist.put(action, getResourcesList(policyStatement));
+                } else {
+                    System.out.println("action not found");
                 }
             }
             return policyGist;
-        }else {
+        } else {
             throw new Exception("statement missing from polictdoc");
         }
     }
 
-    private static void updatePolicyStatement( JSONObject policy, List<String> subscribeTopics, List<String> publishTopics, List<String> receiveTopics, List<String> connectTopics) throws Exception {
-        if(policy.containsKey("Statement") && (policy.get("Statement") != null)){
+    private static void updatePolicyStatement(JSONObject policy, List<String> subscribeTopics, List<String> publishTopics, List<String> receiveTopics, List<String> connectTopics) throws Exception {
+        if (policy.containsKey("Statement") && (policy.get("Statement") != null)) {
             JSONArray policyStatements = (JSONArray) policy.get("Statement");
             for (Object policyStatementObject : policyStatements) {
                 JSONObject policyStatement = (JSONObject) policyStatementObject;
-                if((policyStatement.containsKey("Action"))&&(policyStatement.get("Action") != null)){
+                if ((policyStatement.containsKey("Action")) && (policyStatement.get("Action") != null)) {
                     String action = (String) policyStatement.get("Action");
-                        switch (action){
-                            case "iot:Connect":
-                                addResourceToPolicyIfNotPresent(policyStatement,connectTopics);
-                                break;
+                    switch (action) {
+                        case "iot:Connect":
+                            addResourceToPolicyIfNotPresent(policyStatement, connectTopics);
+                            break;
                             /*case "iot:Publish":
                                 addResourceToPolicyIfNotPresent(policyStatement,publishTopics);
                                 break;
@@ -56,30 +63,30 @@ public class AwsPolicyUtils
                             case "iot:Subscribe":
                                 addResourceToPolicyIfNotPresent(policyStatement,subscribeTopics);
                                 break;*/
-                        }
-                }else{
+                    }
+                } else {
                     throw new Exception("key -Action- missing from policyJson ");
                 }
             } // for ends
-        }else {
+        } else {
             throw new Exception(" key -Statement- missing from policyJson ");
         }
     }
 
     private static String updatePolicy(AWSIot client, String policyName, IotPolicy rule) throws Exception {
-        LOGGER.info(" updating policy "+policyName);
+        LOGGER.info(" updating policy " + policyName);
         JSONObject policy = new JSONObject();
         policy = getPolicyDocumentJson(getPolicy(policyName, client));
-        LOGGER.info("existing policy document "+policy);
+        LOGGER.info("existing policy document " + policy);
         List<String> connectTopics = rule.getArnClientIds();
         addClientToPolicy(policy, connectTopics);
-        LOGGER.info(" updated policy document "+policy);
+        LOGGER.info(" updated policy document " + policy);
         updateClientPolicyVersion(client, policyName, policy);
         return policy.toString();
     }
 
     private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy) {
-        updateClientPolicyVersion(client,policyName,policy,0);
+        updateClientPolicyVersion(client, policyName, policy, 0);
     }
 
     public static IotPolicy getIotPolicyWithTopics(String topic, String type) {
@@ -179,14 +186,14 @@ public class AwsPolicyUtils
         try {
             List<String> resourcesPresent = getResourcesList(policyStatement);
             List<String> resourcesToAdd = getResourcesToAdd(resourcesPresent, topics);
-            addResourcesToPolicy(policyStatement,resourcesToAdd);
-        } catch (ParseException e) {
-           LOGGER.info(" Exception while adding resource to policy ",e);
+            addResourcesToPolicy(policyStatement, resourcesToAdd);
+        } catch (Exception e) {
+            LOGGER.info(" Exception while adding resource to policy ", e);
         }
     }
 
     private static void addResourcesToPolicy(JSONObject policyStatement, List<String> resourcesToAdd) {
-        if((policyStatement != null)&&(resourcesToAdd != null)){
+        if ((policyStatement != null) && (resourcesToAdd != null)) {
             if (policyStatement.containsKey("Resource")) {
                 JSONArray resourceJSONArray;
                 JSONParser parser = new JSONParser();
@@ -197,16 +204,16 @@ public class AwsPolicyUtils
     }
 
     private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy, int count) { //TODO possibility of recursion
-       try{
-           if(count > 3){
-               LOGGER.info(" Exception occurred, recursive execution");
-               return;
-           }
-        createPolicyVersion(policyName,client,policy);
-        }catch (VersionsLimitExceededException e){
+        try {
+            if (count > 3) {
+                LOGGER.info(" Exception occurred, recursive execution");
+                return;
+            }
+            createPolicyVersion(policyName, client, policy);
+        } catch (VersionsLimitExceededException e) {
             LOGGER.info(" policy limit reached ");
-            deleteOldPolicyVersion(client,policyName);
-            updateClientPolicyVersion(client,policyName,policy,count++);
+            deleteOldPolicyVersion(client, policyName);
+            updateClientPolicyVersion(client, policyName, policy, count++);
         }
     }
 
@@ -217,8 +224,8 @@ public class AwsPolicyUtils
     }
 
     private static String getOldestPolicyVersion(List<PolicyVersion> policyVersionList) {
-        Map<Date, PolicyVersion> datePolicyVersionMap = new HashMap<>() ;
-        policyVersionList.forEach(policyVersion -> datePolicyVersionMap.put(policyVersion.getCreateDate(),policyVersion));
+        Map<Date, PolicyVersion> datePolicyVersionMap = new HashMap<>();
+        policyVersionList.forEach(policyVersion -> datePolicyVersionMap.put(policyVersion.getCreateDate(), policyVersion));
         List<Date> dates = new ArrayList<>(datePolicyVersionMap.keySet());
         dates.sort(new Comparator<Date>() {
             @Override
@@ -234,7 +241,7 @@ public class AwsPolicyUtils
                 .withPolicyName(policyName)
                 .withPolicyVersionId(oldestVersion);
         DeletePolicyVersionResult deletePolicyVersionResult = client.deletePolicyVersion(deletePolicyVersionRequest);
-        LOGGER.info(" deleted policy "+policyName+" version "+oldestVersion);
+        LOGGER.info(" deleted policy " + policyName + " version " + oldestVersion);
     }
 
     private static List<PolicyVersion> getPolicyVersions(AWSIot client, String policyName) {
@@ -244,48 +251,62 @@ public class AwsPolicyUtils
         return listPolicyVersionsResut.getPolicyVersions();
     }
 
-    private static JSONObject getPolicyDoc(List<String> clientIds, List<String> publish, List<String> subscribe, List<String> receive ){
+    private static JSONObject getPolicyDoc(List<String> clientIds, List<String> publish, List<String> subscribe, List<String> receive) {
         JSONArray statements = new JSONArray();
         statements.add(getPolicyInJson("iot:Connect", clientIds));
-        statements.add(getPolicyInJson("iot:Publish",publish ));
+        statements.add(getPolicyInJson("iot:Publish", publish));
         statements.add(getPolicyInJson("iot:Subscribe", subscribe));
         statements.add(getPolicyInJson("iot:Receive", receive));
         JSONObject policyDocument = new JSONObject();
         policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
-        LOGGER.info(" policy doc statement "+statements.toString());
+        LOGGER.info(" policy doc statement " + statements.toString());
         policyDocument.put("Statement", statements);
         return policyDocument;
     }
 
 
+    public static String getIotArnClientId(String clientId) {
+        return getIotArnClientString() + clientId;
+    }
 
-    public static String getIotArnClientId(String clientId){
-        return AwsUtil.getIotArn() + ":client/" + clientId;
+    private static String getIotArnClientString() {
+        return AwsUtil.getIotArn() + CLIENT;
     }
 
     static String getIotArnTopic(String topic) {
-        return AwsUtil.getIotArn() +":topic/"+ topic;
+        return getIotArnTopicString() + topic;
+    }
+
+    private static String getIotArnTopicString() {
+        return AwsUtil.getIotArn() + TOPIC;
     }
 
     public static String getIotArnTopicFilter(String topic) {
-        return AwsUtil.getIotArn() +":topicfilter/"+ topic;
+        return getIotArnTopicFilterString() + topic;
     }
 
-    private static JSONObject getPolicyInJson(String action, List<String> resource){
+    private static String getIotArnTopicFilterString() {
+        return AwsUtil.getIotArn() + TOPICFILTER;
+    }
+
+    private static JSONObject getPolicyInJson(String action, List<String> resource) {
         JSONObject object = new JSONObject();
         object.put("Effect", "Allow");
         object.put("Action", action);
         JSONArray array = new JSONArray();
-        for(String str : resource) {
+        for (String str : resource) {
             array.add(str);
         }
         object.put("Resource", array);
         return object;
     }
-    private static JSONObject getPolicyDocumentJson(GetPolicyResult result) throws ParseException {
+
+    private static JSONObject getPolicyDocumentJson(GetPolicyResult result) throws Exception {
+        Objects.requireNonNull(result);
         JSONParser parser = new JSONParser();
         return (JSONObject) parser.parse(result.getPolicyDocument());
     }
+
     private static String createPolicyVersion(String policyName, AWSIot client, JSONObject policyDoc) throws VersionsLimitExceededException {
         CreatePolicyVersionRequest versionRequest = new CreatePolicyVersionRequest().withPolicyName(policyName)
                 .withPolicyDocument(policyDoc.toString())
@@ -293,7 +314,7 @@ public class AwsPolicyUtils
         CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
         LOGGER.info("Policy created for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
         String policyVersion = versionResult.getPolicyVersionId();
-        LOGGER.info(" policy created v->"+policyVersion);
+        LOGGER.info(" policy created v->" + policyVersion);
         return policyVersion;
     }
 
@@ -303,38 +324,34 @@ public class AwsPolicyUtils
         return result;
     }
 
-    public static JSONArray getAllPolicyGist(AWSIot iotClient) throws Exception {
-        List<Policy> policies = getAllPolicy(iotClient);
-        LOGGER.info("policy size "+policies.size());
-        JSONArray gists = new JSONArray();
-        for (Policy policy : policies) {
-            String policyName = policy.getPolicyName();
-            JSONObject policyDocumentJson = getPolicyDocumentJson(getPolicy(policyName, iotClient));
-            LOGGER.info("policy json "+policyDocumentJson);
-            JSONObject gist = getGist(policyDocumentJson);
-            LOGGER.info("policy name "+policyName+" ---- "+policyDocumentJson+"  --- "+gist);
-            gists.add(gist);
-        }
-        LOGGER.info("gist "+gists);
-        return gists;
+    public static JSONObject getPolicyGist(AWSIot iotClient) throws Exception {
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        Objects.requireNonNull(currentOrg);
+        JSONObject policyDocumentJson = getPolicyDocumentJson( getPolicy(currentOrg.getDomain(),iotClient));
+        LOGGER.info("policy json " + policyDocumentJson);
+        JSONObject gist = getGist(policyDocumentJson);
+        LOGGER.info("policy name " + currentOrg.getDomain() + " ---- " + policyDocumentJson + "  --- " + gist);
+        return gist;
     }
-    private static List<Policy> getAllPolicy(AWSIot client){
+
+    private static List<Policy> getAllPolicy(AWSIot client) {
         Objects.requireNonNull(client);
         ListPoliciesRequest request = new ListPoliciesRequest();
         ListPoliciesResult listPoliciesResult = client.listPolicies(request);
         return listPoliciesResult.getPolicies();
     }
-    private static boolean checkForPolicy(String policyName, AWSIot client){
+
+    private static boolean checkForPolicy(String policyName, AWSIot client) {
         GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);
         try {
             GetPolicyResult result = client.getPolicy(request);
             if (result.getPolicyName().equals(policyName)) {
                 return true;
-            }else {
+            } else {
                 LOGGER.info(" resource found but name mismatch ");
                 return false;
             }
-        }catch (ResourceNotFoundException e){
+        } catch (ResourceNotFoundException e) {
             return false;
         }
     }
@@ -357,20 +374,80 @@ public class AwsPolicyUtils
         return getPolicyDoc(new ArrayList<>(Arrays.asList(getIotArnClientId(policyName))), new ArrayList<>(Arrays.asList(getIotArnTopic(policyName))), new ArrayList<>(Arrays.asList(getIotArnTopicFilter(policyName) + "/msgs")), new ArrayList<>(Arrays.asList(getIotArnTopic(policyName) + "/msgs")));
     }*/
 
-    private static List<String> getResourcesList(JSONObject policyStatement) throws ParseException {
-        if((policyStatement != null) && (policyStatement.containsKey("Resource")) ){
+    private static List<String> getResourcesList(JSONObject policyStatement) throws Exception {
+        if ((policyStatement != null) && (policyStatement.containsKey("Resource"))) {
             JSONArray resourceJSONArray;
             JSONParser parser = new JSONParser();
             resourceJSONArray = (JSONArray) parser.parse(String.valueOf(policyStatement.get("Resource")));
-            return getAsList(resourceJSONArray);
+            System.out.println("resource array " + resourceJSONArray);
+            List<String> asList = getAsList(resourceJSONArray);
+            List<String> topics = getTopicsFromArns(asList);
+            return topics;
+        } else {
+            System.out.println("no resource found");
         }
         return new ArrayList<>();
     }
 
+    private static List<String> getTopicsFromArns(List<String> arnTopics) throws Exception {
+        List<String> topics = new ArrayList<>();
+        Objects.requireNonNull(arnTopics, "arn tpoics cant be null");
+        for (String arnTopic : arnTopics) {
+            if (arnTopic.contains(TOPIC)) {
+                arnTopic = getTopic(arnTopic, TOPIC);
+            } else if (arnTopic.contains(TOPICFILTER)) {
+                arnTopic = getTopic(arnTopic, TOPICFILTER);
+            } else if (arnTopic.contains(CLIENT)) {
+                arnTopic = getTopic(arnTopic, CLIENT);
+            } else {
+                throw new Exception("no arnFilter matches ARNTopic " + arnTopic);
+            }
+            topics.add(arnTopic);
+        }
+        return topics;
+    }
+
+    private static String getTopic(String arnTopic, String arnString) throws Exception {
+        if (arnTopic.contains(arnString)) {
+            int indexOf = arnTopic.indexOf(arnString) + arnString.length();
+            return arnTopic.substring(indexOf);
+        } else {
+            throw new Exception(" topic is not in having " + arnString);
+        }
+    }
+   /* private static List<String> getTopicsFromArns(List<String> asList) {
+        List<String> topics = new ArrayList<>();
+
+        int indexOf = str.indexOf("client/")+"client/".length();
+
+
+        String iotArnClientString = getIotArnClientString();
+        String iotArnTopicFilterString = getIotArnTopicFilterString();
+        String iotArnTopicString = getIotArnTopicString();
+        System.out.println(iotArnClientString+" - "+iotArnTopicFilterString+" - "+iotArnTopicString);
+        for (String s : asList) {
+            if (s.contains(iotArnClientString)) {
+                s.replaceFirst(iotArnClientString,"");
+            }
+            else if (s.contains(iotArnTopicFilterString)) {
+                s.replaceFirst(iotArnTopicFilterString,"");
+            }
+            else if(s.contains(iotArnTopicString)){
+                s.replaceFirst(iotArnTopicString,"");
+            }
+            else {
+                LOGGER.info("Exception occurred no ARN string matches "+s);
+                continue;
+            }
+            topics.add(s);
+        }
+        return topics;
+    }*/
+
     private static List<String> getAsList(JSONArray resourceJSONArray) {
         List<String> resources = new ArrayList<>();
-        if(resourceJSONArray != null){
-            resourceJSONArray.forEach(resource->resources.add(String.valueOf(resource)));
+        if (resourceJSONArray != null) {
+            resourceJSONArray.forEach(resource -> resources.add(String.valueOf(resource)));
         }
         return resources;
     }
@@ -378,7 +455,7 @@ public class AwsPolicyUtils
     private static List<String> getResourcesToAdd(List<String> receiveTopics, List<String> toCheckAndAddArray) {
         List<String> resourcesToAdd = new ArrayList<>();
         for (String element : toCheckAndAddArray) {
-            if( ! receiveTopics.contains(element)){
+            if (!receiveTopics.contains(element)) {
                 resourcesToAdd.add(element);
             }
         }
