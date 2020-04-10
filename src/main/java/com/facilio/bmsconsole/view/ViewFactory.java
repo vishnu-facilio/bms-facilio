@@ -1,12 +1,26 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -14,19 +28,27 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
 
 public class ViewFactory {
 
@@ -143,7 +165,7 @@ public class ViewFactory {
 //		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
 //		views.put("approval_all", getAllApproval().setOrder(order++));
 		views.put("approval_myrequests", getMyRequestWorkorders("myrequests").setOrder(order++));
-		views.put("approval_requested", getRequestedStateApproval("requested").setOrder(order++));
+		views.put("approval_requested", getRequestedStateApproval("requested", false).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 
 		order = 1;
@@ -168,7 +190,7 @@ public class ViewFactory {
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
 		views.put("tenantWorkorder", getMyRequestWorkorders("tenantWorkorder").setOrder(order++));
-		views.put("pendingapproval", getRequestedStateApproval("pendingapproval").setOrder(order++));
+		views.put("pendingapproval", getRequestedStateApproval("pendingapproval", true).setOrder(order++));
 		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
@@ -1918,7 +1940,7 @@ public class ViewFactory {
 		return rejectedApproval;
 	}
 	
-	public static FacilioView getRequestedStateApproval(String viewName) {
+	public static FacilioView getRequestedStateApproval(String viewName, boolean isHidden) {
 		
 		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();
@@ -1958,7 +1980,7 @@ public class ViewFactory {
 		rejectedApproval.setName(viewName);
 		rejectedApproval.setDisplayName("Pending Approval");
 		rejectedApproval.setCriteria(criteria);
-		rejectedApproval.setHidden(true);
+		rejectedApproval.setHidden(isHidden);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
 	}
