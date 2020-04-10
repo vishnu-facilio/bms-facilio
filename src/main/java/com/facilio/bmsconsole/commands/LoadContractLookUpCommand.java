@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -30,7 +32,13 @@ public class LoadContractLookUpCommand extends FacilioCommand {
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
-		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("vendor"));
+		List<LookupField>fetchLookup = new ArrayList<LookupField>();
+		fetchLookup.add((LookupField) fieldsAsMap.get("vendor"));
+		for (FacilioField f : fields) {
+			if (!f.isDefault() && f.getDataTypeEnum() == FieldType.LOOKUP) {
+				fetchLookup.add((LookupField) f);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		return false;
 	}
