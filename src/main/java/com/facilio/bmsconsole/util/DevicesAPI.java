@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.FeedbackKioskContext;
@@ -23,6 +25,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -33,9 +36,13 @@ public class DevicesAPI {
 	public static DeviceContext getDevice(long deviceID) throws Exception {
 
 		FacilioChain fetchDetail = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
+		
 		FacilioContext context = fetchDetail.getContext();
+		
 		context.put(FacilioConstants.ContextNames.ID, deviceID);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ModuleNames.DEVICES);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, Collections.singletonList(modBean.getField("associatedResource", FacilioConstants.ModuleNames.DEVICES)));
 		fetchDetail.execute();
 		DeviceContext deviceDetail = (DeviceContext) context.get(FacilioConstants.ContextNames.RECORD);
 		return deviceDetail;
