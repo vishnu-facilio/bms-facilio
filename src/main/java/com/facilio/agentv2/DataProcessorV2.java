@@ -4,7 +4,6 @@ import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
@@ -27,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +147,7 @@ public class DataProcessorV2
                 case AGENT_EVENTS:
                     AgentEvent eventType = getEventType(payload);
                     if (eventType!=null){
-                        processAgentEvents(payload, agent, eventType);
+                        processStatus = processAgentEvents(payload, agent, eventType);
                     }
                     break;
                 default:
@@ -160,37 +160,47 @@ public class DataProcessorV2
         return processStatus;
     }
 
-    private void processAgentEvents(JSONObject payload, FacilioAgent agent, AgentEvent eventType) throws Exception {
+    private boolean processAgentEvents(JSONObject payload, FacilioAgent agent, AgentEvent eventType) throws Exception {
         if (eventType==AgentEvent.CONTROLLERS_MISSING){
-            processControllerMissingEvent(payload, agent);
+            return processControllerMissingEvent(payload, agent);
+        }else{
+            return false;
         }
     }
 
-    private void processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {
+    private boolean processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {
         if (payload.containsKey(AgentConstants.DATA)){
-            JSONArray controllerArray = (JSONArray) payload.get(AgentConstants.DATA);
-            if (controllerArray.size()==0){
-                agentUtil.dropControllerAlarm(agent);
-            }
-            else{
-                JSONArray arrayOfControllers = new JSONArray();
-                for (Object controllerObj: controllerArray){
-                    JSONObject controllerObject = (JSONObject) controllerObj;
-                    if (controllerObject.containsKey(AgentConstants.CONTROLLER_TYPE)) {
-                        int type = Integer.parseInt(controllerObject.get(AgentConstants.CONTROLLER_TYPE).toString());
-                        FacilioControllerType controllerType = FacilioControllerType.valueOf(type);
-                        Controller controllr = controllerUtil.getCachedController(controllerObject, controllerType);
-                        if (controllr!=null) {
-                            arrayOfControllers.add(controllr.getId());
-                        }else {
-                            LOGGER.info("Controller is Null while processing event");
+            try{
+                JSONArray controllerArray = (JSONArray) payload.get(AgentConstants.DATA);
+                if (controllerArray.size()==0){
+                    agentUtil.clearControllerAlarm(agent);
+                }
+                else{
+                    List<Controller> listOfControllers = new ArrayList<>();
+                    for (Object controllerObj: controllerArray){
+                        JSONObject controllerObject = (JSONObject) controllerObj;
+                        if (controllerObject.containsKey(AgentConstants.CONTROLLER_TYPE)) {
+                            int type = Integer.parseInt(controllerObject.get(AgentConstants.CONTROLLER_TYPE).toString());
+                            FacilioControllerType controllerType = FacilioControllerType.valueOf(type);
+                            Controller controllr = controllerUtil.getCachedController(controllerObject, controllerType);
+                            if (controllr!=null) {
+                                listOfControllers.add(controllr);
+                            }else {
+                                LOGGER.info("Controller is null while processing event");
+                            }
                         }
                     }
+                    if (listOfControllers.size()>0){
+                        agentUtil.raiseControllerAlarm(agent,listOfControllers);
+                    }
                 }
-                if (arrayOfControllers.size()>0){
-                    agentUtil.raiseControllerAlarm(agent,arrayOfControllers.toJSONString());
-                }
+                return true;
+            }catch (Exception ex){
+                LOGGER.info("Exception while creating controller alarm ", ex);
+                return false;
             }
+        }else{
+            return false;
         }
     }
 

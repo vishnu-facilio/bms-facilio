@@ -1,10 +1,13 @@
 package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.agent.fw.constants.Status;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -126,7 +129,6 @@ public class AgentUtilV2
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
                     raiseAgentAlarm(agent);
-                    raiseControllerAlarm(agent,"test-string");
                 }else if (containsValueCheck(AgentConstants.COUNT,payload)){
                     LOGGER.info(" CONNECTED ");
                     agent.setConnected(true);
@@ -137,7 +139,7 @@ public class AgentUtilV2
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
                 }
-                   // LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
+                    LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
@@ -187,42 +189,42 @@ public class AgentUtilV2
             LOGGER.info("\n-\n-\n- after populating new agents" + agentMap + "\n-\n-\n-");
     }*/
 
-    public void dropControllerAlarm(FacilioAgent agent) throws Exception {
+    public void clearControllerAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
-        ControllerEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,null);
-        addControllerEventToDB(event);
+        AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY,null);
+        addEventToDB(event);
+        LOGGER.info("Cleared Controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+    }
+
+    public void raiseControllerAlarm(FacilioAgent agent,List<Controller> controllers) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,controllers);
+        addEventToDB(event);
         LOGGER.info("Added controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
 
     }
 
-    public void raiseControllerAlarm(FacilioAgent agent,String controllerList) throws Exception {
-        long currentTime = System.currentTimeMillis();
-        ControllerEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,controllerList);
-        addControllerEventToDB(event);
-        LOGGER.info("Added controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
-
-    }
-
-    private ControllerEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, String controllerIdList) {
-        ControllerEventContext event = new ControllerEventContext();
-        event.setMessage("message");
-        event.setDescription("description");
-        //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
+    private AgentEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, List<Controller> controllers) {
+        AgentEventContext event = new AgentEventContext();
+        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
+            event.setMessage("Data missing for "+controllers.size()+" controllers in agent "+agent.getName());
+            StringBuilder descBuilder = new StringBuilder();
+            for (Controller c :
+                    controllers) {
+                descBuilder.append(c.getName()).append(",");
+            }
+            event.setDescription(descBuilder.toString());
+            event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
+        }else{
+            event.setMessage("Data arriving for all controllers in agent "+agent.getName());
+        }
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
         event.setSiteId(AccountUtil.getCurrentSiteId());
         event.setAgent(agent);
-        event.setControllerList(controllerIdList);
+        event.setControllersList(controllers);
+        event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.CONTROLLER.getIndex());
         return event;
-    }
-
-    private void addControllerEventToDB(ControllerEventContext event) throws Exception {
-        List<ControllerEventContext> eventList = new ArrayList<ControllerEventContext>();
-        eventList.add(event);
-        FacilioContext context = new FacilioContext();
-        context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
-        FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
-        chain.execute(context);
     }
 
     private static AgentEventContext getAgentEventContext(FacilioAgent agent, long currentTime, String severity) {
@@ -243,6 +245,7 @@ public class AgentUtilV2
         event.setCreatedTime(currentTime);
         event.setSiteId(AccountUtil.getCurrentSiteId());
         event.setAgent(agent);
+        event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.AGENT.getIndex());
         return event;
     }
 

@@ -2,11 +2,25 @@ package com.facilio.agent.alarms;
 
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import sun.management.Agent;
 
 public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
     private FacilioAgent agent;
 
+    private AgentAlarmContext.AgentAlarmType agentAlarmType;
+
+    public int getAgentAlarmType() {
+        if  (agentAlarmType!=null) {
+            return agentAlarmType.getIndex();
+        }else {
+            return -1;
+        }
+    }
+    public AgentAlarmContext.AgentAlarmType getAgentAlarmTypeEnum(){return agentAlarmType;}
+    public void setAgentAlarmType(int agentAlarmType) {
+        this.agentAlarmType = AgentAlarmContext.AgentAlarmType.valueOf(agentAlarmType);
+    }
     @Override
     public Type getTypeEnum() {
         return Type.AGENT;

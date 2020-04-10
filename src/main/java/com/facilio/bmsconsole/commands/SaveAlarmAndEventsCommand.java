@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -22,6 +24,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
@@ -59,12 +62,17 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), modBean.getModule(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					if (baseAlarm instanceof AgentAlarmContext) {
+						builder.updateSupplement(getAgentAlarmToControllerMultiLookupField());
+					}
 					builder.update(baseAlarm);
-				}
-				else {
+				} else {
 					InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					if (baseAlarm instanceof AgentAlarmContext) {
+						builder.insertSupplement(getAgentAlarmToControllerMultiLookupField());
+					}
 					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					// LOGGER.log(Level.INFO, "Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					builder.insert(baseAlarm);
@@ -182,7 +190,12 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				InsertRecordBuilder<BaseEventContext> insertBuilder = new InsertRecordBuilder<BaseEventContext>()
 						.moduleName(moduleName)
 						.fields(modBean.getAllFields(moduleName));
+				InsertRecordBuilder<BaseEventContext> agentEventInsertBuilder = new InsertRecordBuilder<BaseEventContext>()
+						.moduleName(moduleName)
+						.fields(modBean.getAllFields(moduleName))
+						.insertSupplement(getAgentEventToControllerMultiLookupField());
 				List<BaseEventContext> eventRecords = new ArrayList<>();
+				List<BaseEventContext> agentEventRecords = new ArrayList<>();
 				List<BaseEventContext> moduleEventList = eventsMap.get(type);
 				for(BaseEventContext event:moduleEventList) {
 					if (event.getId() > 0) {
@@ -190,12 +203,20 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 								.moduleName(moduleName)
 								.andCondition(CriteriaAPI.getIdCondition(event.getId(), modBean.getModule(moduleName)))
 								.fields(modBean.getAllFields(moduleName));
+						if (event instanceof AgentEventContext) {
+							builder.updateSupplement(getAgentEventToControllerMultiLookupField());
+						}
 						builder.update(event);
+					} else {
+						if (event instanceof AgentEventContext) {
+							agentEventRecords.add(event);
+						} else {
+							eventRecords.add(event);
+						}
 					}
-					else {
-						eventRecords.add(event);		
-					}		
-				}	
+				}
+				agentEventInsertBuilder.addRecords(agentEventRecords);
+				agentEventInsertBuilder.save();
 				insertBuilder.addRecords(eventRecords);
 				insertBuilder.save();
 			}
@@ -328,10 +349,30 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				}
 			}
 			catch (Exception e) {
-				LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
+				LOGGER.info("Exception occurred while pushing Web notification during alarm updation ", e);
 			}
 		}
 		return false;
+	}
+	public static MultiLookupField getAgentAlarmToControllerMultiLookupField() throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> map =FieldFactory.getAsMap(moduleBean.getAllFields("agentAlarm"));
+
+		if (map.containsKey("controllersList")){
+			return (MultiLookupField) map.get("controllersList");
+		}
+		LOGGER.info("controllersList field missing");
+		return null;
+	}
+	public static MultiLookupField getAgentEventToControllerMultiLookupField() throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> map =FieldFactory.getAsMap(moduleBean.getAllFields("agentAlarmEvent"));
+
+		if (map.containsKey("controllersList")){
+			return (MultiLookupField) map.get("controllersList");
+		}
+		LOGGER.info("controllersList field missing");
+		return null;
 	}
 
 }
