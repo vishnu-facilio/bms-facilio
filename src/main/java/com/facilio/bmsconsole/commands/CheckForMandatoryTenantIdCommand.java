@@ -18,6 +18,12 @@ public class CheckForMandatoryTenantIdCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(tenantContacts)) {
 			for(TenantContactContext tc : tenantContacts) {
 				tc.setPeopleType(PeopleType.TENANT_CONTACT);
+				if(tc.isTenantPortalAccess()) {
+					context.put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+				}
+				else if(tc.isOccupantPortalAccess()) {
+					context.put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 2);
+				}
 				if(tc.getTenant() == null || tc.getTenant().getId() <=0 ) {
 					throw new IllegalArgumentException("Tenant Contact must have a tenant id associated");
 				}

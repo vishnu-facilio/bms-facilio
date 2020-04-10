@@ -20,7 +20,7 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand{
 		List<EmployeeContext> employees = (List<EmployeeContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET);
 		
-		Integer accessChangeFor = (Integer)context.get(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR);
+		Integer accessChangeFor = (Integer)context.getOrDefault(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 0);
 		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
 		
 		if(CollectionUtils.isNotEmpty(employees)) {

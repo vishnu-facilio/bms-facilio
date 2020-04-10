@@ -96,14 +96,6 @@ public class VendorContactAction extends FacilioAction{
 		this.appId = appId;
 	}
 	
-	private int accessNeededFor = -1;
-	
-	public int getAccessNeededFor() {
-		return accessNeededFor;
-	}
-	public void setAccessNeededFor(int accessNeededFor) {
-		this.accessNeededFor = accessNeededFor;
-	}
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -111,7 +103,8 @@ public class VendorContactAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, getAccessNeededFor());
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			
 		
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -18,6 +18,12 @@ public class AddPeopleTypeForEmployeeCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(employees)) {
 			for(EmployeeContext emp : employees) {
 				emp.setPeopleType(PeopleType.EMPLOYEE);
+				if(emp.isOccupantPortalAccess()) {
+					context.put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 2);
+				}
+				else if(emp.isAppAccess()) {
+					context.put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+				}
 			}
 		}
 		return false;

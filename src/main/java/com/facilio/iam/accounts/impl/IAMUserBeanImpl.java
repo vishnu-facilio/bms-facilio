@@ -290,6 +290,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userStatus.setColumnName("USER_STATUS");
 		userStatus.setModule(IAMAccountConstants.getAccountOrgUserModule());
 		
+		IAMUser user = getFacilioUser(orgId, uId, true);
+		if(user.isDefaultOrg()) {
+			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+		}
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		

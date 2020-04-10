@@ -95,15 +95,6 @@ private static final long serialVersionUID = 1L;
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
-	private int accessNeededFor = -1;
-	
-	public int getAccessNeededFor() {
-		return accessNeededFor;
-	}
-	public void setAccessNeededFor(int accessNeededFor) {
-		this.accessNeededFor = accessNeededFor;
-	}
-	
 	public String addClientContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(clientContacts)) {
@@ -111,8 +102,9 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, getAccessNeededFor());
+			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
 			
+				
 			c.execute();
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
