@@ -241,7 +241,7 @@ public class UserBeanImpl implements UserBean {
 		
 		if(props.get("id") != null) {
 			if(isEmailVerificationNeeded) {
-				if(!user.getInviteAcceptStatus()) {
+				if(!user.isInviteAcceptStatus()) {
 					sendInvitation(user, false, true);
 				}
 				else {
