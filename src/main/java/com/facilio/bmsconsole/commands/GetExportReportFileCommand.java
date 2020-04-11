@@ -16,8 +16,8 @@ import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
+import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -96,20 +96,10 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
+			StringBuilder url = ReportExportUtil.getClientUrl(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, context);
 			ReportTemplateContext reportTemplate=report.getReportTemplate();
 			if(reportTemplate != null) {
-			url.append("&template=").append(FieldUtil.getAsJSON(reportTemplate));
-			}
-			String chartType = (String) context.get("chartType");
-			if (chartType != null) {
-				url.append("&charttype=").append(chartType);
-			}
-			Map<String, Object> params = (Map<String, Object>) context.get("exportParams");
-			if (params != null) {
-				for(Map.Entry<String, Object> param: params.entrySet()) {
-					url.append("&").append(param.getKey()).append("=").append(param.getValue());
-				}
+				url.append("&template=").append(FieldUtil.getAsJSON(reportTemplate));
 			}
 			
 			LOGGER.debug("pdf url --- "+ url);
@@ -346,49 +336,6 @@ public class GetExportReportFileCommand extends FacilioCommand {
 		return records;
 	}
 	
-	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
-		moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
-		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-			url.append("wo");
-		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
-			url.append("fa");
-		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
-			url.append("em");
-		}
-		if (reportId > 0) {
-			url.append("/reports/newview/").append(reportId);			
-		}
-		else {
-			url.append(addAnalyticsConfigAndGetUrl(fileFormat));
-		}
-		if(fileFormat == FileFormat.IMAGE) {
-			url.append("/show");
-		}
-		url.append("?print=true");
-		
-		if(report.getDateRange() != null) {
-			JSONObject dateRange = new JSONObject();
-			dateRange.put("startTime", report.getDateRange().getStartTime());
-			dateRange.put("endTime", report.getDateRange().getEndTime());
-			dateRange.put("operatorId", report.getDateOperator());
-			dateRange.put("value", report.getDateValue());
-			url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
-		}
-		
-		return url;
-	}
-	
-	private String addAnalyticsConfigAndGetUrl(FileFormat fileFormat) {
-		StringBuilder url = new StringBuilder();
-		if(fileFormat == FileFormat.IMAGE) {
-			url.append("/show");
-		}
-		return url.toString();
-	}
-	
 	private enum EnumMode {
 		DURATION,
 		PERCENT,
@@ -405,4 +352,5 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			return null;
 		}
 	}
+	
 }

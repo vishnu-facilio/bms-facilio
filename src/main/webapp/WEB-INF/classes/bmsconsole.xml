@@ -3747,16 +3747,6 @@
 				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="export" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportData">
-			<result name="success" type="json">
-				<param name="includeProperties">fileUrl</param>
-			</result>
-		</action>
-		<action name="exportAnalytics" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportAnalyticsData">
-			<result name="success" type="json">
-				<param name="includeProperties">fileUrl</param>
-			</result>
-		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
@@ -3798,31 +3788,6 @@
 		<action name="updateRefreshInterval" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateRefreshInterval">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		<action name="sendReportMail" class="com.facilio.bmsconsole.actions.DashboardAction" method="sendReportMail">
-			<result name="success" type="json">
-				<param name="includeProperties">reportId</param>
-			</result>
-		</action>
-		<action name="scheduleReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="scheduleReport">
-			<result name="success" type="json">
-				<param name="includeProperties">reportId</param>
-			</result>
-		</action>
-		<action name="scheduledList" class="com.facilio.bmsconsole.actions.DashboardAction" method="scheduledList">
-			<result name="success" type="json">
-				<param name="includeProperties">^scheduledReports.*</param>
-			</result>
-		</action>
-		<action name="deleteScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteScheduledReport">
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-		<action name="editScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="editScheduledReport">
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<!-- <action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">

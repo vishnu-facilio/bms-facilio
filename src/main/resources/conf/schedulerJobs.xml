@@ -14,7 +14,6 @@
 	 <job name='PrePMReminder' classname = 'com.facilio.bmsconsole.jobs.PrePMReminderJob' transactionTimeout='300000'/>
 	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' transactionTimeout='300000'/>
 	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' transactionTimeout='300000'/>
-	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' transactionTimeout='300000'/>
 	 <job name='ReportEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportEmailScheduler' transactionTimeout='300000'/>
 	 <job name='ViewEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ViewEmailScheduler' transactionTimeout='300000'/>
 	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>

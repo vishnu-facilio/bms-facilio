@@ -50,6 +50,14 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
 		if (info.height) {
 			size.height = info.height;
 		}
+		if(info.csrf) {
+			cookies.push({
+				name:'fc.csrfToken',
+	            value: info.csrf,
+	            domain: domain,
+	            path: '/'
+			});
+		}
     	
         await page.setCookie(... cookies)
         await page.emulateMedia('print');

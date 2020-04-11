@@ -69,25 +69,11 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain getSendMailReportChain() {
-		FacilioChain c = getDefaultChain();
-//		c.addCommand(new LoadViewCommand());
-//		c.addCommand(new GetReportUnderlyingDataCommand());
-		c.addCommand(new SendReportMailCommand());
-		return c;
-	}
 	
 	public static FacilioChain getReportUnderlyingDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetReportUnderlyingDataCommand());
-		return c;
-	}
-	
-	public static FacilioChain getReportScheduleChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new ScheduleReportCommand());
 		return c;
 	}
 	
@@ -98,11 +84,6 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain getScheduledReportsChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ReportScheduledListCommand());
-		return c;
-	}
 	
 	public static FacilioChain getWoScheduledViewListChain() {
 		FacilioChain c = getDefaultChain();
@@ -121,20 +102,6 @@ public class ReportsChainFactory {
 	public static FacilioChain deleteWoScheduledViewChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteWoScheduledViewCommand());
-		return c;
-	}
-	
-	public static FacilioChain deleteScheduledReportsChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new DeleteScheduledReportsCommand());
-		return c;
-	}
-	
-	public static FacilioChain updateScheduledReportsChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new DeleteScheduledReportsCommand());
-		c.addCommand(new ScheduleReportCommand());
 		return c;
 	}
 	
