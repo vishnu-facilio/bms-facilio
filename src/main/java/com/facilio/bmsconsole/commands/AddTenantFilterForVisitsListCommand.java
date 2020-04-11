@@ -3,12 +3,19 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
+import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 
 public class AddTenantFilterForVisitsListCommand extends FacilioCommand {
@@ -22,10 +29,25 @@ public class AddTenantFilterForVisitsListCommand extends FacilioCommand {
 			if (filterCriteria == null) {
 				filterCriteria = new Criteria();
 			}
-			ContactsContext contact = ContactsAPI.getContactsIdForUser(AccountUtil.getCurrentUser().getOuid());
+			//need to change this after people contacts is released and host field is changed in visitor mgmt 
+			//this is temp fix
+			ContactsContext contact = null;
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+				//need to uncomment when all users are migrated as employees
+				long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getOuid());
+				if(pplId > 0) {
+					TenantContactContext people = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId);
+					if(people != null) {
+						contact = ContactsAPI.getContact(people.getEmail(), false);
+					}
+				}
+			}
+			else {
+				contact = ContactsAPI.getContactsIdForUser(AccountUtil.getCurrentUser().getOuid());
+			}
 			if (contact != null) {
 				filterCriteria.addAndCondition(
-						CriteriaAPI.getCondition("HOST", "host", contact.getId() + "", PickListOperators.IS));
+						CriteriaAPI.getCondition("HOST", "host", String.valueOf(contact.getId()), PickListOperators.IS));
 				if (viewName.equals("myPendingVisits")) {
 					filterCriteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1",
 							CommonOperators.IS_EMPTY));
