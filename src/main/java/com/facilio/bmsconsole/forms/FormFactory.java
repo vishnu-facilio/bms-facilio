@@ -1407,7 +1407,7 @@ public class FormFactory {
 	
 	public static FacilioForm getRentalLeaseContractForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("RENTAL LEASE CONTRACT");
+		form.setDisplayName("LEASE/RENTAL CONTRACT");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);

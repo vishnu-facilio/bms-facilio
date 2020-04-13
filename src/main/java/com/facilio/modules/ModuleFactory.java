@@ -2861,7 +2861,7 @@ public class ModuleFactory {
 	public static FacilioModule getRentalLeaseContractModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("rentalleasecontracts");
-		module.setDisplayName("Rental Lease Contracts");
+		module.setDisplayName("Lease/Rental Contracts");
 		module.setTableName("Rental_Lease_Contracts");
 		return module;
 	}
