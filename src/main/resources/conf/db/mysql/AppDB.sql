@@ -14858,7 +14858,7 @@ CREATE TABLE Operation_Alarm_Occurrence (
 );
 CREATE TABLE Operation_Alarm_Historical_Logs (
   ID bigint(20) NOT NULL AUTO_INCREMENT,
-  PARENT_ID bigint(20) NOT NULL,
+  PARENT_ID bigint(20) DEFAULT NULL,
   ORGID bigint(20) NOT NULL,
   RESOURCE_ID bigint(20) DEFAULT NULL,
   SPLIT_START_TIME bigint(20) DEFAULT NULL,
