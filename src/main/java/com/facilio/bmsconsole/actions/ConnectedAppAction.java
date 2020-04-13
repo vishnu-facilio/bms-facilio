@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +18,19 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
+import com.facilio.bmsconsole.context.ConnectedAppContext.HostingType;
+import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 
 public class ConnectedAppAction extends FacilioAction {
 
@@ -37,6 +46,16 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedApp(ConnectedAppContext connectedApp) {
 		this.connectedApp = connectedApp;
 	}
+	
+	private ConnectedAppSAMLContext connectedAppSAML;
+
+	public ConnectedAppSAMLContext getConnectedAppSAML() {
+		return connectedAppSAML;
+	}
+
+	public void setConnectedAppSAML(ConnectedAppSAMLContext connectedAppSAML) {
+		this.connectedAppSAML = connectedAppSAML;
+	}
 
 	private long connectedAppId;
 
@@ -47,11 +66,21 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedAppId(long connectedAppId) {
 		this.connectedAppId = connectedAppId;
 	}
+	
+	public String addOrUpdateConnectedAppSAML() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, connectedAppSAML);
+		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppSAMLChain();
+		addItem.execute(context);
+		return SUCCESS;
+	}
 
 	public String addConnectedApp() throws Exception {
 		FacilioContext context = new FacilioContext();
+		connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
+		connectedApp.setIsActive(true);
+		connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
 		context.put(FacilioConstants.ContextNames.RECORD, connectedApp);
-		
 		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
@@ -60,6 +89,7 @@ public class ConnectedAppAction extends FacilioAction {
 
 	public String updateConnectedApp() throws Exception {
 		FacilioContext context = new FacilioContext();
+		connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
 		context.put(FacilioConstants.ContextNames.RECORD, connectedApp);
 		context.put(FacilioConstants.ContextNames.ID, connectedApp.getId());
 
@@ -112,6 +142,16 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedAppList(List<ConnectedAppContext> connectedAppList) {
 		this.connectedAppList = connectedAppList;
 	}
+	
+	private List<ConnectedAppSAMLContext> connectedAppSAMLList;
+
+	public List<ConnectedAppSAMLContext> getConnectedAppSAMLList() {
+		return connectedAppSAMLList;
+	}
+
+	public void setConnectedAppSAMLList(List<ConnectedAppSAMLContext> connectedAppSAMLList) {
+		this.connectedAppSAMLList = connectedAppSAMLList;
+	}
 
 	public String connectedAppList() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -120,7 +160,10 @@ public class ConnectedAppAction extends FacilioAction {
 		fetchListChain.execute(context);
 		
 		connectedAppList = (List<ConnectedAppContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		connectedAppSAMLList = (List<ConnectedAppSAMLContext>) context.get(FacilioConstants.ContextNames.CONNECTEDAPP_SAML_LIST);
+		
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedAppList);
+		setResult(FacilioConstants.ContextNames.CONNECTEDAPP_SAML_LIST, connectedAppSAMLList);
 		return SUCCESS;
 	}
 	
@@ -188,7 +231,18 @@ public class ConnectedAppAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
 		
-		if (this.getConnectedApp().getSamlEnabled() != null && this.getConnectedApp().getSamlEnabled()) {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppSAMLFields())
+				.table(ModuleFactory.getConnectedAppSAMLModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID","connectedAppId",String.valueOf(connectedApp.getId()), NumberOperators.EQUALS));
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		
+		if (props != null && !props.isEmpty()) {
+			connectedAppSAML = FieldUtil.getAsBeanFromMap(props, ConnectedAppSAMLContext.class);
+		}
+		
+		
+		if (connectedAppSAML != null) {
 		
 			String requestId = null;
 			String acsURL = null;
@@ -207,8 +261,8 @@ public class ConnectedAppAction extends FacilioAction {
 			}
 			else {
 				// IdP initiated login
-				acsURL = getConnectedApp().getSpAcsUrl();
-				spEntityId = getConnectedApp().getSpEntityId();
+				acsURL = connectedAppSAML.getSpAcsUrl();
+				spEntityId = connectedAppSAML.getSpEntityId();
 				requestId = "FAC_" + UUID.randomUUID().toString().replace("-", "");
 			}
 			

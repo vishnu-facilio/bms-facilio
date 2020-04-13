@@ -1671,14 +1671,18 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddOrUpdateConnectedAppChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForConnectedApps());
 			c.addCommand(new AddOrUpdateConnectedAppCommand());
+			return c;
+		}
+		
+		public static FacilioChain getAddOrUpdateConnectedAppSAMLChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateConnectedAppSAMLCommand());
 			return c;
 		}
 
 		public static FacilioChain getDeleteConnectedAppChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForConnectedApps());
 			c.addCommand(new DeleteConnectedAppCommand());
 			return c;
 		}

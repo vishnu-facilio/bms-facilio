@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.ConnectedAppContext;
+import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -35,6 +36,20 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 			}
 			
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, connectedApps);
+		}
+		
+		selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppSAMLFields())
+				.table(ModuleFactory.getConnectedAppSAMLModule().getTableName())
+				;
+		props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<ConnectedAppSAMLContext> connectedAppSAML = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				connectedAppSAML.add(FieldUtil.getAsBeanFromMap(prop, ConnectedAppSAMLContext.class));
+			}
+			
+			context.put(FacilioConstants.ContextNames.CONNECTEDAPP_SAML_LIST, connectedAppSAML);
 		}
 		return false;
 	}

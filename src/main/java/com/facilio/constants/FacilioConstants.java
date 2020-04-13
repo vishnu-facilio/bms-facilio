@@ -220,6 +220,8 @@ public class FacilioConstants {
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
 
+		public static final String CONNECTEDAPP_SAML_LIST = "connectedAppSAMLList";
+		
 		public static final String TIMEOUT = "timeout";
 
 		public static final String TENANT_STATUS = "tenantStatus";

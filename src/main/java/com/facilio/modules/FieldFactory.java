@@ -3301,9 +3301,7 @@ public class FieldFactory {
     public static List<FacilioField> getConnectedAppFields() {
         FacilioModule module = ModuleFactory.getConnectedAppsModule();
 
-        List<FacilioField> fields = getSystemFields(module);
-
-        /*fields.add(getOrgIdField(module));*/
+        List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
 
         FacilioField name = new FacilioField();
@@ -3334,40 +3332,45 @@ public class FieldFactory {
         logoId.setModule(module);
         fields.add(logoId);
 
-        FacilioField baseUrl = new FacilioField();
-        baseUrl.setName("baseUrl");
-        baseUrl.setDataType(FieldType.STRING);
-        baseUrl.setColumnName("BASE_URL");
-        baseUrl.setModule(module);
-        fields.add(baseUrl);
-
         fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
-
-        fields.add(getField("samlEnabled", "SAML_ENABLED", module, FieldType.BOOLEAN));
-
-        FacilioField spEntityId = new FacilioField();
-        spEntityId.setName("spEntityId");
-        spEntityId.setDataType(FieldType.STRING);
-        spEntityId.setColumnName("SP_ENTITY_ID");
-        spEntityId.setModule(module);
-        fields.add(spEntityId);
-
-        FacilioField spAcsUrl = new FacilioField();
-        spAcsUrl.setName("spAcsUrl");
-        spAcsUrl.setDataType(FieldType.STRING);
-        spAcsUrl.setColumnName("SP_ACS_URL");
-        spAcsUrl.setModule(module);
-        fields.add(spAcsUrl);
-
-        FacilioField spLogoutUrl = new FacilioField();
-        spLogoutUrl.setName("spLogoutUrl");
-        spLogoutUrl.setDataType(FieldType.STRING);
-        spLogoutUrl.setColumnName("SP_LOGOUT_URL");
-        spLogoutUrl.setModule(module);
-        fields.add(spLogoutUrl);
+        fields.add(getField("showInLauncher", "SHOW_IN_LAUNCHER", module, FieldType.BOOLEAN));
+        fields.add(getField("hostingType", "HOSTING_TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("sandBoxBaseUrl", "SANDBOX_BASE_URL", module, FieldType.STRING));
+        fields.add(getField("productionBaseUrl", "PRODUCTION_BASE_URL", module, FieldType.STRING));
+        fields.add(getField("startUrl", "START_URL", module, FieldType.STRING));
 
         return fields;
     }
+    
+    public static List<FacilioField> getConnectedAppSAMLFields() {
+    	FacilioModule module = ModuleFactory.getConnectedAppSAMLModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+        fields.add(getField("subjectType", "SUBJECT_TYPE", module, FieldType.STRING));
+        fields.add(getField("nameIdFormat", "NAME_ID_FORMAT", module, FieldType.STRING));
+        fields.add(getField("spEntityId", "SP_ENTITY_ID", module, FieldType.STRING));
+        fields.add(getField("spAcsUrl", "SP_ACS_URL", module, FieldType.STRING));
+        fields.add(getField("spLogoutUrl", "SP_LOGOUT_URL", module, FieldType.STRING));
+
+        return fields;
+	}
+	
+	public static List<FacilioField> getConnectedAppWidgetsFields() {
+		FacilioModule module = ModuleFactory.getConnectedAppWidgetsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+        fields.add(getField("widgetName", "WIDGET_NAME", module, FieldType.STRING));
+        fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
+        fields.add(getField("entityType", "ENTITY_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("resourcePath", "RESOURCE_PATH", module, FieldType.STRING));
+
+        return fields;
+	}
+    
 
     public static List<FacilioField> getConnectionFields() {
         FacilioModule module = ModuleFactory.getConnectionModule();

@@ -1,107 +1,155 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.services.factory.FacilioFactory;
 
 public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
-	
+
 	private long id;
 	private long orgId;
 	private String name;
 	private String linkName;
 	private String description;
 	private long logoId;
-	private String baseUrl;
-	private Boolean isActive = true;
-	private Boolean samlEnabled;
-	private String spEntityId;
-	private String spAcsUrl;
-	private String spLogoutUrl;
-	
+	private Boolean isActive;
+	private String sandBoxBaseUrl;
+	private String productionBaseUrl;
+	private String startUrl;
+	private Boolean showInLauncher;
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Boolean getShowInLauncher() {
+		return showInLauncher;
+	}
+
+	public void setShowInLauncher(Boolean showInLauncher) {
+		this.showInLauncher = showInLauncher;
+	}
+
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	public long getOrgId() {
 		return orgId;
 	}
+
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getLinkName() {
 		if (this.linkName == null && this.name != null && !this.name.trim().isEmpty()) {
 			this.linkName = this.name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 		}
 		return linkName;
 	}
+
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public long getLogoId() {
 		return logoId;
 	}
+
 	public String getLogoUrl() throws Exception {
 		if (this.logoId > 0) {
 			return FacilioFactory.getFileStore().getPrivateUrl(this.logoId);
 		}
 		return null;
 	}
+
 	public void setLogoId(long logoId) {
 		this.logoId = logoId;
 	}
-	public String getBaseUrl() {
-		return baseUrl;
+
+	public String getSandBoxBaseUrl() {
+		return sandBoxBaseUrl;
 	}
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
+
+	public void setSandBoxBaseUrl(String sandBoxBaseUrl) {
+		this.sandBoxBaseUrl = sandBoxBaseUrl;
 	}
-	
-	public Boolean isActive() {
-		return isActive;
+
+	public String getProductionBaseUrl() {
+		return productionBaseUrl;
 	}
-	public Boolean getIsActive() {
-		return isActive;
+
+	public void setProductionBaseUrl(String productionBaseUrl) {
+		this.productionBaseUrl = productionBaseUrl;
 	}
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
+
+	public String getStartUrl() {
+		return startUrl;
 	}
-	public Boolean getSamlEnabled() {
-		return samlEnabled;
+
+	public void setStartUrl(String startUrl) {
+		this.startUrl = startUrl;
 	}
-	public void setSamlEnabled(Boolean samlEnabled) {
-		this.samlEnabled = samlEnabled;
+
+	private HostingType hostingType;
+
+	public HostingType getHostingTypeEnum() {
+		return hostingType;
 	}
-	public String getSpEntityId() {
-		return spEntityId;
+
+	public void setHostingType(HostingType hostingType) {
+		this.hostingType = hostingType;
 	}
-	public void setSpEntityId(String spEntityId) {
-		this.spEntityId = spEntityId;
+
+	public int getHostingType() {
+		if (hostingType != null) {
+			return hostingType.getValue();
+		}
+		return -1;
 	}
-	public String getSpAcsUrl() {
-		return spAcsUrl;
+
+	public void setHostingType(int hostingType) {
+		this.hostingType = HostingType.valueOf(hostingType);
 	}
-	public void setSpAcsUrl(String spAcsUrl) {
-		this.spAcsUrl = spAcsUrl;
+
+	public enum HostingType {
+		INTERNAL, EXTERNAL;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static HostingType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
-	public String getSpLogoutUrl() {
-		return spLogoutUrl;
-	}
-	public void setSpLogoutUrl(String spLogoutUrl) {
-		this.spLogoutUrl = spLogoutUrl;
-	}
+
 }

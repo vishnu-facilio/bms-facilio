@@ -4135,6 +4135,14 @@
 			<param name="permission">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
+		
+		<action name="addOrUpdateSAML"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="addOrUpdateConnectedAppSAML">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
 
 		<action name="downloadCertificate"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"

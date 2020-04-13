@@ -5,6 +5,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.ModuleFactory;
 
 public class DeleteConnectedAppCommand extends FacilioCommand {
@@ -17,8 +18,13 @@ public class DeleteConnectedAppCommand extends FacilioCommand {
 		if (connectedAppId > 0) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(ModuleFactory.getConnectedAppsModule().getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()))
 					.andCondition(CriteriaAPI.getIdCondition(connectedAppId, ModuleFactory.getConnectedAppsModule()));
+			
+			builder.delete();
+			
+			builder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getConnectedAppSAMLModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID","connectedAppId",String.valueOf(connectedAppId), NumberOperators.EQUALS));
 			
 			builder.delete();
 		}

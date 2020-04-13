@@ -1072,6 +1072,22 @@ public class ModuleFactory {
 		return connectedApp;
 	}
 	
+	public static FacilioModule getConnectedAppSAMLModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connectedAppSAML");
+		connectedApp.setDisplayName("Connected Apps SAML");
+		connectedApp.setTableName("ConnectedApps_SAML");
+		return connectedApp;
+	}
+	
+	public static FacilioModule getConnectedAppWidgetsModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connectedAppWidgets");
+		connectedApp.setDisplayName("Connected App Widgets");
+		connectedApp.setTableName("ConnectedApp_Widgets");
+		return connectedApp;
+	}
+	
 	public static FacilioModule getConnectionModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connection");
