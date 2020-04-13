@@ -54,6 +54,9 @@
     -
         sampleLocalId : 13
         sample: "what do I do"
+    -
+        sampleLocalId : 14
+        sample: "hey"
         
 - 
    name: "system_intent_not_fount_intent"
@@ -1182,28 +1185,28 @@
        sample: "I want to invite guests"
     -
        sampleLocalId : 3
-       sample: "[Mike](PERSON) is coming [tomorrow](DATE)"
+       sample: "Mike is coming [tomorrow](DATE)"
     -
        sampleLocalId : 4
        sample: "invite people"
     -
        sampleLocalId : 5
-       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE)"
+       sample: "Mike and Andrea are coming [tomorrow](DATE)"
     -
        sampleLocalId : 6
-       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE) [post lunch](TIME)"
+       sample: "Mike and Andrea are coming [tomorrow](DATE) [post lunch](TIME)"
     -
        sampleLocalId : 7
-       sample: "[Mike](PERSON) and [Andrea](PERSON) are coming [tomorrow](DATE) in the [first half](TIME)"
+       sample: "Mike and Andrea are coming [tomorrow](DATE) in the [first half](TIME)"
     -
        sampleLocalId : 8
-       sample: "[Mike](PERSON) and [Andrea](PERSON) will be visiting the [coming Monday](DATE) [first half](TIME)"
+       sample: "Mike and Andrea will be visiting the [coming Monday](DATE) [first half](TIME)"
     -
        sampleLocalId : 9
-       sample: "[Andrea](PERSON) is coming for an interview [tomorrow](DATE) [morning at 10](TIME)"
+       sample: "Andrea is coming for an interview [tomorrow](DATE) [morning at 10](TIME)"
     -
        sampleLocalId : 10
-       sample: "[Mike](PERSON) and [Andrea](PERSON) from Caterpillar are coming to fix the leak [tomorrow](DATE) at [11 AM](TIME)"
+       sample: "Mike and Andrea from Caterpillar are coming to fix the leak [tomorrow](DATE) at [11 AM](TIME)"
     -
        sampleLocalId : 11
        sample: "The caterpillar guys are coming [tomorrow](DATE) "
@@ -1215,19 +1218,19 @@
        sample: "Arrange a pass for the Caterpillar team [tomorrow](DATE)  at [11 AM](TIME)"
     -
        sampleLocalId : 14
-       sample: "I need to arrange a vendor pass for [Mike](PERSON) and [Andrea](PERSON) from Caterpillar whos coming [tomorrow](DATE)  at [11 AM](TIME)"
+       sample: "I need to arrange a vendor pass for Mike and Andrea from Caterpillar whos coming [tomorrow](DATE)  at [11 AM](TIME)"
     -
        sampleLocalId : 15
-       sample: "Create one-day pass for [Mike](PERSON)"
+       sample: "Create one-day pass for Mike"
     -
        sampleLocalId : 16
-       sample: "Arrange a day pass for [Mike](PERSON)"
+       sample: "Arrange a day pass for Mike"
     -
        sampleLocalId : 17
-       sample: "Arrange a half-day pass for [Mike](PERSON)"
+       sample: "Arrange a half-day pass for Mike"
     -
        sampleLocalId : 18
-       sample: "Arrange a three hour pass for [Mike](PERSON) at [11 AM](TIME)"
+       sample: "Arrange a three hour pass for Mike at [11 AM](TIME)"
     -
        sampleLocalId : 19
        sample: "Allow the contractor to enter my premises [tomorrow](DATE) "
