@@ -1,5 +1,6 @@
 system_greet_intent: 
-    - "Hi There, I am Facilio bot. I can help you"
+    - "Hello there! How can I help you? Please select from the options below:"
+    - "Hey there! Here's all the things I can help you with:"
     
 system_intent_not_fount_intent: 
     - "I am sorry, I don't understand what you're looking for. I can help you:"
