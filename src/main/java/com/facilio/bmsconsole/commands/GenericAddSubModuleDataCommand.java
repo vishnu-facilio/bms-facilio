@@ -162,21 +162,32 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                         Map<String, Object> map = datum.getDatumMap();
 
                         map.put(lookupField.getName(), parentObject);
-                        Map<FacilioField, StrutsUploadedFile> fileMap = new HashMap<>();
+                        Map<FacilioField, Map<String, Object>> fileMap = new HashMap<>();
                         for (FacilioField f : fileFields) {
+                        		Map<String, Object> fileDetails = new HashMap<>();
                             Object remove = map.remove(f.getName());
                             if (remove != null) {
-                                fileMap.put(f, (StrutsUploadedFile) remove);
+	                            	fileDetails.put(f.getName(), remove);
+	                            	fileDetails.put(f.getName()+"ContentType", map.remove(f.getName()+"ContentType"));
+	                            	fileDetails.put(f.getName()+"FileName", map.remove(f.getName()+"FileName"));
+	                            	fileMap.put(f, fileDetails);
                             }
                         }
                         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
                         for (FacilioField field : fileMap.keySet()) {
-                            File file = fileMap.get(field).getContent();
+                        	    Map<String, Object> fileDetails = fileMap.get(field);
+                            File file = ((StrutsUploadedFile) fileDetails.get(field.getName())).getContent();
+                            String  contentType = (String) fileDetails.get(field.getName()+"ContentType");
+                            String  fileName = (String) fileDetails.get(field.getName()+"FileName");
                             if (field.isDefault()) {
                                 PropertyUtils.setProperty(moduleRecord, field.getName(), file);
+                                PropertyUtils.setProperty(moduleRecord, field.getName()+"ContentType", contentType);
+                                PropertyUtils.setProperty(moduleRecord, field.getName()+"FileName", fileName);
                             }
                             else {
                                 moduleRecord.setDatum(field.getName(), file);
+                                moduleRecord.setDatum(field.getName()+"ContentType", contentType);
+                                moduleRecord.setDatum(field.getName()+"FileName", fileName);
                             }
                         }
                         moduleRecord.parseFormData();
