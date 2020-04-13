@@ -44,7 +44,7 @@ public class HistoricalOperationAlarmAction extends FacilioAction{
 	public void setResourceIds(List<Long> resourceIds) {
 		this.resourceIds = resourceIds;
 	}
-public String runHistorical() throws Exception {
+    public String runHistorical() throws Exception {
 		
 	
 			if(startTime >= endTime)
@@ -56,7 +56,7 @@ public String runHistorical() throws Exception {
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
 			
-			FacilioChain chain = TransactionChainFactory.getHistoricalOperationAlarm();
+			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRunOpAlarm();
 			chain.execute(context);
 			
 			setResult("success", "Started");	

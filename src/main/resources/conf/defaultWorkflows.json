@@ -1918,7 +1918,7 @@
     resultMap[\"locations\"] = locations;
     return resultMap;
 }"
-}
+},
     "108": {
     	"description" : "overallAlarmDuration",
         "usage" : "alarmSummary",
@@ -1988,6 +1988,101 @@
 							  }
 						     return resMap; 
         			  	}"
-        }
-        
+        },
+	"109": {
+		"description" : "overallAlarmDuration",
+		"usage" : "alarmSummary",
+		"workflow" : "Map durationCompersion(Number alarmId)
+			{
+			module = Module(\"alarmoccurrence\");
+			date = NameSpace(\"date\");
+			thisMonthRange = date.getDateRange(\"Current Year\");
+			lastMonthRange = date.getDateRange(\"Last Year\");
+
+			resMap = {};
+			db = {
+			criteria : [alarm == alarmId && createdTime == thisMonthRange],
+			field: \"duration\",
+			aggregation: \"sum, duration\"
+			};
+
+			res = module.fetch(db);
+			thisMonth = res;
+			db = {
+			criteria : [alarm == alarmId && createdTime == lastMonthRange],
+			field : \"alarm\",
+			aggregation : \"count\"
+			};
+			res = module.fetch(db);
+			LastMonth = res;
+
+			resMap[\"durationCurrentYear\"] = thisMonth;
+			resMap[\"durationLastYear\"] = LastMonth;
+
+			log resMap;
+			return resMap;
+			}"
+	},
+	"110": {
+		"description" : "opAlarmComRank",
+		"usage" : "opAlarmComRank",
+		"workflow" : "Map opAlarmRank(Number alarmId) {
+			date = NameSpace(\"date\");
+			monthRanges = date.getDateRange(\"Current Month\");
+			lastmonthRanges = date.getDateRange(\"Last Month\");
+			db = {
+				criteria:
+				[lastCreatedTime == monthRanges && type == 10],
+				field:\"id\",
+				aggregation:\"sum, noOfOccurrences\",
+				groupBy: \"id\",
+				orderBy:\"noOfOccurrences\" desc
+			};
+			baseAlarmModule = Module(\"baseAlarm\");
+			activeRecord = baseAlarmModule.fetch(db);
+			ranking = 0;
+			if (activeRecord != null) {
+				for each index, value in activeRecord {
+					temp = value.result;
+					temp = value.result + 0;
+					if (temp == alarmId) {
+						ranking = index + 1;
+					}
+				}
+			}
+			lastMonthdb = {
+				criteria:
+				[lastCreatedTime == lastmonthRanges && type == 10],
+				field:\"id\",
+				aggregation:\"sum, noOfOccurrences\",
+				groupBy: \"id\",
+				orderBy:\"noOfOccurrences\" desc
+			};
+			lastActiveRecord = baseAlarmModule.fetch(lastMonthdb);
+			lastranking = 0;
+			if (lastActiveRecord != null) {
+				for each index, value in lastActiveRecord {
+					temp = value.result;
+					temp = value.result + 0;
+					if (temp == alarmId) {
+						lastranking = index + 1;
+					}
+				}
+			}
+			resultMap = {};
+			if (activeRecord != null) {
+				resultMap[\"ranks\"] = activeRecord;
+				resultMap[\"ranking\"] = ranking;
+				resultMap[\"outOfRule\"] = activeRecord.size();
+			}
+			if (lastActiveRecord != null ) {
+				resultMap[\"lastranking\"] = lastranking;
+				resultMap[\"outOfRuleLastMonth\"] = lastActiveRecord.size();
+			}
+			log resultMap;
+			return resultMap;
+			}"
+}
+
+
 }

@@ -125,5 +125,6 @@
 	<!--  OperationAlarm -->
 	<job name = 'OperationAlarmJob' classname = 'com.facilio.bmsconsole.jobs.OperationAlarmJob' transactionTimeout = '7200000'></job>
 	<job name='HistoricalOperationAlarmEventJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationAlarmEventJob' transactionTimeout='900000'/>
-	
+	<job name='HistoricalOperationalAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationalAlarmProcessingJob' transactionTimeout='900000'/>
+
 </scheduler>

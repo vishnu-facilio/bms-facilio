@@ -5143,8 +5143,8 @@ public class TransactionChainFactory {
 	public static FacilioChain getExecuteOperationAlarm()
 	{
 		FacilioChain c=getDefaultChain();
-		c.addCommand(new OperationAlarmCommand());
-		// c.addCommand(new ExecuteOpertionalAlarmCommand);
+		// c.addCommand(new OperationAlarmCommand());
+		c.addCommand(new ExecuteOperationalEventCommand());
 		return c;
 	}	
 	public static FacilioChain addClientContactChain() {
@@ -5183,27 +5183,18 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	public static FacilioChain getHistoricalOperationAlarm()
+	public static FacilioChain getExecuteHistoricalRunOpAlarm()
 	{
 		FacilioChain c=getDefaultChain();
-		c.addCommand(new HistoricalOperationAlarmCommand());
-		c.addCommand(new HistoricalOperationAlarmOccurencesDeletionCommand());
-
-		return c;
-	}
-	public static FacilioChain getExecuteOperatonalAlarm()
-	{
-		FacilioChain c=getDefaultChain();
-		c.addCommand(new OperationAlarm());
-		return c;
-	}
-	public static FacilioChain getHistoricalOperationAlarmOccurencesDeletion()
-	{
-		FacilioChain c=getDefaultChain();
+		c.addCommand(new HistoricalRunOperationalAlarmLog());
 		c.addCommand(new HistoricalOperationAlarmOccurencesDeletionCommand());
 		return c;
 	}
-
+	public static FacilioChain getExecuteHistoricalOperationalAlarmProcessing() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new HistoricalOperationalAlarmProcessingCommand());
+		return c;
+	}
 	public static FacilioChain getImportRollupTenantSpacesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new RollupTenantSpacesCommand());

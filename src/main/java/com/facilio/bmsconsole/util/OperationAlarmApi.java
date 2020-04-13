@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -114,6 +115,7 @@ public class OperationAlarmApi {
 
     private static void raiseAlarm(String msg, ReadingContext readingContext, OperationAlarmContext.CoverageType type, Context context, FacilioField readingField) throws Exception
     {
+        checkAndClearEvent(readingContext, type == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE ? OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE : OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE , context, readingField);
         OperationAlarmEventContext event = createOperationEvent(msg, readingContext, type, readingField);
         addEvent(event, context);
     }
@@ -126,11 +128,15 @@ public class OperationAlarmApi {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         FacilioField parentField = fieldMap.get("parentId");
         FacilioField ttimeField = fieldMap.get("ttime");
+        List<FacilioField> selectfields = new ArrayList<>();
+        selectfields.add(parentField);
+        selectfields.add(ttimeField);
+        selectfields.add(field);
         FacilioModule readingModule = modBean.getModule(field.getModule().getName());
 
         SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
                 .module(readingModule)
-                .select(fields)
+                .select(selectfields)
                 .beanClass(ReadingContext.class)
                 .andCondition(CriteriaAPI.getCondition(parentField, resourceId, NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
@@ -281,34 +287,39 @@ public class OperationAlarmApi {
         return event;
     }
     private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField) throws Exception {
+
         BaseEventContext previousExceedEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
         BaseEventContext previousShortEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT);
             if (previousExceedEvent.getSeverityString() == null && previousShortEvent.getSeverityString() == null) {
                 return;
             }
              if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                 addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                  return;
              }
 
+
              if (previousShortEvent.getSeverityString() != null
                      && !previousShortEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent("Clear ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                 addEvent(createOperationEvent("Asset is OFF during scheduled operating hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                  return;
              }
     }
 
     private static void addEvent(OperationAlarmEventContext event, Context context) throws Exception {
-        BaseEventContext baseEvent = (BaseEventContext) event;
+        OperationAlarmEventContext baseEvent = (OperationAlarmEventContext) event;
         List<BaseEventContext> operationAlarmEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
         if (event.getCoverageType() == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE.getIndex()) {
+            baseEvent.setCoverageType(OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE);
             context.put(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT, baseEvent);
         } else  {
+            baseEvent.setCoverageType(OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE);
             context.put(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT, baseEvent);
         }
         if (operationAlarmEvents == null) {
             operationAlarmEvents = new ArrayList<>();
         }
+        // LOGGER.info("CoverageType" + event.getCoverageType());
         operationAlarmEvents.add(baseEvent);
         context.put(EventConstants.EventContextNames.EVENT_LIST, operationAlarmEvents);
         // operationAlarmEvents.add(baseEvent);
@@ -317,10 +328,15 @@ public class OperationAlarmApi {
     private static void addEventToDB(Context context) throws Exception {
         List<BaseEventContext> eventList =  (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
         if (eventList != null) {
-            // context.put(EventConstants.EventContextNames.EVENT_LIST, operationAlarmEvents);
-           //  Boolean isHistorical = context.get(FacilioConstants.ContextNames.IS_HISTORICAL, false);
-            FacilioChain chain = TransactionChainFactory.getV2AddEventChain(true);
-            chain.execute(context);
+            Boolean isHistorical = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HISTORICAL, false);
+            if (isHistorical) {
+                insertEventsWithoutAlarmOccurrenceProcessed(context);
+            } else {
+                FacilioChain chain = TransactionChainFactory.getV2AddEventChain(true);
+                context.put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
+                context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
+                chain.execute(context);
+            }
         }
 
     }
@@ -357,9 +373,71 @@ public class OperationAlarmApi {
         return previousEvent;
     }
 
-    private String setMessage() {
-
-        return  null;
+    private static void insertEventsWithoutAlarmOccurrenceProcessed(Context context) throws Exception
+    {
+        List<BaseEventContext> events = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
+        List<OperationAlarmEventContext> opEvents = new ArrayList<OperationAlarmEventContext>();
+        for(BaseEventContext event:events)
+        {
+            if (event instanceof  OperationAlarmEventContext) {
+                OperationAlarmEventContext operationEvent = (OperationAlarmEventContext) event;
+                operationEvent.setCoverageType(operationEvent.getCoverageType());
+                operationEvent.setSeverity(AlarmAPI.getAlarmSeverity(operationEvent.getSeverityString()));
+                operationEvent.setMessageKey(operationEvent.constructMessageKey());
+                operationEvent.setAlarmOccurrence(null);
+                operationEvent.setBaseAlarm(null);
+                opEvents.add(operationEvent);
+            }
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if (!opEvents.isEmpty()) {
+            String moduleName = NewEventAPI.getEventModuleName(BaseAlarmContext.Type.OPERATION_ALARM);
+            InsertRecordBuilder<OperationAlarmEventContext> builder = new InsertRecordBuilder<OperationAlarmEventContext>()
+                    .moduleName(moduleName)
+                    .fields(modBean.getAllFields(moduleName));
+            builder.addRecords(opEvents);
+            builder.save();
+        }
     }
 
+    public static void updateOperationAlarmHistoricalLogger(OperationAlarmHistoricalLogsContext operationAlarmHistoricalLogsContext) throws Exception {
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getOperationAlarmHistoricalLogsModule().getTableName())
+                .fields(FieldFactory.getOperationAlarmHistoricalLogFields())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", ""+operationAlarmHistoricalLogsContext.getId(), NumberOperators.EQUALS));
+
+        Map<String, Object> props = FieldUtil.getAsProperties(operationAlarmHistoricalLogsContext);
+        updateBuilder.update(props);
+    }
+
+    public static OperationAlarmHistoricalLogsContext getOperationAlarmHistoricalLoggerById (long loggerRuleId) throws Exception {
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getOperationAlarmHistoricalLogFields())
+                .table(ModuleFactory.getOperationAlarmHistoricalLogsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", ""+loggerRuleId, NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            OperationAlarmHistoricalLogsContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), OperationAlarmHistoricalLogsContext.class);
+            return workflowRuleHistoricalLogger;
+        }
+        return null;
+    }
+
+//    public static List<OperationAlarmHistoricalLogsContext> getOperationAlarmHistoricalLoggerByParentId (long loggerRuleId) throws Exception {
+//
+//        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//                .select(FieldFactory.getOperationAlarmHistoricalLogFields())
+//                .table(ModuleFactory.getOperationAlarmHistoricalLogsModule().getTableName())
+//                .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", ""+loggerRuleId, NumberOperators.EQUALS));
+//
+//        List<Map<String, Object>> props = selectBuilder.get();
+//        if (props != null && !props.isEmpty()) {
+//            OperationAlarmHistoricalLogsContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), OperationAlarmHistoricalLogsContext.class);
+//            return workflowRuleHistoricalLogger;
+//        }
+//        return null;
+//    }
 }

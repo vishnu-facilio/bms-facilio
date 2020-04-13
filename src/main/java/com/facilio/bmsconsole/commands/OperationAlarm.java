@@ -64,13 +64,7 @@ public class OperationAlarm extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(OperationAlarm.class.getName());
 
 	public boolean executeCommand(Context context) throws Exception {
-    	long hrsToCheckinMillis=3600000 * 12;
-    	long endTime = System.currentTimeMillis();
-    	long startTime = System.currentTimeMillis() - hrsToCheckinMillis ;
-		OperationAlarmApi.processOutOfCoverage(startTime, endTime );
-        
-	return false;
-		}
-
+	     return false;
 	}
+}
 
