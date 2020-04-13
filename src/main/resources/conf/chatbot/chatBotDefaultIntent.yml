@@ -251,7 +251,7 @@
                                          if(data.description != null) {
                                             wo.description = data.description;
                                          }
-                                         wo.sourceType = 7;
+                                         wo.sourceType = 10;
                                          wo.requester.id = currentUser.id; 
                                            
                                          siteId = null;
