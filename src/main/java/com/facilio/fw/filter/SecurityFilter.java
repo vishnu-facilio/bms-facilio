@@ -30,6 +30,7 @@ public class SecurityFilter implements Filter {
         List<String> urls = new ArrayList<>();
         urls.add("/api/v2/files/");
         urls.add("/api/v3/files/");
+        urls.add("/api/integ/loadWebView");
         urls.add("/websocket/");
         return urls;
     }
