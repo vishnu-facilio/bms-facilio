@@ -120,7 +120,7 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 		return insuranceContentType;
 	}
 
-	public void setInsuranceContentType(String InsuranceContentType) {
+	public void setInsuranceContentType(String insuranceContentType) {
 		this.insuranceContentType = insuranceContentType;
 	}
 
