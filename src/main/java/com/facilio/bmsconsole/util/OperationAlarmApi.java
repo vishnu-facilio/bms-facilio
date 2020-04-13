@@ -293,17 +293,25 @@ public class OperationAlarmApi {
             if (previousExceedEvent.getSeverityString() == null && previousShortEvent.getSeverityString() == null) {
                 return;
             }
-             if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
-                 return;
-             }
+            if (coverageType == OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE) {
+                if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
+                    addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                }
+                if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
+                    addEvent(createOperationEvent(" Asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                }
+                return;
+            }
 
-
-             if (previousShortEvent.getSeverityString() != null
-                     && !previousShortEvent.getSeverityString().equals("Clear")) {
-                 addEvent(createOperationEvent("Asset is OFF during scheduled operating hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
-                 return;
-             }
+        if (coverageType == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE) {
+            if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
+                addEvent(createOperationEvent(" Asset is operating out of scheduled hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+            }
+            if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
+                addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+            }
+            return;
+        }
     }
 
     private static void addEvent(OperationAlarmEventContext event, Context context) throws Exception {

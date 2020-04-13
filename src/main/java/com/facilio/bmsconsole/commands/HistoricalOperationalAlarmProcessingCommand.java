@@ -53,51 +53,57 @@ public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand 
 
     private void fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long resourceId, long lesserStartTime, long greaterEndTime, BaseAlarmContext.Type type) throws Exception
     {
+        int[] coverageTypes = {1, 2};
+
         final int EVENTS_FETCH_LIMIT_COUNT = 5000;
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = NewEventAPI.getEventModuleName(type);
-        FacilioModule eventModule = modBean.getModule(moduleName);
-        SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
-                .select(modBean.getAllFields(eventModule.getName()))
-                .module(eventModule)
-                .beanClass(NewEventAPI.getEventClass(type))
-                .andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));
+        for (Integer coverageType: coverageTypes) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            String moduleName = NewEventAPI.getEventModuleName(type);
+            FacilioModule eventModule = modBean.getModule(moduleName);
+            SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
+                    .select(modBean.getAllFields(eventModule.getName()))
+                    .module(eventModule)
+                    .beanClass(NewEventAPI.getEventClass(type))
+                    .andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))
+                    .andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageType, NumberOperators.EQUALS));
 
-        HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
-        List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
-        SelectRecordsBuilder.BatchResult<BaseEventContext> batchSelect = selectEventbuilder.getInBatches("CREATED_TIME", EVENTS_FETCH_LIMIT_COUNT);
+            HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
+            List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
+            SelectRecordsBuilder.BatchResult<BaseEventContext> batchSelect = selectEventbuilder.getInBatches("CREATED_TIME", EVENTS_FETCH_LIMIT_COUNT);
 
-        while(batchSelect.hasNext())
-        {
+            while(batchSelect.hasNext())
+            {
+                if (baseEvents != null && !baseEvents.isEmpty())
+                {
+                    FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
+                    addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
+                    addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
+                    addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
+                    addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
+                    addEvent.execute();
+
+                    LOGGER.info("Events added in alarm processing job: "+parentLoggerId+"Operational Alarm resource ID: "  +resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);
+
+                    Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
+                    lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) addEvent.getContext().get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
+                }
+                baseEvents = batchSelect.get();
+                setHistoricalPropsForBaseEvents(baseEvents);
+            }
+
+            //final batch of historical events to proceed with system autoclear
             if (baseEvents != null && !baseEvents.isEmpty())
             {
                 FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
                 addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
                 addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
-                addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
+                addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
                 addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
                 addEvent.execute();
-
-                LOGGER.info("Events added in alarm processing job: "+parentLoggerId+"Operational Alarm resource ID: "  +resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);
-
-                Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
-                lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) addEvent.getContext().get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
+                LOGGER.info("Operational Events added in final alarm processing job: "+parentLoggerId+ " for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);
             }
-            baseEvents = batchSelect.get();
-            setHistoricalPropsForBaseEvents(baseEvents);
-        }
 
-        //final batch of historical events to proceed with system autoclear
-        if (baseEvents != null && !baseEvents.isEmpty())
-        {
-            FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
-            addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
-            addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
-            addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
-            addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
-            addEvent.execute();
-            LOGGER.info("Operational Events added in final alarm processing job: "+parentLoggerId+ " for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);
         }
 
     }
