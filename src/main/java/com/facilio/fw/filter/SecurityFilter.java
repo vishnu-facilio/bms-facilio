@@ -46,10 +46,14 @@ public class SecurityFilter implements Filter {
             String csrfCookieToken = FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE);
             if (StringUtils.isNotEmpty(csrfCookieToken)) {
                 String csrfHeaderToken = request.getHeader(CSRF_HEADER);
-                if (csrfCookieToken.equals(csrfHeaderToken)) {
+                if (csrfHeaderToken == null) {
+                    handleInvalid(request, "header token is null when cookie is not null");
+                    chain.doFilter(req, res);
+                }
+                else if (csrfCookieToken.equals(csrfHeaderToken)) {
                     chain.doFilter(req, res);
                 } else {
-                    handleInvalid(request, response);
+                    handleInvalid(request, "header token didn't match with cookie");
                     chain.doFilter(req, res);
                 }
             } else {
@@ -71,26 +75,23 @@ public class SecurityFilter implements Filter {
         return false;
     }
 
-    private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
+    private void handleInvalid(HttpServletRequest request, String reason) {
         String uri = request.getRequestURI();
         String app = request.getServerName();
         String appName = (String) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME);
         if (StringUtils.isNotEmpty(appName)) {
             app += "/" + appName;
         }
-        String remoteAddr = RequestUtil.getRemoteAddr(request);
         StringBuilder msg = new StringBuilder("Sending 403 for URL : ")
                             .append(uri)
                             .append(" from app ")
                             .append(app)
+                            .append(" because ")
+                            .append(reason)
                             ;
-        msg.append(" requested from ")
-                .append(remoteAddr);
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, msg.toString(), null);
-        event.setProperty(AccessLogFilter.REQUEST_URL, uri);
+        RequestUtil.addRequestLogEvents(request, event);
         event.setProperty("app", app);
-        event.setProperty(AccessLogFilter.REMOTE_IP, remoteAddr);
-        event.setProperty(AccessLogFilter.ORIGIN, RequestUtil.getOrigin(request));
 
         LOGGER.callAppenders(event);
 //        response.setContentType("text/plain");

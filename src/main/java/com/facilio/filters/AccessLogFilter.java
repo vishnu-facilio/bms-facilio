@@ -26,24 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AccessLogFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AccessLogFilter.class.getName());
-    public static final String REMOTE_IP = "remoteIp";
-    private static final String REQUEST_METHOD = "req_method";
-    public static final String REQUEST_URL = "req_uri";
-    private static final String REQUEST_PARAMS = "req_params";
-    private static final String DEFAULT_QUERY_STRING = "-";
-    private static final String QUERY = "query";
     private static final String RESPONSE_CODE = "responseCode";
     private static final String TIME_TAKEN = "timetaken";
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
     private static final String DUMMY_MSG = "accesslog";
     private static final String APPENDER_NAME = "graylog3";
-    private static final String DEFAULT_ORG_USER_ID = "-1";
-    private static final String X_DEVICE_TYPE = "X-Device-Type";
-    private static final String X_APP_VERSION = "X-App-Version";
-    private static final String REFERER = "referer";
-    private static final String RESPONSE_SIZE = "res_size";
     private static final boolean ENABLE_FHR = FacilioProperties.enableFacilioResponse();
-    public static final String ORIGIN = "origin";
+    private static final String RESPONSE_SIZE = "res_size";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
@@ -123,61 +112,10 @@ public class AccessLogFilter implements Filter {
             event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
         }
 
-        String remoteIp = RequestUtil.getRemoteAddr(request);
-        event.setProperty(REMOTE_IP, remoteIp);
-        event.setProperty(REQUEST_METHOD, request.getMethod());
-        String requestUrl = request.getRequestURI();
-        if("".equals(requestUrl)) {
-            event.setProperty(REQUEST_URL, "/jsp/index.jsp");
-        } else {
-            event.setProperty(REQUEST_URL, requestUrl);
-        }
-        String referer = request.getHeader(HttpHeaders.REFERER);
-        if (referer != null && !"".equals(referer.trim())) {
-            event.setProperty(REFERER, referer);
-        }
-        String queryString = request.getQueryString();
-        if(queryString == null) {
-            queryString = DEFAULT_QUERY_STRING;
-        }
-        event.setProperty(QUERY, queryString);
-
-        Organization org = AccountUtil.getCurrentOrg();
-        String orgId = DEFAULT_ORG_USER_ID;
-        if(org != null) {
-            orgId = String.valueOf(org.getOrgId());
-        }
-        event.setProperty("orgId", orgId);
-
-        User user = AccountUtil.getCurrentUser();
-        String userId = DEFAULT_ORG_USER_ID;
-        if (user != null) {
-            userId = String.valueOf(user.getOuid());
-        }
-        event.setProperty("userId", userId);
-
-        if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestParams() != null) {
-            event.setProperty(REQUEST_PARAMS, AccountUtil.getCurrentAccount().getRequestParams());
-        }
-
-        event.setProperty(ORIGIN, RequestUtil.getOrigin(request));
-
-        String deviceType = request.getHeader(X_DEVICE_TYPE);
-        if(deviceType == null) {
-            deviceType = DEFAULT_QUERY_STRING;
-        }
-        event.setProperty("deviceType", deviceType);
-
-        String appVersion = request.getHeader(X_APP_VERSION);
-        if(appVersion == null) {
-            appVersion = DEFAULT_QUERY_STRING;
-        }
-        event.setProperty("appVersion", appVersion);
-
+        RequestUtil.addRequestLogEvents(request, event);
         if ( ENABLE_FHR ) {
             event.setProperty(RESPONSE_SIZE, String.valueOf(responseSize));
         }
-
         long timeTaken = System.currentTimeMillis()-startTime;
         String responseCode = String.valueOf(response.getStatus());
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
@@ -196,12 +134,12 @@ public class AccessLogFilter implements Filter {
 
             Map<String, String> contextMap = new HashMap<>();
 
-            contextMap.put("orgId", orgId);
-            contextMap.put("url", requestUrl);
-            contextMap.put("remoteIp", remoteIp);
-            contextMap.put("referer", referer);
-            contextMap.put("query", queryString);
-            contextMap.put("userId", userId);
+            contextMap.put("orgId", event.getProperty(RequestUtil.ORGID_HEADER));
+            contextMap.put("url", event.getProperty(RequestUtil.REQUEST_URL));
+            contextMap.put("remoteIp", event.getProperty(RequestUtil.REMOTE_IP));
+            contextMap.put("referer", event.getProperty(RequestUtil.REFERER));
+            contextMap.put("query", event.getProperty(RequestUtil.QUERY));
+            contextMap.put("userId", event.getProperty(RequestUtil.USERID_HEADER));
             contextMap.put("responseCode", responseCode);
             contextMap.put("timeTaken", String.valueOf(timeTaken));
             contextMap.put("thread", thread.getName());
