@@ -254,15 +254,31 @@
                                          wo.sourceType = 7;
                                          wo.requester.id = currentUser.id; 
                                            
-                                         cri = {
-                                           criteria : [id != 0],
-                                           limit : 1,
-                                           orderBy : "id" asc,
-                                         };
+                                         siteId = null;
+                                         contacts = Module("contact").fetch([requester == currentUser.id]);
+                                         if(contacts != null) {
+                                            contact = contacts[0];
+                                            if(contact.tenant != null && contact.tenant.id != null) {
+                                               spaces = Module("tenantspaces").fetch([tenant == contact.tenant.id]);
+                                               if(spaces != null) {
+                                                  space = spaces[0];
+                                                  baseSpace = Module("basespace").fetch([id == space.space.id])[0];
+                                                  siteId = baseSpace.site.id;
+                                               }
+                                            }
+                                         }
+                                         if(siteId == null) {
+                                            cri = {
+                                              criteria : [id != 0],
+                                              limit : 1,
+                                              orderBy : "id" asc,
+                                            };
+                                            site = Module("site").fetch(cri)[0];
+                                            siteId = site.id;
+                                         }
                                          
-                                         site = Module("site").fetch(cri)[0];
-                                         wo.siteId = site.id;
-                                         wo.site = site.id;
+                                         wo.siteId = siteId;
+                                         wo.site = siteId;
                                          
                                          WorkOrder().add(wo);
                                          
