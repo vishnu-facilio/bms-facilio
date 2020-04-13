@@ -127,7 +127,8 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
-		if(templateAssetId != null) {
+		Boolean currentAsset = (Boolean) conditionObj.get("currentAsset");
+		if(templateAssetId != null && currentAsset) {
 			parentId = templateAssetId;
 		}
 		

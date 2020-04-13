@@ -106,7 +106,8 @@ public class FilterUtil {
 		
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
-		if(templateAssetId != null) {
+		Boolean currentAsset = (Boolean) conditionObj.get("currentAsset");
+		if(templateAssetId != null && currentAsset) {
 			parentId = templateAssetId;
 		}
 		
@@ -174,6 +175,10 @@ public class FilterUtil {
 				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "appliedVsUnapplied", FieldType.BOOLEAN);
 				ReportYAxisContext yAxis = new ReportYAxisContext();
 				yAxis.setField(module, yField);
+				Map<Integer, Object> enumMap = new HashMap<>();
+				enumMap.put(0, "False");
+				enumMap.put(1, "True");
+				yAxis.setEnumMap(enumMap);
 				dataPoint.setyAxis(yAxis);
 				
 				dataPoint.setModuleName(moduleName);
