@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.service.FacilioService;
 
@@ -76,6 +77,22 @@ public class TVAction extends FacilioAction {
 	                cookie.setHttpOnly(true);
 	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
+	                
+	                RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(connectedScreenId));
+	                
+	                if (remoteScreen.getScreenId() != null) {
+	                	
+		                Long siteId = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getScreen(remoteScreen.getScreenId()).getSiteId());
+		                if (siteId != null) {
+			             Cookie sitecookie = new Cookie("fc.currentSite", String.valueOf(siteId));
+	                	sitecookie.setMaxAge(60 * 60 * 24 * 30);
+	                	sitecookie.setPath("/");
+			            response.addCookie(sitecookie);
+		                }
+	                }
+	                
+
+
 	                FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
 	               
 					return SUCCESS;

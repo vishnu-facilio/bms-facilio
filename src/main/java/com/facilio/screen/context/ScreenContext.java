@@ -13,6 +13,14 @@ public class ScreenContext {
 	Long orgId;
 	String name;
 	int interval;
+	Long siteId;
+	public Long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(Long siteId) {
+		this.siteId = siteId;
+	}
+
 	List<ScreenDashboardRelContext> screenDashboards = new ArrayList<>();
 	String screenSettingString;
 	
