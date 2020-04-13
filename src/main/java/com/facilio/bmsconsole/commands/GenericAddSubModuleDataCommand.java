@@ -199,6 +199,8 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                     recordMap.put(moduleName, beanList);
                 }
                 context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+                // Temp removing subformdata
+                record.setSubFormData(null);
             }
         }
         return false;
