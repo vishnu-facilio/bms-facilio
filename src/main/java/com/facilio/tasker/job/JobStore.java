@@ -251,10 +251,10 @@ public class JobStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE EXECUTOR_NAME = ? AND IS_ACTIVE = ? AND STATUS = ? AND NEXT_EXECUTION_TIME < ? AND EXECUTION_ERROR_COUNT < ?");
-			getPstmt.setLong(1, endTime);
-			getPstmt.setString(2, executorName);
-			getPstmt.setBoolean(3, JobConstants.ENABLED);
-			getPstmt.setInt(4, JobConstants.JOB_COMPLETED);
+			getPstmt.setString(1, executorName);
+			getPstmt.setBoolean(2, JobConstants.ENABLED);
+			getPstmt.setInt(3, JobConstants.JOB_COMPLETED);
+			getPstmt.setLong(4, endTime);
 			getPstmt.setInt(5, maxRetry);
 
 			rs = getPstmt.executeQuery();
