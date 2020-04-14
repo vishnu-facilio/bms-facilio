@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Inflater;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -454,6 +455,7 @@ public class LoginAction extends FacilioAction {
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
 		HttpServletRequest request = ServletActionContext.getRequest(); 
+		HttpServletResponse httpResponse = ServletActionContext.getResponse();
 		
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
@@ -511,6 +513,16 @@ public class LoginAction extends FacilioAction {
 			screenContext.setScreenDashboards(ScreenUtil.getScreenDashboardRel(screenContext));
 			remoteScreen.setScreenContext(screenContext);
 			
+			if (screenContext.getSiteId() != null) {
+				Cookie sitecookie = new Cookie("fc.currentSite", String.valueOf(screenContext.getSiteId()));
+				sitecookie.setMaxAge(60 * 60 * 24 * 30);
+				sitecookie.setPath("/");
+				sitecookie.setSecure(true);
+				httpResponse.addCookie(sitecookie);
+			}
+			else {
+				FacilioCookie.eraseUserCookie(request, httpResponse, "fc.currentSite", null);
+			}
 		}
 		data.put("connectedScreen", remoteScreen);
 
