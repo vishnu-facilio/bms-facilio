@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.context.ChatBotIntentParam;
+import com.facilio.cb.context.ChatBotTimeContext;
 import com.facilio.cb.date.DayEnum;
 import com.facilio.cb.date.MonthEnum;
 import com.facilio.cb.date.WeekEnum;
@@ -13,6 +14,28 @@ import com.facilio.cb.date.YearEnum;
 import com.facilio.time.DateTimeUtil;
 
 public class ChatBotDateTimeUtil {
+	
+	public static final long ONE_HOUR_MILLISEC = 3600000l;
+	public static final long ONE_MIN_MILLISEC = 60000l;
+	
+	public static long compute(ChatBotIntentParam param, ChatBotTimeContext timeContext) throws Exception {
+
+		long returnMillisec = 0;
+		if (timeContext.getHour() >= 0 || timeContext.getMin() >= 0) {
+			
+			if(timeContext.getHour() >= 0) {
+				returnMillisec += timeContext.getHour() * ONE_HOUR_MILLISEC;
+			}
+			if(timeContext.getMin() >= 0) {
+				returnMillisec += timeContext.getMin() * ONE_MIN_MILLISEC;
+			}
+		} 
+		else if (timeContext.getTimeEnum() != null) {
+			returnMillisec = timeContext.getTimeEnum().getMillisec(timeContext);
+		} 
+		
+		return returnMillisec;
+	}
 
 	public static long compute(ChatBotIntentParam param, ChatBotDateContext dateContext) throws Exception {
 
