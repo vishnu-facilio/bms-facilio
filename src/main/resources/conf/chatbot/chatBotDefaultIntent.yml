@@ -1473,7 +1473,7 @@
                                          
                                          }
                                          else {
-                                            resultMap.put("returnText","You dont have any upcomming visits for today.");
+                                            resultMap.put("returnText","You dont have any upcoming visits for today.");
                                          }
                                          
                                          return resultMap;
@@ -1702,14 +1702,14 @@
                 resultWorkflowContext :
                    isV2Script : true
                    workflowV2String : 'Map test(Map data) {
-    
+             
                                          resultMap = {};
                                          if(data.inviteId != null) {
                                             Module("visitorlogging").delete([id == data.inviteId]);
                                             resultMap.put("returnText","Invite deleted successfully.");
                                          }
                                          else {
-                                            resultMap.put("returnText","You dont have any upcomming visits for today.");
+                                            resultMap.put("returnText","You dont have any upcoming visits for today.");
                                          }
                                         
                                          return resultMap;
@@ -1734,14 +1734,49 @@
    displayName: "Manage visitors"
    type: 1
    localId : 17
+   childIntentNames:
+      - "system_edit_invite_intent"
+      - "system_delete_invite_intent"
    actions:
     - 
-        responseType : 3
-        moduleName : 'visitorlogging'
-        viewName : 'upcoming'
         action: 
-            actionType: 29
+            actionType: 30
             status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Map test(Map data) {
+                                           
+                                         range1 = date().getDateRange("Today");
+                                         visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
+                                         resultMap = {};
+                                         if(visits == null) {
+                                            resultMap.put("returnText","You dont have any upcoming visits for today.");
+                                         }
+                                         else {
+                                              visitList = [];
+                                              for each index,visit in visits {
+                                   
+                                                labelString = visit.visitorName+"''s Visit";
+                                                if(visit.expectedCheckInTime != null ) {
+                                                   
+                                                  labelString = labelString +" at " +date().getFormattedTime(visit.expectedCheckInTime,"hh:mm a");
+                                                }
+                                                
+                                                visitList.add(labelString);
+                                              }
+                                              if(visitList.size() == 1) {
+                                                 resultMap.put("returnText","You have 1 Visit today.");
+                                              }
+                                              else {
+                                                 resultMap.put("returnText","You have "+visitList.size()+" Visits today.");
+                                              }
+                                              resultMap.put("extraText",visitList);
+                                         }
+                                        
+                                         return resultMap;
+                                       }'
         
    invokeSamples:
     -

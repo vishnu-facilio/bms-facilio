@@ -94,6 +94,7 @@ public class ChatBotIntent {
 				}
 
 				JSONObject result = new JSONObject();
+				resArray.add(result);
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, cbaction.getResponseType());
 				
 				if(cbaction.getModuleName() != null) {
@@ -124,12 +125,21 @@ public class ChatBotIntent {
 							ChatBotUtil.addSessionExtraParam(intentParamContext, session, param.toString());
 						}
 					}
+					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_TEXT)) {
+						
+						List extraTextList = (List)resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_TEXT);
+						
+						for(Object extraText : extraTextList) {
+							JSONObject result1 = new JSONObject();
+							result1.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+							result1.put(ChatBotConstants.CHAT_BOT_RESPONSE, extraText);
+							resArray.add(result1);
+						}
+					}
 				}
 				else if(cbaction.getResponse() != null) {
 					result.put(ChatBotConstants.CHAT_BOT_RESPONSE, cbaction.getResponse());
 				}
-				 
-				resArray.add(result);
 			}
 		}
 		return resArray;
