@@ -142,6 +142,7 @@ public class OperationAlarmApi {
                 .beanClass(ReadingContext.class)
                 .andCondition(CriteriaAPI.getCondition(parentField, resourceId, NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
+                .andCondition(CriteriaAPI.getCondition(field, "-1", NumberOperators.NOT_EQUALS))
                 .orderBy("TTIME")
                 ;
         List<ReadingContext> readingList = selectBuilder.get();
@@ -170,6 +171,10 @@ public class OperationAlarmApi {
     }
 
     private static void evaluateOutOfSchedule(BusinessHoursContext businessHoursContext, ReadingContext reading, FacilioField readingField, Context context,Map<String,Object> resource) throws Exception {
+        if (reading == null || readingField == null) {
+            LOGGER.info("Reading => " + reading);
+            LOGGER.info("Reading Fields => " + readingField);
+        }
         Boolean value = (Boolean) reading.getData().get(readingField.getName());
         BusinessHoursContext.BusinessHourType type = BusinessHoursContext.BusinessHourType.valueOf(businessHoursContext.getBusinessHourTypeId());
         OperationAlarmEventContext event;
