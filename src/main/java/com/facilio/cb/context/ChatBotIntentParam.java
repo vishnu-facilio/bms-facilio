@@ -29,6 +29,7 @@ public class ChatBotIntentParam {
 	String updateParamTriggerText;
 	long criteriaId = -1;
 	boolean multipleAllowed;
+	Date_Period datePeriod;
 	
 	public boolean isMultipleAllowed() {
 		return multipleAllowed;
@@ -212,6 +213,14 @@ public class ChatBotIntentParam {
 	public void setMlType(int mlType) {
 		this.mlType = ML_Type.getAllMLTypes().get(mlType);
 	}
+	
+	public Date_Period getDatePeriodEnum() {
+		return datePeriod;
+	}
+
+	public void setDatePeriod(Date_Period datePeriod) {
+		this.datePeriod = datePeriod;
+	}
 
 
 	public enum ML_Type {
@@ -278,6 +287,44 @@ public class ChatBotIntentParam {
 		}
 
 		public static Map<Integer, ML_Type> getAllMLTypes() {
+			return optionMap;
+		}
+	}
+	
+	public enum Date_Period {
+		
+		UPCOMING(1, "Upcoming"),
+		PREVIOUS(2, "Prevoius"),
+		;
+
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Date_Period(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Date_Period> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Date_Period> initTypeMap() {
+			Map<Integer, Date_Period> typeMap = new HashMap<>();
+
+			for (Date_Period type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Date_Period> getAllTypeConfig() {
 			return optionMap;
 		}
 	}
