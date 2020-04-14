@@ -134,11 +134,19 @@ public class GetAllFieldsCommand extends FacilioCommand {
 						fields.add(fieldObject);
 					}
 				}
-				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm") || moduleName.equals(ContextNames.OPERATION_ALARM)) {
+				else if (moduleName.equals("newreadingalarm") || moduleName.equals("bmsalarm") || moduleName.equals("mlAnomalyAlarm")) {
 					if(!fieldObject.isDefault()) {
 						fields.add(fieldObject);
 					}
 					else if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
+						fields.add(fieldObject);
+					}
+				}
+				else if (moduleName.equals(ContextNames.OPERATION_ALARM)) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.newOpAlarmsFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}

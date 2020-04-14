@@ -89,6 +89,9 @@ public class ColumnFactory {
 
 		columnMap.put("agentAlarm-default", getDefaultAgentAlarmColumns());
 
+		// operational Alarm
+		columnMap.put("operationalarm-default", getDefaultOperationalAlarmColumns());
+
 
 		columnMap.put("mlAnomalyAlarm-default", getDefaultMlAnomalyAlarmColumns());
 		columnMap.put("service-default", getDefaultServiceColumns());
@@ -823,6 +826,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		return columns;
+	}
+
+
+	private static List<ViewField> getDefaultOperationalAlarmColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("resource", "Asset"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		return columns;
 	}
 	

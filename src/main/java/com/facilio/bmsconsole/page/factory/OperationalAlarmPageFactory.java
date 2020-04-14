@@ -97,7 +97,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
     private  static  PageWidget addDefaultAlarmDuration (Page.Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.setTitle("Duartion");
+        cardWidget.setTitle("Duration");
         cardWidget.addToWidgetParams("primaryTitle", "This Year");
         cardWidget.addToWidgetParams("primaryKey", "durationCurrentYear");
         cardWidget.addToWidgetParams("secondaryTitle", "Last Year");

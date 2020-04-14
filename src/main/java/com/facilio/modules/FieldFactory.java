@@ -171,6 +171,17 @@ public class FieldFactory {
             newAlarmsFieldsInclude.add("readingAlarmCategory");
         }
 
+        public static List<String> newOpAlarmsFieldsInclude = new ArrayList<String>();
+
+        static {
+            newOpAlarmsFieldsInclude.add("subject");
+            newOpAlarmsFieldsInclude.add("Severity");
+            newOpAlarmsFieldsInclude.add("lastClearedTime");
+            newOpAlarmsFieldsInclude.add("lastCreatedTime");
+            newOpAlarmsFieldsInclude.add("lastOccurredTime");
+            newOpAlarmsFieldsInclude.add("resource");
+        }
+
         public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 
         static {
