@@ -41,7 +41,7 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     ]
 
     try{
-    		
+    		let isPdf = output.endsWith(".pdf");
     		let size = {width: 800, height: 768};
     		let info = JSON.parse(infoStr);
 		if (info.width) {
@@ -50,13 +50,8 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
 		if (info.height) {
 			size.height = info.height;
 		}
-		if(info.csrf) {
-			cookies.push({
-				name:'fc.csrfToken',
-	            value: info.csrf,
-	            domain: domain,
-	            path: '/'
-			});
+		if (!isPdf) {
+			size.deviceScaleFactor = 2;
 		}
     	
         await page.setCookie(... cookies)
@@ -83,11 +78,11 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
             });   	
         }
         
-        if (output.endsWith(".pdf")) {
+        if (isPdf) {
         		await page.pdf({path: output, format: 'A4'});
         }
         else {
-        		await page.screenshot({path: output});
+        		await page.screenshot({path: output, quality: 100});
         }
 
     }catch(e){

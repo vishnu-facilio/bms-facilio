@@ -2863,7 +2863,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
 		FacilioView allView = new FacilioView();
-		allView.setName("all");
+		allView.setName("vendorWorkorder");
 		allView.setDisplayName("All Workorders");
 		allView.setSortFields(sortFields);
 		allView.setHidden(true);

@@ -3,17 +3,12 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -21,7 +16,6 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
-import com.opensymphony.xwork2.ActionContext;
 
 public class PdfUtil {
 
@@ -59,7 +53,6 @@ public class PdfUtil {
 				}
 				additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 				additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
-				addCsrfToken(additionalInfo);
 				
 
 				String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo.toString()};
@@ -141,23 +134,6 @@ public class PdfUtil {
 
 	public static File exportUrlAsFile(String url, String name, FileFormat... formats){	
 		return exportUrlAsFile(url, name, null, null, formats);
-	}
-	
-	private static void addCsrfToken(JSONObject additionalInfo) {
-		String csrfToken = null;
-		if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			csrfToken = FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE);
-		}
-		
-		if (csrfToken == null) {
-			try {
-				csrfToken = AwsUtil.generateCSRFToken();
-			} catch (Exception e) {
-				LOGGER.info("Exception occurred ", e);
-			}
-		}
-		additionalInfo.put("csrf", csrfToken);
 	}
 
 }
