@@ -24,6 +24,11 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -54,67 +59,76 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-			
-			List<ReportDataPointContext> dFDataPoints = new ArrayList<>();
-			ReportDataPointContext tfDataPoint = null, cfDataPoint = null;
-			
-			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-			Long parentId = null;
-			if(report.getReportTemplate() != null) {
-				parentId = report.getReportTemplate().getParentId();
-			}
-			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
-			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
-			Map<String, Object> filters = new HashMap<>();
-			
-			List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
-			if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
-				JSONObject dataFilter = report.getDataFilterJSON();
-				if(dataFilter != null && !dataFilter.isEmpty()) {
-					JSONObject conditions = (JSONObject) dataFilter.get("conditions");
-					if(conditions != null && !conditions.isEmpty()) {
-						for(Object key : conditions.keySet()) {
-							JSONObject condition = (JSONObject)conditions.get((String)key);
-							List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange(), parentId);
-							key = "Cri_"+key+".timeline";
-							filters.put((String) key, timeLine);
-						}
+		List<ReportDataPointContext> dFDataPoints = new ArrayList<>();
+		ReportDataPointContext tfDataPoint = null, cfDataPoint = null, ohDataPoint = null;
+		
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		Long parentId = null;
+		if(report.getReportTemplate() != null) {
+			parentId = report.getReportTemplate().getParentId();
+		}
+		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
+		Map<String, Object> filters = new HashMap<>();
+		
+		List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
+		
+		if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
+			JSONObject dataFilter = report.getDataFilterJSON();
+			if(dataFilter != null && !dataFilter.isEmpty()) {
+				JSONObject conditions = (JSONObject) dataFilter.get("conditions");
+				if(conditions != null && !conditions.isEmpty()) {
+					for(Object key : conditions.keySet()) {
+						JSONObject condition = (JSONObject)conditions.get((String)key);
+						List<Map<String, Object>> timeLine = getDFTimeLine(condition, report.getDateRange(), parentId);
+						key = "Cri_"+key+".timeline";
+						filters.put((String) key, timeLine);
 					}
+				}
+				
+				dFDataPoints = FilterUtil.getDFDataPoints(dataFilter);
+			}
+			
+			
+			JSONObject timeFilter = report.getTimeFilterJSON();
+			if(timeFilter != null && !timeFilter.isEmpty()) {
+				List<Map<String, Object>> TFTimeLine = getTFTimeLine(report.getDateRange(), timeFilter);
+				if(CollectionUtils.isNotEmpty(TFTimeLine)) {
+					filters.put("TimeFilter.timeline", TFTimeLine);
 					
-					dFDataPoints = FilterUtil.getDFDataPoints(dataFilter);
+					tfDataPoint = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), getTFDataPointName(timeFilter));	
 				}
-				
-				
-				JSONObject timeFilter = report.getTimeFilterJSON();
-				if(timeFilter != null && !timeFilter.isEmpty()) {
-					List<Map<String, Object>> TFTimeLine = getTFTimeLine(report.getDateRange(), timeFilter);
-					if(CollectionUtils.isNotEmpty(TFTimeLine)) {
-						filters.put("TimeFilter.timeline", TFTimeLine);
-						
-						tfDataPoint = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), getTFDataPointName(timeFilter));	
-					}
-				}
-				
-				if(CollectionUtils.isNotEmpty(combinedList)) {
-					createCombinedMap();
-					if(MapUtils.isNotEmpty(combinedMap)) {
-						filters.put("Filter.timeline", getCombinedTimeLine());
-						
-						cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter");
-					}
-				}
-				if(cfDataPoint != null) {
-					reportDataPoints.add(cfDataPoint);
-				}
-				if(tfDataPoint != null) {
-					reportDataPoints.add(tfDataPoint);
-				}
-				if(!dFDataPoints.isEmpty()){
-					reportDataPoints.addAll(dFDataPoints);
-				}
-				report.setDataPoints(reportDataPoints);
-				reportAggrData.putAll(filters);
 			}
+			
+			if(CollectionUtils.isNotEmpty(combinedList)) {
+				createCombinedMap();
+				if(MapUtils.isNotEmpty(combinedMap)) {
+					filters.put("Filter.timeline", getCombinedTimeLine());
+					
+					cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter", "Filter");
+				}
+			}
+			if(cfDataPoint != null) {
+				reportDataPoints.add(cfDataPoint);
+			}
+			if(tfDataPoint != null) {
+				reportDataPoints.add(tfDataPoint);
+			}
+			if(!dFDataPoints.isEmpty()){
+				reportDataPoints.addAll(dFDataPoints);
+			}
+			report.setDataPoints(reportDataPoints);
+			reportAggrData.putAll(filters);
+			
+		}
+		Map<String, Object> operatingTimeLine = getOperatingHoursTimeLine((FacilioContext) context, report.getDateRange());
+		if(operatingTimeLine != null && !operatingTimeLine.isEmpty()) {
+			ohDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Operating Hours", "operatingHours");
+			if(ohDataPoint != null) {
+				reportDataPoints.add(ohDataPoint);
+			}
+			reportAggrData.putAll(operatingTimeLine);
+		}
 		return false;
 	}
 	
@@ -128,7 +142,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
 		Boolean currentAsset = (Boolean) conditionObj.get("currentAsset");
-		if(templateAssetId != null && currentAsset) {
+		if(templateAssetId != null && (currentAsset != null && currentAsset)) {
 			parentId = templateAssetId;
 		}
 		
@@ -436,5 +450,41 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			}
 		}
 		return name.toString();
+	}
+	
+	private static Map<String, Object> getOperatingHoursTimeLine(FacilioContext context, DateRange dateRange) throws Exception{
+		Map<String, Object> operatingHoursObj = new HashMap<>();
+		List<Map<String, Object>> timeline = new ArrayList<>();
+		Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
+		ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
+		if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null){
+			Long operatingHourList = alarmResource.getOperatingHour();
+			if(operatingHourList != null) {
+				BusinessHoursList operatingHourObj = BusinessHoursAPI.getBusinessHours(operatingHourList);
+				if(CollectionUtils.isNotEmpty(operatingHourObj)) {
+					ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
+					do {
+						for (BusinessHourContext operatingHour : operatingHourObj) {
+							if (operatingHour.getDayOfWeek() == start.getDayOfWeek().getValue()) {
+								Map<String, Object> obj = new HashMap();
+				    			Map<String, Object> obj1 = new HashMap();
+					    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
+						    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
+						    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
+						    	obj.put("value", 1);
+						    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
+						    	obj1.put("value", 0);
+						    	timeline.add(obj);
+						    	timeline.add(obj1);
+								operatingHour.getDayOfWeek();
+							}
+						}
+						start = start.plusDays(1);
+					}  while (start.toEpochSecond() <= end.toEpochSecond());
+				}
+			}
+			operatingHoursObj.put("operatingHours.timeline", timeline);
+		}
+		return operatingHoursObj;
 	}
 }

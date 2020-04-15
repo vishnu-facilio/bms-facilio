@@ -107,7 +107,7 @@ public class FilterUtil {
 		Long field = (Long) conditionObj.get("fieldId");
 		Long parentId = (Long) conditionObj.get("parentId");
 		Boolean currentAsset = (Boolean) conditionObj.get("currentAsset");
-		if(templateAssetId != null && currentAsset) {
+		if(templateAssetId != null && (currentAsset != null && currentAsset)) {
 			parentId = templateAssetId;
 		}
 		
@@ -243,7 +243,7 @@ public class FilterUtil {
 		
 	}
 	
-	public static ReportDataPointContext getDataPoint(String moduleName, String name) throws Exception {
+	public static ReportDataPointContext getDataPoint(String moduleName, String name, String alias) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
@@ -270,7 +270,7 @@ public class FilterUtil {
 		dataPoint.setName(name);
 		
 		Map<String, String> aliases = new HashMap<>();
-		aliases.put("actual", name);
+		aliases.put("actual", alias);
 		dataPoint.setAliases(aliases);
 		dataPoint.setType(DataPointType.FILTER);
 		
