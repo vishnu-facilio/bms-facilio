@@ -65,7 +65,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
     }
     protected static PageWidget addAlarmReport(Page.Section section) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-        alarmReport.addToLayoutParams(section, 24, 15);
+        alarmReport.addToLayoutParams(section, 24, 13);
         section.addWidget(alarmReport);
         return alarmReport;
     }

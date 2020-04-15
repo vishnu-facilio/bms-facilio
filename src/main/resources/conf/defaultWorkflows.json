@@ -2026,25 +2026,27 @@
 	"110": {
 		"description" : "opAlarmComRank",
 		"usage" : "opAlarmComRank",
-		"workflow" : "Map opAlarmRank(Number alarmId) {
+		"workflow" : "
+			Map opAlarmRank(Number alarmId) {
 			date = NameSpace(\"date\");
 			monthRanges = date.getDateRange(\"Current Month\");
 			lastmonthRanges = date.getDateRange(\"Last Month\");
 			db = {
 				criteria:
-				[lastCreatedTime == monthRanges && type == 10],
-				field:\"id\",
-				aggregation:\"sum, noOfOccurrences\",
-				groupBy: \"id\",
-				orderBy:\"noOfOccurrences\" desc
+				[createdTime == monthRanges && type == 8],
+				field:\"alarm\",
+				aggregation:\"sum, duration\",
+				groupBy: \"alarm\",
+				orderBy:\"duration\" desc
 			};
-			baseAlarmModule = Module(\"baseAlarm\");
+			baseAlarmModule = Module(\"alarmOccurrence\");
 			activeRecord = baseAlarmModule.fetch(db);
 			ranking = 0;
+			log activeRecord;
 			if (activeRecord != null) {
 				for each index, value in activeRecord {
 					temp = value.result;
-					temp = value.result + 0;
+					temp = value.result.id + 0;
 					if (temp == alarmId) {
 						ranking = index + 1;
 					}
@@ -2052,18 +2054,18 @@
 			}
 			lastMonthdb = {
 				criteria:
-				[lastCreatedTime == lastmonthRanges && type == 10],
-				field:\"id\",
-				aggregation:\"sum, noOfOccurrences\",
-				groupBy: \"id\",
-				orderBy:\"noOfOccurrences\" desc
+				[createdTime == lastmonthRanges && type == 8],
+				field:\"alarm\",
+				aggregation:\"sum, duration\",
+				groupBy: \"alarm\",
+				orderBy:\"duration\" desc
 			};
 			lastActiveRecord = baseAlarmModule.fetch(lastMonthdb);
 			lastranking = 0;
 			if (lastActiveRecord != null) {
 				for each index, value in lastActiveRecord {
-					temp = value.result;
-					temp = value.result + 0;
+					temp = value.result.id;
+					temp = value.result.id + 0;
 					if (temp == alarmId) {
 						lastranking = index + 1;
 					}
@@ -2079,7 +2081,6 @@
 				resultMap[\"lastranking\"] = lastranking;
 				resultMap[\"outOfRuleLastMonth\"] = lastActiveRecord.size();
 			}
-			log resultMap;
 			return resultMap;
 			}"
 }

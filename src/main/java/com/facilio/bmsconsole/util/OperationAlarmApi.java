@@ -174,6 +174,7 @@ public class OperationAlarmApi {
         if (reading == null || readingField == null) {
             LOGGER.info("Reading => " + reading);
             LOGGER.info("Reading Fields => " + readingField);
+            return;
         }
         Boolean value = (Boolean) reading.getData().get(readingField.getName());
         BusinessHoursContext.BusinessHourType type = BusinessHoursContext.BusinessHourType.valueOf(businessHoursContext.getBusinessHourTypeId());
@@ -182,10 +183,10 @@ public class OperationAlarmApi {
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
-                    raiseAlarm("Asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                    raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     break;
                 }
-                checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                 break;
             case DAYS_24_5:
                 List<BusinessHourContext> hours = businessHoursContext.getSingleDaybusinessHoursList();
@@ -196,18 +197,18 @@ public class OperationAlarmApi {
                 }
                 if(!value) {  //  when result is false and checking whether it should be true
                     if(hoursList.contains(reading.getDay())) {
-                        raiseAlarm("Asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                        raiseAlarm( resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                         break;
                     }
-                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                 }
                 else
                 {
                     if(!hoursList.contains(reading.getDay())) {
-                        raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                        raiseAlarm(resource.get("name") + " asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     }
-                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField, resource);
                 }
                 break;
             case CUSTOM:
@@ -228,31 +229,31 @@ public class OperationAlarmApi {
                 if(!value)
                 {
                     if(businessHour == null) {
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                         break;
                     }
                     else if (businessHour != null ){
 //
                         if (date.getHour() >= startTime.getHour() && date.getHour() <= endTime.getHour()) {
-                            raiseAlarm("Asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                            raiseAlarm(resource.get("name") + " asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                             break;
                         }
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                     }
                 }
                 else
                 {
                     if (businessHour == null ) {
-                        raiseAlarm("Asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                        raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     } else if (businessHour != null) {
                         if (date.getHour() < startTime.getHour() && date.getHour() > endTime.getHour()) {
-                            raiseAlarm("Asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                            raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
-                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                        checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField, resource);
                     }
-                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField, resource);
                 }
                 break;
         }
@@ -290,7 +291,7 @@ public class OperationAlarmApi {
         event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
         return event;
     }
-    private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField) throws Exception {
+    private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField, Map<String,Object> resource) throws Exception {
 
         BaseEventContext previousExceedEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
         BaseEventContext previousShortEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT);
@@ -299,20 +300,20 @@ public class OperationAlarmApi {
             }
             if (coverageType == OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE) {
                 if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                    addEvent(createOperationEvent(" Asset is operating out of scheduled hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                    addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                 }
                 if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
-                    addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                    addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
                 }
                 return;
             }
 
         if (coverageType == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE) {
             if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
-                addEvent(createOperationEvent(" Asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
             }
             if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                addEvent(createOperationEvent(" Asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+                addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
             }
             return;
         }
