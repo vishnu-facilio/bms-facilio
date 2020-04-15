@@ -237,6 +237,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 			woItem.setTransactionCost(quantity* purchasedItem.getUnitcost());
 		}
 		woItem.setItem(item);
+		woItem.setStoreRoom(item.getStoreRoom());
 		woItem.setItemType(itemTypes);
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);

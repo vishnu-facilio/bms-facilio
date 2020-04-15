@@ -250,5 +250,14 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 		this.transactionCost = transactionCost;
 	}
 	
+	private StoreRoomContext storeRoom;
+
+	public StoreRoomContext getStoreRoom() {
+		return storeRoom;
+	}
+
+	public void setStoreRoom(StoreRoomContext storeRoom) {
+		this.storeRoom = storeRoom;
+	}
 	
 }

@@ -213,6 +213,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		woTool.setRemainingQuantity(quantity);
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		woTool.setStoreRoom(tool.getStoreRoom());
 		woTool.setToolType(tool.getToolType());
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(parentId);

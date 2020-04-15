@@ -2731,6 +2731,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUpdateInventoryRequestChain() {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			return chain;
@@ -4331,6 +4332,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());

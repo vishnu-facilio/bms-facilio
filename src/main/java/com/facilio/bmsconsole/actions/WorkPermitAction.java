@@ -110,6 +110,14 @@ private static final long serialVersionUID = 1L;
 		this.stateTransitionId = stateTransitionId;
 	}
 	
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
+	
 	private Map<String, List<WorkflowRuleContext>> stateFlows;
 	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
 		return stateFlows;
@@ -150,6 +158,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
+			c.getContext().put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 			

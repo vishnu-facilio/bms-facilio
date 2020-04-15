@@ -88,6 +88,7 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 						ToolTransactionContext transaction = new ToolTransactionContext();
 						transaction.setPurchasedTool(pt);
 						transaction.setTool(pt.getTool());
+						transaction.setStoreRoom(pt.getTool().getStoreRoom());
 						transaction.setQuantity(1);
 						transaction.setParentId(pt.getId());
 						transaction.setIsReturnable(false);
@@ -126,6 +127,7 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 			} else {
 				ToolTransactionContext transaction = new ToolTransactionContext();
 				transaction.setTool(tool);
+				transaction.setStoreRoom(tool.getStoreRoom());
 				transaction.setQuantity(tool.getQuantity());
 				transaction.setParentId(tool.getId());
 				transaction.setIsReturnable(false);
@@ -179,6 +181,7 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 				t.setQuantity(q);
 				ToolTransactionContext transaction = new ToolTransactionContext();
 				transaction.setTool(t);
+				transaction.setStoreRoom(t.getStoreRoom());
 				transaction.setQuantity(1);
 				transaction.setParentId(t.getId());
 				transaction.setIsReturnable(false);

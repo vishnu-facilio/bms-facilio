@@ -175,6 +175,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 			woTool.setShipment(shipment.getId());
 		}
 		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
+		woTool.setStoreRoom(tool.getStoreRoom());
 		woTool.setIsReturnable(true);
 		if(asset!=null) {
 			woTool.setAsset(asset);

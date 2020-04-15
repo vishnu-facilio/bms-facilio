@@ -223,6 +223,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 				costOccured = purchasedItem.getUnitcost() * quantity;
 			}
 		}
+		woItem.setStoreRoom(item.getStoreRoom());
 		woItem.setQuantity(quantity);
 		woItem.setTransactionState(TransactionState.USE);
 		if(parentTransactionId != -1) {

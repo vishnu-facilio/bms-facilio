@@ -123,6 +123,14 @@ public class InventoryRequestAction extends FacilioAction {
 	public void setInventoryType(int inventoryType) {
 		this.inventoryType = inventoryType;
 	}
+	
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
+	}
 
 	private List<InventoryRequestLineItemContext> lineItems;
 	
@@ -135,6 +143,8 @@ public class InventoryRequestAction extends FacilioAction {
 	public String addOrUpdateInventoryRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryRequest);
+		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+		
 		
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateInventoryRequestChain();
 		chain.execute(context);

@@ -61,6 +61,7 @@ public class AddOrUpdateItemStockTransactionsCommand extends FacilioCommand {
 				}
 				transaction.setPurchasedItem(ic);
 				transaction.setItem(ic.getItem());
+				transaction.setStoreRoom(item.getStoreRoom());
 				transaction.setItemType(item.getItemType());
 				transaction.setQuantity(ic.getQuantity());
 				transaction.setParentId(ic.getId());
@@ -118,6 +119,7 @@ public class AddOrUpdateItemStockTransactionsCommand extends FacilioCommand {
 			}
 			transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 			transaction.setItem(items);
+			transaction.setStoreRoom(items.getStoreRoom());
 			transaction.setItemType(items.getItemType());
 			transaction.setQuantity(1);
 			transaction.setAsset(asset);
