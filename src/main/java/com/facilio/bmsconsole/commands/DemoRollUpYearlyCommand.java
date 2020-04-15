@@ -90,6 +90,7 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
         	System.out.println("laststart :"+lastYearWeekStart + " latend : "+lastYearWeekEnd);
         	lastYearWeekStart = DateTimeUtil.addWeeks(lastYearWeekStart, -1);
         	lastYearWeekEnd = DateTimeUtil.addWeeks(lastYearWeekEnd, -1);
+        	thisYearWeekStart = DateTimeUtil.addWeeks(thisYearWeekStart, -1);
         	System.out.println("laststart :"+lastYearWeekStart + " latend : "+lastYearWeekEnd);
         	weekDiff = (thisYearWeekStart - lastYearWeekStart);
         	updateTtimeColumns(alarmsTableList,weekDiff,lastYearWeekStart,lastYearWeekEnd,orgId,conn);
