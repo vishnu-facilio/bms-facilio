@@ -177,6 +177,7 @@ public class AgentConstants
     public static final String HEADER = "header";
     public static final String IP = "ip";
     public static final String IDX = "idx";
+    public static final String THREAD_DUMP = "threadDump";
 
 
 }

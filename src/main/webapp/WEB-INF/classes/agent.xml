@@ -164,6 +164,15 @@
         </action>
         <action name="logCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getLogCount">
         </action>
+
+
+    </package>
+
+    <package name="ControllerApiV2" namespace="/api/v2/agent/threadDump" extends="agent">
+        <action name="list" class="com.facilio.agentv2.AgentAction" method="listThreadDump">
+        </action>
+        <action name="count" class="com.facilio.agentv2.AgentAction" method="countThreadDump">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
@@ -420,7 +429,7 @@
     </package>
 
     <package name="test" namespace="/api/v2/agent/test" extends="agent">
-       <!-- <action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
+      <!--  <action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
         </action>-->
         <action name="getPolicyGist" class="com.facilio.agentv2.AgentAction" method="getPolicyGist">
         </action>

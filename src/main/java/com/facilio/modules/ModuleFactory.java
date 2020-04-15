@@ -3633,4 +3633,13 @@ public class ModuleFactory {
 		module.setTableName("Employee");
 		return module;
 	}
+
+	public static FacilioModule getAgentThreadDumpModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("agentThreadDumpModule");
+		module.setTableName("Agent_Thread_Dump");
+		module.setDisplayName("AgentThreadDump");
+		return module;
+	}
+
 }

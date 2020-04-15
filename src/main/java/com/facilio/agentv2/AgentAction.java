@@ -658,4 +658,25 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+    public String listThreadDump(){
+        try{
+            setResult(AgentConstants.DATA, AgentThreadDumpAPI.getDumps(agentId,constructListContext(new FacilioContext())));
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting thread Dump agentId "+getAgentId()+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+    public String countThreadDump(){
+        try{
+            setResult(AgentConstants.DATA, AgentThreadDumpAPI.count(agentId));
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting thread dump count for agentId "+getAgentId()+" ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
 }

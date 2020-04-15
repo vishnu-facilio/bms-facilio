@@ -375,6 +375,20 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getAgentThreadDumpFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAgentThreadDumpModule();
+        fields.add(getIdField(module));
+        fields.add(getNewAgentIdField(module));
+        fields.add(getCreatedTime(module));
+        fields.add(getFileId(module));
+        return fields;
+    }
+
+
+    public static FacilioField getFileId(FacilioModule module){
+        return getField(AgentConstants.FILE_ID,"FILE_ID",FieldType.NUMBER);
+    }
     public static FacilioField getAgentIdField(FacilioModule module) {
         return getField(AgentKeys.AGENT_ID, "AGENT_ID", FieldType.NUMBER);
     }

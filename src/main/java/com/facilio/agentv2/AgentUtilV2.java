@@ -3,7 +3,6 @@ package com.facilio.agentv2;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
-import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -121,6 +120,9 @@ public class AgentUtilV2
      */
     public boolean processAgent(JSONObject payload, FacilioAgent agent) throws Exception {
         if (agent != null) {
+            if (containsValueCheck(AgentConstants.COMMAND,payload)) {
+                AgentThreadDumpAPI.processThreadDump(payload,agent);
+            }
             long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());

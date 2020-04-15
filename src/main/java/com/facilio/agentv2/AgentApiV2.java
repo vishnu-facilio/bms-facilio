@@ -250,12 +250,8 @@ public class AgentApiV2 {
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getNewAgentFields())
                 .andCondition(CriteriaAPI.getIdCondition(agent.getId(), MODULE));
-        if (updateRecordBuilder.update(FieldUtil.getAsJSON(agent)) > 0) {
-            return true;
-        } else {
-            LOGGER.info("Exception occurred while updating agent, updating failed");
-            return false;
-        }
+        updateRecordBuilder.update(FieldUtil.getAsJSON(agent));
+        return true;
     }
 
     public static boolean updateAgentLastDataRevievedTime(FacilioAgent agent){

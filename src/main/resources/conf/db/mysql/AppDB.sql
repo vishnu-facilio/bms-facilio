@@ -2657,6 +2657,16 @@ CREATE TABLE IF NOT EXISTS Agent_V2_Log(
         CONSTRAINT Agent_V2_Log_FK_MSGID FOREIGN KEY (MSGID) REFERENCES Iot_Message(ID)
 );
 
+CREATE TABLE IF NOT EXISTS Agent_Thread_Dump(
+                                           ID bigint AUTO_INCREMENT PRIMARY KEY,
+                                           ORGID bigint(20) NOT NULL,
+                                           AGENT_ID BIGINT(20) NOT NULL,
+                                           FILE_ID BIGINT(20) NOT NULL,
+                                           CREATED_TIME bigint(20),
+                                           CONSTRAINT Agent_Thread_Dump_FK_AGENT_ID FOREIGN KEY (AGENT_ID) REFERENCES Agent(ID),
+                                           CONSTRAINT Agent_Thread_Dump_FILEID FOREIGN KEY (FILE_ID) REFERENCES FacilioFile (FILE_ID)
+);
+
 
 CREATE TABLE IF NOT EXISTS AssetCustomModuleData (
 	ID BIGINT AUTO_INCREMENT PRIMARY KEY,
