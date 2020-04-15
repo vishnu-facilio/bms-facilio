@@ -101,6 +101,34 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	private int updateWorkOrders (WorkOrderContext workOrder, FacilioModule module, List<WorkOrderContext> oldWos, Map<Long, List<UpdateChangeSet>> changeSets, Context context, List<Long> recordIds) throws Exception {
 
 		updateWODetails(workOrder);
+		
+		boolean isTenantChanged = false;
+		boolean isScopeFieldsChanged = false;
+		
+		TenantContext tenant = null;
+		for (WorkOrderContext oldWo : oldWos) {
+			if (workOrder.getSiteId() != -1 && oldWo.getSiteId() != workOrder.getSiteId()) {
+				throw new IllegalArgumentException("Site cannot be changed for work order");
+			}
+			if (workOrder.getTenant() != null && (oldWo.getTenant() == null || workOrder.getTenant().getId() !=  oldWo.getTenant().getId())) {
+				isTenantChanged = true;
+				if (tenant == null) {
+					tenant = TenantsAPI.getTenant(workOrder.getTenant().getId());
+				}
+				if (tenant.getSiteId() != oldWo.getSiteId()) {
+					throw new IllegalArgumentException("The selected tenant belongs to another Site.");
+				}
+			}
+			if (!isScopeFieldsChanged && workOrder.getResource() != null && (oldWo.getResource() == null || workOrder.getResource().getId() !=  oldWo.getResource().getId())) {
+				isScopeFieldsChanged  = true;
+			}
+			else if (!isScopeFieldsChanged && workOrder.getAssignedTo() != null && (oldWo.getAssignedTo() == null || workOrder.getAssignedTo().getId() !=  oldWo.getAssignedTo().getId())) {
+				isScopeFieldsChanged  = true;
+			}
+			else if (!isScopeFieldsChanged && workOrder.getAssignmentGroup() != null && (oldWo.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getId() !=  oldWo.getAssignmentGroup().getId())) {
+				isScopeFieldsChanged  = true;
+			}
+		}
 
 		if (workOrder.getParentWO() != null && workOrder.getParentWO().getId() > 0) {
 			validateStatusOfParentAndChild(workOrder, oldWos);
@@ -109,17 +137,15 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		if(workOrder.getStatus() != null) {
 			validateCloseStatus(workOrder, oldWos);
 		}
-		else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
-			transferToAnotherSite(workOrder);
-		}
-		else if (workOrder.getTenant()!= null && workOrder.getTenant().getId() != -1) {
-			transferToAnotherTenant(workOrder, oldWos);
+		
+		if (isScopeFieldsChanged) {
+			TicketAPI.validateSiteSpecificData(workOrder, oldWos);			
 		}
 		
-		if (workOrder.getSiteId() == -1) {
-			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
+		if (isTenantChanged) {
 			TicketAPI.associateTenant(workOrder);
 		}
+
 		
 		int rowsUpdated = 0;
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

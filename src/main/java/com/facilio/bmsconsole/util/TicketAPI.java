@@ -1599,7 +1599,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		
 	}
 	public static void associateTenant (TicketContext ticket) throws Exception {
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
+		if (ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 ) {
 				if (AccountUtil.getCurrentOrg().getOrgId() != 320l) {
 					List<TenantContext> tenants = TenantsAPI.getAllTenantsForResource(ticket.getResource().getId());
@@ -1608,7 +1608,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			}
-			else {
+			else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 				TenantContext tenant = TenantsAPI.getTenantForResource(ticket.getResource().getId());
 				ticket.setTenant(tenant);
 			}
