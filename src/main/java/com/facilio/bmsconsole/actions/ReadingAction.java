@@ -638,14 +638,14 @@ public class ReadingAction extends FacilioAction {
 	public String getAllSpaceTypeReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE,getSpaceType());
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
 		FacilioChain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
 		getSpaceTypeReading.execute(context);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
 		spaces = (Map<Long, BaseSpaceContext>)context.get(FacilioConstants.ContextNames.SPACES);
-		System.out.println(">>>>>>> getAllSpaceTypeReadings.readings : "+readings);
-		System.out.println(">>>>>>> getAllSpaceTypeReadings.moduleMap : "+moduleMap);
-		System.out.println(">>>>>>> getAllSpaceTypeReadings.spaces : "+spaces);
 		return SUCCESS;
 	}
 	
@@ -1630,9 +1630,22 @@ public class ReadingAction extends FacilioAction {
 		this.resetCounterMetaList = resetCounterMetaList;
 	}
 	
-	public String v2getAssetReadings() throws Exception {
+	private Boolean assetReading;
+	public Boolean getAssetReading() {
+		return assetReading;
+	}
+	public void setAssetReading(Boolean assetReading) {
+		this.assetReading = assetReading;
+	}
+
+	public String v2getCategoryReadings() throws Exception {
 		setParentCategoryId(id);
-		getAssetReadings();
+		if (assetReading != null && assetReading == false) {
+			getSpaceReadings();
+		}
+		else {
+			getAssetReadings();
+		}
 		// Temp...needs to move this to reading list command
 		List<FacilioField> fields = new ArrayList<>();
 		if (this.readings != null) {

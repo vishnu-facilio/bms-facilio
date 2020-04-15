@@ -193,7 +193,6 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 		header = new HashMap<>();
 		header.put("name", "enumInputValues");
-		header.put("editable", true);
 		headers.add(header);
 
 		log.setHeaders(headers);

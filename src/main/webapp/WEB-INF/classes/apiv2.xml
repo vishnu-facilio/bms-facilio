@@ -2089,9 +2089,19 @@
 	<package name="readingsApiv2" namespace="/api/v2/readings" extends="v2Api">
 		<action name="getSubModuleRel" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSubModuleRel">
 		</action>
-		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAssetReadings">
+		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+		<action name="spacecategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ASSET_SETTINGS</param>
+			<param name="assetReading">false</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>

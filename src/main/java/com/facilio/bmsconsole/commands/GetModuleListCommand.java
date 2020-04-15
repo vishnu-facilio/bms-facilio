@@ -38,6 +38,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("alarm"));
 			moduleList.add(modBean.getModule("vendors"));
 			moduleList.add(modBean.getModule(ContextNames.TENANT_UNIT_SPACE));
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+				moduleList.add(modBean.getModule(ContextNames.TENANT));				
+			}
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
 				moduleList.add(modBean.getModule(ContextNames.PEOPLE));
 			}
