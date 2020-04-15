@@ -26,14 +26,11 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
-import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.time.DateTimeUtil;
 
 public class GetExportReportFileCommand extends FacilioCommand {
@@ -96,14 +93,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			StringBuilder url = ReportExportUtil.getClientUrl(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, context);
-			ReportTemplateContext reportTemplate=report.getReportTemplate();
-			if(reportTemplate != null) {
-				url.append("&template=").append(FieldUtil.getAsJSON(reportTemplate));
-			}
-			
-			LOGGER.debug("pdf url --- "+ url);
-			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileName, fileFormat);
+			fileUrl = ReportExportUtil.exportPdf(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, isS3Url, fileName, context);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -14,8 +12,8 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -36,7 +34,9 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				ruleType = WorkflowRuleContext.RuleType.STATE_FLOW;
 			}
 			FacilioStatus currentState = getStatus(moduleData, ruleType);
-			currentState = TicketAPI.getStatus(currentState.getId());
+			if (currentState != null) {	// For preopen
+				currentState = TicketAPI.getStatus(currentState.getId());				
+			}
 			long stateFlowId = getStateFlowId(moduleData, ruleType);
 			context.put("currentState", currentState);
 			if (currentState != null) {

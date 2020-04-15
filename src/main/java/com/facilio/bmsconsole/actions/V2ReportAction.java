@@ -1898,6 +1898,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setExportParams(Map<String, Object> exportParams) {
 		this.exportParams = exportParams;
 	}
+	
+	private Map<String, Object> renderParams;
+	public Map<String, Object> getRenderParams() {
+		return renderParams;
+	}
+	public void setRenderParams(Map<String, Object> renderParams) {
+		this.renderParams = renderParams;
+	}
 
 	private ReportTemplateContext template;
 	
@@ -1933,6 +1941,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
 		context.put("exportParams", exportParams);
+		context.put("renderParams", renderParams);
 		
 		exportChain.execute(context);
 		
@@ -1955,6 +1964,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
 		context.put("exportParams", exportParams);
+		context.put("renderParams", renderParams);
 		
 		exportChain.execute(context);
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));

@@ -45,10 +45,10 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     		let size = {width: 800, height: 768};
     		let info = JSON.parse(infoStr);
 		if (info.width) {
-			size.width = info.width;
+			size.width = parseInt(info.width);
 		}
 		if (info.height) {
-			size.height = info.height;
+			size.height = parseInt(info.height);
 		}
 		if (!isPdf) {
 			size.deviceScaleFactor = 2;
@@ -58,12 +58,16 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
         await page.emulateMedia('print');
         await page.setViewport(size);
         
-        await page.setExtraHTTPHeaders({
-            'X-Is-Export': 'true',
-            'X-Device-Type': 'puppeteer',
-            	'X-Current-Org': info.orgDomain,
-            	'X-Org-Id': info.orgId
-        })
+        let headers = {
+	        'X-Is-Export': 'true',
+	        'X-Device-Type': 'puppeteer',
+	        	'X-Current-Org': info.orgDomain,
+	        	'X-Org-Id': info.orgId
+        };
+        if (info.currentSite) {
+        		headers['X-current-site'] = info.currentSite + "";
+        }
+        await page.setExtraHTTPHeaders(headers);
         
         if(htmlContent && htmlContent != "false")
         {

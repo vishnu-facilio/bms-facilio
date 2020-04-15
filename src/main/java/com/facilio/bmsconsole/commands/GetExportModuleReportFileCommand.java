@@ -20,7 +20,6 @@ import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
@@ -66,8 +65,7 @@ private static final String ALIAS = "alias";
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			StringBuilder url = ReportExportUtil.getClientUrl(module, fileFormat, report, context);
-			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileName, fileFormat);
+			fileUrl = ReportExportUtil.exportPdf(module, fileFormat, report, isS3Url, fileName, context);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);

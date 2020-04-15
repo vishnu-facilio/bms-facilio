@@ -12,8 +12,11 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportTemplateContext;
 
 public class ReportExportUtil {
 	
@@ -38,7 +41,7 @@ public class ReportExportUtil {
 	}
 	
 	
-	public static StringBuilder getClientUrl(FacilioModule module, FileFormat fileFormat, ReportContext report, Context context) {
+	public static String exportPdf(FacilioModule module, FileFormat fileFormat, ReportContext report, Boolean isS3Url, String fileName, Context context) throws Exception {
 		long reportId = report.getId();
 		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
 		String moduleName = module.getName();
@@ -84,7 +87,23 @@ public class ReportExportUtil {
 			}
 		}
 		
-		return url;
+		if (report.getTypeEnum() == ReportType.READING_REPORT) {
+			ReportTemplateContext reportTemplate=report.getReportTemplate();
+			if(reportTemplate != null) {
+				url.append("&template=").append(FieldUtil.getAsJSON(reportTemplate));
+			}
+		}
+		
+		log.debug("pdf url --- "+ url);
+		
+		Map<String, Object> renderParams = (Map<String, Object>) context.get("renderParams");
+		JSONObject additionalInfo = new JSONObject(); 
+		if (renderParams != null) {
+			additionalInfo = new JSONObject();
+			additionalInfo.putAll(renderParams);
+		}
+		
+		return PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileName, additionalInfo, fileFormat);
 	}
 	
 }

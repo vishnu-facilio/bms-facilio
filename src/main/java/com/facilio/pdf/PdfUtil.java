@@ -53,6 +53,9 @@ public class PdfUtil {
 				}
 				additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 				additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
+				if (AccountUtil.getCurrentSiteId() != -1) {
+					additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
+				}
 				
 
 				String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo.toString()};
