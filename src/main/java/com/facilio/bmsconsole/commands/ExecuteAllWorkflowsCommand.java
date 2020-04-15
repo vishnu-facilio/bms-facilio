@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -79,7 +80,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			Boolean isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
 			if(AccountUtil.getCurrentOrg().getId() == 155l || AccountUtil.getCurrentOrg().getId() == 231l || AccountUtil.getCurrentOrg().getId() == 238l || AccountUtil.getCurrentOrg().getId() == 78l) {
-				isParallelRuleExecution = true;
+				if(FacilioProperties.isProduction()) {
+					isParallelRuleExecution = true;
+				}
 			}
 			
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
