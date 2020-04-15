@@ -1583,6 +1583,7 @@ public class FacilioConstants {
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
 	
 		public static final String TENANT_UNIT_SPACE = "tenantunit";
+		public static final String ALARM_TYPE = "alarmType";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

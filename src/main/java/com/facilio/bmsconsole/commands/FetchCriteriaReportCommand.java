@@ -24,6 +24,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -455,35 +456,38 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	private static Map<String, Object> getOperatingHoursTimeLine(FacilioContext context, DateRange dateRange) throws Exception{
 		Map<String, Object> operatingHoursObj = new HashMap<>();
 		List<Map<String, Object>> timeline = new ArrayList<>();
-		Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
-		ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
-		if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null){
-			Long operatingHourList = alarmResource.getOperatingHour();
-			if(operatingHourList != null) {
-				BusinessHoursList operatingHourObj = BusinessHoursAPI.getBusinessHours(operatingHourList);
-				if(CollectionUtils.isNotEmpty(operatingHourObj)) {
-					ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
-					do {
-						for (BusinessHourContext operatingHour : operatingHourObj) {
-							if (operatingHour.getDayOfWeek() == start.getDayOfWeek().getValue()) {
-								Map<String, Object> obj = new HashMap();
-				    			Map<String, Object> obj1 = new HashMap();
-					    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
-						    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
-						    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
-						    	obj.put("value", 1);
-						    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
-						    	obj1.put("value", 0);
-						    	timeline.add(obj);
-						    	timeline.add(obj1);
-								operatingHour.getDayOfWeek();
+		Object alarmType =  context.get(FacilioConstants.ContextNames.ALARM_TYPE);
+		if(alarmType != null) {
+			Boolean isOperationAlarm = (int)alarmType==BaseAlarmContext.Type.OPERATION_ALARM.getIndex();
+			ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
+			if(isOperationAlarm != null && isOperationAlarm && alarmResource != null){
+				Long operatingHourList = alarmResource.getOperatingHour();
+				if(operatingHourList != null) {
+					BusinessHoursList operatingHourObj = BusinessHoursAPI.getBusinessHours(operatingHourList);
+					if(CollectionUtils.isNotEmpty(operatingHourObj)) {
+						ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
+						do {
+							for (BusinessHourContext operatingHour : operatingHourObj) {
+								if (operatingHour.getDayOfWeek() == start.getDayOfWeek().getValue()) {
+									Map<String, Object> obj = new HashMap();
+					    			Map<String, Object> obj1 = new HashMap();
+						    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
+							    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
+							    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
+							    	obj.put("value", 1);
+							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
+							    	obj1.put("value", 0);
+							    	timeline.add(obj);
+							    	timeline.add(obj1);
+									operatingHour.getDayOfWeek();
+								}
 							}
-						}
-						start = start.plusDays(1);
-					}  while (start.toEpochSecond() <= end.toEpochSecond());
+							start = start.plusDays(1);
+						}  while (start.toEpochSecond() <= end.toEpochSecond());
+					}
 				}
+				operatingHoursObj.put("operatingHours.timeline", timeline);
 			}
-			operatingHoursObj.put("operatingHours.timeline", timeline);
 		}
 		return operatingHoursObj;
 	}

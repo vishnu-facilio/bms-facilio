@@ -566,6 +566,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setNewFormat(boolean newFormat) {
 		this.newFormat = newFormat;
 	}
+	private Integer alarmType;
+	
+	public Integer getAlarmType() {
+		return alarmType;
+	}
+	public void setAlarmType(Integer alarmType) {
+		this.alarmType = alarmType;
+	}
 	public String fetchReadingsFromAlarm() throws Exception {
 		
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
@@ -578,6 +586,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
 		context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
+		context.put(FacilioConstants.ContextNames.ALARM_TYPE, alarmType);
 		if(readingRuleId > 0) {
 			context.put(FacilioConstants.ContextNames.FETCH_EVENT_BAR, true);
 			context.put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
@@ -1057,6 +1066,7 @@ public class V2ReportAction extends FacilioAction {
 		ResourceContext resource = ResourceAPI.getResource(alarmOccurrence.getResource().getId());
 		this.alarmResource = resource;
 		
+		alarmType = alarmOccurrence.getAlarm().getType();
 		JSONArray dataPoints = new JSONArray();
 		if(readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
 			
