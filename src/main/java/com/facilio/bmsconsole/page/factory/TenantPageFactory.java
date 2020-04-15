@@ -34,13 +34,14 @@ public class TenantPageFactory extends PageFactory{
 		tab1.addSection(tab1Sec1);
 		
 		addSecondaryDetailsWidget(tab1Sec1);
-		addCommonSubModuleGroup(tab1Sec1);
 		addTenantSpecialWidget(tab1Sec1);
 		if (record == null) {
 			return page;
 		}
 
 		addRelatedList(tab1Sec1, record.getModuleId());
+		addCommonSubModuleGroup(tab1Sec1);
+		
 
 		return page;
 	}
