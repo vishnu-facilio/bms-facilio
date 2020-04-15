@@ -5,10 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.bmsconsole.context.*;
+
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -18,10 +22,13 @@ import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class NewEventAPI {
 
@@ -164,5 +171,35 @@ public class NewEventAPI {
 			newList.addAll(builder.get());
 		}
 		return newList;
+	}
+	
+	public static Map<Long, AlarmOccurrenceContext> updateLatestOccurrenceFromEvent(Map<Long, AlarmOccurrenceContext> latestOccurrenceMap) throws Exception {
+		if (latestOccurrenceMap == null || MapUtils.isEmpty(latestOccurrenceMap)) {
+			return null;
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_EVENT);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		for(Long id:latestOccurrenceMap.keySet()) 
+		{
+			AlarmOccurrenceContext latestOccurrence = latestOccurrenceMap.get(id);
+			
+			SelectRecordsBuilder<BaseEventContext> selectbuilder = new SelectRecordsBuilder<BaseEventContext>()
+					.beanClass(BaseEventContext.class)
+					.module(module)
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), ""+latestOccurrence.getAlarm().getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarmOccurrence"), ""+id, NumberOperators.EQUALS))
+					.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
+			
+			BaseEventContext newLatestEvent =  selectbuilder.fetchFirst();
+			if (newLatestEvent != null) {
+				latestOccurrence.setLastOccurredTime(newLatestEvent.getCreatedTime());
+			}	
+		}
+		return null;
 	}
 }
