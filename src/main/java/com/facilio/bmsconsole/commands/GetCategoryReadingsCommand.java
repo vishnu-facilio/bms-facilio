@@ -9,6 +9,8 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -49,6 +51,16 @@ public class GetCategoryReadingsCommand extends FacilioCommand {
 				relModuleImplementation(context, categoryReadingRelModule, fields, parentCategoryId);
 			}
 		}
+		else if (categoryReadingRelModule.equals(ModuleFactory.getSpaceCategoryReadingRelModule())) {
+			//Assuming if parentId is passed, it will be handled in space specific readings command.
+			long parentId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_ID, -1l);
+			if (parentId == -1) {
+				// This is only if space (type 4) readings are fetched with no category 
+				List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(SpaceType.SPACE, true);
+				context.put(FacilioConstants.ContextNames.MODULE_LIST, defaultReadings);
+			}
+		}
+		
 		return false;
 	}
 

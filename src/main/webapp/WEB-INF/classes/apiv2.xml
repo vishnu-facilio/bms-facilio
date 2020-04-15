@@ -2096,6 +2096,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
 			</result>
 		</action>
 		<action name="spacecategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
@@ -2106,6 +2107,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
 			</result>
 		</action>
 	</package>
