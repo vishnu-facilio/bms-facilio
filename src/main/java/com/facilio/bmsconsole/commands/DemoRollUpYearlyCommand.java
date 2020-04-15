@@ -99,7 +99,7 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 		}
         
         try {	
-//        	propagateAlarmOccurrenceToAlarms(alarmsTableList,lastYearWeekStart,lastYearWeekEnd,weekDiff,orgId);
+        	propagateAlarmOccurrenceToAlarms(alarmsTableList,lastYearWeekStart,lastYearWeekEnd,weekDiff,orgId);
 		}
 		catch (Exception e) {
 			LOGGER.error("###Exception occurred in propagating AlarmOccurrence DemoRollUpYearlyJob. TableName is:  " + alarmsTableList);
@@ -149,7 +149,6 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 				
 				if(tableNamekey.equals("AlarmOccurrence") && primaryColumn.equals("CREATED_TIME") && orgId != -1) 
 				{
-					AccountUtil.setCurrentAccount(orgId);
 					List<BaseAlarmContext> baseAlarms = getDistinctAlarms(lastYearWeekStart+weekDiff,lastYearWeekEnd+weekDiff);
 					if(baseAlarms != null && !baseAlarms.isEmpty()) 
 					{		
