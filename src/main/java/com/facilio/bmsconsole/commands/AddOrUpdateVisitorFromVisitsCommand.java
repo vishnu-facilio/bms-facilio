@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -29,6 +30,7 @@ public class AddOrUpdateVisitorFromVisitsCommand extends FacilioCommand{
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
+				CommonCommandUtil.handleLookupFormData(modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING), vL.getData());
 				if(StringUtils.isNotEmpty(vL.getVisitorPhone())) {
 					VisitorContext visitor = VisitorManagementAPI.getVisitor(-1, vL.getVisitorPhone());
 					if(visitor == null) {

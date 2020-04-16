@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
@@ -38,6 +39,7 @@ public class AddOrUpdatePurchaseRequestCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			CommonCommandUtil.handleLookupFormData(fields, purchaseRequestContext.getData());
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
 			

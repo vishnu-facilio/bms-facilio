@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VisitorContext;
