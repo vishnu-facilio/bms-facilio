@@ -176,7 +176,7 @@ public class ChatBotAction extends FacilioAction {
 		event.setAction(action);
 		event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
 		event.setSessionType(LiveSessionType.TENANT_PORTAL);
-		event.setContent(chatMessage2);
+		event.addData("result", chatMessage2.toJSONString());
 		
 		WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), event);
 	}
