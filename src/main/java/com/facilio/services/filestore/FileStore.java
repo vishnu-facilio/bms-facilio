@@ -613,7 +613,6 @@ public abstract class FileStore {
 		props.put("isDeleted", true);
 		props.put("deletedBy", AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId() : -1);
 		props.put("deletedTime", System.currentTimeMillis());
-		LOGGER.info("Delete Message Queue props in Filestore : "+props);
 		return builder.update(props);
 	}
 	public String orginalFileUrl (long fileId) throws Exception {
