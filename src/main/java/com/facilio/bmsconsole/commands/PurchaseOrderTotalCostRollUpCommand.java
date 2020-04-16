@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,17 +32,27 @@ public class PurchaseOrderTotalCostRollUpCommand extends FacilioCommand {
 		if (purchaseOrder != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
-			
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
+
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
 			//get total cost from line items
+			List<FacilioField> updatedFields = new ArrayList<FacilioField>();
+			updatedFields.add(fieldsMap.get("totalCost"));
+			updatedFields.add(fieldsMap.get("totalQuantity"));
+			
 			double totalCost = getTotalCost(purchaseOrder.getId());
 			double totalQuantity = getTotalQuantity(purchaseOrder.getId());
-			purchaseOrder.setTotalCost(totalCost);
-			purchaseOrder.setTotalQuantity(totalQuantity);
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("totalCost", totalCost);
+			map.put("totalQuantity", totalQuantity);
+			
 			//update total cost for purchase order
 			UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
-					.module(module).fields(modBean.getAllFields(module.getName()))
+					.module(module).fields(updatedFields)
 					.andCondition(CriteriaAPI.getIdCondition(purchaseOrder.getId(), module));
-			updateBuilder.update(purchaseOrder);
+			updateBuilder.updateViaMap(map);
 		}
 		return false;
 	}
