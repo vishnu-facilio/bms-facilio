@@ -611,6 +611,8 @@ public abstract class FileStore {
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("isDeleted", true);
+		props.put("deletedBy", AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId() : -1);
+		props.put("deletedTime", System.currentTimeMillis());
 		return builder.update(props);
 	}
 	public String orginalFileUrl (long fileId) throws Exception {

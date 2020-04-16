@@ -3637,6 +3637,8 @@ public class FieldFactory {
 
         fields.add(getField("fileId", "FILE_ID", module, FieldType.ID));
         fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
 
         return fields;
     }
