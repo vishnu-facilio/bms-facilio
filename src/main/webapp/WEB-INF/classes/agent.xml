@@ -168,7 +168,7 @@
 
     </package>
 
-    <package name="ControllerApiV2" namespace="/api/v2/agent/threadDump" extends="agent">
+    <package name="ControllerThreadApiV2" namespace="/api/v2/agent/threadDump" extends="agent">
         <action name="list" class="com.facilio.agentv2.AgentAction" method="listThreadDump">
         </action>
         <action name="count" class="com.facilio.agentv2.AgentAction" method="countThreadDump">
