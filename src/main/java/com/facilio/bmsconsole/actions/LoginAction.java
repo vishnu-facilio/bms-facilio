@@ -321,6 +321,17 @@ public class LoginAction extends FacilioAction {
 		account.put("portalInfo", AccountUtil.getPortalInfo());
 		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
 		Map<String, Object> data = new HashMap<>();
+		
+		
+		try {
+			Map<String, Object> config = new HashMap<>();
+			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.TENANT_PORTAL, LiveSessionSource.WEB));
+			account.put("config",config);	
+		} catch (Exception e) {
+			log.error("Error getting socket endpoint in portal",e);
+		}
+		
+		
 		data.put("users", users);
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
