@@ -54,7 +54,11 @@ public class GetConnectedAppDetailsCommand extends FacilioCommand{
 			if (props != null && !props.isEmpty()) {
 				List<ConnectedAppWidgetContext> connectedAppWidgetsList = new ArrayList<>();
 				for(Map<String, Object> prop : props) {
-					connectedAppWidgetsList.add(FieldUtil.getAsBeanFromMap(prop, ConnectedAppWidgetContext.class));
+					ConnectedAppWidgetContext connectedAppWidget = FieldUtil.getAsBeanFromMap(prop, ConnectedAppWidgetContext.class);
+					if(connectedAppWidget.getCriteriaId() > 0){
+						connectedAppWidget.setCriteria(CriteriaAPI.getCriteria(connectedAppWidget.getCriteriaId()));
+					}
+					connectedAppWidgetsList.add(connectedAppWidget);
 				}
 				connectedAppContext.setConnectedAppWidgetsList(connectedAppWidgetsList);
 			}

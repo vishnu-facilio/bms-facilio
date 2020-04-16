@@ -4152,9 +4152,25 @@
 			<param name="isNewPermission">true</param>
 		</action>
 		
+		<action name="deleteSAML"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="deleteConnectedAppSAML">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
 		<action name="addOrUpdateWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addOrUpdateConnectedAppWidget">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
+		<action name="deleteWidget"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="deleteConnectedAppWidget">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>

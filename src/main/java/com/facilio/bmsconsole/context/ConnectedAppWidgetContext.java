@@ -1,16 +1,26 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private long id;
+	Criteria criteria;
 	private long criteriaId;
 	private long connectedAppId;
 	private String widgetName;
 	private long entityId;
 	private String resourcePath;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
 
 	public long getId() {
 		return id;
@@ -60,25 +70,30 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 		this.resourcePath = resourcePath;
 	}
 
-	private EntityType entityType;
+	private EntityType entityTypeEnum;
 
+	public void setEntityTypeEnum(EntityType entityTypeEnum) {
+		this.entityTypeEnum = entityTypeEnum;
+	}
+	
 	public EntityType getEntityTypeEnum() {
+		if(entityType > 0){
+			return EntityType.valueOf(entityType);
+		}
+		return entityTypeEnum;
+	}
+	
+	private int entityType;
+
+	public int getEntityType() {
+		if(entityTypeEnum!=null){
+			return entityTypeEnum.getValue();
+		}
 		return entityType;
 	}
 
-	public void setEntityType(EntityType entityType) {
-		this.entityType = entityType;
-	}
-
-	public int getEntityType() {
-		if (entityType != null) {
-			return entityType.getValue();
-		}
-		return -1;
-	}
-
 	public void setEntityType(int entityType) {
-		this.entityType = EntityType.valueOf(entityType);
+		this.entityType = entityType;
 	}
 
 	public enum EntityType {

@@ -27,7 +27,7 @@ public class AddOrUpdateConnectedAppWidgetCommand extends FacilioCommand {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
 						.fields(FieldFactory.getConnectedAppWidgetsFields())
-						.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID","connectedAppId",String.valueOf(ConnectedAppWidgetContext.getConnectedAppId()), NumberOperators.EQUALS));
+						.andCondition(CriteriaAPI.getIdCondition(ConnectedAppWidgetContext.getId(), ModuleFactory.getConnectedAppWidgetsModule()));
 				
 				Map<String, Object> props = FieldUtil.getAsProperties(ConnectedAppWidgetContext);
 				updateBuilder.update(props);

@@ -23,8 +23,12 @@ import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.modules.ModuleFactory;
 
 public class ConnectedAppAction extends FacilioAction {
 
@@ -79,8 +83,41 @@ public class ConnectedAppAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteConnectedAppSAML() throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getConnectedAppSAMLModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID","connectedAppId",String.valueOf(connectedAppId), NumberOperators.EQUALS));
+		
+		builder.delete();
+		return SUCCESS;
+	}
+	
+	public String deleteConnectedAppWidget() throws Exception {
+		
+		if(connectedAppWidget.getCriteriaId() > 0){
+			CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
+		}
+		
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(connectedAppWidget.getId(), ModuleFactory.getConnectedAppWidgetsModule()));
+		
+		builder.delete();
+		return SUCCESS;
+	}
+	
 	public String addOrUpdateConnectedAppWidget() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if(connectedAppWidget.getCriteria() != null){
+			if(connectedAppWidget.getCriteriaId() > 0){
+				CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
+			}
+			long criteriaId = CriteriaAPI.addCriteria(connectedAppWidget.getCriteria());
+			connectedAppWidget.setCriteriaId(criteriaId);
+		}else if(connectedAppWidget.getCriteria() == null && connectedAppWidget.getCriteriaId() > 0){
+			CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
+		}
+		
 		context.put(FacilioConstants.ContextNames.RECORD, connectedAppWidget);
 		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppWidgetChain();
 		addItem.execute(context);
