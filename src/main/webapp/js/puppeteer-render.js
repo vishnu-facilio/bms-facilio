@@ -86,7 +86,13 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
         		await page.pdf({path: output, format: 'A4'});
         }
         else {
-        		await page.screenshot({path: output, quality: 100});
+        		if (info.printableArea) {
+        			const el = await page.$(info.printableArea);
+        			await el.screenshot({path: output, quality: 100});
+        		}
+        		else {
+        			await page.screenshot({path: output, quality: 100});        			
+        		}
         }
 
     }catch(e){
