@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 
@@ -17,6 +19,24 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private String productionBaseUrl;
 	private String startUrl;
 	private Boolean showInLauncher;
+	private ConnectedAppSAMLContext connectedAppSAML;
+	private List<ConnectedAppWidgetContext> connectedAppWidgetsList;
+	
+	public List<ConnectedAppWidgetContext> getConnectedAppWidgetsList() {
+		return connectedAppWidgetsList;
+	}
+
+	public void setConnectedAppWidgetsList(List<ConnectedAppWidgetContext> connectedAppWidgetsList) {
+		this.connectedAppWidgetsList = connectedAppWidgetsList;
+	}
+
+	public ConnectedAppSAMLContext getConnectedAppSAML() {
+		return connectedAppSAML;
+	}
+
+	public void setConnectedAppSAML(ConnectedAppSAMLContext connectedAppSAML) {
+		this.connectedAppSAML = connectedAppSAML;
+	}
 
 	public Boolean getIsActive() {
 		return isActive;

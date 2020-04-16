@@ -4119,6 +4119,14 @@
 			<param name="permission">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
+		
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="getConnectedAppDetails">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
@@ -4143,7 +4151,15 @@
 			<param name="permission">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
-
+		
+		<action name="addOrUpdateWidget"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="addOrUpdateConnectedAppWidget">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
 		<action name="downloadCertificate"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="downloadCertificate">
@@ -4215,15 +4231,6 @@
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
 			<result name="success">/jsps/connection.jsp</result>
-		</action>
-	</package>
-	
-	<package name="connectedAppsDetails" namespace="/api/v2/connectedApps/details"
-		extends="v2Api">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
-			method="connectedAppDetails">
-			<param name="linkName">{1}</param>
 		</action>
 	</package>
 	

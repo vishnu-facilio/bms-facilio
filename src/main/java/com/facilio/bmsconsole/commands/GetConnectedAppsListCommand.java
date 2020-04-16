@@ -29,13 +29,11 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
 				;
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<ConnectedAppContext> connectedApps = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			List<ConnectedAppContext> connectedApps = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				connectedApps.add(FieldUtil.getAsBeanFromMap(prop, ConnectedAppContext.class));
 			}
-			
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, connectedApps);
 		}
 		
 		selectBuilder = new GenericSelectRecordBuilder()
@@ -44,13 +42,12 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 				;
 		props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			List<ConnectedAppSAMLContext> connectedAppSAML = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				connectedAppSAML.add(FieldUtil.getAsBeanFromMap(prop, ConnectedAppSAMLContext.class));
+				ConnectedAppSAMLContext connectedAppSAML = FieldUtil.getAsBeanFromMap(prop, ConnectedAppSAMLContext.class);
+				connectedApps.stream().filter(ca->ca.getId()==connectedAppSAML.getConnectedAppId()).findFirst().get().setConnectedAppSAML(connectedAppSAML);
 			}
-			
-			context.put(FacilioConstants.ContextNames.CONNECTEDAPP_SAML_LIST, connectedAppSAML);
 		}
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, connectedApps);
 		return false;
 	}
 }

@@ -1015,14 +1015,12 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain fetchConnectedAppDetails() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForConnectedApps());
 		c.addCommand(new GetConnectedAppDetailsCommand());
 		return c;
 	}
 	
 	public static FacilioChain getConnectedAppsList() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForConnectedApps());
 		c.addCommand(new GetConnectedAppsListCommand());
 		return c;
 	}
