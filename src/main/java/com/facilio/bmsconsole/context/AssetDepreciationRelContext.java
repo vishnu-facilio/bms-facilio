@@ -28,8 +28,8 @@ public class AssetDepreciationRelContext implements Serializable {
         this.depreciationId = depreciationId;
     }
 
-    private long depreciationAmount = -1;
-    public long getDepreciationAmount() {
+    private float depreciationAmount = -1;
+    public float getDepreciationAmount() {
         return depreciationAmount;
     }
     public void setDepreciationAmount(long depreciationAmount) {

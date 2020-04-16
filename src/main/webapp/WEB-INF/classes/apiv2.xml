@@ -396,6 +396,8 @@
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="activate" />
 		<action name="deactivate"
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="deactivate" />
+		<action name="addAsset"
+				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="addAssetInDepreciation" />
 	</package>
 
 	<package name="approvalTransition" extends="v2Api" namespace="/api/v2/approval">

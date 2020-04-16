@@ -4841,8 +4841,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new AddPeopleAccessCommand());
-		
-		
+
+
 		return c;
 	}
 	
@@ -4903,7 +4903,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
-		
+
 		return c;
 	}
 	
@@ -4913,8 +4913,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
-		
-		
+
+
 		return c;
 	}
 	
@@ -4924,8 +4924,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new AddPeopleAccessCommand());
-		
-		
+
+
 		return c;
 	}
 	
@@ -4960,7 +4960,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
-	
+
 
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
 	{
@@ -5203,7 +5203,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateClientAppPortalAccessCommand());
-		
+
 		return c;
 	}
 	
@@ -5261,7 +5261,7 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	
+
 	public static FacilioChain enableEnergyStarChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetEnergyStarCustomerCommand());
@@ -5276,7 +5276,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddEnergyStarMeterCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain updateEnergyStarPropertyChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetEnergyStarCustomerCommand());
@@ -5284,12 +5284,18 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateEnergyStarPropertyUseCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain deleteEnergyStarPropertyChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new DeleteEnergyStarPropertyCommand());
 		return c;
+	}
+
+	public static FacilioChain getAddAssetToDepreciationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddAssetToDepreciationCommand());
+		return chain;
 	}
 }
 

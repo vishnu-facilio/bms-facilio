@@ -16,7 +16,9 @@ import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.MultiLookupMeta;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,5 +73,22 @@ public class AssetDepreciationAPI {
                 .table(ModuleFactory.getAssetDepreciationRelModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("DEPRECIATION_ID", "depreciationId", String.valueOf(id), NumberOperators.EQUALS));
         builder.delete();
+    }
+
+    public static void addAsset(Long depreciationId, List<Long> assetIds) throws Exception {
+        if (CollectionUtils.isEmpty(assetIds)) {
+            return;
+        }
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .fields(FieldFactory.getAssetDepreciationRelFields())
+                .table(ModuleFactory.getAssetDepreciationRelModule().getTableName());
+        for (Long assetId : assetIds) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("assetId", assetId);
+            map.put("depreciationId", depreciationId);
+            map.put("activated", false);
+            builder.addRecord(map);
+        }
+        builder.save();
     }
 }

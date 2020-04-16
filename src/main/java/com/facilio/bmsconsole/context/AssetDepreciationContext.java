@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Calendar;
 import java.util.List;
@@ -67,6 +66,30 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         this.frequencyType = frequencyType;
     }
 
+    private long totalPriceFieldId = -1;
+    public long getTotalPriceFieldId() {
+        return totalPriceFieldId;
+    }
+    public void setTotalPriceFieldId(long totalPriceFieldId) {
+        this.totalPriceFieldId = totalPriceFieldId;
+    }
+
+    private long salvagePriceFieldId = -1;
+    public long getSalvagePriceFieldId() {
+        return salvagePriceFieldId;
+    }
+    public void setSalvagePriceFieldId(long salvagePriceFieldId) {
+        this.salvagePriceFieldId = salvagePriceFieldId;
+    }
+
+    private long currentPriceFieldId = -1;
+    public long getCurrentPriceFieldId() {
+        return currentPriceFieldId;
+    }
+    public void setCurrentPriceFieldId(long currentPriceFieldId) {
+        this.currentPriceFieldId = currentPriceFieldId;
+    }
+
     private long startDateFieldId = -1;
     public long getStartDateFieldId() {
         return startDateFieldId;
@@ -115,9 +138,32 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         }
     }
 
+    public interface Frequency {
+
+    }
+
     public enum DepreciationType implements FacilioEnum {
-        SINGLE,
-        DOUBLE
+        SINGLE {
+            @Override
+            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice) {
+                float depreciatedAmount = totalDepreciationAmount / frequency;
+                float newPrice = currentPrice - depreciatedAmount;
+                if (newPrice < depreciatedAmount) {
+                    return 0;
+                }
+                return newPrice;
+            }
+        },
+        DOUBLE {
+            @Override
+            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice) {
+                float newPrice = currentPrice - ((currentPrice / frequency) * 2);
+                if (newPrice < 0) {
+                    newPrice = 0;
+                }
+                return newPrice;
+            }
+        }
         ;
 
         public static DepreciationType valueOf(int value) {
@@ -126,6 +172,8 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
             }
             return null;
         }
+
+        public abstract float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice);
 
         @Override
         public int getIndex() {
@@ -138,11 +186,7 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         }
     }
 
-    public interface Frequency {
-
-    }
-
-    public enum FrequencyType implements FacilioEnum, Frequency {
+    public enum FrequencyType implements FacilioEnum {
         MONTHLY,
         QUARTERLY,
         HALF_YEARLY,

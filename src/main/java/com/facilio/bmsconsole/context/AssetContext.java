@@ -287,8 +287,23 @@ public class AssetContext extends ResourceContext {
 	public void setIdentifiedLocation(SiteContext identifiedLocation) {
 		this.identifiedLocation = identifiedLocation;
 	}
-	
-	
+
+	private int salvageAmount = -1;
+	public int getSalvageAmount() {
+		return salvageAmount;
+	}
+	public void setSalvageAmount(int salvageAmount) {
+		this.salvageAmount = salvageAmount;
+	}
+
+	private int currentPrice = -1;
+	public int getCurrentPrice() {
+		return currentPrice;
+	}
+	public void setCurrentPrice(int currentPrice) {
+		this.currentPrice = currentPrice;
+	}
+
 	public String getUrl() {
 		return FacilioProperties.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
 	}

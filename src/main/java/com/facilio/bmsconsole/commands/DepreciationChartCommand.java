@@ -7,14 +7,12 @@ import com.facilio.bmsconsole.context.AssetDepreciationRelContext;
 import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.*;
 
@@ -41,33 +39,59 @@ public class DepreciationChartCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Asset not found");
             }
 
-            float unitPrice = assetContext.getUnitPrice();
-            if (unitPrice == -1) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+            String assetModuleName = FacilioConstants.ContextNames.ASSET;
+            FacilioField totalPriceField = modBean.getField(assetDepreciation.getTotalPriceFieldId(), assetModuleName);
+            if (totalPriceField == null) {
+                throw new IllegalArgumentException("Invalid total price field");
+            }
+            float totalPrice = (int) FieldUtil.getValue(assetContext, totalPriceField);
+            if (totalPrice == -1) {
                 throw new IllegalArgumentException("Price cannot be empty");
             }
 
+            FacilioField salvageAmountField = modBean.getField(assetDepreciation.getSalvagePriceFieldId(), assetModuleName);
+            int salvageAmount = (int) FieldUtil.getValue(assetContext, salvageAmountField);
+
+            FacilioField startDateField = modBean.getField(assetDepreciation.getStartDateFieldId(), assetModuleName);
+            long date = (long) FieldUtil.getValue(assetContext, startDateField);
+            if (date == -1) {
+                throw new IllegalArgumentException("Start date cannot be empty");
+            }
+
+            AssetDepreciationContext.DepreciationType depreciationType = assetDepreciation.getDepreciationTypeEnum();
+
             List<Map<String, Object>> mapList = new ArrayList<>();
-            long date = System.currentTimeMillis();
             Calendar instance = Calendar.getInstance();
             instance.setTimeInMillis(date);
             int dayOfMonth = instance.get(Calendar.DATE);
 
-            float depreciationAmount = unitPrice / assetDepreciation.getFrequency();
+            float unitPrice = totalPrice;
+
+            // remove the salvage amount from total depreciate amount
+            if (salvageAmount > 0) {
+                totalPrice -= salvageAmount;
+            }
+
             while (unitPrice >= 0) {
+
                 Map<String, Object> map = new HashMap<>();
 
                 instance.setTimeInMillis(date);
                 instance.set(Calendar.DATE, dayOfMonth);
                 date = instance.getTimeInMillis();
 
-                date = assetDepreciation.nextDate(date);
                 map.put("price", unitPrice);
                 map.put("date", DateTimeUtil.getFormattedTime(date, "dd-MMM-yyyy"));
-                unitPrice = Math.round(unitPrice - depreciationAmount);
-                if (unitPrice > 0 && unitPrice < depreciationAmount) {
-                    unitPrice = 0;
+
+                if (unitPrice <= 0) {
+                    break;
                 }
 
+                date = assetDepreciation.nextDate(date);
+                unitPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
+                unitPrice = Math.round(unitPrice);
                 mapList.add(map);
             }
 
