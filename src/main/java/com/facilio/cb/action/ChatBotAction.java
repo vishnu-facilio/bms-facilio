@@ -119,7 +119,7 @@ public class ChatBotAction extends FacilioAction {
 
 	public String chat() throws Exception {
 		
-		sendToWMS(chatMessage);
+		sendToWMS(chatMessage,"userMessage");
 		
 		FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
 		
@@ -163,17 +163,17 @@ public class ChatBotAction extends FacilioAction {
 			
 			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 			
-			sendToWMS(getResult());
+			sendToWMS(getResult(),"botMessage");
 		}
 		
 		return SUCCESS;
 	}
 	
-	private void sendToWMS(JSONObject chatMessage2) throws Exception {
+	private void sendToWMS(JSONObject chatMessage2,String action) throws Exception {
 		
 		WmsEvent event = new WmsEvent();
 		event.setNamespace("chatbot");
-		event.setAction("newChatMessage");
+		event.setAction(action);
 		event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
 		event.setSessionType(LiveSessionType.TENANT_PORTAL);
 		event.setContent(chatMessage2);
