@@ -6,10 +6,15 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateRecordBuilder;
 
 public class UpdateBaseSpaceCommand extends FacilioCommand {
@@ -22,21 +27,22 @@ public class UpdateBaseSpaceCommand extends FacilioCommand {
 		{
 
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
+			if(moduleName.equals("space")) {
+				if(((SpaceContext)baseSpace).getSpaceCategory() != null) {
+					SpaceCategoryContext spaceCategory = (SpaceCategoryContext) RecordAPI.getRecord(FacilioConstants.ContextNames.SPACE_CATEGORY, ((SpaceContext)baseSpace).getSpaceCategory().getId());
+					if(spaceCategory != null && spaceCategory.getSpaceModuleId() > 0 && spaceCategory.getName().equals("Tenant Unit")) {
+						moduleName = FacilioConstants.ContextNames.TENANT_UNIT_SPACE;
+					}
+				}
+			}
 			context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);	
 
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-
-				
-				UpdateRecordBuilder<BaseSpaceContext> builder = new UpdateRecordBuilder<BaseSpaceContext>()
-						.moduleName(moduleName)
-						.fields(modBean.getAllFields(moduleName))
-						.andCondition(CriteriaAPI.getIdCondition(Collections.singletonList(baseSpace.getId()) ,module));
-															
-			long id = builder.update(baseSpace);
-			baseSpace.setId(id);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			RecordAPI.updateRecord(baseSpace, module, modBean.getAllFields(moduleName));
+																		
+			context.put(FacilioConstants.ContextNames.RECORD_ID, baseSpace.getId());
 		}
 		else 
 		{

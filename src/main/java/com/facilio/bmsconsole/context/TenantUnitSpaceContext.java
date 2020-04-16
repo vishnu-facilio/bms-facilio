@@ -32,7 +32,6 @@ public class TenantUnitSpaceContext extends SpaceContext{
 		this.isOccupied = isOccupied;
 	}
 
-	@JsonInclude
 	public boolean isOccupied() {
 		if (isOccupied != null) {
 			return isOccupied.booleanValue();
