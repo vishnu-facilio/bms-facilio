@@ -411,6 +411,7 @@ public class AdminAction extends ActionSupport {
 
 	public String fieldMigration() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 		long orgId = Long.parseLong(request.getParameter("orgid"));
 		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
 		long sourceFieldId = Long.parseLong(request.getParameter("sourceField"));
@@ -419,7 +420,10 @@ public class AdminAction extends ActionSupport {
 
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		bean.readingFieldsMigration(orgId, sourceFieldId, assetId,  assetCategoryId, targetFieldId);
-
+		request.removeAttribute("orgid");
+		request.removeAttribute("assetcategory");
+		request.removeAttribute("assetId");
+		response.sendRedirect("fieldMigration");
 		return SUCCESS;
 	}
 

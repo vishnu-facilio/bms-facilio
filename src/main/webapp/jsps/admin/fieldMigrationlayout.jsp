@@ -223,9 +223,9 @@
 
         <%--        <br> <br> <br>--%>
 
-        <label for="fieldId"><h5>
-           Default Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-        <select name="fieldId" id="fieldId">
+        <label for="sourceField"><h5>
+           Source Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <select name="sourceField" id="sourceField">
             <option value="" disabled selected>Select</option>
             <%
 
@@ -234,24 +234,11 @@
                     reading = bean.getAssetReadings(parentCategoryId);
                     for (FacilioModule list : reading) {
                         for (FacilioField fields : list.getFields()) {
-                            if ((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))) {
-                                if ((fields.getName().equals("totalEnergyConsumption")
-                                        || fields.getName().equals("phaseEnergyR")
-                                        || fields.getName().equals("phaseEnergyY")
-                                        || fields.getName().equals("phaseEnergyB"))
-                                        || (fields.getDataTypeEnum() == FieldType.NUMBER
-                                        || fields.getDataTypeEnum() == FieldType.DECIMAL)
-                                        && ((NumberField) fields).isCounterField()) {
             %>
             <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
             </option>
 
             <%
-                }
-            } else {%>
-            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
-            </option>
-            <% }
             }
             }
             }
@@ -260,9 +247,9 @@
         <br>
         <br>
         <br>
-        <label for="fieldId"><h5>
-            Custom Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-        <select name="fieldId" id="fieldId">
+        <label for="targetField"><h5>
+            Target Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <select name="targetField" id="targetField">
             <option value="" disabled selected>Select</option>
             <%
 
@@ -271,18 +258,12 @@
                     reading = bean.getAssetReadings(parentCategoryId);
                     for (FacilioModule list : reading) {
                         for (FacilioField fields : list.getFields()) {
-//                            if ((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))) {
-                                if (fields.getDefault() == false) {
             %>
             <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>
             </option>
 
             <%
-              //  }
-            } else {%>
-<%--            <option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%>--%>
-<%--            </option>--%>
-            <% }
+              //
             }
             }
             }

@@ -62,8 +62,8 @@ public class DeleteAssetReadingCommand extends FacilioCommand {
             SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
                     .module(readingModule)
                     .beanClass(ReadingContext.class)
-                    .select(readingsFields)
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(), ""+readingModule.getModuleId(), NumberOperators.EQUALS));
+                    .select(readingsFields);
+//                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(), ""+readingModule.getModuleId(), NumberOperators.EQUALS));
             if (readingField != null) {
                 builder.andCondition(CriteriaAPI.getCondition(readingField, CommonOperators.IS_NOT_EMPTY));
             }
@@ -77,6 +77,8 @@ public class DeleteAssetReadingCommand extends FacilioCommand {
             int offset = 0;
             builder.offset(offset);
             builder.limit(recordLimit);
+            builder.orderBy("id");
+
             List<ReadingContext> readingsList = builder.get();
             if (readingsList != null && !readingsList.isEmpty()) {
                 List<Long> batchParentIds = readingsList.stream().map(reading -> reading.getParentId()).collect(Collectors.toList());

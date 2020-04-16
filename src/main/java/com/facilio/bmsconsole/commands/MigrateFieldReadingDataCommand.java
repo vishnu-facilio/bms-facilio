@@ -57,7 +57,7 @@ public class MigrateFieldReadingDataCommand extends FacilioCommand {
                     .beanClass(ReadingContext.class)
                     .select(sourcefields)
                     .andCondition(CriteriaAPI.getCondition(sourceField, CommonOperators.IS_NOT_EMPTY));
-            if (!resources.isEmpty()) {
+            if (resources != null && !resources.isEmpty()) {
                 builder.andCondition(CriteriaAPI.getCondition(sourcefieldMap.get("parentId"),resources, NumberOperators.EQUALS));
             }
             int offset = 0;
