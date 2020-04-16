@@ -1907,13 +1907,13 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			space.setSiteId(building.getSiteId());
 		}
-		if(space.getFloor().getId() != -1 && space.getFloor().getId() != 0) {
+		if(space.getFloor().getId() > 0) {
 			long floorId = space.getFloor().getId();
 			FloorContext floor = SpaceAPI.getFloorSpace(floorId);
 			space.setSiteId(floor.getSiteId());
 			space.setBuilding(floor.getBuilding());
 		}
-		if (space.getParentSpace() != null && space.getParentSpace().getId() > -1) {
+		if (space.getParentSpace() != null && space.getParentSpace().getId() > 0) {
 			long spaceId = space.getParentSpace().getId();
 			SpaceContext spaces = SpaceAPI.getSpace(spaceId);
 			space.setSiteId(spaces.getSiteId());
