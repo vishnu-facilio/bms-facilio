@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -193,16 +192,6 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedAppList(List<ConnectedAppContext> connectedAppList) {
 		this.connectedAppList = connectedAppList;
 	}
-	
-	private List<ConnectedAppSAMLContext> connectedAppSAMLList;
-
-	public List<ConnectedAppSAMLContext> getConnectedAppSAMLList() {
-		return connectedAppSAMLList;
-	}
-
-	public void setConnectedAppSAMLList(List<ConnectedAppSAMLContext> connectedAppSAMLList) {
-		this.connectedAppSAMLList = connectedAppSAMLList;
-	}
 
 	public String connectedAppList() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -213,7 +202,6 @@ public class ConnectedAppAction extends FacilioAction {
 		connectedAppList = (List<ConnectedAppContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedAppList);
-		setResult(FacilioConstants.ContextNames.CONNECTEDAPP_SAML_LIST, connectedAppSAMLList);
 		return SUCCESS;
 	}
 	
