@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 
 public class SetSpaceCategoryModuleDetailsCommand extends FacilioCommand{
 
@@ -20,6 +21,8 @@ public class SetSpaceCategoryModuleDetailsCommand extends FacilioCommand{
 				SpaceCategoryContext spaceCategory = (SpaceCategoryContext) RecordAPI.getRecord(FacilioConstants.ContextNames.SPACE_CATEGORY, space.getSpaceCategory().getId());
 				if(spaceCategory != null && spaceCategory.getSpaceModuleId() > 0 && spaceCategory.getName().equals("Tenant Unit")) {
 					SetTableNamesCommand.getForTenantUnitSpace().execute(context);
+					TenantUnitSpaceContext ts = FieldUtil.cloneBean(space, TenantUnitSpaceContext.class);
+					context.put(FacilioConstants.ContextNames.SPACE, ts);
 					return false;
 				}
 			}

@@ -124,6 +124,9 @@ public class SpaceAction extends FacilioAction {
 	public String addSpace() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		if(tenantSpace != null) {
+			space = tenantSpace;
+		}
 		context.put(FacilioConstants.ContextNames.SPACE, space);
 		
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
@@ -137,7 +140,7 @@ public class SpaceAction extends FacilioAction {
 		FacilioChain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
 		
-		setSpaceId(space.getId());
+		setSpaceId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 		
 		return SUCCESS;
 	}
@@ -370,4 +373,14 @@ public class SpaceAction extends FacilioAction {
 	{
 		this.tenant = tenant;
 	}
+	
+	private TenantUnitSpaceContext tenantSpace;
+	public TenantUnitSpaceContext getTenantSpace() {
+		return tenantSpace;
+	}
+
+	public void setTenantSpace(TenantUnitSpaceContext tenantSpace) {
+		this.tenantSpace = tenantSpace;
+	}
+	
 }

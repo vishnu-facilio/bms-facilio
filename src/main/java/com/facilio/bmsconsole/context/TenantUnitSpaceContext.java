@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class TenantUnitSpaceContext extends SpaceContext{
 
@@ -20,9 +21,10 @@ public class TenantUnitSpaceContext extends SpaceContext{
 	}
 	
 
-	private Boolean isOccupied;
+	@JsonInclude
+	private Boolean isOccupied = false;
 
-	public Boolean getisOccupied() {
+	public Boolean getIsOccupied() {
 		return isOccupied;
 	}
 
@@ -30,6 +32,7 @@ public class TenantUnitSpaceContext extends SpaceContext{
 		this.isOccupied = isOccupied;
 	}
 
+	@JsonInclude
 	public boolean isOccupied() {
 		if (isOccupied != null) {
 			return isOccupied.booleanValue();
