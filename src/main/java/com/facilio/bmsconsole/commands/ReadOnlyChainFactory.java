@@ -849,6 +849,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseRequestListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return chain;
 	}
 
@@ -857,6 +858,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
 		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new FetchPurchaseRequestDetailsCommand());
 		return c;
 	}
