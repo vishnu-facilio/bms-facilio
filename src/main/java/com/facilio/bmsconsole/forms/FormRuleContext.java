@@ -18,7 +18,7 @@ public class FormRuleContext {
 	long fieldId = -1;
 	long criteriaId = -1;
 	Criteria criteria;
-	
+	FormRuleType type;
 	TriggerType triggerType;
 	RuleType ruleType;
 	
@@ -30,6 +30,17 @@ public class FormRuleContext {
 
 	public void setActions(List<FormRuleActionContext> actions) {
 		this.actions = actions;
+	}
+	
+	public int getType() {
+		if(type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setType(int type) {
+		this.type = FormRuleType.getAllRuleType().get(type);
 	}
 
 	public boolean evaluateCriteria (Map<String, Object> record,FacilioContext context) throws Exception {
@@ -222,6 +233,52 @@ public class FormRuleContext {
 		}
 
 		public static Map<Integer, RuleType> getAllRuleType() {
+			return ruleTypeMap;
+		}
+	}
+	
+	public enum FormRuleType {
+		
+		FROM_RULE(1,"From Rule"),
+		FROM_FORM(2,"From Form"),
+		;
+
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public void setIntVal(int intVal) {
+			this.intVal = intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		private FormRuleType(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, FormRuleType> ruleTypeMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, FormRuleType> initTypeMap() {
+			Map<Integer, FormRuleType> typeMap = new HashMap<>();
+
+			for (FormRuleType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, FormRuleType> getAllRuleType() {
 			return ruleTypeMap;
 		}
 	}

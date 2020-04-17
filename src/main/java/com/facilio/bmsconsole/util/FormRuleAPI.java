@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
@@ -19,6 +20,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -29,6 +32,7 @@ public class FormRuleAPI {
 	
 	public static final String FORM_RULE_RESULT_JSON = "formRuleResultJSON";
 	public static final String FORM_RULE_CONTEXT = "formRuleContext";
+	public static final String FORM_RULE_CONTEXTS = "formRuleContexts";
 	public static final String FORM_RULE_ACTION_CONTEXT = "formRuleActionContext";
 	
 	public static final String FORM_RULE_TRIGGER_TYPE = "formRuleTriggerType";
@@ -140,6 +144,39 @@ public class FormRuleAPI {
 			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
 			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 			return formRuleContext;
+		}
+		return null;
+	}
+	
+	public static List<FormRuleContext> getFormRuleContexts(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		Map<String, FacilioField> formFieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
+		
+		Map<String, FacilioField> formRuleFieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleFields())
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.innerJoin(ModuleFactory.getFormModule().getTableName())
+				.on("Forms.ID = Form_Rule.FORM_ID")
+				.andCondition(CriteriaAPI.getCondition(formFieldMap.get("moduleId"), ""+module.getModuleId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("type"), ""+FormRuleContext.FormRuleType.FROM_RULE.getIntVal(), NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			List<FormRuleContext> formRuleContexts = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				formRuleContexts.add(formRuleContext);
+			}
+			return formRuleContexts;
 		}
 		return null;
 	}

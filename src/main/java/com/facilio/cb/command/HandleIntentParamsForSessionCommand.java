@@ -96,7 +96,7 @@ public class HandleIntentParamsForSessionCommand extends FacilioCommand {
 								ChatBotDateContext cbDateContext = FieldUtil.getAsBeanFromJson(cbDate, ChatBotDateContext.class);
 								value = ChatBotDateTimeUtil.compute(chatBotParam, cbDateContext);
 							}
-							if(chatBotParam.getMlTypeEnum() == ML_Type.TIME) {
+							else if(chatBotParam.getMlTypeEnum() == ML_Type.TIME) {
 								JSONObject cbtime = (JSONObject) json.get("value");
 								ChatBotTimeContext cbtimeContext = FieldUtil.getAsBeanFromJson(cbtime, ChatBotTimeContext.class);
 								value = ChatBotDateTimeUtil.compute(chatBotParam, cbtimeContext);

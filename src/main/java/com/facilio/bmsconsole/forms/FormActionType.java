@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 
@@ -96,6 +97,18 @@ public enum FormActionType {
 			Criteria criteria = formRuleActionContext.getCriteria();
 			if(criteria == null) {
 				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), formRuleActionContext.getCriteriaId());
+			}
+			
+			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			
+			for(String key : criteria.getConditions().keySet()) {
+				
+				Condition condition = criteria.getConditions().get(key);
+				
+				if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
+					String value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, condition.getValue());
+					condition.setValue(value);
+				}
 			}
 			
 			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);

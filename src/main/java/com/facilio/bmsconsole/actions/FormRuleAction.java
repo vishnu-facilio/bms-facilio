@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
@@ -22,8 +23,17 @@ public class FormRuleAction extends FacilioAction {
 	 private long formFieldId;
 	 private int triggerType;
 	 Map<String,Object> formData;
+	 String moduleName;
 	 
-	 FormRuleContext formRuleContext;
+	 public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	FormRuleContext formRuleContext;
 
 	 public FormRuleContext getFormRuleContext() {
 		return formRuleContext;
@@ -109,6 +119,20 @@ public class FormRuleAction extends FacilioAction {
 		
 		formRuleContext = FormRuleAPI.getFormRuleContext(formRuleContext.getId());
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		return SUCCESS;
+	}
+	
+	public String getRuleList() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getFormRuleList();
+		
+		Context context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
+		
+		chain.execute();
+		
+		setResult(FormRuleAPI.FORM_RULE_CONTEXTS, context.get(FormRuleAPI.FORM_RULE_CONTEXTS));
 		return SUCCESS;
 	}
 
