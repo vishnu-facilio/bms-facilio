@@ -1,6 +1,7 @@
 package com.facilio.cb.action;
 
 import java.io.File;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -18,6 +19,7 @@ import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.WmsChatMessage;
@@ -158,10 +160,10 @@ public class ChatBotAction extends FacilioAction {
 			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_JSON);
 			
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotReplyMessage);
-			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT));
+			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, FieldUtil.getAsJSONArray((List<ChatBotSuggestionContext>)context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS), ChatBotSuggestionContext.class));
+			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,FieldUtil.getAsJSON(context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT)));
 			
-			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
+			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, FieldUtil.getAsJSON(context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION)));
 			
 			sendToWMS(getResult(),"botMessage");
 		}
