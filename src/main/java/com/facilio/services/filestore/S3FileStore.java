@@ -27,6 +27,7 @@ import com.amazonaws.services.cloudfront.util.SignerUtils;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -186,22 +187,11 @@ public class S3FileStore extends FileStore {
 			return false;
 		}
 		
-//		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());
 		return  deleteFiles(Collections.singletonList(fileId));
 	}
 
 	@Override
 	public boolean deleteFiles(List<Long> fileId) throws Exception {
-		
-		/*List<String> filePathList = getFilePathList(fileId);
-		
-		try {
-			DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
-					.withKeys(filePathList.toArray(new String[filePathList.size()]));
-			AwsUtil.getAmazonS3Client().deleteObjects(dor);
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		}*/
 		return markAsDeleted(fileId) > 0;
 	}
 
@@ -445,6 +435,27 @@ public class S3FileStore extends FileStore {
 			metaData.setContentLength(imageInByte.length);
 			return AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, bis, metaData);
 		}
+	}
+	
+	@Override
+	public boolean deleteFilePermenantly(long fileId) throws Exception {
+		
+		FileInfo fileInfo = getFileInfo(fileId);
+		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());
+		
+		return deleteFileEntry(fileId);
+	}
+	
+	@Override
+	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+		
+		List<String> filePathList = getFilePathList(fileIds);
+		
+		DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
+				.withKeys(filePathList.toArray(new String[filePathList.size()]));
+		AwsUtil.getAmazonS3Client().deleteObjects(dor);
+		
+		return deleteFileEntries(fileIds);
 	}
 	
 }

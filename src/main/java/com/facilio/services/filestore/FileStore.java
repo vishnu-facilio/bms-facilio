@@ -667,9 +667,13 @@ public abstract class FileStore {
 	
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
 		
-	public abstract boolean deleteFile(long fileId) throws Exception;
+	public abstract boolean deleteFile(long fileId) throws Exception;	// Mark As Deleted
 	
-	public abstract boolean deleteFiles(List<Long> fileId) throws Exception;
+	public abstract boolean deleteFiles(List<Long> fileId) throws Exception; 	// Mark As Deleted
+	
+	public abstract boolean deleteFilePermenantly(long fileId) throws Exception;
+
+	public abstract boolean deleteFilesPermanently(List<Long> fileIds) throws Exception;
 	
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
 

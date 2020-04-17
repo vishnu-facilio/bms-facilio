@@ -188,14 +188,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		}
 		
 		return deleteFiles(Collections.singletonList(fileId));
-		/*boolean status = new File(fileInfo.getFilePath()).delete();
-		if (status) {
-			// deleting db entry
-			return deleteFileEntry(fileId);
-		}
-		else {
-			return status;
-		}*/
+		
 	}
 
 	@Override
@@ -300,5 +293,26 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 				}
 			}
 		}
+	}
+	
+	@Override
+	public boolean deleteFilePermenantly(long fileId) throws Exception {
+		return deleteFilesPermanently(Collections.singletonList(fileId));
+	}
+	
+	@Override
+	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+		List<String> filePathList = getFilePathList(fileIds);
+		boolean status = true;
+		for(String path: filePathList) {
+			status = new File(path).delete();
+			if (status == false) {
+				break;
+			}
+		}
+		if (status) {
+			deleteFileEntries(fileIds);
+		}
+		return status;
 	}
 }

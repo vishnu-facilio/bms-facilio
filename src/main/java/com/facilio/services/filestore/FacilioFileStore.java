@@ -1,7 +1,16 @@
 package com.facilio.services.filestore;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -11,22 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.util.ImageScaleUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileInfo;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.services.filestore.FileStore;
+import javax.imageio.ImageIO;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.imageio.ImageIO;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.ImageScaleUtil;
+import com.facilio.fs.FileInfo;
 
 public class FacilioFileStore extends FileStore {
 	private static Logger log = LogManager.getLogger(FacilioFileStore.class.getName());
@@ -406,6 +407,23 @@ public class FacilioFileStore extends FileStore {
 
 		Integer statusCode = (Integer) response.get("status");
 		return statusCode;
+		
+	}
+
+	@Override
+	public boolean deleteFilePermenantly(long fileId) throws Exception {
+		
+		// TODO call api to delete file
+//		return deleteFileEntry(fileId);
+		return false;
+	}
+
+	@Override
+	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+		
+		// TODO call api to delete file
+//		return deleteFileEntries(fileIds);
+		return false;
 		
 	}
 	
