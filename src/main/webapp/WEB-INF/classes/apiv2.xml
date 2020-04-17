@@ -5732,8 +5732,8 @@
 			class="com.facilio.bmsconsole.actions.PeopleAction" method="deletePeople" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.PeopleAction" method="getPeopleDetails" />
-		<action name="updatePortalAccess"
-			class="com.facilio.bmsconsole.actions.PeopleAction" method="updatePortalAccess" />
+		<action name="updateOccupantPortalAccess"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="updateOccupantPortalAccess" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PeopleAction" method="peopleList">
 			<param name="viewName">{1}</param>

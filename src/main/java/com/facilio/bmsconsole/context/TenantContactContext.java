@@ -53,20 +53,4 @@ public class TenantContactContext extends PeopleContext{
 		return false;
 	}
 	
-	private Boolean isOccupantPortalAccess;
-
-	public Boolean getIsOccupantPortalAccess() {
-		return isOccupantPortalAccess;
-	}
-
-	public void setIsOccupantPortalAccess(Boolean occupantPortalAccess) {
-		this.isOccupantPortalAccess = occupantPortalAccess;
-	}
-
-	public boolean isOccupantPortalAccess() {
-		if (isOccupantPortalAccess != null) {
-			return isOccupantPortalAccess.booleanValue();
-		}
-		return false;
-	}
 }

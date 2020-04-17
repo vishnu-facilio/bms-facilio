@@ -151,6 +151,11 @@ public class FacilioConstants {
 		public static final String APPLICATION_ID = "applicationId";
 
 		public static final String APP_ID = "appId";
+		public static final String TENANT_PORTAL_APP_ID = "tenantPortalappId";
+		public static final String SERVICE_PORTAL_APP_ID = "servicePortalappId";
+		public static final String VENDOR_PORTAL_APP_ID = "vendorPortalappId";
+		public static final String CLIENT_PORTAL_APP_ID = "clientPortalappId";
+		
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
         public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
 

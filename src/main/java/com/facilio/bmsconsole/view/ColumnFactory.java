@@ -182,7 +182,9 @@ public class ColumnFactory {
 		columnMap.put("floor-default", getDefaultFloorViewColumns());
 		columnMap.put("tenantunit-default",getDefaultTenantUnitSpaceColumns());
 		columnMap.put("tenantspaces-default",getDefaultTenantSpacesColumns());
-
+		
+		columnMap.put("people-default",getDefaultPeopleColumns());
+		
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -1374,6 +1376,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("area", "Total Area"));
 		columns.add(new ViewField("isOccupied", "Occupied Status"));
 
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPeopleColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("peopleType", "People Type"));
+	
 
 		return columns;
 	}

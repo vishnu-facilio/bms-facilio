@@ -4828,6 +4828,8 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPeople());
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new AddPeopleAccessCommand());
+		
 		
 		return c;
 	}
@@ -4862,6 +4864,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
 		return c;
 	}
 	public static FacilioChain getListOfFloorPlanChain() {
@@ -4877,6 +4880,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateTenantAppPortalAccessCommand());
 		return c;
 	}
 	
@@ -4886,6 +4890,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		
 		return c;
 	}
 	
@@ -4894,6 +4900,8 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		
 		
 		return c;
 	}
@@ -4903,6 +4911,8 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPeople());
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new AddPeopleAccessCommand());
+		
 		
 		return c;
 	}
@@ -4928,6 +4938,14 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		return c;
+	}
+	
+	public static FacilioChain updatePeopleAppAccessChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	
@@ -5172,6 +5190,8 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateClientAppPortalAccessCommand());
+		
 		return c;
 	}
 	

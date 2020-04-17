@@ -48,7 +48,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum PeopleType implements FacilioEnum {
-		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OTHERS;
+		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OCCUPANT, DEFAULT, OTHERS;
 
 		@Override
 		public int getIndex() {
@@ -104,4 +104,20 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		this.roleId = roleId;
 	}
 	
+	private Boolean isOccupantPortalAccess;
+
+	public Boolean getIsOccupantPortalAccess() {
+		return isOccupantPortalAccess;
+	}
+
+	public void setIsOccupantPortalAccess(Boolean occupantPortalAccess) {
+		this.isOccupantPortalAccess = occupantPortalAccess;
+	}
+
+	public boolean isOccupantPortalAccess() {
+		if (isOccupantPortalAccess != null) {
+			return isOccupantPortalAccess.booleanValue();
+		}
+		return false;
+	}
 }

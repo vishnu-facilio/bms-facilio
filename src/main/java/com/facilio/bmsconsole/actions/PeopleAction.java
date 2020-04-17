@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -87,6 +88,24 @@ public class PeopleAction extends FacilioAction{
 	public void setPeopleIds(List<Long> peopleIds) {
 		this.peopleIds = peopleIds;
 	}
+	
+	private long appId;
+	
+	public long getAppId() {
+		return appId;
+	}
+	public void setAppId(long appId) {
+		this.appId = appId;
+	}
+	
+	private long occupantPortalAppId;
+	
+	public long getOccupantPortalAppId() {
+		return occupantPortalAppId;
+	}
+	public void setOccupantPortalAppId(long occupantPortalAppId) {
+		this.occupantPortalAppId = occupantPortalAppId;
+	}
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
@@ -94,6 +113,7 @@ public class PeopleAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -106,6 +126,9 @@ public class PeopleAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -180,6 +203,20 @@ public class PeopleAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.PEOPLE, people);
 		
 		return SUCCESS;
+	}
+	
+	public String updateOccupantPortalAccess() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(peopleList)) {
+			FacilioChain c = TransactionChainFactory.updatePeopleAppAccessChain();
+			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
+			
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+		  
 	}
 	
 }

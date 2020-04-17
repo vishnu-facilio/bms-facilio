@@ -7,7 +7,9 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 
@@ -17,31 +19,16 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 	    List<PeopleContext> people = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
+	   Long occupantPortalAppId = (Long)context.getOrDefault(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, -1l);
+		
 	    if(CollectionUtils.isNotEmpty(people)) {
-//	    	AppDomain facilioApp = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-//	    	AppDomain occupantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL);
-//	    	AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL);
-//	    	AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL);
-//	    	AppDomain clientPortalApp = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL);
-//	    	
-//	    	for(PeopleContext person : people) {
-//	    		if(facilioApp != null && person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isAppAccess()) {
-//	    			PeopleAPI.addAppUser(person, facilioApp != null ? facilioApp.getDomain() : null);
-//	    		}
-//	    		if(occupantPortalApp != null && ((person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isOccupantPortalAccess())|| (person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isOccupantPortalAccess()))) {
-//	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp != null ? occupantPortalApp.getDomain() : null, 1);
-//	    		}
-//	    		if(vendorPortalApp != null && person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)person).isVendorPortalAccess()) {
-//	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, vendorPortalApp.getId());
-//	    		}
-//	    		if(tenantPortalApp != null && person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isTenantPortalAccess()) {
-//	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? tenantPortalApp.getDomain() : null, 1);
-//	    		}
-//	    		if(clientPortalApp != null && person.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT && ((ClientContactContext)person).isClientPortalAccess()) {
-//	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? clientPortalApp.getDomain() : null, 1);
-//	    		}
-//	    		
-//		    }
+	    	
+	    	List<AppDomain> occupantPortalApps = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
+	    	if(CollectionUtils.isNotEmpty(occupantPortalApps)) {
+    			for(PeopleContext ppl : people) {
+					PeopleAPI.updatePeoplePortalAccess(ppl, AppDomainType.SERVICE_PORTAL, occupantPortalAppId);
+				}
+		    }
 	    }
 		return false;
 	}

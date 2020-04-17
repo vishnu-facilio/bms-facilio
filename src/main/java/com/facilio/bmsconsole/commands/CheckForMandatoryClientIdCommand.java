@@ -19,9 +19,6 @@ public class CheckForMandatoryClientIdCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(clientContacts)) {
 			for(ClientContactContext cc : clientContacts) {
 				cc.setPeopleType(PeopleType.CLIENT_CONTACT);
-				if(cc.isClientPortalAccess()) {
-					context.put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
-				}
 				if(cc.getClient() == null || cc.getClient().getId() <=0 ) {
 					throw new IllegalArgumentException("Client Contact must have a client id associated");
 				}

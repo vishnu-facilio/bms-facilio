@@ -88,12 +88,13 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
-	private long appId;
-	public long getAppId() {
-		return appId;
+	private long clientPortalAppId;
+	
+	public long getClientPortalAppId() {
+		return clientPortalAppId;
 	}
-	public void setAppId(long appId) {
-		this.appId = appId;
+	public void setClientPortalAppId(long clientPortalAppId) {
+		this.clientPortalAppId = clientPortalAppId;
 	}
 	public String addClientContacts() throws Exception {
 		
@@ -102,7 +103,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
 			
 				
 			c.execute();
@@ -115,7 +116,10 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(clientContacts)) {
 			FacilioChain c = TransactionChainFactory.updateClientContactChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
+			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -197,9 +201,7 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(clientContacts)) {
 			FacilioChain c = TransactionChainFactory.updateClientContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
-			//1 - Client portal
-			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.CLIENT_CONTACT, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

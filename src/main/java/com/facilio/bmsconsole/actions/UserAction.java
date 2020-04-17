@@ -305,16 +305,16 @@ public class UserAction extends FacilioAction {
 			}
 		}
 		catch (Exception e) {
-			if (e instanceof AccountException) {
-				AccountException ae = (AccountException) e;
-				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
+			if (e.getCause() != null && e.getCause() instanceof AccountException) {
+				AccountException ae = (AccountException) e.getCause();
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS) || ae.getErrorCode().equals(AccountException.ErrorCode.USER_ALREADY_EXISTS_IN_APP)) {
 					addFieldError("error", "This user already exists in this app of your organization.");
+					return ERROR;
 				}
 			}
-			else {
-				log.info("Exception occurred ", e);
-				addFieldError("error", "This user already exists in this app of your organization.");
-			}
+			log.info("Exception occurred ", e);
+			addFieldError("error", e.getMessage());
+			
 			return ERROR;
 		}
 		return SUCCESS;
@@ -376,18 +376,24 @@ public class UserAction extends FacilioAction {
 				addUser.execute(context);
 		}
 		catch (Exception e) {
-			if (e instanceof AccountException) {
-				AccountException ae = (AccountException) e;
+			if (e.getCause() != null && e.getCause() instanceof AccountException) {
+				AccountException ae = (AccountException) e.getCause();
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
-					addFieldError("error", "This user already exists in your organization.");
+					addFieldError("error", "This user already exists in the app of your organization.");
+					return ERROR;
 				}
-				if (ae.getErrorCode().equals(AccountException.ErrorCode.NOT_PERMITTED)) {
+				else if (ae.getErrorCode().equals(AccountException.ErrorCode.NOT_PERMITTED)) {
 					addFieldError("error", "Not Permitted to do this operation");
+					return ERROR;
 				}
-			} else {
-				log.info("Exception occurred ", e);
-				addFieldError("error", "This user already exists in your organization.");
-			}
+				else if (ae.getErrorCode().equals(AccountException.ErrorCode.USER_ALREADY_EXISTS_IN_APP)) {
+					addFieldError("error", "This user already exists in the app of your organization.");
+					return ERROR;
+				}
+			} 
+			log.info("Exception occurred ", e);
+			addFieldError("error", e.getMessage());
+			
 			return ERROR;
 		}
 		setUserId(user.getId());

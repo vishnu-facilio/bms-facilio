@@ -137,11 +137,14 @@ public class UserBeanImpl implements UserBean {
 					createUserEntry(orgId, user, isSelfSignup, isEmailVerificationNeeded);
 				}
 				else {
-					throw new IllegalArgumentException("User already exists in app");
+					throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_APP, "User already exists in app");
 				}
 			}
 		}
 		catch(Exception e) {
+			if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
+				throw e;
+			}
 			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 			throw e;
 		}
@@ -739,6 +742,9 @@ public class UserBeanImpl implements UserBean {
 		}
 		catch(AccountException ex) {
 			if(ex.getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL) {
+				throw ex;
+			}
+			if(ex.getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
 				throw ex;
 			}
 			if(ex.getErrorCode() == ErrorCode.INVALID_APP_DOMAIN) {

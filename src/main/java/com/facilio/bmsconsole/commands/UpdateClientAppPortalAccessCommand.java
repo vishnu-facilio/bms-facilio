@@ -16,13 +16,10 @@ public class UpdateClientAppPortalAccessCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ClientContactContext> clientContacts = (List<ClientContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		Integer accessChangeFor = (Integer)context.getOrDefault(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 0);
-		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
+		Long appId = (Long)context.getOrDefault(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, -1l);
 		if(CollectionUtils.isNotEmpty(clientContacts)) {
-			if(accessChangeFor == 1) {
-				for(ClientContactContext tc : clientContacts) {
-					PeopleAPI.updateClientContactAppPortalAccess(tc, AppDomainType.CLIENT_PORTAL, appId);
-				}
+			for(ClientContactContext tc : clientContacts) {
+				PeopleAPI.updateClientContactAppPortalAccess(tc, AppDomainType.CLIENT_PORTAL, appId);
 			}
 		}
 		return false;

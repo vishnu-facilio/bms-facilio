@@ -87,15 +87,13 @@ public class VendorContactAction extends FacilioAction{
 		this.id = id;
 	}
 	
-	private long appId;
-	
-	public long getAppId() {
-		return appId;
+	private long vendorPortalAppId;
+	public long getVendorPortalAppId() {
+		return vendorPortalAppId;
 	}
-	public void setAppId(long appId) {
-		this.appId = appId;
+	public void setVendorPortalAppId(long vendorPortalAppId) {
+		this.vendorPortalAppId = vendorPortalAppId;
 	}
-	
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -103,7 +101,7 @@ public class VendorContactAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
 			
 		
 			c.execute();
@@ -116,7 +114,10 @@ public class VendorContactAction extends FacilioAction{
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
+			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -197,9 +198,7 @@ public class VendorContactAction extends FacilioAction{
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
-			//1 - Vendor portal
-			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.execute();

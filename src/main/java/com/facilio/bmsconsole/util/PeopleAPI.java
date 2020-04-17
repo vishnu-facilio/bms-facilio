@@ -109,31 +109,31 @@ public class PeopleAPI {
 		
 		PeopleContext peopleExisiting = getPeople(user.getEmail());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 		long pplId = -1;
 		if(peopleExisiting == null) {
-			EmployeeContext people = new EmployeeContext();
-			people.setIsAssignable(false);
+			PeopleContext people = new PeopleContext();
 			people.setEmail(user.getEmail());
 			people.setName(user.getName());
 			people.setActive(true);
 			people.setPhone(user.getMobile());
-			people.setPeopleType(PeopleType.EMPLOYEE);
-			people.setIsAppAccess(false);
+			people.setPeopleType(PeopleType.OCCUPANT);
 			people.setIsOccupantPortalAccess(true);
 			
-			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			
 			RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 			pplId = people.getId();
-			}
-		else {
-			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
-			emp.setIsOccupantPortalAccess(true);
-			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
-			pplId = emp.getId();
+			updatePeopleIdInOrgUsers(pplId, user.getOuid());
+			
 		}
-		updatePeopleIdInOrgUsers(pplId, user.getOuid());
+//		else {
+//			PeopleContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), PeopleContext.class);
+//			emp.setIsOccupantPortalAccess(true);
+//			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
+//			pplId = emp.getId();
+//		}
+//		updatePeopleIdInOrgUsers(pplId, user.getOuid());
+		
 		
 	}
 	
@@ -240,15 +240,68 @@ public class PeopleAPI {
 	}
 	
 	
-	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType, long appId, List<UpdateChangeSet> changes) throws Exception {
-	   AppDomain appDomain = null;
-		if(appId > 0) {
-			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+	public static void updateEmployeeAppPortalAccess(EmployeeContext person, AppDomainType appDomainType, long appId) throws Exception {
+	   
+		EmployeeContext existingPeople = (EmployeeContext) RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId());
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
+			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
-		else {
-			//temp handling to be removed when app id is being sent
-			if(appDomainType == AppDomainType.FACILIO) {
-				appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+		
+			if(existingPeople.isAppAccess() && existingPeople.getRoleId() <= 0) {
+				throw new IllegalArgumentException("Role cannot be null");
+			}
+		
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
+			}
+			else {
+				//temp handling to be removed when app id is being sent
+				if(appDomainType == AppDomainType.FACILIO) {
+					appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+				}
+			}
+			if(appDomain != null) {
+				User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+				if((appDomainType == AppDomainType.FACILIO && existingPeople.isAppAccess())) {
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+						ApplicationApi.addUserInApp(user, false);
+						if(user.getRoleId() != existingPeople.getRoleId()) {
+							user.setRoleId(existingPeople.getRoleId());
+							AccountUtil.getUserBean().updateUser(user);
+						}
+					}
+					else {
+						User newUser = addAppUser(existingPeople, appDomain.getDomain());
+						newUser.setAppDomain(appDomain);
+					}
+				}
+				else {
+					if(user != null) {
+						ApplicationApi.deleteUserFromApp(user, appDomain);
+					}
+				}
+			}
+	        else {
+	        	throw new IllegalArgumentException("Invalid App Domain");
+	        }
+		}	
+		
+	}
+	
+	public static void updateTenantContactAppPortalAccess(TenantContactContext person, AppDomainType appDomainType, long appId) throws Exception {
+		
+		TenantContactContext existingPeople = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, person.getId());
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isTenantPortalAccess())){
+			throw new IllegalArgumentException("Email Id associated with this contact is empty");
+		}
+		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 			}
 			else {
 				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
@@ -259,172 +312,167 @@ public class PeopleAPI {
 			    	   appDomain = appDomains.get(0);
 			       }
 			}
-		}
-	
-		PeopleContext existingPeople = getPeopleForId(person.getId());
-		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
-			throw new IllegalArgumentException("Email Id associated with this employee is empty");
-		}
-    	
-        if(appDomain != null) {
-			User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
-			if((appDomainType == AppDomainType.FACILIO && person.isAppAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
-				if(user != null) {
-					user.setAppDomain(appDomain);
-					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
-					if(RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE)) {
-						ApplicationApi.addUserInApp(user);
+			if(appDomain != null) {
+	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+	        	if((appDomainType == AppDomainType.TENANT_PORTAL && existingPeople.isTenantPortalAccess())) {
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+				    	ApplicationApi.addUserInApp(user, false);
 					}
-					if(user.getRoleId() != existingPeople.getRoleId()) {
-						user.setRoleId(existingPeople.getRoleId());
-						AccountUtil.getUserBean().updateUser(user);
+					else {
+						User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
+						newUser.setAppDomain(appDomain);
 					}
 				}
 				else {
-					User newUser = addAppUser(existingPeople, appDomain.getDomain());
-					newUser.setAppDomain(appDomain);
+					if(user != null) {
+						ApplicationApi.deleteUserFromApp(user, appDomain);
+					}
 				}
 			}
-			else {
-				if(user != null) {
-					ApplicationApi.deleteUserFromApp(user, appDomain);
-				}
-			}
+	        else {
+	        	throw new IllegalArgumentException("Invalid App Domain");
+	        }
 		}
-        else {
-        	throw new IllegalArgumentException("Invalid App Domain");
-        }
-		
 	}
 	
-	public static void updateTenantContactAppPortalAccess(TenantContactContext person, AppDomainType appDomainType, long appId) throws Exception {
-	   AppDomain appDomain = null;
-		if(appId > 0) {
-			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
-		}
-		else {
-			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-		       if(CollectionUtils.isNotEmpty(appDomains)) {
-		    	   if(appDomains.size() > 1) {
-		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
-		    	   }
-		    	   appDomain = appDomains.get(0);
-		       }
-		}
-		PeopleContext existingPeople = getPeopleForId(person.getId());
-		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+	public static void updatePeoplePortalAccess(PeopleContext person, AppDomainType appDomainType, long appId) throws Exception {
+	
+		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
-		if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
-        	if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
-				if(user != null) {
-					user.setAppDomain(appDomain);
-					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
-			    	ApplicationApi.addUserInApp(user);
-				}
-				else {
-					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
-					newUser.setAppDomain(appDomain);
-				}
+		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 			}
 			else {
-				if(user != null) {
-					ApplicationApi.deleteUserFromApp(user, appDomain);
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+			       if(CollectionUtils.isNotEmpty(appDomains)) {
+			    	   if(appDomains.size() > 1) {
+			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    	   }
+			    	   appDomain = appDomains.get(0);
+			       }
+			}
+			if(appDomain != null) {
+	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+	        	if((appDomainType == AppDomainType.SERVICE_PORTAL && existingPeople.isOccupantPortalAccess())) {
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+				    	ApplicationApi.addUserInApp(user, false);
+					}
+					else {
+						User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
+						newUser.setAppDomain(appDomain);
+					}
+				}
+				else {
+					if(user != null) {
+						ApplicationApi.deleteUserFromApp(user, appDomain);
+					}
 				}
 			}
+	        else {
+	        	throw new IllegalArgumentException("Invalid App Domain");
+	        }
 		}
-        else {
-        	throw new IllegalArgumentException("Invalid App Domain");
-        }
-		
 	}
 	
 	public static void updateClientContactAppPortalAccess(ClientContactContext person, AppDomainType appDomainType, long appId) throws Exception {
-		AppDomain appDomain = null;
-		if(appId > 0) {
-			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
-		}
-		else {
-			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-		       if(CollectionUtils.isNotEmpty(appDomains)) {
-		    	   if(appDomains.size() > 1) {
-		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
-		    	   }
-		    	   appDomain = appDomains.get(0);
-		       }
-		}
-		PeopleContext existingPeople = getPeopleForId(person.getId());
-		if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+		
+		ClientContactContext existingPeople = (ClientContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, person.getId());
+		
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isClientPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
-    	
-        if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
-        	if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
-				if(user != null) {
-					user.setAppDomain(appDomain);
-					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
-				    ApplicationApi.addUserInApp(user);
-				}
-				else {
-					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
-					newUser.setAppDomain(appDomain);
-				}
+		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 			}
 			else {
-				if(user != null) {
-					ApplicationApi.deleteUserFromApp(user, appDomain);
-				}
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+			       if(CollectionUtils.isNotEmpty(appDomains)) {
+			    	   if(appDomains.size() > 1) {
+			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    	   }
+			    	   appDomain = appDomains.get(0);
+			       }
 			}
-	    }
-        else {
-        	throw new IllegalArgumentException("Invalid App Domain");
-        }
-		
+			if(appDomain != null) {
+	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+	        	if((appDomainType == AppDomainType.CLIENT_PORTAL && existingPeople.isClientPortalAccess())) {
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+					    ApplicationApi.addUserInApp(user, false);
+					}
+					else {
+						User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
+						newUser.setAppDomain(appDomain);
+					}
+				}
+				else {
+					if(user != null) {
+						ApplicationApi.deleteUserFromApp(user, appDomain);
+					}
+				}
+		    }
+	        else {
+	        	throw new IllegalArgumentException("Invalid App Domain");
+	        }
+			
+		}	
 	}
 	
 	public static void updateVendorContactAppPortalAccess(VendorContactContext person, AppDomainType appDomainType, long appId) throws Exception {
-       AppDomain appDomain = null;
-		if(appId > 0) {
-			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
-		}
-		else {
-			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
-		       if(CollectionUtils.isNotEmpty(appDomains)) {
-		    	   if(appDomains.size() > 1) {
-		    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
-		    	   }
-		    	   appDomain = appDomains.get(0);
-		       }
-		}
-	    PeopleContext existingPeople = getPeopleForId(person.getId());
-	    if(existingPeople != null && StringUtils.isEmpty(existingPeople.getEmail())) {
+		
+		VendorContactContext existingPeople = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, person.getId());
+		
+		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isVendorPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
-		if(appDomain != null) {
-        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
-        	if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
-				if(user != null) {
-					user.setAppDomain(appDomain);
-					user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
-				    ApplicationApi.addUserInApp(user);
-				}
-				else {
-					User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
-					newUser.setAppDomain(appDomain);
-		    	}
+		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 			}
 			else {
-				if(user != null) {
-					ApplicationApi.deleteUserFromApp(user, appDomain);
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+			       if(CollectionUtils.isNotEmpty(appDomains)) {
+			    	   if(appDomains.size() > 1) {
+			    		   throw new IllegalArgumentException("Please send the appId as there are multiple apps configured for this type");
+			    	   }
+			    	   appDomain = appDomains.get(0);
+			       }
+			}
+			if(appDomain != null) {
+	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+	        	if((appDomainType == AppDomainType.VENDOR_PORTAL && existingPeople.isVendorPortalAccess())) {
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(ApplicationApi.getApplicationIdForApp(appDomain));
+					    ApplicationApi.addUserInApp(user, false);
+					}
+					else {
+						User newUser = addPortalAppUser(existingPeople, appDomain.getDomain(), appDomain.getIdentifier());
+						newUser.setAppDomain(appDomain);
+			    	}
+				}
+				else {
+					if(user != null) {
+						ApplicationApi.deleteUserFromApp(user, appDomain);
+					}
 				}
 			}
-		}
-        else {
-        	throw new IllegalArgumentException("Invalid App Domain");
-        }
-		
+	        else {
+	        	throw new IllegalArgumentException("Invalid App Domain");
+	        }
+		}	
 	}
 	
 	public static void deletePeopleUsers(long peopleId) throws Exception {

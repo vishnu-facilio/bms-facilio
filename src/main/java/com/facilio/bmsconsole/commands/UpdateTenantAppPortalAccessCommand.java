@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.bmsconsole.context.TenantContactContext;
@@ -16,19 +17,13 @@ public class UpdateTenantAppPortalAccessCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<TenantContactContext> tenantContacts = (List<TenantContactContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		Integer accessChangeFor = (Integer)context.getOrDefault(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 0);
-		Long appId = (Long)context.get(FacilioConstants.ContextNames.APP_ID);
+		Long tenantPortalappId = (Long)context.getOrDefault(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, -1l);
+		Long servicePortalappId = (Long)context.getOrDefault(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, -1l);
 		
 		if(CollectionUtils.isNotEmpty(tenantContacts)) {
-			if(accessChangeFor == 1) {
-				for(TenantContactContext tc : tenantContacts) {
-					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.TENANT_PORTAL, appId);
-				}
-			}
-			else if(accessChangeFor == 2){
-				for(TenantContactContext tc : tenantContacts) {
-					PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.SERVICE_PORTAL, appId);
-				}
+			for(TenantContactContext tc : tenantContacts) {
+				PeopleAPI.updateTenantContactAppPortalAccess(tc, AppDomainType.TENANT_PORTAL, tenantPortalappId);
+				PeopleAPI.updatePeoplePortalAccess(tc, AppDomainType.SERVICE_PORTAL, servicePortalappId);
 			}
 		}
 		return false;

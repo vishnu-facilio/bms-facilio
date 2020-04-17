@@ -203,13 +203,17 @@ public class ApplicationApi {
 		return ids;
 	}
 	
-	public static long addUserInApp(User user) throws Exception {
-		if(checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId()) <= 0) {
+	public static long addUserInApp(User user, boolean shouldThrowError) throws Exception {
+		long userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
+		if (userExisitsInApp <= 0) {
 		   return AccountUtil.getUserBean().addToORGUsersApps(user, true);
 		}
-		else {
-			throw new IllegalArgumentException("User already exists in app");
+		else { 
+			if(shouldThrowError) {
+				throw new IllegalArgumentException("User already exists in app");
+			}
 		}
+		return userExisitsInApp;
 	}
 		
 	public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
