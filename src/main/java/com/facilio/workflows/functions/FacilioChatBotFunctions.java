@@ -25,7 +25,13 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 			ChatBotParamContext params = new ChatBotParamContext();
 			
 			params.setParamName(objects[0].toString());
-			params.setMessage(objects[1].toString());
+			
+			if(objects[1] instanceof String) {
+				params.setMessage(Collections.singletonList(objects[1].toString()));
+			}
+			else if (objects[1] instanceof List) {
+				params.setMessage((List<String>)objects[1]);
+			}
 			if(objects.length > 2) {
 				if(objects[2] instanceof List) {
 					params.setOptions((List<JSONObject>) objects[2]);
@@ -54,8 +60,18 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 			
 			params.setParamMap((Map<String, Object>) objects[0]);
 			if(objects.length > 1) {
-				params.setMessage((String)objects[1]);
+				params.setInCardMessage((String)objects[1]);
+				
+				if(objects.length > 2) {
+					if(objects[2] instanceof String) {
+						params.setMessage(Collections.singletonList((String)objects[2]));
+					}
+					else if (objects[2] instanceof List) {
+						params.setMessage((List<String>)objects[2]);
+					}
+				}
 			}
+			
 			return params;
 		};
 		

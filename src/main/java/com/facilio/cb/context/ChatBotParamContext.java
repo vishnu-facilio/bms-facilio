@@ -8,7 +8,13 @@ import com.facilio.db.criteria.Criteria;
 
 public class ChatBotParamContext {
 	
-	String message;
+	List<String> message;
+	public List<String> getMessage() {
+		return message;
+	}
+	public void setMessage(List<String> message) {
+		this.message = message;
+	}
 	String paramName;
 	String moduleName;		// for criteria Type
 	Criteria criteria;
@@ -25,12 +31,6 @@ public class ChatBotParamContext {
 	}
 	public void setOptions(List<JSONObject> options) {
 		this.options = options;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public void setMessage(String message) {
-		this.message = message;
 	}
 	public Criteria getCriteria() {
 		return criteria;

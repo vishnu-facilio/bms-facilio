@@ -108,7 +108,22 @@ public class ChatBotIntent {
 					Map<String, Object> resultMap = (Map<String,Object>) context.get(WorkflowV2Util.WORKFLOW_RESPONSE);
 					
 					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT)) {
-						result.put(ChatBotConstants.CHAT_BOT_RESPONSE, resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT));
+						if(resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT) instanceof String) {
+							result.put(ChatBotConstants.CHAT_BOT_RESPONSE, resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT));
+						}
+						else if (resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT) instanceof List) {
+							List<String> responseList = (List<String>) resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT);
+							result.put(ChatBotConstants.CHAT_BOT_RESPONSE, responseList.get(0));
+							
+							if(responseList.size() > 1) {
+								for(int i=1;i<responseList.size();i++) {
+									JSONObject result1 = new JSONObject();
+									result1.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+									result1.put(ChatBotConstants.CHAT_BOT_RESPONSE, responseList.get(i));
+									resArray.add(result1);
+								}
+							}
+						}
 					}
 					else {
 						result.put(ChatBotConstants.CHAT_BOT_RESPONSE,resultMap);

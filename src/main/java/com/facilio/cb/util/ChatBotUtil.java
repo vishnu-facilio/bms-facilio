@@ -270,7 +270,7 @@ public class ChatBotUtil {
 			intentParam.setOptions(params.getOptions());
 			intentParam.setModuleName(params.getModuleName());
 			intentParam.setCriteria(params.getCriteria());
-			intentParam.setAskAs(params.getMessage());
+			intentParam.setAskAsList(params.getMessage());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
@@ -727,6 +727,15 @@ public class ChatBotUtil {
 			result.put(ChatBotConstants.CHAT_BOT_PARAM_TYPE, param.getDataType());
 		}
 		
+		if(param.getAskAsList().size() > 1) {
+			for(int i=1;i<param.getAskAsList().size();i++) {
+				JSONObject result1 = new JSONObject();
+				result1.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+				result1.put(ChatBotConstants.CHAT_BOT_RESPONSE, param.getAskAsList().get(i));
+				resArray.add(result1);
+			}
+		}
+		
 		chatBotSessionConversation1.setQuery(resArray.toJSONString());
 		
 		ChatBotUtil.addChatBotSessionConversation(chatBotSessionConversation1);
@@ -751,22 +760,36 @@ public class ChatBotUtil {
 		
 		JSONArray resArray = new JSONArray();
 		
+		if(botConfirmContext.getMessage() != null && !botConfirmContext.getMessage().isEmpty()) {
+			
+			for(String message : botConfirmContext.getMessage()) {
+				JSONObject result = new JSONObject();
+				
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+				
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE, message);
+				
+				resArray.add(result);
+			}
+		}
+		else {
+			JSONObject result = new JSONObject();
+			
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+			
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, session.getIntent().getConfirmationText() == null ? ChatBotConstants.CHAT_BOT_DEFAULT_CONFIRMATION_TEXT :  session.getIntent().getConfirmationText());
+			
+			resArray.add(result);
+		}
+		
 		JSONObject result = new JSONObject();
-		
-		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
-		
-		result.put(ChatBotConstants.CHAT_BOT_RESPONSE, session.getIntent().getConfirmationText() == null ? ChatBotConstants.CHAT_BOT_DEFAULT_CONFIRMATION_TEXT :  session.getIntent().getConfirmationText());
-		
-		resArray.add(result);
-		
-		result = new JSONObject();
 		
 //		List<ChatBotSessionConversation> conversations = ChatBotUtil.getSessionConversationMapForConfirmationCard(session.getId(),session.getIntentId());
 		
 		result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.CONFIRMATION_CARD.getIntVal());
 		
-		if(botConfirmContext.getMessage() != null) {
-			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, botConfirmContext.getMessage());
+		if(botConfirmContext.getInCardMessage() != null) {
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, botConfirmContext.getInCardMessage());
 		}
 		else {
 			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, ChatBotConstants.CHAT_BOT_DEFAULT_SUBMIT_CONFIRMATION_TEXT);

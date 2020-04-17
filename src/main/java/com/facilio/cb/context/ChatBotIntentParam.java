@@ -18,7 +18,7 @@ public class ChatBotIntentParam {
 	long intentId = -1;
 	String name;
 	String displayName;
-	String askAs;
+	List<String> askAsList;
 	FieldType dataType;
 	ML_Type mlType;
 	int localId;
@@ -176,14 +176,25 @@ public class ChatBotIntentParam {
 
 
 	public String getAskAs() {
-		return askAs;
+		if(this.getAskAsList() != null) {
+			return this.getAskAsList().get(0);
+		}
+		return null;
 	}
-
 
 	public void setAskAs(String askAs) {
-		this.askAs = askAs;
+		if(askAs != null) {
+			this.askAsList = Collections.singletonList(askAs);
+		}
+	}
+	
+	public List<String> getAskAsList() {
+		return askAsList;
 	}
 
+	public void setAskAsList(List<String> askAs) {
+		this.askAsList = askAs;
+	}
 
 	public int getDataType() {
 		if(dataType != null) {

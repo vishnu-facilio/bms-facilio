@@ -1,11 +1,27 @@
 package com.facilio.cb.context;
 
+import java.util.List;
 import java.util.Map;
 
 public class ChatBotConfirmContext {
 	
-	String message;
+	List<String> message;
+	public List<String> getMessage() {
+		return message;
+	}
+	public void setMessage(List<String> message) {
+		this.message = message;
+	}
 	
+	String inCardMessage;
+	
+	public String getInCardMessage() {
+		return inCardMessage;
+	}
+	public void setInCardMessage(String inCardMessage) {
+		this.inCardMessage = inCardMessage;
+	}
+
 	Map<String,Object> paramMap;
 
 	public Map<String, Object> getParamMap() {
@@ -14,13 +30,5 @@ public class ChatBotConfirmContext {
 
 	public void setParamMap(Map<String, Object> paramMap) {
 		this.paramMap = paramMap;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
 	}
 }
