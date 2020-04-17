@@ -1,15 +1,11 @@
 package com.facilio.accounts.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.beans.ModuleBean;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -31,7 +27,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
@@ -134,9 +129,6 @@ public class PermissionUtil {
 
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
-			if (user.getUserType() == 0) {
-				criteria.addAndCondition(CriteriaAPI.getCondition("hideToCustomer", "HIDE_TO_CUSTOMER", String.valueOf(false), BooleanOperators.IS));
-			}
 		}
 		if(moduleName.equals("site")) {
 			Condition condition = new Condition();

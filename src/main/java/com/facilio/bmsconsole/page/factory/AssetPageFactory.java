@@ -78,7 +78,7 @@ public class AssetPageFactory extends PageFactory {
 				addAssetReadingChart(tab1Sec1, 2128, "Water Consumption");
 				addAssetReadingChart(tab1Sec1, 4042, "Water Meter Reading Trend");
 			}
-			else if (asset.getCategory().getId() == 3027) {
+			else if (asset.getCategory().getId() == 3027 && (asset.getId() == 1275717 ||  asset.getId() == 1275718 || asset.getId() == 127519)) {
 				addAssetReadingChart(tab1Sec1, 4034, "Chilled Water Consumption");
 				addAssetReadingChart(tab1Sec1, 4038, "Chilled Water Reading Trend");
 				addAssetReadingChart(tab1Sec1, 4041, "Chilled Water Flow Trend");
