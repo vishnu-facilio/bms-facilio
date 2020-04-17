@@ -713,6 +713,19 @@ public class ModuleFactory {
 		return alarmFollowersModule;
 	}
 	
+	public static FacilioModule getEnergyStarCustomerModule() {
+		return constructModule("energyStarCustomer", "Energy Star Customer", "Energy_Star_Customer");
+	}
+	public static FacilioModule getEnergyStarPropertyModule() {
+		return constructModule("energyStarProperty", "Energy Star Property", "Energy_Star_Property");
+	}
+	public static FacilioModule getEnergyStarPropertyUseModule() {
+		return constructModule("energyStarPropertyUse", "Energy Star Property Use", "Energy_Star_Property_Use");
+	}
+	public static FacilioModule getEnergyStarMeterModule() {
+		return constructModule("energyStarMeter", "Energy Star Meter", "Energy_Star_Meter");
+	}
+	
 	public static FacilioModule getPMJobPlanModule() {
 		return constructModule("pmjobplan", "pm job plan", "PM_Job_Plan");
 	}

@@ -27,15 +27,16 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.controlaction.commands.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
+import com.facilio.energystar.command.*;
+import com.facilio.cb.command.*;
+import com.facilio.controlaction.commands.*;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -5220,6 +5221,36 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteApplicationUsersCommand());
 		
+		return c;
+	}
+	
+	public static FacilioChain enableEnergyStarChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
+		c.addCommand(new EnergyStarEnableCommand());
+		return c;
+	}
+	public static FacilioChain addEnergyStarProperyChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
+		c.addCommand(new AddEnergyStarPropertyCommand());
+		c.addCommand(new AddEnergyStarPropertyUseCommand());
+		c.addCommand(new AddEnergyStarMeterCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateEnergyStarPropertyChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
+		c.addCommand(new UpdateEnergyStarPropertyCommand());
+		c.addCommand(new UpdateEnergyStarPropertyUseCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteEnergyStarPropertyChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
+		c.addCommand(new DeleteEnergyStarPropertyCommand());
 		return c;
 	}
 }

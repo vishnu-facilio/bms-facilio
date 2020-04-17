@@ -8033,6 +8033,62 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    
+    public static List<FacilioField> getEnergyStarCustomerFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarCustomerModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("energyStarCustomerId", "ENERGY_STAR_CUSTOMER_ID", module, FieldType.NUMBER));
+        fields.add(getField("userName", "USERNAME", module, FieldType.STRING));
+        fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
+        fields.add(getField("dataExchangeMode", "DATA_EXCHANGE_MODE", module, FieldType.NUMBER));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getEnergyStarPropertyFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarPropertyModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("buildingId", "BUILDING_ID", module, FieldType.NUMBER));
+        fields.add(getField("buildingType", "BUILDING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("energyStarPropertyId", "ES_PROPERTY_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarPropertyUseId", "ES_PROPERTY_USE_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarDesignId", "ES_DESIGN_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getEnergyStarPropertyUseFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarPropertyUseModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("propertyId", "PROPERTY_ID", module, FieldType.NUMBER));
+        fields.add(getField("properyUseType", "USE_INT", module, FieldType.NUMBER));
+        fields.add(getField("value", "VALUE", module, FieldType.STRING));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getEnergyStarMeterFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarMeterModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("propertyId", "PROPERTY_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+        fields.add(getField("meterDataModuleId", "METER_DATA_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getAgentAlarmFields() {
         List<FacilioField> fields = new ArrayList<>();
