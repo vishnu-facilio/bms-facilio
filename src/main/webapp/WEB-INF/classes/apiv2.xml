@@ -4190,7 +4190,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="samlLogin">
-			<param name="linkName">{1}</param>
+			<param name="id">{1}</param>
 		</action>
 
 		<action name="all"

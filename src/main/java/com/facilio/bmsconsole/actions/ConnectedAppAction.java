@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -35,6 +37,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -192,6 +195,20 @@ public class ConnectedAppAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public long getConnectedAppId(long widgetId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppWidgetsFields())
+				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(widgetId,ModuleFactory.getConnectedAppWidgetsModule()))
+				;
+		Map<String, Object> prop = selectBuilder.fetchFirst();
+		ConnectedAppWidgetContext connectedAppWidget = FieldUtil.getAsBeanFromMap(prop, ConnectedAppWidgetContext.class);
+		if(connectedAppWidget != null){
+			return connectedAppWidget.getConnectedAppId();
+		}
+		return -1;
+	}
+	
 	private List<ConnectedAppContext> connectedAppList;
 
 	public List<ConnectedAppContext> getConnectedAppList() {
@@ -316,7 +333,7 @@ private void setConditions(List<FacilioField> fields, String fieldName, JSONObje
 		
 		String samlRequest = req.getParameter("SAMLRequest");
 		String relay = req.getParameter("RelayState");
-		
+		setConnectedAppId(getConnectedAppId(id));
 		this.getConnectedAppDetails();
 		
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
@@ -361,4 +378,14 @@ private void setConditions(List<FacilioField> fields, String fieldName, JSONObje
 		
 		return SUCCESS;
 	}
+	long id;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 }

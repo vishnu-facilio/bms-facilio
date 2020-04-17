@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
+import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -53,6 +54,24 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 				connectedApps.stream().filter(ca->ca.getId()==connectedAppSAML.getConnectedAppId()).findFirst().ifPresent(ca -> ca.setConnectedAppSAML(connectedAppSAML));
 			}
 		}
+		
+		selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppWidgetsFields())
+				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+				;
+		props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				ConnectedAppWidgetContext connectedAppWidget = FieldUtil.getAsBeanFromMap(prop, ConnectedAppWidgetContext.class);
+				connectedApps.stream().filter(ca->ca.getId()==connectedAppWidget.getConnectedAppId()).findFirst().ifPresent(ca -> {
+					if(ca.getConnectedAppWidgetsList() == null){
+						ca.setConnectedAppWidgetsList(new ArrayList<>());
+					}
+					ca.getConnectedAppWidgetsList().add(connectedAppWidget);
+				});
+			}
+		}
+		
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, connectedApps);
 		return false;
 	}
