@@ -12,11 +12,14 @@ import com.facilio.time.DateTimeUtil;
 public class ChatBotDateContext {
 	
 	String date;
+	
 	DirectDateEnums day;
+	
 	YearEnum yearEnum;
 	MonthEnum monthEnum;
 	WeekEnum weekEnum;
 	DayEnum dayEnum;
+	int dateInt = -1;
 	
 	Calendar calendar = Calendar.getInstance(DateTimeUtil.getLocale());
 	
@@ -71,5 +74,10 @@ public class ChatBotDateContext {
 	public void setMonthEnum(String monthEnum) {
 		this.monthEnum = MonthEnum.getDateEnum(monthEnum);
 	}
-	
+	public int getDateInt() {
+		return dateInt;
+	}
+	public void setDateInt(int dateInt) {
+		this.dateInt = dateInt;
+	}
 }

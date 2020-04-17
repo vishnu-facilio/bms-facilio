@@ -50,7 +50,6 @@ public class ChatBotDateTimeUtil {
 			if (dateContext.getDayEnum() == null && dateContext.getWeekEnum() == null && dateContext.getMonthEnum() == null && dateContext.getYearEnum() == null) {
 				return returnMillisec;
 			}
-			Map<Integer,Integer> dataToBeFilledAtLast = new HashMap<>();
 			if (dateContext.getDayEnum() != null) {
 				
 				if (dateContext.getWeekEnum() == null) {
@@ -77,14 +76,18 @@ public class ChatBotDateTimeUtil {
 			else {
 				if(dateContext.getWeekEnum() != null) {
 					if(dateContext.getWeekEnum() == WeekEnum.FIRST) {
-						dataToBeFilledAtLast.put(Calendar.DATE, 1);
+						if(dateContext.getDateInt() < 0) {
+							dateContext.setDateInt(1);
+						}
 					}
 					else {
 						dateContext.setDayEnum(DayEnum.SUNDAY.getName());
 					}
 				}
 				else {
-					dataToBeFilledAtLast.put(Calendar.DATE, 1);
+					if(dateContext.getDateInt() < 0) {
+						dateContext.setDateInt(1);
+					}
 				}
 			}
 			if (dateContext.getWeekEnum() != null) {
@@ -158,11 +161,8 @@ public class ChatBotDateTimeUtil {
 			if(dateContext.getDayEnum() != null) {
 				dateContext.getDayEnum().fillCalenderObj(dateContext);
 			}
-			
-			if(dataToBeFilledAtLast != null && !dataToBeFilledAtLast.isEmpty()) {
-				for(Integer key : dataToBeFilledAtLast.keySet()) {
-					dateContext.getCalendar().set(key, dataToBeFilledAtLast.get(key));
-				}
+			if(dateContext.getDateInt() > 0) {
+				dateContext.getCalendar().set(Calendar.DAY_OF_MONTH, dateContext.getDateInt());
 			}
 		}
 		
