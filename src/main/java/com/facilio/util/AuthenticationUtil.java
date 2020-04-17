@@ -1,8 +1,6 @@
 package com.facilio.util;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,14 +52,6 @@ public class AuthenticationUtil {
         return null;
 	}
 	
-	public static void addDomainCookie(String domain, HttpServletResponse response) {
-		Cookie cookie = new Cookie("fc.currentOrg", domain);
-		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
-		cookie.setPath("/");
-		cookie.setSecure(true);
-		cookie.setHttpOnly(true);
-		response.addCookie(cookie);
-	}
 	
 
 }

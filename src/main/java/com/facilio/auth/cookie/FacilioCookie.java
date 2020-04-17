@@ -87,4 +87,22 @@ public class FacilioCookie {
         cookie.setMaxAge(expiry);
         return cookie;
     }
+    
+    public static void addOrgDomainCookie(String domain, HttpServletResponse response) {
+		Cookie cookie = new Cookie("fc.currentOrg", domain);
+		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
+		cookie.setPath("/");
+		cookie.setSecure(true);
+		cookie.setHttpOnly(true);
+		response.addCookie(cookie);
+	}
+    
+    public static void addCurrentSiteCookie(String site, HttpServletResponse response) {
+    		Cookie sitecookie = new Cookie("fc.currentSite", site);
+		sitecookie.setMaxAge(60 * 60 * 24 * 30);
+		sitecookie.setPath("/");
+		sitecookie.setSecure(true);
+		response.addCookie(sitecookie);
+    }
+    
 }

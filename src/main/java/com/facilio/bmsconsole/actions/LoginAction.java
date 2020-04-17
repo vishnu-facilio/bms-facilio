@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Inflater;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -42,7 +41,6 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -53,13 +51,11 @@ import org.w3c.dom.NodeList;
 
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -88,13 +84,11 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
-import com.facilio.util.AuthenticationUtil;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
@@ -525,11 +519,7 @@ public class LoginAction extends FacilioAction {
 			remoteScreen.setScreenContext(screenContext);
 			
 			if (screenContext.getSiteId() != null) {
-				Cookie sitecookie = new Cookie("fc.currentSite", String.valueOf(screenContext.getSiteId()));
-				sitecookie.setMaxAge(60 * 60 * 24 * 30);
-				sitecookie.setPath("/");
-				sitecookie.setSecure(true);
-				httpResponse.addCookie(sitecookie);
+				FacilioCookie.addCurrentSiteCookie(String.valueOf(screenContext.getSiteId()), httpResponse);
 			}
 			else {
 				FacilioCookie.eraseUserCookie(request, httpResponse, "fc.currentSite", null);
@@ -638,7 +628,7 @@ public class LoginAction extends FacilioAction {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
-		AuthenticationUtil.addDomainCookie(getSwitchOrgDomain(), response);
+		FacilioCookie.addOrgDomainCookie(getSwitchOrgDomain(), response);
 
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;

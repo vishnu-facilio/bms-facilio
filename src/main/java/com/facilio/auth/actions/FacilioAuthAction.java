@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -56,7 +55,6 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
-import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 import io.sentry.SentryClient;
@@ -489,6 +487,7 @@ public class FacilioAuthAction extends FacilioAction {
 		String isPortal = request.getParameter("isPortal");
 		String isDevice = request.getParameter("isDevice");
 		String currentOrg = request.getParameter("currentOrg");
+		String currentSite = request.getParameter("currentSite");
 		boolean isPotalUser = false;
 		boolean isDeviceUser = false;
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
@@ -511,7 +510,10 @@ public class FacilioAuthAction extends FacilioAction {
 		response.addCookie(token);
 		
 		if (org.apache.commons.lang3.StringUtils.isNotEmpty(currentOrg)) {
-			AuthenticationUtil.addDomainCookie(currentOrg, response);
+			FacilioCookie.addOrgDomainCookie(currentOrg, response);
+		}
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(currentSite)) {
+			FacilioCookie.addCurrentSiteCookie(currentSite, response);
 		}
 
 		try {
