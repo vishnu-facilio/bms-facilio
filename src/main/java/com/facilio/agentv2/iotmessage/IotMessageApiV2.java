@@ -322,6 +322,7 @@ public class IotMessageApiV2 {
                 builder.offset(offset);
                 builder.limit(perPage);
             }
+            builder.orderBy(AgentConstants.SENT_TIME + " DESC");
             return builder.get();
         }else {
             throw new Exception(" No iot message for agent ->"+agentId);

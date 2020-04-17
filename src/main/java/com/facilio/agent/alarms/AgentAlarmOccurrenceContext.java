@@ -2,7 +2,6 @@ package com.facilio.agent.alarms;
 
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import sun.management.Agent;
 
 public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
 

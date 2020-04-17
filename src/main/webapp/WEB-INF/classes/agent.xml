@@ -429,7 +429,7 @@
     </package>
 
     <package name="test" namespace="/api/v2/agent/test" extends="agent">
-      <!--  <action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
+        <!--<action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
         </action>-->
         <action name="getPolicyGist" class="com.facilio.agentv2.AgentAction" method="getPolicyGist">
         </action>

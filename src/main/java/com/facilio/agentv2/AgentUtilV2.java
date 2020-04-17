@@ -145,10 +145,8 @@ public class AgentUtilV2
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
-                int status = Integer.parseInt(payload.get(AgentConstants.STATUS).toString());
-
+                agent.setConnected(true);
             }
-            agent.setConnected(true);
             return updateAgent(agent, payload);
         } else {
             throw new Exception("Agent can't be null");

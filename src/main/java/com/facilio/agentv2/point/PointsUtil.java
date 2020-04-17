@@ -2,12 +2,11 @@ package com.facilio.agentv2.point;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.modules.FieldUtil;
+import com.facilio.bacnet.BACNetUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -116,6 +115,7 @@ public class PointsUtil
             //TODO try bulk insert first
             long pointsAdded = 0;
             for (Point point : points) {
+                applyBacnetDefaultWritableRule(point);
                 boolean pointEntry = PointsAPI.addPoint(point); //TODO make it bulk add
                 if (!pointEntry) {
                     LOGGER.info("Exception while adding point," + point.toJSON());
@@ -128,6 +128,15 @@ public class PointsUtil
             LOGGER.info(" Exception occurred, pointsData missing from payload -> "+payload);
         }
         return true;
+    }
+
+    private static void applyBacnetDefaultWritableRule(Point point) {
+        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
+            BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
+            if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
+                point.setWritable(true);
+            }
+        }
     }
 
     private static boolean containsValueCheck(String key, Map<String,Object> jsonObject){
