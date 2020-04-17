@@ -108,14 +108,15 @@ public class ConnectedAppAction extends FacilioAction {
 	
 	public String addOrUpdateConnectedAppWidget() throws Exception {
 		FacilioContext context = new FacilioContext();
-		if(connectedAppWidget.getCriteria() != null){
-			if(connectedAppWidget.getCriteriaId() > 0){
-				CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
+		if(connectedAppWidget.getCriteriaId() > 0){
+			CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
+			if(connectedAppWidget.getCriteria() == null){
+				connectedAppWidget.setCriteriaId(-99);
 			}
+		}
+		if(connectedAppWidget.getCriteria() != null){
 			long criteriaId = CriteriaAPI.addCriteria(connectedAppWidget.getCriteria());
 			connectedAppWidget.setCriteriaId(criteriaId);
-		}else if(connectedAppWidget.getCriteria() == null && connectedAppWidget.getCriteriaId() > 0){
-			CriteriaAPI.deleteCriteria(connectedAppWidget.getCriteriaId());
 		}
 		
 		context.put(FacilioConstants.ContextNames.RECORD, connectedAppWidget);

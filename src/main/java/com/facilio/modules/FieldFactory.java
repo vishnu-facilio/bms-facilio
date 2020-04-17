@@ -3347,8 +3347,8 @@ public class FieldFactory {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
-        fields.add(getField("subjectType", "SUBJECT_TYPE", module, FieldType.STRING));
-        fields.add(getField("nameIdFormat", "NAME_ID_FORMAT", module, FieldType.STRING));
+        fields.add(getField("subjectType", "SUBJECT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("nameIdFormat", "NAME_ID_FORMAT", module, FieldType.NUMBER));
         fields.add(getField("spEntityId", "SP_ENTITY_ID", module, FieldType.STRING));
         fields.add(getField("spAcsUrl", "SP_ACS_URL", module, FieldType.STRING));
         fields.add(getField("spLogoutUrl", "SP_LOGOUT_URL", module, FieldType.STRING));
@@ -3364,6 +3364,7 @@ public class FieldFactory {
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
         fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
         fields.add(getField("widgetName", "WIDGET_NAME", module, FieldType.STRING));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
         fields.add(getField("entityType", "ENTITY_TYPE", module, FieldType.NUMBER));
         fields.add(getField("resourcePath", "RESOURCE_PATH", module, FieldType.STRING));

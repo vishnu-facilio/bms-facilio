@@ -11,9 +11,18 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private long criteriaId;
 	private long connectedAppId;
 	private String widgetName;
+	private String linkName;
 	private long entityId;
 	private String resourcePath;
-	
+
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
 	public Criteria getCriteria() {
 		return criteria;
 	}

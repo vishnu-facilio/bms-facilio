@@ -9,8 +9,6 @@ public class ConnectedAppSAMLContext extends ModuleBaseWithCustomFields {
 	private String spEntityId;
 	private String spAcsUrl;
 	private String spLogoutUrl;
-	private String subjectType;
-	private String nameIdFormat;
 
 	public long getConnectedAppId() {
 		return connectedAppId;
@@ -43,21 +41,89 @@ public class ConnectedAppSAMLContext extends ModuleBaseWithCustomFields {
 	public void setSpLogoutUrl(String spLogoutUrl) {
 		this.spLogoutUrl = spLogoutUrl;
 	}
+	
+	private SubjectType subjectTypeEnum;
 
-	public String getSubjectType() {
+	public void setSubjectTypeEnum(SubjectType subjectTypeEnum) {
+		this.subjectTypeEnum = subjectTypeEnum;
+	}
+	
+	public SubjectType getSubjectTypeEnum() {
+		if(subjectType > 0){
+			return SubjectType.valueOf(subjectType);
+		}
+		return subjectTypeEnum;
+	}
+	
+	private int subjectType;
+
+	public int getSubjectType() {
+		if(subjectTypeEnum!=null){
+			return subjectTypeEnum.getValue();
+		}
 		return subjectType;
 	}
 
-	public void setSubjectType(String subjectType) {
-		this.subjectType = subjectType;
+	public void setSubjectType(int entityType) {
+		this.subjectType = entityType;
 	}
 
-	public String getNameIdFormat() {
+	public enum SubjectType {
+		USERID_EMAIL;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static SubjectType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private NameIdFormat nameIdFormatEnum;
+
+	public void setNameIdFormatEnum(NameIdFormat nameIdFormatEnum) {
+		this.nameIdFormatEnum = nameIdFormatEnum;
+	}
+	
+	public NameIdFormat getNameIdFormatEnum() {
+		if(nameIdFormat > 0){
+			return NameIdFormat.valueOf(nameIdFormat);
+		}
+		return nameIdFormatEnum;
+	}
+	
+	private int nameIdFormat;
+
+	public int getNameIdFormat() {
+		if(nameIdFormatEnum!=null){
+			return nameIdFormatEnum.getValue();
+		}
 		return nameIdFormat;
 	}
 
-	public void setNameIdFormat(String nameIdFormat) {
+	public void setNameIdFormat(int nameIdFormat) {
 		this.nameIdFormat = nameIdFormat;
 	}
+
+	public enum NameIdFormat {
+		UNSPECIFIED,
+		EMAIL_ADDRESS;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static NameIdFormat valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+
 
 }
