@@ -144,6 +144,12 @@ public class SpaceAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String v2AddSpace() throws Exception {
+		addSpace();
+		setResult(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+		return SUCCESS;
+	}
 	
 	public String updateSpace() throws Exception 
 	{
@@ -157,6 +163,12 @@ public class SpaceAction extends FacilioAction {
 		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSpace(space);
+		return SUCCESS;
+	}
+
+	public String v2UpdateSpace() throws Exception {
+		updateSpace();
+		setResult(FacilioConstants.ContextNames.SPACE, space);
 		return SUCCESS;
 	}
 	

@@ -1902,7 +1902,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 	}
 	
 	public static void updateSiteAndBuildingId(SpaceContext space) throws Exception {
-		if(space.getBuilding() != null) {
+		if(space.getBuilding() != null && space.getBuilding().getId() > 0) {
 			long buildingId = space.getBuilding().getId();
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
 			space.setSiteId(building.getSiteId());

@@ -5689,6 +5689,8 @@
 	<package name="spaceApiv2" namespace="/api/v2/space" extends="v2Api">
 		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction" method="v2DeleteCampus" />
 		<action name="details" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2SpaceDetails" />
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2AddSpace" />
+		<action name="update" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2UpdateSpace" />
 
 	</package>
 	<package name="buildingsApiv2" namespace="/api/v2/building" extends="v2Api">
