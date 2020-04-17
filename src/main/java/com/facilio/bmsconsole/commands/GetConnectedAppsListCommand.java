@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -26,8 +27,13 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getConnectedAppFields())
 				.table(ModuleFactory.getConnectedAppsModule().getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
 				;
+		
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
+		}
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<ConnectedAppContext> connectedApps = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
@@ -44,7 +50,7 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
 				ConnectedAppSAMLContext connectedAppSAML = FieldUtil.getAsBeanFromMap(prop, ConnectedAppSAMLContext.class);
-				connectedApps.stream().filter(ca->ca.getId()==connectedAppSAML.getConnectedAppId()).findFirst().get().setConnectedAppSAML(connectedAppSAML);
+				connectedApps.stream().filter(ca->ca.getId()==connectedAppSAML.getConnectedAppId()).findFirst().ifPresent(ca -> ca.setConnectedAppSAML(connectedAppSAML));
 			}
 		}
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, connectedApps);

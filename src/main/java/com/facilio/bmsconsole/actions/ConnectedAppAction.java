@@ -3,12 +3,16 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -24,11 +28,15 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ConnectedAppAction extends FacilioAction {
 
@@ -197,6 +205,10 @@ public class ConnectedAppAction extends FacilioAction {
 	public String connectedAppList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
+		if (getCriteria() != null) {	
+			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
+ 		}
+		
 		FacilioChain fetchListChain = ReadOnlyChainFactory.getConnectedAppsList();
 		fetchListChain.execute(context);
 		
@@ -204,6 +216,45 @@ public class ConnectedAppAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedAppList);
 		return SUCCESS;
+	}
+	
+	private Criteria getCriteria() throws Exception {
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+	 		
+	 		if (filterJson.size() > 0) {
+	 			Iterator<String> filterIterator = filterJson.keySet().iterator();
+	 			List<FacilioField> fields = FieldFactory.getConnectedAppFields();
+				Criteria criteria = new Criteria();
+				while(filterIterator.hasNext()) {
+					String fieldName = filterIterator.next();
+					Object fieldJson = filterJson.get(fieldName);
+					List<Condition> conditionList = new ArrayList<>();
+					JSONObject fieldJsonObj = (JSONObject) fieldJson;
+					setConditions(fields, fieldName, fieldJsonObj, conditionList);
+					criteria.groupOrConditions(conditionList);
+				}
+				
+				return criteria;
+	 		}
+		}
+		return null;
+	}
+	
+private void setConditions(List<FacilioField> fields, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
+				
+		FacilioField field = fields.stream().filter(f->f.getName().equalsIgnoreCase(fieldName)).findFirst().get();
+		String value = fieldJson.get("value").toString();
+		int operatorId = -1;
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+		} 
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperatorId(operatorId);
+		condition.setValue(value);
+		conditionList.add(condition);
 	}
 	
 	private String acsUrl;
