@@ -36,9 +36,12 @@ public class AddTenantUserCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		
+		Boolean spaceUpdate = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.SPACE_UPDATE, false);
 		FacilioModule tcModule = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
 		List<FacilioField> tcFields = modBean.getAllFields(tcModule.getName());
+		if(spaceUpdate == null) {
+			spaceUpdate = false;
+		}
 		
 		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
@@ -47,7 +50,7 @@ public class AddTenantUserCommand extends FacilioCommand {
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
 		}
 		else {
-			if(StringUtils.isNotEmpty(tenant.getPrimaryContactPhone())) {
+			if(StringUtils.isNotEmpty(tenant.getPrimaryContactPhone()) && !spaceUpdate) {
 				ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(tenant.getPrimaryContactPhone(), tenant.getId(), false);
 				if(existingcontactForPhone == null) {
 					existingcontactForPhone = addDefaultTenantPrimaryContact(tenant);
@@ -60,7 +63,7 @@ public class AddTenantUserCommand extends FacilioCommand {
 				}
 			}
 		}
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && !spaceUpdate) {
 			TenantContactContext tc = getDefaultTenantContact(tenant);
 			List<TenantContactContext> primarycontatsIfAny = PeopleAPI.getTenantContacts(tc.getTenant().getId(), true);
 			TenantContactContext tenantPrimaryContact = null;
