@@ -72,7 +72,6 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_TEMPLATE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.AGENT.equals(specialType)
-				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)
 				;
 	}

@@ -42,7 +42,7 @@ public class ConnectedAppSAMLContext extends ModuleBaseWithCustomFields {
 		this.spLogoutUrl = spLogoutUrl;
 	}
 	
-	private SubjectType subjectTypeEnum;
+	private SubjectType subjectTypeEnum = SubjectType.USERID_EMAIL;
 
 	public void setSubjectTypeEnum(SubjectType subjectTypeEnum) {
 		this.subjectTypeEnum = subjectTypeEnum;
@@ -83,7 +83,7 @@ public class ConnectedAppSAMLContext extends ModuleBaseWithCustomFields {
 		}
 	}
 	
-	private NameIdFormat nameIdFormatEnum;
+	private NameIdFormat nameIdFormatEnum = NameIdFormat.EMAIL_ADDRESS;
 
 	public void setNameIdFormatEnum(NameIdFormat nameIdFormatEnum) {
 		this.nameIdFormatEnum = nameIdFormatEnum;

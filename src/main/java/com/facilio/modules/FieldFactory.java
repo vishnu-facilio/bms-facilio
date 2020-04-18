@@ -3302,13 +3302,17 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getConnectedAppsModule();
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdField(module));
 
+        FacilioField id = getIdField(module);
+        id.setDefault(true);
+        fields.add(id);
+        
         FacilioField name = new FacilioField();
         name.setName("name");
         name.setDataType(FieldType.STRING);
         name.setColumnName("NAME");
         name.setModule(module);
+        name.setDefault(true);
         fields.add(name);
 
         FacilioField linkName = new FacilioField();
@@ -3316,6 +3320,7 @@ public class FieldFactory {
         linkName.setDataType(FieldType.STRING);
         linkName.setColumnName("LINK_NAME");
         linkName.setModule(module);
+        linkName.setDefault(true);
         fields.add(linkName);
 
         FacilioField description = new FacilioField();
@@ -3323,6 +3328,7 @@ public class FieldFactory {
         description.setDataType(FieldType.STRING);
         description.setColumnName("DESCRIPTION");
         description.setModule(module);
+        description.setDefault(true);
         fields.add(description);
 
         FacilioField logoId = new FacilioField();
@@ -3330,15 +3336,33 @@ public class FieldFactory {
         logoId.setDataType(FieldType.NUMBER);
         logoId.setColumnName("LOGO_ID");
         logoId.setModule(module);
+        logoId.setDefault(true);
         fields.add(logoId);
 
-        fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
-        fields.add(getField("showInLauncher", "SHOW_IN_LAUNCHER", module, FieldType.BOOLEAN));
-        fields.add(getField("hostingType", "HOSTING_TYPE", module, FieldType.SYSTEM_ENUM));
-        fields.add(getField("sandBoxBaseUrl", "SANDBOX_BASE_URL", module, FieldType.STRING));
-        fields.add(getField("productionBaseUrl", "PRODUCTION_BASE_URL", module, FieldType.STRING));
-        fields.add(getField("startUrl", "START_URL", module, FieldType.STRING));
-
+        FacilioField isActive = getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN);
+        isActive.setDefault(true);
+        fields.add(isActive);
+        
+        FacilioField showInLauncher = getField("showInLauncher", "SHOW_IN_LAUNCHER", module, FieldType.BOOLEAN);
+        showInLauncher.setDefault(true);
+        fields.add(showInLauncher);
+        
+        FacilioField hostingType = getField("hostingType", "HOSTING_TYPE", module, FieldType.SYSTEM_ENUM);
+        hostingType.setDefault(true);
+        fields.add(hostingType);
+        
+        FacilioField sandBoxBaseUrl = getField("sandBoxBaseUrl", "SANDBOX_BASE_URL", module, FieldType.STRING);
+        sandBoxBaseUrl.setDefault(true);
+        fields.add(sandBoxBaseUrl);
+        
+        FacilioField productionBaseUrl = getField("productionBaseUrl", "PRODUCTION_BASE_URL", module, FieldType.STRING);
+        productionBaseUrl.setDefault(true);
+        fields.add(productionBaseUrl);
+        
+        FacilioField startUrl = getField("startUrl", "START_URL", module, FieldType.STRING);
+        startUrl.setDefault(true);
+        fields.add(startUrl);
+        
         return fields;
     }
     
