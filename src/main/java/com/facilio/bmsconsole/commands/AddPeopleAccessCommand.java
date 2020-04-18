@@ -1,17 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.modules.UpdateChangeSet;
 
 public class AddPeopleAccessCommand extends FacilioCommand{
 
@@ -20,15 +21,15 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 	    List<PeopleContext> people = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 	   Long occupantPortalAppId = (Long)context.getOrDefault(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, -1l);
+	   Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
 		
-	    if(CollectionUtils.isNotEmpty(people)) {
-	    	
-	    	List<AppDomain> occupantPortalApps = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
-	    	if(CollectionUtils.isNotEmpty(occupantPortalApps)) {
-    			for(PeopleContext ppl : people) {
+	    if(CollectionUtils.isNotEmpty(people)  && MapUtils.isNotEmpty(changeSet)) {
+    		for(PeopleContext ppl : people) {
+    			List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
+				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) {
 					PeopleAPI.updatePeoplePortalAccess(ppl, AppDomainType.SERVICE_PORTAL, occupantPortalAppId);
 				}
-		    }
+			}
 	    }
 		return false;
 	}

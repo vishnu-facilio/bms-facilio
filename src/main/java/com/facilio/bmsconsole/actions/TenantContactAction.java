@@ -119,6 +119,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.addTenantContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
@@ -136,6 +137,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 		
@@ -221,6 +223,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -235,6 +238,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

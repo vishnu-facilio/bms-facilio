@@ -115,6 +115,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -130,6 +131,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -214,6 +216,7 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -227,6 +230,7 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
 			c.execute();

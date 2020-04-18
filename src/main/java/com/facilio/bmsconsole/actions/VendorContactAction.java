@@ -102,6 +102,7 @@ public class VendorContactAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 		
 			c.execute();
@@ -117,6 +118,7 @@ public class VendorContactAction extends FacilioAction{
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -199,6 +201,7 @@ public class VendorContactAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.execute();
