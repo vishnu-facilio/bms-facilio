@@ -17,6 +17,33 @@ public class FormRuleContext {
 	long formId = -1;
 	long fieldId = -1;
 	long criteriaId = -1;
+	long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	String name;
+	String description;
 	Criteria criteria;
 	FormRuleType type;
 	TriggerType triggerType;

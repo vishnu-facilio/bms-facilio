@@ -329,6 +329,9 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getFormRuleModule();
 
         fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getSiteIdField(module));
         fields.add(getField("ruleType", "RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.LOOKUP));
