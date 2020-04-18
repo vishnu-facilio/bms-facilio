@@ -16,6 +16,9 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private String resourcePath;
 
 	public String getLinkName() {
+		if (this.linkName == null && this.widgetName != null && !this.widgetName.trim().isEmpty()) {
+			this.linkName = this.widgetName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+		}
 		return linkName;
 	}
 

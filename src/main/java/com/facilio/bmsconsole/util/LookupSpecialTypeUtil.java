@@ -72,6 +72,8 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_TEMPLATE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.AGENT.equals(specialType)
+				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
+				|| FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)
 				;
 	}
 	
@@ -646,6 +648,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)) {
 			return ModuleFactory.getConnectedAppsModule();
 		}
+		else if(FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)) {
+			return ModuleFactory.getConnectedAppWidgetsModule();
+		}
 		else if(ContextNames.PRINTERS.equals(specialType)) {
 			return ModuleFactory.getPrinterModule();
 		}
@@ -714,6 +719,12 @@ public class LookupSpecialTypeUtil {
         }
 		else  if (FacilioConstants.ContextNames.PRINTERS.equals(specialType)) {
 		    return  FieldFactory.getPrinterFields();
+        }
+		else  if (FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)) {
+		    return  FieldFactory.getConnectedAppFields();
+        }
+		else  if (FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)) {
+		    return  FieldFactory.getConnectedAppWidgetsFields();
         }
 		
 		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {

@@ -4168,6 +4168,16 @@
 			<param name="isNewPermission">true</param>
 		</action>
 		
+		<action name="viewWidget"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="viewWidget">
+		</action>
+		
+		<action name="widgetList"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="connectedAppWidgetList">
+		</action>
+		
 		<action name="deleteWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedAppWidget">
@@ -4189,21 +4199,14 @@
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
-			method="samlLogin">
-			<param name="id">{1}</param>
+			method="viewConnectedApp">
+			<param name="linkName">{1}</param>
 		</action>
 
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="connectedAppList">
 		</action>
-        <action name="setupAll"
-                class="com.facilio.bmsconsole.actions.ConnectedAppAction"
-                method="connectedAppList">
-            <param name="moduleName">setup</param>
-            <param name="permission">CONNECTED_APPS</param>
-            <param name="isNewPermission">true</param>
-        </action>
 	</package>
 	
 	<package name="connection" namespace="/api/v2/connection"

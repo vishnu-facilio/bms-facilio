@@ -105,6 +105,14 @@ public class Page {
 		public void setComponent(String component) {
 			this.component = component;
 		}
+		
+		private String displayName;
+		public String getDisplayName() {
+			return displayName;
+		}
+		public void setDisplayName(String displayName) {
+			this.displayName = displayName;
+		}
 
 		private List<Section> sections;
 		public List<Section> getSections() {

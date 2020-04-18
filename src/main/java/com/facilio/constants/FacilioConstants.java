@@ -1282,6 +1282,9 @@ public class FacilioConstants {
 		
 		public static final String CONNECTED_APPS = "connectedApps";
 		public static final String CONNECTED_APP = "connectedApp";
+		public static final String CONNECTED_APP_WIDGET = "connectedAppWidget";
+		public static final String CONNECTED_APP_WIDGETS = "connectedAppWidgets";
+		public static final String CONNECTED_APP_VIEW_URL = "connectedAppViewURL";
 
 		public static final String CUSTOM_BUTTONS = "customButtons";
 

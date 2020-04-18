@@ -501,6 +501,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new PageRecordHandlingCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
+		c.addCommand(new GetPageConnectedAppWidgetsCommand());
 		return c;
 	}
 
@@ -1019,9 +1020,37 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getViewConnectedAppChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetConnectedAppCommand());
+		c.addCommand(new GetConnectedAppViewURLCommand());
+		return c;
+	}
+	
+	public static FacilioChain getViewConnectedAppWidgetChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetConnectedAppWidgetCommand());
+		c.addCommand(new GetConnectedAppViewURLCommand());
+		return c;
+	}
+	
+	public static FacilioChain getConnectedAppWidgetChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetConnectedAppDetailsCommand());
+		return c;
+	}
+	
 	public static FacilioChain getConnectedAppsList() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetConnectedAppsListCommand());
+		return c;
+	}
+	
+	public static FacilioChain getConnectedAppWidgetsList() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetConnectedAppWidgetListCommand());
 		return c;
 	}
 
