@@ -16,6 +16,7 @@ import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
+import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
@@ -207,16 +208,16 @@ public class AgentAction extends AgentActionV2 {
             if ((agentId != null) && (agentId > 0)) {
                 //TYPE AND AGENT ID
                 if ((controllerType != null) && (controllerType > 0)) {
-                    setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+                    setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(Arrays.asList(getAgentId()), FacilioControllerType.valueOf(getControllerType())));
                 }
                 // AGENT ID ALONE
                 else {
-                    setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(getAgentId()));
+                    setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
                 }
             }
             // TYPE ALONE
             else if ((controllerType != null) && (controllerType > 0)) {
-                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(-1, FacilioControllerType.valueOf(getControllerType())));
+                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(null, FacilioControllerType.valueOf(getControllerType())));
             }
             //DEVICE POINT COUNT
             else {
@@ -550,12 +551,12 @@ public class AgentAction extends AgentActionV2 {
     //__________________________________________________
     // general utilities
 
- /*   public String addModbusControllers() {
+    /*public String addModbusControllers() {
         try {
             if (FacilioProperties.isDevelopment()) {
                 ModbusTcpControllerContext controllerContext = new ModbusTcpControllerContext();
                 FacilioAgent agent = AgentApiV2.getAgent(agentId);
-                Objects.requireNonNull(agent);
+                Objects.requireNonNull(agent,"Agent can't be null");
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setSlaveId(1);
                 controllerContext.setIpAddress("1.1.1.1");
@@ -571,6 +572,24 @@ public class AgentAction extends AgentActionV2 {
                     modbusTcpPointContext.setModbusDataType(3L);
                     modbusTcpPointContext.setDeviceId(controllerContext.getDeviceId());
                     PointsAPI.addPoint(modbusTcpPointContext);
+                }
+
+                BacnetIpControllerContext bc = new BacnetIpControllerContext();
+                bc.setName("bacnet controller 1");
+                bc.setNetworkNumber(1);
+                bc.setIpAddress("1.1.1.1");
+                bc.setInstanceNumber(2);
+                bc.setAgentId(agentId);
+                bc.setSiteId(agent.getSiteId());
+                FieldDeviceApi.addControllerAsDevice(bc);
+                ControllerApiV2.addController(bc);
+                for (int i = 0; i < 10; i++) {
+                    BacnetIpPointContext bp = new BacnetIpPointContext();
+                    bp.setInstanceNumber(i);
+                    bp.setDeviceId(bc.getDeviceId());
+                    bp.setInstanceType(i);
+                    bp.setName("bp"+i);
+                    PointsAPI.addPoint(bp);
                 }
                 ok();
             } else {
@@ -679,4 +698,16 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+    public String listAgentVersions(){
+        try{
+            setResult(AgentConstants.DATA, AgentVersionApi.listAgentVersions(constructListContext(new FacilioContext())));
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting versions +",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+
 }

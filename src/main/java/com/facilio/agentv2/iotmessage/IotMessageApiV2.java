@@ -325,7 +325,8 @@ public class IotMessageApiV2 {
             builder.orderBy(AgentConstants.SENT_TIME + " DESC");
             return builder.get();
         }else {
-            throw new Exception(" No iot message for agent ->"+agentId);
+            LOGGER.info(" No iot message for agent ->"+agentId);
+            return new ArrayList<>();
         }
     }
 

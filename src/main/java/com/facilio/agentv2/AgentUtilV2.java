@@ -59,17 +59,28 @@ public class AgentUtilV2
     public static JSONObject getOverview() {
         JSONObject overiewData = new JSONObject();
         overiewData.put(AgentConstants.AGENT,AgentApiV2.getAgentCountDetails());
-        try {
-            LOGGER.info(" controller data ");
-            overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(null));
-        } catch (Exception e) {
-            LOGGER.info("Exception while getting controllerCountdata",e);
-        }
-        try {
-            LOGGER.info(" point count data ");
-            overiewData.put(AgentConstants.POINTS,PointsAPI.getPointsCountData(-1L));
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting pointsCountData",e);
+        if (overiewData.containsKey(AgentConstants.AGENT)) {
+            JSONObject agentCount = (JSONObject) overiewData.get(AgentConstants.AGENT);
+            if(agentCount.containsKey(AgentConstants.RECORD_IDS)){
+                List<Long> agentIds = (List<Long>) agentCount.get(AgentConstants.RECORD_IDS);
+                LOGGER.info("agentIds "+agentIds);
+                if( ! agentIds.isEmpty()){
+                    try {
+                        LOGGER.info(" controller data ");
+                        overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(agentIds));
+                    } catch (Exception e) {
+                        LOGGER.info("Exception while getting controllerCountdata",e);
+                    }
+                    try {
+                        LOGGER.info(" point count data ");
+                        overiewData.put(AgentConstants.POINTS,PointsAPI.getPointsCountData(agentIds));
+                    } catch (Exception e) {
+                        LOGGER.info("Exception occurred while getting pointsCountData",e);
+                    }
+                }else {
+                    LOGGER.info("zero agents");
+                }
+            }
         }
         overiewData.put("chartParams",MetricsApi.getMetricsGraphData(null));
         overiewData.put(AgentConstants.INTEGRATIONS,0);

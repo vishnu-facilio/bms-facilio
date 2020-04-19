@@ -1,12 +1,16 @@
 package com.facilio.agentv2.upgrade;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilities;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -35,11 +39,28 @@ public class AgentVersionApi {
     }
 
     public static Map<String, Object> getAgentVersion(long versionId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentVersionModule()), String.valueOf(versionId), NumberOperators.EQUALS));
+       return fetchAgentVersion(criteria,new FacilioContext()).get(0);
+    }
+
+    public static List<Map<String,Object>> listAgentVersions(FacilioContext context) throws Exception {
+        return fetchAgentVersion(null,context);
+    }
+
+    private static List<Map<String, Object>> fetchAgentVersion(Criteria criteria, FacilioContext context) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentVersionModule().getTableName())
-                .select(FieldFactory.getAgentVersionFields())
-                .andCondition(CriteriaAPI.getIdCondition(versionId, ModuleFactory.getAgentVersionModule()));
-        return selectRecordBuilder.fetchFirst();
+                .select(FieldFactory.getAgentVersionFields());
+        if(context != null){
+            selectRecordBuilder.limit(AgentUtilities.getlimit(context));
+            selectRecordBuilder.offset(AgentUtilities.getOffset(context));
+        }
+        if(criteria != null){
+            selectRecordBuilder.andCriteria(criteria);
+        }
+        return selectRecordBuilder.get();
+
     }
 
     public static boolean logAgentUpgrateRequest(FacilioAgent agent, long versionId, String authKey, long orgIg) throws Exception {

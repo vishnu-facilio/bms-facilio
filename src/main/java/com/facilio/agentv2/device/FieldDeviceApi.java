@@ -201,19 +201,19 @@ public class FieldDeviceApi {
     }
 
 
-    public static long getAgentDeviceCount(long agentId) {
-        return getDeviceCount(agentId, null);
+    public static long getAgentDeviceCount(List<Long> agentIds) {
+        return getDeviceCount(agentIds, null);
     }
 
     public static long getTypeDeviceCount(FacilioControllerType type) {
-        return getDeviceCount(-1, type);
+        return getDeviceCount(null, type);
     }
 
-    public static long getTypeDeviceCount(long agentId, FacilioControllerType type) {
-        return getDeviceCount(agentId, type);
+    public static long getTypeDeviceCount(List<Long> agentIds, FacilioControllerType type) {
+        return getDeviceCount(agentIds, type);
     }
 
-    private static long getDeviceCount(long agentId, FacilioControllerType type) {
+    private static long getDeviceCount(List<Long> agentIds, FacilioControllerType type) {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
         try {
@@ -221,8 +221,8 @@ public class FieldDeviceApi {
                     .table(fieldDeviceModule.getTableName())
                     .select(new HashSet<>())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID));
-            if (agentId > 0) {
-                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+            if ((agentIds != null) && ( ! agentIds.isEmpty())) {
+                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), agentIds, NumberOperators.EQUALS));
             }
             if ((type != null)) {
                 builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(type.asInt()), NumberOperators.EQUALS));
@@ -235,7 +235,7 @@ public class FieldDeviceApi {
     }
 
     public static long getDeviceCount() {
-        return getDeviceCount(-1, null);
+        return getDeviceCount(null, null);
     }
 
     public static Map<String, Object> getDeviceData(Long deviceId) {

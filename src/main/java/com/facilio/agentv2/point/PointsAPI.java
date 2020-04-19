@@ -832,17 +832,20 @@ public class PointsAPI {
     }
 
 
-    public static List<MiscPoint> getPointsSuperficial(Long agentId) throws Exception {
-        Set<Long> controllerIds = new HashSet<>();
-        if (agentId > 0) {
-            controllerIds = ControllerApiV2.getControllerIds(agentId);
+    public static List<MiscPoint> getAgentPointsSuperficial(List<Long> agentIds) throws Exception {
+        Set<Long> controllerIds;
+        if ((agentIds != null) && ( ! agentIds.isEmpty())) {
+            controllerIds = ControllerApiV2.getControllerIds(agentIds);
             LOGGER.info(" controller ids "+controllerIds);
+            if ( ! controllerIds.isEmpty()) {
+                return getControllerPointsSuperficial(new ArrayList<>(controllerIds));
+            }
         }
-        return getPointsSuperficial(controllerIds);
+        return new ArrayList<>();
     }
 
 
-    private static List<MiscPoint> getPointsSuperficial(Set<Long> controllerIds) throws Exception {
+    private static List<MiscPoint> getControllerPointsSuperficial(List<Long> controllerIds) throws Exception {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
@@ -852,21 +855,23 @@ public class PointsAPI {
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
         }
         List<Map<String, Object>> data = builder.get();
-        LOGGER.info(" data " + data);
+        LOGGER.info("points query "+builder.toString());
         return FieldUtil.getAsBeanListFromMapList(data, MiscPoint.class);
     }
 
-    public static JSONObject getControllerPointsCountData(Long controllerId)throws Exception{
-        List<MiscPoint> points = getPointsSuperficial(new HashSet<>(Arrays.asList(controllerId)));
+
+    public static JSONObject getPointsCountData(List<Long> agentId) throws Exception {
+        List<MiscPoint> points = getAgentPointsSuperficial(agentId);
+        LOGGER.info(" points count "+points.size());
         return getPointCountDataJSON(points);
     }
+
     public static JSONObject getPointsCountData(Long agentId) throws Exception {
-        List<MiscPoint> points = getPointsSuperficial(agentId);
-        LOGGER.info(" superficial points "+points.size());
-        return getPointCountDataJSON( points);
+       return getPointsCountData(Collections.singletonList(agentId));
     }
 
     public static JSONObject getPointCountDataJSON( List<MiscPoint> points) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        LOGGER.info("points count "+points.size());
         JSONObject pointCountData = new JSONObject();
         int subPts = 0;
         int confPts = 0;

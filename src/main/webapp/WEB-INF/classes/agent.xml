@@ -160,6 +160,8 @@
         </action>
         <action name="upgradeAgent" class="com.facilio.agentv2.actions.VersionLogAction" method="upgradeAgent">
         </action>
+        <action name="versions" class="com.facilio.agentv2.AgentAction" method="listAgentVersions">
+        </action>
         <action name="logs" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentLogs">
         </action>
         <action name="logCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getLogCount">

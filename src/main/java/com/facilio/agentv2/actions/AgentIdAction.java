@@ -24,6 +24,7 @@ import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +122,7 @@ public class AgentIdAction extends AgentActionV2 {
     public String getControllerCount() {
         try {
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResult(AgentConstants.DATA, ControllerApiV2.getCountForAgent(getAgentId()));
+            setResult(AgentConstants.DATA, ControllerApiV2.getCountForAgent(Arrays.asList(getAgentId())));
             ok();
             return SUCCESS;
         } catch (Exception e) {
@@ -183,7 +184,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String countAgentDevices() {
         try {
-            setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(getAgentId()));
+            setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
             setResult(AgentConstants.RESULT, SUCCESS);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting agentDevices count", e);

@@ -289,15 +289,18 @@ public class AgentApiV2 {
             fields.add(fieldsmap.get(AgentConstants.CONNECTED));
             fields.add(FieldFactory.getIdField(agentDataModule));
             fields.add(FieldFactory.getSiteIdField(agentDataModule));
+            List<Long> ids = new ArrayList<>();
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(agentDataModule.getTableName())
                     .select(fields)
                     .andCondition(getDeletedTimeNullCondition(agentDataModule));
             List<Map<String, Object>> data = selectRecordBuilder.get();
+            LOGGER.info("query "+selectRecordBuilder.toString());
             Set<Long> siteSet = new HashSet<>();
             int offlineCount = 0;
             if (!data.isEmpty()) {
                 for (Map<String, Object> datum : data) {
+                    ids.add((Long) datum.get(AgentConstants.ID));
                     if ((datum.get(AgentConstants.CONNECTED) == null) || (!(boolean) datum.get(AgentConstants.CONNECTED))) {
                         offlineCount++;
                     }
@@ -307,6 +310,7 @@ public class AgentApiV2 {
                 }
             }
             JSONObject countData = new JSONObject();
+            countData.put(AgentConstants.RECORD_IDS,ids);
             countData.put(AgentConstants.SITE_COUNT,siteSet.size());
             countData.put(AgentConstants.TOTAL_COUNT,data.size());
             countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
