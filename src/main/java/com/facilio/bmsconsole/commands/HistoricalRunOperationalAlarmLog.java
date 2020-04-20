@@ -34,8 +34,7 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand{
 		// TODO Auto-generated method stub
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
-		long categoryId = (long) context.get(FacilioConstants.ContextNames.CATEGORY_ID);
-		System.out.println(range);
+		long categoryId = (long) context.getOrDefault(FacilioConstants.ContextNames.CATEGORY_ID, -1l);
 		List<Long> finalResourceIds=new ArrayList<>();
 		if(categoryId > -1)
 		{

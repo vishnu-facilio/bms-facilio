@@ -116,6 +116,7 @@ public class FacilioConstants {
 		public static final String OPERATION_EVENT = "operationevent";
 		public static final String PREVIOUS_SHORT_OF_EVENT = "previousshotofevent";
 		public static final String PREVIOUS_EXCEED_EVENT = "previousexceedevent";
+		public static final String PREVIOUS_EVENT = "previousevent";
 		public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
 		public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";

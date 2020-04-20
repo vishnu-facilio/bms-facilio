@@ -2083,7 +2083,73 @@
 			}
 			return resultMap;
 			}"
-}
+		},
+		"111": {
+		"description" : "overallOffAlarmDuration",
+		"usage" : "operationAlarmSummary",
+		"workflow" : "Map offDurationCompersion(Number alarmId)
+			{
+				module = Module(\"operationalarmoccurrence\");
+				date = NameSpace(\"date\");
+				thisMonthRange = date.getDateRange(\"Current Year\");
+				lastMonthRange = date.getDateRange(\"Last Year\");
 
+				resMap = {};
+				db = {
+					criteria : [alarm == alarmId && createdTime == thisMonthRange && coverageType == 2],
+					field: \"duration\",
+					aggregation: \"sum, duration\"
+				};
 
+				res = module.fetch(db);
+				thisMonth = res;
+				db = {
+					criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 2],
+					field: \"duration\",
+					aggregation: \"sum, duration\"
+				};
+				res = module.fetch(db);
+				LastMonth = res;
+
+				resMap[\"durationCurrentYear\"] = thisMonth;
+				resMap[\"durationLastYear\"] = LastMonth;
+
+				log resMap;
+				return resMap;
+			}"
+		},
+		"112": {
+			"description" : "overallOnAlarmDuration",
+			"usage" : "operationAlarmSummary",
+			"workflow" : "Map onDurationCompersion(Number alarmId)
+				{
+					module = Module(\"operationalarmoccurrence\");
+					date = NameSpace(\"date\");
+					thisMonthRange = date.getDateRange(\"Current Year\");
+					lastMonthRange = date.getDateRange(\"Last Year\");
+
+					resMap = {};
+					db = {
+						criteria : [alarm == alarmId && createdTime == thisMonthRange && coverageType == 1],
+						field: \"duration\",
+						aggregation: \"sum, duration\"
+					};
+
+					res = module.fetch(db);
+					thisMonth = res;
+					db = {
+						criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 1],
+						field: \"duration\",
+						aggregation: \"sum, duration\"
+					};
+					res = module.fetch(db);
+					LastMonth = res;
+
+					resMap[\"durationCurrentYear\"] = thisMonth;
+					resMap[\"durationLastYear\"] = LastMonth;
+
+					log resMap;
+					return resMap;
+				}"
+		}
 }

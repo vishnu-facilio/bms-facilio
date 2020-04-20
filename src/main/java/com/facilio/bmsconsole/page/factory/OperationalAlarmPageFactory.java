@@ -40,8 +40,9 @@ public class OperationalAlarmPageFactory extends PageFactory {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
         addDefaultAlarmRank(tab2Sec1);
-        addDefaultAlarmDuration(tab2Sec1);
-        ReadingAlarmPageFactory.addAlarmDuration(tab2Sec1);
+        addDefaultOutAlarmDuration(tab2Sec1);
+        addDefaultOffAlarmDuration(tab2Sec1);
+        // ReadingAlarmPageFactory.addAlarmDuration(tab2Sec1);
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE));
         Criteria criteria = new Criteria();
@@ -73,7 +74,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
         PageWidget alarmDetails = new PageWidget(PageWidget.WidgetType.CHART, "outOfSchedule");
         alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.OUT_OF_SCHEDULE);
-        addChartParams(alarmDetails, null, BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR , "createdTime", BmsAggregateOperators.NumberAggregateOperator.SUM , "duration" ,null, DateOperators.CURRENT_YEAR, String.valueOf(lastOccurrence.getCreatedTime()) ,criteria);
+        addChartParams(alarmDetails, "stackedbar", BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR , "createdTime", BmsAggregateOperators.NumberAggregateOperator.SUM , "duration" ,"coverageType", DateOperators.CURRENT_YEAR, String.valueOf(lastOccurrence.getCreatedTime()) ,criteria);
         section.addWidget(alarmDetails);
         return alarmDetails;
     }
@@ -94,16 +95,30 @@ public class OperationalAlarmPageFactory extends PageFactory {
         section.addWidget(cardWidget);
         return  cardWidget;
     }
-    private  static  PageWidget addDefaultAlarmDuration (Page.Section section) {
+    private  static  PageWidget addDefaultOutAlarmDuration (Page.Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.setTitle("Duration");
+        cardWidget.setTitle("Out of Schedule Run");
         cardWidget.addToWidgetParams("primaryTitle", "This Year");
         cardWidget.addToWidgetParams("primaryKey", "durationCurrentYear");
         cardWidget.addToWidgetParams("secondaryTitle", "Last Year");
         cardWidget.addToWidgetParams("secondaryKey", "durationLastYear");
         cardWidget.addToWidgetParams("dataType", "duration");
-        cardWidget.addToWidgetParams("workflowId", "109");
+        cardWidget.addToWidgetParams("workflowId", "112");
+        cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
+        section.addWidget(cardWidget);
+        return  cardWidget;
+    }
+    private  static  PageWidget addDefaultOffAlarmDuration (Page.Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.setTitle("Unscheduled OFF");
+        cardWidget.addToWidgetParams("primaryTitle", "This Year");
+        cardWidget.addToWidgetParams("primaryKey", "durationCurrentYear");
+        cardWidget.addToWidgetParams("secondaryTitle", "Last Year");
+        cardWidget.addToWidgetParams("secondaryKey", "durationLastYear");
+        cardWidget.addToWidgetParams("dataType", "duration");
+        cardWidget.addToWidgetParams("workflowId", "111");
         cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
         section.addWidget(cardWidget);
         return  cardWidget;

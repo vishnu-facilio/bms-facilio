@@ -19,7 +19,7 @@ public class OperationAlarmEventContext extends BaseEventContext {
 	@Override
     public String constructMessageKey() {
         if (getResource() != null && getCoverageTypeEnum() != null) {
-            return getResource().getId() + "_" + getCoverageType()  + "_" + getEventType();
+            return getResource().getId() + "_" + getEventType();
         }
         return null;
         

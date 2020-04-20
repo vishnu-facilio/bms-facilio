@@ -43,10 +43,10 @@ public class HistoricalOperationAlarmOccurencesDeletionCommand extends FacilioCo
 		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		long startTime = range.getStartTime();
 		long endTime= range.getEndTime();
-		int[] coverageType = {1, 2};
+		// int[] coverageType = {1, 2};
 
-		for (Integer type: coverageType) {
-			List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(startTime, endTime, resourceIds, AlarmOccurrenceContext.Type.OPERATION_OCCURRENCE , type);
+		// for (Integer type: coverageType) {
+			List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(startTime, endTime, resourceIds, AlarmOccurrenceContext.Type.OPERATION_OCCURRENCE , null);
 			if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 			{
 				AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
@@ -73,7 +73,7 @@ public class HistoricalOperationAlarmOccurencesDeletionCommand extends FacilioCo
 				NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);
 			}
 
-		}
+		//}
 
 		context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(startTime, endTime));
 		return false;	
@@ -150,7 +150,10 @@ public class HistoricalOperationAlarmOccurencesDeletionCommand extends FacilioCo
 				.beanClass(NewAlarmAPI.getOccurrenceClass(type)).moduleName(NewAlarmAPI.getOccurrenceModuleName(type));
 				if (resourceIds != null ) {
 					selectbuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getField("resourceid", "RESOURCE_ID", FieldType.NUMBER), resourceIds, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageTye, NumberOperators.EQUALS));
+					;
+				}
+				if (coverageTye != null) {
+					selectbuilder.andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageTye, NumberOperators.EQUALS));
 				}
 
 		Criteria criteria = new Criteria();

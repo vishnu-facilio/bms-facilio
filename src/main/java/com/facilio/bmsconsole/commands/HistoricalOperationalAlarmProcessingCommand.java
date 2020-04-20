@@ -53,10 +53,10 @@ public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand 
 
     private void fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long resourceId, long lesserStartTime, long greaterEndTime, BaseAlarmContext.Type type) throws Exception
     {
-        int[] coverageTypes = {1, 2};
+        // int[] coverageTypes = {1, 2};
 
         final int EVENTS_FETCH_LIMIT_COUNT = 5000;
-        for (Integer coverageType: coverageTypes) {
+       //  for (Integer coverageType: coverageTypes) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String moduleName = NewEventAPI.getEventModuleName(type);
             FacilioModule eventModule = modBean.getModule(moduleName);
@@ -65,8 +65,8 @@ public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand 
                     .module(eventModule)
                     .beanClass(NewEventAPI.getEventClass(type))
                     .andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))
-                    .andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageType, NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));
+//                    .andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageType, NumberOperators.EQUALS));
 
             HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
             List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
@@ -104,7 +104,7 @@ public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand 
                 LOGGER.info("Operational Events added in final alarm processing job: "+parentLoggerId+ " for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);
             }
 
-        }
+       // }
 
     }
 

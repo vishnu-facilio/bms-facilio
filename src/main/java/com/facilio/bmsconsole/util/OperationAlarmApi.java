@@ -42,6 +42,7 @@ public class OperationAlarmApi {
         GenericSelectRecordBuilder fieldsBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(true), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition("NAME", "name",
                         "runStatus", StringOperators.IS))
                 .orCondition(CriteriaAPI.getCondition("NAME", "name",
@@ -183,7 +184,7 @@ public class OperationAlarmApi {
         switch (type) {
             case DAYS_24_7:
                 if (!value) {
-                    raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                    raiseAlarm(resource.get("name").toString() , reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     break;
                 }
                 checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
@@ -197,7 +198,7 @@ public class OperationAlarmApi {
                 }
                 if(!value) {  //  when result is false and checking whether it should be true
                     if(hoursList.contains(reading.getDay())) {
-                        raiseAlarm( resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                        raiseAlarm( resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                         break;
                     }
                     checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
@@ -205,7 +206,7 @@ public class OperationAlarmApi {
                 else
                 {
                     if(!hoursList.contains(reading.getDay())) {
-                        raiseAlarm(resource.get("name") + " asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                        raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     }
                     checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField, resource);
@@ -235,7 +236,7 @@ public class OperationAlarmApi {
                     else if (businessHour != null ){
 //
                         if (date.getHour() >= startTime.getHour() && date.getHour() <= endTime.getHour()) {
-                            raiseAlarm(resource.get("name") + " asset is OFF during scheduled operating hours\n", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
+                            raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                             break;
                         }
                         checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
@@ -244,11 +245,11 @@ public class OperationAlarmApi {
                 else
                 {
                     if (businessHour == null ) {
-                        raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                        raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     } else if (businessHour != null) {
                         if (date.getHour() < startTime.getHour() && date.getHour() > endTime.getHour()) {
-                            raiseAlarm(resource.get("name") + " asset is operating out of scheduled hours\n", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                            raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
                         checkAndClearEvent(reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField, resource);
@@ -266,15 +267,15 @@ public class OperationAlarmApi {
     private static OperationAlarmEventContext createOperationEvent(String message, ReadingContext readingContext, OperationAlarmContext.CoverageType type,String severity, FacilioField readingField)
     {
         OperationAlarmEventContext event=new OperationAlarmEventContext();
-        event.setMessage(message);
+        event.setMessage(message + " is not operating as per the operation schedule");
         event.setSeverityString(severity);
-        event.setDescription("description");
+        // event.setDescription("description");
         event.setCreatedTime(readingContext.getTtime());
         event.setSiteId(readingContext.getSiteId());
         event.setReadingFieldId(readingField.getFieldId());
         ResourceContext context = new ResourceContext();
         context.setId(readingContext.getParentId());
-        event.setResource(context);;
+        event.setResource(context);
         event.setCoverageType(type);
         return event;
 
@@ -291,34 +292,53 @@ public class OperationAlarmApi {
         event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
         return event;
     }
+//    private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField, Map<String,Object> resource) throws Exception {
+//
+//        BaseEventContext previousExceedEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
+//        BaseEventContext previousShortEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
+//            if (previousExceedEvent.getSeverityString() == null && previousShortEvent.getSeverityString() == null) {
+//                return;
+//            }
+//            if (coverageType == OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE) {
+//                if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
+//                    addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+//                }
+//                if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
+//                    addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+//                }
+//                return;
+//            }
+//
+//        if (coverageType == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE) {
+//            if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
+//                addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+//            }
+//            if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
+//                addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+//            }
+//            return;
+//        }
+//    }
     private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField, Map<String,Object> resource) throws Exception {
 
-        BaseEventContext previousExceedEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT);
-        BaseEventContext previousShortEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT);
-            if (previousExceedEvent.getSeverityString() == null && previousShortEvent.getSeverityString() == null) {
-                return;
+        BaseEventContext previousEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EVENT);
+        if (previousEvent.getSeverityString() == null) {
+            return;
+        }
+        if (coverageType == OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE) {
+            if (previousEvent.getSeverityString() != null && !previousEvent.getSeverityString().equals("Clear")) {
+                addEvent(createOperationEvent(resource.get("name").toString(), reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
             }
-            if (coverageType == OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE) {
-                if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                    addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
-                }
-                if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
-                    addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
-                }
-                return;
-            }
+            return;
+        }
 
         if (coverageType == OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE) {
-            if (previousShortEvent.getSeverityString() != null && !previousShortEvent.getSeverityString().equals("Clear")) {
-                addEvent(createOperationEvent(resource.get("name") + " asset is OFF during scheduled operating hours ", reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
-            }
-            if (previousExceedEvent.getSeverityString() != null && !previousExceedEvent.getSeverityString().equals("Clear")) {
-                addEvent(createOperationEvent(resource.get("name") + " asset is operating out of scheduled hours\n ", reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
+            if (previousEvent.getSeverityString() != null && !previousEvent.getSeverityString().equals("Clear")) {
+                addEvent(createOperationEvent(resource.get("name").toString(), reading, coverageType, FacilioConstants.Alarm.CLEAR_SEVERITY, readingField), context);
             }
             return;
         }
     }
-
     private static void addEvent(OperationAlarmEventContext event, Context context) throws Exception {
         OperationAlarmEventContext baseEvent = (OperationAlarmEventContext) event;
         List<BaseEventContext> operationAlarmEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
@@ -332,6 +352,7 @@ public class OperationAlarmApi {
         if (operationAlarmEvents == null) {
             operationAlarmEvents = new ArrayList<>();
         }
+        context.put(FacilioConstants.ContextNames.PREVIOUS_EVENT, baseEvent);
         // LOGGER.info("CoverageType" + event.getCoverageType());
         operationAlarmEvents.add(baseEvent);
         context.put(EventConstants.EventContextNames.EVENT_LIST, operationAlarmEvents);
@@ -356,36 +377,70 @@ public class OperationAlarmApi {
     private static OperationAlarmEventContext setPreviousEventMeta(Long parentId, Context context, long startTime) throws Exception {
         OperationAlarmEventContext previousEvent = null;
         Boolean isHistorical = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HISTORICAL, false);
-        BaseAlarmContext exceedbaseAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_" + OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
-        AlarmOccurrenceContext exceedlastestOccurrence ;
-        AlarmOccurrenceContext shortOflastestOccurrence ;
-        BaseEventContext exceedPreviousEvent = new BaseEventContext();
-        BaseEventContext shortOfPreviousEvent = new BaseEventContext();
-        if (exceedbaseAlarm != null) {
+        BaseAlarmContext opBaseAlarm = NewAlarmAPI.getBaseAlarmByMessageKey( parentId + "_" + BaseAlarmContext.Type.OPERATION_ALARM);
+//        BaseAlarmContext exceedbaseAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_"  + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
+//        AlarmOccurrenceContext exceedlastestOccurrence ;
+//        AlarmOccurrenceContext shortOflastestOccurrence ;
+        AlarmOccurrenceContext opAlarmOccurrence ;
+        BaseEventContext opEvent = new BaseEventContext();
+//        BaseEventContext shortOfPreviousEvent = new BaseEventContext();
+        if (opBaseAlarm != null) {
             if (!isHistorical) {
-                exceedlastestOccurrence = NewAlarmAPI.getLatestAlarmOccurance(exceedbaseAlarm.getId());
+                opAlarmOccurrence = NewAlarmAPI.getLatestAlarmOccurance(opBaseAlarm.getId());
 
             } else {
-                exceedlastestOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(exceedbaseAlarm, startTime);
+                opAlarmOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(opBaseAlarm, startTime);
             }
-            exceedPreviousEvent.setSeverity(exceedlastestOccurrence.getSeverity());
+            opEvent.setSeverity(opAlarmOccurrence.getSeverity());
 
         }
-        BaseAlarmContext shortOfAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_" + OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
-        if (shortOfAlarm != null) {
-            if (!isHistorical) {
-                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurance(shortOfAlarm.getId());
-
-            } else {
-                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(shortOfAlarm, startTime);
-            }
-            shortOfPreviousEvent.setSeverity(shortOflastestOccurrence.getSeverity());
-        }
-        context.put(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT, shortOfPreviousEvent);
-        context.put(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT, exceedPreviousEvent);
+//        BaseAlarmContext shortOfAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_" + OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
+//        if (shortOfAlarm != null) {
+//            if (!isHistorical) {
+//                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurance(shortOfAlarm.getId());
+//
+//            } else {
+//                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(shortOfAlarm, startTime);
+//            }
+//            shortOfPreviousEvent.setSeverity(shortOflastestOccurrence.getSeverity());
+//        }
+//        context.put(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT, shortOfPreviousEvent);
+        context.put(FacilioConstants.ContextNames.PREVIOUS_EVENT, opEvent);
         return previousEvent;
     }
 
+//    private static OperationAlarmEventContext setPreviousEventMeta(Long parentId, Context context, long startTime) throws Exception {
+//        OperationAlarmEventContext previousEvent = null;
+//        Boolean isHistorical = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HISTORICAL, false);
+//        BaseAlarmContext exceedbaseAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_" + OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
+//        AlarmOccurrenceContext exceedlastestOccurrence ;
+//        AlarmOccurrenceContext shortOflastestOccurrence ;
+//        BaseEventContext exceedPreviousEvent = new BaseEventContext();
+//        BaseEventContext shortOfPreviousEvent = new BaseEventContext();
+//        if (exceedbaseAlarm != null) {
+//            if (!isHistorical) {
+//                exceedlastestOccurrence = NewAlarmAPI.getLatestAlarmOccurance(exceedbaseAlarm.getId());
+//
+//            } else {
+//                exceedlastestOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(exceedbaseAlarm, startTime);
+//            }
+//            exceedPreviousEvent.setSeverity(exceedlastestOccurrence.getSeverity());
+//
+//        }
+//        BaseAlarmContext shortOfAlarm = NewAlarmAPI.getBaseAlarmByMessageKey(parentId + "_" + OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE + "_" +  BaseAlarmContext.Type.OPERATION_ALARM);
+//        if (shortOfAlarm != null) {
+//            if (!isHistorical) {
+//                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurance(shortOfAlarm.getId());
+//
+//            } else {
+//                shortOflastestOccurrence = NewAlarmAPI.getLatestAlarmOccurrenceWithInTime(shortOfAlarm, startTime);
+//            }
+//            shortOfPreviousEvent.setSeverity(shortOflastestOccurrence.getSeverity());
+//        }
+//        context.put(FacilioConstants.ContextNames.PREVIOUS_SHORT_OF_EVENT, shortOfPreviousEvent);
+//        context.put(FacilioConstants.ContextNames.PREVIOUS_EXCEED_EVENT, exceedPreviousEvent);
+//        return previousEvent;
+//    }
     private static void insertEventsWithoutAlarmOccurrenceProcessed(Context context) throws Exception
     {
         List<BaseEventContext> events = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);

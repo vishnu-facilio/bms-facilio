@@ -911,12 +911,14 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateBusinessHoursCommand());
 			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
 			c.addCommand(new AddSingleDayBusinessHourCommand());
+			c.addCommand(new AddHistoricalOperationalAlarmCommand());
 			return c;
 		}
 		public static FacilioChain updateBusinessHourInResourceChain () {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new UpdateBusinessHourInResourceCommand());
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new AddHistoricalOperationalAlarmCommand());
 			return c;
 		}
 		public static FacilioChain deleteBusinessHoursChain () {
