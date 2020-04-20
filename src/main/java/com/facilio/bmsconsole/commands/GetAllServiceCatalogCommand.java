@@ -11,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -34,6 +35,7 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long groupId = (long) context.get(FacilioConstants.ContextNames.GROUP_ID);
+        Boolean fetchComplaintType = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
@@ -61,6 +63,11 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
         if (StringUtils.isNotEmpty(searchString)) {
             builder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
         }
+        
+        if (fetchComplaintType == null || !fetchComplaintType) {
+        	builder.andCondition(CriteriaAPI.getCondition("IS_COMPLAINT_TYPE", "complaintType" ,"false", BooleanOperators.IS));
+        }
+        
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

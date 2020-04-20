@@ -19,6 +19,15 @@ public class ServiceCatalogAction extends FacilioAction {
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
+    
+    private Boolean fetchComplaintType;
+
+	public Boolean getFetchComplaintType() {
+		return fetchComplaintType;
+	}
+	public void setFetchComplaintType(Boolean fetchComplaintType) {
+		this.fetchComplaintType = fetchComplaintType;
+	}
 
     private ServiceCatalogContext serviceCatalog;
     public ServiceCatalogContext getServiceCatalog() {
@@ -76,6 +85,9 @@ public class ServiceCatalogAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
+        if (fetchComplaintType != null && fetchComplaintType) {
+        	context.put(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE, fetchComplaintType);
+        }
         context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         context.put(FacilioConstants.ContextNames.SEARCH, searchString);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());

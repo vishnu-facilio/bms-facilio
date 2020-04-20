@@ -7738,6 +7738,7 @@ public class FieldFactory {
         fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
         fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+        fields.add(getField("complaintType", "IS_COMPLAINT_TYPE", FieldType.BOOLEAN));
 
         return fields;
     }

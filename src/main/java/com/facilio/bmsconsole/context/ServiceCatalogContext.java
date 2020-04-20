@@ -80,8 +80,18 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
     public void setModuleId(long moduleId) {
         this.moduleId = moduleId;
     }
+    
+    private Boolean complaintType;
 
-    private FacilioModule module;
+    public Boolean getComplaintType() {
+		return complaintType;
+	}
+	public void setComplaintType(Boolean complaintType) {
+		this.complaintType = complaintType;
+	}
+	
+
+	private FacilioModule module;
     public FacilioModule getModule() {
         return module;
     }
