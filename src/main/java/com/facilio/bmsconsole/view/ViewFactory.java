@@ -190,7 +190,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTenantsView().setOrder(order++));
-		views.put("active", getActiveTenantsView().setOrder(order++));
+		//views.put("active", getActiveTenantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TENANT, views);
 
 		order = 1;
