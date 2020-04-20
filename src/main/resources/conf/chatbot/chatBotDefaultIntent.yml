@@ -808,6 +808,7 @@
       name : 'checkinDate'
       dataType : 6
       localId : 7
+      mlType : 12
       typeConfig : 1
       editable : true
       updateParamTriggerText : 'Edit checkin time'
@@ -835,114 +836,77 @@
                                 if(data.client_message_local != null) {
                                   
                                   if(data.client_message_local == "Edit host") {
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
-                                       return chatBot().param("host","Select host",[id > 0],"contact");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("host","Select host",[id > 0],"contact");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                  
+                                     if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
+                                        return chatBot().param("host","Select host",[id > 0],"contact");
+                                     }
+                                     
                                   }
                                   if(data.client_message_local == "Edit Visitor Name") {
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
-                                       return chatBot().param("editableName","Enter the name");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("editableName","Enter the name");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                  
+                                    if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
+                                        return chatBot().param("editableName","Enter the name");
+                                     }
+                                     
                                   }
                                   if(data.client_message_local == "Edit type") {
-                              
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
+                                    
+                                    if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
                                        return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                     }
                                   }
                                   if(data.client_message_local == "Edit email") {
-                              
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
+                                  
+                                     if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
                                        return chatBot().param("email","Enter the email");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("email","Enter the email");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                     }
                                   }
                                   if(data.client_message_local == "Edit phone number") {
-                              
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
-                                       return chatBot().param("phone","Enter the phone number");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("phone","Enter the phone number");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                    
+                                    if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
+                                      return chatBot().param("phone","Enter the phone number");
+                                     }
                                   }
                                   if(data.client_message_local == "Edit checkin time") {
+                                  
+                                     if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
+                                      return chatBot().param("checkinDate","Select the checkin time");
+                                     }
                               
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
-                                       return chatBot().param("checkinDate","Select the checkin time");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("checkinDate","Select the checkin time");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
                                   }
                                   if(data.client_message_local == "Edit checkout time") {
-                              
-                                    if(data.names.size() == 1) {
-                                       data.client_message_local = null;
+                                  
+                                     if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
+                                     }
+                                     else {
+                                        data.client_message_local = null;
                                        return chatBot().param("checkoutDate","Select the checkout time");
-                                    }
-                                    else {
-                                       if(data.name != null) {
-                                          data.client_message_local = null;
-                                          return chatBot().param("checkoutDate","Select the checkout time");
-                                       }
-                                       else {
-                                          askName = true;
-                                       }
-                                    }
+                                     }
                                   }
                                   if(data.client_message_local == "Add people") {
                                     
@@ -1041,7 +1005,16 @@
                                         newMap.visitorType = type.id;
                                       }
                                       contact = Module("contact").fetch([requester == currentUser.id])[0];
-                                       
+                                      if(data.checkinDate != null) {
+                                         if(date().getCurrentHour(data.checkinDate) == 0) {
+                                            data.checkinDate = date().addHours(data.checkinDate,10); 
+                                         }
+                                         newMap.checkinDate = data.checkinDate;
+                                         newMap.checkoutDate = date().addHours(data.checkinDate,3);  
+                                         data.checkinDateFilled = true;
+                                         data.checkinDate = null;
+                                         data.checkoutDate = null;
+                                      }
                                       newMap.host = contact.id;
                                       if(index>0) {
                                          firstPersonMap = data.get(data.names.get(0));
