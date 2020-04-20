@@ -570,6 +570,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code listInitialisationWithElements}
+	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
+	 * @param ctx the parse tree
+	 */
+	void enterListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code listInitialisationWithElements}
+	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
+	 * @param ctx the parse tree
+	 */
+	void exitListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code mapInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#map_opperations}.
 	 * @param ctx the parse tree

@@ -342,6 +342,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code listInitialisationWithElements}
+	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code mapInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#map_opperations}.
 	 * @param ctx the parse tree

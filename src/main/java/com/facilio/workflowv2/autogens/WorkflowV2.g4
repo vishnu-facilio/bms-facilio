@@ -129,6 +129,7 @@ atom
  
 list_opperations
  : (OPEN_BRACKET CLOSE_BRACKET)+														#listInitialisation
+ | OPEN_BRACKET (atom)+(COMMA atom)* CLOSE_BRACKET										#listInitialisationWithElements
  ;
  
 map_opperations

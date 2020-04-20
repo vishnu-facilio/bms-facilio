@@ -616,6 +616,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMapInitialisation(WorkflowV2Parser.MapInitialisationContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -31,8 +31,10 @@ import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.AtomContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Catch_statementContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.ListInitialisationWithElementsContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_catchContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_statementContext;
@@ -122,6 +124,21 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     public Value visitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx) 
     { 
     	return new Value(new ArrayList<>()); 
+    }
+    
+    @Override
+    public Value visitListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx) {
+    	
+    	List<Object> objects = new ArrayList<>();
+    	
+    	for (AtomContext atom : ctx.atom()) {
+    		
+    		Value value = this.visit(atom);
+    		
+    		objects.add(value.asObject());
+    	}
+    	
+    	return new Value(objects);
     }
     
     @Override 
