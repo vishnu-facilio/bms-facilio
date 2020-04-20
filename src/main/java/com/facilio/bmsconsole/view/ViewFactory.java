@@ -6294,7 +6294,7 @@ public class ViewFactory {
 		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
 		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
-		criteria.addAndCondition(getVisitorLogStatusCriteria("Invited"));
+		criteria.addAndCondition(getVisitorLogStatusCriteria("InviteRequested"));
 		
 		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		view.setSortFields(Arrays.asList(new SortField(expCheckInTime, false)));
