@@ -734,6 +734,7 @@ public class FacilioConstants {
 
 		public static final String ASSET_DEPRECIATION = "assetdepreciation";
 		public static final String ASSET_DEPRECIATION_REL = "assetdepreciationRel";
+		public static final String ASSET_DEPRECIATION_CALCULATION = "assetdepreciationCalculation";
 		public static final String ACTIVATE = "activate";
 
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";

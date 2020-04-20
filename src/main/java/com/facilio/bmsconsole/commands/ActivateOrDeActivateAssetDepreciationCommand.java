@@ -34,8 +34,6 @@ public class ActivateOrDeActivateAssetDepreciationCommand extends FacilioCommand
                     .fields(Collections.singletonList(modBean.getField("active", FacilioConstants.ContextNames.ASSET_DEPRECIATION)))
                     .andCondition(CriteriaAPI.getIdCondition(id, module));
             builder.update(assetDepreciation);
-
-            // add or delete job details
         }
         return false;
     }

@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
@@ -41,21 +42,13 @@ public class DepreciationChartCommand extends FacilioCommand {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-            String assetModuleName = FacilioConstants.ContextNames.ASSET;
-            FacilioField totalPriceField = modBean.getField(assetDepreciation.getTotalPriceFieldId(), assetModuleName);
-            if (totalPriceField == null) {
-                throw new IllegalArgumentException("Invalid total price field");
-            }
-            float totalPrice = (int) FieldUtil.getValue(assetContext, totalPriceField);
+            FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+            float totalPrice = (int) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule);
             if (totalPrice == -1) {
                 throw new IllegalArgumentException("Price cannot be empty");
             }
-
-            FacilioField salvageAmountField = modBean.getField(assetDepreciation.getSalvagePriceFieldId(), assetModuleName);
-            int salvageAmount = (int) FieldUtil.getValue(assetContext, salvageAmountField);
-
-            FacilioField startDateField = modBean.getField(assetDepreciation.getStartDateFieldId(), assetModuleName);
-            long date = (long) FieldUtil.getValue(assetContext, startDateField);
+            int salvageAmount = (int) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule);
+            long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
             if (date == -1) {
                 throw new IllegalArgumentException("Start date cannot be empty");
             }

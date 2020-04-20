@@ -6658,6 +6658,23 @@ public class FieldFactory {
         fields.add(getField("depreciationId", "DEPRECIATION_ID", module, FieldType.NUMBER));
         fields.add(getField("depreciationAmount", "DEPRECIATION_AMOUNT", module, FieldType.NUMBER));
         fields.add(getField("activated", "ACTIVATED", module, FieldType.BOOLEAN));
+        fields.add(getField("lastCalculatedId", "LAST_CALCULATED_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getAssetDepreciationCalculationFields() {
+        FacilioModule module = ModuleFactory.getAssetDepreciationCalculationModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        LookupField assetLookup = (LookupField) getField("asset", "ASSET_ID", module, FieldType.LOOKUP);
+        assetLookup.setLookupModule(ModuleFactory.getAssetsModule());
+        fields.add(assetLookup);
+        fields.add(getField("depreciationId", "DEPRECIATION_ID", module, FieldType.NUMBER));
+        fields.add(getField("calculatedDate", "CALCULATED_DATE", module, FieldType.NUMBER));
+        fields.add(getField("currentPrice", "CURRENT_PRICE", module, FieldType.NUMBER));
+        fields.add(getField("depreciatedAmount", "DEPRECIATED_AMOUNT", module, FieldType.NUMBER));
 
         return fields;
     }

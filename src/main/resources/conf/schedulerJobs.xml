@@ -120,6 +120,8 @@
 	<!-- Field Migrtaion -->
 	<job name='FieldMigration' classname = 'com.facilio.bmsconsole.jobs.FieldMigrationJob' transactionTimeout='7200000'/>
 
+	<!-- Asset Depreciation Job -->
+	<job name='AssetDepreciationJob' classname='com.facilio.bmsconsole.jobs.AssetDepreciationJob' transactionTimeout='7200000' />
 
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>

@@ -492,6 +492,15 @@ public class FieldUtil {
         return changeList;
     }
 
+    public static Object getValue(ModuleBaseWithCustomFields record, long fieldId, FacilioModule module) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField field = modBean.getField(fieldId, module.getModuleId());
+		if (field == null) {
+			throw new IllegalArgumentException("Invalid field");
+		}
+		return getValue(record, field);
+	}
+
     public static Object getValue(ModuleBaseWithCustomFields record, FacilioField field) throws Exception {
 		Object value;
 		if (field.isDefault()) {

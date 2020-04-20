@@ -43,4 +43,12 @@ public class AssetDepreciationRelContext implements Serializable {
     public void setActivated(Boolean activated) {
         this.activated = activated;
     }
+
+    private long lastCalculatedId = -1;
+    public long getLastCalculatedId() {
+        return lastCalculatedId;
+    }
+    public void setLastCalculatedId(long lastCalculatedId) {
+        this.lastCalculatedId = lastCalculatedId;
+    }
 }

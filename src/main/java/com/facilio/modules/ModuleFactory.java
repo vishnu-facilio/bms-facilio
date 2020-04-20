@@ -391,19 +391,28 @@ public class ModuleFactory {
 	}
 	
 	public static FacilioModule getAssetsModule() {
-		FacilioModule fieldModule = new FacilioModule();
-		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
-		fieldModule.setDisplayName("Assets");
-		fieldModule.setTableName("Assets");
-		return fieldModule;
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.ASSET);
+		module.setDisplayName("Assets");
+		module.setTableName("Assets");
+		return module;
 	}
 
 	public static FacilioModule getAssetDepreciationRelModule() {
-		FacilioModule fieldModule = new FacilioModule();
-		fieldModule.setName(ContextNames.ASSET_DEPRECIATION_REL);
-		fieldModule.setDisplayName("Asset Depreciation Rel");
-		fieldModule.setTableName("Asset_Depreication_Rel");
-		return fieldModule;
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.ASSET_DEPRECIATION_REL);
+		module.setDisplayName("Asset Depreciation Rel");
+		module.setTableName("Asset_Depreication_Rel");
+		return module;
+	}
+
+	public static FacilioModule getAssetDepreciationCalculationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.ASSET_DEPRECIATION_CALCULATION);
+		module.setDisplayName("Asset Depreciation Calculation");
+		module.setTableName("Asset_Depreciation_Calculation");
+		module.setType(FacilioModule.ModuleType.SUB_ENTITY);
+		return module;
 	}
 	
 	public static FacilioModule getEnergyMeterModule() {
