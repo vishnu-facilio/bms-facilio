@@ -2411,4 +2411,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetApplicationUsersCommand());
 		return chain;
 	}
+
+	public static FacilioChain getRDMforRestAPI() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetRDMForRestAPI());
+		return chain;
+		
+	}
 }

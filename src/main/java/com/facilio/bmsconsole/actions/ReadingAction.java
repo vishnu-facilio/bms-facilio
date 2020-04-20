@@ -1450,14 +1450,23 @@ public class ReadingAction extends FacilioAction {
 	
 	public String v2GetLastValue() throws Exception {
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		field = modBean.getField(fieldId);
-		ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, field);
-		ReadingsAPI.convertUnitForRdmData(rdm);
-
-		setResult("value", rdm.getValue());
-		setResult("time", rdm.getTtime());
+		FacilioChain chain = ReadOnlyChainFactory.getRDMforRestAPI();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
+		
+		chain.execute();
+		
+		if(fieldId > 0) {
+			
+			setResult("lastestdata",context.get(FacilioConstants.ContextNames.READING_DATA_META));
+		}
+		else {
+			setResult("lastestdata",context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		}
 		
 		return SUCCESS;
 	}
