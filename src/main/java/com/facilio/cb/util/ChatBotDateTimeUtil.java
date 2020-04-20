@@ -1,12 +1,9 @@
 package com.facilio.cb.util;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.context.ChatBotIntentParam;
-import com.facilio.cb.context.ChatBotTimeContext;
 import com.facilio.cb.date.DayEnum;
 import com.facilio.cb.date.MonthEnum;
 import com.facilio.cb.date.WeekEnum;
@@ -18,24 +15,6 @@ public class ChatBotDateTimeUtil {
 	public static final long ONE_HOUR_MILLISEC = 3600000l;
 	public static final long ONE_MIN_MILLISEC = 60000l;
 	
-	public static long compute(ChatBotIntentParam param, ChatBotTimeContext timeContext) throws Exception {
-
-		long returnMillisec = 0;
-		if (timeContext.getHour() >= 0 || timeContext.getMin() >= 0) {
-			
-			if(timeContext.getHour() >= 0) {
-				returnMillisec += timeContext.getHour() * ONE_HOUR_MILLISEC;
-			}
-			if(timeContext.getMin() >= 0) {
-				returnMillisec += timeContext.getMin() * ONE_MIN_MILLISEC;
-			}
-		} 
-		else if (timeContext.getTimeEnum() != null) {
-			returnMillisec = timeContext.getTimeEnum().getMillisec(timeContext);
-		} 
-		
-		return returnMillisec;
-	}
 
 	public static long compute(ChatBotIntentParam param, ChatBotDateContext dateContext) throws Exception {
 
@@ -163,6 +142,15 @@ public class ChatBotDateTimeUtil {
 			}
 			if(dateContext.getDateInt() > 0) {
 				dateContext.getCalendar().set(Calendar.DAY_OF_MONTH, dateContext.getDateInt());
+			}
+			if(dateContext.getTimeEnum() != null) {
+				dateContext.getTimeEnum().fillCalenderObj(dateContext);
+			}
+			if(dateContext.getHour() > -1) {
+				dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, dateContext.getHour());
+			}
+			if(dateContext.getMin() > -1) {
+				dateContext.getCalendar().set(Calendar.MINUTE, dateContext.getMin());
 			}
 		}
 		

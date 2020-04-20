@@ -1,24 +1,26 @@
 package com.facilio.cb.date;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.cb.context.ChatBotTimeContext;
+import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.util.ChatBotDateTimeUtil;
 
-public enum TimeEnum implements ChatBotTimeInterface {
+public enum TimeEnum implements ChatBotDateInterface {
 	
 	MORNING(1,"MORNING") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 9;
 		}
@@ -27,13 +29,14 @@ public enum TimeEnum implements ChatBotTimeInterface {
 	NOON(2,"NOON") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 12;
 		}
@@ -42,58 +45,62 @@ public enum TimeEnum implements ChatBotTimeInterface {
 	EVENING(3,"EVENING") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 16;
 		}
 
 	},
-	NIGHT(3,"NIGHT") {
+	NIGHT(4,"NIGHT") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 21;
 		}
 
 	},
-	AFTER_LUNCH(3,"AFTER_LUNCH") {
+	AFTER_LUNCH(5,"AFTER_LUNCH") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 15;
 		}
 
 	},
-	BEFORE_LUNCH(3,"BEFORE_LUNCH") {
+	BEFORE_LUNCH(6,"BEFORE_LUNCH") {
 
 		@Override
-		public long getMillisec(ChatBotTimeContext dateContext) throws Exception {
+		public void fillCalenderObj(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
-			return getIntValue(dateContext) * ChatBotDateTimeUtil.ONE_HOUR_MILLISEC;
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, getIntValue(dateContext));
+			dateContext.getCalendar().set(Calendar.MINUTE, 0);
 		}
 
 		@Override
-		public int getIntValue(ChatBotTimeContext dateContext) throws Exception {
+		public int getIntValue(ChatBotDateContext dateContext) throws Exception {
 			// TODO Auto-generated method stub
 			return 11;
 		}

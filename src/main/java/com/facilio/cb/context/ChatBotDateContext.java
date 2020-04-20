@@ -5,6 +5,7 @@ import java.util.Calendar;
 import com.facilio.cb.date.DayEnum;
 import com.facilio.cb.date.DirectDateEnums;
 import com.facilio.cb.date.MonthEnum;
+import com.facilio.cb.date.TimeEnum;
 import com.facilio.cb.date.WeekEnum;
 import com.facilio.cb.date.YearEnum;
 import com.facilio.time.DateTimeUtil;
@@ -21,12 +22,35 @@ public class ChatBotDateContext {
 	DayEnum dayEnum;
 	int dateInt = -1;
 	
+	int hour = -1;
+	int min = -1;
+	TimeEnum timeEnum;
+	
 	Calendar calendar = Calendar.getInstance(DateTimeUtil.getLocale());
 	
 	{
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
+	}
+	
+	public int getHour() {
+		return hour;
+	}
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+	public int getMin() {
+		return min;
+	}
+	public void setMin(int min) {
+		this.min = min;
+	}
+	public TimeEnum getTimeEnum() {
+		return timeEnum;
+	}
+	public void setTimeEnum(String timeEnum) {
+		this.timeEnum = TimeEnum.getDateEnum(timeEnum);
 	}
 	
 	public WeekEnum getWeekEnum() {

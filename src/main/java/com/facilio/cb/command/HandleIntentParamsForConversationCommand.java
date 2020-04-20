@@ -1,19 +1,15 @@
 package com.facilio.cb.command;
 
-import java.util.ArrayList;
-
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.cb.context.ChatBotDateContext;
-import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentParam;
+import com.facilio.cb.context.ChatBotIntentParam.ML_Type;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotSessionConversation;
-import com.facilio.cb.context.ChatBotTimeContext;
-import com.facilio.cb.context.ChatBotIntentParam.ML_Type;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotDateTimeUtil;
 import com.facilio.cb.util.ChatBotUtil;
@@ -61,11 +57,6 @@ public class HandleIntentParamsForConversationCommand extends FacilioCommand {
 							JSONObject cbDate = (JSONObject) json.get("value");
 							ChatBotDateContext cbDateContext = FieldUtil.getAsBeanFromJson(cbDate, ChatBotDateContext.class);
 							value = ChatBotDateTimeUtil.compute(chatBotParam, cbDateContext);
-						}
-						if(chatBotParam.getMlTypeEnum() == ML_Type.TIME) {
-							JSONObject cbtime = (JSONObject) json.get("value");
-							ChatBotTimeContext cbtimeContext = FieldUtil.getAsBeanFromJson(cbtime, ChatBotTimeContext.class);
-							value = ChatBotDateTimeUtil.compute(chatBotParam, cbtimeContext);
 						}
 						else {
 							value = json.get("value").toString();
