@@ -121,8 +121,6 @@ public class ChatBotAction extends FacilioAction {
 
 	public String chat() throws Exception {
 		
-		sendToWMS(chatMessage,"userMessage");
-		
 		FacilioChain chain = TransactionChainFactory.HandleChatBotMessageChain();
 		
 		FacilioContext context = chain.getContext();
@@ -165,8 +163,23 @@ public class ChatBotAction extends FacilioAction {
 			
 			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, FieldUtil.getAsJSON(context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION)));
 			
-			sendToWMS(getResult(),"botMessage");
 		}
+		
+		long uniqueID = -1;
+		if(context.get(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION) != null) {
+			uniqueID = ((ChatBotSessionConversation) context.get(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION) ).getId();
+		}
+		else if (context.get(ChatBotConstants.CHAT_BOT_SESSION) != null) {
+			uniqueID = ((ChatBotSession) context.get(ChatBotConstants.CHAT_BOT_SESSION) ).getId();
+		}
+		
+		if(chatMessage != null) {
+			chatMessage.put("uniqueID", uniqueID);
+			sendToWMS(chatMessage,"userMessage");
+		}
+		setResult("uniqueID", uniqueID);
+		
+		sendToWMS(getResult(),"botMessage");
 		
 		return SUCCESS;
 	}

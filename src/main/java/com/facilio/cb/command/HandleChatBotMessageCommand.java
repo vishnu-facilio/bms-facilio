@@ -93,10 +93,12 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 			ChatBotSession chatBotSession = (ChatBotSession)newcontext1.get(ChatBotConstants.CHAT_BOT_SESSION);
 			
 			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, chatBotSession.getResponse());
+			context.put(ChatBotConstants.CHAT_BOT_SESSION, chatBotSession);
 		}
 		else {
 			ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext1.get(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION);
 			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_JSON, conversation.getQuery());
+			context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, conversation);
 		}
 		context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext1.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
 		context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext1.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
