@@ -106,7 +106,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				if(MapUtils.isNotEmpty(combinedMap)) {
 					filters.put("Filter.timeline", getCombinedTimeLine());
 					
-					cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter", "Filter");
+					cfDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Filter", "Filter", null);
 				}
 			}
 			if(cfDataPoint != null) {
@@ -124,7 +124,10 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		}
 		Map<String, Object> operatingTimeLine = getOperatingHoursTimeLine((FacilioContext) context, report.getDateRange());
 		if(operatingTimeLine != null && !operatingTimeLine.isEmpty()) {
-			ohDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Operating Hours", "operatingHours");
+			Map<Integer, Object> enumMap = new HashMap<>();
+			enumMap.put(0, "Off");
+			enumMap.put(1, "On");
+			ohDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Operating Hours", "operatingHours", enumMap);
 			if(ohDataPoint != null) {
 				reportDataPoints.add(ohDataPoint);
 			}
@@ -462,33 +465,52 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
 			if(isOperationAlarm != null && isOperationAlarm && alarmResource != null){
 				Long operatingHourList = alarmResource.getOperatingHour();
+				ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 				if(operatingHourList != null) {
 					BusinessHoursList operatingHourObj = BusinessHoursAPI.getBusinessHours(operatingHourList);
 					if(CollectionUtils.isNotEmpty(operatingHourObj)) {
-						ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 						do {
 							for (BusinessHourContext operatingHour : operatingHourObj) {
 								if (operatingHour.getDayOfWeek() == start.getDayOfWeek().getValue()) {
-									Map<String, Object> obj = new HashMap();
-					    			Map<String, Object> obj1 = new HashMap();
-						    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
-							    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
-							    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
-							    	obj.put("value", 1);
-							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
-							    	obj1.put("value", 0);
-							    	timeline.add(obj);
-							    	timeline.add(obj1);
-									operatingHour.getDayOfWeek();
+									if(operatingHour.getStartTime() != null) {
+										Map<String, Object> obj = new HashMap();
+						    			Map<String, Object> obj1 = new HashMap();
+							    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
+								    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
+								    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
+								    	obj.put("value", 1);
+								    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
+								    	obj1.put("value", 0);
+								    	timeline.add(obj);
+								    	timeline.add(obj1);
+									}else {
+										timeline.addAll(prepareDateRangeTimeLine(start, DateTimeUtil.getDayEndTimeOf(start)));
+									}
 								}
 							}
 							start = start.plusDays(1);
 						}  while (start.toEpochSecond() <= end.toEpochSecond());
+					}
+					else{
+						timeline.addAll(prepareDateRangeTimeLine(start, end));
 					}
 				}
 				operatingHoursObj.put("operatingHours.timeline", timeline);
 			}
 		}
 		return operatingHoursObj;
+	}
+	
+	private static List<Map<String, Object>> prepareDateRangeTimeLine(ZonedDateTime start, ZonedDateTime end){
+		List<Map<String, Object>> timeLine = new ArrayList();
+		Map<String, Object> obj = new HashMap();
+		Map<String, Object> obj1 = new HashMap();
+    	obj.put("key", start.toInstant().toEpochMilli());
+    	obj.put("value", 1);
+    	obj1.put("key", end.toInstant().toEpochMilli());
+    	obj1.put("value", 0);
+    	timeLine.add(obj);
+    	timeLine.add(obj1);
+		return timeLine;
 	}
 }

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -243,7 +245,7 @@ public class FilterUtil {
 		
 	}
 	
-	public static ReportDataPointContext getDataPoint(String moduleName, String name, String alias) throws Exception {
+	public static ReportDataPointContext getDataPoint(String moduleName, String name, String alias, Map<Integer, Object> enumMap) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
@@ -255,9 +257,10 @@ public class FilterUtil {
 		ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "ttime", FieldType.BOOLEAN);
 		ReportYAxisContext yAxis = new ReportYAxisContext();
 		yAxis.setField(module, yField);
-		Map<Integer, Object> enumMap = new HashMap<>();
-		enumMap.put(0, "False");
-		enumMap.put(1, "True");
+		if(MapUtils.isEmpty(enumMap)) {
+			enumMap.put(0, "False");
+			enumMap.put(1, "True");
+		}
 		yAxis.setEnumMap(enumMap);
 		dataPoint.setyAxis(yAxis);
 		
