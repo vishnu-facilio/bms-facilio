@@ -30,6 +30,9 @@
 <%@ page import="com.facilio.modules.ModuleFactory" %>
 <%@ page import="com.facilio.db.builder.GenericInsertRecordBuilder" %>
 <%@ page import="com.facilio.modules.fields.*" %>
+<%@ page import="com.facilio.tasker.job.JobStore" %>
+<%@ page import="com.facilio.tasker.job.JobContext" %>
+<%@ page import="com.facilio.accounts.dto.Account" %>
 
 
 <%--
@@ -153,6 +156,17 @@
             depreciationField.setDefault(true);
             depreciationField.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
             modBean.addField(depreciationField);
+
+            JobContext job = new JobContext();
+            job.setJobId(AccountUtil.getCurrentOrg().getOrgId());
+            job.setJobName("AssetDepreciationJob");
+            job.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+            job.setActive(true);
+            job.setTransactionTimeout(7200000);
+            job.setIsPeriodic(true);
+            job.setScheduleJson("{\"times\":[\"00:00\"],\"frequencyType\":1,\"frequencyTypeEnum\":\"DAILY\"}");
+            job.setExecutorName("facilio");
+            JobStore.addJob(job);
 
             return false;
         }
