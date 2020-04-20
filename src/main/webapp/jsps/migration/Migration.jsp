@@ -56,7 +56,22 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+            if (module == null) {
+                return false;
+            }
+
+            modBean.addField(FieldFactory.getField("salvageAmount", "Salvage Amount", "SALVAGE_AMOUNT", module, FieldType.NUMBER));
+            modBean.addField(FieldFactory.getField("currentPrice", "Current Price", "CURRENT_PRICE", module, FieldType.NUMBER));
+
+            FacilioModule assetDepreciationModule = new FacilioModule();
+            assetDepreciationModule.setName("assetdepreciation");
+            assetDepreciationModule.setDisplayName("Asset Depreciation");
+            assetDepreciationModule.setTableName("AssetDepreciation");
+            assetDepreciationModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
+
 
             return false;
         }
