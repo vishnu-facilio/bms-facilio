@@ -43,6 +43,12 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 				}
 				else if (objects[2] instanceof Map) {
 					params.setDateSlot((JSONObject) objects[2]);
+					if(objects.length > 3) {
+						params.setPreviousValue(objects[3]);
+					}
+				}
+				else {
+					params.setPreviousValue(objects[2]);
 				}
 			}
 			return params;

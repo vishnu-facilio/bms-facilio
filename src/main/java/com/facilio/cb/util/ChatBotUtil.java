@@ -272,6 +272,7 @@ public class ChatBotUtil {
 			intentParam.setCriteria(params.getCriteria());
 			intentParam.setAskAsList(params.getMessage());
 			intentParam.setDateSlot(params.getDateSlot());
+			intentParam.setPreviousValue(params.getPreviousValue());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
@@ -730,6 +731,7 @@ public class ChatBotUtil {
 			
 			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, param.getAskAs());
 			result.put(ChatBotConstants.CHAT_BOT_PARAM_TYPE, param.getDataType());
+			result.put(ChatBotConstants.CHAT_BOT_PREVIOUS_VALUE, param.getPreviousValue());
 		}
 		
 		if(param.getAskAsList().size() > 1) {

@@ -20,7 +20,14 @@ public class ChatBotParamContext {
 	Criteria criteria;
 	JSONObject dateSlot;
 	List<JSONObject> options;
+	Object previousValue;
 	
+	public Object getPreviousValue() {
+		return previousValue;
+	}
+	public void setPreviousValue(Object previousValue) {
+		this.previousValue = previousValue;
+	}
 	public String getParamName() {
 		return paramName;
 	}

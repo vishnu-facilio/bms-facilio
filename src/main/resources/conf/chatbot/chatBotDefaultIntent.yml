@@ -164,8 +164,9 @@
                              
                              }
                              if(data.client_message != null && data.client_message == "Edit subject") {
+                                   subject = data.subject;
                                    data.subject = null;
-                                   return chatBot().param("subject","please edit your message for the request");
+                                   return chatBot().param("subject","please edit your message for the request",subject);
                              }
                              if(data.client_message != null && (data.client_message == "Add urgency" || data.client_message == "Edit urgency")) {
                              
@@ -903,7 +904,16 @@
                                      }
                                      else {
                                         data.client_message_local = null;
-                                      return chatBot().param("checkinDate","Select the checkin time",data.slot);
+                                        previousValue = null;
+                                        if(data.names.size() == 1) {
+                                           previousValue = data.get(data.names[0]).get("checkinDate");
+                                        }
+                                        else {
+                                           if(data.name != "All") {
+                                              previousValue = data.get(data.name).get("checkinDate");
+                                           }
+                                        }
+                                        return chatBot().param("checkinDate","Select the checkin time",data.slot,previousValue);
                                      }
                               
                                   }

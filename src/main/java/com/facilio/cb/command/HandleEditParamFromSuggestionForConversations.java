@@ -29,10 +29,6 @@ public class HandleEditParamFromSuggestionForConversations extends FacilioComman
 		
 		if(chatBotSessionConversation.getState() == ChatBotSessionConversation.State.CONFIRMATION_RAISED.getIntVal() && intentParam != null) {
 			
-			ChatBotSessionConversation prevoiusConversation = ChatBotUtil.getSessionConversationForParam(chatBotSessionConversation.getChatBotSession().getId(), intentParam.getId());
-			
-			context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, prevoiusConversation);
-			
 			if(chatBotSessionConversation.getChatBotSession().getIntent().getContextWorkflow() != null) {
 				
 				chatBotSessionConversation.getChatBotSession().addParamsObject("client_message", intentParam.getUpdateParamTriggerText());

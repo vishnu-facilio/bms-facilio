@@ -101,7 +101,6 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 			context.put(ChatBotConstants.NEW_CHAT_BOT_SESSION_CONVERSATION, conversation);
 		}
 		context.put(ChatBotConstants.CHAT_BOT_SUGGESTIONS, newcontext1.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS));
-		context.put(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, newcontext1.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION));
 		
 		return false;
 	}

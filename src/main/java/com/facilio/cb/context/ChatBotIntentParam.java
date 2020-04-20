@@ -32,6 +32,15 @@ public class ChatBotIntentParam {
 	Date_Period datePeriod;
 	JSONObject dateSlot;
 	
+	Object previousValue;
+	
+	public Object getPreviousValue() {
+		return previousValue;
+	}
+	public void setPreviousValue(Object previousValue) {
+		this.previousValue = previousValue;
+	}
+	
 	public JSONObject getDateSlot() {
 		return dateSlot;
 	}

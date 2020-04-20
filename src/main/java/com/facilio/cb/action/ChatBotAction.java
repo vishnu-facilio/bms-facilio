@@ -161,8 +161,6 @@ public class ChatBotAction extends FacilioAction {
 			setResult(ChatBotConstants.CHAT_BOT_SUGGESTIONS, FieldUtil.getAsJSONArray((List<ChatBotSuggestionContext>)context.get(ChatBotConstants.CHAT_BOT_SUGGESTIONS), ChatBotSuggestionContext.class));
 			setResult(ChatBotConstants.CHAT_BOT_ATTACHMENT,FieldUtil.getAsJSON(context.get(ChatBotConstants.CHAT_BOT_ATTACHMENT)));
 			
-			setResult(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION, FieldUtil.getAsJSON(context.get(ChatBotConstants.PREVIOUS_CHAT_BOT_SESSION_CONVERSATION)));
-			
 		}
 		
 		long uniqueID = -1;
