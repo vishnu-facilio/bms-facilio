@@ -10,7 +10,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
@@ -31,6 +30,8 @@ public interface OrgBean {
 	public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception;
 	 
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception;
+	
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
 	

@@ -17,7 +17,8 @@ public class GetApplicationUsersCommand extends FacilioCommand{
 		if(appId <= 0) {
 			throw new IllegalArgumentException("Invalid app id");
 		}
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, false);
+		boolean fetchNonAppUsers= (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, false);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, false, fetchNonAppUsers);
 		context.put(FacilioConstants.ContextNames.USERS, users);
 	
 		return false;

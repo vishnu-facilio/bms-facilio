@@ -150,6 +150,7 @@ public class FacilioConstants {
 
 		public static final String APPLICATION = "application";
 		public static final String APPLICATION_ID = "applicationId";
+		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
 
 		public static final String APP_ID = "appId";
 		public static final String TENANT_PORTAL_APP_ID = "tenantPortalappId";

@@ -55,6 +55,14 @@ public class ApplicationAction extends FacilioAction {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	private Boolean fetchNonAppUsers;
+	public Boolean getFetchNonAppUsers() {
+		return fetchNonAppUsers;
+	}
+	public void setFetchNonAppUsers(Boolean fetchNonAppUsers) {
+		this.fetchNonAppUsers = fetchNonAppUsers;
+	}
 
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
@@ -116,6 +124,9 @@ public class ApplicationAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getApplicationUsersChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		if (fetchNonAppUsers != null) {
+			context.put(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, fetchNonAppUsers);
+		}
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
 		

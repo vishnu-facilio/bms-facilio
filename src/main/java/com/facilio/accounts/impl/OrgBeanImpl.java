@@ -1,7 +1,6 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +90,14 @@ public class OrgBeanImpl implements OrgBean {
 		return FieldUtil.getAsBeanFromMap(portalMap, PortalInfoContext.class);
 	}
 	
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites)
+			throws Exception {
+		return getAppUsers(orgId, appId, checkAccessibleSites, false);
+	}
+	
     @Override
-	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception {
 		
     	if(appId <= 0) {
     		appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
@@ -107,9 +112,10 @@ public class OrgBeanImpl implements OrgBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 	
 		fields.add(AccountConstants.getApplicationIdField());
+		NumberOperators operator = fetchNonAppUsers ? NumberOperators.NOT_EQUALS : NumberOperators.EQUALS;
 		selectBuilder.innerJoin("ORG_User_Apps")
 			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(appId), operator));
 					
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
