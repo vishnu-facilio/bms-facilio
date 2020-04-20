@@ -163,6 +163,7 @@
             job.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             job.setActive(true);
             job.setTransactionTimeout(7200000);
+            job.setExecutionTime((System.currentTimeMillis() + 30000) / 1000);
             job.setIsPeriodic(true);
             job.setScheduleJson("{\"times\":[\"00:00\"],\"frequencyType\":1,\"frequencyTypeEnum\":\"DAILY\"}");
             job.setExecutorName("facilio");
