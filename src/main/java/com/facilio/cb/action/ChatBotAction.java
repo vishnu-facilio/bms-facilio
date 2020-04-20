@@ -173,14 +173,17 @@ public class ChatBotAction extends FacilioAction {
 	
 	private void sendToWMS(JSONObject chatMessage2,String action) throws Exception {
 		
-		WmsEvent event = new WmsEvent();
-		event.setNamespace("chatbot");
-		event.setAction(action);
-		event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
-		event.setSessionType(LiveSessionType.TENANT_PORTAL);
-		event.addData("result", chatMessage2.toJSONString());
+		if(chatMessage2 != null) {
+			WmsEvent event = new WmsEvent();
+			event.setNamespace("chatbot");
+			event.setAction(action);
+			event.setEventType(WmsEventType.ChatBot.NEW_MESSAGE);
+			event.setSessionType(LiveSessionType.TENANT_PORTAL);
+			event.addData("result", chatMessage2.toJSONString());
+			
+			WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), event);
+		}
 		
-		WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), event);
 	}
 
 	public String flushIntentAndModel() throws Exception {
