@@ -258,6 +258,7 @@ public class FilterUtil {
 		ReportYAxisContext yAxis = new ReportYAxisContext();
 		yAxis.setField(module, yField);
 		if(MapUtils.isEmpty(enumMap)) {
+			enumMap = new HashMap<>();
 			enumMap.put(0, "False");
 			enumMap.put(1, "True");
 		}
