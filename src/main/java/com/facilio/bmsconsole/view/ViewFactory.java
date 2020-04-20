@@ -190,7 +190,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTenantsView().setOrder(order++));
-		//views.put("active", getActiveTenantsView().setOrder(order++));
+		views.put("active", getActiveTenantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TENANT, views);
 
 		order = 1;
@@ -1220,23 +1220,33 @@ public class ViewFactory {
 	}
 
 	private static Condition getTenantStateCondition(String state) {
-		FacilioModule tenantsModule = ModuleFactory.getTenantsModule();
-		FacilioField statusField = new FacilioField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS");
-		statusField.setDataType(FieldType.ENUM);
-		statusField.setModule(tenantsModule);
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
 
-		Condition status = new Condition();
-		status.setField(statusField);
-		status.setOperator(NumberOperators.EQUALS);
-		if (state.equals("Active")) {
-			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
-		} else if (state.equals("Retired")) {
-			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
-		}
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(state);
 
-		return status;
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getTenantsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
 	}
 	private static Condition getAssetStateCondition(String state) {
 		FacilioModule assetsModule = ModuleFactory.getAssetsModule();
