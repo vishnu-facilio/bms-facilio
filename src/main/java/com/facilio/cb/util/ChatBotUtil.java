@@ -271,6 +271,7 @@ public class ChatBotUtil {
 			intentParam.setModuleName(params.getModuleName());
 			intentParam.setCriteria(params.getCriteria());
 			intentParam.setAskAsList(params.getMessage());
+			intentParam.setDateSlot(params.getDateSlot());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
 			
@@ -718,6 +719,10 @@ public class ChatBotUtil {
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.LOOKUP.getIntVal());
 				result.put(FacilioConstants.ContextNames.CRITERIA, FieldUtil.getAsJSON(param.getCriteria()));
 				result.put(FacilioConstants.ContextNames.MODULE_NAME, param.getModuleName());
+			}
+			else if(param.getDateSlot() != null) {
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.SLOTED_DATES.getIntVal());
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_SLOTS, param.getDateSlot());
 			}
 			else {
 				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());

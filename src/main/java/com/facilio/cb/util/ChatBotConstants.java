@@ -68,6 +68,8 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_RESPONSE_TYPE = "chatBotResponseType";
 	public static final String CHAT_BOT_RESPONSE_OPTIONS = "chatBotResponseOptions";
 	
+	public static final String CHAT_BOT_RESPONSE_SLOTS = "slots";
+	
 	public static final String CHAT_BOT_PARAM_TYPE = "chatBotParamType";
 	public static final String CHAT_BOT_PARAM_IS_MULTIPLE_ALLOWED = "chatBotParamIsMultipleAlowed";
 	

@@ -30,6 +30,14 @@ public class ChatBotIntentParam {
 	long criteriaId = -1;
 	boolean multipleAllowed;
 	Date_Period datePeriod;
+	JSONObject dateSlot;
+	
+	public JSONObject getDateSlot() {
+		return dateSlot;
+	}
+	public void setDateSlot(JSONObject dateSlot) {
+		this.dateSlot = dateSlot;
+	}
 	
 	public boolean isMultipleAllowed() {
 		return multipleAllowed;

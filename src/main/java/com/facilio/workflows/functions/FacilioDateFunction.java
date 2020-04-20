@@ -660,7 +660,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
-	GET_FROMATTED_TIME(31,"getFormattedTime") {
+	GET_FORMATTED_TIME(31,"getFormattedTime") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			

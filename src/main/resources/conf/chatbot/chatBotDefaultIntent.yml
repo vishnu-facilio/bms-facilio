@@ -830,6 +830,15 @@
        workflowV2String : 'ChatBotAction test(Map data){
                                 
                                 log "data --- "+data;
+                                if(data.slot == null) {
+                                   slot = {};
+                                   timeSlots = ["10 AM","12 AM","2 PM","3 PM"];
+                                   today = date().getDayStartTime();
+                                   slot[date().getFormattedTime(date().addDays(today,1),"dd/MM/yyyy")] = timeSlots;
+                                   slot[date().getFormattedTime(date().addDays(today,2),"dd/MM/yyyy")] = timeSlots;
+                                   slot[date().getFormattedTime(date().addDays(today,3),"dd/MM/yyyy")] = timeSlots;
+                                   data.slot = slot;
+                                }
                                 if(data.client_message != null) {
                                    data.client_message_local = data.client_message;
                                 }
@@ -894,7 +903,7 @@
                                      }
                                      else {
                                         data.client_message_local = null;
-                                      return chatBot().param("checkinDate","Select the checkin time");
+                                      return chatBot().param("checkinDate","Select the checkin time",data.slot);
                                      }
                               
                                   }
@@ -969,7 +978,7 @@
                                 }
                                 
                                 if(fillOneOrManyParam != null) {
-                                   if(data.names.size() == 1) {
+                                  if(data.names.size() == 1) {
                                     data.get(data.names[0]).put(fillOneOrManyParam, data.get(fillOneOrManyParam));
                                     data.put(fillOneOrManyParam,null);
                                   }
@@ -987,7 +996,7 @@
                                       data.name = null;
                                       data.put(fillOneOrManyParam,null);
                                     }
-                                  }
+                                 }
                                   fillOneOrManyParam = null;
                                 }
                               
@@ -1053,7 +1062,8 @@
                                    log "data.checkinDate -- "+data.checkinDate;
                                    log "data."+data;
                                    if(data.checkinDate == null) {
-                                      return chatBot().param("checkinDate","When are they coming in?");
+                                      
+                                      return chatBot().param("checkinDate","When are they coming in?",data.slot);
                                    }
                                    else {
                                       for each index,name in data.names {

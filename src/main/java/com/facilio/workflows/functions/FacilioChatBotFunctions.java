@@ -12,6 +12,7 @@ import com.facilio.cb.context.ChatBotConfirmContext;
 import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface {
@@ -39,6 +40,9 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 				else if (objects[2] instanceof Criteria) {
 					params.setCriteria((Criteria)objects[2]);
 					params.setModuleName((String)objects[3]);
+				}
+				else if (objects[2] instanceof Map) {
+					params.setDateSlot((JSONObject) objects[2]);
 				}
 			}
 			return params;

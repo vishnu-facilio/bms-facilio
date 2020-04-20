@@ -93,6 +93,7 @@ public class ChatBotIntentAction {
 		CONFIRMATION_CARD(6,"Confirmation Card"),
 		LOOKUP(7,"Lookup"),
 		INTENT_LIST(8,"Intent List"),
+		SLOTED_DATES(9,"Sloted Dated"),
 		;
 
 		int intVal;

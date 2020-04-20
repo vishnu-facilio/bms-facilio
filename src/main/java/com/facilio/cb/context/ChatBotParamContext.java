@@ -18,10 +18,17 @@ public class ChatBotParamContext {
 	String paramName;
 	String moduleName;		// for criteria Type
 	Criteria criteria;
+	JSONObject dateSlot;
 	List<JSONObject> options;
 	
 	public String getParamName() {
 		return paramName;
+	}
+	public JSONObject getDateSlot() {
+		return dateSlot;
+	}
+	public void setDateSlot(JSONObject dateSlot) {
+		this.dateSlot = dateSlot;
 	}
 	public void setParamName(String paramName) {
 		this.paramName = paramName;
