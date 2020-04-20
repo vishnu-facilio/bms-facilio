@@ -34,8 +34,10 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.util.DBConf;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
@@ -46,10 +48,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1337,6 +1341,29 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception {
 		MetricsApi.updateMetrics(toUpdate,metricsId);
 		return false;
+	}
+
+	@Override
+	public void deleteOlderFiles(List<FacilioField> fields, Map<String, FacilioField> fieldMap) throws Exception {
+		try {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
+					.table(ModuleFactory.getFilesModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("deletedTime"), CommonOperators.IS_NOT_EMPTY))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("deletedTime"),
+							String.valueOf(DateTimeUtil.addMonths(System.currentTimeMillis(), -1)),
+							DateOperators.IS_BEFORE))
+					.orderBy("FILE_ID").limit(30000);
+			while (true) {
+				List<Map<String, Object>> props = builder.get();
+				if (CollectionUtils.isEmpty(props)) {
+					break;
+				}
+				List<Long> fileIds = props.stream().map(p -> (Long) p.get("fileId")).collect(Collectors.toList());
+				FacilioFactory.getFileStore().deleteFilesPermanently(fileIds);
+			}
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 }

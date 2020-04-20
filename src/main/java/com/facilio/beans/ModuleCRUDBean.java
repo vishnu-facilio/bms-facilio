@@ -12,6 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -133,4 +134,6 @@ public interface ModuleCRUDBean {
 	public boolean addMetrics(AgentMetrics toInsertMap) throws Exception;
 
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception;
+
+	public void deleteOlderFiles(List<FacilioField> fields,Map<String,FacilioField> fieldMap)throws Exception;
 }
