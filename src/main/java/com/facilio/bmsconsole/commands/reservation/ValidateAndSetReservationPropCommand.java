@@ -184,7 +184,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                                                                 .andCondition(CriteriaAPI.getCondition(spaceField, String.valueOf(reservation.getSpace().getId()), PickListOperators.IS))
                                                                 .andCondition(CriteriaAPI.getCondition(scheduledStartField, String.valueOf(reservation.getScheduledEndTime()), DateOperators.IS_BEFORE))
                                                                 .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(reservation.getScheduledStartTime()), DateOperators.IS_AFTER))
-                                                                .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(ReservationContext.ReservationStatus.SCHEDULED.getIndex()), EnumOperators.IS))
+                                                                .andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(ReservationContext.ReservationStatus.SCHEDULED.getIndex()), EnumOperators.IS))
                                                                 ;
 
         if (reservation.getId() > 0) {
