@@ -2064,6 +2064,10 @@ public class FormFactory {
 		FormField tenant = new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 5, 1);
 		tenant.setHideField(true);
 		fields.add(tenant);
+		FormField isOccupied = new FormField("isOccupied", FieldDisplayType.DECISION_BOX, "Occupancy Status", Required.OPTIONAL, 5, 1);
+		isOccupied.setHideField(true);
+		fields.add(isOccupied);
+		
 		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 5, 1));
 		
 		return fields;
