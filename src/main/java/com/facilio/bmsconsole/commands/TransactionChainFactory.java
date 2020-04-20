@@ -1029,7 +1029,7 @@ public class TransactionChainFactory {
 		public static FacilioChain commonAddModuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddModulesCommand());
-			c.addCommand(new SetColumnNameForNewCFsCommand());
+//			c.addCommand(new SetColumnNameForNewCFsCommand());
 			c.addCommand(new AddFieldsCommand());
 
 			return c;
@@ -1067,7 +1067,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddFieldsChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new SetColumnNameForNewCFsCommand());
+//			c.addCommand(new SetColumnNameForNewCFsCommand());
 			c.addCommand(new AddFieldsCommand());
 			return c;
 		}
@@ -1370,17 +1370,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static FacilioChain getExportModuleReportFileChain() {
+		public static FacilioChain getExportModuleReportFileChain(boolean fetchData) {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			if (fetchData) {
+				c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			}
 			c.addCommand(new GetModuleFromReportContextCommand());
 			c.addCommand(new GetExportModuleReportFileCommand());
 			return c;
 		}
 
-		public static FacilioChain sendModuleReportMailChain() {
+		public static FacilioChain sendModuleReportMailChain(boolean fetchData) {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(getExportModuleReportFileChain());
+			c.addCommand(getExportModuleReportFileChain(fetchData));
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
@@ -1388,7 +1390,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getExportModuleAnalyticsFileChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ConstructReportData());
-			c.addCommand(getExportModuleReportFileChain());
+			c.addCommand(getExportModuleReportFileChain(true));
 			return c;
 		}
 

@@ -43,7 +43,8 @@ public class ReportEmailScheduler extends FacilioJob {
 				Map<String, Object> prop = props.get(0);
 				
 				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat((int) prop.get("fileFormat")));
+				FileFormat fileFormat = FileFormat.getFileFormat((int) prop.get("fileFormat"));
+				context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 				
 				EMailTemplate template  = (EMailTemplate) TemplateAPI.getTemplate((long)prop.get("templateId"));
 				context.put(FacilioConstants.Workflow.TEMPLATE, template);
@@ -56,7 +57,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				
 				FacilioChain mailReportChain;
 				if (reportContext.getTypeEnum() == ReportType.WORKORDER_REPORT) {
-					mailReportChain = TransactionChainFactory.sendModuleReportMailChain();
+					mailReportChain = TransactionChainFactory.sendModuleReportMailChain(fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF);
 				}
 				else {
 					mailReportChain = TransactionChainFactory.sendReportMailChain();

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -41,10 +43,25 @@ public class AddFieldsCommand extends FacilioCommand {
 			if (allowSameName == null) {
 				allowSameName = false;
 			}
+			Boolean isNewModules = (Boolean) context.get(FacilioConstants.ContextNames.IS_NEW_MODULES);
+			if (isNewModules == null) {
+				isNewModules = false;
+			}
+			
+			
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && module.getFields() != null && !module.getFields().isEmpty()) {
+					
+					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
+					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
+					
+					List<FacilioField> counterFields = new ArrayList<>();
+					
 					for(FacilioField field : module.getFields()) {
+						
+						setColumnName(field, existingColumns);
+						
 						field.setModule(cloneMod);
 						constructFieldName(field, module, allowSameName);
 						long fieldId = modBean.addField(field);
@@ -55,11 +72,25 @@ public class AddFieldsCommand extends FacilioCommand {
 							if (numberField.isCounterField()) {
 								NumberField deltaField = FieldUtil.cloneBean(numberField, NumberField.class);
 								deltaField.setCounterField(null);
+								deltaField.setId(-1);
+								
+								deltaField.setColumnName(null);
+								setColumnName(deltaField, existingColumns);
+								
 								deltaField.setName(deltaField.getName()+"Delta");
 								deltaField.setDisplayName(deltaField.getDisplayName()+" Delta");
-								module.getFields().add(deltaField);
+								
+								long deletaFieldId = modBean.addField(deltaField);
+								deltaField.setFieldId(deletaFieldId);
+								fieldIds.add(deletaFieldId);
+								
+								counterFields.add(deltaField);
 							}
 						}
+					}
+					
+					if (!counterFields.isEmpty()) {
+						module.getFields().addAll(counterFields);
 					}
 				}
 			}
@@ -74,6 +105,28 @@ public class AddFieldsCommand extends FacilioCommand {
 			}
 		}
 		return false;
+	}
+	
+	private void setColumnName(FacilioField field, Map<FieldType, List<String>> existingColumns) throws Exception {
+		FieldType dataType = field.getDataTypeEnum();
+		if(dataType != null) {
+			List<String> existingColumnNames = existingColumns.get(dataType);
+			if(existingColumnNames == null) {
+				existingColumnNames = new ArrayList<>();
+				existingColumns.put(dataType, existingColumnNames);
+			}
+			if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
+				String newColumnName = getColumnNameForNewField(dataType, existingColumnNames);
+				if(newColumnName == null) {
+					throw new Exception("No more columns available.");
+				}
+				field.setColumnName(newColumnName);
+			}
+			existingColumnNames.add(field.getColumnName());
+		}
+		else {
+			throw new IllegalArgumentException("Invalid Data Type Value");
+		}
 	}
 	
 	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName) throws Exception {
@@ -119,5 +172,37 @@ public class AddFieldsCommand extends FacilioCommand {
 			field.setName(field.getName() + "_" + ++count);
 			field.setDisplayName(field.getDisplayName() + " " + count);
 		}
+	}
+	
+	private Map<FieldType, List<String>> getColumnNamesGroupedByType(List<FacilioField> fields) {
+		Map<FieldType, List<String>> existingColumns = new HashMap<>();
+		if(fields != null) {
+			for(FacilioField field : fields) {
+				List<String> columns = existingColumns.get(field.getDataTypeEnum());
+				if(columns == null) {
+					columns = new ArrayList<>();
+					existingColumns.put(field.getDataTypeEnum(), columns);
+				}
+				columns.add(field.getColumnName());
+			}
+		}
+		return existingColumns;
+	}
+	
+	private String getColumnNameForNewField(FieldType type, List<String> existingColumns) throws Exception {
+		String[] columns = type.getColumnNames();
+		if(columns != null && columns.length > 0) {
+			if(existingColumns == null || existingColumns.size() == 0) {
+				return columns[0];
+			}
+			else {
+				for(String column : columns) {
+					if(!existingColumns.contains(column)) {
+						return column;
+					}
+				}
+			}
+		}
+		return null;
 	}
 }

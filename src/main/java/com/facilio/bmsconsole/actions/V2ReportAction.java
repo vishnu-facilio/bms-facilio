@@ -1938,10 +1938,7 @@ public class V2ReportAction extends FacilioAction {
 			}
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
-		context.put("chartType", chartType);	// Temp
-		context.put("exportParams", exportParams);
-		context.put("renderParams", renderParams);
+		setExportParamsInContext(context);
 		
 		exportChain.execute(context);
 		
@@ -1952,19 +1949,20 @@ public class V2ReportAction extends FacilioAction {
 	
 	
 	public String exportModuleReport() throws Exception {
-		FacilioContext context = new FacilioContext();
 		FacilioChain exportChain = null;
+		FacilioContext context;
 		if (reportId != -1) {
-			exportChain = TransactionChainFactory.getExportModuleReportFileChain();
+			boolean fetchData = fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF;
+			exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
+			context = exportChain.getContext();
 			getReport(context);
 		} else {
-			updateContext(context);
 			exportChain = TransactionChainFactory.getExportModuleAnalyticsFileChain();
+			context = exportChain.getContext();
+			updateContext(context);
 		}
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
-		context.put("chartType", chartType);	// Temp
-		context.put("exportParams", exportParams);
-		context.put("renderParams", renderParams);
+		
+		setExportParamsInContext(context);
 		
 		exportChain.execute(context);
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
@@ -1998,10 +1996,10 @@ public class V2ReportAction extends FacilioAction {
 			}
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		context.put("chartType", chartType);	// Temp
 		context.put("isS3Url", true);
+		setExportParamsInContext(context);
 
 		mailReportChain.execute(context);
 		
@@ -2016,22 +2014,29 @@ public class V2ReportAction extends FacilioAction {
 		
 		if (reportId != -1) {
 			getReport(context);
-			mailReportChain = TransactionChainFactory.sendModuleReportMailChain();
+			boolean fetchData = fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF;
+			mailReportChain = TransactionChainFactory.sendModuleReportMailChain(fetchData);
 		} else {
 			updateContext(context);
 			mailReportChain = TransactionChainFactory.sendModuleAnalyticsMailChain();
 		}
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
-		context.put("chartType", chartType);	// Temp
-		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put("isS3Url", true);
-
+		setExportParamsInContext(context);
+		
 		mailReportChain.execute(context);
 
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 
 		return SUCCESS;
+	}
+	
+	private void setExportParamsInContext(FacilioContext context) {
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put("chartType", chartType);	// Temp
+		context.put("exportParams", exportParams);
+		context.put("renderParams", renderParams);
 	}
 	
 	ReportInfo reportInfo;
