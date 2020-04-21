@@ -1900,6 +1900,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getFieldsByModuleType() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetFieldsByModuleType());
+		return c;
+	}
+
 	public static FacilioChain getFieldsByAccessType() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetFieldsByAccessType());

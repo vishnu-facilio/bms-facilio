@@ -2331,6 +2331,11 @@
 			method="updateModuleData">
 		</action>
 
+		<action name="getModuleLookUpFieldDetails"
+				class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="getModuleLookUpFieldDetails">
+		</action>
+
 		<action name="getFieldsByAccessType"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getFieldsByAccessType">

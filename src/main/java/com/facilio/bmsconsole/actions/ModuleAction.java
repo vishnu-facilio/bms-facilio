@@ -680,6 +680,17 @@ public class ModuleAction extends FacilioAction {
 
 	private long accessType = -1L;
 
+	public String getModuleLookUpFieldDetails() throws Exception {
+		FacilioChain chain = FacilioChainFactory.getFieldsByModuleType();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		Map<String, List<Map<String, Object>>> result = (Map<String, List<Map<String, Object>>>) context.get(ContextNames.RESULT);
+		setResult("fieldDetails", result);
+		return SUCCESS;
+	}
+
 	public String getFieldsByAccessType() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FIELD_ACCESS_TYPE, accessType);
