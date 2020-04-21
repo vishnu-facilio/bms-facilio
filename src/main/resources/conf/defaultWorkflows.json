@@ -2087,7 +2087,8 @@
 		"111": {
 		"description" : "overallOffAlarmDuration",
 		"usage" : "operationAlarmSummary",
-		"workflow" : "Map offDurationCompersion(Number alarmId)
+		"workflow" : "
+			Map offDurationCompersion(Number alarmId)
 			{
 				module = Module(\"operationalarmoccurrence\");
 				date = NameSpace(\"date\");
@@ -2097,19 +2098,24 @@
 				resMap = {};
 				db = {
 					criteria : [alarm == alarmId && createdTime == thisMonthRange && coverageType == 2],
-					field: \"duration\",
-					aggregation: \"sum, duration\"
+					field:\"alarm\",
+					aggregation:\"sum, duration\",
+					groupBy: \"alarm\",
 				};
-
-				res = module.fetch(db);
-				thisMonth = res;
+				thisMonthRes = module.fetch(db);
+				if (thisMonthRes != null) {
+				thisMonth = thisMonthRes.get(0).duration;
+				}
 				db = {
-					criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 2],
-					field: \"duration\",
-					aggregation: \"sum, duration\"
+				criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 2],
+				field:\"alarm\",
+				aggregation:\"sum, duration\",
+				groupBy: \"alarm\",
 				};
-				res = module.fetch(db);
-				LastMonth = res;
+				lastMonthRes = module.fetch(db);
+				if (lastMonthRes != null) {
+				LastMonth = lastMonthRes.get(0).duration;
+				}
 
 				resMap[\"durationCurrentYear\"] = thisMonth;
 				resMap[\"durationLastYear\"] = LastMonth;
@@ -2121,7 +2127,8 @@
 		"112": {
 			"description" : "overallOnAlarmDuration",
 			"usage" : "operationAlarmSummary",
-			"workflow" : "Map onDurationCompersion(Number alarmId)
+			"workflow" : "
+				Map onDurationCompersion(Number alarmId)
 				{
 					module = Module(\"operationalarmoccurrence\");
 					date = NameSpace(\"date\");
@@ -2130,20 +2137,25 @@
 
 					resMap = {};
 					db = {
-						criteria : [alarm == alarmId && createdTime == thisMonthRange && coverageType == 1],
-						field: \"duration\",
-						aggregation: \"sum, duration\"
+					criteria : [alarm == alarmId && createdTime == thisMonthRange && coverageType == 1],
+					field:\"alarm\",
+					aggregation:\"sum, duration\",
+					groupBy: \"alarm\",
 					};
-
-					res = module.fetch(db);
-					thisMonth = res;
+					thisMonthRes = module.fetch(db);
+					if (thisMonthRes != null) {
+					thisMonth = thisMonthRes.get(0).duration;
+					}
 					db = {
-						criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 1],
-						field: \"duration\",
-						aggregation: \"sum, duration\"
+					criteria : [alarm == alarmId && createdTime == lastMonthRange && coverageType == 1],
+					field:\"alarm\",
+					aggregation:\"sum, duration\",
+					groupBy: \"alarm\",
 					};
-					res = module.fetch(db);
-					LastMonth = res;
+					lastMonthRes = module.fetch(db);
+					if (lastMonthRes != null) {
+					LastMonth = lastMonthRes.get(0).duration;
+					}
 
 					resMap[\"durationCurrentYear\"] = thisMonth;
 					resMap[\"durationLastYear\"] = LastMonth;
