@@ -9,6 +9,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -129,5 +130,12 @@ public class RecordAPI {
 			}
 		}
 		return false;
+	}
+	
+	public static void handleCustomLookup(Map<String, Object> data, String modName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(modName);
+		CommonCommandUtil.handleLookupFormData(fields, data);
+		
 	}
 }

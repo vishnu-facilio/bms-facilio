@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,8 +11,10 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -111,11 +114,15 @@ public class PeopleAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
+			for(PeopleContext ppl : peopleList) {
+				ppl.parseFormData();
+				RecordAPI.handleCustomLookup(ppl.getData(), FacilioConstants.ContextNames.PEOPLE);
+			}
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -126,11 +133,15 @@ public class PeopleAction extends FacilioAction{
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
+			for(PeopleContext ppl : peopleList) {
+				ppl.parseFormData();
+				RecordAPI.handleCustomLookup(ppl.getData(), FacilioConstants.ContextNames.PEOPLE);
+			}
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.PEOPLE, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
