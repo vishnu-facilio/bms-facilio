@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -13,6 +7,12 @@ import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.List;
 
 public class TenantContactAction extends FacilioAction{
 
@@ -115,12 +115,18 @@ private static final long serialVersionUID = 1L;
 	}
 	public String addTenantContacts() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(tenantContacts)) {
+		if(!CollectionUtils.isEmpty(tenantContacts) || tenantContact != null) {
 			FacilioChain c = TransactionChainFactory.addTenantContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
+
+			if (tenantContact != null) {
+				tenantContact.parseFormData();
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(tenantContact));
+			} else {
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
+			}
 			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 				
