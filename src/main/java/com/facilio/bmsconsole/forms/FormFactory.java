@@ -1409,7 +1409,7 @@ public class FormFactory {
 	public static FacilioForm getRentalLeaseContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("LEASE/RENTAL CONTRACT");
-		form.setName("web_default");
+		form.setName("default_rentalleasecontracts_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getRentalLeaseFormFields());
@@ -1481,7 +1481,7 @@ public class FormFactory {
 	public static FacilioForm getReservationForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("RESERVATIONS");
-		form.setName("web_default");
+		form.setName("default_reservation_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getReservationFormFields());
