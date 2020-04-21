@@ -738,8 +738,10 @@ public class PeopleAPI {
 			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
 		}
 		TenantContactContext tc = (TenantContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId);
-		return tc.getTenant();
-	
+		if (tc != null) {
+			return tc.getTenant();
+		}
+		return null;
 	}
 
 	public static VendorContext getVendorForUser(long ouId) throws Exception {

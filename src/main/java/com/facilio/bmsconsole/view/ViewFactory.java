@@ -167,7 +167,7 @@ public class ViewFactory {
 		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
-		views.put("tenantWorkorder", getMyRequestWorkorders("tenantWorkorder").setOrder(order++));
+		views.put("tenantWorkorder", getTenantWorkorders("tenantWorkorder").setOrder(order++));
 		views.put("pendingapproval", getRequestedStateApproval("pendingapproval", true).setOrder(order++));
 		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -2990,6 +2990,27 @@ public class ViewFactory {
 		myAllWorkordersView.setHidden(true);
 
 		return myAllWorkordersView;
+	}
+	
+	private static FacilioView getTenantWorkorders(String viewName) {
+
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName(viewName);
+		allView.setDisplayName("Tenant Workorders");
+		allView.setSortFields(sortFields);
+		allView.setHidden(true);
+
+		return allView;
 	}
 
 	public static Criteria getCriteriaForView(String viewName, FacilioModule module) {

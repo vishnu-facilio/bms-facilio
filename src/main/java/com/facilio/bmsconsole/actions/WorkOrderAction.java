@@ -1945,6 +1945,11 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
+		
+		// Currently setting tenant portal based on view name. Will be removed once scoping is handled
+		boolean isTenantPortal = getViewName() != null && getViewName().equals("tenantWorkorder");
+		context.put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, isTenantPortal);
+		
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
 		context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
