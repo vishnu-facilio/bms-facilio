@@ -110,15 +110,7 @@ public class DataProcessorV2
                     processStatus = processDevicePoints(agent, payload);
                     break;
                 case ACK:
-                    payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    if(containsCheck(AgentConstants.CONTROLLER,payload)){
-                        Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
-                        if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload),controller,payload)) {
-                            processStatus = true;
-                            break;
-                        }
-                    }
-                    processStatus = AckUtil.processAgentAck(payload, agent.getId(), orgId);
+                    processStatus = processAck(agent,payload);
                     break;
                 case TIMESERIES:
                     Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
@@ -158,6 +150,22 @@ public class DataProcessorV2
         }
         LOGGER.info(" process status " + processStatus);
         return processStatus;
+    }
+
+    private boolean processAck(FacilioAgent agent, JSONObject payload) {
+        try {
+            payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
+            if (containsCheck(AgentConstants.CONTROLLER, payload)) {
+                Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
+                if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload), controller, payload)) {
+                    return true;
+                }
+            }
+             return AckUtil.processAgentAck(payload, agent.getId(), orgId);
+        }catch (Exception e){
+            LOGGER.info("Exception while processing ACK ",e);
+        }
+        return false;
     }
 
     private boolean processAgentEvents(JSONObject payload, FacilioAgent agent, AgentEvent eventType) throws Exception {
