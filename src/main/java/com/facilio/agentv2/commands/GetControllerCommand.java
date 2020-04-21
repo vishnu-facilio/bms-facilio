@@ -26,7 +26,6 @@ public class GetControllerCommand extends AgentV2Command {
 
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
-        LOGGER.info(" in get controllerdata chain ");
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String childTableModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
@@ -95,7 +94,6 @@ public class GetControllerCommand extends AgentV2Command {
             selectRecordBuilder.groupBy(controllerModule.getTableName()+".ID");
             List<Map<String, Object>> result = selectRecordBuilder.get();
             context.put(FacilioConstants.ContextNames.RECORD_LIST, result);
-            LOGGER.info(" query "+selectRecordBuilder.toString());
             if (result != null) {
                 LOGGER.debug("No. of records fetched for module : " + childTableModuleName + " is " + result.size());
             }

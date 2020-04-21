@@ -48,7 +48,6 @@ public class AgentAction extends AgentActionV2 {
 
     public String listAgents() {
         try {
-            LOGGER.info(" listing agents");
             FacilioContext context = new FacilioContext();
             constructListContext(context);
             List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData(false);
@@ -56,15 +55,12 @@ public class AgentAction extends AgentActionV2 {
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
-                LOGGER.info(" agent datum " + agentListDatum);
                 if (agentListDatum.containsKey(AgentConstants.CONNECTED)) {
                     if (agentListDatum.get(AgentConstants.CONNECTED) == null) {
-                        LOGGER.info(" agent offline null");
                         offLineAgents++;
                         continue;
                     }
                     if (!(boolean) agentListDatum.get(AgentConstants.CONNECTED)) {
-                        LOGGER.info(" agent offline 0");
                         offLineAgents++;
                     }
                 } else {
@@ -82,13 +78,11 @@ public class AgentAction extends AgentActionV2 {
             setResult(AgentConstants.TOTAL_COUNT, agentListData.size());
             setResult(AgentConstants.ACTIVE_COUNT, agentListData.size() - offLineAgents);
             setResult(AgentConstants.DATA, agentListData);
-            setResponseCode(HttpURLConnection.HTTP_OK);
-            setResult(AgentConstants.RESULT, SUCCESS);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent list", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            setResult(AgentConstants.RESULT, ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -103,13 +97,11 @@ public class AgentAction extends AgentActionV2 {
     public String getAgentCount() {
         try {
             setResult(AgentConstants.DATA, AgentApiV2.getAgentCount());
-            setResponseCode(HttpURLConnection.HTTP_OK);
-            setResult(AgentConstants.RESULT, SUCCESS);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agentCount->", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            setResult(AgentConstants.RESULT, ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -167,9 +159,7 @@ public class AgentAction extends AgentActionV2 {
                         .ofType(FacilioControllerType.valueOf(controllerType))
                         .pagination(context);
                 pointsData = getPointRequest.getPoints();
-                LOGGER.info(" getting controller points");
             } else if ((deviceId != null) && (deviceId > 0) && (controllerType != null) && (controllerType > 0)) {
-                LOGGER.info(" getting device points");
                 GetPointRequest getPointRequest = new GetPointRequest()
                         .withDeviceId(deviceId)
                         .ofType(FacilioControllerType.valueOf(controllerType))
@@ -177,7 +167,6 @@ public class AgentAction extends AgentActionV2 {
                 pointsData = getPointRequest.getPoints();
             } else {
                 if ((controllerId == null) && (deviceId == null)) {
-                    LOGGER.info(" getting all points");
                     GetPointRequest getPointRequest = new GetPointRequest()
                             .pagination(context);
                     pointsData = getPointRequest.getPoints();
@@ -192,12 +181,11 @@ public class AgentAction extends AgentActionV2 {
                 }
             }
             setResult(AgentConstants.DATA, pointData);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting points", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -236,28 +224,22 @@ public class AgentAction extends AgentActionV2 {
 
 
     public String PointsCount() {
-        LOGGER.info(" getting points ");
         try {
             long count = 0;
             if ((controllerId != null) && (controllerId > 0) && (deviceId == null)) {
-                LOGGER.info(" contid ");
                 count = PointsAPI.getPointsCount(getControllerId(), -1);
             } else if ((deviceId != null) && (deviceId > 0) && (controllerId != null)) {
-                LOGGER.info(" device id  ");
                 count = PointsAPI.getPointsCount(-1, deviceId);
             } else {
-                LOGGER.info(" no point id");
                 count = PointsAPI.getPointsCount(-1, -1);
             }
 
             setResult(AgentConstants.DATA, count);
-            setResponseCode(HttpURLConnection.HTTP_OK);
-            setResult(AgentConstants.RESULT, SUCCESS);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting all point for agent->" + controllerId + " -", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResult(AgentConstants.RESULT, ERROR);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            internalError();
         }
         return SUCCESS;
     }
@@ -284,12 +266,11 @@ public class AgentAction extends AgentActionV2 {
                 jsonObject.put(AgentConstants.CHILDJSON, controller.getChildJSON());
             }
             setResult(AgentConstants.DATA, jsonObject);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting controller", e);
             setResult(AgentConstants.RESULT, new JSONObject());
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+           internalError();
         }
         return SUCCESS;
     }
@@ -298,10 +279,11 @@ public class AgentAction extends AgentActionV2 {
         try {
             Controller controllers = ControllerApiV2.getControllerFromDb(getControllerId());
             setResult(AgentConstants.DATA, controllers.toJSON());
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info(" Exception occurred while getting controller data", e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -316,27 +298,15 @@ public class AgentAction extends AgentActionV2 {
 
     private String name;
 
-    public String createPolicy() {
-        try {
-            LOGGER.info(" calling create policy ");
-            setResult(AgentConstants.DATA, AwsUtil.createIotPolicy(getName(), AccountUtil.getCurrentOrg().getDomain(), "facilio"));
-            //AwsUtil.addAwsIotClient();
-            setResponseCode(HttpURLConnection.HTTP_OK);
-        } catch (Exception e) {
-            LOGGER.info(" Exception while creating policy for " + getName() + " ", e);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        }
-        return SUCCESS;
-    }
-
     public String getAgentFilter() {
         try {
             List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilter();
             setResult(AgentConstants.DATA, agentFilter);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent filter ", e);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -344,11 +314,11 @@ public class AgentAction extends AgentActionV2 {
     public String getOverview() {
         try {
             setResult(AgentConstants.DATA, AgentUtilV2.getOverview());
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting overview");
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -369,17 +339,16 @@ public class AgentAction extends AgentActionV2 {
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
 
     public String getSubscribedPoints() {
-        LOGGER.info(" get subscribed points ");
         GetPointRequest getPointRequest = new GetPointRequest()
                 .filterSubsctibedPoints();
         try {
@@ -394,11 +363,11 @@ public class AgentAction extends AgentActionV2 {
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -418,11 +387,11 @@ public class AgentAction extends AgentActionV2 {
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -442,11 +411,11 @@ public class AgentAction extends AgentActionV2 {
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
-            setResponseCode(HttpURLConnection.HTTP_OK);
+            ok();
         } catch (Exception e) {
             LOGGER.info("Exception  occurred while getting points ", e);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -456,11 +425,12 @@ public class AgentAction extends AgentActionV2 {
             if( AccountUtil.getCurrentOrg()!= null ) {
                 JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
                 setResult(AgentConstants.DATA, alertsPoints);
-                setResponseCode(HttpURLConnection.HTTP_OK);
+                ok();
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting alert points ", e);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
         }
         return SUCCESS;
     }
@@ -609,15 +579,11 @@ public class AgentAction extends AgentActionV2 {
             }
             Map<String, Object> anImport = ModbusImportUtils.getImport(getId());
             if(! anImport.isEmpty()){
-                LOGGER.info(" import data "+anImport);
                 if((anImport.containsKey(AgentConstants.STATUS))){
                     long status = ((Number) anImport.get(AgentConstants.STATUS)).longValue();
                     if(status == 0){
-                        LOGGER.info(" contains check "+anImport.containsKey(AgentConstants.FILE_ID));
-                        LOGGER.info(anImport+" contains check "+anImport.containsKey("fileId"));
                         if(anImport.containsKey(AgentConstants.FILE_ID)){
                             long fileId = ((Number)anImport.get(AgentConstants.FILE_ID)).longValue();
-                            LOGGER.info(" file id "+fileId);
                             long idx = ((Number) anImport.get(AgentConstants.IDX)).longValue();
                             if(fileId > 0){
                                 long type = ((Number)anImport.get(AgentConstants.TYPE)).longValue();

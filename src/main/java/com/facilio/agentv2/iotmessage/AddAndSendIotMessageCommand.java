@@ -11,11 +11,7 @@ public class AddAndSendIotMessageCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" add and send iot message command ");
         IotData data = (IotData) context.get(AgentConstants.DATA);
-        for (IotMessage message : data.getMessages()) {
-            LOGGER.info(" message - " + message);
-        }
         IotMessageApiV2.addIotData(data);
         IotMessageApiV2.addIotMessage(data.getId(), data.getMessages());
         IotMessageApiV2.publishIotMessage(data);

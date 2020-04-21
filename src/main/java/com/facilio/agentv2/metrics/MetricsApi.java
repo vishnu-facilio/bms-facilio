@@ -78,7 +78,6 @@ public class MetricsApi {
             selectRecordBuilder.limit(50);
         }
         List<Map<String, Object>> data = selectRecordBuilder.get();
-        LOGGER.info(" query "+selectRecordBuilder.toString());
         return data;
     }
 
@@ -99,7 +98,6 @@ public class MetricsApi {
     private static Map<String, Object> getMetrics(FacilioAgent agent, JSONObject payload) throws Exception {
         List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
         FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
-        LOGGER.info(" getting metrics for agent->" + agent.getId());
         if (agent != null) {
             if ((agent.getId() > 0)) {
                 if (payload != null) {
@@ -114,7 +112,6 @@ public class MetricsApi {
                                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentPublishTypeField(metricsV2Module), String.valueOf(payloadInt), NumberOperators.EQUALS))
                                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsV2Module), String.valueOf(createdTime), NumberOperators.EQUALS));
                         List<Map<String, Object>> result = selectRecordBuilder.get();
-                        LOGGER.info(" query to get metrics " + selectRecordBuilder.toString());
                         if (!result.isEmpty()) {
                             if (result.size() == 1) {
                                 return result.get(0);
@@ -148,7 +145,6 @@ public class MetricsApi {
             timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
         }*/
         long baseTime = getBaseTime(timeStamp, (dataInterval* 60000));
-        LOGGER.info(timeStamp + " - - " + baseTime);
         return baseTime;
     }
 
@@ -237,7 +233,6 @@ public class MetricsApi {
         if (rem != 0) {
             return timeStamp - rem;
         }
-        LOGGER.info(" created time is " + timeStamp);
         return timeStamp;
     }
 
@@ -259,12 +254,8 @@ public class MetricsApi {
 
     public static boolean insertMetrics(AgentMetrics metrics) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        LOGGER.info(" metrics "+FieldUtil.getAsJSON(metrics));
         FacilioModule module = modBean.getModule(MODULE_NAME);
         List<FacilioField> allFields = modBean.getModuleFields(module.getName());
-        for (FacilioField allField : allFields) {
-            System.out.println(allField.getName());
-        }
         InsertRecordBuilder<AgentMetrics> insertRecordBuilder = new InsertRecordBuilder<AgentMetrics>()
                 .fields(allFields)
                 .module(module);

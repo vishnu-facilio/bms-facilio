@@ -5,6 +5,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -32,7 +33,6 @@ public class FieldDeviceApi {
 
     public static int deleteDevices(Collection<Long> deviceId) throws SQLException {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
-        LOGGER.info(" deleting devices ->" + deviceId);
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(fieldDeviceModule.getTableName())
                 .fields(FieldFactory.getFieldDeviceFields())
                 .andCondition(CriteriaAPI.getIdCondition(deviceId, ModuleFactory.getFieldDeviceModule()));
@@ -69,7 +69,6 @@ public class FieldDeviceApi {
                 .fields(FieldFactory.getFieldDeviceFields());
         long deviceId = builder.insert(FieldUtil.getAsProperties(device));
         if (deviceId > 0) {
-            LOGGER.info(" field device added " + deviceId);
             device.setId(deviceId);
         } else {
             LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
@@ -88,7 +87,6 @@ public class FieldDeviceApi {
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.IDENTIFIER), identifier.trim(), StringOperators.IS))
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
                 List<Map<String, Object>> result = builder.get();
-                LOGGER.info(" query " + builder.toString());
                 if (result.size() == 1) {
                     Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
                     if (device.getControllerProps().containsKey("type"))
@@ -108,7 +106,6 @@ public class FieldDeviceApi {
 
 
     public static List<Map<String, Object>> getDevices(List<Long> deviceIds) {
-        LOGGER.info(" getting devices for " + deviceIds);
         try {
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.RECORD_IDS, deviceIds);
@@ -124,7 +121,6 @@ public class FieldDeviceApi {
      * @return
      */
     public static List<Map<String, Object>> getDevicesForAgent(Long agentId) {
-        LOGGER.info(" getting devices for " + agentId);
         try {
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.AGENT_ID, agentId);
@@ -153,34 +149,38 @@ public class FieldDeviceApi {
         if ((ids != null) && (!ids.isEmpty())) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));
         }
-        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
-        if (pagination != null && !fetchCount) {
-            int page = (int) pagination.get("page");
-            int perPage = (int) pagination.get("perPage");
+        if (containsCheck(FacilioConstants.ContextNames.PAGINATION,context)) {
+            JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+            boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+            if (pagination != null && !fetchCount) {
+                int page = (int) pagination.get("page");
+                int perPage = (int) pagination.get("perPage");
 
-            int offset = ((page - 1) * perPage);
-            if (offset < 0) {
-                offset = 0;
+                int offset = ((page - 1) * perPage);
+                if (offset < 0) {
+                    offset = 0;
+                }
+                builder.offset(offset);
+                builder.limit(perPage);
+            } else if (fetchCount) {
+                builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(fieldDeviceModule));
+                builder.select(new ArrayList<>());
             }
-
-            builder.offset(offset);
-            builder.limit(perPage);
-        } else if (fetchCount) {
-            builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(fieldDeviceModule));
-            builder.select(new ArrayList<>());
         }
-
+        else {
+            LOGGER.info("no pagination");
+            builder.limit(50);
+        }
         List<Map<String, Object>> rows = builder.andCriteria(criteria).get();
-        LOGGER.info("  query -> " + builder.toString());
-        LOGGER.info(" got devices " + rows);
+        if(FacilioProperties.isDevelopment()){
+            LOGGER.info(" query "+builder.toString());
+        }
         return rows;
     }
 
     public static boolean discoverPoints(List<Long> ids) {
         Device device;
         Controller controller;
-        LOGGER.info(" in discover points ");
         for (Map<String, Object> deviceMap : getDevices(ids)) {
             try {
                 device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
@@ -189,7 +189,6 @@ public class FieldDeviceApi {
                     throw new Exception(" controller cant be created ");
                 }
                 controller.setAgentId(device.getAgentId());
-                LOGGER.info(" controller formed is ->" + controller.getChildJSON());
                 ControllerMessenger.discoverPoints(controller);
                 return true;
             } catch (Exception e) {

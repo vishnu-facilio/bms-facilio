@@ -83,7 +83,6 @@ public class AgentThreadDumpAPI {
             }
             genericSelectRecordBuilder.limit(perPage).offset(offset);
         }
-        LOGGER.info(" log list query " + genericSelectRecordBuilder.get());
         return genericSelectRecordBuilder.get();
     }
 
@@ -97,7 +96,6 @@ public class AgentThreadDumpAPI {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module), String.valueOf(agentId), NumberOperators.EQUALS));
         }
         List<Map<String, Object>> result = genericSelectRecordBuilder.get();
-        LOGGER.info(" log count query " + genericSelectRecordBuilder.get());
         return (long) result.get(0).get(AgentConstants.ID);
     }
 

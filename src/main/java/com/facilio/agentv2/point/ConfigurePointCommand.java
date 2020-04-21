@@ -16,19 +16,17 @@ public class ConfigurePointCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info("inside ConfigurePointCommand ");
         if (containsAndNotNull(context, AgentConstants.POINTS) && containsAndNotNull(context, AgentConstants.CONTROLLER)) {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
             if (containsAndNotNull(context, AgentConstants.POINTS)) {
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);
                 List<Point> pointsToConfigure = new ArrayList<>();
-                LOGGER.info(" controller id " + controller.getId());
                 for (Point point : points) {
                     if ((point.getControllerId() < 1) || (point.getControllerId() == controller.getId())) {
                         point.setControllerId(controller.getId());
                         pointsToConfigure.add(point);
                     } else {
-                        LOGGER.info(" point already configured ");
+                        LOGGER.info(" point already configured "+point.getId());
                     }
                 }
                 PointsAPI.configurePoints(pointsToConfigure, controller);

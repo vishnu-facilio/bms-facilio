@@ -4,10 +4,6 @@ import com.facilio.modules.FacilioEnum;
 
 public class PointEnum {
 
-    public static void main(String[] args) {
-        System.out.println(ConfigureStatus.IN_PROGRESS.getIndex());
-    }
-
     public static enum ConfigureStatus implements FacilioEnum {
         UNCONFIGURED("Un Configured"),
         IN_PROGRESS("In Progress"),

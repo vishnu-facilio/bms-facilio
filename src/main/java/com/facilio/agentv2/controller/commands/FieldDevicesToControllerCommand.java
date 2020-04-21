@@ -21,12 +21,6 @@ public class FieldDevicesToControllerCommand extends FacilioCommand {
         List<Long> devicesToDelete = new ArrayList<>();
         if(context.containsKey(AgentConstants.FIELD_DEIVICES) && context.containsKey(AgentConstants.AGENT_ID)){
             Device device = (Device) context.get(AgentConstants.FIELD_DEIVICES);
-            long agentId = (long) context.get(AgentConstants.AGENT_ID);
-           /* if(ControllerApiV2.checkForFieldDeviceController(device.getId())){
-                LOGGER.info(" Exception , device already converted as controller ->"+device.getId());
-                context.put(AgentConstants.CONTROLLER,ControllerApiV2.getCon);
-                return false;
-            }*/
             Map<Long, Controller> deviceIdControllerMap = ControllerUtilV2.fieldDeviceToController(device);
             if (deviceIdControllerMap.isEmpty()) {
                 throw new Exception(" No controllers for devices->"+device.getId());

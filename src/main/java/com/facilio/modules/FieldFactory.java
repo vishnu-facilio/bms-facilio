@@ -465,7 +465,7 @@ public class FieldFactory {
 
     public static List<FacilioField> getNewAgentFields() {
         List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getNewAgentDataModule();
+        FacilioModule module = ModuleFactory.getNewAgentModule();
         fields.add(getIdField(module));
         fields.add(getField(AgentConstants.DEVICE_DETAILS, "DEVICE_DETAILS", module, FieldType.STRING));
         fields.add(getField(AgentConstants.CONNECTED, "CONNECTED", module, FieldType.BOOLEAN));

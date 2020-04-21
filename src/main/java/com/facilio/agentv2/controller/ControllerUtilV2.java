@@ -67,11 +67,9 @@ public class ControllerUtilV2 {
                         .withControllerProperties(controller.getChildJSON(),FacilioControllerType.valueOf(controller.getControllerType()));
                 controllerFromDb = getControllerRequest.getController();
                 if (controllerFromDb != null) {
-                    LOGGER.info(" controller present ");
                     deviceIdControllerMap.put(device.getId(), controllerFromDb);
 
                 } else {
-                    LOGGER.info(" making new controller ");
                     controller.setActive(true);
                     controller.setDataInterval(900000);
                     controller.setAvailablePoints(0);
@@ -90,7 +88,6 @@ public class ControllerUtilV2 {
             throw new Exception("controllerProps can't be null or empty -> " + controllerProps);
         }
 
-        LOGGER.info(" device id controller map is ->" + deviceIdControllerMap);
         return deviceIdControllerMap;
     }
 
@@ -103,42 +100,20 @@ public class ControllerUtilV2 {
                 JSONObject controllerPropJSON;
                 JSONObject controllerJSON = fieldDevice.getControllerProps();
                 Object object = controllerJSON.get(AgentConstants.CONTROLLER);
-                if(object instanceof String){
-                    controllerPropJSON = (JSONObject) new JSONParser().parse(String.valueOf(object));
-                    controllerJSON.putAll(controllerPropJSON);
-                }else {
-                    controllerJSON.putAll((JSONObject)object);
+                if(object != null){
+                    if(object instanceof String){
+                        controllerPropJSON = (JSONObject) new JSONParser().parse(String.valueOf(object));
+                        controllerJSON.putAll(controllerPropJSON);
+                    }else {
+                        controllerJSON.putAll((JSONObject)object);
+                    }
                 }
                 controller = ControllerApiV2.makeControllerFromMap(controllerJSON,controllerType);
-            }else {
-                LOGGER.info("fieldDevice cant be null");
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
         return controller;
-    }
-
-    // pakka
-
-
-/*    public static boolean processController(long agentId, List<Long> ids) {
-        LOGGER.info(" processing devices ");
-        FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
-        FacilioContext context = chain.getContext();
-        context.put(AgentConstants.AGENT_ID,agentId);
-        context.put(AgentConstants.ID,ids);
-        try {
-            chain.execute();
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }*/
-
-    private static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
-        return jsonObject.containsKey(key) && (jsonObject.get(key) != null);
     }
 
     public static Controller makeCustomController(long orgId, long agentId, JSONObject controllerJson) {
@@ -184,17 +159,13 @@ public class ControllerUtilV2 {
 
 
     public Controller getCachedController(JSONObject controllerJson, FacilioControllerType controllerType) throws Exception {
-        LOGGER.info(" getting controllers from db");
 
         if((controllerJson != null)&&(controllerType != null)){
             Controller mockController = ControllerApiV2.makeControllerFromMap(controllerJson,controllerType);
-            LOGGER.info(" looking controller "+mockController.getIdentifier());
             if ((controllerMapList.get(controllerType.asInt()) == null)) {// avoids null pointer --  loads the controller map
-                LOGGER.info(" controllermap is null for controllerType ->"+controllerType);
                 controllerMapList.get(controllerType.asInt()).putAll(new HashMap<>());
             }
             if ((controllerMapList.get(controllerType.asInt()).isEmpty())) { // map for the controllerType is empty
-                LOGGER.info(" controller map for type "+controllerType.asString()+" , getting from db");
                 Map<String, Controller> controllers = new HashMap<>(); // get all controller fpr that controllerType
                 try {
                     GetControllerRequest getControllerRequest = new GetControllerRequest()
@@ -210,13 +181,10 @@ public class ControllerUtilV2 {
                 for (String key : controllers.keySet()) {
                     controllerMapList.get(controllers.get(key).getControllerType()).put(key, controllers.get(key));
                 }
-                LOGGER.info(" got controllers from db and loading it to map "+controllers.size());
                 return controllerMapList.get(controllerType.asInt()).get(mockController.getIdentifier());
             }
             else {
-                LOGGER.info(" controllers present for type "+controllerType.asString());
                 if (controllerMapList.get(controllerType.asInt()).containsKey(mockController.getIdentifier())) {
-                    LOGGER.info(" controller present in cache ");
                     return controllerMapList.get(controllerType.asInt()).get(mockController.getIdentifier());
                 } else {
                     Controller controller = null;
@@ -232,7 +200,6 @@ public class ControllerUtilV2 {
                     if (controller != null) {
                         try {
                             controllerMapList.get(controllerType.asInt()).put(controller.getIdentifier(), controller);
-                            LOGGER.info(" caching controller "+controller.getIdentifier());
                             return controller;
                         } catch (Exception e) {
                             LOGGER.info("Exception occured, cant generate identifier");

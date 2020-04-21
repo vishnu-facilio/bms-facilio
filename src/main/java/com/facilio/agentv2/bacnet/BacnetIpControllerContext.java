@@ -30,7 +30,6 @@ public class BacnetIpControllerContext extends Controller {
     }
 
     public static boolean validateControllerJSON(Map<String, Object> map) throws Exception {
-        LOGGER.info(" validating controllerjson "+map);
         if(  containsValueCheck(AgentConstants.IP_ADDRESS,map) && containsValueCheck(AgentConstants.INSTANCE_NUMBER,map) && containsValueCheck(AgentConstants.NETWORK_NUMBER,map) ){
             return true;
         }

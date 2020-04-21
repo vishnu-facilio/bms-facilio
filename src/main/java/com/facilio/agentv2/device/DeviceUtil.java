@@ -39,7 +39,6 @@ public class DeviceUtil {
         List<Device> devices = new ArrayList<>();
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
-            LOGGER.info("in device count "+devicesArray.size());
             if (devicesArray.isEmpty()) {
                 throw new Exception("Exception Occurred, Device data is empty");
             }
@@ -67,7 +66,6 @@ public class DeviceUtil {
                 }
                 if(deviceJSON.containsKey(AgentConstants.NAME)){
                     device.setName((String)deviceJSON.get(AgentConstants.NAME));
-                    System.out.println(" name found and setting it ");
                 }else{
                     device.setName(device.getIdentifier());
                 }
@@ -78,7 +76,6 @@ public class DeviceUtil {
                 device.setControllerProps(deviceJSON);
                 devices.add(device);
             }
-            LOGGER.info(" device processed +"+devices.size());
             return addDevices(devices);
         } else {
             throw new Exception("Exception occurred while processing device, data is missing from payload->" + payload);
@@ -101,7 +98,6 @@ public class DeviceUtil {
             try{
                 for (Device device : devices) {
                     if(device.getControllerType() == FacilioControllerType.MODBUS_IP.asInt()){
-                        LOGGER.info("Adding device straight to controller for modbus ip");
                         ControllerUtilV2.fieldDeviceToController(device);
                     }
                 }

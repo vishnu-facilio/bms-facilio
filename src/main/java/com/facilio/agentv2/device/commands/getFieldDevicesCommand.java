@@ -17,7 +17,6 @@ public class getFieldDevicesCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" in fielddevices command");
         if((context.containsKey(AgentConstants.ID)) ){
             Long deviceId = (Long) context.get(AgentConstants.ID);
             List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(Collections.singletonList(deviceId)), Device.class);
@@ -33,7 +32,6 @@ public class getFieldDevicesCommand extends FacilioCommand {
                    throw new Exception("Exception while getting device object, agentId is 0");
                 }
                 context.put(AgentConstants.FIELD_DEIVICES,devices.get(0));
-                LOGGER.info(" returning field devices ");
                 return false;
         }else {
             LOGGER.info(" Exception Occurred,  agentId and ids missing from contest to get FieldDevices");

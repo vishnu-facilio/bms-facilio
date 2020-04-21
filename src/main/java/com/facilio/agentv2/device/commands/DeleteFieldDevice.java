@@ -14,7 +14,6 @@ public class DeleteFieldDevice extends FacilioCommand
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" in delete fields command ");
         if(context.containsKey(AgentConstants.ID)){
             Collection<Long> deviceId = (Collection<Long>) context.get(AgentConstants.ID);
             if( deviceId.isEmpty() ){

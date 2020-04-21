@@ -38,7 +38,6 @@ public class AgentMessenger {
     }
 
     private static IotData constructNewIotAgentMessage(FacilioAgent agent, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
-        LOGGER.info(" context to construct message " + extraMsgContent);
         if ((command != FacilioCommand.PING) && (!agent.getConnected())) {
             throw new Exception("Agent is not connected");
         }
@@ -69,7 +68,6 @@ public class AgentMessenger {
                         LOGGER.info(type);
                         if (type == FacilioControllerType.MODBUS_RTU) {
                             alterMessageForRtu(messageBody, extraMsgContent);
-                            LOGGER.info("object altered " + messageBody);
                         }
                     } else {
                         LOGGER.info("Exception occurred , no data in context for " + command.name());
@@ -82,7 +80,6 @@ public class AgentMessenger {
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(messageBody, command));
             iotData.setMessages(messages);
-            LOGGER.info(" iot data generated is " + iotData);
             return iotData;
     }
 
@@ -118,7 +115,6 @@ public class AgentMessenger {
     public static boolean shutDown(long agentId) { //TODO not yet tested
         if (agentId > 0) {
             try {
-                LOGGER.info(" shutting agent ->" + agentId + " down");
                 IotData shutDown = constructAgentShutDown(agentId);
                 MessengerUtil.addAndPublishNewAgentData(shutDown);
                 return true;
@@ -192,7 +188,6 @@ public class AgentMessenger {
     }*/
 
     public static boolean sendConfigureModbusRtuNetworkCommand(RtuNetworkContext rtuNetwork) throws Exception {
-        LOGGER.info(" sending rtu network ");
         if (rtuNetwork != null) {
             JSONObject networkJson = new JSONObject();
             networkJson.put(AgentConstants.DATA, FieldUtil.getAsJSON(rtuNetwork));

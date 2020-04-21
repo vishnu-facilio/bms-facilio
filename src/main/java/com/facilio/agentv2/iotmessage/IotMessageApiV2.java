@@ -211,7 +211,6 @@ public class IotMessageApiV2 {
                     .select(FieldFactory.getIotMessageFields())
                     .andCondition(CriteriaAPI.getIdCondition(ids, iotMessageModule));
             List<Map<String, Object>> records = builder.get();
-        LOGGER.info("  query "+builder.toString());
         if (records.isEmpty()) {
             return new ArrayList<>();
         } else {

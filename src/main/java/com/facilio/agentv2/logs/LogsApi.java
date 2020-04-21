@@ -120,7 +120,6 @@ public class LogsApi
                     .table(agentV2LogModule.getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(agentV2LogModule));
             List<Map<String, Object>> result = builder.get();
-            LOGGER.info(" count is " + result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent count ", e);

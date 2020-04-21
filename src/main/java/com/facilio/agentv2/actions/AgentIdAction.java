@@ -47,7 +47,9 @@ public class AgentIdAction extends AgentActionV2 {
         try {
             List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(getAgentId(), constructListContext(new FacilioContext())), Device.class);
             List<Device> newDevices = new ArrayList<>();
-            newDevices.add(devices.get(0));
+            if (!devices.isEmpty()) {
+                newDevices.add(devices.get(0));
+            }
             setResult(AgentConstants.DATA, devices);
             ok();
         } catch (Exception e) {

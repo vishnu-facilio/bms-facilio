@@ -39,7 +39,6 @@ public class ControllerMessenger {
             throw new Exception("Exception occurred, points map is empty");
         }
         long controllerId = (long) points.get(0).getControllerId();
-        LOGGER.info(" controller Id ->"+controllerId);
         return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
     }
 
@@ -66,13 +65,11 @@ public class ControllerMessenger {
      * @throws Exception
      */
     private static IotData constructNewIotMessage(Controller controller, FacilioCommand command, List<Point> points, FacilioContext context) throws Exception {
-        LOGGER.info(" constructing controller message ");
         if (controller == null) {
             throw new Exception("Exception occurred,  Controller not present");
         }
         IotData iotData = new IotData();
         long agentId = controller.getAgentId();
-        LOGGER.info(" agentId  " + agentId);
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if (agent != null) {
             if( ! agent.getConnected()){
@@ -82,7 +79,6 @@ public class ControllerMessenger {
             iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
             object.put(AgentConstants.COMMAND, command.asInt());
-            LOGGER.info(" controller type  " + controller.getControllerType());
             object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
             object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
             //object.putAll(controller.getChildJSON());
@@ -174,7 +170,6 @@ public class ControllerMessenger {
 
 public static boolean discoverPoints(long controllerId) throws Exception {
             IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
-            LOGGER.info(" iot data "+iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
 }
@@ -182,7 +177,6 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     public static boolean discoverPoints(Controller controller){
         try {
             IotData iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS);
-            LOGGER.info(" iot data " + iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
         } catch (Exception e) {
@@ -193,7 +187,6 @@ public static boolean discoverPoints(long controllerId) throws Exception {
 
     public static void configurePoints(List<Point> points, FacilioControllerType controllerType) throws Exception {
         IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE);
-        LOGGER.info(" iot data " + iotData);
         MessengerUtil.addAndPublishNewAgentData(iotData);
 
     }
@@ -219,7 +212,6 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void subscribeUnscbscribePoints(List<Point> points, FacilioCommand command) throws Exception {
-        LOGGER.info(" iot message to " + command.toString());
         IotData iotData = constructNewIotMessage(points, command);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }

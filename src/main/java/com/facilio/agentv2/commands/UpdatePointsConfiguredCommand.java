@@ -37,13 +37,11 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             Map<String, Object> toUpdate = new HashMap<>();
             toUpdate.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.IN_PROGRESS.getIndex());
             toUpdate.put(AgentConstants.CONTROLLER_ID, context.get(AgentConstants.CONTROLLER_ID));
-            LOGGER.info("UpdatePointsConfiguredCommand ids ->" + ids);
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(ModuleFactory.getPointModule().getTableName())
                     .fields(FieldFactory.getPointFields())
                     .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getPointModule()));
             int rowsAffected = builder.update(toUpdate);
-            LOGGER.info("UpdatePointsConfiguredCommand rows affectyed ->" + rowsAffected);
 
             if (rowsAffected > 0) {
                 List<FacilioField> childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf((Integer) context.get(AgentConstants.POINT_TYPE)));
@@ -54,7 +52,6 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
                 int childRowsAffected = builder1.update(toUpdate);
 
                 childPointFields.forEach(field -> System.out.println(field));
-                LOGGER.info(" child points rowd affected ->" + childRowsAffected);
                 context.put(FacilioConstants.ContextNames.ROWS_UPDATED, childRowsAffected);
                 if (childRowsAffected > 0) {
                     return true;

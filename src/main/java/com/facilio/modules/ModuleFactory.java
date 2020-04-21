@@ -193,7 +193,7 @@ public class ModuleFactory {
 		return agentDataModule;
 	}
 
-	public static FacilioModule getNewAgentDataModule() {
+	public static FacilioModule getNewAgentModule() {
 		FacilioModule agentDataModule = new FacilioModule();
 		agentDataModule.setName("agent");
 		agentDataModule.setDisplayName("agent");

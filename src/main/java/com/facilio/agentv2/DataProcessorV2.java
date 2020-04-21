@@ -398,9 +398,9 @@ public class DataProcessorV2
 
     private long getAgentId(String agent) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getNewAgentDataModule().getTableName())
+                .table(ModuleFactory.getNewAgentModule().getTableName())
                 .select(FieldFactory.getNewAgentFields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentDataModule()),agent, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agent, StringOperators.IS));
         List<Map<String, Object>> rows =selectRecordBuilder.get();
         if (rows.size()>0){
             return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());

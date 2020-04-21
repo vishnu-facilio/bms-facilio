@@ -11,7 +11,6 @@ import com.facilio.agent.integration.UpdateIntegrationCommand;
 import com.facilio.agent.integration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.agentv2.UpdateAgentCommand;
 import com.facilio.agentv2.commands.*;
-import com.facilio.agentv2.controller.commands.AddDevicesCommand;
 import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
 import com.facilio.agentv2.device.commands.DeleteFieldDevice;
 import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
@@ -27,16 +26,16 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.commands.*;
+import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
-import com.facilio.energystar.command.*;
-import com.facilio.cb.command.*;
-import com.facilio.controlaction.commands.*;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -3904,11 +3903,6 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddDevicesChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new AddDevicesCommand());
-		return chain;
-	}
 	public static FacilioChain generateScheduleChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
