@@ -16,6 +16,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
+import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -932,4 +933,34 @@ public class PointsAPI {
         return false;
     }
 
+    public static void handleModbusIpWritableSwitch(Map<String, Object> point) {
+        if(point != null){
+            point.put(AgentConstants.WRITABLE_SWITCH,true);
+        }
+    }
+
+    public static void handleOpcXmlWritableSwitch(Map<String, Object> point) {
+        if(point != null){
+            point.put(AgentConstants.WRITABLE_SWITCH,true);
+        }
+    }
+    public static void applyBacnetDefaultWritableRule(Point point) {
+        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
+            BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
+            if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
+                point.setWritable(true);
+            }
+        }
+    }
+    public static void handleBacnetWritableSwitch(Map<String,Object> point) {
+        if(containsValueCheck(AgentConstants.INSTANCE_TYPE,point)){
+            BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf(((Number) point.get(AgentConstants.INSTANCE_TYPE)).intValue());
+            if((instanceType != null) && instanceType.isWritable()){
+                LOGGER.info("instance type "+instanceType.name());
+                point.put(AgentConstants.WRITABLE_SWITCH,true);
+            }else {
+                point.put(AgentConstants.WRITABLE_SWITCH,false);
+            }
+        }
+    }
 }

@@ -180,4 +180,5 @@ public class AgentConstants
     public static final String THREAD_DUMP = "threadDump";
 
 
+    public static final String WRITABLE_SWITCH = "writableSwitch";
 }

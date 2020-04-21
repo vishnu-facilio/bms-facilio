@@ -157,9 +157,28 @@ public class GetPointRequest {
             }
             data = selectRecordBuilder.get();
         }
+        if( ! data.isEmpty()){
+            handlePointToggleFlag(data);
+        }
         return data;
     }
-    
+
+    private void handlePointToggleFlag(List<Map<String, Object>> points) {
+        for (Map<String, Object> point : points) {
+            if (containsValueCheck(AgentConstants.POINT_TYPE,point)) {
+                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number)point.get(AgentConstants.POINT_TYPE)).intValue());
+                switch (controllerType){
+                    case BACNET_IP:
+                        PointsAPI.handleBacnetWritableSwitch(point);
+                        break;
+                    case MODBUS_IP:
+                        PointsAPI.handleModbusIpWritableSwitch(point);
+                        break;
+                }
+            }
+        }
+    }
+
     public GetPointRequest limit(int limit) {
     		this.limit = limit;
     		return this;
@@ -256,5 +275,19 @@ public class GetPointRequest {
             throw new Exception(" controller id can't be less than 1");
         }
         return this;
+    }
+    private static boolean notNull(Object object) {
+        return object != null;
+    }
+
+    private static boolean checkValue(Long value){
+        return (value != null) && (value >  0);
+    }
+
+    private static boolean containsValueCheck(String key, Map<String,Object> map){
+        if(notNull(key) && notNull(map) && map.containsKey(key) && ( map.get(key) != null) ){
+            return true;
+        }
+        return false;
     }
 }
