@@ -2470,7 +2470,7 @@
 	
 	<package name="assetClientApiV2" namespace="/api/v2/asset"
 		extends="v2Api">
-		<action name="lastestdata"
+		<action name="latestdata"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLastValue">
 		</action>
