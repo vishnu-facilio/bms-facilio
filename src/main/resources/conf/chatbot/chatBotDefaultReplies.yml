@@ -1,10 +1,18 @@
 system_greet_intent: 
-    - "Hello there! How can I help you? Please select from the options below:"
-    - "Hey there! Here's all the things I can help you with:"
+    - "Hi there! How can I help you?"
+    - "Hello there! Ask me for help on any of these tasks below:"
+    - "Hey there! Here’s all the things I can assist you with:"
+    - "Hi! Can I help you with any of the following tasks?"
     
 system_intent_not_fount_intent: 
-    - "I am sorry, I don't understand what you're looking for. I can help you:"
-    - "I am sorry, I don't understand what you're looking for. You can ask me to:"
+    - "Sorry, I’m not sure if I understood you correctly. Please select one of the following to proceed."
+    - "I didn't understand that. Maybe I can assist you with one of these."
+    - "I am not able to understand that. Did you want help with any of the tasks below?"
+    - "I didn't get that. But, I'd be happy to help you with these tasks"
+    - "I am sorry I don't understand what you're looking for. You can ask me to."
+    - "I didn't understand that. Are you looking for help with any of the following?"
+    - "I din't get that. Can I help you with any of the following? "
+    - "I didn't understand that. But I'd be happy to help you with these tasks:"
     
 system_greet_question_1_intent: 
     - "Fine, thank you"

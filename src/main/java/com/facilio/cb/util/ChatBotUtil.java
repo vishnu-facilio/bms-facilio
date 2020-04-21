@@ -1121,7 +1121,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		ChatBotModel model = new ChatBotModel();
 		
 		model.setOrgId(AccountUtil.getCurrentOrg().getId());
-		model.setType(ChatBotModel.App_Type.TENENT.getIntVal());
+		model.setType(ChatBotModel.App_Type.APP.getIntVal());
 		model.setMlModel(mlModelName);
 		
 		return addModel(model);

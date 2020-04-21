@@ -155,8 +155,16 @@
    contextWorkflow :
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data){
+                             
+                             subjectQueryList = [["I will help you submit a service request.","Can you provide me with the details?"],
+                                                 ["I''ll help you raise a service request. Please provide the details that I can include in it.","This will help the property team to gain some context."],
+                                                 ["I need a few details to submit the request","Please add the information to be included in your request"],
+                                                 ["I''ll help you raise a service request.","Please provide details that I can include in it."],
+                                                 ["I need a few details to submit the request for you.","What do you want to report?"]
+                                                ];
+                             
                              if(data.subject == null) {
-                                 return chatBot().param("subject","I will help you submit a service request. Can you provide me with some details?");
+                                 return chatBot().param("subject",subjectQueryList.get(math().random(subjectQueryList.size())));
                              }
                              if(data.client_message != null && data.client_message == "Add attachment") {
                                 
@@ -232,7 +240,12 @@
                                    
                                    confirmation.fields = fields;
                                    
-                                   return chatBot().confirm(confirmation);
+                                   confirmationQueryList = ["Thanks for providing me with the information. I have created a service request for you.",
+                                                            "Thank you. I have created the service request. This is how it looks:",
+                                                            ["Thanks! I have created your service request.","You can also add more info if you''d like to give the property personel more context."]    
+                                                           ];
+                                   
+                                   return chatBot().confirm(confirmation,null,confirmationQueryList.get(math().random(confirmationQueryList.size())));
                                 }
                              }
                            }'
@@ -293,9 +306,17 @@
                                             WorkOrder().addAttachements(wo.id,photoIds);
                                          }
                                          
+                                         meg1 = "Your service request has been submitted successfully with ID __[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__";
+                                         meg2 = "Thank you! I have submitted your service request with Request ID __[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__";
+                                         
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Your service request has been submitted successfully with ID __[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__.You can ask me to check on the status or add more details to this request at any time");
+                                         returnTextList = [[meg1,"You can ask me to check on the status or add more details to this request at any time"],
+                                                           [meg2,"You can add more details to the request or track the status any time you''d like by dropping me a message."]
+                                                          ];
+                                         
+                                         
+                                         resultMap.put("returnText",returnTextList.get(math().random(returnTextList.size())));
                                          extraParmas = {};
                                          extraParmas.put("woId",wo.id);
                                          resultMap.put("extraParams",extraParmas);
@@ -418,11 +439,20 @@
                                 
                                 criteria1 = [requester == currentUser.id && status == openStatusIds];
                                 
-                                return chatBot().param("woId","Select the work request to add the comment to",criteria1,"workorder");
+                                
+                                woAskList = ["Select the work request to add the comment to","Which of these requests do you want to add the comment to?"];
+                                
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
                                
                              }
                              if(data.woId != null && data.comment == null) {
-                                return chatBot().param("comment","Please enter the comment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
+                             
+                                confirm1 = "Please enter the comment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                confirm2 = "Please enter the comment you want to add to your request: __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                confirmList = [confirm1,confirm2];
+                                
+                                
+                                return chatBot().param("comment",confirmList.get(math().random(confirmList.size())));
                              }
                              if(data.woId != null && data.comment != null) {
                              
@@ -444,7 +474,11 @@
                                          
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Your comment has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
+                                         confirm1 = "Your comment has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                         confirm2 = "Thanks. I have added your comments to the request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                         confirmList = [confirm1,confirm2];
+                                         
+                                         resultMap.put("returnText",confirmList.get(math().random(confirmList.size())));
                                          
                                          return resultMap;
                                          
@@ -511,11 +545,20 @@
                                 
                                 criteria1 = [requester == currentUser.id && status == openStatusIds];
                                 
-                                return chatBot().param("woId","Select the work request to add the attachment to",criteria1,"workorder");
+                                woAskList = ["Select the work request to add the attachment to","Which of these requests do you want to add an attachment to?"];
+                                
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
                                
                              }
                              if(data.woId != null && data.attachment == null) {
-                                return chatBot().param("attachment","Please add the attachment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
+                                
+                                confirm1 = "Please add the attachment to be added to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                confirm2 = "You can add the attachment by clicking on the icon in the text box below:";
+                                confirmList = [confirm1,confirm2];
+                                
+                                
+                                return chatBot().param("attachment",confirmList.get(math().random(confirmList.size())));
+                             
                              }
                              if(data.woId != null && data.attachment != null) {
                              
@@ -539,7 +582,11 @@
                                          
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText","Your attachment has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__");
+                                         confirm1 = "Your photo has been successfully added to Service Request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                         confirm2 = "Your image has been added as an attachment to the service request __[#"+data.woId+"](/tenant/workorder/summary/"+data.woId+")__";
+                                         confirmList = [confirm1,confirm2];
+                                         
+                                         resultMap.put("returnText",confirmList.get(math().random(confirmList.size())));
                                          
                                          return resultMap;
                                          
@@ -607,8 +654,8 @@
                                    
                                    return chatBot().execute();
                                 } 
-                                
-                                return chatBot().param("woId","Select the work request",criteria1,"workorder");
+                                woAskList = ["Please select the Service request for which you’d like to check the status for:","Please select the service request you want to check the status for:"];
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
                                
                              }
                              if(data.woId != null) {

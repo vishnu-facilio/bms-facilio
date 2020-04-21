@@ -3,6 +3,7 @@ package com.facilio.workflows.functions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.facilio.workflows.exceptions.FunctionParamException;
 
@@ -87,6 +88,23 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 			
 			double a = Double.parseDouble(objects[0].toString());
 			return Math.sqrt(a);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	RANDOM(7,"random") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			int no = (int) Double.parseDouble(objects[0].toString());
+			
+			Random random = new Random();
+			return random.nextInt(no);
+			
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
