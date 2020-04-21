@@ -213,6 +213,7 @@ public class OperationAlarmApi {
                 }
                 break;
             case CUSTOM:
+
                 List<BusinessHourContext> hoursNew = businessHoursContext.getSingleDaybusinessHoursList();
                 Map<Integer,BusinessHourContext> dayWithTime = new HashMap<Integer, BusinessHourContext>();
                 for(BusinessHourContext hour: hoursNew)
@@ -249,6 +250,10 @@ public class OperationAlarmApi {
                         break;
                     } else if (businessHour != null) {
                         if (date.getHour() < startTime.getHour() && date.getHour() > endTime.getHour()) {
+                            raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
+                            break;
+                        }
+                        else if (date.getHour() > endTime.getHour() || date.getHour() < startTime.getHour()) {
                             raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
@@ -320,7 +325,6 @@ public class OperationAlarmApi {
 //        }
 //    }
     private static void checkAndClearEvent(ReadingContext reading, OperationAlarmContext.CoverageType coverageType, Context context, FacilioField readingField, Map<String,Object> resource) throws Exception {
-
         BaseEventContext previousEvent = (BaseEventContext) context.get(FacilioConstants.ContextNames.PREVIOUS_EVENT);
         if (previousEvent.getSeverityString() == null) {
             return;
