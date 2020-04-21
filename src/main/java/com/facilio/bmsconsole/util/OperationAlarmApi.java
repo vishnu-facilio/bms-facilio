@@ -249,11 +249,11 @@ public class OperationAlarmApi {
                         raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                         break;
                     } else if (businessHour != null) {
-                        if (date.getHour() < startTime.getHour() && date.getHour() > endTime.getHour()) {
+                        if (date.getHour() < startTime.getHour() && date.getHour() >= endTime.getHour()) {
                             raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
-                        else if (date.getHour() > endTime.getHour() || date.getHour() < startTime.getHour()) {
+                        else if (date.getHour() >= endTime.getHour() || date.getHour() < startTime.getHour()) {
                             raiseAlarm(resource.get("name").toString(), reading, OperationAlarmContext.CoverageType.EXCEEDED_SCHEDULE, context, readingField);
                             break;
                         }
