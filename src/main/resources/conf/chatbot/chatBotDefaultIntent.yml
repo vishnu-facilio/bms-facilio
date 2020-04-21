@@ -589,7 +589,7 @@
                                 module = Module("workorder").asMap();
                                 
                                 db = {
-   	                                    criteria : [parentModuleId == module.moduleId && typeCode == 1],
+   	                                    criteria : [parentModuleId == module.moduleId && (typeCode == 1 || typeCode == 2)],
                                     	field : "id"
                                      };
                                      
