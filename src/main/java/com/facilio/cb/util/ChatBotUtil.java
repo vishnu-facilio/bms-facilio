@@ -13,6 +13,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -1120,7 +1121,7 @@ List<FacilioField> cbIntentFields = FieldFactory.getCBIntentParamFields();
 		ChatBotModel model = new ChatBotModel();
 		
 		model.setOrgId(AccountUtil.getCurrentOrg().getId());
-		model.setType(ChatBotModel.App_Type.APP.getIntVal());
+		model.setType(ChatBotModel.App_Type.TENENT.getIntVal());
 		model.setMlModel(mlModelName);
 		
 		return addModel(model);

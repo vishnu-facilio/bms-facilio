@@ -283,6 +283,7 @@
                                          
                                          wo.siteId = siteId;
                                          wo.site = siteId;
+                                         wo.sendForApproval = true;
                                          
                                          WorkOrder().add(wo);
                                          
