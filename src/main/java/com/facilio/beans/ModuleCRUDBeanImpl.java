@@ -68,6 +68,8 @@ import java.util.stream.Collectors;
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	private static final Logger LOGGER = LogManager.getLogger(ModuleCRUDBeanImpl.class.getName());
+	private static List<FacilioField> FacilioFileFields = FieldFactory.getFileFields();
+	private static Map<String, FacilioField> FacilioFileFieldMap = FieldFactory.getAsMap(FacilioFileFields);
 
 	@Override
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception {
@@ -1344,13 +1346,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void deleteOlderFiles(List<FacilioField> fields, Map<String, FacilioField> fieldMap) throws Exception {
+	public void deleteOlderFiles(long deletedTime) throws Exception {
 		try {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(FacilioFileFields)
 					.table(ModuleFactory.getFilesModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("deletedTime"), CommonOperators.IS_NOT_EMPTY))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("deletedTime"),
-							String.valueOf(DateTimeUtil.addMonths(System.currentTimeMillis(), -1)),
+					.andCondition(CriteriaAPI.getCondition(FacilioFileFieldMap.get("deletedTime"), CommonOperators.IS_NOT_EMPTY))
+					.andCondition(CriteriaAPI.getCondition(FacilioFileFieldMap.get("deletedTime"),
+							String.valueOf(deletedTime),
 							DateOperators.IS_BEFORE))
 					.orderBy("FILE_ID").limit(30000);
 			while (true) {

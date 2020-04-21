@@ -135,5 +135,5 @@ public interface ModuleCRUDBean {
 
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception;
 
-	public void deleteOlderFiles(List<FacilioField> fields,Map<String,FacilioField> fieldMap)throws Exception;
+	public void deleteOlderFiles(long deletedTime)throws Exception;
 }
