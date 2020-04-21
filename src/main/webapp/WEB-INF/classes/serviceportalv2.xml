@@ -1232,13 +1232,13 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	<package name="tenantUnitApiv2" namespace="/api/v2/space" extends="v2Api">
+	<package name="tenantUnitApiv2" namespace="/api/service/v2/space" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2AddSpace" />
 		<action name="update" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2UpdateSpace" />
 
 	</package>
 	<package name="rentalLeaseContractsPortalApi"
-			 namespace="/api/v2/rentalleasecontract" extends="v2Api">
+			 namespace="/api/service/v2/rentalleasecontract" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"
 				method="addRentalLeaseContract">
@@ -1246,7 +1246,7 @@
 		</action>
 	</package>
 	<package name="tenantPortalReservationApiV2"
-			 namespace="/api/v2/reservations" extends="v2Api">
+			 namespace="/api/service/v2/reservations" extends="v2Api">
 	<action name="add"
 			class="com.facilio.bmsconsole.actions.ReservationAction"
 			method="addReservation">
