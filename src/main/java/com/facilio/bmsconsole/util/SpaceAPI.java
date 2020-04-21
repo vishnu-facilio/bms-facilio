@@ -958,8 +958,8 @@ public class SpaceAPI {
 	
 	public static SiteContext getSite(String siteName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ZONE);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ZONE);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
 		
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)

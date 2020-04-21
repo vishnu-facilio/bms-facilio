@@ -192,8 +192,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 
 	URIBuilder uri = new URIBuilder(thirdPartyDetailsMap.get("tokenURL"))
 			.addParameter("grant_type", thirdPartyDetailsMap.get("grant_type"))
-			.addParameter("username", thirdPartyDetailsMap.get("username"))
-			.addParameter("password", thirdPartyDetailsMap.get("password"));
+			.addParameter("username", getUserName())
+			.addParameter("password", getPassword());
 
 	RequestConfig config = RequestConfig
 	      .custom()
@@ -237,7 +237,9 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		bimIntegrationLog.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
 		bimIntegrationLog.setThirdParty(thirdParty.getValue());
 		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
-		
+		setAssetURL(assetURL !=null ? assetURL : thirdPartyDetailsMap.get("assetURL"));
+		setUserName(userName !=null ? userName : thirdPartyDetailsMap.get("userName"));
+		setPassword(password !=null ? password : thirdPartyDetailsMap.get("password"));
 		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
 		addThirdPartyIdCustomFieldInAsset();
 		
@@ -246,7 +248,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
 			bimIntegrationLog.setId(bimid);
 			
-			importInvicaraAssets(thirdParty,thirdPartyDetailsMap.get("assetURL"),token);
+			importInvicaraAssets(thirdParty,getAssetURL(),token);
 			bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.COMPLETED);
 			BimAPI.updateBimIntegrationLog(module,fields,bimIntegrationLog);
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
@@ -254,7 +256,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
 			bimIntegrationLog.setId(bimid);
 
-			importYouBimSitesBuildingAssets(thirdParty,thirdPartyDetailsMap.get("siteURL"),thirdPartyDetailsMap.get("buildingURL"),thirdPartyDetailsMap.get("assetCategoryURL"),thirdPartyDetailsMap.get("assetURL"),token);
+			importYouBimSitesBuildingAssets(thirdParty,thirdPartyDetailsMap.get("siteURL"),thirdPartyDetailsMap.get("buildingURL"),thirdPartyDetailsMap.get("assetCategoryURL"),getAssetURL(),token);
 			bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.COMPLETED);
 			BimAPI.updateBimIntegrationLog(module,fields,bimIntegrationLog);
 		}
@@ -384,7 +386,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 							asset.setName(assetName);
 							asset.setDescription(description);
 							asset.setSiteId(building.getSiteId());
-							asset.setCategory(assetCategory);
+//							asset.setCategory(assetCategory);
 							updateAsset(asset,moduleName);
 						}else{
 							AssetContext asset = new AssetContext();
@@ -692,5 +694,34 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	public void setFileUploadFileName(String fileUploadFileName) {
 		this.fileUploadFileName = fileUploadFileName;
 	}
+	
+	private String assetURL;
+	private String userName;
+	private String password;
 
+	public String getAssetURL() {
+		return assetURL;
+	}
+
+	public void setAssetURL(String assetURL) {
+		this.assetURL = assetURL;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	
 }

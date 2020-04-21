@@ -661,7 +661,7 @@ public class BimAPI {
 		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
 			
-			thirdPartyDetailsMap.put("username", "swathi@facilio.com");
+			thirdPartyDetailsMap.put("userName", "swathi@facilio.com");
 			thirdPartyDetailsMap.put("password", "Facilio@123");
 			thirdPartyDetailsMap.put("grant_type", "password");
 			thirdPartyDetailsMap.put("tokenURL", "https://facilio-api:5RTyKv4NvVstckcx5E78EM4RyAttoI@facilio-int.invicara.com/passportsvc/api/v1/oauth/token");
@@ -669,7 +669,7 @@ public class BimAPI {
 		
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
 			
-			thirdPartyDetailsMap.put("username", "swathi@facilio.com");
+			thirdPartyDetailsMap.put("userName", "swathi@facilio.com");
 			thirdPartyDetailsMap.put("password", "Facilio@123");
 			thirdPartyDetailsMap.put("grant_type","password");
 			thirdPartyDetailsMap.put("tokenURL", "https://api.youbim.com/users/getToken");
