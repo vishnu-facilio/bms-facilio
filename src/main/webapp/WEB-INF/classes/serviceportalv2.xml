@@ -1232,6 +1232,28 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="tenantUnitApiv2" namespace="/api/v2/space" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2AddSpace" />
+		<action name="update" class="com.facilio.bmsconsole.actions.SpaceAction" method="v2UpdateSpace" />
+
+	</package>
+	<package name="rentalLeaseContractsPortalApi"
+			 namespace="/api/v2/rentalleasecontract" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"
+				method="addRentalLeaseContract">
+			<param name="moduleName">contract</param>
+		</action>
+	</package>
+	<package name="tenantPortalReservationApiV2"
+			 namespace="/api/v2/reservations" extends="v2Api">
+	<action name="add"
+			class="com.facilio.bmsconsole.actions.ReservationAction"
+			method="addReservation">
+	</action>
+	</package>
+
+
 	<package name="tenantViewApi" namespace="/api/service/view" extends="newServicePortalApiV2">
 	<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
@@ -1252,6 +1274,11 @@
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="deleteContacts" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
+	</package>
+	<package name="TenantContactV2" namespace="/api/service/v2/tenantcontact"
+			 extends="newServicePortalApiV2">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.TenantContactAction" method="addTenantContacts" />
 	</package>
 	<package name="ServiceAttachmentApi" namespace="/api/service/attachment" extends="newServicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"

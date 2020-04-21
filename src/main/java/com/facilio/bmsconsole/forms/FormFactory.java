@@ -131,6 +131,8 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getClientContactForm())
 						.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, geTenantUnitSpaceForm())
 						.put(FacilioConstants.ContextNames.EMPLOYEE, geEmployeeContactForm())
+						.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractForm())
+						.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationForm())
 							
 						.build())
         			
@@ -333,6 +335,8 @@ public class FormFactory {
 		List<FacilioForm> clientContactFormsList = Arrays.asList(getClientContactForm());
 		List<FacilioForm> tenantUnitFormsList = Arrays.asList(geTenantUnitSpaceForm());
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
+		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
+		List<FacilioForm> rentalLeaseFormsList = Arrays.asList(getRentalLeaseContractForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -359,6 +363,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.CLIENT_CONTACT, getFormMap(clientContactFormsList))
 				.put(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, getFormMap(tenantUnitFormsList))
 				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
+				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
+				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 
 				.build();
 	}
