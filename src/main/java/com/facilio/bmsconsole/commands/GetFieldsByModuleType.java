@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -15,6 +17,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule parentModule = modBean.getModule(moduleName);
 
         List<FacilioField> allFields = modBean.getAllFields(moduleName);
         Map<String, List<Map<String, Object>>> result = new HashMap<>();
@@ -30,12 +33,17 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 }
                 List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
 
+                long moduleId = -1L;
+                if ("ticketstatus".equals(lookupModule.getName())) {
+                    moduleId = parentModule.getModuleId();
+                }
+
                 Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() == null || i.getMainField()).findFirst();
                 if (!mainField.isPresent()) {
                     continue;
                 }
 
-                List<Map<String, Object>> values = getValues(lookupModule, mainField.get());
+                List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
                 result.put(lookupModule.getDisplayName(), values);
             } else if (dataTypeEnum == FieldType.ENUM) {
                 EnumField enumField = (EnumField) field;
@@ -56,12 +64,17 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 }
                 List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModule.getName());
 
+                long moduleId = -1L;
+                if ("ticketstatus".equals(lookupModule.getName())) {
+                    moduleId = parentModule.getModuleId();
+                }
+
                 Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() == null || i.getMainField()).findFirst();
                 if (!mainField.isPresent()) {
                     continue;
                 }
 
-                List<Map<String, Object>> values = getValues(lookupModule, mainField.get());
+                List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
                 result.put(lookupModule.getDisplayName(), values);
             } else if (dataTypeEnum == FieldType.SYSTEM_ENUM) {
                 SystemEnumField systemEnumField = (SystemEnumField) field;
@@ -75,11 +88,17 @@ public class GetFieldsByModuleType extends FacilioCommand {
         return false;
     }
 
-    private List<Map<String, Object>> getValues(FacilioModule module, FacilioField field) throws Exception {
+    private List<Map<String, Object>> getValues(FacilioModule module, FacilioField field, long moduleId) throws Exception {
         FacilioField idField = FieldFactory.getIdField(module);
         SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder()
                 .select(Arrays.asList(field, idField))
                 .module(module);
+
+        if (moduleId != -1L) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioField parentModuleId = modBean.getField("parentModuleId", "ticketstatus");
+            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(parentModuleId, moduleId+"", NumberOperators.EQUALS));
+        }
 
         List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
 
