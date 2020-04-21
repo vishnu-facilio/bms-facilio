@@ -24,10 +24,11 @@ public enum FormActionType {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.SHOW_FIELD, null);
-			
-			resultJson.add(json);
-			
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SHOW_FIELD, null);
+				resultJson.add(json);
+			}
 		}
 	},
 	HIDE_FIELD(2,"hide") {
@@ -37,9 +38,11 @@ public enum FormActionType {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.HIDE_FIELD, null);
-			
-			resultJson.add(json);
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.HIDE_FIELD, null);
+				resultJson.add(json);
+			}
 			
 		}
 	},
@@ -50,9 +53,11 @@ public enum FormActionType {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.ENABLE_FIELD, null);
-			
-			resultJson.add(json);
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.ENABLE_FIELD, null);
+				resultJson.add(json);
+			}
 		}
 	},
 	DISABLE_FIELD(4,"disable") {
@@ -62,9 +67,11 @@ public enum FormActionType {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.DISABLE_FIELD, null);
-			
-			resultJson.add(json);
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.DISABLE_FIELD, null);
+				resultJson.add(json);
+			}
 		}
 	},
 	SET_FIELD_VALUE(5,"set") {
@@ -75,15 +82,20 @@ public enum FormActionType {
 			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 			
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
-			String meta = formRuleActionContext.getActionMeta();
-			JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
 			
-			Object value = metaJson.get("setValue");
-			if(value instanceof String && FormRuleAPI.containsPlaceHolders((String)value)) {
-				value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, (String)value);
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
+				
+				String meta = actionField.getActionMeta();
+				JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
+				
+				Object value = metaJson.get("setValue");
+				if(value instanceof String && FormRuleAPI.containsPlaceHolders((String)value)) {
+					value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, (String)value);
+				}
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
+				resultJson.add(json);
 			}
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
-			resultJson.add(json);
+			
 		}
 	},
 	APPLY_FILTER(6,"filter") {
@@ -91,30 +103,34 @@ public enum FormActionType {
 		public void performAction(FacilioContext facilioContext) throws Exception {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			
-			if(formRuleActionContext.getCriteriaId() < 0 && formRuleActionContext.getCriteria() == null) {
-				throw new IllegalArgumentException("No Filter Found");
-			}
-			Criteria criteria = formRuleActionContext.getCriteria();
-			if(criteria == null) {
-				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), formRuleActionContext.getCriteriaId());
-			}
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
 			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 			
-			for(String key : criteria.getConditions().keySet()) {
+			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
-				Condition condition = criteria.getConditions().get(key);
-				
-				if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-					String value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, condition.getValue());
-					condition.setValue(value);
+				if(actionField.getCriteriaId() < 0 && actionField.getCriteria() == null) {
+					throw new IllegalArgumentException("No Filter Found");
 				}
+				Criteria criteria = actionField.getCriteria();
+				if(criteria == null) {
+					criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), actionField.getCriteriaId());
+				}
+				
+				for(String key : criteria.getConditions().keySet()) {
+					
+					Condition condition = criteria.getConditions().get(key);
+					
+					if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
+						String value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, condition.getValue());
+						condition.setValue(value);
+					}
+				}
+				
+				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
+				
+				resultJson.add(json);
 			}
-			
-			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
-			
-			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
-			resultJson.add(json);
 		}
 	},
 	;

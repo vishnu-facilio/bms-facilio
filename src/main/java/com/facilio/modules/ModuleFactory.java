@@ -184,6 +184,14 @@ public class ModuleFactory {
 		formModule.setTableName("Form_Rule_Action");
 		return formModule;
 	}
+	
+	public static FacilioModule getFormRuleActionFieldModule() {
+		FacilioModule formModule = new FacilioModule();
+		formModule.setName("formRuleActionField");
+		formModule.setDisplayName("Form Rule Action Field");
+		formModule.setTableName("Form_Rule_Action_Field");
+		return formModule;
+	}
 
 	public static FacilioModule getAgentDataModule() {
 		FacilioModule agentDataModule = new FacilioModule();

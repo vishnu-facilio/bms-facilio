@@ -1,39 +1,28 @@
 package com.facilio.bmsconsole.forms;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
-import com.facilio.db.criteria.Criteria;
 
 public class FormRuleActionContext {
 	long id = -1;
 	long orgId = -1;
 	long formRuleId = -1;
-	long formFieldId = -1;
-	String actionMeta;
 	FormActionType actionType;
-	long criteriaId = -1;
-	Criteria criteria;
+	List<FormRuleActionFieldsContext> formRuleActionFieldsContext;
 	
-	
+	public List<FormRuleActionFieldsContext> getFormRuleActionFieldsContext() {
+		return formRuleActionFieldsContext;
+	}
+
+	public void setFormRuleActionFieldsContext(List<FormRuleActionFieldsContext> formRuleActionFieldsContext) {
+		this.formRuleActionFieldsContext = formRuleActionFieldsContext;
+	}
+
 	public void executeAction(FacilioContext facilioContext) throws Exception {
 		facilioContext.put(FormRuleAPI.FORM_RULE_ACTION_CONTEXT, this);
 		actionType.performAction(facilioContext);
-	}
-	
-	public long getCriteriaId() {
-		return criteriaId;
-	}
-
-	public void setCriteriaId(long criteriaId) {
-		this.criteriaId = criteriaId;
-	}
-
-	public Criteria getCriteria() {
-		return criteria;
-	}
-
-	public void setCriteria(Criteria criteria) {
-		this.criteria = criteria;
 	}
 	
 	public long getId() {
@@ -53,18 +42,6 @@ public class FormRuleActionContext {
 	}
 	public void setFormRuleId(long formRuleId) {
 		this.formRuleId = formRuleId;
-	}
-	public long getFormFieldId() {
-		return formFieldId;
-	}
-	public void setFormFieldId(long formFieldId) {
-		this.formFieldId = formFieldId;
-	}
-	public String getActionMeta() {
-		return actionMeta;
-	}
-	public void setActionMeta(String actionMeta) {
-		this.actionMeta = actionMeta;
 	}
 	public FormActionType getActionTypeEnum() {
 		return actionType;

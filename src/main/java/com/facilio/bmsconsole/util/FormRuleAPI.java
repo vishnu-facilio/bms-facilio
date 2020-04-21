@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
+import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -74,6 +75,31 @@ public class FormRuleAPI {
 		insertBuilder.save();
 
 		formRuleActionContext.setId((Long) props.get("id"));
+	}
+	
+	public static void addFormRuleActionFieldsContext(FormRuleActionContext formRuleActionContext) throws Exception {
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getFormRuleActionFieldModule().getTableName())
+				.fields(FieldFactory.getFormRuleActionFieldsFields());
+
+		for(FormRuleActionFieldsContext formRuleActionFields : formRuleActionContext.getFormRuleActionFieldsContext()) {
+			
+			formRuleActionFields.setFormRuleActionId(formRuleActionContext.getId());
+			formRuleActionFields.setOrgId(AccountUtil.getCurrentOrg().getId());
+			
+			if(formRuleActionFields.getCriteria() != null) {
+				long id = CriteriaAPI.addCriteria(formRuleActionFields.getCriteria(), AccountUtil.getCurrentOrg().getId());
+				formRuleActionFields.setCriteriaId(id);
+			}
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(formRuleActionFields);
+			insertBuilder.addRecord(props);
+			
+		}
+		
+		insertBuilder.save();
+
 	}
 	
 	public static void updateFormRuleContext(FormRuleContext formRuleContext) throws Exception {
@@ -195,10 +221,33 @@ public class FormRuleAPI {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<FormRuleActionContext> formRuleActionContext = FieldUtil.getAsBeanListFromMapList(props, FormRuleActionContext.class);
+			
+			for(FormRuleActionContext formRuleAction : formRuleActionContext) {
+				
+				formRuleAction.setFormRuleActionFieldsContext(getFormRuleActionFieldContext(formRuleAction.getId()));
+			}
 			return formRuleActionContext;
 		}
 		return null;
 	}
+	
+	public static List<FormRuleActionFieldsContext> getFormRuleActionFieldContext(long formRuleActionId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleActionFieldsFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleActionFieldsFields())
+				.table(ModuleFactory.getFormRuleActionFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formRuleActionId"), ""+formRuleActionId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<FormRuleActionFieldsContext> formRuleActionContext = FieldUtil.getAsBeanListFromMapList(props, FormRuleActionFieldsContext.class);
+			return formRuleActionContext;
+		}
+		return null;
+	}
+	
 	public static JSONObject getActionJson(Long fieldId,FormActionType actionType,Object value) {
 		JSONObject jsonObject = new JSONObject();
 		

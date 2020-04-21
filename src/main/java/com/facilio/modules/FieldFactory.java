@@ -349,6 +349,16 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("formRuleId", "FORM_RULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getFormRuleActionFieldsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFormRuleActionFieldModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("formRuleActionId", "FORM_RULE_ACTION_ID", module, FieldType.LOOKUP));
         fields.add(getField("formFieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("actionMeta", "ACTION_META_JSON", module, FieldType.STRING));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
