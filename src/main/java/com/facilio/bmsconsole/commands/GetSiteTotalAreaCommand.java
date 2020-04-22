@@ -1,17 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
-import java.util.List;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.constants.FacilioConstants;
 
 public class GetSiteTotalAreaCommand extends FacilioCommand  {
     public boolean executeCommand(Context context) throws Exception {
-        List<SiteContext> sites = SpaceAPI.getAllSites();
+        List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
         long totalArea = 0;
-        for (SiteContext site: sites) {
+        for (BaseSpaceContext site: sites) {
             if (site.getArea() > 0) {
                 totalArea += site.getArea();
             }

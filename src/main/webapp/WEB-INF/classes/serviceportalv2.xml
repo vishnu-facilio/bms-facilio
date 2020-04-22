@@ -1182,7 +1182,13 @@
 			class="com.facilio.bmsconsole.actions.TenantAction" method="v2fetchTenant" >
 			<param name="tenantPortal">true</param>
 			</action>
-		</package>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2fetchAllTenants">
+		    <param name="viewName">{1}</param>
+		</action>
+			
+	</package>
 	
 	<package name="TenantVisitorInviteList" namespace="/api/service/v2/visitorinvite" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
