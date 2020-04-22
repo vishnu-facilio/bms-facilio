@@ -11,23 +11,30 @@ public class DemoHelperUtil {
 
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(FilterUtil.class.getName());
 
+	private static final long DAY_IN_MILLISECONDS = (long)(24*60*60*1000);
+	
 	public static Long getEndTime(FacilioModule module, DateRange dateRange) {
-		Long currentTime = System.currentTimeMillis();
+		long currentTime = System.currentTimeMillis();
 		
 		if(dateRange != null) {
-			Long endTime = 0L;
+
 			String moduleName = module.getName();
+			
 			if("energypredictionmlreadings".equals(moduleName))  {
-				return DateTimeUtil.getMonthEndTimeOf(currentTime);
+				return dateRange.getEndTime();
 			}
 			
 			if("loadpredictionmlreadings".equals(moduleName)) {
-				endTime = DateTimeUtil.getDayEndTimeOf(currentTime);
-				endTime += (24*60*60*1000);
-				return endTime;
+				long mlReadingEndTime = DateTimeUtil.getDayEndTimeOf(currentTime) + DAY_IN_MILLISECONDS;
+				
+				if(mlReadingEndTime >= dateRange.getEndTime()) {
+					return dateRange.getEndTime();
+				}
+				return mlReadingEndTime;
 			}
+			
 			// to handle past date as endTime
-			if (endTime >= dateRange.getEndTime()) {
+			if (currentTime >= dateRange.getEndTime()) {
 				return dateRange.getEndTime();
 			}
 		}
