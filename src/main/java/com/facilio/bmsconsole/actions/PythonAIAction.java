@@ -102,9 +102,11 @@ public class PythonAIAction extends FacilioAction {
 				if(!key.equals(xaxis) && this.yaxis.contains(key)){
 					yAxis = (String) key;
 			    	String filePath = createTempCSV(datas, xaxis, yAxis);
+			    	LOGGER.info("tempfile path---->"+filePath);
 					runOnCommandLine(filePath, trendLineMap, yAxis, degree);
 				}
 			};
+			LOGGER.info("trendline mp"+trendLineMap.toString());
 			return trendLineMap;
 		}
 		return null;

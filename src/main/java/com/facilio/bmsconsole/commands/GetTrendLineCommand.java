@@ -59,6 +59,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 					body.put("xaxis", xAxis);
 					body.put("yaxis", dataPointAlias);
 					body.put("orgId", orgId.toString());
+					LOGGER.info("trendline request raised");
 					String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
 					
 					if(!response.isEmpty()){
