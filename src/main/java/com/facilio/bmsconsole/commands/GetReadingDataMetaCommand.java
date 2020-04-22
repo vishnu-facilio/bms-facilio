@@ -35,27 +35,27 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 			List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
-				if(AccountUtil.getCurrentOrg().getId() == 78){
+				if(AccountUtil.getCurrentOrg().getId() == 78l){
 					LOGGER.info("multivariate check moduleName->" + moduleName);
 				}
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-				if(AccountUtil.getCurrentOrg().getId() == 78){
+				if(AccountUtil.getCurrentOrg().getId() == 78l){
 					LOGGER.info("multivariate check readings->" + readings);
 				}
 				for(ReadingContext reading : readings) {
 					Map<String, Object> readingData = reading.getReadings();
-					if(AccountUtil.getCurrentOrg().getId() == 78){
+					if(AccountUtil.getCurrentOrg().getId() == 78l){
 						LOGGER.info("multivariate check readingData->" + readingData);
 					}
 					if (readingData != null && !readingData.isEmpty()) {
 						for (String fieldName : readingData.keySet()) {
 							FacilioField field = fieldMap.get(fieldName);
-							if(AccountUtil.getCurrentOrg().getId() == 78){
+							if(AccountUtil.getCurrentOrg().getId() == 78l){
 								LOGGER.info("multivariate check fieldName->" + fieldName);
 							}
-							if(AccountUtil.getCurrentOrg().getId() == 78){
+							if(AccountUtil.getCurrentOrg().getId() == 78l){
 								LOGGER.info("multivariate check field->" + field);
 							}
 							if (field != null) {
@@ -75,17 +75,21 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 //					logger.log(Level.INFO, "RDM Pairs : "+rdmPairs);
 //				}
 			}
-			if(AccountUtil.getCurrentOrg().getId() == 78){
+			if(AccountUtil.getCurrentOrg().getId() == 78l){
 				LOGGER.info("multivariate check rdmPairs->" + rdmPairs);
 			}
 			
 			if (!rdmPairs.isEmpty()) {
 				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
-				if(AccountUtil.getCurrentOrg().getId() == 78){
+				if(AccountUtil.getCurrentOrg().getId() == 78l){
 					LOGGER.info("multivariate check readingDataMeta->" + readingDataMeta);
 				}
 			}
 			if ((readingDataMeta == null) || (readingDataMeta.isEmpty())) {
+				LOGGER.info("multivariate Org id ->" + AccountUtil.getCurrentOrg().getId());
+				LOGGER.info("multivariate Org id -> ->" + (AccountUtil.getCurrentOrg().getId() == 78l));
+				LOGGER.info("multivariate Org id -> ->" + (AccountUtil.getCurrentOrg().getId() == 78));
+
 				LOGGER.info(" reading data meta empty->" + readingDataMeta);
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
