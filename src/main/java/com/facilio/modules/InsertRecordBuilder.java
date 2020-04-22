@@ -252,8 +252,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				/*currentFields.add(FieldFactory.getOrgIdField(currentModule));*/
 				currentFields.add(FieldFactory.getModuleIdField(currentModule));
 
-				if (FieldUtil.isSiteIdFieldPresent(currentModule, true)) {
-					currentFields.add(FieldFactory.getSiteIdField(currentModule));
+				Collection<FacilioField> scopeFields = ScopeHandler.getInstance().updateValuesForInsertAndGetFields(currentModule, props);
+				if (CollectionUtils.isNotEmpty(scopeFields)) {
+					currentFields.addAll(scopeFields);
 				}
 
 				if (FieldUtil.isSystemFieldsPresent(currentModule)) {

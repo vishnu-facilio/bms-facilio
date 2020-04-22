@@ -441,6 +441,9 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
+		if (module == null) {
+			throw new IllegalArgumentException("No such module exists with modulename : "+moduleName);
+		}
 		List<Long> extendedModuleIds = module.getExtendedModuleIds();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())

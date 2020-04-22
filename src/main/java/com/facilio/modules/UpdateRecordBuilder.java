@@ -30,7 +30,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.collections4.MapUtils;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
-	
+
 	private GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private String moduleName;
@@ -46,28 +46,29 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private List<SupplementRecord> updateSupplements;
 	private List<Long> recordIds = null;
 	private boolean isIdsFetched = false;
-	
+	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
+
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public UpdateRecordBuilder<E> moduleName(String moduleName) {
 		this.selectBuilder.moduleName(moduleName);
 		this.moduleName = moduleName;
 		return this;
 	}
-	
+
 	public UpdateRecordBuilder<E> module(FacilioModule module) {
 		this.selectBuilder.module(module);
 		this.module = module;
 		return this;
 	}
-	
+
 	@Override
 	public UpdateRecordBuilder<E> table(String tableName) {
 		return this;
 	}
-	
+
 	@Override
 	public UpdateRecordBuilder<E> useExternalConnection (Connection conn) {
 		builder.useExternalConnection(conn);
@@ -79,17 +80,17 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	public JoinRecordBuilder<E> innerJoin(String tableName) {
 		return new JoinRecordBuilder<E>(this, selectBuilder.innerJoin(tableName), builder.innerJoin(tableName));
 	}
-	
+
 	@Override
 	public JoinRecordBuilder<E> leftJoin(String tableName) {
 		return new JoinRecordBuilder<E>(this, selectBuilder.leftJoin(tableName), builder.leftJoin(tableName));
 	}
-	
+
 	@Override
 	public JoinRecordBuilder<E> rightJoin(String tableName) {
 		return new JoinRecordBuilder<E>(this, selectBuilder.rightJoin(tableName), builder.rightJoin(tableName));
 	}
-	
+
 	@Override
 	public JoinRecordBuilder<E> fullJoin(String tableName) {
 		return new JoinRecordBuilder<E>(this, selectBuilder.fullJoin(tableName), builder.fullJoin(tableName));
@@ -102,7 +103,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		this.selectBuilder.andCustomWhere(whereCondition, values);
 		return this;
 	}
-	
+
 	@Override
 	@Deprecated
 	public UpdateRecordBuilder<E> orCustomWhere(String whereCondition, Object... values) {
@@ -149,40 +150,40 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		this.fields = fields;
 		return this;
 	}
-	
+
 	public UpdateRecordBuilder<E> withChangeSet(Class<E> beanClass) {
 		this.withChangeSet = true;
 		selectBuilder.beanClass(beanClass);
 		return this;
 	}
-	
+
 	public UpdateRecordBuilder<E> withChangeSet(List<E> oldValues) {
 		this.withChangeSet = true;
 		this.oldValues = oldValues;
 		return this;
 	}
-	
+
 	public UpdateRecordBuilder<E> withDeleted() {
 		this.withDeleted = true;
 		selectBuilder.fetchDeleted();
 		return this;
 	}
-	
+
 	public Map<Long, List<UpdateChangeSet>> getChangeSet() {
-		
+
 		if (!updated) {
 			throw new IllegalArgumentException("Update first and then get change set.");
 		}
-		
+
 		return changeSet;
 	}
-	
+
 	public List<E> getOldValues() {
-		
+
 		if (!updated) {
 			throw new IllegalArgumentException("Update first and then get old values.");
 		}
-		
+
 		return oldValues;
 	}
 
@@ -201,21 +202,18 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		updateSupplements.addAll(supplements);
 		return this;
 	}
- 	
+
 	@Override
 	public int update(E bean) throws Exception {
 		this.bean = bean;
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		return updateViaMap(moduleProps);
 	}
-	
+
 	private void removeSystemProps (Map<String, Object> moduleProps) {
 		moduleProps.remove("orgId");
 		moduleProps.remove("moduleId");
 		moduleProps.remove("id");
-		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() != -1) {
-			moduleProps.remove("siteId");
-		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
 		}
@@ -223,17 +221,18 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
 		}
 	}
-	
+
 	public int updateViaMap(Map<String, Object> props) throws Exception {
 		int rowsUpdated = 0;
 		if(MapUtils.isNotEmpty(props)) {
 			checkForNull();
 			Map<String, Object> moduleProps = new HashMap<>(props);
 			removeSystemProps(moduleProps);
+			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, null, moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
-				
+
 				if (AccountUtil.getCurrentUser() != null) {
 					moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
 				}
@@ -243,7 +242,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					if (CollectionUtils.isNotEmpty(recordIds)) {
 						WhereBuilder whereCondition = new WhereBuilder();
 						whereCondition.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-					
+
 						rowsUpdated = update(whereCondition, moduleProps);
 					}
 				}
@@ -252,14 +251,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					WhereBuilder whereCondition = new WhereBuilder();
 //					Condition orgCondition = CriteriaAPI.getCurrentOrgIdCondition(module);
 //					whereCondition.andCondition(orgCondition);
-					
+
 					Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 					whereCondition.andCondition(moduleCondition);
 
-					long currentSiteId = AccountUtil.getCurrentSiteId();
-					if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
-						Condition siteIdCondition = CriteriaAPI.getCurrentSiteIdCondition(module);
-						whereCondition.andCondition(siteIdCondition);
+					if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && !scopeFieldsAndCriteria.getCriteria().isEmpty()) {
+						whereCondition.andCriteria(scopeFieldsAndCriteria.getCriteria());
 					}
 
 					if (module.isTrashEnabled() && !withDeleted) {
@@ -295,17 +292,17 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			this.selectBuilder.select(fields).skipPermission();
 			List<Map<String, Object>> oldProps = selectBuilder.getAsProps();
 			recordIds = oldProps.stream()
-						.map(p -> (Long) p.get("id"))
-						.collect(Collectors.toList());
+					.map(p -> (Long) p.get("id"))
+					.collect(Collectors.toList());
 			isIdsFetched = true;
 		}
 		return recordIds;
 	}
-	
+
 	private List<Long> constructChangeSet(Map<String, Object> moduleProps) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
-		
+
 		if (oldValues == null) {
 			this.selectBuilder.select(allFields);
 			selectBuilder.skipPermission();
@@ -321,10 +318,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			for (E bean : oldValues) {
 				long id = bean.getId();
 				ids.add(id);
-				
+
 				Map<String, Object> oldProp = FieldUtil.getAsProperties(bean);
 				updateLookupFields(oldProp, allFields);
-				
+
 				MapDifference<String, Object> difference = Maps.difference(oldProp, moduleProps);
 				List<UpdateChangeSet> currentChangeList = new ArrayList<>();
 				getNewValues(id, fieldNames, fieldMap, difference.entriesOnlyOnRight(), currentChangeList);
@@ -336,7 +333,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 		return null;
 	}
-	
+
 	private void getNewValues(long recordId, Set<String> fieldNames, Map<String, FacilioField> fieldMap, Map<String, Object> difference, List<UpdateChangeSet> changeList) {
 		for(Map.Entry<String, Object> entry : difference.entrySet()) {
 			String fieldName = entry.getKey();
@@ -349,7 +346,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 	}
-	
+
 	private void getDifference(long recordId, Set<String> fieldNames, Map<String, FacilioField> fieldMap, Map<String, ValueDifference<Object>> difference, List<UpdateChangeSet> changeList) {
 		for(Map.Entry<String, ValueDifference<Object>> entry : difference.entrySet()) {
 			String fieldName = entry.getKey();
@@ -363,17 +360,17 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 	}
-	
+
 	private int update(WhereBuilder where, Map<String, Object> moduleProps) throws SQLException {
 		Set<FacilioField> updateFields = new HashSet<>();
 		if (module.isTrashEnabled()) {
 			FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 			updateFields.add(isDeletedField);
 		}
-		
+
 		updateFields.addAll(FieldUtil.removeMultiRecordFields(fields));
-		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() == -1) {
-			updateFields.add(FieldFactory.getSiteIdField(module));
+		if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+			updateFields.addAll(scopeFieldsAndCriteria.getFields());
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			updateFields.addAll(FieldFactory.getSystemFields(module));
@@ -381,22 +378,19 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isBaseEntityRootModule(module)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
-		
+
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
 		builder.setBaseTableName(prevModule.getTableName());
 		while(extendedModule != null) {
 			builder.innerJoin(extendedModule.getTableName())
 					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
-			if (FieldUtil.isSiteIdFieldPresent(extendedModule) && AccountUtil.getCurrentSiteId() == -1) {
-				updateFields.add(FieldFactory.getSiteIdField(extendedModule));
-			}
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
-		
+
 		builder.andCustomWhere(where.getWhereClause(), where.getValues());
-		
+
 		prevModule = module;
 		List<FacilioField> f = new ArrayList<>();
 		List<FileField> fileFields = new ArrayList<>();
@@ -420,7 +414,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			updateBuilder.fields(f);
 			updateBuilder.table(prevModule.getTableName());
-			
+
 			prevModule = prevModule.getExtendModule();
 			if (!f.isEmpty()) {
 				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
@@ -430,12 +424,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				fileFields.addAll(updateBuilder.getFileFields());
 			}
 		}
-		
+
 		removeFileCustomFields(fileFields);
-		
+
 		return updateCount;
 	}
-	
+
 	private void removeFileCustomFields(List<FileField> fileFields) {
 		if (CollectionUtils.isNotEmpty(fileFields) && bean != null && MapUtils.isNotEmpty(bean.getData())) {
 			Map<String, Object> data = bean.getData();
@@ -449,11 +443,11 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 	}
-	
+
 	private void updateLookupFields(Map<String, Object> moduleProps, List<FacilioField> fields) throws Exception {
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
+				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName());
 				if(lookupProps != null && !lookupProps.isEmpty()) {
 					if(lookupProps.get("id") != null) {
 						moduleProps.put(field.getName(), lookupProps.get("id"));
@@ -465,12 +459,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 		}
 	}
-	
+
 	private void checkForNull() throws Exception {
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
-		
+
 		if(module == null) {
 			if(moduleName == null || moduleName.isEmpty()) {
 				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
@@ -479,19 +473,19 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			module = modBean.getModule(moduleName);
 		}
 	}
-	
+
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<UpdateRecordBuilder<E>> {
 		private UpdateRecordBuilder<E> parentBuilder;
 		private GenericJoinBuilder joinBuilder;
 		private SelectRecordsBuilder.JoinRecordBuilder<E> selectJoinBuilder;
-		
+
 		private JoinRecordBuilder(UpdateRecordBuilder<E> parentBuilder, SelectRecordsBuilder.JoinRecordBuilder<E> selectJoinBuilder, GenericJoinBuilder joinBuilder) {
 			this.parentBuilder = parentBuilder;
 			this.joinBuilder = joinBuilder;
 			this.selectJoinBuilder = selectJoinBuilder;
 			// TODO Auto-generated constructor stub
 		}
-		
+
 		@Override
 		public UpdateRecordBuilder<E> on(String condition) {
 			// TODO Auto-generated method stub
@@ -499,6 +493,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			selectJoinBuilder.on(condition);
 			return parentBuilder;
 		}
-		
+
 	}
 }

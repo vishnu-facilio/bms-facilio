@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.db.builder.*;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.modules.fields.FetchSupplementHandler;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +59,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private boolean isAggregation = false;
 	private Collection<LookupField> lookupFields;
 	private int limit = -1;
+	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 
 	private boolean skipPermission;
 
@@ -424,14 +426,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 
-	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, List<FacilioField> deleteFields) {
+	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, List<FacilioField> deleteFields) {
 		Set<FacilioField> selectFields = new HashSet<>();
 		if (!isAggregation) {
 			selectFields.add(orgIdField);
 			selectFields.add(moduleIdField);
-			if (FieldUtil.isSiteIdFieldPresent(module)) {
-				selectFields.add(siteIdField);
-			}
 			selectFields.add(FieldFactory.getIdField(module));
 			if (FieldUtil.isSystemFieldsPresent(module)) {
 				selectFields.addAll(FieldFactory.getSystemFields(module));
@@ -441,6 +440,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 			if (module.isTrashEnabled()) {
 				selectFields.addAll(deleteFields);
+			}
+
+			if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+				selectFields.addAll(scopeFieldsAndCriteria.getFields());
 			}
 		}
 
@@ -463,7 +466,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return selectFields;
 	}
 
-	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
+	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField isDeletedField) {
 		WhereBuilder whereCondition = new WhereBuilder();
 		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(orgCondition);
@@ -471,14 +474,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
 
-		long currentSiteId = AccountUtil.getCurrentSiteId();
-		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
-			Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
-			whereCondition.andCondition(siteCondition);
-		}
-
 		if (module.isTrashEnabled() && !fetchDeleted) {
 			whereCondition.andCondition(CriteriaAPI.getCondition(isDeletedField, String.valueOf(false), BooleanOperators.IS));
+		}
+
+		if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && !scopeFieldsAndCriteria.getCriteria().isEmpty()) {
+			whereCondition.andCriteria(scopeFieldsAndCriteria.getCriteria());
 		}
 
 		if (CollectionUtils.isNotEmpty(criteriaJoinTables)) {
@@ -551,7 +552,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 
-	public String constructQueryString() {
+	public String constructQueryString() throws Exception {
 		constructBuilderProps(true);
 		return builder.constructSelectStatement();
 	}
@@ -562,16 +563,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	private boolean queryConstructed = false;
-	private void constructBuilderProps(boolean isJustQueryConstruction) {
+	private void constructBuilderProps(boolean isJustQueryConstruction) throws Exception {
 		if (!queryConstructed) {
 			queryConstructed = true;
 			FacilioField orgIdField = AccountConstants.getOrgIdField(module);
 			FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
-			FacilioField siteIdField = null;
-			if (FieldUtil.isSiteIdFieldPresent(module)) {
-				siteIdField = FieldFactory.getSiteIdField(module);
-			}
-
 			List<FacilioField> deleteFields = null;
 			FacilioField isDeletedField = null;
 			if (module.isTrashEnabled()) {
@@ -582,8 +578,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				deleteFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
 				deleteFields.add(FieldFactory.getSysDeletedByField(parentModule));
 			}
+			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, null);
 
-			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, siteIdField, deleteFields);
+			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields);
 			builder.select(selectFields);
 
 			builder.groupBy(groupBy);
@@ -594,7 +591,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				builder.limit(DEFAULT_LIMIT);
 			}
 
-			WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField, isDeletedField);
+			WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, isDeletedField);
 			builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 			handlePermissionAndScope();
 
