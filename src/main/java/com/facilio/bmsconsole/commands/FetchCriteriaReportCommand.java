@@ -477,6 +477,20 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 						    			Map<String, Object> obj1 = new HashMap();
 							    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
 								    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
+								    	Long startMillis = start.toInstant().toEpochMilli();
+								    	Long endMillis = end.toInstant().toEpochMilli();
+								    	if(!startMillis.equals(startMillis+startTime)) {
+								    		Map<String, Object> startObj = new HashMap();
+								    		startObj.put("key", startMillis);
+								    		startObj.put("value", 0);
+									    	timeline.add(startObj);
+								    	}
+								    	if(!endMillis.equals(endMillis+endTime)) {
+								    		Map<String, Object> endObj = new HashMap();
+								    		endObj.put("key", endMillis);
+								    		endObj.put("value", 0);
+								    		timeline.add(endObj);
+								    	}
 								    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
 								    	obj.put("value", 1);
 								    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
