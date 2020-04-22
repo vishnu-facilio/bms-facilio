@@ -24,7 +24,7 @@ public class EnergyStarSDK {
 	public static String ENERGY_STAR_FACILIO_USERNAME = "Krishnan123ek";
 	public static String ENERGY_STAR_FACILIO_PASSWORD = "Facilio@123";
 	
-	public static void createCustomer(EnergyStarCustomerContext customerContext) throws Exception {
+	public static String createCustomer(EnergyStarCustomerContext customerContext) throws Exception {
 		
 		Organization org = AccountUtil.getCurrentOrg();
 		
@@ -57,7 +57,7 @@ public class EnergyStarSDK {
 		
 		String response = sendAPI("customer", HttpMethod.POST, xmlString);
 		
-		
+		return XMLBuilder.parse(response).getElement("id").text();
 	}
 	
 	private static String sendAPI(String action,HttpMethod method, String payload) throws IOException {

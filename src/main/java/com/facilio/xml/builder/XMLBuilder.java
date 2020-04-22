@@ -5,10 +5,11 @@ import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
@@ -16,15 +17,15 @@ public class XMLBuilder {
 	
 	Element element;
 	Document doc;
-	String xmlString;
+	NodeList nodes;
 	
 	private XMLBuilder(Element element,Document doc) {
 		this.element = element;
 		this.doc = doc;
 	}
 	
-	private XMLBuilder(String xmlString,Document doc) {
-		this.element = element;
+	private XMLBuilder(NodeList nodes,Document doc) {
+		this.nodes = nodes;
 		this.doc = doc;
 	}
 	
@@ -40,24 +41,6 @@ public class XMLBuilder {
 		 
 		 return new XMLBuilder(element,doc);
 	}
-	
-//	public static XMLBuilder parse(String xmlString) throws Exception {
-//		
-//		try(InputStream stream = new ByteArrayInputStream(xmlString.getBytes("UTF-16"));) {
-//			parse(stream);
-//		}
-//	}
-//	
-//	public static XMLBuilder parse(InputStream stream) throws Exception {
-//		
-//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//    	Document doc = dBuilder.parse(stream);
-//        doc.getDocumentElement().normalize();
-//		 
-//		 
-//		 return new XMLBuilder(element,doc);
-//	}
 	
 	public XMLBuilder element(String name) throws Exception {
 		
@@ -99,5 +82,112 @@ public class XMLBuilder {
 		 String result = lsSerializer.writeToString(doc);
 		
 		 return result;
+	}
+	
+	// parser methods
+	
+	public static XMLBuilder parse(String xmlString) throws Exception {
+		
+		try(InputStream stream = new ByteArrayInputStream(xmlString.getBytes("UTF-16"));) {
+			return parse(stream);
+		}
+	}
+	
+	public static XMLBuilder parse(InputStream stream) throws Exception {
+		
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    	Document doc = dBuilder.parse(stream);
+        doc.getDocumentElement().normalize();
+        
+        Node node = doc.getFirstChild();
+        String nodeName = node.getNodeName();
+		
+        NodeList nodeList = doc.getElementsByTagName(nodeName);
+		 
+		return new XMLBuilder(nodeList,doc);
+	}
+	
+	public String text() {
+		
+		Element result = null;
+		if(element != null) {
+			result = element;
+		}
+		else if(nodes != null) {
+			Node resultNode = nodes.item(0);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		result = (Element) resultNode;
+        	}
+		}
+		if(result != null) {
+			String resultString = result.getTextContent();
+    		return resultString;
+		}
+		return null;
+	}
+	
+	public String t() {
+		return text();
+	}
+	public String getText() {
+		return text();
+	}
+	
+	public String a(String name) {
+		return attribute(name);
+	}
+	public String getAttribute(String name) {
+		return attribute(name);
+	}
+	
+	public String attribute(String name) {
+		
+		Element result = null;
+		if(element != null) {
+			result = element;
+		}
+		else if(nodes != null) {
+			Node resultNode = nodes.item(0);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		result = (Element) resultNode;
+        	}
+		}
+		if(result != null) {
+			String resultString = result.getAttribute(name);
+    		return resultString;
+		}
+		return null;
+	}
+	
+	public XMLBuilder get(int index) {
+		
+		if(nodes != null) {
+			Node resultNode = nodes.item(index);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		Element result  = (Element) resultNode;
+        		this.element = result;
+        	}
+		}
+		return this;
+	}
+	
+	public XMLBuilder getElement(String name) {
+		
+		Element result = null;
+		if(element != null) {
+			result = element;
+		}
+		else if(nodes != null) {
+			Node resultNode = nodes.item(0);
+        	if (resultNode.getNodeType() == Node.ELEMENT_NODE) {
+        		result = (Element) resultNode;
+        	}
+		}
+		if(result != null) {
+			NodeList nodeList = result.getElementsByTagName(name);
+			return new XMLBuilder(nodeList,doc);
+		}
+		return null;
 	}
 }
