@@ -414,6 +414,14 @@
 			<param name="formType">3</param>
 		</action>
 	</package>
+	
+	<package name="serviePortalapplications" namespace="/api/service/v2/application"
+		extends="newServicePortalApiV2">
+		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getApplicationDetails">
+		</action>
+	</package>
+	
 	<package name="newServiceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="newServicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>
@@ -1407,4 +1415,5 @@
 		</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
+	
 </struts>
