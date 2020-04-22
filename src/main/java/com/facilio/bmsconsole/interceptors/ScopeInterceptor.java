@@ -134,7 +134,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
                     if (user == null) {
                         LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
-                        return "unauthorized";
+                        return "usernotinapp";
                     }
                 }
                 Account account = new Account(iamAccount.getOrg(), user);

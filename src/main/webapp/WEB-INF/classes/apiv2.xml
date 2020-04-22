@@ -20,6 +20,9 @@
 			<result name="unauthorized" type="httpheader">
 				<param name="status">403</param>
 			</result>
+			<result name="usernotinapp" type="httpheader">
+				<param name="status">409</param>
+			</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
