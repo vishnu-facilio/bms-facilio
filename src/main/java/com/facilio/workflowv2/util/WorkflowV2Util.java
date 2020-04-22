@@ -2,6 +2,7 @@ package com.facilio.workflowv2.util;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,14 +18,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
@@ -43,6 +48,8 @@ public class WorkflowV2Util {
 	private static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
 	
 	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
+	
+	private static final String DEFAULT_WORKFLOW_YML_FILE_NAME = "conf/workflowscript/defaultWorkflows.yml";
 	
 	private static final String WORKFLOW_TEMPLATE_FILE_NAME = "conf/workflowTemplates.json";
 	
@@ -154,6 +161,27 @@ public class WorkflowV2Util {
         	   workflowTemplates = (JSONObject)jsonParser.parse(reader1);
            }
         }
+        try(InputStream inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_WORKFLOW_YML_FILE_NAME);) {
+        	
+        	Yaml yaml = new Yaml();
+        	Map<String, Object> defaultWorkflowFromYaml = (Map<String, Object>) yaml.load(inputStream);
+        	
+        	for(String key : defaultWorkflowFromYaml.keySet()) {
+        		
+        		Map jsonMap = (Map) defaultWorkflowFromYaml.get(key);
+        		
+        		JSONObject json = FieldUtil.getAsJSON(jsonMap);
+        		
+        		defaultWorkflowFromYaml.put(key, json);
+        	}
+        	
+        	defaultWorkflows.putAll(defaultWorkflowFromYaml);
+        	
+        }
+        catch (Exception e) {
+			e.printStackTrace();
+		}
+        
 	}
 
 	public static String getModuleClassNameFromModuleName(String moduleName) {

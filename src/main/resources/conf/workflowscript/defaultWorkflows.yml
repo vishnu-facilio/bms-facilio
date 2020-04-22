@@ -1,44 +1,42 @@
--
-   '0':
-     description: sample
-     usage: test
-     workflow: 'Number getSquareOf(Number i)
-                      {
-                      		return i * i;
-                      }'
-   '1': 
-      description: sample
-      usage: test
-      workflow: 'Map test(Number pmId) 
-        			  	{ 
-        			  		woModule = Module("workorder"); 
-        			  		res = woModule.fetch([pm == pmId && actualWorkStart > 0]); 
-        			  		if (res == null) 
-        			  		{ 
-        			  			return 0; 
-        			  		} 
-  							date = NameSpace("date");
-    						temp = date.getPreviousMonthEndDate();
-  							previousMonthRes = woModule.fetch([pm == pmId && actualWorkStart > 0 && createdTime <= temp]);
-  							previousMonthresponseTime = 0; 
-  							if (previousMonthRes != null) {	
+'0':
+  description: 'sample'
+  usage: 'test'
+  workflow: 'Number getCubeOf(Number i)
+                   {
+                   		return i * i * i;
+                   }'
+'1': 
+   description: 'woAverageResponseTime'
+   usage: 'pmSummary'
+   workflow: 'Map test(Number pmId) 
+     			  	{ 
+     			  		woModule = Module("workorder"); 
+     			  		res = woModule.fetch([pm == pmId && actualWorkStart > 0]); 
+     			  		if (res == null) 
+     			  		{ 
+     			  			return null; 
+     			  		} 
+							date = NameSpace("date");
+ 						temp = date.getPreviousMonthEndDate();
+							previousMonthRes = woModule.fetch([pm == pmId && actualWorkStart > 0 && createdTime <= temp]);
+							previousMonthresponseTime = 0; 
+							if (previousMonthRes != null) {	
 	        			  		b = previousMonthRes.size(); 
-	                              for each index,value in previousMonthRes { 
+	                            for each index,value in previousMonthRes { 
 	        			  			wd =  (value.actualWorkStart - value.createdTime); 
 	        			  			previousMonthresponseTime = (previousMonthresponseTime + wd);
 	        			  		}
-                                previousMonthresponseTime = previousMonthresponseTime/b; 
-                            }
-        			  		responseTime = 0; 
-        			  		a = res.size(); 
-        			  		for each index,value in res { 
-        			  			wd =  (value.actualWorkStart - value.createdTime); 
-        			  			responseTime = (responseTime + wd);
-        			  		} 
-        			  		responseTime = responseTime/a; 
-                            resMap = {};
-                            resMap["responseTime"] = responseTime;
-                            resMap["previousMonthresponseTime"] = previousMonthresponseTime;
-         					return resMap; 
-        			  	}'
-
+                             previousMonthresponseTime = previousMonthresponseTime/b; 
+                         }
+     			  		responseTime = 0; 
+     			  		a = res.size(); 
+     			  		for each index,value in res { 
+     			  			wd =  (value.actualWorkStart - value.createdTime); 
+     			  			responseTime = (responseTime + wd);
+     			  		} 
+     			  		responseTime = responseTime/a; 
+                         resMap = {};
+                         resMap["responseTime"] = responseTime;
+                         resMap["previousMonthresponseTime"] = previousMonthresponseTime;
+      					return resMap; 
+     			  	}'
