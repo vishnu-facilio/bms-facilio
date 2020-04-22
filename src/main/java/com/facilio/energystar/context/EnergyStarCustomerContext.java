@@ -18,7 +18,7 @@ public class EnergyStarCustomerContext {
 	long energyStarCustomerId;
 	String userName;
 	String password;
-	long dataExchangeMode;
+	long dataExchangeMode = -1;
 	List<Data_Exchange_Mode> availableDataExchangeModes;
 	
 	
@@ -82,7 +82,6 @@ public class EnergyStarCustomerContext {
 		this.userName = userName;
 	}
 
-	@JsonIgnore
 	@JSON(serialize=false)
 	public String getPassword() {
 		return password;
@@ -115,14 +114,15 @@ public class EnergyStarCustomerContext {
 
 
 	public enum Data_Exchange_Mode {
-		ELECTRIC(1, "Electric",1),
-		NATURAL_GAS(2, "Natural Gas",2),
-		PROPANE(3,"Propane",4);
+		ELECTRIC(1, "Electric",1,"energydata"),
+		NATURAL_GAS(2, "Natural Gas",2,null),
+		PROPANE(3,"Propane",4,null);
 		;
 
 		int intVal;
 		String name;
 		long license;
+		String moduleName;
 
 		public int getIntVal() {
 			return intVal;
@@ -135,10 +135,11 @@ public class EnergyStarCustomerContext {
 		public long getLicence() {
 			return license;
 		}
-		private Data_Exchange_Mode(int intVal, String name,long licenceId) {
+		private Data_Exchange_Mode(int intVal, String name,long licenceId,String moduleName) {
 			this.intVal = intVal;
 			this.name = name;
 			this.license = licenceId;
+			this.moduleName = moduleName;
 		}
 
 		private static final Map<Integer, Data_Exchange_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());

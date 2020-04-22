@@ -5932,5 +5932,16 @@
 		</action>
 	</package>
 	
+	<package name="energyStartIntegrationV2" namespace="/api/v2/energystar"
+		extends="v2Api">
+		<action name="enable"
+			class="com.facilio.energystar.action.EnergyStarAction" method="enable" />
+		<action name="addProperty"
+			class="com.facilio.energystar.action.EnergyStarAction" method="addEnergyStarProperty" />
+		<action name="updateProperty"
+			class="com.facilio.energystar.action.EnergyStarAction" method="updateEnergyStarProperty" />
+		<action name="deleteProperty"
+			class="com.facilio.energystar.action.EnergyStarAction" method="deleteEnergyStarProperty" />
+	</package>
 
 </struts>

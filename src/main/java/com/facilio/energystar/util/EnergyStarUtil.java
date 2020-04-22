@@ -1,5 +1,6 @@
 package com.facilio.energystar.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,9 +73,17 @@ public class EnergyStarUtil {
 		customerContext.setUserName(getUserNameFromOrgName(org.getName()));
 		customerContext.setPassword(getPasswordFromUserName(customerContext.getUserName()));
 		
+		List<Data_Exchange_Mode> exchangeModeList = customerContext.getAvailableDataExchangeModes() == null ? new ArrayList<>() : customerContext.getAvailableDataExchangeModes();
+		
+		exchangeModeList.add(Data_Exchange_Mode.ELECTRIC);
+		
+		customerContext.setAvailableDataExchangeModes(exchangeModeList);
+		
 		long total = 0;
-		for(Data_Exchange_Mode dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
-			total = total & dataExchangeMode.getLicence();
+		if(customerContext.getAvailableDataExchangeModes() != null) {
+			for(Data_Exchange_Mode dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
+				total = total | dataExchangeMode.getLicence();
+			}
 		}
 		
 		customerContext.setDataExchangeMode(total);

@@ -11,9 +11,9 @@ public class EnergyStarProperyUseContext {
 
 	long id;
 	long orgId;
-	long propertId;
+	long propertyId;
 	Propert_Use properyUseType;
-	Object value;
+	String value;
 	
 	public long getId() {
 		return id;
@@ -27,11 +27,11 @@ public class EnergyStarProperyUseContext {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-	public long getPropertId() {
-		return propertId;
+	public long getPropertyId() {
+		return propertyId;
 	}
-	public void setPropertId(long propertId) {
-		this.propertId = propertId;
+	public void setPropertyId(long propertId) {
+		this.propertyId = propertId;
 	}
 	public int getProperyUseType() {
 		if(properyUseType != null) {
@@ -42,10 +42,10 @@ public class EnergyStarProperyUseContext {
 	public void setProperyUseType(int properyUseType) {
 		this.properyUseType = Propert_Use.getAllAppTypes().get(properyUseType);
 	}
-	public Object getValue() {
+	public String getValue() {
 		return value;
 	}
-	public void setValue(Object value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 	

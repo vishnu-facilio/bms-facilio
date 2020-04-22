@@ -20,7 +20,7 @@ public class AddEnergyStarPropertyUseCommand extends FacilioCommand {
 			
 			
 			for(EnergyStarProperyUseContext propertyUse : propContext.getPropertyUseContexts()) {
-				propertyUse.setPropertId(propContext.getId());
+				propertyUse.setPropertyId(propContext.getId());
 				EnergyStarUtil.addEnergyStarPropertyUse(propertyUse);
 			}
 		}

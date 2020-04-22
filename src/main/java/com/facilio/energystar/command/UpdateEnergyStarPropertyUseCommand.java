@@ -37,7 +37,7 @@ public class UpdateEnergyStarPropertyUseCommand extends FacilioCommand {
 			
 			for(EnergyStarProperyUseContext propertyUse : propContext.getPropertyUseContexts()) {
 				propertyUse.setId(-1);
-				propertyUse.setPropertId(propContext.getId());
+				propertyUse.setPropertyId(propContext.getId());
 				EnergyStarUtil.addEnergyStarPropertyUse(propertyUse);
 			}
 		}
