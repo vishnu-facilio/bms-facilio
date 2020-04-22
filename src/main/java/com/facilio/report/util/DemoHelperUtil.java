@@ -13,31 +13,31 @@ public class DemoHelperUtil {
 
 	private static final long DAY_IN_MILLISECONDS = (long)(24*60*60*1000);
 	
-	public static Long getEndTime(FacilioModule module, DateRange dateRange) {
+	public static Long getEndTime(FacilioModule module, long endTime) {
 		long currentTime = System.currentTimeMillis();
 		
-		if(dateRange != null) {
+//		if(endTime != null) {
 
 			String moduleName = module.getName();
 			
 			if("energypredictionmlreadings".equals(moduleName))  {
-				return dateRange.getEndTime();
+				return endTime;
 			}
 			
 			if("loadpredictionmlreadings".equals(moduleName)) {
 				long mlReadingEndTime = DateTimeUtil.getDayEndTimeOf(currentTime) + DAY_IN_MILLISECONDS;
 				
-				if(mlReadingEndTime >= dateRange.getEndTime()) {
-					return dateRange.getEndTime();
+				if(mlReadingEndTime >= endTime) {
+					return endTime;
 				}
 				return mlReadingEndTime;
 			}
 			
 			// to handle past date as endTime
-			if (currentTime >= dateRange.getEndTime()) {
-				return dateRange.getEndTime();
+			if (currentTime >= endTime) {
+				return endTime;
 			}
-		}
+//		}
 		return currentTime;
 	}
 }

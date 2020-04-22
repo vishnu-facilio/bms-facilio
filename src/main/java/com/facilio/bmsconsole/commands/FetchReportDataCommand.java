@@ -67,7 +67,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 	private ModuleBean modBean;
 	private Boolean enableFutureData = false;
 	private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
-	
+	private DateRange originalDateRange;	// this is used for demo accounts
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -339,8 +340,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
 			DateRange dateRange = report.getDateRange();
-			if (dateRange != null) {
-				Long endTine = DemoHelperUtil.getEndTime(dp.getxAxis().getModule(), dateRange);
+			if (dateRange != null && originalDateRange != null) {
+				Long endTine = DemoHelperUtil.getEndTime(dp.getxAxis().getModule(), originalDateRange.getEndTime());
 				dateRange.setEndTime(endTine);
 			}
 		}
@@ -863,6 +864,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 			else {
 				actualRange = report.getDateRange();
 			}
+
+			originalDateRange = new DateRange(actualRange.getStartTime(), actualRange.getEndTime());
 			if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
 				for (ReportBaseLineContext baseLine : report.getBaseLines()) {
 
