@@ -177,6 +177,10 @@ public class OperationAlarmApi {
             LOGGER.info("Reading Fields => " + readingField);
             return;
         }
+        if (reading.getData() == null) {
+            LOGGER.info("Reading => " + readingField.getName());
+            return;
+        }
         Boolean value = (Boolean) reading.getData().get(readingField.getName());
         BusinessHoursContext.BusinessHourType type = BusinessHoursContext.BusinessHourType.valueOf(businessHoursContext.getBusinessHourTypeId());
         OperationAlarmEventContext event;
