@@ -20,7 +20,7 @@ public class GetAvailableApproverListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         FacilioStatus currentState = (FacilioStatus) context.get("currentState");
-        if (currentState != null && currentState.isRequestedState()) {
+        if (currentState != null) {
             List<WorkflowRuleContext> availableStates = (List<WorkflowRuleContext>) context.get("availableStates");
             ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
             WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(moduleData.getApprovalFlowId());
