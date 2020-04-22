@@ -61,7 +61,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 					body.put("orgId", orgId.toString());
 					LOGGER.info("trendline request raised");
 					String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
-					
+					LOGGER.info("trendline response----->"+response);
 					if(!response.isEmpty()){
 						JSONObject responseObj = (JSONObject) new JSONParser().parse(response);
 						if(responseObj != null && !responseObj.isEmpty()){

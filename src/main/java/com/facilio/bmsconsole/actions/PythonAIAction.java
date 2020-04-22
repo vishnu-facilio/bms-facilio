@@ -73,6 +73,7 @@ public class PythonAIAction extends FacilioAction {
 	
 			
 	public String getTrendLine() throws Exception {
+		LOGGER.info("trendline request landed");
 		if(trendLineObj != null && !trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
 			String degree = "1";
 			if(trendLineObj.get("type").equals("2")){
