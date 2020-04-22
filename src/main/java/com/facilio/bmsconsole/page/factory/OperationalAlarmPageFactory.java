@@ -39,7 +39,9 @@ public class OperationalAlarmPageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-        addDefaultAlarmRank(tab2Sec1);
+        ReadingAlarmPageFactory.addAlarmRankCard(tab2Sec1);
+        // addDefaultAlarmRank(tab2Sec1);
+        addDefaultAlarmDuration(tab2Sec1);
         addDefaultOutAlarmDuration(tab2Sec1);
         addDefaultOffAlarmDuration(tab2Sec1);
         // ReadingAlarmPageFactory.addAlarmDuration(tab2Sec1);
@@ -91,6 +93,20 @@ public class OperationalAlarmPageFactory extends PageFactory {
         cardWidget.addToWidgetParams("secondaryKeyOutOf", "outOfRuleLastMonth");
         cardWidget.addToWidgetParams("dataType", "rank");
         cardWidget.addToWidgetParams("workflowId", "110");
+        cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
+        section.addWidget(cardWidget);
+        return  cardWidget;
+    }
+    private  static  PageWidget addDefaultAlarmDuration (Page.Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.setTitle("Total schedule violations");
+        cardWidget.addToWidgetParams("primaryTitle", "This Year");
+        cardWidget.addToWidgetParams("primaryKey", "durationCurrentYear");
+        cardWidget.addToWidgetParams("secondaryTitle", "Last Year");
+        cardWidget.addToWidgetParams("secondaryKey", "durationLastYear");
+        cardWidget.addToWidgetParams("dataType", "duration");
+        cardWidget.addToWidgetParams("workflowId", "113");
         cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
         section.addWidget(cardWidget);
         return  cardWidget;

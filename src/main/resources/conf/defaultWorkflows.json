@@ -2163,5 +2163,80 @@
 					log resMap;
 					return resMap;
 				}"
+		},
+		"113": {
+		"description" : "overallOutOfscheduleAlarmDuration",
+		"usage" : "operationAlarmSummary",
+		"workflow" : "
+			Map overAllDurationCompersion(Number alarmId)
+			{
+				module = Module(\"operationalarmoccurrence\");
+				date = NameSpace(\"date\");
+				thisMonthRange = date.getDateRange(\"Current Year\");
+				lastMonthRange = date.getDateRange(\"Last Year\");
+
+				resMap = {};
+				db = {
+					criteria : [alarm == alarmId && createdTime == thisMonthRange],
+					field:\"alarm\",
+					aggregation:\"sum, duration\",
+					groupBy: \"alarm\",
+				};
+				thisMonthRes = module.fetch(db);
+				if (thisMonthRes != null) {
+					thisMonth = thisMonthRes.get(0).duration;
+				}
+				db = {
+					criteria : [alarm == alarmId && createdTime == lastMonthRange],
+					field:\"alarm\",
+					aggregation:\"sum, duration\",
+					groupBy: \"alarm\",
+				};
+				lastMonthRes = module.fetch(db);
+				if (lastMonthRes != null) {
+					LastMonth = lastMonthRes.get(0).duration;
+				}
+
+				resMap[\"durationCurrentYear\"] = thisMonth;
+				resMap[\"durationLastYear\"] = LastMonth;
+
+				log resMap;
+				return resMap;
+			}"
+		},
+		"114": {
+		"description" : "overallOutOfscheduleRank",
+		"usage" : "operationAlarmSummary",
+		"workflow" : "Map newOpAlrmRankWorkflow(Number alarmId, String moduleName) {
+			date = NameSpace(\"date\");
+			monthRanges = date.getDateRange(\"Current Year\");
+			db = {
+				criteria: [lastCreatedTime == monthRanges],
+				field:\"id\",
+				aggregation:\"sum, noOfOccurrences\",
+				groupBy: \"resource\",
+				orderBy:\"noOfOccurrences\" desc
+			};
+			readingAlarmModule = Module(moduleName);
+			activeRecord = readingAlarmModule.fetch(db);
+			ranking = 0;
+			if (activeRecord != null) {
+				for each index, value in activeRecord {
+					temp = value.result;
+					temp = value.result + 0;
+					if (temp == alarmId) {
+						ranking = index + 1;
+					}
+				}
+			}
+			resultMap = {};
+			if (activeRecord != null) {
+				resultMap[\"ranks\"] = activeRecord;
+				resultMap[\"ranking\"] = ranking;
+				resultMap[\"outOfRule\"] = activeRecord.size();
+			}
+			log resultMap;
+			return resultMap;
+			}"
 		}
 }
