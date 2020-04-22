@@ -36,6 +36,7 @@ public class ColumnFactory {
 		// For getting default columns for a module
 		columnMap.put("approval-default", getWoApprovalDefaultViewColumns());
 		columnMap.put("workorder-default", getWorkorderDefaultViewColumns());
+		columnMap.put("workorder-pendingapproval", getWorkorderApprovalColumns());
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
@@ -267,6 +268,19 @@ public class ColumnFactory {
 		return columns;
 	}
 	
+	private static List<ViewField> getWorkorderApprovalColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("serialNumber", "ID"));
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("requester", "Requester"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		return columns;
+	}
+
 	private static List<ViewField> getWoApprovalDefaultViewColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
