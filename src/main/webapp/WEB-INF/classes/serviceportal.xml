@@ -288,6 +288,13 @@
 		</action>
 	</package>
 	
+	<package name="applications" namespace="/api/service/v2/application"
+		extends="v2Api">
+		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getApplicationDetails">
+			</action>
+	</package>
+	
 	
 	<package name="tenantService" namespace="/api/service/tenant" extends="serviceportal">
 	
