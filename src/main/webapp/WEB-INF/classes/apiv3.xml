@@ -100,6 +100,11 @@
                 method="summary">
         </action>
 
+        <action name="patch"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="patch">
+        </action>
+
 
     </package>
 

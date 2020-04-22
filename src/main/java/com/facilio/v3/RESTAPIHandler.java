@@ -10,6 +10,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -91,6 +92,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     }
 
     private  void handleSummaryRequest(String moduleName, long id) throws Exception {
+        Object record = getRecord(moduleName, id);
+        Map<String, Object> result = new HashMap<>();
+        result.put(moduleName, record);
+        this.setData(FieldUtil.getAsJSON(result));
+    }
+
+    private Object getRecord(String moduleName, long id) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
 
@@ -131,12 +139,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         if (CollectionUtils.isEmpty(list)) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put(moduleName, list.get(0));
-
-        this.setData(FieldUtil.getAsJSON(result));
+        return list.get(0);
     }
 
     private Class getBeanClass(FacilioModule module) {
@@ -313,6 +316,87 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
     }
 
+    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj) throws Exception {
+        Object record = getRecord(moduleName, id);
+
+        FacilioModule module = getModule(moduleName);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> modFields = modBean.getAllFields(moduleName);
+
+        Set<String> fieldNames = patchObj.keySet();
+        Map<String, FacilioField> fieldAsMap = FieldFactory.getAsMap(modFields);
+
+
+        List<FacilioField> patchedFields = new ArrayList<>();
+        for (String fieldName: fieldNames) {
+            FacilioField field = fieldAsMap.get(fieldName);
+            if (field != null) {
+                patchedFields.add(field);
+            }
+        }
+
+        if (patchedFields.isEmpty()) {
+            summary();
+            return;
+        }
+
+        Class beanClass = getBeanClass(module);
+        List<Map<String, Object>> converted = FieldUtil.getAsMapList(Collections.singletonList(record), beanClass);
+
+        JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
+
+        Set<String> keys = patchObj.keySet();
+        for (String key: keys) {
+            summaryRecord.put(key, patchObj.get(key));
+        }
+
+        V3Config v3Config = getV3Config(moduleName);
+        Command initCommand = new DefaultInit();
+        Command beforeSaveCommand = null;
+        Command afterSaveCommand = null;
+        Command afterTransactionCommand = null;
+
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+
+        if (v3Config != null) {
+            V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
+            if (updateHandler != null) {
+                initCommand = updateHandler.getInitCommand();
+                beforeSaveCommand = updateHandler.getBeforeSaveCommand();
+                afterSaveCommand = updateHandler.getAfterSaveCommand();
+                afterTransactionCommand = updateHandler.getAfterTransactionCommand();
+            }
+        }
+
+        addIfNotNull(transactionChain, initCommand);
+        addIfNotNull(transactionChain, beforeSaveCommand);
+
+        transactionChain.addCommand(new UpdateCommand(module));
+
+        addIfNotNull(transactionChain, afterSaveCommand);
+        addIfNotNull(transactionChain, afterTransactionCommand);
+
+        addWorkflowChain(transactionChain);
+
+        FacilioContext context = transactionChain.getContext();
+
+        context.put(Constants.RECORD_ID, id);
+        context.put(Constants.MODULE_NAME, moduleName);
+        context.put(Constants.RAW_INPUT, summaryRecord);
+        context.put(Constants.PATCH_FIELDS, patchedFields);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
+        transactionChain.execute();
+
+        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
+
+        if (count == null || count <= 0) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
+        }
+
+        summary();
+    }
+
     private void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
@@ -361,10 +445,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
 
         summary();
-    }
-
-    private static void deleteHandler(String moduleName, long id) {
-
     }
 
 
@@ -430,6 +510,25 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     public String update() throws Exception {
         try {
             updateHandler(this.getModuleName(), this.getId(), this.getData());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+            this.setMessage("Internal Server Error");
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
+        return SUCCESS;
+    }
+
+    public String patch() throws Exception {
+        try {
+            patchHandler(this.getModuleName(), this.getId(), this.getData());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());

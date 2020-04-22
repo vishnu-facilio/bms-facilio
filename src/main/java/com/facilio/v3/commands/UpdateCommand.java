@@ -34,7 +34,7 @@ public class UpdateCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
 
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+        List<FacilioField> fields = (List<FacilioField>) context.get(Constants.PATCH_FIELDS);
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
         }
