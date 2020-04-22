@@ -17,10 +17,12 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
@@ -204,6 +206,12 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	  HttpPost request = new HttpPost(uri.build());
 	  request.setConfig(config);
 	  request.addHeader("Content-Type", "application/json");
+	  
+	  String requestBody = "{\"username\":\""+ getUserName() +"\",\"password\":\""+ getPassword() +"\"}";
+
+	  HttpEntity entity = new ByteArrayEntity(requestBody.getBytes("UTF-8"));
+	  request.setEntity(entity);
+	  
 	  CloseableHttpResponse response = client.execute(request);
 
 	  StringBuilder result = new StringBuilder();
@@ -220,8 +228,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	if(thirdParty.equals(ThirdParty.INVICARA)){
 		return ((JSONObject) parser.parse(result.toString())).get("access_token").toString();
 	}else if(thirdParty.equals(ThirdParty.YOUBIM)){
-//		return ((JSONObject)parser.parse(((JSONObject)parser.parse(((JSONObject) parser.parse(result.toString())).get("response").toString())).get("data").toString())).get("token").toString();
-		return "4b41407126fa3d8a9f1e709d4d813ccf63685af1";
+		return ((JSONObject)parser.parse(((JSONObject)parser.parse(((JSONObject) parser.parse(result.toString())).get("response").toString())).get("data").toString())).get("token").toString();
 	}
 	
 	return "";
@@ -241,7 +248,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		setUserName(userName !=null ? userName : thirdPartyDetailsMap.get("userName"));
 		setPassword(password !=null ? password : thirdPartyDetailsMap.get("password"));
 		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
-		addThirdPartyIdCustomFieldInAsset();
+		addThirdPartyIdCustomFieldInAsset(thirdParty);
 		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
 			bimIntegrationLog.setNoOfModules(1);
@@ -263,7 +270,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		return SUCCESS;
 	}
 	
-	public void addThirdPartyIdCustomFieldInAsset() throws Exception {
+	public void addThirdPartyIdCustomFieldInAsset(ThirdParty thirdParty) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields("asset"));
@@ -280,6 +287,36 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
 			
 			addFieldsChain.execute();
+		}
+		if(thirdParty.equals(ThirdParty.YOUBIM)){
+			if(!fieldsMap.containsKey("2dviewid")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("2d View Id");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("3dviewid")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("3d View Id");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
 		}
 	}
 	
@@ -378,22 +415,32 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						String assetName= result2.get("name").toString();
 						String thirdPartyId= result2.get("id").toString();
 						String description= result2.get("description").toString();
+						JSONObject viewIdJson = (JSONObject) parser.parse(result2.get("modeling_identifier").toString());
 						
 						long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
+												
 						if(assetId > 0){
 							AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setDatum("2dviewid", viewIdJson.get("2d").toString());
+							asset.setDatum("3dviewid", viewIdJson.get("3d").toString());
 							asset.setName(assetName);
 							asset.setDescription(description);
 							asset.setSiteId(building.getSiteId());
+							asset.setSpaceId(building.getId());
+							asset.setCurrentSpaceId(building.getId());
 //							asset.setCategory(assetCategory);
 							updateAsset(asset,moduleName);
 						}else{
 							AssetContext asset = new AssetContext();
 							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setDatum("2dviewid", viewIdJson.get("2d").toString());
+							asset.setDatum("3dviewid", viewIdJson.get("3d").toString());
 							asset.setName(assetName);
 							asset.setDescription(description);
 							asset.setSiteId(building.getSiteId());
+							asset.setSpaceId(building.getId());
+							asset.setCurrentSpaceId(building.getId());
 							asset.setCategory(assetCategory);
 							addAsset(asset,moduleName);
 						}
