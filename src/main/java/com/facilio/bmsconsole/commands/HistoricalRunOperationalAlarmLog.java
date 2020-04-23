@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,11 +18,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
@@ -56,7 +53,12 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand{
 			context.put(FacilioConstants.ContextNames.RESOURCE_LIST,resourceIds);
 			finalResourceIds=resourceIds;
 		}
+		long activeCurrentResourceLogs = getActiveOpResourceLogs(finalResourceIds);
 
+		if(activeCurrentResourceLogs > 0)
+		{
+			throw new Exception("Operational historical evaluation is already on progress for the selected asset(s).");
+		}
 
 		int minutesInterval = (7 * 24) * 60; 								//As of now, splitting up the resource job each week
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);
@@ -165,6 +167,25 @@ public class HistoricalRunOperationalAlarmLog extends FacilioCommand{
 			lastParentId=(long) props.get(0).get("parentId");
 		}
 		return lastParentId;
+	}
+	public static long getActiveOpResourceLogs(List<Long> resourceIds) throws Exception {
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getOperationAlarmHistoricalLogFields());
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(countField))
+				.table(ModuleFactory.getOperationAlarmHistoricalLogsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +OperationAlarmHistoricalLogsContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		long activeResourceLevelJobsCountForCurrentRule = 0l;
+
+		if (props != null && !props.isEmpty()) {
+			activeResourceLevelJobsCountForCurrentRule = (long) props.get(0).get("id");
+		}
+		return activeResourceLevelJobsCountForCurrentRule;
 	}
 
 }

@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -65,7 +66,8 @@ public class HistoricalOperationalAlarmProcessingCommand extends FacilioCommand 
                     .module(eventModule)
                     .beanClass(NewEventAPI.getEventClass(type))
                     .andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));
+                    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))
+                    .andCustomWhere(" (ALARM_OCCURRENCE_ID IS NULL) ");
 //                    .andCondition(CriteriaAPI.getCondition("COVERAGE_TYPE", "coverageType", "" +coverageType, NumberOperators.EQUALS));
 
             HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();

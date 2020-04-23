@@ -143,7 +143,8 @@ public class OperationAlarmApi {
                 .beanClass(ReadingContext.class)
                 .andCondition(CriteriaAPI.getCondition(parentField, resourceId, NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(ttimeField, startTime+","+endTime, DateOperators.BETWEEN))
-                .andCondition(CriteriaAPI.getCondition(field, "-1", NumberOperators.NOT_EQUALS))
+//                .andCondition(CriteriaAPI.getCondition(field, "-1", NumberOperators.NOT_EQUALS))
+                .andCustomWhere(" ( " + field.getColumnName() + " IS NOT NULL) ")
                 .orderBy("TTIME")
                 ;
         List<ReadingContext> readingList = selectBuilder.get();
@@ -190,8 +191,9 @@ public class OperationAlarmApi {
                 if (!value) {
                     raiseAlarm(resource.get("name").toString() , reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField);
                     break;
+                } else {
+                    checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                 }
-                checkAndClearEvent(reading, OperationAlarmContext.CoverageType.SHORT_OF_SCHEDULE, context, readingField, resource);
                 break;
             case DAYS_24_5:
                 List<BusinessHourContext> hours = businessHoursContext.getSingleDaybusinessHoursList();
