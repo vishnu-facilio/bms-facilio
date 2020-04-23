@@ -123,8 +123,6 @@ public enum FloorPlanMode {
 	
 	private JSONObject getFunctionParams(FloorPlanViewContext viewContext) throws Exception {
 		
-		FloorPlan floorPlan = new FloorPlan();
-		
 		FloorPlanContext floorPlanContext = new FloorPlanContext();
 		floorPlanContext.setId(viewContext.getFloorPlanId());
 		
