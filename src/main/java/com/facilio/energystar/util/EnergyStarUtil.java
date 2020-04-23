@@ -148,14 +148,14 @@ public class EnergyStarUtil {
 		return energyStarMeterContext;
 	}
 	
-	public static int updateEnergyStarRelModule(FacilioModule module,List<FacilioField> fields,Object customerContext,Criteria updateCriteria) throws Exception {
+	public static int updateEnergyStarRelModule(FacilioModule module,List<FacilioField> fields,Object context,Criteria updateCriteria) throws Exception {
 		
 		GenericUpdateRecordBuilder updatetBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
 				.andCriteria(updateCriteria);
 
-		Map<String, Object> props = FieldUtil.getAsProperties(customerContext);
+		Map<String, Object> props = FieldUtil.getAsProperties(context);
 		return updatetBuilder.update(props);
 
 	}

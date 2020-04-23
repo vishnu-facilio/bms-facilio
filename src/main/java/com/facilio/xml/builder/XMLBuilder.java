@@ -15,13 +15,15 @@ import org.w3c.dom.ls.LSSerializer;
 
 public class XMLBuilder {
 	
+	XMLBuilder parent;
 	Element element;
 	Document doc;
 	NodeList nodes;
 	
-	private XMLBuilder(Element element,Document doc) {
+	private XMLBuilder(Document doc,Element element,XMLBuilder parent) {
 		this.element = element;
 		this.doc = doc;
+		this.parent = parent;
 	}
 	
 	private XMLBuilder(NodeList nodes,Document doc) {
@@ -39,17 +41,41 @@ public class XMLBuilder {
 		 
 		 doc.appendChild(element);
 		 
-		 return new XMLBuilder(element,doc);
+		 return new XMLBuilder(doc,element,null);
 	}
 	
 	public XMLBuilder element(String name) throws Exception {
 		
 		Element element = doc.createElement(name);
 		
-		XMLBuilder xmlElement = new XMLBuilder(element,doc);
+		XMLBuilder xmlElement = new XMLBuilder(doc,element,this);
 		
 		 this.element.appendChild(element);
 		 return xmlElement;
+	}
+	
+	public XMLBuilder constructElement(String name) throws Exception {
+		
+		Element element = doc.createElement(name);
+		
+		XMLBuilder xmlElement = new XMLBuilder(doc,element,null);
+		
+		return xmlElement;
+	}
+	
+	public XMLBuilder addElement(XMLBuilder xmlElement) throws Exception {
+		
+		xmlElement.parent = this;
+		this.element.appendChild(xmlElement.element);
+		return this;
+	}
+	
+	public XMLBuilder parent() {
+		return parent;
+	}
+	
+	public XMLBuilder p() {
+		return parent();
 	}
 	
 	public XMLBuilder e(String text) throws Exception {
@@ -80,13 +106,15 @@ public class XMLBuilder {
 		 LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		 
 		 String result = lsSerializer.writeToString(doc);
-		
+		 result = result.replaceAll("\\<\\?xml(.+?)\\?\\>", "").trim();
 		 return result;
 	}
 	
 	// parser methods
 	
 	public static XMLBuilder parse(String xmlString) throws Exception {
+		
+		xmlString = xmlString.replaceAll("\\<\\?xml(.+?)\\?\\>", "").trim();
 		
 		try(InputStream stream = new ByteArrayInputStream(xmlString.getBytes("UTF-16"));) {
 			return parse(stream);

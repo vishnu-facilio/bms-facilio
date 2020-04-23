@@ -39,6 +39,9 @@ public class EnergyStarProperyUseContext {
 		}
 		return -1;
 	}
+	public Propert_Use getProperyUseTypeEnum() {
+		return properyUseType;
+	}
 	public void setProperyUseType(int properyUseType) {
 		this.properyUseType = Propert_Use.getAllAppTypes().get(properyUseType);
 	}

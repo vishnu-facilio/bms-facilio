@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EnergyStarPropertyContext {
@@ -15,10 +16,25 @@ public class EnergyStarPropertyContext {
 	long orgId;
 	long buildingId;
 	Building_Type buildingType;
-	long energyStarPropertyId;
-	long energyStarPropertyUseId;
-	long energyStarDesignId;
+	String energyStarPropertyId;
+	String energyStarPropertyUseId;
+	String energyStarDesignId;
 	
+	String yearBuild;
+	String occupancyPercentage;
+	
+	BuildingContext buildingContext;
+	
+	public BuildingContext getBuildingContext() {
+		return buildingContext;
+	}
+
+
+	public void setBuildingContext(BuildingContext buildingContext) {
+		this.buildingContext = buildingContext;
+	}
+
+
 	List<EnergyStarProperyUseContext> propertyUseContexts;
 	
 	List<EnergyStarMeterContext> meterContexts;
@@ -46,6 +62,25 @@ public class EnergyStarPropertyContext {
 
 	public long getId() {
 		return id;
+	}
+	
+	public String getYearBuild() {
+		return yearBuild;
+	}
+
+
+	public void setYearBuild(String yearBuild) {
+		this.yearBuild = yearBuild;
+	}
+
+
+	public String getOccupancyPercentage() {
+		return occupancyPercentage;
+	}
+
+
+	public void setOccupancyPercentage(String occupancyPercentage) {
+		this.occupancyPercentage = occupancyPercentage;
 	}
 
 
@@ -80,6 +115,10 @@ public class EnergyStarPropertyContext {
 		}
 		return -1;
 	}
+	
+	public Building_Type getBuildingTypeEnum() {
+			return buildingType;
+	}
 
 
 	public void setBuildingType(int buildingType) {
@@ -87,46 +126,44 @@ public class EnergyStarPropertyContext {
 	}
 
 
-	public long getEnergyStarPropertyId() {
+	public String getEnergyStarPropertyId() {
 		return energyStarPropertyId;
 	}
 
-	@JsonIgnore
 	@JSON(serialize=false)
-	public void setEnergyStarPropertyId(long energyStarPropertyId) {
+	public void setEnergyStarPropertyId(String energyStarPropertyId) {
 		this.energyStarPropertyId = energyStarPropertyId;
 	}
 
 
-	public long getEnergyStarPropertyUseId() {
+	public String getEnergyStarPropertyUseId() {
 		return energyStarPropertyUseId;
 	}
 
-	@JsonIgnore
 	@JSON(serialize=false)
-	public void setEnergyStarPropertyUseId(long energyStarPropertyUseId) {
+	public void setEnergyStarPropertyUseId(String energyStarPropertyUseId) {
 		this.energyStarPropertyUseId = energyStarPropertyUseId;
 	}
 
 
-	public long getEnergyStarDesignId() {
+	public String getEnergyStarDesignId() {
 		return energyStarDesignId;
 	}
 
-	@JsonIgnore
 	@JSON(serialize=false)
-	public void setEnergyStarDesignId(long energyStarDesignId) {
+	public void setEnergyStarDesignId(String energyStarDesignId) {
 		this.energyStarDesignId = energyStarDesignId;
 	}
 
 
-	enum Building_Type {
-		SCHOOL(1, "k-12 School"),
-		OFFICE(2, "Office"),
+	public enum Building_Type {
+		SCHOOL(1, "k-12 School","k12School"),
+		OFFICE(2, "Office","office"),
 		;
 
 		int intVal;
 		String name;
+		String linkName;
 
 		public int getIntVal() {
 			return intVal;
@@ -135,10 +172,16 @@ public class EnergyStarPropertyContext {
 		public String getName() {
 			return name;
 		}
+		
+		public String getLinkName() {
+			return linkName;
+		}
 
-		private Building_Type(int intVal, String name) {
+		private Building_Type(int intVal, String name,String linkName) {
 			this.intVal = intVal;
 			this.name = name;
+			this.linkName = linkName;
+					
 		}
 
 		private static final Map<Integer, Building_Type> optionMap = Collections.unmodifiableMap(initTypeMap());

@@ -1,5 +1,6 @@
 package com.facilio.energystar.context;
 
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mode;
 
 public class EnergyStarMeterContext {
@@ -10,8 +11,23 @@ public class EnergyStarMeterContext {
 	Data_Exchange_Mode type;
 	long meterId;
 	long meterDataModuleId;
-	long energyStarMeterId;
+	String energyStarMeterId;
+	String firstBillDate;
 	
+	public String getFirstBillDate() {
+		return firstBillDate;
+	}
+	public void setFirstBillDate(String firstBillDate) {
+		this.firstBillDate = firstBillDate;
+	}
+	AssetContext meterContext;
+	
+	public AssetContext getMeterContext() {
+		return meterContext;
+	}
+	public void setMeterContext(AssetContext meterContext) {
+		this.meterContext = meterContext;
+	}
 	public long getId() {
 		return id;
 	}
@@ -36,6 +52,9 @@ public class EnergyStarMeterContext {
 		}
 		return -1;
 	}
+	public Data_Exchange_Mode getTypeEnum() {
+		return type;
+	}
 	public void setType(int type) {
 		this.type = Data_Exchange_Mode.getAllAppTypes().get(type);
 	}
@@ -51,10 +70,10 @@ public class EnergyStarMeterContext {
 	public void setMeterDataModuleId(long meterDataModuleId) {
 		this.meterDataModuleId = meterDataModuleId;
 	}
-	public long getEnergyStarMeterId() {
+	public String getEnergyStarMeterId() {
 		return energyStarMeterId;
 	}
-	public void setEnergyStarMeterId(long energyStarMeterId) {
+	public void setEnergyStarMeterId(String energyStarMeterId) {
 		this.energyStarMeterId = energyStarMeterId;
 	}
 }

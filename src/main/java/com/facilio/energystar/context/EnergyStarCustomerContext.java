@@ -15,7 +15,7 @@ public class EnergyStarCustomerContext {
 	long orgId;
 	long createdTime;
 	long createdBy;
-	long energyStarCustomerId;
+	String energyStarCustomerId;
 	String userName;
 	String password;
 	long dataExchangeMode = -1;
@@ -61,14 +61,13 @@ public class EnergyStarCustomerContext {
 		this.createdBy = createdBy;
 	}
 
-	@JsonIgnore
 	@JSON(serialize=false)
-	public long getEnergyStarCustomerId() {
+	public String getEnergyStarCustomerId() {
 		return energyStarCustomerId;
 	}
 
 
-	public void setEnergyStarCustomerId(long energyStarCustomerId) {
+	public void setEnergyStarCustomerId(String energyStarCustomerId) {
 		this.energyStarCustomerId = energyStarCustomerId;
 	}
 
@@ -114,15 +113,20 @@ public class EnergyStarCustomerContext {
 
 
 	public enum Data_Exchange_Mode {
-		ELECTRIC(1, "Electric",1,"energydata"),
-		NATURAL_GAS(2, "Natural Gas",2,null),
-		PROPANE(3,"Propane",4,null);
+		ELECTRIC(1, "Electric",1,"energydata","kWh (thousand Watt-hours)"),
+		NATURAL_GAS(2, "Natural Gas",2,null,null),
+		PROPANE(3,"Propane",4,null,null);
 		;
 
 		int intVal;
 		String name;
 		long license;
 		String moduleName;
+		String unitOfMessure;
+		
+		public String getUnitOfMessure() {
+			return unitOfMessure;
+		}
 
 		public int getIntVal() {
 			return intVal;
@@ -135,11 +139,12 @@ public class EnergyStarCustomerContext {
 		public long getLicence() {
 			return license;
 		}
-		private Data_Exchange_Mode(int intVal, String name,long licenceId,String moduleName) {
+		private Data_Exchange_Mode(int intVal, String name,long licenceId,String moduleName,String unitOfMeasure) {
 			this.intVal = intVal;
 			this.name = name;
 			this.license = licenceId;
 			this.moduleName = moduleName;
+			this.unitOfMessure = unitOfMeasure;
 		}
 
 		private static final Map<Integer, Data_Exchange_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());

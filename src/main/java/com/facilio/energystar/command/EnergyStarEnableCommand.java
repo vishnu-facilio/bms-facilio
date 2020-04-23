@@ -5,6 +5,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
+import com.facilio.energystar.util.EnergyStarSDK;
 import com.facilio.energystar.util.EnergyStarUtil;
 
 public class EnergyStarEnableCommand extends FacilioCommand {
@@ -17,7 +18,9 @@ public class EnergyStarEnableCommand extends FacilioCommand {
 		if(customer == null) {
 			customer = EnergyStarUtil.getEnergyStarCustomerContext();
 			
-			//add customer here
+			String id = EnergyStarSDK.createCustomer(customer);
+			
+			customer.setEnergyStarCustomerId(id);
 			
 			customer = EnergyStarUtil.addEnergyStarCustomer(customer);
 		}

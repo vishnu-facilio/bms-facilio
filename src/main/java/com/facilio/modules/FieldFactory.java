@@ -8116,7 +8116,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
-        fields.add(getField("energyStarCustomerId", "ENERGY_STAR_CUSTOMER_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarCustomerId", "ENERGY_STAR_CUSTOMER_ID", module, FieldType.STRING));
         fields.add(getField("userName", "USERNAME", module, FieldType.STRING));
         fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
         fields.add(getField("dataExchangeMode", "DATA_EXCHANGE_MODE", module, FieldType.NUMBER));
@@ -8131,9 +8131,11 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("buildingId", "BUILDING_ID", module, FieldType.NUMBER));
         fields.add(getField("buildingType", "BUILDING_TYPE", module, FieldType.NUMBER));
-        fields.add(getField("energyStarPropertyId", "ES_PROPERTY_ID", module, FieldType.NUMBER));
-        fields.add(getField("energyStarPropertyUseId", "ES_PROPERTY_USE_ID", module, FieldType.NUMBER));
-        fields.add(getField("energyStarDesignId", "ES_DESIGN_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarPropertyId", "ES_PROPERTY_ID", module, FieldType.STRING));
+        fields.add(getField("energyStarPropertyUseId", "ES_PROPERTY_USE_ID", module, FieldType.STRING));
+        fields.add(getField("energyStarDesignId", "ES_DESIGN_ID", module, FieldType.STRING));
+        fields.add(getField("yearBuild", "YEAR_BUILD", module, FieldType.STRING));
+        fields.add(getField("occupancyPercentage", "OCCUPANCY_PERCENTAGE", module, FieldType.STRING));
 
         return fields;
     }
@@ -8159,7 +8161,8 @@ public class FieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
         fields.add(getField("meterDataModuleId", "METER_DATA_MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.NUMBER));
+        fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.STRING));
+        fields.add(getField("firstBillDate", "FIRST_BILL_DATE", module, FieldType.STRING));
 
         return fields;
     }
