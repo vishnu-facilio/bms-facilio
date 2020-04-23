@@ -80,6 +80,9 @@ public class RoleBeanImpl implements RoleBean {
 	public long createRole(long orgId, Role role) throws Exception {
 		
 		role.setOrgId(orgId);
+		if (role.getCreatedTime() <= 0) {
+			role.setCreatedTime(System.currentTimeMillis());
+		}
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getRoleModule().getTableName())

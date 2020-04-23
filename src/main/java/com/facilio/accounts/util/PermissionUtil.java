@@ -224,7 +224,9 @@ public class PermissionUtil {
 											}
 												else {
 												Condition userCondition = new Condition();
+												boolean isPlanned = false;
 												if (moduleName.equals("planned")) {
+													isPlanned = true;
 													userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
 												}
 												else {
@@ -236,6 +238,11 @@ public class PermissionUtil {
 
 												criteria = new Criteria();
 												criteria.addAndCondition(userCondition);
+												if (!isPlanned) {
+													Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+													criteria.addOrCondition(createdByCondition);
+												}
+												
 												}
 											return criteria;
 										} else if(permission.getActionName().equals("READ_TEAM") || permission.getActionName().equals("UPDATE_TEAM") || permission.getActionName().equals("DELETE_TEAM")){
@@ -253,7 +260,9 @@ public class PermissionUtil {
 											}
 											String groupColName = "ASSIGNMENT_GROUP_ID";
 											String colName = "ASSIGNED_TO_ID";
+											boolean isPlanned = false;
 											if (moduleName.equals("planned")) {
+												isPlanned = true;
 												groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
 												colName = "Workorder_Template.ASSIGNED_TO_ID";
 											}
@@ -263,6 +272,11 @@ public class PermissionUtil {
 											criteria = new Criteria();
 											criteria.addOrCondition(groupCondition);
 											criteria.addOrCondition(userCondition);
+											
+											if (!isPlanned) {
+												Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+												criteria.addOrCondition(createdByCondition);
+											}
 											return criteria;
 										}
 									}
@@ -334,7 +348,9 @@ public class PermissionUtil {
 								}
 									else {
 									Condition userCondition = new Condition();
+									boolean isPlanned = false;
 									if (moduleName.equals("planned")) {
+										isPlanned = true;
 										userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
 									}
 									else {
@@ -346,6 +362,11 @@ public class PermissionUtil {
 
 									criteria = new Criteria();
 									criteria.addAndCondition(userCondition);
+									if (!isPlanned) {
+										Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										criteria.addOrCondition(createdByCondition);
+									}
+									
 									}
 								}break;
 								case READ_TEAM:
@@ -365,9 +386,11 @@ public class PermissionUtil {
 									}
 									String groupColName = "ASSIGNMENT_GROUP_ID";
 									String colName = "ASSIGNED_TO_ID";
+									boolean isPlanned = false;
 									if (moduleName.equals("planned")) {
 										groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
 										colName = "Workorder_Template.ASSIGNED_TO_ID";
+										isPlanned = true;
 									}
 									Condition groupCondition = CriteriaAPI.getCondition(groupColName, "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
 									Condition userCondition = CriteriaAPI.getCondition(colName, "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
@@ -375,6 +398,10 @@ public class PermissionUtil {
 									criteria = new Criteria();
 									criteria.addOrCondition(groupCondition);
 									criteria.addOrCondition(userCondition);
+									if (!isPlanned) {
+										Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										criteria.addOrCondition(createdByCondition);
+									}
 								}break;
 							}
 						}

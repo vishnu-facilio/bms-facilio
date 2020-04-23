@@ -1,9 +1,11 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
@@ -98,29 +101,41 @@ public class OrgBeanImpl implements OrgBean {
 	
     @Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers) throws Exception {
+    	
+	    	User currentUser = AccountUtil.getCurrentAccount().getUser();
+		if(currentUser == null){
+			return null;
+		}
 		
-    	if(appId <= 0) {
-    		appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
-    	}
+	    	if(appId <= 0) {
+	    		appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
+	    	}
+	    	
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getApplicationIdField());
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
-		;
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-	
-		fields.add(AccountConstants.getApplicationIdField());
-		NumberOperators operator = fetchNonAppUsers ? NumberOperators.NOT_EQUALS : NumberOperators.EQUALS;
-		selectBuilder.innerJoin("ORG_User_Apps")
-			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(appId), operator));
-					
-		User currentUser = AccountUtil.getCurrentAccount().getUser();
-		if(currentUser == null){
-			return null;
+				.innerJoin("ORG_User_Apps")
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+				;
+		
+		if (fetchNonAppUsers) {
+			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
+			if (appUserIds != null) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+			}
+			
+			appId = ApplicationApi.getApplicationForLinkName("newapp").getId();
 		}
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+		
 		if(checkAccessibleSites) {
 			List<Long> accessibleSpace = currentUser.getAccessibleSpace();
 			String siteIdCondition = "";
@@ -173,6 +188,21 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
+    
+    private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {
+    		List<Long> userIds = null;
+    		
+    		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder(builder)
+    					.select(Collections.singletonList(fieldMap.get("ouid")))
+    					.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+    					;
+    		
+    		List<Map<String, Object>> props = selectBuilder.get();
+    		if (CollectionUtils.isNotEmpty(props)) {
+    			userIds = props.stream().map(prop -> (long) prop.get("ouid")).collect(Collectors.toList());
+    		}
+    		return userIds;
+    }
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
