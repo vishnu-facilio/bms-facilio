@@ -471,7 +471,6 @@ public class S3FileStore extends FileStore {
 				log.info(successfulDeletes + " objects successfully marked for deletion without versions.");
 				List<KeyVersion> keyList = new ArrayList<KeyVersion>();
 				resultObj.forEach((DeletedObject deletedObject) -> {
-					log.info("Delete Key Objects are :"+deletedObject.getKey() +"  versionDeletedIds are : "+deletedObject.getDeleteMarkerVersionId());
 					keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
 				});
 				multiObjectVersionedDeleteAndRemoveDeleteMarkers(keyList);
