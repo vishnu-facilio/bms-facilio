@@ -11,12 +11,17 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.iterators.CollatingIterator;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -28,6 +33,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.DeleteObjectsResult.DeletedObject;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -448,14 +456,33 @@ public class S3FileStore extends FileStore {
 	
 	@Override
 	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
-		
+
 		List<String> filePathList = getFilePathList(fileIds);
-		
-		DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
-				.withKeys(filePathList.toArray(new String[filePathList.size()]));
-		AwsUtil.getAmazonS3Client().deleteObjects(dor);
-		
+		List<List<String>> partitionList = ListUtils.partition(filePathList, 1000);
+
+		partitionList.forEach((List<String> chunckObjects) -> {
+			DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
+					.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
+
+			DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
+			int successfulDeletes = delObjRes.getDeletedObjects().size();
+			log.info(successfulDeletes + " objects successfully marked for deletion without versions.");
+			List<KeyVersion> keyList = new ArrayList<KeyVersion>();
+			log.info("Delete Key Objects are :"+delObjRes.getDeletedObjects().get(0).getKey() +"  versionDeletedIds are : "+delObjRes.getDeletedObjects().get(0).getDeleteMarkerVersionId());
+			delObjRes.getDeletedObjects().forEach((DeletedObject deletedObject) -> {
+				keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
+			});
+			multiObjectVersionedDeleteAndRemoveDeleteMarkers(keyList);
+		});
+
 		return deleteFileEntries(fileIds);
 	}
 	
+	private void multiObjectVersionedDeleteAndRemoveDeleteMarkers(List<KeyVersion> keyList) {
+		DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(getBucketName()).withKeys(keyList)
+				.withQuiet(false);
+		DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(deleteRequest);
+		int successfulDeletes = delObjRes.getDeletedObjects().size();
+		log.info(successfulDeletes + " delete markers successfully deleted");
+	}
 }
