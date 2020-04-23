@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.Criteria;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.List;
@@ -44,12 +44,45 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.criteria = criteria;
     }
 
+    private EventType eventType;
+    public int getEventType() {
+        if (eventType != null) {
+            return eventType.getValue();
+        }
+        return -1;
+    }
+    public void setEventType(int eventType) {
+        this.eventType = EventType.valueOf(eventType);;
+    }
+    public EventType getEventTypeEnum() {
+        return eventType;
+    }
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
     private List<Long> fieldIds;
     public List<Long> getFieldIds() {
         return fieldIds;
     }
     public void setFieldIds(List<Long> fieldIds) {
         this.fieldIds = fieldIds;
+    }
+
+    private JSONObject configJson;
+    public String getConfigJson() {
+        if (configJson != null) {
+            return configJson.toJSONString();
+        }
+        return null;
+    }
+    public void setConfigJson(String json) {
+        if (StringUtils.isNotEmpty(json)) {
+            try {
+                JSONParser parser = new JSONParser();
+                configJson = (JSONObject) parser.parse(json);
+            } catch (Exception e) {}
+        }
     }
 
     private SharingContext<ApproverContext> approvers;

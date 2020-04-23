@@ -7424,6 +7424,7 @@ public class FieldFactory {
         list.add(getField("draft", "DRAFT", stateFlowModule, FieldType.BOOLEAN));
         list.add(getField("publishedDate", "PUBLISHED_DATE", stateFlowModule, FieldType.DATE_TIME));
         list.add(getField("formLevel", "FORM_LEVEL", stateFlowModule, FieldType.BOOLEAN));
+        list.add(getField("configJson", "CONFIG_JSON", stateFlowModule, FieldType.STRING));
         return list;
     }
 

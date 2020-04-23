@@ -65,23 +65,30 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             approvalStateFlow.setName(approvalMeta.getName());
             approvalStateFlow.setDescription(approvalMeta.getDescription());
             approvalStateFlow.setRuleType(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
-            approvalStateFlow.setActivityType(EventType.FIELD_CHANGE);
+            if (approvalMeta.getEventTypeEnum() == null) {
+                // temporary fix - remove when client supports it
+                approvalMeta.setEventType(EventType.FIELD_CHANGE);
+            }
+            approvalStateFlow.setActivityType(approvalMeta.getEventTypeEnum());
             approvalStateFlow.setModule(module);
             approvalStateFlow.setDefaltStateFlow(false);
             approvalStateFlow.setCriteria(approvalMeta.getCriteria());
             approvalStateFlow.setDefaultStateId(requested.getId());
             approvalStateFlow.setId(approvalMeta.getId());
             List<FieldChangeFieldContext> changeFields = new ArrayList<>();
-            for (Long fieldId: approvalMeta.getFieldIds()) {
-                Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(modBean.getAllFields(moduleName));
-                if (!fieldMap.containsKey(fieldId)) {
-                    throw new IllegalArgumentException("Invalid field");
+
+            if (approvalMeta.getEventTypeEnum() == EventType.FIELD_CHANGE) {
+                for (Long fieldId : approvalMeta.getFieldIds()) {
+                    Map<Long, FacilioField> fieldMap = FieldFactory.getAsIdMap(modBean.getAllFields(moduleName));
+                    if (!fieldMap.containsKey(fieldId)) {
+                        throw new IllegalArgumentException("Invalid field");
+                    }
+                    FieldChangeFieldContext changeField = new FieldChangeFieldContext();
+                    changeField.setFieldId(fieldId);
+                    changeFields.add(changeField);
                 }
-                FieldChangeFieldContext changeField = new FieldChangeFieldContext();
-                changeField.setFieldId(fieldId);
-                changeFields.add(changeField);
+                approvalStateFlow.setFields(changeFields);
             }
-            approvalStateFlow.setFields(changeFields);
 
             boolean add = false;
             if (approvalMeta.getId() <= 0) {
