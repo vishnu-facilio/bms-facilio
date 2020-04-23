@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ContactsContext;
@@ -67,7 +68,7 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
                     filterCriteria = new Criteria();
                     context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
                 }
-                if(!moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOGGING)) {
+                if(StringUtils.isNotEmpty(moduleName) && !moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOGGING)) {
                 	filterCriteria.addAndCondition(condition);
                 }
             }
