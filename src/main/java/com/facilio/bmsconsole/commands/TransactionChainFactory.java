@@ -4354,10 +4354,10 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
-		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
