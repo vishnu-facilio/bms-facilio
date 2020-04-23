@@ -20,7 +20,8 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
-        Boolean isVendorPortal = (Boolean) context.get(FacilioConstants.ContextNames.IS_VENDOR_PORTAL);
+    	String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		Boolean isVendorPortal = (Boolean) context.get(FacilioConstants.ContextNames.IS_VENDOR_PORTAL);
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         if (isVendorPortal != null && isVendorPortal) {
         		long currentUserId = AccountUtil.getCurrentUser().getOuid();
@@ -66,8 +67,9 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
                     filterCriteria = new Criteria();
                     context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
                 }
-                
-                filterCriteria.addAndCondition(condition);
+                if(!moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOGGING)) {
+                	filterCriteria.addAndCondition(condition);
+                }
             }
         }
         
