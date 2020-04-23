@@ -3158,6 +3158,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ApplyConditionalFormattingForCard());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteFloorPlanWorkflowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExecuteFloorPlanWorkflowCommand());
+			return c;
+		}
 
 		public static FacilioChain getAddGraphicsChain() {
 			FacilioChain c = getDefaultChain();

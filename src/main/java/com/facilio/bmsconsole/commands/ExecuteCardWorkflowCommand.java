@@ -44,7 +44,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
 		if (cl != null) {
-			Object cardValue = cl.execute(cardContext);
+			Object cardValue = cl.getResult(cardContext);
 		
 			context.put(FacilioConstants.ContextNames.CARD_RETURN_VALUE, cardValue);
 		}

@@ -65,7 +65,7 @@ public enum CardLayout {
 	
 	PMREADINGS_LAYOUT_1 ("pmreadings_layout_1") {
 		@Override
-		public Object execute(WidgetCardContext cardContext) throws Exception {
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
 			
 			String title = (String) cardParams.get("title");
@@ -100,7 +100,7 @@ public enum CardLayout {
 	
 	KPICARD_LAYOUT_1 ("kpicard_layout_1") {
 		@Override
-		public Object execute(WidgetCardContext cardContext) throws Exception {
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
 			
 			String title = (String) cardParams.get("title");
@@ -164,7 +164,7 @@ public enum CardLayout {
 	},
 	KPICARD_LAYOUT_2 ("kpicard_layout_2") {
 		@Override
-		public Object execute(WidgetCardContext cardContext) throws Exception {
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
 
 			String title = (String) cardParams.get("title");
@@ -230,7 +230,7 @@ public enum CardLayout {
 	},
 	PHOTOS_LAYOUT_1("photos_layout_1") {
 		@Override
-		public Object execute(WidgetCardContext cardContext) throws Exception {
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
 			String cardParamsString = cardContext.getCardParams().toJSONString();
 			JSONParser parser = new JSONParser();
 			JSONObject cardParams = (JSONObject) parser. parse(cardParamsString);
@@ -353,7 +353,7 @@ public enum CardLayout {
 	},
 	FLOORPLAN_LAYOUT_1 ("floorplan_layout_1") {
 		@Override
-		public Object execute(WidgetCardContext cardContext) throws Exception {
+		protected Object execute(WidgetCardContext cardContext) throws Exception {
 			JSONObject cardParams = cardContext.getCardParams();
 			
 			String title = (String) cardParams.get("title");
@@ -397,15 +397,39 @@ public enum CardLayout {
 		return this.name;
 	}
 	
-	public Object execute(WidgetCardContext cardContext) throws Exception {
+	protected Object execute(WidgetCardContext cardContext) throws Exception {
 		
-		WorkflowContext workflow = new WorkflowContext();
-		workflow.setIsV2Script(true);
-		
-		List<Object> paramsList = new ArrayList<Object>();
-		paramsList.add(cardContext.getCardParams());
+		if (cardLayoutScriptMap.containsKey(this.name)) {
+			
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setIsV2Script(true);
+			
+			List<Object> paramsList = new ArrayList<Object>();
+			paramsList.add(cardContext.getCardParams());
+			
+			workflow.setWorkflowV2String(cardLayoutScriptMap.get(this.name));
+			
+			FacilioChain workflowChain = TransactionChainFactory.getExecuteWorkflowChain();
+			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
+			
+			workflowChain.execute();
+			
+			return workflow.getReturnValue();
+		}
+		return null;
+	}
+	
+	public Object getResult(WidgetCardContext cardContext) throws Exception {
 		
 		if (cardContext.getScriptMode() == WidgetCardContext.ScriptMode.CUSTOM_SCRIPT) {
+			
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setIsV2Script(true);
+			
+			List<Object> paramsList = new ArrayList<Object>();
+			paramsList.add(cardContext.getCardParams());
+			
 			if (cardContext.getCustomScript() != null) {
 				workflow.setWorkflowV2String(cardContext.getCustomScript());
 			}
@@ -413,18 +437,18 @@ public enum CardLayout {
 				workflow = WorkflowUtil.getWorkflowContext(cardContext.getCustomScriptId());
 				cardContext.setCustomScript(workflow.getWorkflowV2String());
 			}
+			
+			FacilioChain workflowChain = TransactionChainFactory.getExecuteWorkflowChain();
+			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
+			
+			workflowChain.execute();
+			
+			return workflow.getReturnValue();
 		}
-		else if (cardLayoutScriptMap.containsKey(this.name)) {
-			workflow.setWorkflowV2String(cardLayoutScriptMap.get(this.name));			
+		else {
+			return this.execute(cardContext);
 		}
-		
-		FacilioChain workflowChain = TransactionChainFactory.getExecuteWorkflowChain();
-		workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
-		
-		workflowChain.execute();
-		
-		return workflow.getReturnValue();
 	}
 	
 	private static final Map<String, CardLayout> cardLayoutMap = Collections.unmodifiableMap(initCardLayoutMap());
@@ -462,18 +486,4 @@ public enum CardLayout {
 	public static Map<String, CardLayout> getAllCardLayouts() {
 		return cardLayoutMap;
 	}
-	private JSONObject result;
-
-	public JSONObject getResult() {
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void setResult(String key, Object result) {
-		if (this.result == null) {
-			this.result = new JSONObject();
-		}
-		this.result.put(key, result);			
-	}
-
 }

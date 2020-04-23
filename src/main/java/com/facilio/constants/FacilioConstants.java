@@ -369,6 +369,7 @@ public class FacilioConstants {
 		public  static final String PRE_EVENT="preevent";
 		public static final String IS_PRE_EVENT = "is_pre_event";
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
+		public static final String FLOORPLAN_VIEW_CONTEXT = "floorPlanViewContext";
 	
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";

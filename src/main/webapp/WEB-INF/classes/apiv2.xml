@@ -5733,6 +5733,11 @@
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="deleteFloorPlan" />
 			<action name="getall"
 			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getAllFloorPlanData" />
+			
+		<action name="getAvailableViewModes"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getAvailableViewModes" />
+		<action name="viewFloorPlanMode"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="viewFloorPlanMode" />
 	</package>
 	
 	<package name="clientViews" namespace="/api/v2/clients/view"
