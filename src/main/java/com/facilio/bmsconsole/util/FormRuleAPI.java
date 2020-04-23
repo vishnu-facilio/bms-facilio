@@ -144,6 +144,7 @@ public class FormRuleAPI {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
+			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 			return formRuleContext;
 		}
 		return null;

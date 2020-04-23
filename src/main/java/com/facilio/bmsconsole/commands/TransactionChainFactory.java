@@ -3713,6 +3713,13 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteFormRuleCommand());
 			return c;
 		}
+		
+		public static FacilioChain fetchFormRuleDetailsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetFormRuleDetailsCommand());
+			return c;
+		}
+		
 
 		public static FacilioChain getUpdateStateFlowDiagramChain() {
 			FacilioChain c = getDefaultChain();

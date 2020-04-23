@@ -117,8 +117,16 @@ public class FormRuleAction extends FacilioAction {
 	
 	public String getRule() throws Exception {
 		
-		formRuleContext = FormRuleAPI.getFormRuleContext(formRuleContext.getId());
-		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		FacilioChain c = TransactionChainFactory.fetchFormRuleDetailsChain();
+		
+		Context context = c.getContext();
+		
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		c.execute();
+				
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
+		
 		return SUCCESS;
 	}
 	
