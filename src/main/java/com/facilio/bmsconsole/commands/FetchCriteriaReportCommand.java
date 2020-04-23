@@ -125,8 +125,8 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		Map<String, Object> operatingTimeLine = getOperatingHoursTimeLine((FacilioContext) context, report.getDateRange());
 		if(operatingTimeLine != null && !operatingTimeLine.isEmpty()) {
 			Map<Integer, Object> enumMap = new HashMap<>();
-			enumMap.put(0, "Off");
-			enumMap.put(1, "On");
+			enumMap.put(0, "No");
+			enumMap.put(1, "Yes");
 			ohDataPoint = FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Operating Hours", "operatingHours", enumMap);
 			if(ohDataPoint != null) {
 				reportDataPoints.add(ohDataPoint);
