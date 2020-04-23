@@ -740,34 +740,24 @@
 		</action>
 		
 		<action name="list" class="com.facilio.bmsconsole.actions.ReadingAction" method="allFormulasOfType">
-			<param name="moduleName">setup</param>
 			<param name="type">1</param>
-			<param name="permission">ENERGY_ANALYTICS,READ</param>
 		</action>
 		
 		<action name="count" class="com.facilio.bmsconsole.actions.ReadingAction" method="allFormulasOfType">
-			<param name="moduleName">setup</param>
 			<param name="type">1</param>
 			<param name="fetchCount">true</param>
-			<param name="permission">ENERGY_ANALYTICS,READ</param>
 		</action>
 		
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addFormulaField">
-			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS,CREATE</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="editFormula">
-			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS,UPDATE</param>
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="deleteFormula">
-			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS,DELETE</param>
 		</action>
 
 		<action name="addKPICategory"
