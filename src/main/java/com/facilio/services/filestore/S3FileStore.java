@@ -465,14 +465,17 @@ public class S3FileStore extends FileStore {
 					.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
 
 			DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
-			int successfulDeletes = delObjRes.getDeletedObjects().size();
-			log.info(successfulDeletes + " objects successfully marked for deletion without versions.");
-			List<KeyVersion> keyList = new ArrayList<KeyVersion>();
-			log.info("Delete Key Objects are :"+delObjRes.getDeletedObjects().get(0).getKey() +"  versionDeletedIds are : "+delObjRes.getDeletedObjects().get(0).getDeleteMarkerVersionId());
-			delObjRes.getDeletedObjects().forEach((DeletedObject deletedObject) -> {
-				keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
-			});
-			multiObjectVersionedDeleteAndRemoveDeleteMarkers(keyList);
+			List<DeletedObject> resultObj = delObjRes.getDeletedObjects();
+			if(CollectionUtils.isNotEmpty(resultObj)) {
+				int successfulDeletes = delObjRes.getDeletedObjects().size();
+				log.info(successfulDeletes + " objects successfully marked for deletion without versions.");
+				List<KeyVersion> keyList = new ArrayList<KeyVersion>();
+				resultObj.forEach((DeletedObject deletedObject) -> {
+					log.info("Delete Key Objects are :"+deletedObject.getKey() +"  versionDeletedIds are : "+deletedObject.getDeleteMarkerVersionId());
+					keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
+				});
+				multiObjectVersionedDeleteAndRemoveDeleteMarkers(keyList);
+			}
 		});
 
 		return deleteFileEntries(fileIds);
