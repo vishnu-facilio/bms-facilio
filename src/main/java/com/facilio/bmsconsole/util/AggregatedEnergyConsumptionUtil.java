@@ -303,22 +303,19 @@ public class AggregatedEnergyConsumptionUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
-		
-		Map<String, FacilioField> energyMeterModuleFields = FieldFactory.getAsMap(modBean.getAllFields(energyMeterModule.getName()));
-		FacilioField childMeterExpressionField = energyMeterModuleFields.get("childMeterExpression");
-		
+				
 		//add alter table for MULTIPLICATION_FACTOR
 		FacilioField multiplicationFactor = new FacilioField();
 		multiplicationFactor.setName("multiplicationFactor");
 		multiplicationFactor.setColumnName("MULTIPLICATION_FACTOR");
 		multiplicationFactor.setDisplayName("Multiplication Factor");
-		multiplicationFactor.setOrgId(childMeterExpressionField.getOrgId());
+		multiplicationFactor.setOrgId(AccountUtil.getCurrentOrg().getId());
 		multiplicationFactor.setDisplayType(FacilioField.FieldDisplayType.NUMBER.getIntValForDB());
 		multiplicationFactor.setDataType(FieldType.NUMBER.getTypeAsInt());
 		multiplicationFactor.setDataType(FieldType.NUMBER);
-		multiplicationFactor.setDefault(childMeterExpressionField.getDefault());
-		multiplicationFactor.setDisabled(childMeterExpressionField.getDisabled());
-		multiplicationFactor.setRequired(childMeterExpressionField.getRequired());
+		multiplicationFactor.setDefault(true);
+		multiplicationFactor.setDisabled(false);
+		multiplicationFactor.setRequired(false);
 		multiplicationFactor.setModule(energyMeterModule);
 		modBean.addField(multiplicationFactor);
 	}
