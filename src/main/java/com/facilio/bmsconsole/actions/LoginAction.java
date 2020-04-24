@@ -51,11 +51,13 @@ import org.w3c.dom.NodeList;
 
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -84,6 +86,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -182,21 +185,48 @@ public class LoginAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 
+		String appDomain = request.getServerName();
+		boolean portalUser = false;
+		AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appdomainObj != null && appdomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+			portalUser = true;
+		}
 		// end user session
 		try {
-			String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			String facilioToken = null;
 			String deviceType = request.getHeader("X-Device-Type");
 			if (!StringUtils.isNullOrEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				if(org.apache.commons.lang3.StringUtils.isEmpty(mobileInstanceId) || mobileInstanceId.equals("null")) {
 					throw new IllegalArgumentException("Mobile Instance Id cannot be null");
 				}
+				String headerToken = request.getHeader("Authorization");
+	            if (headerToken != null && headerToken.trim().length() > 0) {
+	                if (headerToken.startsWith("Bearer facilio ")) {
+	                    facilioToken = headerToken.replace("Bearer facilio ", "");
+	                } else if(headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
+	                    facilioToken = headerToken.replace("Bearer Facilio ", "");
+	                } else {
+	                    facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
+	                }
+		        }
+			}
+			else {
+				facilioToken = FacilioCookie.getUserCookie(request, portalUser ? "fc.idToken.facilioportal" : "fc.idToken.facilio");
 			}
 
-			if (facilioToken != null) {
+			if (org.apache.commons.lang3.StringUtils.isNotEmpty(facilioToken)) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
 					if(IAMUserUtil.logOut(currentUser.getUid(), facilioToken)) {
+						HttpSession session = request.getSession();
+						session.invalidate();
+						String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
+						FacilioCookie.eraseUserCookie(request, response, portalUser ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
+						FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
+						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
+						
 						if(mobileInstanceId != null) {
 							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
 						}

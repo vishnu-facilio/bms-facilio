@@ -232,12 +232,13 @@
 			</result>
 		</action>
 		
-        <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
-                method="apiLogout">
-            <result name="success" type="json">
-                <param name="includeProperties">^account.*</param>
-            </result>
-        </action>
+       <action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="apiLogout">
+			<param name="authorise">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 	
 		<action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
 			<result name="success" type="json">

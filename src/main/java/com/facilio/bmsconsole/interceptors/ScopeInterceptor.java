@@ -131,11 +131,17 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid appDomain");
                 }
                 if (iamAccount.getUser() != null) {
-                    user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-                    if (user == null) {
-                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
-                        return "usernotinapp";
-                    }
+                	String authorisationReqd = ActionContext.getContext().getParameters().get("authorise").getValue();
+                	if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
+	                	user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+	                    if (user == null) {
+	                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
+	                        return "usernotinapp";
+	                    }
+                	}
+                	else {
+                		user = new User(iamAccount.getUser());
+                	}
                 }
                 Account account = new Account(iamAccount.getOrg(), user);
                 account.setUserSessionId(iamAccount.getUserSessionId());

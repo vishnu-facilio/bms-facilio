@@ -32,6 +32,7 @@
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
+		<param name="authorise">false</param>
 		</action>
 		
 	</package>
