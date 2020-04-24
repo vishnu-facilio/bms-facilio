@@ -357,23 +357,36 @@ public class AggregatedEnergyConsumptionUtil {
 		
 		if(energyMeters != null && !energyMeters.isEmpty()) 
 		{
-			for(EnergyMeterContext energyMeter :energyMeters)
+			if(startTime != -1 && endTime != -1) 
 			{
-				if(startTime == -1 || endTime == -1) 
+				for(EnergyMeterContext energyMeter :energyMeters)
+				{
+					DateRange dateRange = new DateRange(startTime, endTime);
+					meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
+					energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+				}
+			}
+			else 
+			{
+				for(EnergyMeterContext energyMeter :energyMeters)
 				{
 					ReadingContext firstReading = fetchSingleResourceReading(energyMeter.getId(), "TTIME ASC");
 					ReadingContext lastReading = fetchSingleResourceReading(energyMeter.getId(), "TTIME DESC");
-
-					if(startTime == -1 && firstReading != null) {
+					
+					if(firstReading != null) {
 						startTime = firstReading.getTtime();
 					}	
-					if(endTime == -1 && lastReading != null) {
+					if(lastReading != null) {
 						endTime = lastReading.getTtime();
 					}
-				}
-				DateRange dateRange = new DateRange(startTime, endTime);
-				meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
-				energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+				
+					if(startTime != -1 && endTime != -1) 
+					{
+						DateRange dateRange = new DateRange(startTime, endTime);
+						meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
+						energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+					}
+				}			
 			}		
 		}
 		
