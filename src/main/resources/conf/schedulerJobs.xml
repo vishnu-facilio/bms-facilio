@@ -126,6 +126,7 @@
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>
+	<job name = 'DemoAlarmPropagationJob' classname = 'com.facilio.bmsconsole.jobs.DemoAlarmPropagationJob' transactionTimeout = '3600000'></job>
 	
 	<!--  OperationAlarm -->
 	<job name = 'OperationAlarmJob' classname = 'com.facilio.bmsconsole.jobs.OperationAlarmJob' transactionTimeout = '7200000'></job>
