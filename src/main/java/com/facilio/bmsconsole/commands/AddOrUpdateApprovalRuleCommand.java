@@ -41,10 +41,6 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Approvers cannot be empty");
             }
 
-            if (CollectionUtils.isEmpty(approvalMeta.getFieldIds())) {
-                throw new IllegalArgumentException("Field Ids cannot be empty");
-            }
-
 
             // Getting necessary status for approval state-transition
             FacilioStatus rejected = TicketAPI.getApprovalStatus("Rejected");
