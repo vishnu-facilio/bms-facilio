@@ -324,27 +324,31 @@ public class AggregatedEnergyConsumptionUtil {
 	}
 	
 	public static void addAggregatedEnergyConsumptionMigFields() throws Exception {
-				
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, AssetsAPI.getCategory("Energy Meter").getId());
-		context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ENERGY_METER);
-
-		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, AggregatedEnergyConsumptionUtil.AGGREGATED_READINGS_TABLE_NAME);
-		context.put(FacilioConstants.ContextNames.READING_NAME, AggregatedEnergyConsumptionUtil.AGGREGATED_ENERGY_CONSUMPTION_READING_NAME);
 		
-		FacilioField aggregatedEnergyConsumptionField = new FacilioField();
-		aggregatedEnergyConsumptionField.setName(AggregatedEnergyConsumptionUtil.AGGREGATED_ENERGY_CONSUMPTION_READING_NAME);
-		aggregatedEnergyConsumptionField.setDisplayName("Daily Energy Consumption");
-		aggregatedEnergyConsumptionField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL.getIntValForDB());
-		aggregatedEnergyConsumptionField.setDataType(FieldType.DECIMAL.getTypeAsInt());
-		aggregatedEnergyConsumptionField.setDefault(true);
-		aggregatedEnergyConsumptionField.setDisabled(false);
-		aggregatedEnergyConsumptionField.setRequired(false);
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD, aggregatedEnergyConsumptionField);
+		if(AssetsAPI.getCategory("Energy Meter") != null && AssetsAPI.getCategory("Energy Meter").getId() != -1) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, AssetsAPI.getCategory("Energy Meter").getId());
+			context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ENERGY_METER);
 
-		FacilioChain c = TransactionChainFactory.getAddCategoryReadingChain();
-		c.execute(context);
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, AggregatedEnergyConsumptionUtil.AGGREGATED_READINGS_TABLE_NAME);
+			context.put(FacilioConstants.ContextNames.READING_NAME, AggregatedEnergyConsumptionUtil.AGGREGATED_ENERGY_CONSUMPTION_READING_NAME);
+			
+			FacilioField aggregatedEnergyConsumptionField = new FacilioField();
+			aggregatedEnergyConsumptionField.setName(AggregatedEnergyConsumptionUtil.AGGREGATED_ENERGY_CONSUMPTION_READING_NAME);
+			aggregatedEnergyConsumptionField.setDisplayName("Daily Energy Consumption");
+			aggregatedEnergyConsumptionField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL.getIntValForDB());
+			aggregatedEnergyConsumptionField.setDataType(FieldType.DECIMAL.getTypeAsInt());
+			aggregatedEnergyConsumptionField.setDataType(FieldType.DECIMAL);
+			aggregatedEnergyConsumptionField.setDefault(true);
+			aggregatedEnergyConsumptionField.setDisabled(false);
+			aggregatedEnergyConsumptionField.setRequired(false);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD, aggregatedEnergyConsumptionField);
+
+			FacilioChain c = TransactionChainFactory.getAddCategoryReadingChain();
+			c.execute(context);
+			
+		}
 	}
 	
 	public static void calculateHistoryForAggregatedEnergyConsumption(long startTime, long endTime, List<Long> resourceIds) throws Exception
