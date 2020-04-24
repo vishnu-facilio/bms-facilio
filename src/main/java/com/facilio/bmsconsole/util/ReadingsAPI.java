@@ -1360,6 +1360,7 @@ public class ReadingsAPI {
 				}
 			}
 			updateReading(module, fields, secondReading);
+			AggregatedEnergyConsumptionUtil.recalculateAggregatedEnergyConsumption(Collections.singletonList(secondReading));
 		}
 	}
 	

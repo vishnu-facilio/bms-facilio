@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
@@ -1302,6 +1303,31 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String calculateAggregatedEnergyConsumption() throws Exception
+	{
+		if(startTime > endTime) {
+			throw new Exception("Start time should be less than the Endtime");
+		}
+		List<Long> resourceIds = null;
+		if(historicalLoggerAssetIds != null && !historicalLoggerAssetIds.isEmpty()) {
+			resourceIds = historicalLoggerAssetIds;
+		}
+		else if(historicalLoggerAssetId != null && !historicalLoggerAssetId.isEmpty() && StringUtils.isNotEmpty(historicalLoggerAssetId)) {
+			resourceIds = getIdListFromAssetId();
+		}
+		AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(startTime, endTime, resourceIds);
+		setResult("success", "Historical for AggregatedEnergyConsumption has been started.");
+		return SUCCESS;	
+	}
+	
+	public String runMigForAggregatedEnergyConsumption() throws Exception
+	{
+		AggregatedEnergyConsumptionUtil.addMFMigField();
+	    AggregatedEnergyConsumptionUtil.addAggregatedEnergyConsumptionMigFields();
+		setResult("success", "Migration for AggregatedEnergyConsumption is done.");
+		return SUCCESS;	
+	}
+	
 	public String getWorkflowRuleParentLoggers() throws Exception {
 		Collection<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getAllParentWorkflowRuleHistoricalLogger(getRuleId());
 		setResult("workflowRuleParentHistoricalLoggers", parentWorkflowRuleHistoricalLoggerList);
@@ -1553,7 +1579,25 @@ public class ReadingAction extends FacilioAction {
 	public void setHistoricalLoggerAssetIds(List<Long> historicalLoggerAssetIds) {
 		this.historicalLoggerAssetIds = historicalLoggerAssetIds;
 	}
+	
+	String historicalLoggerAssetId;
+	public String getHistoricalLoggerAssetId() {
+		return historicalLoggerAssetId;
+	}
 
+	public void setHistoricalLoggerAssetId(String historicalLoggerAssetId) {
+		this.historicalLoggerAssetId = historicalLoggerAssetId;
+	}
+
+	public List<Long> getIdListFromAssetId() {
+		List<String> listofStringNumbers = Arrays.asList(historicalLoggerAssetId.split(","));
+		List<Long> listofResourceIds = new ArrayList<>();
+		for (String number : listofStringNumbers) {
+			listofResourceIds.add(Long.valueOf(number.trim()));
+		}
+		return listofResourceIds;
+	}
+	
 	long fieldId;
 	public long getFieldId() {
 		return fieldId;

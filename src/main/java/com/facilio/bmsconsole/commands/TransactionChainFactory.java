@@ -1120,6 +1120,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingUnitAndInputConversionCommand());
 			c.addCommand(new EnergyDataDeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
+			c.addCommand(new CalculateAggregatedEnergyConsumptionCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
 			c.addCommand(new ExecuteValidationRule());
 			c.addCommand(new AddOrUpdateReadingValuesCommand());

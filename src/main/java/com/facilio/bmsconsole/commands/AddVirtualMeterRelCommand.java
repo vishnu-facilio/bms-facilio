@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -9,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.constants.FacilioConstants;
@@ -24,7 +26,7 @@ public class AddVirtualMeterRelCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EnergyMeterContext meter = (EnergyMeterContext) context.get(FacilioConstants.ContextNames.RECORD);
+		EnergyMeterContext meter = (EnergyMeterContext) context.get(FacilioConstants.ContextNames.RECORD);	
 		if(meter != null && meter.getChildMeterExpression() != null) {
 			String expression = meter.getChildMeterExpression();
 			if(expression == null || expression.isEmpty()) {
@@ -55,7 +57,11 @@ public class AddVirtualMeterRelCommand extends FacilioCommand {
 			HistoricalLoggerContext historicalLoggerContext = DeviceAPI.setHistoricalLoggerContext(meter.getId(), startTime, endTime, true, (long) -1);
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 			DeviceAPI.addHistoricalVMCalculationJob(historicalLoggerContext.getId(),meter.getId(),startTime, endTime,true);
-		}
+		}	
+
+		if(meter != null && meter.getMultiplicationFactor() != -1 && meter.getMultiplicationFactor() != 1l) {
+			AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(-1l, -1l, Collections.singletonList(meter.getId()));
+		}	
 		return false;
 	}
 
