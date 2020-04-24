@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -47,7 +48,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 //			// Validate configuration of tab
 //			tab.validateConfig();
 
-            if (checkRouteAlreadyFound(tab)) {
+            if (checkIfRouteAlreadyFound(tab)) {
                 throw new IllegalArgumentException("Route is already found for this app");
             }
 
@@ -86,7 +87,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
                 .andCondition(CriteriaAPI.getCondition("ROUTE", "route", tab.getRoute(), StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(tab.getGroupId()),
+                .andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(tab.getAppId()),
                         NumberOperators.EQUALS));
 
         if (tab.getId() > 0) {
@@ -96,6 +97,32 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
 
         Map<String, Object> map = builder.fetchFirst();
         return map != null;
+    }
+
+    private boolean checkIfRouteAlreadyFound(WebTabContext webTab) throws Exception {
+        if (StringUtils.isEmpty(webTab.getRoute())) {
+            throw new IllegalArgumentException("Route cannot be empty");
+        }
+        List<WebTabContext> webTabs = new ArrayList<>();
+        List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(webTab.getAppId());
+        if (webTabGroups != null && !webTabGroups.isEmpty()) {
+            for (WebTabGroupContext webTabGroup : webTabGroups) {
+                List<WebTabContext> webTabContexts = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
+                if (webTabContexts != null && !webTabContexts.isEmpty()) {
+                    webTabs.addAll(webTabContexts);
+                }
+            }
+        }
+
+        if (webTabs != null && !webTabs.isEmpty()) {
+            for (WebTabContext webTabContext : webTabs) {
+                if (webTabContext.getRoute().equals(webTab.getRoute())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private int getLastOrderNumber(Long groupId) throws Exception {
@@ -122,31 +149,31 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
         List<Map<String, Object>> tabIdAppIdProps = new ArrayList<>();
         if (webTab.getModuleIds() != null && !webTab.getModuleIds().isEmpty()) {
             for (Long moduleId : webTab.getModuleIds()) {
-                if (webTab.getTypeEnum() == Type.MODULE) {
+                /*if (webTab.getTypeEnum() == Type.MODULE) {
                     if (isModuleIdForModuleTabForAppIdAlreadyAdded(webTab.getId(), moduleId, webTab.getAppId(), "", false)) {
                         throw new IllegalStateException("Module of this tab type is already added.");
                     }
-                }
+                }*/
                 TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(),
                         moduleId, webTab.getAppId());
                 tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
             }
         } else if (webTab.getConfigJSON() != null) {
             String specialType = (String) webTab.getConfigJSON().get("type");
-            if (webTab.getTypeEnum() == Type.MODULE) {
+           /* if (webTab.getTypeEnum() == Type.MODULE) {
                 if (isModuleIdForModuleTabForAppIdAlreadyAdded(webTab.getId(), -1, webTab.getAppId(), specialType, true)) {
                     throw new IllegalStateException(specialType + "Module of this tab type is already added.");
                 }
-            }
+            }*/
             TabIdAppIdMappingContext tabIdAppIdMappingContext = new TabIdAppIdMappingContext(webTab.getId(), webTab.getAppId(), specialType);
             tabIdAppIdProps.add(FieldUtil.getAsProperties(tabIdAppIdMappingContext));
         }
-        if(!tabIdAppIdProps.isEmpty()) {
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
-					.fields(FieldFactory.getTabIdAppIdMappingFields()).addRecords(tabIdAppIdProps);
-			builder.save();
-		}
+        if (!tabIdAppIdProps.isEmpty()) {
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+                    .fields(FieldFactory.getTabIdAppIdMappingFields()).addRecords(tabIdAppIdProps);
+            builder.save();
+        }
     }
 
     private boolean isModuleIdForModuleTabForAppIdAlreadyAdded(long tabId, long moduleId, long appId, String specialType, boolean isSpecialType) throws Exception {

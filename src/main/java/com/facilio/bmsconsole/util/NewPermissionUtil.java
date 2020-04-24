@@ -25,6 +25,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> dashboardTabType = Collections.unmodifiableMap(initDashboardMap());
     private static Map<String, Integer> customTabType = Collections.unmodifiableMap(initCustomMap());
     private static Map<String, Long> settingsTabType = Collections.unmodifiableMap(initSettingsMap());
+    private static Map<String, Integer> portalOverviewType = Collections.unmodifiableMap(initportalOverviewMap());
 
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
@@ -144,6 +145,13 @@ public class NewPermissionUtil {
 
         return settingsTabType;
     }
+
+    private static Map<String, Integer> initportalOverviewMap() {
+        portalOverviewType = new HashMap<>();
+        portalOverviewType.put("READ", 1);
+        return  portalOverviewType;
+    }
+
 
     static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
 
@@ -343,6 +351,13 @@ public class NewPermissionUtil {
         permissions.add(new Permission("COMMISSIONING", "Commissioning", settingsTabType.get("COMMISSIONING"), null));
         permissionMap.put("agent_configurations", permissions);
         permissionList.put(Type.SETTINGS.getIndex(), permissionMap);
+
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", portalOverviewType.get("READ"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.PORTAL_OVERVIEW.getIndex(), permissionMap);
     }
 
     public static List<Permission> getPermissions(int tabType, String moduleName) {
@@ -412,6 +427,8 @@ public class NewPermissionUtil {
                 return customTabType.get(action);
             case 10:
                 return settingsTabType.containsKey(action) ? settingsTabType.get(action) : -1;
+            case 12:
+                return portalOverviewType.getOrDefault(action, -1);
             default:
                 return -1;
         }
