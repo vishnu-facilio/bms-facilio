@@ -89,6 +89,14 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if (!fieldMapping.containsKey("ticket__moduleState")) {
 					missingColumns.add("Module State");
 				}
+			} else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
+				if (!fieldMapping.containsKey("itemTypes__name")) {
+					missingColumns.add("Name");
+				}
+			} else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
+				if (!fieldMapping.containsKey("toolTypes__name")) {
+					missingColumns.add("Name");
+				}
 			} else if (requiredFields.size() != 0) {
 
 				for (String field : requiredFields) {
@@ -206,6 +214,28 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
 						}
 						else {
+							uniqueString = getUniqueString(groupedContext, uniqueString);
+						}
+					} else if (ImportAPI.isInsertImport(importProcessContext) && moduleName.equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
+						String name = fieldMapping.get("itemTypes__name");
+						ArrayList<String> columns = new ArrayList<>();
+						if (!colVal.containsKey(name) || (colVal.get(name) == null)) {
+							columns.add("Name");
+						}
+						if (CollectionUtils.isNotEmpty(columns)) {
+							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
+						} else {
+							uniqueString = getUniqueString(groupedContext, uniqueString);
+						}
+					} else if (ImportAPI.isInsertImport(importProcessContext) && moduleName.equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
+						String name = fieldMapping.get("toolTypes__name");
+						ArrayList<String> columns = new ArrayList<>();
+						if (!colVal.containsKey(name) || (colVal.get(name) == null)) {
+							columns.add("Name");
+						}
+						if (CollectionUtils.isNotEmpty(columns)) {
+							throw new ImportMandatoryFieldsException(row_no, columns, new Exception());
+						} else {
 							uniqueString = getUniqueString(groupedContext, uniqueString);
 						}
 					}

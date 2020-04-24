@@ -68,7 +68,6 @@ public class FormFactory {
 		forms.put("portalVisitorForm", getPortalVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
 		forms.put("default_visitorlogging_portal", getPortalVisitorPreRegisterForm());
-		forms.put("portalVisitorPreRegisterForm", getPortalVisitorPreRegisterForm());
 		forms.put("vendor_contact_form", getVendorContactForm());
 		forms.put("portal_vendor_contact_form", getPortalVendorForm());
 		//visitor type forms
@@ -317,6 +316,7 @@ public class FormFactory {
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
+		List<FacilioForm> visitorLoggingForms = Arrays.asList(getVisitorPreRegisterForm());
 		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm(), getPortalVendorForm());
 		
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
@@ -365,6 +365,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.EMPLOYEE, getFormMap(employeeFormsList))
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
+				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
 
 				.build();
 	}
