@@ -25,7 +25,7 @@ import java.util.*;
 public class AgentVersionApi {
     private static final Logger LOGGER = LogManager.getLogger(AgentVersionApi.class.getName());
 
-    public static long addAgentVersion(float version, String description, String createdBy, String url) throws Exception {
+    public static long addAgentVersion(String version, String description, String createdBy, String url) throws Exception {
         Map<String, Object> versionContext = new HashMap<>();
         versionContext.put(AgentConstants.VERSION, version);
         versionContext.put(AgentConstants.DESCRIPTION, description);
@@ -35,7 +35,9 @@ public class AgentVersionApi {
         GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getAgentVersionModule().getTableName())
                 .fields(FieldFactory.getAgentVersionFields());
-        return genericInsertRecordBuilder.insert(versionContext);
+        long versionId = genericInsertRecordBuilder.insert(versionContext);
+        LOGGER.info("new version added "+versionId);
+        return versionId ;
     }
 
     public static Map<String, Object> getAgentVersion(long versionId) throws Exception {

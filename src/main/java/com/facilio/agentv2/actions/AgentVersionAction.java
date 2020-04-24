@@ -6,7 +6,6 @@ import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class AgentVersionAction extends AgentActionV2 {
@@ -14,8 +13,7 @@ public class AgentVersionAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentVersionAction.class.getName());
 
     @NotNull
-    @Min(1)
-    private Float version;
+    private String version;
 
     @NotNull
     private String description;
@@ -34,11 +32,11 @@ public class AgentVersionAction extends AgentActionV2 {
         this.fileName = fileName;
     }
 
-    public Float getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(Float version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
