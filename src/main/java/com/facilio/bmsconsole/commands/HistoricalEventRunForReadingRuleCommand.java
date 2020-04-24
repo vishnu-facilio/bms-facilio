@@ -609,12 +609,19 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	{
 		List<ReadingEventContext> readingEvents = new ArrayList<ReadingEventContext>();
 		List<PreEventContext> preEvents = new ArrayList<PreEventContext>();
+		
+		List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
+		HashMap<String,AlarmSeverityContext> alarmSeverityStringMap = new HashMap<String,AlarmSeverityContext>();
+		for(AlarmSeverityContext alarmSeverity:alarmSeverityList) {
+			alarmSeverityStringMap.put(alarmSeverity.getSeverity(),alarmSeverity);	
+		}
+		
 		for(BaseEventContext event:events)
 		{
 			if (event instanceof  ReadingEventContext) {
 				ReadingEventContext readingEvent = (ReadingEventContext) event;
 				readingEvent.setRuleId(ruleId);
-				readingEvent.setSeverity(AlarmAPI.getAlarmSeverity(readingEvent.getSeverityString()));
+				readingEvent.setSeverity(alarmSeverityStringMap.get(readingEvent.getSeverityString()));
 				readingEvent.setMessageKey(readingEvent.constructMessageKey());
 				readingEvent.setAlarmOccurrence(null);
 				readingEvent.setBaseAlarm(null);
@@ -623,7 +630,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			else if (event instanceof PreEventContext) {
 				PreEventContext preEvent = (PreEventContext) event;
 				preEvent.setReadingContext(preEvent.getReadingContext());
-				preEvent.setSeverity(AlarmAPI.getAlarmSeverity(preEvent.getSeverityString()));
+				preEvent.setSeverity(alarmSeverityStringMap.get(preEvent.getSeverityString()));
 				preEvent.setMessageKey(preEvent.constructMessageKey());
 				preEvent.setAlarmOccurrence(null);
 				preEvent.setBaseAlarm(null);
