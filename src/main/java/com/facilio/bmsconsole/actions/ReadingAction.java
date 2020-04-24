@@ -1305,7 +1305,7 @@ public class ReadingAction extends FacilioAction {
 	
 	public String calculateAggregatedEnergyConsumption() throws Exception
 	{
-		if(startTime >= endTime) {
+		if(startTime > endTime) {
 			throw new Exception("Start time should be less than the Endtime");
 		}
 		List<Long> resourceIds = null;

@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -34,6 +35,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -332,7 +335,7 @@ public class AggregatedEnergyConsumptionUtil {
 		
 		FacilioField aggregatedEnergyConsumptionField = new FacilioField();
 		aggregatedEnergyConsumptionField.setName(AggregatedEnergyConsumptionUtil.AGGREGATED_ENERGY_CONSUMPTION_READING_NAME);
-		aggregatedEnergyConsumptionField.setDisplayName("Aggregated Energy Consumption");
+		aggregatedEnergyConsumptionField.setDisplayName("Daily Energy Consumption");
 		aggregatedEnergyConsumptionField.setDisplayType(FacilioField.FieldDisplayType.DECIMAL.getIntValForDB());
 		aggregatedEnergyConsumptionField.setDataType(FieldType.DECIMAL.getTypeAsInt());
 		aggregatedEnergyConsumptionField.setDefault(true);
@@ -351,29 +354,101 @@ public class AggregatedEnergyConsumptionUtil {
 		LinkedHashMap<Long,DateRange> meterIdVsMaxDateRange = new LinkedHashMap<Long,DateRange>();
 		HashMap<Long, Long> energyMeterMFMap = new HashMap<Long,Long>();
 		
-		if(startTime != -1 && endTime != -1 && energyMeters != null && !energyMeters.isEmpty()) 
+		if(energyMeters != null && !energyMeters.isEmpty()) 
 		{
-			DateRange dateRange = new DateRange(startTime, endTime);
 			for(EnergyMeterContext energyMeter :energyMeters)
 			{
+				if(startTime == -1 || endTime == -1) 
+				{
+					ReadingContext firstReading = fetchSingleResourceReading(energyMeter.getId(), "TTIME ASC");
+					ReadingContext lastReading = fetchSingleResourceReading(energyMeter.getId(), "TTIME DESC");
+
+					if(startTime == -1 && firstReading != null) {
+						startTime = firstReading.getTtime();
+					}	
+					if(endTime == -1 && lastReading != null) {
+						endTime = lastReading.getTtime();
+					}
+				}
+				DateRange dateRange = new DateRange(startTime, endTime);
 				meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
 				energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
 			}		
 		}
 		
 		if(meterIdVsMaxDateRange != null && MapUtils.isNotEmpty(meterIdVsMaxDateRange) && energyMeterMFMap != null && MapUtils.isNotEmpty(energyMeterMFMap))
-		{								
-			List<ReadingContext> finalDeltaAggregatedReadings = AggregatedEnergyConsumptionUtil.aggregateEnergyConsumptionReadings(meterIdVsMaxDateRange);
-			AggregatedEnergyConsumptionUtil.calculateMFOnAggregatedConsumptionDelta(finalDeltaAggregatedReadings,energyMeterMFMap);
+		{									
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			Map<String,FacilioField> energyDataFieldMap = FieldFactory.getAsMap(modBean.getAllFields(energyDataModule.getName()));
+			FacilioField readingDeltaField = energyDataFieldMap.get("totalEnergyConsumptionDelta");
+			readingDeltaField.setModule(energyDataModule);
 			
-			LinkedHashMap<String,ReadingContext> alreadyPresentAggregatedReadingsMap = AggregatedEnergyConsumptionUtil.getAlreadyPresentAggregatedReadings(finalDeltaAggregatedReadings);
-		
-			if(finalDeltaAggregatedReadings != null && !finalDeltaAggregatedReadings.isEmpty())
+			List<FacilioField> selectFields = new ArrayList<FacilioField>();
+			selectFields.add(energyDataFieldMap.get("parentId"));
+			
+			FacilioField timeFieldCloned = energyDataFieldMap.get("ttime").clone();
+			timeFieldCloned.setName(timeFieldCloned.getName()+"Grouped");
+			FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.FULLDATE.getSelectField(timeFieldCloned);
+			
+			Criteria criteria = new Criteria();
+			for(Long resourceId :meterIdVsMaxDateRange.keySet()) {
+				Criteria subCriteria = new Criteria();
+				DateRange dateRange = meterIdVsMaxDateRange.get(resourceId);
+				subCriteria.addAndCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), ""+resourceId, NumberOperators.EQUALS));
+				subCriteria.addAndCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"), dateRange.getStartTime()+","+dateRange.getEndTime(), DateOperators.BETWEEN));
+				criteria.orCriteria(subCriteria);
+			}
+			
+			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+					.table(readingDeltaField.getModule().getTableName())
+					.module(readingDeltaField.getModule())
+					.select(selectFields)
+					.setAggregation()
+					.beanClass(ReadingContext.class)
+					.aggregate(AggregateOperator.getAggregateOperator(BmsAggregateOperators.NumberAggregateOperator.MIN.getValue()), energyDataFieldMap.get("ttime"))
+					.aggregate(AggregateOperator.getAggregateOperator(BmsAggregateOperators.NumberAggregateOperator.SUM.getValue()), readingDeltaField)
+					.andCondition(CriteriaAPI.getCondition(readingDeltaField, "", CommonOperators.IS_NOT_EMPTY))
+					.groupBy(energyDataFieldMap.get("parentId").getCompleteColumnName()+","+groupingTimeField.getCompleteColumnName())
+					.andCriteria(criteria);
+			
+			SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches(energyDataFieldMap.get("ttime").getColumnName(), 5000);
+			while (bs.hasNext()) 
 			{
-				LinkedHashMap<String, ReadingContext> finalDeltaReadingsMap = AggregatedEnergyConsumptionUtil.getReadingsMapWithParentTimeKey(finalDeltaAggregatedReadings);
-				NewTransactionService.newTransaction(() -> AggregatedEnergyConsumptionUtil.checkAddorUpdateOfAggregatedEnergyConsumptionData(finalDeltaReadingsMap, alreadyPresentAggregatedReadingsMap));
+				List<ReadingContext> finalDeltaAggregatedReadings = bs.get();
+				AggregatedEnergyConsumptionUtil.calculateMFOnAggregatedConsumptionDelta(finalDeltaAggregatedReadings,energyMeterMFMap);
+				
+				LinkedHashMap<String,ReadingContext> alreadyPresentAggregatedReadingsMap = AggregatedEnergyConsumptionUtil.getAlreadyPresentAggregatedReadings(finalDeltaAggregatedReadings);
+			
+				if(finalDeltaAggregatedReadings != null && !finalDeltaAggregatedReadings.isEmpty())
+				{
+					LinkedHashMap<String, ReadingContext> finalDeltaReadingsMap = AggregatedEnergyConsumptionUtil.getReadingsMapWithParentTimeKey(finalDeltaAggregatedReadings);
+					NewTransactionService.newTransaction(() -> AggregatedEnergyConsumptionUtil.checkAddorUpdateOfAggregatedEnergyConsumptionData(finalDeltaReadingsMap, alreadyPresentAggregatedReadingsMap));
+				}
 			}			
 		}	
+	}
+	
+	public static ReadingContext fetchSingleResourceReading(long resourceId, String orderBy) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		List<FacilioField> fields = modBean.getAllFields(energyDataModule.getName());
+		Map<String,FacilioField> energyDataFieldMap = FieldFactory.getAsMap(fields);
+		FacilioField readingDeltaField = energyDataFieldMap.get("totalEnergyConsumptionDelta");
+		readingDeltaField.setModule(energyDataModule);
+		FacilioField parentField = energyDataFieldMap.get("parentId");
+		
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																.select(fields)
+																.module(energyDataModule)
+																.beanClass(ReadingContext.class)
+																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(readingDeltaField, CommonOperators.IS_NOT_EMPTY))
+																.orderBy(orderBy).limit(1)
+																;
+		
+		return selectBuilder.fetchFirst();
 	}
 
 	public static void recalculateAggregatedEnergyConsumption(List<ReadingContext> readings) throws Exception
@@ -402,7 +477,7 @@ public class AggregatedEnergyConsumptionUtil {
 					return;
 				}
 				
-				if(energyReadingFieldRdm != null && energyReadingFieldRdm.getInputType() != ReadingInputType.TASK.getValue()) {
+				if(energyReadingFieldRdm != null && energyReadingFieldRdm.getInputType() != ReadingInputType.TASK.getValue() && energyReadingFieldRdm.getInputType() != ReadingInputType.WEB.getValue()) {
 					return;
 				}
 				
@@ -440,9 +515,8 @@ public class AggregatedEnergyConsumptionUtil {
 		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
 				.select(modBean.getAllFields(module.getName()))
 				.module(module)
-				.beanClass(EnergyMeterContext.class)
+				.beanClass(EnergyMeterContext.class);
 //				.andCondition(CriteriaAPI.getCondition(fieldMap.get("multiplicationFactor"), "", CommonOperators.IS_NOT_EMPTY))
-				.maxLevel(0);
 		
 		Criteria subCriteria = new Criteria();
 		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("connected"), "", CommonOperators.IS_EMPTY));
@@ -451,7 +525,6 @@ public class AggregatedEnergyConsumptionUtil {
 		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
-
 		}
 		return selectBuilder.get();
 	}

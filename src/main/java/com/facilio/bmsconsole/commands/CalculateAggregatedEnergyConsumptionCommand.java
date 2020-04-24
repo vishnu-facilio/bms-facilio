@@ -116,7 +116,7 @@ public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand 
 			return;
 		}
 		
-		if(energyReadingFieldRdm != null && energyReadingFieldRdm.getInputType() != ReadingInputType.TASK.getValue()) {
+		if(energyReadingFieldRdm != null && energyReadingFieldRdm.getInputType() != ReadingInputType.TASK.getValue() && energyReadingFieldRdm.getInputType() != ReadingInputType.WEB.getValue()) {
 			return;
 		}
 		

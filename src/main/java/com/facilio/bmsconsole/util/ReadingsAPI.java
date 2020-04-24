@@ -1364,7 +1364,7 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value) throws Exception{
+	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
 		 boolean isDeltaKeyPresent= reading.getReadings().entrySet().stream().filter(rd->rd.getKey().equalsIgnoreCase(fieldName+"Delta")).findFirst().isPresent();
 			if (isDeltaKeyPresent) {
 				reading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(fieldName + "Delta")).findFirst().get().setValue(value);
