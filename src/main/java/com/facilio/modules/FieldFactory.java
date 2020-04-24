@@ -8162,6 +8162,7 @@ public class FieldFactory {
         fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
         fields.add(getField("meterDataModuleId", "METER_DATA_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.STRING));
+        fields.add(getField("meterDataFieldId", "METER_DATA_FIELD_ID", module, FieldType.STRING));
         fields.add(getField("firstBillDate", "FIRST_BILL_DATE", module, FieldType.STRING));
 
         return fields;

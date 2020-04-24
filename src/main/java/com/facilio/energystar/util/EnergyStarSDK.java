@@ -153,8 +153,33 @@ public class EnergyStarSDK {
 
 		String id = XMLBuilder.parse(response).getElement("id").text();
 		
+		String resp = sendAPI("association/property/"+propertyContext.getEnergyStarPropertyId()+"/meter/"+id, HttpMethod.POST, null);
+		
+		System.out.println("meter associate response "+ resp);
+		
 		return id;
 			
+	}
+	
+	public static String addConsumptionData(EnergyStarMeterContext meter,String value,String from,String to) throws Exception {
+		
+		XMLBuilder builder = XMLBuilder.create("meterData")
+								.element("meterConsumption")
+									.element("usage").t(value).p()
+									.element("startDate").t(from).p()
+									.element("endDate").t(to)
+								;
+		
+		String xmlString = builder.getAsXMLString();	
+		
+		System.out.println(xmlString);
+		String response = sendAPI("meter/"+meter.getEnergyStarMeterId()+"/consumptionData", HttpMethod.POST, xmlString);
+		
+		System.out.println(response);
+
+		String id = XMLBuilder.parse(response).getElement("meterConsumption").getElement("id").text();
+		
+		return id;
 	}
 	
 	

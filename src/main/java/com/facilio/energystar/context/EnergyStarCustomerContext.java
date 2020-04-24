@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EnergyStarCustomerContext {
@@ -113,9 +114,9 @@ public class EnergyStarCustomerContext {
 
 
 	public enum Data_Exchange_Mode {
-		ELECTRIC(1, "Electric",1,"energydata","kWh (thousand Watt-hours)"),
-		NATURAL_GAS(2, "Natural Gas",2,null,null),
-		PROPANE(3,"Propane",4,null,null);
+		ELECTRIC(1, "Electric",1,"kWh (thousand Watt-hours)","energydata","totalEnergyConsumptionDelta",NumberAggregateOperator.SUM),
+		NATURAL_GAS(2, "Natural Gas",2,null,null,null,null),
+		PROPANE(3,"Propane",4,null,null,null,null);
 		;
 
 		int intVal;
@@ -123,7 +124,18 @@ public class EnergyStarCustomerContext {
 		long license;
 		String moduleName;
 		String unitOfMessure;
+		String fieldName;
+		NumberAggregateOperator aggr;
 		
+		public String getModule() {
+			return moduleName;
+		}
+		public String getField() {
+			return fieldName;
+		}
+		public NumberAggregateOperator getAggr() {
+			return aggr;
+		}
 		public String getUnitOfMessure() {
 			return unitOfMessure;
 		}
@@ -139,12 +151,14 @@ public class EnergyStarCustomerContext {
 		public long getLicence() {
 			return license;
 		}
-		private Data_Exchange_Mode(int intVal, String name,long licenceId,String moduleName,String unitOfMeasure) {
+		private Data_Exchange_Mode(int intVal, String name,long licenceId,String unitOfMeasure,String moduleName,String fieldName,NumberAggregateOperator aggr) {
 			this.intVal = intVal;
 			this.name = name;
 			this.license = licenceId;
 			this.moduleName = moduleName;
 			this.unitOfMessure = unitOfMeasure;
+			this.fieldName = fieldName;
+			this.aggr = aggr;
 		}
 
 		private static final Map<Integer, Data_Exchange_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());

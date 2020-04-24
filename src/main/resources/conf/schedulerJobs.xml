@@ -132,5 +132,11 @@
 	<job name = 'OperationAlarmJob' classname = 'com.facilio.bmsconsole.jobs.OperationAlarmJob' transactionTimeout = '7200000'></job>
 	<job name='HistoricalOperationAlarmEventJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationAlarmEventJob' transactionTimeout='900000'/>
 	<job name='HistoricalOperationalAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationalAlarmProcessingJob' transactionTimeout='900000'/>
+	
+	<!--  energy star jobs -->
+	
+	<job name='EnergyStarPushData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarPushData' transactionTimeout='900000'/>
+	<job name='EnergyStarPushHistoricalData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarPushHistoricalData' transactionTimeout='36000000'/>
+	<job name='EnergyStarFetchData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarFetchData' transactionTimeout='900000'/>
 
 </scheduler>

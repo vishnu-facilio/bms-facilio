@@ -5306,11 +5306,29 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateEnergyStarPropertyUseCommand());
 		return c;
 	}
+	
+	public static FacilioChain pushEnergyStarHistoricalChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PushEnergyStarHistoricalCommand());
+		return c;
+	}
 
 	public static FacilioChain deleteEnergyStarPropertyChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new DeleteEnergyStarPropertyCommand());
+		return c;
+	}
+	
+	public static FacilioChain getEnergyStarPushDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new EnergyStarPushDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain getEnergyStarFetchDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new EnergyStarFetchDataCommand());
 		return c;
 	}
 

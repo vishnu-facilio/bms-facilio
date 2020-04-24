@@ -5,12 +5,13 @@ import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mo
 
 public class EnergyStarMeterContext {
 
-	long id;
-	long orgId;
-	long propertyId;
+	long id = -1;
+	long orgId = -1;
+	long propertyId = -1; 
 	Data_Exchange_Mode type;
-	long meterId;
-	long meterDataModuleId;
+	long meterId = -1;
+	long meterDataModuleId = -1;
+	long meterDataFieldId = -1;
 	String energyStarMeterId;
 	String firstBillDate;
 	
@@ -75,5 +76,11 @@ public class EnergyStarMeterContext {
 	}
 	public void setEnergyStarMeterId(String energyStarMeterId) {
 		this.energyStarMeterId = energyStarMeterId;
+	}
+	public long getMeterDataFieldId() {
+		return meterDataFieldId;
+	}
+	public void setMeterDataFieldId(long meterDataFieldId) {
+		this.meterDataFieldId = meterDataFieldId;
 	}
 }

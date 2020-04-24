@@ -5923,6 +5923,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="updateEnergyStarProperty" />
 		<action name="deleteProperty"
 			class="com.facilio.energystar.action.EnergyStarAction" method="deleteEnergyStarProperty" />
+		<action name="pushHistoricalData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="pushHistoricalData" />
 	</package>
 
 </struts>

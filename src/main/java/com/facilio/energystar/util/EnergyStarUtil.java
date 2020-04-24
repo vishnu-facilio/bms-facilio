@@ -10,6 +10,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
@@ -30,9 +31,15 @@ public class EnergyStarUtil {
 	
 	public static final String ENERGY_STAR_PROPERTY_CONTEXT = "energyStarPropertyContext";
 	
-	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXTS = "energyStarPropertyUseContext";
+	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXTS = "energyStarPropertyUseContexts";
 	
-	public static final String ENERGY_STAR_METER_CONTEXTS = "energyStarMeterContext";
+	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXT = "energyStarPropertyUseContext";
+	
+	public static final String ENERGY_STAR_METER_CONTEXTS = "energyStarMeterContexts";
+	
+	public static final String ENERGY_STAR_METER_CONTEXT = "energyStarMeterContext";
+	
+	public static final String ENERGY_STAR_METER_ID = "energyStarMeterID";
 	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {
@@ -167,5 +174,24 @@ public class EnergyStarUtil {
 				.andCriteria(deleteCriteria);
 
 		return deleteBuilder.delete();
+	}
+	
+	public static List<Map<String, Object>> fetchEnergyStarRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				;
+		
+		if(fetchCriteria != null) {
+			selectBuilder.andCriteria(fetchCriteria);
+		}
+		if(condition != null) {
+			selectBuilder.andCondition(condition);
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		return props;
 	}
 }
