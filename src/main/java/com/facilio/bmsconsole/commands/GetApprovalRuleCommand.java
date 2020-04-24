@@ -25,9 +25,12 @@ public class GetApprovalRuleCommand extends FacilioCommand {
             approvalMeta.setName(stateFlowContext.getName());
             approvalMeta.setDescription(stateFlowContext.getDescription());
             approvalMeta.setCriteria(stateFlowContext.getCriteria());
+            approvalMeta.setEventType(stateFlowContext.getActivityTypeEnum());
 
-            List<Long> fieldIds = stateFlowContext.getFields().stream().map(FieldChangeFieldContext::getFieldId).collect(Collectors.toList());
-            approvalMeta.setFieldIds(fieldIds);
+            if (CollectionUtils.isNotEmpty(stateFlowContext.getFields())) {
+                List<Long> fieldIds = stateFlowContext.getFields().stream().map(FieldChangeFieldContext::getFieldId).collect(Collectors.toList());
+                approvalMeta.setFieldIds(fieldIds);
+            }
             approvalMeta.setId(stateFlowContext.getId());
 
             List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(stateFlowContext.getId());
