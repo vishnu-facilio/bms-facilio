@@ -19,7 +19,7 @@ public class AddAgentAction extends AgentActionV2
 
 
     @NotNull
-    @Size(min = 3,max = 20,message = "Agent name must have 3-15 characters")
+    @Size(min = 3,max = 100,message = "Agent name must have 3-100 characters")
     private String agentName;
 
     @Min(value = 10,message = "Data interval can't be less than 10")
