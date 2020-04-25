@@ -52,7 +52,7 @@ public class AddAgentAction extends AgentActionV2
         this.displayName = displayName;
     }
 
-    @NotNull @Size(min = 2,max = 15)
+    @NotNull @Size(min = 2,max = 30)
     private String displayName;
 
 
