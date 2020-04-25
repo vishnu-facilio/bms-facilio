@@ -142,7 +142,7 @@ public class WorkflowRuleHistoricalAlarmsDeletionAPI {
 		}
 		FacilioModule eventModule = modBean.getModule(moduleName);
 	
-		DeleteRecordBuilder<AlarmOccurrenceContext> deleteBuilder = new DeleteRecordBuilder<AlarmOccurrenceContext>()
+		DeleteRecordBuilder<BaseEventContext> deleteBuilder = new DeleteRecordBuilder<BaseEventContext>()
 				.module(eventModule)
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
