@@ -155,7 +155,7 @@ public static String getResponse (ThirdParty thirdParty, String requestURL,Strin
 		connection.setDoOutput(false);
 		connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
 		connection.setConnectTimeout(300000);
-		connection.setReadTimeout(300000);
+		connection.setReadTimeout(500000);
 		if(thirdParty.equals(ThirdParty.INVICARA)){
 			connection.setRequestProperty ("Authorization", "Bearer "+accessToken);
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
@@ -330,6 +330,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		JSONParser parser = new JSONParser();
 		JSONObject resultObj = (JSONObject) parser.parse(sitesJsonString);
 		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+		
 		for(int i=0;i<arr.length();i++){
 
 			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
@@ -384,6 +385,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				String moduleName = "";
 				String assetCategoryName= result1.get("name").toString();
 				long oldAssetCategoryId= Long.parseLong(result1.get("id").toString());
+
 				if(assetCategoryMap.containsKey(assetCategoryName)){
 					assetCategoryName = assetCategoryMap.get(assetCategoryName).toString();
 					AssetCategoryContext assetCategory = AssetsAPI.getCategory(assetCategoryName);
@@ -416,7 +418,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						String thirdPartyId= result2.get("id").toString();
 						String description= result2.get("description").toString();
 						JSONObject viewIdJson = (JSONObject) parser.parse(result2.get("modeling_identifier").toString());
-						
+
 						long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
 												
 						if(assetId > 0){
@@ -429,8 +431,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 							asset.setSiteId(building.getSiteId());
 							asset.setSpaceId(building.getId());
 							asset.setCurrentSpaceId(building.getId());
-//							asset.setCategory(assetCategory);
-							updateAsset(asset,moduleName);
+							asset.setCategory(asset.getCategory());
+							updateAsset(asset,asset.getCategory().getModuleName());
 						}else{
 							AssetContext asset = new AssetContext();
 							asset.setDatum("thirdpartyid", thirdPartyId);
@@ -453,6 +455,29 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	
 	public void importInvicaraAssets(ThirdParty thirdParty,String assetURL,String token) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+		SiteContext site = SpaceAPI.getSite(siteName);
+		if(site != null){
+			site.setName(siteName);
+			updateSite(site);
+		}else{
+			site = new SiteContext();
+			site.setName(siteName);
+			addSite(site);
+		}
+		Long siteId = site.getId();
+		
+		BuildingContext building = SpaceAPI.getBuilding(buildingName);
+		if(building != null){
+			updateBuilding(building);
+		}else{
+			building = new BuildingContext();
+			building.setName(buildingName);
+			building.setSiteId(siteId);
+			addBuilding(building);
+		}
+		Long buildingId = building.getId();
+		
 		String assetsJsonString= getResponse(thirdParty,assetURL,token);
 
 		JSONParser parser = new JSONParser();
@@ -467,78 +492,100 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			
 			String thirdPartyId= result.get("_id").toString();
 			JSONObject properties=  (JSONObject) parser.parse(result.get("properties").toString());
-			List<SiteContext> sites = SpaceAPI.getAllSites();
-			Long siteId = sites.get(0).getId();
 			
-			String category = ((JSONObject)parser.parse(properties.get("dtCategory").toString())).get("val").toString();
-			JSONObject snoObject = (JSONObject)parser.parse(properties.get("Serial Number").toString());
+			
+			String category = ((JSONObject)parser.parse(properties.get("dtType").toString())).get("val").toString();
 			
 			String serialNumber = "";
-			if(snoObject.containsKey("val")){
-				serialNumber =  snoObject.get("val").toString();
+			if(properties.containsKey("Serial Number")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Serial Number").toString());
+				if(snoObject.containsKey("val")){
+					serialNumber =  snoObject.get("val").toString();
+				}
 			}
 			
-			String tag=  ((JSONObject)parser.parse(properties.get("Asset Tag").toString())).get("val").toString();
-			JSONObject modelObject = (JSONObject)parser.parse(properties.get("Model").toString());
+			String tag="";
+			
+			if(properties.containsKey("Asset Tag")){
+				tag =  ((JSONObject)parser.parse(properties.get("Asset Tag").toString())).get("val").toString();
+			}
+			
 			String model = "";
-			if(modelObject.containsKey("val")){
-				model =  modelObject.get("val").toString();
+			
+			if(properties.containsKey("Model")){
+				JSONObject modelObject = (JSONObject)parser.parse(properties.get("Model").toString());
+				if(modelObject.containsKey("val")){
+					model =  modelObject.get("val").toString();
+				}
 			}
-			String description=  ((JSONObject)parser.parse(properties.get("COBie Type Description").toString())).get("val").toString();
-			String manufacturer=  ((JSONObject)parser.parse(properties.get("Manufacturer").toString())).get("val").toString();
 			
+			String description="";
 			
-			long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
-			if(assetId > 0){
-				AssetContext asset = AssetsAPI.getAssetInfo(assetId);
-				asset.setDatum("thirdpartyid", thirdPartyId);
-				asset.setName(assetName);
-				asset.setDescription(description);
-				asset.setSiteId(siteId);
-				asset.setManufacturer(manufacturer);
-				asset.setSerialNumber(serialNumber);
-				asset.setTagNumber(tag);
-				asset.setModel(model);
-				asset.setCategory(asset.getCategory());
-				updateAsset(asset, asset.getCategory().getModuleName());
-			}else{
-				String moduleName = "";
-				String categoryName = "";
-				
-				HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
+			if(properties.containsKey("COBie Type Description")){
+				description =  ((JSONObject)parser.parse(properties.get("COBie Type Description").toString())).get("val").toString();
+			}
+			
+			String manufacturer="";
+			
+			if(properties.containsKey("Manufacturer")){
+				manufacturer =  ((JSONObject)parser.parse(properties.get("Manufacturer").toString())).get("val").toString();
+			}
+			
+			String moduleName = "";
+			String categoryName = "";
+			
+			HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
+			
+			if(assetCategoryMap.containsKey(category)) {
 				categoryName = assetCategoryMap.get(category).toString();
-				
 				AssetCategoryContext assetCategory = AssetsAPI.getCategory(categoryName);
-				
+
 				if(assetCategory == null){
 					assetCategory = AssetsAPI.getCategory(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-						if(assetCategory == null){
-							assetCategory = new AssetCategoryContext();
-							if(categoryName != null && !categoryName.isEmpty()) {
-								assetCategory.setName(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-								assetCategory.setType(AssetCategoryType.MISC);
-								FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
-								FacilioContext context = addAssetCategoryChain.getContext();
-								context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
-								addAssetCategoryChain.execute();	
-							}
-						}	
+					if(assetCategory == null){
+						assetCategory = new AssetCategoryContext();
+						assetCategory.setName(categoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+						assetCategory.setType(AssetCategoryType.MISC);
+						FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+						FacilioContext context = addAssetCategoryChain.getContext();
+						context.put(FacilioConstants.ContextNames.RECORD, assetCategory);
+						addAssetCategoryChain.execute();	
+					}
 				}
-
-				FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
-				moduleName = module.getName();
 				
-				AssetContext asset = new AssetContext();
-				asset.setDatum("thirdpartyid", thirdPartyId);
-				asset.setName(assetName);
-				asset.setDescription(description);
-				asset.setSiteId(siteId);
-				asset.setManufacturer(manufacturer);
-				asset.setSerialNumber(serialNumber);
-				asset.setTagNumber(tag);
-				asset.setModel(model);
-				asset.setCategory(assetCategory);
-				addAsset(asset,moduleName);
+				long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
+				if(assetId > 0){
+					AssetContext asset = AssetsAPI.getAssetInfo(assetId);
+					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setName(assetName);
+					asset.setDescription(description);
+					asset.setSiteId(siteId);
+					asset.setSpaceId(buildingId);
+					asset.setCurrentSpaceId(buildingId);
+					asset.setManufacturer(manufacturer);
+					asset.setSerialNumber(serialNumber);
+					asset.setTagNumber(tag);
+					asset.setModel(model);
+					asset.setCategory(asset.getCategory());
+					updateAsset(asset, asset.getCategory().getModuleName());
+				}else{
+					FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
+					moduleName = module.getName();
+					
+					AssetContext asset = new AssetContext();
+					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setName(assetName);
+					asset.setDescription(description);
+					asset.setSiteId(siteId);
+					asset.setSpaceId(buildingId);
+					asset.setCurrentSpaceId(buildingId);
+					asset.setManufacturer(manufacturer);
+					asset.setSerialNumber(serialNumber);
+					asset.setTagNumber(tag);
+					asset.setModel(model);
+					asset.setCategory(assetCategory);
+					addAsset(asset,moduleName);
+				}
 			}
 		}
 	}
@@ -745,6 +792,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	private String assetURL;
 	private String userName;
 	private String password;
+	private String siteName;
+	private String buildingName;
 
 	public String getAssetURL() {
 		return assetURL;
@@ -769,6 +818,21 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
+	public String getSiteName() {
+		return siteName;
+	}
+
+	public void setSiteName(String siteName) {
+		this.siteName = siteName;
+	}
+
+	public String getBuildingName() {
+		return buildingName;
+	}
+
+	public void setBuildingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
 	
 }
