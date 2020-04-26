@@ -11,11 +11,14 @@ import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 
@@ -74,7 +77,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) throws Exception {
 		if (CollectionUtils.isEmpty(csvData)) {
 			return;
 		}
@@ -83,39 +86,67 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
 		Iterator<Map<String, Object>> itr = csvData.iterator();
 		Map<String, Object> currentData = itr.next();
-		boolean isFirst = true;
+		boolean isNoData = false;
+		ArrayList<Long> parentIds = dp.getMetaData() != null ? (ArrayList<Long>) dp.getMetaData().get("parentIds") : null;
+		long dataInterval = 0;
+		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL) {
+			isNoData = true;
+			if(CollectionUtils.isNotEmpty(parentIds)) {
+				dataInterval = ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField())*60*1000;
+				Map<Integer, Object> enumMap = dp.getyAxis().getEnumMap();
+				enumMap.put(enumMap.size(), "No Data");
+				dp.getyAxis().setEnumMap(enumMap);
+			}else {
+				dataInterval = ReadingsAPI.getOrgDefaultDataIntervalInMin()*60*1000;
+				Map<Integer, Object> enumMap = dp.getyAxis().getEnumMap();
+				enumMap.put(enumMap.size(), "No Data");
+				dp.getyAxis().setEnumMap(enumMap);
+			}
+		}
 		while (itr.hasNext()) {
 //			Map<String, Object> data = csvData.get(i);
 			Map<String, Object> nextData = itr.next();
-			aggregateEnum(report, dp, aggrData, timeAlias, currentData, nextData, isFirst, previousRecords);
-			if (isFirst) {
-				isFirst = false;
-			}
+			aggregateEnum(report, dp, aggrData, timeAlias, currentData, nextData, isNoData, previousRecords, dataInterval);
 			currentData = nextData;
 		}
-		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
+		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isNoData, previousRecords, dataInterval); //for the last record
 		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".timeline"));
 	}
 
-	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
-		long startTime = -1, endTime = -1;
+	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isNoData, Map<String, SimpleEntry<Long, Integer>> previousRecords, Long dataInterval) {
+		long startTime = -1, endTime = -1, nextStartTime = -1;
 
-		if (!isFirst) {
+		if (currentData != null) {
 			startTime = (long) currentData.get(timeAlias);
 		}
 
 		if (nextData != null) {
 			endTime = (long) nextData.get(timeAlias);
 		}
-
+		
+		if(isNoData) {
+			nextStartTime = endTime;
+			endTime = startTime+dataInterval;
+		}
+		
+		Set<Integer> enumSet = dp.getyAxis().getEnumMap().keySet();
 		for (String alias : dp.getAliases().values()) {
-			EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
+			EnumVal enumValue = calculateEnumAggr(report, enumSet, currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
 			if (enumValue != null) {
 				currentData.put(alias, enumValue);
 				// For derivation since enumval will be passed as value for the alias
 				if (CollectionUtils.isNotEmpty(enumValue.getTimeline())) {
 					currentData.put(alias+".value", enumValue.getTimeline().get(0).getValue());					
 				}
+			}
+		}
+		if(isNoData && (endTime != nextStartTime && MapUtils.isNotEmpty(previousRecords))) {
+			for (String alias : dp.getAliases().values()) {
+				SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(endTime, enumSet.size()-1);
+				previousRecords.put(alias, val);
+				List<SimpleEntry<Long, Integer>> enumVal = new ArrayList();
+				enumVal.add(val);
+				EnumVal enumValue = calculateEnumAggr(report, enumSet, enumVal, alias, endTime, nextStartTime, previousRecords, aggrData);
 			}
 		}
 	}
