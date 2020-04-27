@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -5151,7 +5150,7 @@ public class ViewFactory {
 		return allView;
 	}
 
-	private static Condition getOnlyTillDateAlarm() {
+	public static Condition getOnlyTillDateAlarm() {
 		// To get alarm list till now as in demo account alarm for the whole week will be avaiable
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");

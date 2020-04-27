@@ -1487,38 +1487,41 @@ public static long getSitesCount() throws Exception {
 	}
 	public static long getV2AlarmCount (long spaceId) throws  Exception {
 
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(ID)");
-		countFld.setDataType(FieldType.NUMBER);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
 		FacilioField resourceIdFld = new FacilioField();
 		resourceIdFld.setName("resourceId");
 		resourceIdFld.setColumnName("RESOURCE_ID");
 		resourceIdFld.setModule(ModuleFactory.getBaseAlarmModule());
 		resourceIdFld.setDataType(FieldType.NUMBER);
 
+		Criteria spaceCriteria = new Criteria();
 		Condition spaceCond = new Condition();
 		spaceCond.setField(resourceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
+		spaceCriteria.groupOrConditions(Collections.singletonList(spaceCond));
 
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getBaseAlarmModule().getTableName())
-				.andCondition(ViewFactory.getReadingAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
-				.select(fields)
-				.andCondition(spaceCond);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ViewFactory.getReadingAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false));
+		Condition tillDateAlarm = ViewFactory.getOnlyTillDateAlarm();
+		criteria.addAndCondition(tillDateAlarm);
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
+		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+				.module(module)
+				.select(null)
+				.beanClass(beanClassName)
+				.andCriteria(spaceCriteria)
+				.andCriteria(criteria)
+				.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+
+		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		if (CollectionUtils.isEmpty(records)) {
 			return 0;
 		}
 		else {
-			return ((Number) rs.get(0).get("count")).longValue();
+			return records.get(0).getId();
 		}
 	}
 	public static long getFireAlarmsCount(long spaceId) throws Exception {
