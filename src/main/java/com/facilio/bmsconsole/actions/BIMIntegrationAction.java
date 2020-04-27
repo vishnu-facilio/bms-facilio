@@ -55,6 +55,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
@@ -288,6 +289,24 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
 			
 			addFieldsChain.execute();
+		}
+		if(thirdParty.equals(ThirdParty.INVICARA)){
+			if(!fieldsMap.containsKey("runstatus")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				BooleanField field =  new BooleanField();
+				field.setDataType(4);
+				field.setDisplayName("Run status");
+				field.setDisplayType(FieldDisplayType.DECISION_BOX);
+				field.setDisplayTypeInt(4);
+				field.setRequired(false);
+				field.setTrueVal("On");
+				field.setFalseVal("Off");
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
 		}
 		if(thirdParty.equals(ThirdParty.YOUBIM)){
 			if(!fieldsMap.containsKey("2dviewid")){
@@ -562,6 +581,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(assetId > 0){
 					AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setDatum("runstatus",false);
 					asset.setName(assetName);
 					asset.setDescription(description);
 					asset.setSiteId(siteId);
@@ -579,6 +599,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 					
 					AssetContext asset = new AssetContext();
 					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setDatum("runstatus",false);
 					asset.setName(assetName);
 					asset.setDescription(description);
 					asset.setSiteId(siteId);

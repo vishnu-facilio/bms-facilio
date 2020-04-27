@@ -686,12 +686,19 @@ public class BimAPI {
 		HashMap<String,String> thirdPartyDetailsMap = new HashMap<String,String>();
 		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
-			thirdPartyDetailsMap.put("HVAC Air Handling Unit", "AHU");
-			thirdPartyDetailsMap.put("HVAC Chiller Unit", "Chiller");
-			thirdPartyDetailsMap.put("HVAC Cooling Tower", "Cooling Tower");
-			thirdPartyDetailsMap.put("HVAC Damper", "damper");
-			thirdPartyDetailsMap.put("HVAC Valve", "valve");
-			thirdPartyDetailsMap.put("HVAC Pump", "pump");
+//			thirdPartyDetailsMap.put("HVAC Air Handling Unit", "AHU");
+//			thirdPartyDetailsMap.put("HVAC Chiller Unit", "Chiller");
+//			thirdPartyDetailsMap.put("HVAC Cooling Tower", "Cooling Tower");
+//			thirdPartyDetailsMap.put("HVAC Damper", "damper");
+//			thirdPartyDetailsMap.put("HVAC Valve", "valve");
+//			thirdPartyDetailsMap.put("HVAC Pump", "pump");
+//			thirdPartyDetailsMap.put("Screw Chiller", "Chiller");
+//			thirdPartyDetailsMap.put("Boiler", "Boiler");
+//			thirdPartyDetailsMap.put("Chilled Water Pump", "Primary Pump");
+//			thirdPartyDetailsMap.put("Fan Coil Unit", "FCU");
+//			thirdPartyDetailsMap.put("Extract Air Handling Unit", "AHU");
+			thirdPartyDetailsMap.put("Supply Air Handling Unit", "AHU");
+//			thirdPartyDetailsMap.put("Heat Exchanger", "AHU");
 		
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
 			
