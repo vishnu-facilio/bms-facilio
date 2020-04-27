@@ -325,6 +325,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			selectBuilder.innerJoin(joinModule.getTableName())
 			.on(on);
 		}
+		selectBuilder.addJoinModules(Collections.singletonList(joinModule));
 
 		FacilioModule prevModule = joinModule;
 		FacilioModule extendedModule = prevModule.getExtendModule();

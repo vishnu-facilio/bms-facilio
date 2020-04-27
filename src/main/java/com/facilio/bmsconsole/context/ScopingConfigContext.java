@@ -79,4 +79,12 @@ public class ScopingConfigContext implements Serializable{
 		this.setOperator(Operator.getOperator(operatorId));
 	}
 	
+	private String fieldValueGenerator;
+	public String getFieldValueGenerator() {
+		return fieldValueGenerator;
+	}
+	public void setFieldValueGenerator(String fieldValueGenerator) {
+		this.fieldValueGenerator = fieldValueGenerator;
+	}
+	
 }

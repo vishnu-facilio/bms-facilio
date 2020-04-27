@@ -47,6 +47,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private List<Long> recordIds = null;
 	private boolean isIdsFetched = false;
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
+	private Collection<FacilioModule> joinModules;
+
 
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -228,7 +230,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			checkForNull();
 			Map<String, Object> moduleProps = new HashMap<>(props);
 			removeSystemProps(moduleProps);
-			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, null, moduleProps);
+			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, joinModules, moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
@@ -495,4 +497,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 
 	}
+	
+	//will be an interface method once i check in in framework
+		public void addJoinModules(Collection<FacilioModule> joinModules) {
+			if(joinModules == null) {
+				this.joinModules = new ArrayList<FacilioModule>();  
+			}
+			this.joinModules.addAll(joinModules);
+		}
 }

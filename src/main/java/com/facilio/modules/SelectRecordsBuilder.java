@@ -62,6 +62,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 
 	private boolean skipPermission;
+	private Collection<FacilioModule> joinModules;
+
 
 	private Set<String> criteriaJoinTables;
 	//Need where condition builder for custom field
@@ -578,7 +580,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				deleteFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
 				deleteFields.add(FieldFactory.getSysDeletedByField(parentModule));
 			}
-			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, null);
+			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, joinModules);
 
 			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields);
 			builder.select(selectFields);
@@ -775,4 +777,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		return null;
 	}
+	
+	//will be an interface method once i check in in framework
+	public void addJoinModules(Collection<FacilioModule> joinModules) {
+		if(joinModules == null) {
+			this.joinModules = new ArrayList<FacilioModule>();  
+		}
+		this.joinModules.addAll(joinModules);
+	}
+
 }

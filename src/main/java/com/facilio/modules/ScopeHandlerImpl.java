@@ -9,17 +9,16 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class ScopeHandlerImpl extends ScopeHandler {
@@ -166,13 +165,28 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		             String fieldName = entry.getKey();
 		             ScopingConfigContext obj = (ScopingConfigContext) entry.getValue();
 		             FacilioField field = RecordAPI.getField(fieldName, module.getName());
-		             fields.add(field);
-		             if(!isInsert) {
-		            	 if(criteria == null) {
-		            		 criteria = new Criteria();
-		            	 }
-			             Condition condition = CriteriaAPI.getCondition(field, obj.getValue(), obj.getOperator());
-			             criteria.addAndCondition(condition);
+		             if(field != null) {
+			             fields.add(field);
+			             if(!isInsert) {
+			            	 if(criteria == null) {
+			            		 criteria = new Criteria();
+			            	 }
+			            	 String value = obj.getValue();
+			            	 if(StringUtils.isEmpty(value)) {
+			            		 if(StringUtils.isEmpty(obj.getFieldValueGenerator())){
+			            			 throw new IllegalArgumentException("Both value and value generator cannot be null");
+			            		 }
+			            		Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(obj.getFieldValueGenerator());
+			            		ValueGenerator valueGenerator = classObject.newInstance();
+			            		 if(AccountUtil.getCurrentUser().getAppDomain() != null) {
+			            			 value = valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType());
+			            		 }
+			            	 }
+			            	 if(StringUtils.isNotEmpty(value)) {
+					             Condition condition = CriteriaAPI.getCondition(field, value, obj.getOperator());
+					             criteria.addAndCondition(condition);
+			            	 }
+			             }
 		             }
 		        }
 				return ScopeFieldsAndCriteria.of(fields, criteria);
