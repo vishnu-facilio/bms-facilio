@@ -1,6 +1,8 @@
 package com.facilio.cb.util;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import com.facilio.cb.context.ChatBotDateContext;
 import com.facilio.cb.context.ChatBotIntentParam;
@@ -14,6 +16,13 @@ public class ChatBotDateTimeUtil {
 	
 	public static final long ONE_HOUR_MILLISEC = 3600000l;
 	public static final long ONE_MIN_MILLISEC = 60000l;
+	
+	public static TimeZone getTimeZone() {
+	    final TimeZone timeZone = TimeZone.getTimeZone(DateTimeUtil.getDateTime().getZone());
+	    
+	    String tz =Arrays.stream(TimeZone.getAvailableIDs(timeZone.getRawOffset())).findFirst().get();
+	    return TimeZone.getTimeZone(tz);
+	}
 	
 
 	public static long compute(ChatBotIntentParam param, ChatBotDateContext dateContext) throws Exception {
@@ -143,11 +152,11 @@ public class ChatBotDateTimeUtil {
 			if(dateContext.getDateInt() > 0) {
 				dateContext.getCalendar().set(Calendar.DAY_OF_MONTH, dateContext.getDateInt());
 			}
-			if(dateContext.getTimeEnum() != null) {
-				dateContext.getTimeEnum().fillCalenderObj(dateContext);
-			}
 		}
 		
+		if(dateContext.getTimeEnum() != null) {
+			dateContext.getTimeEnum().fillCalenderObj(dateContext);
+		}
 		if(dateContext.getHour() > -1) {
 			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, dateContext.getHour());
 		}

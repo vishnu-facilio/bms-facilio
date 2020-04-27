@@ -1,6 +1,7 @@
 package com.facilio.cb.context;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import com.facilio.cb.date.DayEnum;
 import com.facilio.cb.date.DirectDateEnums;
@@ -8,6 +9,7 @@ import com.facilio.cb.date.MonthEnum;
 import com.facilio.cb.date.TimeEnum;
 import com.facilio.cb.date.WeekEnum;
 import com.facilio.cb.date.YearEnum;
+import com.facilio.cb.util.ChatBotDateTimeUtil;
 import com.facilio.time.DateTimeUtil;
 
 public class ChatBotDateContext {
@@ -26,7 +28,7 @@ public class ChatBotDateContext {
 	int min = -1;
 	TimeEnum timeEnum;
 	
-	Calendar calendar = Calendar.getInstance(DateTimeUtil.getLocale());
+	Calendar calendar = Calendar.getInstance(ChatBotDateTimeUtil.getTimeZone(), DateTimeUtil.getLocale());
 	
 	{
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
