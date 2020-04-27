@@ -26,6 +26,7 @@ public class GetApprovalRuleCommand extends FacilioCommand {
             approvalMeta.setDescription(stateFlowContext.getDescription());
             approvalMeta.setCriteria(stateFlowContext.getCriteria());
             approvalMeta.setEventType(stateFlowContext.getActivityTypeEnum());
+            approvalMeta.setConfigJson(stateFlowContext.getConfigJson());
 
             if (CollectionUtils.isNotEmpty(stateFlowContext.getFields())) {
                 List<Long> fieldIds = stateFlowContext.getFields().stream().map(FieldChangeFieldContext::getFieldId).collect(Collectors.toList());
