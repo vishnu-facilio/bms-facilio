@@ -130,6 +130,7 @@ public class ApprovalAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getApprovalModuleDataListChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.VIEW_NAME, getViewName());
 		constructListContext((FacilioContext) context);
 		chain.execute();
 

@@ -2423,6 +2423,8 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getApprovalModuleDataListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApprovalModuleDataListCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GetLookupFieldsFromViewCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
