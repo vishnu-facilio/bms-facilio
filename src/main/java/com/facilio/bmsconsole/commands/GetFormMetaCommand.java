@@ -41,7 +41,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			formModule = modBean.getModule(formModuleName);
 			if (formId == -1 && formName == null) {
 				FormType formType = (FormType) context.get(FacilioConstants.ContextNames.FORM_TYPE);
-				formName = FormFactory.getDefaultFormName(formModuleName,formType != null ? formType.getStringVal() : FormType.WEB.getStringVal());
+				formName = FormFactory.getDefaultFormName(formModuleName,formType != null ? formType : FormType.WEB);
 			}
 		}
 		

@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.forms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -16,10 +27,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class FormFactory {
 	
@@ -155,15 +162,15 @@ public class FormFactory {
 	}
 	
 	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) {
-		return getDefaultForm(moduleName, form.getFormTypeVal(), onlyFields);
+		return getDefaultForm(moduleName, form.getFormTypeEnum(), onlyFields);
 	}
 	
-	public static FacilioForm getDefaultForm(String moduleName, String formTypeVal, Boolean...onlyFields) {
-		return getForm(moduleName, getDefaultFormName(moduleName, formTypeVal) , onlyFields);
+	public static FacilioForm getDefaultForm(String moduleName, FormType formType, Boolean...onlyFields) {
+		return getForm(moduleName, getDefaultFormName(moduleName, formType) , onlyFields);
 	}
 	
-	public static String getDefaultFormName(String moduleName, String formTypeVal) {
-		return "default_"+moduleName+"_"+ (formTypeVal.equals("portal") ? formTypeVal : "web" ) ;
+	public static String getDefaultFormName(String moduleName, FormType formType) {
+		return "default_"+moduleName+"_"+ (formType == FormType.PORTAL ? FormType.PORTAL.getStringVal() : "web") ;
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {

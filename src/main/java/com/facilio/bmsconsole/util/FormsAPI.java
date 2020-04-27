@@ -860,9 +860,9 @@ public class FormsAPI {
 	
 	// From factory first. If not (for custom module), then will check in db
 	public static FacilioForm getDefaultForm(String moduleName, FormType formType, Boolean...onlyFields) throws Exception {
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, formType.getStringVal(), onlyFields);
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, formType, onlyFields);
 		if (defaultForm == null && formType != FormType.PORTAL) {
-			defaultForm = FormFactory.getDefaultForm(moduleName, FormType.WEB.getStringVal(), onlyFields);
+			defaultForm = FormFactory.getDefaultForm(moduleName, FormType.WEB, onlyFields);
 		}
 		if (defaultForm == null) {
 			Map<String, Object> params = new HashMap<>();
@@ -879,10 +879,10 @@ public class FormsAPI {
 
 	// From DB first. If not, will check in factory
 	public static FacilioForm getDefaultFormFromDBOrFactory(FacilioModule module, FormType formType, Boolean...onlyFields) throws Exception {
-		String formName = FormFactory.getDefaultFormName(module.getName(), formType.getStringVal());
+		String formName = FormFactory.getDefaultFormName(module.getName(), formType);
 		FacilioForm form = FormsAPI.getFormFromDB(formName, module);
 		if (form == null) {
-			form = new FacilioForm(FormFactory.getDefaultForm(module.getName(), formType.getStringVal(), onlyFields));
+			form = new FacilioForm(FormFactory.getDefaultForm(module.getName(), formType, onlyFields));
 		}
 		return form;
 	}
