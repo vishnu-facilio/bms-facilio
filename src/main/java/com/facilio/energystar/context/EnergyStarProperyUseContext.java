@@ -59,7 +59,7 @@ public class EnergyStarProperyUseContext {
 		percentOfficeCooled(3, "Percent office cooled","percentOfficeCooled",FieldType.STRING,Building_Type.OFFICE),
 		percentOfficeHeated(4, "Percent office heated","percentOfficeHeated",FieldType.STRING,Building_Type.OFFICE),
 		weeklyOperatingHours(5, "Weekly operating hours","weeklyOperatingHours",FieldType.STRING,Building_Type.OFFICE),
-		numberOfWorkers(6, "Number of worklers","numberOfWorkers",FieldType.STRING,Building_Type.OFFICE),
+		numberOfWorkers(6, "Number of workers","numberOfWorkers",FieldType.STRING,Building_Type.OFFICE),
 		;
 
 		int intVal;
