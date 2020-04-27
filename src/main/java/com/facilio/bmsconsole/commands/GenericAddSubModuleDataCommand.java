@@ -14,6 +14,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.dispatcher.multipart.StrutsUploadedFile;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -191,6 +192,7 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                             }
                         }
                         moduleRecord.parseFormData();
+                        CommonCommandUtil.handleLookupFormData(fields, moduleRecord.getData());
                         beanList.add(moduleRecord);
                     }
                     insertRecordBuilder.addRecords(beanList);
