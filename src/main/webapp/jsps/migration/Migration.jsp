@@ -1,3 +1,4 @@
+<%@page import="org.apache.log4j.Priority"%>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
 <%@ page import="org.apache.commons.chain.Context" %>
 <%@ page import="org.apache.log4j.Logger" %>
@@ -57,35 +58,8 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
 
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule assetDepreciationModule = modBean.getModule(FacilioConstants.ContextNames.ASSET_DEPRECIATION);
-            if (assetDepreciationModule == null) {
-                return false;
-            }
-
-            FacilioField startDateField = modBean.getField("startDate", assetDepreciationModule.getName());
-            modBean.deleteField(startDateField.getFieldId());
-
-            FacilioField startDate = FieldFactory.getField("startDateFieldId", "Start Date Field Id", "START_DATE_FIELDID", assetDepreciationModule, FieldType.NUMBER);
-            startDate.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-            startDate.setDefault(true);
-            modBean.addField(startDate);
-
-            FacilioField totalPrice = FieldFactory.getField("totalPriceFieldId", "Total Price Field Id", "TOTAL_PRICE_FIELDID", assetDepreciationModule, FieldType.NUMBER);
-            totalPrice.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-            totalPrice.setDefault(true);
-            modBean.addField(totalPrice);
-
-            FacilioField salvagePrice = FieldFactory.getField("salvagePriceFieldId", "Salvage Price Field Id", "SALVAGE_PRICE_FIELDID", assetDepreciationModule, FieldType.NUMBER);
-            salvagePrice.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-            salvagePrice.setDefault(true);
-            modBean.addField(salvagePrice);
-
-            FacilioField currentPrice = FieldFactory.getField("currentPriceFieldId", "Current Price Field Id", "CURRENT_PRICE_FIELDID", assetDepreciationModule, FieldType.NUMBER);
-            currentPrice.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-            currentPrice.setDefault(true);
-            modBean.addField(currentPrice);
-
+           
+			LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             return false;
         }
     }
@@ -100,5 +74,9 @@
         c.execute();
 
         AccountUtil.cleanCurrentAccount();
+        
+        out.println("Completed For -- "+org.getId()+"<br>");
     }
+    
+    out.println("Completed");
 %>
