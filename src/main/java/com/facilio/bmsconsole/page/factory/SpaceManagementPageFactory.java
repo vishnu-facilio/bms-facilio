@@ -121,7 +121,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1Sec1.addWidget(cardWidget);
 		addSpaceOccupancyWidget(tab1Sec1, 4);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (space.getSpace3() == null) {
+		if (space.getSpace3() == null && space.getNoOfSubSpaces() > 0) {
 			Section tab1Sec2 = page.new Section();
 			addSpaceRelatedListWidget(tab1Sec2, "relatedSubSpaces",modBean);
 			tab1.addSection(tab1Sec2);
