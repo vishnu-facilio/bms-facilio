@@ -273,6 +273,7 @@ public class ChatBotIntentParam {
 		CARDINAL(18, "Cardinal","CARDINAL",true),
 		
 		SUBJECT(19, "Subject","message_subject",false),
+		DATETIME(20, "Date Time","DATETIME",true),
 		;
 
 		int intVal;

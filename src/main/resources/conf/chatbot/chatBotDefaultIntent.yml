@@ -857,7 +857,7 @@
       name : 'checkinDate'
       dataType : 6
       localId : 7
-      mlType : 12
+      mlType : 20
       typeConfig : 1
       editable : true
       updateParamTriggerText : 'Edit checkin time'

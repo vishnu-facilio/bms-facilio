@@ -79,7 +79,7 @@ public class ChatBotMLUtil {
 
 			headers.put("Content-Type", "application/json");
 
-			String response = FacilioHttpUtils.doHttpPost("https://chatbot.facilio.com/api/chatbot/createchatbot", headers,
+			String response = FacilioHttpUtils.doHttpPost("https://newchatbot.facilio.com/api/chatbot/createchatbot", headers,
 					null, intentJson.toJSONString());
 
 			System.out.println("respose ---- "+response);
@@ -104,7 +104,7 @@ public class ChatBotMLUtil {
 			
 			LOGGER.info("params ---- " + params);
 
-			String response = FacilioHttpUtils.doHttpGet("https://chatbot.facilio.com/api/chatbot/findchatintent", null,params);
+			String response = FacilioHttpUtils.doHttpGet("https://newchatbot.facilio.com/api/chatbot/findchatintent", null,params);
 
 			System.out.println("respose ---- " + response);
 			
