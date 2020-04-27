@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -59,8 +60,8 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class BIMIntegrationAction extends FacilioAction{
 
-	private static final long serialVersionUID = 1L;
-
+	private static final Logger LOGGER = Logger.getLogger(BIMIntegrationAction.class.getName());
+	
 	public String uploadBim() throws Exception {
 				
 		FacilioChain uploadFileChain = TransactionChainFactory.uploadBimFileChain();
@@ -454,8 +455,9 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	}
 	
 	public void importInvicaraAssets(ThirdParty thirdParty,String assetURL,String token) throws Exception {
+		LOGGER.info("Inside importInvicaraAssets");	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
+			
 		SiteContext site = SpaceAPI.getSite(siteName);
 		if(site != null){
 			site.setName(siteName);
@@ -477,14 +479,14 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			addBuilding(building);
 		}
 		Long buildingId = building.getId();
-		
+		LOGGER.info("Site Building added");	
 		String assetsJsonString= getResponse(thirdParty,assetURL,token);
 
 		JSONParser parser = new JSONParser();
 
 		JSONObject resultObj = (JSONObject) parser.parse(assetsJsonString);
 		JSONArray arr = new JSONArray(resultObj.get("_list").toString());
-		
+		LOGGER.info("Asset arr :: "+resultObj.get("_list").toString());	
 		for(int i=0;i<arr.length();i++){
 
 			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
@@ -554,6 +556,9 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				}
 				
 				long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
+				
+				LOGGER.info("assetId :: "+assetId);	
+				
 				if(assetId > 0){
 					AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 					asset.setDatum("thirdpartyid", thirdPartyId);
