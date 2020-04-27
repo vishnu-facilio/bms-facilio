@@ -146,12 +146,13 @@ public class ChatBotDateTimeUtil {
 			if(dateContext.getTimeEnum() != null) {
 				dateContext.getTimeEnum().fillCalenderObj(dateContext);
 			}
-			if(dateContext.getHour() > -1) {
-				dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, dateContext.getHour());
-			}
-			if(dateContext.getMin() > -1) {
-				dateContext.getCalendar().set(Calendar.MINUTE, dateContext.getMin());
-			}
+		}
+		
+		if(dateContext.getHour() > -1) {
+			dateContext.getCalendar().set(Calendar.HOUR_OF_DAY, dateContext.getHour());
+		}
+		if(dateContext.getMin() > -1) {
+			dateContext.getCalendar().set(Calendar.MINUTE, dateContext.getMin());
 		}
 		
 		if(returnMillisec < 0) {
