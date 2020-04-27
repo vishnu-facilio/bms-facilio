@@ -138,4 +138,13 @@ public class RecordAPI {
 		CommonCommandUtil.handleLookupFormData(fields, data);
 		
 	}
+	
+
+	public static FacilioField getField(String fieldName, String modName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return modBean.getField(fieldName, modName);
+				
+		
+	}
+	
 }

@@ -157,4 +157,16 @@ public class ApplicationContext implements Serializable{
 			return null;
 		}
 	}
+	
+	private ScopingContext scoping;
+
+	public ScopingContext getScoping() {
+		return scoping;
+	}
+
+	public void setScoping(ScopingContext scoping) {
+		this.scoping = scoping;
+	}
+	
+	
 }

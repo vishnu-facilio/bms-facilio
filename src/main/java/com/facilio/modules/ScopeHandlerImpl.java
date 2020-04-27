@@ -1,13 +1,26 @@
 package com.facilio.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.*;
 
 public class ScopeHandlerImpl extends ScopeHandler {
 
@@ -24,32 +37,88 @@ public class ScopeHandlerImpl extends ScopeHandler {
      */
     @Override
     public Collection<FacilioField> updateValuesForInsertAndGetFields(FacilioModule module, List<Map<String, Object>> props) {
-        if (FieldUtil.isSiteIdFieldPresent(module, true)) {
-            return Collections.singletonList(FieldFactory.getSiteIdField(module));
-        }
+        try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)){
+				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
+				if(scopeFields != null) {
+					return scopeFields.getFields();
+				}
+			}
+			else {
+				if(FieldUtil.isSiteIdFieldPresent(module, true)) {
+					return Collections.singletonList(FieldFactory.getSiteIdField(module));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         return null;
     }
 
     @Override
     public ScopeFieldsAndCriteria updateValuesForUpdateAndGetFieldsAndCriteria (FacilioModule module, Collection<FacilioModule> joinModules, Map<String, Object> prop) {
-        if (FieldUtil.isSiteIdFieldPresent(module)) {
-            long currentSiteId = AccountUtil.getCurrentSiteId();
-            if (currentSiteId > 0) {
-                prop.remove("siteId"); //Not allowing to change site id if it's scope is set.
-            }
-            return constructSiteFieldsAndCriteria(module, true);
-        }
+        try {
+        	if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+        		Map<Long, Map<String, Object>> scopingMap = AccountUtil.getCurrentAppScopingMap();
+				if(MapUtils.isNotEmpty(scopingMap)) {
+					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
+					if(MapUtils.isNotEmpty(moduleScoping)) {
+						ScopeFieldsAndCriteria scopeFieldCriteria = constructScopingFieldsAndCriteria(module, joinModules, false);
+						Map<String, Object> globalScopingValues = AccountUtil.getGlobalScopingFieldMap();
+						if(MapUtils.isNotEmpty(globalScopingValues)) {
+							for(FacilioField field : scopeFieldCriteria.getFields()) {
+								if(globalScopingValues.containsKey(field.getName())) {
+									prop.remove(field.getName());
+									scopeFieldCriteria.getFields().remove(field);
+								}
+								else {
+									ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+									FacilioModule extendedModule = module.getExtendModule();
+					                while(extendedModule != null) {
+					                	FacilioField parentModulefield = modBean.getField(field.getName(), extendedModule.getName());
+					                	if(parentModulefield != null){
+					                		scopeFieldCriteria.getFields().add(parentModulefield);
+					                	}
+					                    extendedModule = extendedModule.getExtendModule();
+					                }
+								}
+							}
+							
+						}
+					}
+				}
+        	}
+        	else if (FieldUtil.isSiteIdFieldPresent(module)) {
+			    long currentSiteId = AccountUtil.getCurrentSiteId();
+			    if (currentSiteId > 0) {
+			        prop.remove("siteId"); //Not allowing to change site id if it's scope is set.
+			    }
+			    return constructSiteFieldsAndCriteria(module, true);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         return null;
     }
 
     @Override
     public ScopeFieldsAndCriteria getFieldsAndCriteriaForSelect(FacilioModule module, Collection<FacilioModule> joinModules) {
-        if (FieldUtil.isSiteIdFieldPresent(module)) {
-            return constructSiteFieldsAndCriteria(module, false);
-        }
+        try {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+				return constructScopingFieldsAndCriteria(module, joinModules, false);
+			}
+			else {
+				if (FieldUtil.isSiteIdFieldPresent(module)) {
+			        return constructSiteFieldsAndCriteria(module, false);
+			    }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         return null;
     }
-
+    
     private ScopeFieldsAndCriteria constructSiteFieldsAndCriteria (FacilioModule module, boolean isUpdate) {
         FacilioField siteIdField = FieldFactory.getSiteIdField(module);
         long currentSiteId = AccountUtil.getCurrentSiteId();
@@ -63,6 +132,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
         if (isUpdate) { //Will allow site id to be updated only if current site is -1. Also site fields of all parent modules needs to be added in fields because those have to be updated too
             if (currentSiteId == -1) {
                 fields = new ArrayList<>();
+                criteria = new Criteria();
                 fields.add(siteIdField);
                 FacilioModule extendedModule = module.getExtendModule();
                 while(extendedModule != null) {
@@ -78,4 +148,40 @@ public class ScopeHandlerImpl extends ScopeHandler {
         }
         return ScopeFieldsAndCriteria.of(fields, criteria);
     }
+    
+    private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
+    	if(CollectionUtils.isEmpty(joinModules)) {
+    		joinModules = new ArrayList<FacilioModule>();
+    		joinModules.add(primaryModule);
+    	}
+    	for(FacilioModule module : joinModules) {
+    		Map<String, Object> moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
+	    	if(MapUtils.isNotEmpty(moduleScoping)) {
+				Iterator<Map.Entry<String, Object>> itr = moduleScoping.entrySet().iterator(); 
+				List<FacilioField> fields = new ArrayList<FacilioField>();
+				Criteria criteria = null;
+			    
+				while(itr.hasNext()) 
+		        { 
+					 Map.Entry<String, Object> entry = itr.next(); 
+		             String fieldName = entry.getKey();
+		             ScopingConfigContext obj = (ScopingConfigContext) entry.getValue();
+		             FacilioField field = RecordAPI.getField(fieldName, module.getName());
+		             fields.add(field);
+		             if(!isInsert) {
+		            	 if(criteria == null) {
+		            		 criteria = new Criteria();
+		            	 }
+			             Condition condition = CriteriaAPI.getCondition(field, obj.getValue(), obj.getOperator());
+			             criteria.addAndCondition(condition);
+		             }
+		        }
+				return ScopeFieldsAndCriteria.of(fields, criteria);
+			}
+    	}
+    	return null;
+    }
+
+    
+  
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.GetApplicationDetails;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.Permission;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
@@ -359,5 +361,47 @@ public class ApplicationApi {
 		}
 		return appDomainName;
 	}
+
+	public static String getPushNotificationKeyForApp(int appType) throws Exception {
+		if(appType <= 0 || appType == 1) {
+			return FacilioProperties.getPushNotificationKey();
+		}
+		else if(appType == 4) {
+			return FacilioProperties.getPortalPushNotificationKey();
+		}
+		else {
+			return FacilioProperties.getPortalPushNotificationKey();
+		}
+	}
 	
+	public static Map<Long, Map<String, Object>> getScopingMapForApp(long appId, long orgId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getScopingConfigFields())
+				.table("Scoping_Config")
+				.innerJoin("Scoping")
+				.on("Scoping.ID = Scoping_Config.SCOPING_ID")
+				.innerJoin("Application")
+				.on("Application.SCOPING_ID = Scoping.ID")
+				.andCondition(CriteriaAPI.getCondition("APPLICATION.ID","appId" , String.valueOf(appId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, Map<String, Object>> moduleScoping = new HashMap<Long, Map<String,Object>>();
+		if(CollectionUtils.isNotEmpty(props)) {
+			List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
+			for(ScopingConfigContext scopingConfig : list) {
+				Map<String, Object> scopingfields = null; 
+				 if(moduleScoping.containsKey(scopingConfig.getModuleId())) {
+					 scopingfields = moduleScoping.get(scopingConfig.getModuleId());
+				 }
+				 else {
+					 scopingfields = new HashMap<String, Object>();
+				 }
+				 scopingfields.put(scopingConfig.getFieldName(), scopingConfig);
+				 moduleScoping.put(scopingConfig.getModuleId(), scopingfields);
+			}
+			return moduleScoping;
+		}
+		return null;
+	}
 }

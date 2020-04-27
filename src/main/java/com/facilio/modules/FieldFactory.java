@@ -2700,6 +2700,14 @@ public class FieldFactory {
         url.setColumnName("URL");
         url.setModule(module);
         fields.add(url);
+        
+        FacilioField appType = new FacilioField();
+        appType.setName("appId");
+        appType.setDataType(FieldType.NUMBER);
+        appType.setColumnName("APP_TYPE");
+        appType.setModule(module);
+        fields.add(appType);
+
 
         return fields;
     }
@@ -7886,6 +7894,7 @@ public class FieldFactory {
         fields.add(getField("appDomainId", "APP_DOMAIN_ID", module, FieldType.NUMBER));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("layoutType", "LAYOUT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("scoping", "SCOPING_ID", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -8373,4 +8382,17 @@ public class FieldFactory {
 	        return fields;
 
 	    }
+	 
+	 public static List<FacilioField> getScopingConfigFields() {
+		 List<FacilioField> fields = new ArrayList<>();
+	        FacilioModule module = ModuleFactory.getScopingConfigModule();
+
+	        fields.add(getIdField(module));
+	        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
+	        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+	        fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
+	        return fields;
+	 }
 }

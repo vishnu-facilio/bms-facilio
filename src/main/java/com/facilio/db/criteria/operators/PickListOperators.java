@@ -11,11 +11,18 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.FacilioModulePredicate;
 
@@ -186,8 +193,82 @@ public enum PickListOperators implements Operator<String> {
 			objs.add(AccountUtil.getCurrentUser().getId());
 			return objs;
 		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_TENANT)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+				if(tenant != null) {
+					objs.add(tenant.getId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_VENDOR)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				VendorContext vendor = PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
+				if(vendor != null) {
+					objs.add(vendor.getId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_CLIENT)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				ClientContext client = PeopleAPI.getClientForUser(AccountUtil.getCurrentUser().getId());
+				if(client != null) {
+					objs.add(client.getId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
+		}
 		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 			return (List<Object>) getLoggedInUserGroupIds();
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_TENANT_SITES)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+				if(tenant != null) {
+					//for now oneto one mapping for tenant -> sites.ll change in future.
+					objs.add(tenant.getSiteId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_SITES)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+				if(CollectionUtils.isNotEmpty(sites)) {
+					for(BaseSpaceContext site : sites) {
+						objs.add(site.getId());
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.CURRENT_SITE)) {
+			List<Object> objs = new ArrayList<>();
+			try {
+				if(AccountUtil.getCurrentSiteId() > 0) {
+					objs.add(AccountUtil.getCurrentSiteId());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return objs;
 		}
 		else {
 			return null;

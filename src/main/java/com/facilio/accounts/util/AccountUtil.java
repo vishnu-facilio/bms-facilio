@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -18,6 +21,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -38,6 +42,7 @@ public class AccountUtil {
 	
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);
+		setScopingMap(account);
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
@@ -50,6 +55,16 @@ public class AccountUtil {
 			setCurrentAccount(account);
 			User user = AccountUtil.getOrgBean().getSuperAdmin(org.getId());
 			account.setUser(user);
+			setScopingMap(account);
+		}
+	}
+	
+	private static void setScopingMap(Account account) throws Exception {
+		if(account.getUser() != null && account.getOrg() != null) {
+			long appId = account.getUser().getApplicationId();
+			if(appId > 0) {
+				account.setAppScopingMap(ApplicationApi.getScopingMapForApp(appId, account.getOrg().getOrgId()));
+			}
 		}
 	}
 	
@@ -78,11 +93,39 @@ public class AccountUtil {
 		currentAccount.remove();
 	}
 	
+	public static Object getGlobalScopingFieldValue(String fieldName) {
+		if (currentAccount.get() != null) {
+			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
+			if(MapUtils.isNotEmpty(globalScopingMap)) {
+				return globalScopingMap.get(fieldName);
+			}
+		}
+		return null;
+	}
+	
 	public static long getCurrentSiteId() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getCurrentSiteId();
 		}
 		return -1;
+	}
+	
+	public static void setGlobalScopingFieldValue(String fieldName, Object value) {
+		if (currentAccount.get() != null) {
+			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
+			if(MapUtils.isEmpty(globalScopingMap)) {
+				globalScopingMap = new HashMap<String, Object>();
+			}
+			globalScopingMap.put(fieldName, value);
+		}
+	}
+	
+	public static Map<String, Object> getGlobalScopingFieldMap() {
+		if (currentAccount.get() != null) {
+			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
+			return globalScopingMap;
+		}
+		return null;
 	}
 	
 	public static long getCurrentUserSessionId() {
@@ -92,6 +135,23 @@ public class AccountUtil {
 		return -1;
 	}
 
+	public static Map<Long, Map<String, Object>> getCurrentAppScopingMap() {
+		if (currentAccount.get() != null) {
+			return currentAccount.get().getAppScopingMap();
+		}
+		return null;
+	}
+	
+	public static Map<String, Object> getCurrentAppScopingMap(long modId) {
+		if (currentAccount.get() != null) {
+			Map<Long, Map<String, Object>> scopingMap = currentAccount.get().getAppScopingMap();
+			if(MapUtils.isNotEmpty(scopingMap)){
+				return scopingMap.get(modId);
+			}
+		}
+		return null;
+	}
+	
 	public static void incrementInsertQueryCount(int count) {
 		if(currentAccount.get() != null) {
 			currentAccount.get().incrementInsertQueryCount(count);
@@ -310,7 +370,8 @@ public class AccountUtil {
 		BIM(17179869184L),
 		PEOPLE_CONTACTS(34359738368L),
 		NEW_APPROVALS(68719476736L),
-		CHATBOT(137438953472L)
+		CHATBOT(137438953472L),
+		SCOPING(274877906944L)
 		;
 		
 		private long license;

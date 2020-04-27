@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +27,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private static final long serialVersionUID = 1L;
 	private User user;
 	private long siteId = -1;
+	private Map<String, Object> globlaScopingMap;
 
 	private String deviceType;
 	private String appVersion;
@@ -63,6 +65,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long publicRedisPutTime = 0L;
 	private long publicRedisDeleteTime = 0L;
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
+	private Map<Long, Map<String, Object>> scopingMap;
 
 
 	private RemoteScreenContext remoteScreen;
@@ -117,8 +120,24 @@ public class Account implements AccountsInterface<User>, Serializable{
 		return -1;
 	}
 
+	public Map<String, Object> getGloblaScopingMap() {
+		if(isScoped()) {
+			return globlaScopingMap;
+		}
+		return null;
+	}
+
+	public void setGloblaScopingMap(Map<String, Object> globlaScopingMap) {
+		this.globlaScopingMap = globlaScopingMap;
+	}
+
 	public void setCurrentSiteId(long siteId) {
 		this.siteId = siteId;
+		if(this.globlaScopingMap == null) {
+			this.globlaScopingMap = new HashMap<String, Object>();
+		}
+		this.globlaScopingMap.put("siteId", siteId);
+		
 	}
 
 	public Boolean isFromMobile() {
@@ -598,6 +617,11 @@ public class Account implements AccountsInterface<User>, Serializable{
 		publicAccess.pop();
 	}
 
+	public Map<Long, Map<String, Object>> getAppScopingMap() {
+		// TODO Auto-generated method stub
+		return this.scopingMap;
+	}
+	
 	public String getCurrentDataSource() {
 		if (getOrg() != null && isScoped()) {
 			return getOrg().getDataSource();
@@ -614,6 +638,10 @@ public class Account implements AccountsInterface<User>, Serializable{
 
 	public void setUserSessionId(long userSessionId) {
 		this.userSessionId = userSessionId;
+	}
+	
+	public void setAppScopingMap(Map<Long, Map<String, Object>> scoping) {
+		this.scopingMap = scoping;
 	}
 }
 

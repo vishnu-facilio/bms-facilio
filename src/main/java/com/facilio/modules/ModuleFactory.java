@@ -3695,5 +3695,13 @@ public class ModuleFactory {
 		module.setDisplayName("AgentThreadDump");
 		return module;
 	}
+	
+	public static FacilioModule getScopingConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scopingconfig");
+		module.setTableName("Scoping_Config");
+		module.setDisplayName("Scoping Config");
+		return module;
+	}
 
 }
