@@ -72,10 +72,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 									scopeFieldCriteria.getFields().remove(field);
 								}
 								else {
-									ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 									FacilioModule extendedModule = module.getExtendModule();
 					                while(extendedModule != null) {
-					                	FacilioField parentModulefield = modBean.getField(field.getName(), extendedModule.getName());
+					                	FacilioField parentModulefield = RecordAPI.getField(field.getName(), extendedModule.getName());
 					                	if(parentModulefield != null){
 					                		scopeFieldCriteria.getFields().add(parentModulefield);
 					                	}
