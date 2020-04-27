@@ -463,7 +463,12 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	public static List<ReadingRuleContext> getReadingRulesList(long ruleGroupId) throws Exception {
 		return getReadingRulesList(Collections.singletonList(ruleGroupId));
 	}
+	
 	public static List<ReadingRuleContext> getReadingRulesList(List<Long> ruleGroupIds) throws Exception {
+		return getReadingRulesList(ruleGroupIds, true, true);
+		
+	}
+	public static List<ReadingRuleContext> getReadingRulesList(List<Long> ruleGroupIds, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		if (ruleGroupIds == null || ruleGroupIds.isEmpty()) {
 			return null;
 		}
@@ -493,7 +498,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		List<ReadingRuleContext> readingRuleContexts = null;
 		if(props != null && !props.isEmpty()) {
 			readingRuleContexts = new ArrayList<>();
-			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, true, true);
+			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
 			for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
 				workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
 				readingRuleContexts.add((ReadingRuleContext)workflowRuleContext);

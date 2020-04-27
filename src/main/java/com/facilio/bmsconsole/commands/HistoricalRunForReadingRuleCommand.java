@@ -88,8 +88,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				Long resourceId = workflowRuleHistoricalLoggerContext.getResourceId();
 				Long ruleId = workflowRuleHistoricalLoggerContext.getRuleId();
 
-				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-				if (readingRule == null || readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
+				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
+				if (readingRule == null || resourceId == null) {
 					return false;
 				}
 				
@@ -97,7 +97,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 //				LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 				Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 				List<WorkflowFieldContext> fields = null;
-				AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingRule.getId()),null);
+				AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(readingRule.getId()), false, true),null);
 				if(alarmRule != null) {
 					
 					fields = new ArrayList<>();
