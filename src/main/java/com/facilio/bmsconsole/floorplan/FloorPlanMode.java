@@ -21,9 +21,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FloorPlanContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -33,12 +31,11 @@ import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public enum FloorPlanMode {
 
 	DEFAULT("default"),
-	SPACE_CATEGORY("space_category"),
+	SPACE_CATEGORY("spacecategory"),
 	RESERVATION("reservation"),
 	ASSET("asset"),
 	CONTROL_POINTS("control_points") {
@@ -51,9 +48,9 @@ public enum FloorPlanMode {
 			FacilioChain c = TransactionChainFactory.getFloorPlanChain();
 			c.getContext().put(FacilioConstants.ContextNames.FLOOR_PLAN, floorPlanContext);
 			c.execute();
-			floorPlanContext = (FloorPlanContext) c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN);
+			FloorPlanContext floorplan = (FloorPlanContext) c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN_VIEW);
 			
-			List<SpaceContext> spaces = SpaceAPI.getAllSpaces(floorPlanContext.getFloorId());
+			List<SpaceContext> spaces = SpaceAPI.getAllSpaces(floorplan.getFloorId());
 			
 			JSONArray areas = new JSONArray();
 			if (spaces != null && !spaces.isEmpty()) {
@@ -78,6 +75,7 @@ public enum FloorPlanMode {
 							
 							JSONObject marker = new JSONObject();
 							marker.put("title", controlCategory.getControlTypeEnum().getName());
+							marker.put("Enum", controlCategory.getControlTypeEnum());
 							marker.put("data", controlCategory);
 							
 							if (controlCategory.getControlTypeEnum() == ControllableAssetCategoryContext.ControllableCategory.AC) {
@@ -129,7 +127,7 @@ public enum FloorPlanMode {
 		FacilioChain c = TransactionChainFactory.getFloorPlanChain();
 		c.getContext().put(FacilioConstants.ContextNames.FLOOR_PLAN, floorPlanContext);
 		c.execute();
-		floorPlanContext = (FloorPlanContext) c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN);
+		floorPlanContext = (FloorPlanContext) c.getContext().get(FacilioConstants.ContextNames.FLOOR_PLAN_VIEW);
 		
 		JSONObject params = new JSONObject();
 		params.put("floorId", floorPlanContext.getFloorId());

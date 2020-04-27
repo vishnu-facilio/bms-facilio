@@ -1581,6 +1581,7 @@ public class FacilioConstants {
 		public static final String FLOOR_PLAN = "floorPlan";
 		public static final String FLOOR_PLAN_ID = "floorPlanId";
 		public static final String FLOOR_PLANS = "floorPlans";
+		public static final String FLOOR_PLAN_VIEW = "floorPlanView";
 		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
 		public static final String RULE_ASSET_COUNT = "ruleassetcount";
 
@@ -1813,6 +1814,7 @@ public class FacilioConstants {
 			classMap.put(SPACE_RATING, RatingContext.class);
 			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
 			classMap.put(FLOOR_PLAN, FloorPlanContext.class);
+			classMap.put(FLOOR_PLAN_VIEW, FloorPlanContext.class);
 			classMap.put(FLOORPLAN_OBJECT, FloorPlanObjectContext.class);
 			classMap.put(PEOPLE, PeopleContext.class);
 			classMap.put(EMPLOYEE, EmployeeContext.class);
