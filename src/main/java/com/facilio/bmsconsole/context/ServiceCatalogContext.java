@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 import java.io.Serializable;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.FormInterface;
 import com.facilio.modules.FacilioModule;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ServiceCatalogContext implements Serializable, FormInterface {
 
@@ -82,14 +85,22 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
     }
     
     private Boolean complaintType;
-
+    @JSON(serialize = false)
+    @JsonIgnore
     public Boolean getComplaintType() {
 		return complaintType;
 	}
+    @JsonIgnore
 	public void setComplaintType(Boolean complaintType) {
 		this.complaintType = complaintType;
 	}
-	
+	@JSON(serialize = false)
+	public boolean isComplaintType() {
+		if (complaintType == null) {
+			return false;
+		}
+		return true;
+	}
 
 	private FacilioModule module;
     public FacilioModule getModule() {

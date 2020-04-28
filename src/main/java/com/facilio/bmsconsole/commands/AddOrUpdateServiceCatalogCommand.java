@@ -1,10 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.ServiceCatalogApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,14 +19,10 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 
 public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
 
@@ -73,6 +75,9 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
 
     private void addServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
         checkForDuplicateName(serviceCatalog.getName(), -1);
+        if (serviceCatalog.isComplaintType()) {
+        		serviceCatalog.setGroupId(ServiceCatalogApi.getComplaintCategory().getId());
+        }
 
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())

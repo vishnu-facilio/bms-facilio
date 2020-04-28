@@ -7,8 +7,6 @@ import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 public class ServiceCatalogAction extends FacilioAction {
 
@@ -85,8 +83,8 @@ public class ServiceCatalogAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
-        if (fetchComplaintType != null && fetchComplaintType) {
-        	context.put(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE, fetchComplaintType);
+        if (fetchComplaintType != null) {
+        		context.put(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE, fetchComplaintType);
         }
         context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         context.put(FacilioConstants.ContextNames.SEARCH, searchString);

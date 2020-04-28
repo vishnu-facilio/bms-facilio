@@ -1,17 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.ServiceCatalogApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -19,16 +30,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetAllServiceCatalogCommand extends FacilioCommand {
 
@@ -37,9 +39,11 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
         long groupId = (long) context.get(FacilioConstants.ContextNames.GROUP_ID);
         Boolean fetchComplaintType = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COMPLAINT_TYPE);
 
+        List<FacilioField> fields = FieldFactory.getServiceCatalogFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
-                .select(FieldFactory.getServiceCatalogFields());
+                .select(fields);
 
         if (groupId > 0) {
             builder.andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(groupId), NumberOperators.EQUALS));
@@ -65,7 +69,8 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
         }
         
         if (fetchComplaintType == null || !fetchComplaintType) {
-        	builder.andCondition(CriteriaAPI.getCondition("IS_COMPLAINT_TYPE", "complaintType" ,"false", BooleanOperators.IS));
+        		ServiceCatalogGroupContext complaintCategory = ServiceCatalogApi.getComplaintCategory();
+        		builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupId") ,String.valueOf(complaintCategory.getId()), NumberOperators.NOT_EQUALS));
         }
         
 

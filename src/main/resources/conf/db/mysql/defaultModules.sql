@@ -9045,3 +9045,6 @@ INSERT INTO Space_Category (ORGID, MODULEID, NAME, DESCRIPTION, SPACE_MODULE_ID)
 --adding occupant portal access to people module
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @PEOPLE_MODULE_ID, 'isOccupantPortalAccess', 'Occupant Portal Access', 5, 'OCCUPANT_PORTAL_ACCESS', 4, false, false, true);
 INSERT INTO BooleanFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
+
+-- Adding default complaint type service category
+INSERT INTO Service_Catalog_Group (ORGID, NAME, DESCRIPTION) VALUES (${orgId}, 'complaint', 'Complaint category');

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
@@ -41,14 +42,14 @@ public class CommissioningApi {
 	}
 	
 	public static CommissioningLogContext commissioniongDetails(long id, boolean fetchControllers) throws Exception {
-		List<CommissioningLogContext> logs = commissioniongList(Collections.singletonList(id), fetchControllers);
+		List<CommissioningLogContext> logs = commissioniongList(Collections.singletonList(id), fetchControllers, null);
 		if (CollectionUtils.isNotEmpty(logs)) {
 			return logs.get(0);
 		}
 		return null;
 	}
 	
-	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers) throws Exception {
+	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination) throws Exception {
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		List<FacilioField> fields = FieldFactory.getCommissioningLogFields();
 		if (ids == null || ids.size() > 1) {
@@ -63,6 +64,22 @@ public class CommissioningApi {
 		if (ids != null) {
 			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
+		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			if (perPage != -1) {
+				int offset = ((page-1) * perPage);
+				if (offset < 0) {
+					offset = 0;
+				}
+
+				builder.offset(offset);
+				builder.limit(perPage);
+			}
+		}
+		
 		List<Map<String, Object>> props = builder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			List<CommissioningLogContext> logs = FieldUtil.getAsBeanListFromMapList(props, CommissioningLogContext.class);

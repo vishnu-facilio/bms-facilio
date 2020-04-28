@@ -289,7 +289,7 @@ public class ApplicationApi {
 		AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".facilioclients.com");
 		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId(),"client", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
-		ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent App", false, facilioApp.getId(), "agent", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getId(), "agent", ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
 		List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
 		applicationsDefault.add(facilioApplication);

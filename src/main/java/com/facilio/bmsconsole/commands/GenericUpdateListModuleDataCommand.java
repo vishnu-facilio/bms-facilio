@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,9 @@ public class GenericUpdateListModuleDataCommand extends FacilioCommand {
 			Boolean withChangeSet = (Boolean) context.get(FacilioConstants.ContextNames.WITH_CHANGE_SET);
 			
 			for (ModuleBaseWithCustomFields record :records) {
+				
+				CommonCommandUtil.handleLookupFormData(fields, record.getData());
+				
 				UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 						.module(module)
 						.fields(fields)
