@@ -38,7 +38,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                     moduleId = parentModule.getModuleId();
                 }
 
-                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() == null || i.getMainField()).findFirst();
+                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
                 if (!mainField.isPresent()) {
                     continue;
                 }
@@ -54,7 +54,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {
                     Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("id"));
+                    option.put("id", value.get("index"));
                     option.put("value", value.get("value"));
                     options.add(option);
                 }
@@ -69,7 +69,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {
                     Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("id"));
+                    option.put("id", value.get("index"));
                     option.put("value", value.get("value"));
                     options.add(option);
                 }
@@ -91,7 +91,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                     moduleId = parentModule.getModuleId();
                 }
 
-                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() == null || i.getMainField()).findFirst();
+                Optional<FacilioField> mainField = lookupModuleFields.stream().filter(i -> i.getMainField() != null && i.getMainField()).findFirst();
                 if (!mainField.isPresent()) {
                     continue;
                 }
@@ -107,7 +107,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 List<Map<String, Object>> options = new ArrayList<>();
                 for (Map<String, Object> value : values) {
                     Map<String, Object> option = new HashMap<>();
-                    option.put("id", value.get("id"));
+                    option.put("id", value.get("index"));
                     option.put("value", value.get("value"));
                     options.add(option);
                 }
