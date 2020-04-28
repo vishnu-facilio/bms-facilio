@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,8 +59,11 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -95,24 +99,25 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(workflowRuleResourceLoggerContext.getParentRuleLoggerId());
 			Long ruleId = workflowRuleLoggerContext.getRuleId();
 
-			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-			if (readingRule == null || resourceId == null) {
+			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
+			ResourceContext currentResourceContext = ResourceAPI.getResource(resourceId);
+
+			if(readingRule == null || currentResourceContext == null) {
 				return false;
 			}
 
+			readingRule.setMatchedResources(Collections.singletonMap(currentResourceContext.getId(), currentResourceContext));
 			LOGGER.info("Historical Event Rule Job started for jobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " between "+ startTime +" and "+endTime+" with the jobtriggeredtime at: "+ jobStartTime);	
-			boolean isFirstIntervalJob = false;
-			boolean isLastIntervalJob = false;
+			boolean isFirstIntervalJob = false,isLastIntervalJob = false;
 			
-			if(logState != null)
-			{
+			if(logState != null) {
 				isFirstIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
 				isLastIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
 			}
 
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 			List<WorkflowFieldContext> fields = null;
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingRule.getId()),null);
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(readingRule.getId()), false, true),null);
 			if(alarmRule != null) {		
 				fields = new ArrayList<>();
 				if(alarmRule.getPreRequsite().getWorkflow() != null) {
@@ -172,19 +177,18 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			}
 			
 			readings = fetchReadings(readingRule, resourceId, startTime, endTime);
-			
 			long eventProcessingStartTime = System.currentTimeMillis();
 			long eventSpecialCaseStartTime = 0, eventInsertStartTime = 0, eventInsertEndTime = 0;
 			boolean isReadingsEmpty = (readings == null || readings.isEmpty())? true: false;	
 
 			if(readings != null && !readings.isEmpty())
-			{
+			{	
+				handleDuplicateTriggerMetricReadingErrors(readingRule, readings, currentResourceContext);
 				startTime = readings.get(0).getTtime();
 				endTime = readings.get(readings.size() - 1).getTtime();
 				executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
 				
 				eventSpecialCaseStartTime = System.currentTimeMillis();
-				
 				if(events != null && !events.isEmpty())
 				{
 					BaseEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
@@ -239,6 +243,10 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		else if(!isManualFailed) {
 			workflowRuleHistoricalLogsContext.setErrorMessage("Sorry there seems to be a technical problem. Check your configurations and try re-running the rule for the current timeline.");
 		}
+				
+		if(!isManualFailed) {
+			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" ExceptionMessage -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));
+		}
 		
 		throw historicalRuleException;
 	}	
@@ -281,8 +289,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			}
 			
 			if(!isManualFailed) {
-				CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
-				LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" Exception -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));
+				CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run Failed for Reading_Rule_Resource_Event_Logger : "+jobId, mailExp);
 				LOGGER.log(Level.SEVERE, exceptionMessage);		
 			}
 			
@@ -655,6 +662,35 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			builder.addRecords(readingEvents);
 			builder.save();			
 		}	
+	}
+	
+	private void handleDuplicateTriggerMetricReadingErrors(ReadingRuleContext readingRule, List<ReadingContext> readings, ResourceContext currentResourceContext) throws Exception 
+	{
+		List<Long> uniqueTtimeOfReadings = new ArrayList<Long>();
+		for(ReadingContext reading:readings) 
+		{
+			if(uniqueTtimeOfReadings != null && reading.getTtime() != - 1 && uniqueTtimeOfReadings.contains(reading.getTtime()) && readingRule.getReadingField() != null)
+			{
+				isManualFailed = true;
+				String fieldReading = "";
+				if(readingRule.getReadingField().getName() != null && reading.getReading(readingRule.getReadingField().getName()) != null) 
+				{
+					fieldReading = " - " + reading.getReading(readingRule.getReadingField().getName());
+					if(readingRule.getReadingField() instanceof NumberField) {
+						Unit fieldUnit = UnitsUtil.getDisplayUnit((NumberField)readingRule.getReadingField());
+						if(fieldUnit != null && fieldUnit.getSymbol() != null) {
+							fieldReading = fieldReading + " " +fieldUnit.getSymbol();							
+						}
+					}							
+				}
+				throw new Exception("Please check the trigger metric readings (" + readingRule.getReadingField().getDisplayName() +fieldReading+ 
+						") for this asset (" +currentResourceContext.getName()+ "). It seems to have duplicates at "
+						+DateTimeUtil.getFormattedTime(reading.getTtime(), "dd-MMM-yyyy HH:mm")+ ".");
+			}
+			else {
+				uniqueTtimeOfReadings.add(reading.getTtime());
+			}
+		}
 	}
 	
 	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
