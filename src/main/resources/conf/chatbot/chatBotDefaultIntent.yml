@@ -1226,61 +1226,61 @@
        sample: "I want to invite guests"
     -
        sampleLocalId : 3
-       sample: "Mike is coming [tomorrow](DATE)"
+       sample: "Mike is coming tomorrow"
     -
        sampleLocalId : 4
        sample: "invite people"
     -
        sampleLocalId : 5
-       sample: "Mike and Andrea are coming [tomorrow](DATE)"
+       sample: "John and Joe are coming day after tomorrow"
     -
        sampleLocalId : 6
-       sample: "Mike and Andrea are coming [tomorrow](DATE) [post lunch](TIME)"
+       sample: "Richard and Andrea are coming today post lunch"
     -
        sampleLocalId : 7
-       sample: "Mike and Andrea are coming [tomorrow](DATE) in the [first half](TIME)"
+       sample: "Sophia and Isabella are coming next monday in the first half"
     -
        sampleLocalId : 8
-       sample: "Mike and Andrea will be visiting the [coming Monday](DATE) [first half](TIME)"
+       sample: "Emma and Olivia will be visiting coming Monday second half"
     -
        sampleLocalId : 9
-       sample: "Andrea is coming for an interview [tomorrow](DATE) [morning at 10](TIME)"
+       sample: "Jayden is coming for an interview Tuesday at 10"
     -
        sampleLocalId : 10
-       sample: "Mike and Andrea from Caterpillar are coming to fix the leak [tomorrow](DATE) at [11 AM](TIME)"
+       sample: "Ethan and Alexander from Caterpillar are coming to fix the leak Wednesday at 11 AM"
     -
        sampleLocalId : 11
-       sample: "The caterpillar guys are coming [tomorrow](DATE) "
+       sample: "The caterpillar guys are coming Thursday"
     -
        sampleLocalId : 12
-       sample: "Arrange a visitor pass for the IT team [tomorrow](DATE) "
+       sample: "Arrange a visitor pass for the IT team Friday"
     -
        sampleLocalId : 13
-       sample: "Arrange a pass for the Caterpillar team [tomorrow](DATE)  at [11 AM](TIME)"
+       sample: "Arrange a pass for the Caterpillar team tomorrow  at 11 AM"
     -
        sampleLocalId : 14
-       sample: "I need to arrange a vendor pass for Mike and Andrea from Caterpillar whos coming [tomorrow](DATE)  at [11 AM](TIME)"
+       sample: "I need to arrange a vendor pass for Daniel and Elizabeth from Caterpillar whos coming next Friday at 11 AM"
     -
        sampleLocalId : 15
-       sample: "Create one-day pass for Mike"
+       sample: "Create one-day pass for Addison"
     -
        sampleLocalId : 16
-       sample: "Arrange a day pass for Mike"
+       sample: "Arrange a day pass for Matthew"
     -
        sampleLocalId : 17
-       sample: "Arrange a half-day pass for Mike"
+       sample: "Arrange a half-day pass for David"
     -
        sampleLocalId : 18
-       sample: "Arrange a three hour pass for Mike at [11 AM](TIME)"
+       sample: "Arrange a three hour pass for Samantha at 9 AM"
     -
        sampleLocalId : 19
-       sample: "Allow the contractor to enter my premises [tomorrow](DATE) "
+       sample: "Allow the contractor to enter my premises Sunday "
     -
        sampleLocalId : 20
-       sample: "Generate a pass for the contractor to fix the leak [tomorrow](DATE) "
+       sample: "Generate a pass for the contractor to fix the leak tomorrow"
     -
        sampleLocalId : 21
-       sample: "Generate a pass for Quality FM [tomorrow](DATE) at [11 AM](TIME)"
+       sample: "Generate a pass for Quality FM today at 10 PM"
   
   
   
