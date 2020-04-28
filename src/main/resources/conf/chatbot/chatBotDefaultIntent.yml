@@ -881,7 +881,7 @@
                                 log "data --- "+data;
                                 if(data.slot == null) {
                                    slot = {};
-                                   timeSlots = ["10 AM","12 AM","2 PM","3 PM"];
+                                   timeSlots = ["10:00","12:00","14:00","15:00"];
                                    today = date().getDayStartTime();
                                    slot[date().getFormattedTime(date().addDays(today,1),"dd/MM/yyyy")] = timeSlots;
                                    slot[date().getFormattedTime(date().addDays(today,2),"dd/MM/yyyy")] = timeSlots;
@@ -1780,6 +1780,7 @@
       - "system_delete_invite_intent"
    actions:
     - 
+        responseType : 10
         action: 
             actionType: 30
             status: 1
@@ -1813,7 +1814,7 @@
                                               else {
                                                  resultMap.put("returnText","You have "+visitList.size()+" Visits today.");
                                               }
-                                              resultMap.put("extraText",visitList);
+                                              resultMap.put("textList",visitList);
                                          }
                                         
                                          return resultMap;

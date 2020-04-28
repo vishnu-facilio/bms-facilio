@@ -94,6 +94,7 @@ public class ChatBotIntentAction {
 		LOOKUP(7,"Lookup"),
 		INTENT_LIST(8,"Intent List"),
 		SLOTED_DATES(9,"Sloted Dated"),
+		LIST_RESPONSE(10,"List Response"),
 		;
 
 		int intVal;

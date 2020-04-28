@@ -49,7 +49,7 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_WORKFLOW_RETURN_TEXT = "returnText";
 	public static final String CHAT_BOT_WORKFLOW_RETURN_EXTRA_PARAM = "extraParams";
-	public static final String CHAT_BOT_WORKFLOW_RETURN_EXTRA_TEXT = "extraText";
+	public static final String CHAT_BOT_WORKFLOW_RETURN_TEXT_LIST = "textList";
 	
 	public static final String CHAT_BOT_SKIP_ACTION_EXECUTION = "skipActionExecution";
 	

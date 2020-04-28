@@ -140,16 +140,11 @@ public class ChatBotIntent {
 							ChatBotUtil.addSessionExtraParam(intentParamContext, session, param.toString());
 						}
 					}
-					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_TEXT)) {
+					if(resultMap.containsKey(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT_LIST)) {
 						
-						List extraTextList = (List)resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_EXTRA_TEXT);
+						List extraTextList = (List)resultMap.get(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT_LIST);
 						
-						for(Object extraText : extraTextList) {
-							JSONObject result1 = new JSONObject();
-							result1.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
-							result1.put(ChatBotConstants.CHAT_BOT_RESPONSE, extraText);
-							resArray.add(result1);
-						}
+						result.put(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT_LIST,extraTextList);
 					}
 				}
 				else if(cbaction.getResponse() != null) {
