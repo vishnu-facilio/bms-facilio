@@ -172,17 +172,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			            		 criteria = new Criteria();
 			            	 }
 			            	 String value = obj.getValue();
-			            	 if(StringUtils.isEmpty(value)) {
-			            		 if(StringUtils.isEmpty(obj.getFieldValueGenerator())){
-			            			 throw new IllegalArgumentException("Both value and value generator cannot be null");
-			            		 }
-			            		Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(obj.getFieldValueGenerator());
-			            		ValueGenerator valueGenerator = classObject.newInstance();
-			            		 if(AccountUtil.getCurrentUser().getAppDomain() != null) {
-			            			 value = valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType());
-			            		 }
-			            	 }
-			            	 if(StringUtils.isNotEmpty(value)) {
+			            	  if(StringUtils.isNotEmpty(value)) {
 					             Condition condition = CriteriaAPI.getCondition(field, value, obj.getOperator());
 					             criteria.addAndCondition(condition);
 			            	 }

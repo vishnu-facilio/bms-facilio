@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
@@ -38,6 +39,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.ValueGenerator;
 import com.facilio.modules.fields.FacilioField;
 
 public class ApplicationApi {
@@ -391,6 +393,7 @@ public class ApplicationApi {
 			List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
 			for(ScopingConfigContext scopingConfig : list) {
 				Map<String, Object> scopingfields = null; 
+				computeValueForScopingField(scopingConfig);
 				 if(moduleScoping.containsKey(scopingConfig.getModuleId())) {
 					 scopingfields = moduleScoping.get(scopingConfig.getModuleId());
 				 }
@@ -403,5 +406,22 @@ public class ApplicationApi {
 			return moduleScoping;
 		}
 		return null;
+	}
+	
+	private static void computeValueForScopingField(ScopingConfigContext sc) throws Exception {
+		if(sc != null) {
+			if(StringUtils.isNotEmpty(sc.getValue())) {
+				return;
+			}
+			if(StringUtils.isEmpty(sc.getFieldValueGenerator())) {
+				throw new IllegalArgumentException("Scoping field --> "+ sc.getFieldName() +" must either have avlue or value generator associated");
+			}
+			Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
+       		ValueGenerator valueGenerator = classObject.newInstance();
+       		 if(AccountUtil.getCurrentUser().getAppDomain() != null) {
+       			sc.setValue(valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
+       		 }
+       	 	
+		}
 	}
 }
