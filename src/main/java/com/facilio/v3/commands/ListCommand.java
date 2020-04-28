@@ -83,7 +83,7 @@ public class ListCommand extends FacilioCommand {
                 .beanClass(beanClass);
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
-        Boolean includeParentCriteria = (Boolean) context.get(Constants.INCLUDE_PARENT_CRITERIA);
+        boolean excludeParentCriteria = (boolean) context.getOrDefault(Constants.EXCLUDE_PARENT_CRITERIA, false);
 
         Criteria beforeFetchCriteria = (Criteria) context.get(Constants.BEFORE_FETCH_CRITERIA);
 
@@ -96,7 +96,7 @@ public class ListCommand extends FacilioCommand {
         }
 
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-        if ((filterCriteria == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+        if (!excludeParentCriteria && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
             selectRecordsBuilder.andCriteria(view.getCriteria());
         }
 

@@ -4,7 +4,7 @@ public class Constants {
     public static final String FILTERS = "filters";
     public static final String RECORD_MAP = "recordMap";
     public static final String RAW_INPUT = "rawInput";
-    public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
+    public static final String EXCLUDE_PARENT_CRITERIA = "excludeParentCriteria";
     public static final String FILTER_CRITERIA = "filterCriteria";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String MODULE_NAME = "moduleName";

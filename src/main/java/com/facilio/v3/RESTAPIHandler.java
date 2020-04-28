@@ -203,15 +203,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             JSONObject json = (JSONObject) parser.parse(filters);
             context.put(Constants.FILTERS, json);
 
-            boolean includeParentFilter = this.getIncludeParentFilter();
-            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, includeParentFilter);
+            boolean excludeParentFilter = this.getExcludeParentFilter();
+            context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
         }
 
-        boolean overrideViewOrderBy = this.getOverrideViewOrderBy();
         Object orderBy = this.getOrderBy();
         Object orderByType = this.getOrderType();
 
-        if (overrideViewOrderBy && orderBy != null) {
+        if (orderBy != null) {
             JSONObject sorting = new JSONObject();
             sorting.put("orderBy", orderBy);
             sorting.put("orderType", orderByType);

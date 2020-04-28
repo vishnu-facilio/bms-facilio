@@ -1,7 +1,8 @@
 package com.facilio.v3;
 
-import com.opensymphony.xwork2.ActionSupport;
 import org.json.simple.JSONObject;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 public class V3Action extends ActionSupport {
     private JSONObject data;
@@ -74,20 +75,12 @@ public class V3Action extends ActionSupport {
 		this.viewName = viewName;
 	}
 
-	private boolean includeParentFilter;
-	public boolean getIncludeParentFilter() {
-		return includeParentFilter;
+	private boolean excludeParentFilter;
+	public boolean getExcludeParentFilter() {
+		return excludeParentFilter;
 	}
-	public void setIncludeParentFilter(boolean includeParentFilter) {
-		this.includeParentFilter = includeParentFilter;
-	}
-
-	private boolean overrideViewOrderBy;
-	public boolean getOverrideViewOrderBy() {
-		return overrideViewOrderBy;
-	}
-	public void setOverrideViewOrderBy(boolean overrideViewOrderBy) {
-		this.overrideViewOrderBy = overrideViewOrderBy;
+	public void setExcludeParentFilter(boolean excludeParentFilter) {
+		this.excludeParentFilter = excludeParentFilter;
 	}
 
 	private String orderBy;
