@@ -139,6 +139,17 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             transitionRuleContext.setToStateId(rejected.getId());
             ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transitionRuleContext);
             ruleChain.execute();
+
+            ruleChain = TransactionChainFactory.addWorkflowRuleChain();
+            ruleContext = ruleChain.getContext();
+            transitionRuleContext =
+                    getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
+                            false, null, null, "Re-Send", module,
+                            null, approvalStateFlowId);
+            transitionRuleContext.setFromStateId(rejected.getId());
+            transitionRuleContext.setToStateId(requested.getId());
+            ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transitionRuleContext);
+            ruleChain.execute();
         }
         return false;
     }
