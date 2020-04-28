@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -133,16 +134,17 @@ public class Account implements AccountsInterface<User>, Serializable{
 
 	public void setCurrentSiteId(long siteId) {
 		this.siteId = siteId;
+		if(siteId > 0) {
+			addToGlobalScopingMap("siteId", siteId);
+		}
+		
+	}
+	
+	private void addToGlobalScopingMap(String key, Object value) {
 		if(this.globlaScopingMap == null) {
 			this.globlaScopingMap = new HashMap<String, Object>();
 		}
-		if(siteId > 0) {
-			this.globlaScopingMap.put("siteId", siteId);
-		}
-		else {
-			this.globlaScopingMap.remove("siteId");
-		}
-		
+		this.globlaScopingMap.put(key, value);
 	}
 
 	public Boolean isFromMobile() {

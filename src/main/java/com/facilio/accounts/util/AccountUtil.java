@@ -59,13 +59,18 @@ public class AccountUtil {
 		}
 	}
 	
-	private static void setScopingMap(Account account) throws Exception {
-		if(account.getUser() != null && account.getOrg() != null) {
+	public static void setScopingMap(Account account) throws Exception {
+		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
 			if(appId > 0) {
 				account.setAppScopingMap(ApplicationApi.getScopingMapForApp(appId, account.getOrg().getOrgId()));
 			}
 		}
+	}
+	
+	public static void setCurrentSiteId(long siteId) throws Exception {
+		getCurrentAccount().setCurrentSiteId(siteId);
+		setScopingMap(getCurrentAccount());
 	}
 	
 	public static Account getCurrentAccount() {

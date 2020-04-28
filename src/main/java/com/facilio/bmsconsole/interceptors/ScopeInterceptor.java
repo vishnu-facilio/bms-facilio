@@ -166,7 +166,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         if (currentAccount != null) {
                             List<Long> sites = CommonCommandUtil.getMySiteIds();
                             if (sites != null && sites.size() == 1) {
-                                currentAccount.setCurrentSiteId(sites.get(0));
+                               AccountUtil.setCurrentSiteId(sites.get(0));
 //								if (accessibleSpace == null) {
 //									accessibleSpace = new ArrayList<>();
 //									accessibleSpace.add(sites.get(0));
@@ -193,7 +193,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                                             throw new IllegalArgumentException("Invalid Site.");
                                         }
                                     }
-                                    currentAccount.setCurrentSiteId(currentSiteId);
+                                    AccountUtil.setCurrentSiteId(currentSiteId);
 //									if (currentSiteId != -1 && accessibleSpace == null) {
 //										accessibleSpace = new ArrayList<>();
 //										accessibleSpace.add(currentSiteId);
