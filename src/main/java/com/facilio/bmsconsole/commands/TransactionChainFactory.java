@@ -796,6 +796,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ConstructEditAssetActivityCommand());
+			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());

@@ -902,8 +902,9 @@ public class FormFactory {
 		fields.add(new FormField("childMeterExpression", FieldDisplayType.TEXTBOX, "Expression", Required.OPTIONAL, 15, 2));
 		fields.add(new FormField("isVirtual", FieldDisplayType.DECISION_BOX, "Is Virtual", Required.OPTIONAL, 16, 2));
 		fields.add(new FormField("purpose", FieldDisplayType.LOOKUP_SIMPLE, "Purpose", Required.OPTIONAL, 17, 2));
-		fields.add(new FormField("purposeSpace", FieldDisplayType.SPACECHOOSER, "Opperational Space", Required.OPTIONAL, 18, 2));
+		fields.add(new FormField("purposeSpace", FieldDisplayType.SPACECHOOSER, "Operational Space", Required.OPTIONAL, 18, 2));
 		fields.add(new FormField("root", FieldDisplayType.DECISION_BOX, "Is Root", Required.OPTIONAL, 19, 2));
+		fields.add(new FormField("multiplicationFactor", FieldDisplayType.TEXTBOX, "Multiplication Factor", Required.OPTIONAL, 20, 2));
 		
 		return Collections.unmodifiableList(fields);
 	}
