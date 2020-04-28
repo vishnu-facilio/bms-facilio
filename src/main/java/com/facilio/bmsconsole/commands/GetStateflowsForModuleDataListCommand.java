@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -23,26 +25,33 @@ public class GetStateflowsForModuleDataListCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(records)) {
 			Map<String, List<WorkflowRuleContext>> stateFlows = StateFlowRulesAPI.getAvailableStates(records);
 			if (MapUtils.isNotEmpty(stateFlows)) {
-				if (moduleName.equals("workpermit")) {
-					for(ModuleBaseWithCustomFields record: records) {
-						if (record.getModuleState() == null) {
-							continue;
-						}
-						String key = record.getStateFlowId() + "_" + record.getModuleState().getId();
-						if(stateFlows.containsKey(key)) {
-							List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(new ArrayList<>(stateFlows.get(key)), moduleName, record, context);
-							record.setCanCurrentUserApprove(CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions));
-						}
+				for(ModuleBaseWithCustomFields record: records) {
+					FacilioStatus currentState = record.getApprovalStatus();
+					if (currentState == null) {
+						currentState = record.getModuleState();
 					}
-				}
-				else {
-					for (String key : stateFlows.keySet()) {
-						List<WorkflowRuleContext> list = stateFlows.get(key);
+					if (currentState == null) {
+						continue;
+					}
+
+					long stateFlowId = record.getApprovalFlowId();
+					if (stateFlowId < 0) {
+						stateFlowId = record.getStateFlowId();
+					}
+
+					String key = stateFlowId + "_" + currentState.getId();
+					if(stateFlows.containsKey(key)) {
+						ArrayList<WorkflowRuleContext> list = new ArrayList<>(stateFlows.get(key));
 						GetAvailableStateCommand.removeUnwantedTranstions(list);
+						List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(list, moduleName, record, context);
+						if (CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions)) {
+							record.setEvaluatedTransitionIds(evaluateStateFlowAndExecuteActions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
+						}
+						record.setCanCurrentUserApprove(CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions));
 					}
 				}
 			}
-		context.put("stateFlows", stateFlows);
+			context.put("stateFlows", stateFlows);
 		}
 		return false;
 	}

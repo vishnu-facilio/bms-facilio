@@ -706,6 +706,16 @@
 			<param name="workOrderId">{1}</param>
 		</action>
 	</package>
+	<package name="approvalTransition" extends="v2Api" namespace="/api/service/v2/approval">
+		<action name="availableTransitions"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" />
+		<action name="changeTransition"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" />
+		<action name="approvalDetails"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalDetails" />
+		<action name="moduleList"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleDataList" />
+	</package>
 	<package name="VendorWoStateTransition"
 		namespace="/api/service/v2/statetransition" extends="newServicePortalApiV2">
 		<action name="getAvailableState"
