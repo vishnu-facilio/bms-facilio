@@ -8394,7 +8394,8 @@ public class FieldFactory {
 	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
 	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
 	        fields.add(getField("fieldValueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
-		      
+	        fields.add(getField("isMandatory", "IS_MANDATORY", module, FieldType.BOOLEAN));
+			      
 	        return fields;
 	 }
 }
