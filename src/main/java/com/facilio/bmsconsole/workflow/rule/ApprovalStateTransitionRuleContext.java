@@ -12,16 +12,33 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionRuleContext {
 
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+        FacilioStatus status = TicketAPI.getStatus(getToStateId());
+        if (status.getParentModuleId() == -1 && "Rejected".equals(status.getDisplayName())) {
+            // if it is rejected status, check the evaluateStateFlow for approve transition
+            List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(getStateFlowId());
+            if (CollectionUtils.isNotEmpty(allStateTransitionList) && allStateTransitionList.size() == 2) {
+                Optional<WorkflowRuleContext> first = allStateTransitionList.stream().filter(transition -> transition.getId() != getId()).findFirst();
+                if (first.isPresent()) {
+                    boolean b = ((ApprovalStateTransitionRuleContext) first.get())
+                            .evaluateStateFlow(moduleRecord.getApprovalFlowId(), moduleRecord.getApprovalStatus(), moduleName, record, placeHolders, context);
+                    if (!b) {
+                        return false;
+                    }
+                }
+            }
+        }
         return evaluateStateFlow(moduleRecord.getApprovalFlowId(), moduleRecord.getApprovalStatus(),
                 moduleName, record, placeHolders, context);
     }
