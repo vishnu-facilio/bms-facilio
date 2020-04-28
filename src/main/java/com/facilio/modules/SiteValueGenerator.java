@@ -19,19 +19,18 @@ public class SiteValueGenerator extends ValueGenerator {
 	public String generateValueForCondition(int appType) {
 		List<Object> values = new ArrayList<Object>(); 
 		try {
-			if(appType == AppDomainType.FACILIO.getIndex()) {
-				Long currentSiteId = (Long)AccountUtil.getGlobalScopingFieldValue("siteId");
-				if(currentSiteId != null && currentSiteId > 0) {
-					values.add(String.valueOf(currentSiteId));
-				}
-				else {
-					List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
-					if(CollectionUtils.isNotEmpty(sites)) {
-						for(BaseSpaceContext site : sites) {
-							values.add(site.getId());
-						}
-						return StringUtils.join(values, ",");
+			Long currentSiteId = (Long)AccountUtil.getGlobalScopingFieldValue("siteId");
+			if(currentSiteId != null && currentSiteId > 0) {
+				values.add(String.valueOf(currentSiteId));
+				return StringUtils.join(values, ",");
+			}
+			else if(appType == AppDomainType.FACILIO.getIndex()) {
+				List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+				if(CollectionUtils.isNotEmpty(sites)) {
+					for(BaseSpaceContext site : sites) {
+						values.add(site.getId());
 					}
+					return StringUtils.join(values, ",");
 				}
 			}
 			else if(appType == AppDomainType.TENANT_PORTAL.getIndex()) {
