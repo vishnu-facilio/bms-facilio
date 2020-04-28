@@ -136,7 +136,12 @@ public class Account implements AccountsInterface<User>, Serializable{
 		if(this.globlaScopingMap == null) {
 			this.globlaScopingMap = new HashMap<String, Object>();
 		}
-		this.globlaScopingMap.put("siteId", siteId);
+		if(siteId > 0) {
+			this.globlaScopingMap.put("siteId", siteId);
+		}
+		else {
+			this.globlaScopingMap.remove("siteId");
+		}
 		
 	}
 

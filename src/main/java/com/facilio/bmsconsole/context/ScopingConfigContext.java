@@ -87,21 +87,4 @@ public class ScopingConfigContext implements Serializable{
 		this.fieldValueGenerator = fieldValueGenerator;
 	}
 	
-	private Boolean isMandatory;
-
-	public Boolean getIsMandatory() {
-		return isMandatory;
-	}
-
-	public void setIsMandatory(Boolean isMandatory) {
-		this.isMandatory = isMandatory;
-	}
-
-	public boolean isMandatory() {
-		if (isMandatory != null) {
-			return isMandatory.booleanValue();
-		}
-		return false;
-	} 
-	
 }
