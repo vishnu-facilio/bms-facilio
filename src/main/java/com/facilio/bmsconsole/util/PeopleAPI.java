@@ -738,8 +738,8 @@ public class PeopleAPI {
 			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
 		}
 		TenantContactContext tc = (TenantContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId);
-		if (tc != null) {
-			return tc.getTenant();
+		if (tc != null && tc.getTenant() != null && tc.getTenant().getId() > 0) {
+			return (TenantContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, tc.getTenant().getId());
 		}
 		return null;
 	}
@@ -749,8 +749,12 @@ public class PeopleAPI {
 		if(pplId <= 0) {
 			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
 		}
-		VendorContactContext tc = (VendorContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
-		return tc.getVendor();
+		VendorContactContext vc = (VendorContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
+		if (vc != null && vc.getVendor() != null && vc.getVendor().getId() > 0) {
+			return (VendorContext)RecordAPI.getRecord(FacilioConstants.ContextNames.VENDORS, vc.getVendor().getId());
+		}
+	
+		return null;
 
 	}
 
@@ -759,8 +763,12 @@ public class PeopleAPI {
 		if(pplId <= 0) {
 			throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
 		}
-		ClientContactContext tc = (ClientContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, pplId);
-		return tc.getClient();
+		ClientContactContext cc = (ClientContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, pplId);
+		if (cc != null && cc.getClient() != null && cc.getClient().getId() > 0) {
+			return (ClientContext)RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT, cc.getClient().getId());
+		}
+	
+		return null;
 
 	}
 	

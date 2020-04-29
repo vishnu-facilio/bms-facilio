@@ -448,6 +448,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
 				selectFields.addAll(scopeFieldsAndCriteria.getFields());
 			}
+			
+			if (FieldUtil.isSiteIdFieldPresent(module)) {
+				selectFields.add(FieldFactory.getSiteIdField(module));
+			}
 		}
 
 		if (CollectionUtils.isNotEmpty(select)) {

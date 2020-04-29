@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -82,9 +83,9 @@ public class ExportUtil {
 			HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
 			HSSFRow rowhead = sheet.createRow((short) 0);
 			
-			List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-			Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-			for (BaseSpaceContext site : siteList) {
+			List<SiteContext> siteList = SpaceAPI.getAllSites();
+			Map<Long, SiteContext> siteIdVsSiteMap = new HashMap<>();  
+			for (SiteContext site : siteList) {
 				siteIdVsSiteMap.put(site.getId(), site);
 			}
 			int i = 0;
@@ -281,9 +282,9 @@ public class ExportUtil {
 	        	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
 	    		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
 	    		
-	    		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
-	    		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
-	    		for (BaseSpaceContext site : siteList) {
+	    		List<SiteContext> siteList = SpaceAPI.getAllSites();
+	    		Map<Long, SiteContext> siteIdVsSiteMap = new HashMap<>();  
+	    		for (SiteContext site : siteList) {
 	    			siteIdVsSiteMap.put(site.getId(), site);
 	    		}
 	        

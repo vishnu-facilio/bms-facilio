@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.bean.GroupBean;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
@@ -19,7 +18,9 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -28,7 +29,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -352,9 +352,9 @@ public class GroupBeanImpl implements GroupBean {
 		if (siteId > 0) {
 			siteIds.add(siteId);
 		} else {
-			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+			List<SiteContext> sites = SpaceAPI.getAllSites();
 			if (sites != null && !sites.isEmpty()) {
-				for (BaseSpaceContext b: sites) {
+				for (SiteContext b: sites) {
 					siteIds.add(b.getSiteId());
 				}
 			}
@@ -399,9 +399,9 @@ public class GroupBeanImpl implements GroupBean {
 		if (siteId > 0) {
 			siteIds.add(siteId);
 		} else {
-			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
+			List<SiteContext> sites = SpaceAPI.getAllSites();
 			if (sites != null && !sites.isEmpty()) {
-				for (BaseSpaceContext b: sites) {
+				for (SiteContext b: sites) {
 					siteIds.add(b.getSiteId());
 				}
 			}

@@ -517,6 +517,7 @@ public class CommonCommandUtil {
 		return toArray;
     }
     
+    //dont use this method instead use SpaceAPI.getAllSites - that will fetch the accessible sites based on scoping
     public static List<BaseSpaceContext> getMySites() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);

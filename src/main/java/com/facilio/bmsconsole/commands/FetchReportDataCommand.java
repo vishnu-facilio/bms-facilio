@@ -330,6 +330,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		FacilioModule prevModule = joinModule;
 		FacilioModule extendedModule = prevModule.getExtendModule();
 		while(extendedModule != null) {
+			selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
 			selectBuilder.innerJoin(extendedModule.getTableName())
 							.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
 			prevModule = extendedModule;
@@ -660,11 +661,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
 		
 		if (!isAlreadyAdded(addedModules, resourceModule)) {
+			selectBuilder.addJoinModules(Collections.singletonList(resourceModule));
 			selectBuilder.innerJoin(resourceModule.getTableName())
 			.on(resourceModule.getTableName()+".ID = " + field.getCompleteColumnName());
 			addedModules.add(resourceModule);
 		}
 		
+		selectBuilder.addJoinModules(Collections.singletonList(baseSpaceModule));
 		selectBuilder.innerJoin(baseSpaceModule.getTableName())
 		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");		
 		addedModules.add(baseSpaceModule);
@@ -753,6 +756,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		while (prevModule != null && CollectionUtils.isNotEmpty(stack)) {
 			FacilioModule pop = stack.pop();
+			builder.addJoinModules(Collections.singletonList(pop));
 			builder.innerJoin(pop.getTableName())
 			.on(prevModule.getTableName()+".ID = "+pop.getTableName()+".ID");
 			prevModule = pop;
