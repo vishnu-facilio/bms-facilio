@@ -14,10 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionRuleContext {
 
@@ -27,7 +24,12 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
         FacilioStatus status = TicketAPI.getStatus(getToStateId());
         if (status.getParentModuleId() == -1 && "Rejected".equals(status.getDisplayName())) {
             // if it is rejected status, check the evaluateStateFlow for approve transition
-            List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(getStateFlowId());
+            List<Map<String, Long>> stateIds = new ArrayList<>();
+            Map<String, Long> map = new HashMap<>();
+            map.put("stateFlowId", getStateFlowId());
+            map.put("fromStateId", getFromStateId());
+            stateIds.add(map);
+            List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getStateTransitions(stateIds);
             if (CollectionUtils.isNotEmpty(allStateTransitionList) && allStateTransitionList.size() == 2) {
                 Optional<WorkflowRuleContext> first = allStateTransitionList.stream().filter(transition -> transition.getId() != getId()).findFirst();
                 if (first.isPresent()) {
