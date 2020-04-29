@@ -2323,6 +2323,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
+	public static FacilioChain getCommissioningPointsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCommissioningPointsCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getFloorPlanSpacesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetFloorPlanSpacesCommand());

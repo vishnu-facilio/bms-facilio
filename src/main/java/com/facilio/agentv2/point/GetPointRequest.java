@@ -116,9 +116,17 @@ public class GetPointRequest {
 
     public GetPointRequest filterCommissionedPoints() {
         Map<String, FacilioField> asMap = FieldFactory.getAsMap(fields);
-        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.RESOURCE_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.ASSET_CATEGORY_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.FIELD_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.FIELD_ID), CommonOperators.IS_NOT_EMPTY));
+        return this;
+    }
+    
+    public GetPointRequest filterUnMappedPoints() {
+        Map<String, FacilioField> asMap = FieldFactory.getAsMap(fields);
+        Criteria filterCriteria= new Criteria(); 
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.RESOURCE_ID), CommonOperators.IS_EMPTY));
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(asMap.get(AgentConstants.FIELD_ID), CommonOperators.IS_EMPTY));
+        filterCriteria.andCriteria(filterCriteria);
         return this;
     }
 

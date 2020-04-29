@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
@@ -21,12 +22,17 @@ import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -34,6 +40,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 
 
 public class CommissioningApi {
@@ -167,6 +174,28 @@ public class CommissioningApi {
 		return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
 	}
 	
+	public static Long checkDraftMode(List<Long> controllerIds) throws Exception {
+		FacilioModule module = ModuleFactory.getCommissioningLogModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogFields());
+		FacilioModule controllerModule = ModuleFactory.getCommissioningLogControllerModule();
+		Map<String, FacilioField> controllerFieldMap = FieldFactory.getAsMap(FieldFactory.getCommissioningLogControllerFields());
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.innerJoin(controllerModule.getTableName())
+				.on(fieldMap.get("id").getCompleteColumnName()+"="+controllerFieldMap.get("commissioningLogId").getCompleteColumnName())
+				.select(Collections.singletonList(fieldMap.get("id")))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(controllerFieldMap.get("controllerId"), controllerIds, NumberOperators.EQUALS));
+				;
+				
+		Map<String, Object> props = builder.fetchFirst();
+		if (props != null && !props.isEmpty()) {
+			return (long) props.get("id");
+		}
+		return null;
+	}
+	
 	
 	public static void filterAndValidatePointsOnUpdate(CommissioningLogContext log, CommissioningLogContext oldLog) throws Exception {
 		if (oldLog == null) {
@@ -234,6 +263,40 @@ public class CommissioningApi {
 		if (!rdmPairs.isEmpty()) {
 			checkRDMType(rdmPairs);
 		}
+	}
+	
+	public static Map<Long, String> getResources(Set<Long> resourceIds) throws Exception {
+		if (!resourceIds.isEmpty()) {
+			FacilioChain chain = FacilioChainFactory.getPickListChain();
+			Context picklistContext = chain.getContext();
+			picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.RESOURCE);
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getIdCondition(resourceIds, null));
+			picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
+			chain.execute();
+			return (Map<Long, String>) picklistContext.get(ContextNames.PICKLIST);
+		}
+		return null;
+	}
+
+	public static Map<Long, Map<String, Object>> getFields(Set<Long> fieldIds) throws Exception {
+		if (!fieldIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = modBean.getFields(fieldIds);
+			if (fields != null) {
+				Map<Long, Map<String, Object>> fieldMap = new HashMap<>();
+				for(FacilioField field: fields) {
+					Map<String, Object> fieldDetail = new HashMap<>();
+					fieldDetail.put("name", field.getDisplayName());
+					if (field instanceof NumberField) {
+						fieldDetail.put("metric", ((NumberField) field).getMetric());
+					}
+					fieldMap.put(field.getId(), fieldDetail);
+				}
+				return fieldMap;
+			}
+		}
+		return null;
 	}
 	
 }

@@ -2768,10 +2768,6 @@
 	</package>
 	
 	<package name="commissioningApiv2" namespace="/api/v2/commissioning" extends="v2Api">
-		<action name="points" class="com.facilio.bmsconsole.actions.TimeSeries" method="pointList">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONTROLLER</param>
-		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.CommissionAction" method="logList">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
@@ -2791,6 +2787,20 @@
 		<action name="delete" class="com.facilio.bmsconsole.actions.CommissionAction" method="deleteLog">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="checkDraft" class="com.facilio.bmsconsole.actions.CommissionAction" method="checkDraft">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="mapped" class="com.facilio.bmsconsole.actions.CommissionAction" method="pointsList">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+			<param name="fetchMapped">true</param>
+		</action>
+		<action name="unmapped" class="com.facilio.bmsconsole.actions.CommissionAction" method="pointsList">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+			<param name="fetchMapped">false</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.CommissionAction" method="logDetails">
 			<param name="moduleName">setup</param>

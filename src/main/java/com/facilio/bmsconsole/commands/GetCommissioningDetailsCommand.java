@@ -15,21 +15,16 @@ import org.json.simple.JSONArray;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
-import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 
 public class GetCommissioningDetailsCommand extends FacilioCommand {
@@ -127,33 +122,15 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 	private void setResources(Set<Long> resourceIds, Context context) throws Exception {
 		if (!resourceIds.isEmpty()) {
-			FacilioChain chain = FacilioChainFactory.getPickListChain();
-			Context picklistContext = chain.getContext();
-			picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.RESOURCE);
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getIdCondition(resourceIds, null));
-			picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
-			chain.execute();
-			context.put(ContextNames.RESOURCE_LIST, picklistContext.get(ContextNames.PICKLIST));
+			Map<Long, String> resources = CommissioningApi.getResources(resourceIds);
+			context.put(ContextNames.RESOURCE_LIST, resources);
 		}
 	}
 
 	private void setFields(Set<Long> fieldIds, Context context) throws Exception {
 		if (!fieldIds.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> fields = modBean.getFields(fieldIds);
-			if (fields != null) {
-				Map<Long, Map<String, Object>> fieldMap = new HashMap<>();
-				for(FacilioField field: fields) {
-					Map<String, Object> fieldDetail = new HashMap<>();
-					fieldDetail.put("name", field.getDisplayName());
-					if (field instanceof NumberField) {
-						fieldDetail.put("metric", ((NumberField) field).getMetric());
-					}
-					fieldMap.put(field.getId(), fieldDetail);
-				}
-				context.put(ContextNames.FIELDS, fieldMap);
-			}
+			Map<Long, Map<String, Object>> fieldMap = CommissioningApi.getFields(fieldIds);
+			context.put(ContextNames.FIELDS, fieldMap);
 		}
 	}
 
