@@ -72,7 +72,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 				reportAggrData.putAll(aggrData);
 			}
 		}
-		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
+//		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
 		return false;
 	}
 	
