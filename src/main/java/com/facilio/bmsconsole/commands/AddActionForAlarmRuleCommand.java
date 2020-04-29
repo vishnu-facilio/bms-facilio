@@ -17,19 +17,18 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
+//		ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
 		
-		List<ActionContext> actions = new ArrayList<ActionContext>();
-		if(alarmTriggerRule != null) {
-			actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
-			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
-		}
+//		if(alarmTriggerRule != null) {
+//			actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
+//			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
+//		}
 
 		WorkflowRuleContext reportDowntimeRule=alarmRule.getReportDowntimeRule();
 		if(reportDowntimeRule!=null){
 			ActionContext action= ActionAPI.getDefaultPropsForDowntimeAction(ActionType.REPORT_DOWNTIME_ACTION);
 			reportDowntimeRule.setActions(Collections.singletonList(action));
-			actions = ActionAPI.addActions(reportDowntimeRule.getActions(), reportDowntimeRule);
+			List<ActionContext> actions = ActionAPI.addActions(reportDowntimeRule.getActions(), reportDowntimeRule);
 			ActionAPI.addWorkflowRuleActionRel(reportDowntimeRule.getId(), actions);
 		}
 //		if(alarmRule.getAlarmRCARules() != null) {
@@ -42,7 +41,7 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 
 		if (alarmRule.getWorkflowRulesForAlarms() != null) {
 			for( AlarmWorkflowRuleContext workflowRulesForAlarm :alarmRule.getWorkflowRulesForAlarms()) {
-				actions = ActionAPI.addActions(workflowRulesForAlarm.getActions(), workflowRulesForAlarm);
+				List<ActionContext> actions = ActionAPI.addActions(workflowRulesForAlarm.getActions(), workflowRulesForAlarm);
 				ActionAPI.addWorkflowRuleActionRel(workflowRulesForAlarm.getId(), actions);
 			}
 		}
