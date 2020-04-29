@@ -385,6 +385,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		FacilioModule extendedModule = module.getExtendModule();
 		builder.setBaseTableName(prevModule.getTableName());
 		while(extendedModule != null) {
+			addJoinModules(Collections.singletonList(extendedModule));
 			builder.innerJoin(extendedModule.getTableName())
 					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
 			prevModule = extendedModule;

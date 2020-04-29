@@ -605,6 +605,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			FacilioModule prevModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
 			while (extendedModule != null) {
+				addJoinModules(Collections.singletonList(extendedModule));
 				builder.innerJoin(extendedModule.getTableName())
 						.on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
 				prevModule = extendedModule;
