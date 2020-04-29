@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -61,6 +63,56 @@ public class FormRuleAPI {
 		insertBuilder.save();
 		
 		formRuleContext.setId((Long) props.get("id"));
+	}
+	
+	public static Map<Long,FormRuleContext> getFormTypeRulesMap(long formId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getFormRuleFields();
+		fields.addAll(FieldFactory.getFormRuleActionFields());
+		fields.addAll(FieldFactory.getFormRuleActionFieldsFields());
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.innerJoin(ModuleFactory.getFormRuleActionModule().getTableName())
+				.on("Form_Rule_Action.FORM_RULE_ID = Form_Rule.ID")
+				.innerJoin(ModuleFactory.getFormRuleActionFieldModule().getTableName())
+				.on("Form_Rule_Action.id = Form_Rule_Action_Field.FORM_RULE_ACTION_ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), FormRuleContext.FormRuleType.FROM_FORM.getIntVal()+"", NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Map<Long,FormRuleContext> returnMap = new HashMap<Long, FormRuleContext>();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop :props) {
+				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				FormRuleActionContext formRuleActionContext = FieldUtil.getAsBeanFromMap(prop, FormRuleActionContext.class);
+				
+				FormRuleActionFieldsContext formRuleActionFieldContext = FieldUtil.getAsBeanFromMap(prop, FormRuleActionFieldsContext.class);
+				
+				if(formRuleContext.getCriteriaId() > 0) {
+					formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
+				}
+				
+				if(formRuleActionFieldContext.getCriteriaId() > 0 ) {
+					formRuleActionFieldContext.setCriteria(CriteriaAPI.getCriteria(formRuleActionFieldContext.getCriteriaId()));
+				}
+				
+				
+				formRuleActionContext.setFormRuleActionFieldsContext(Collections.singletonList(formRuleActionFieldContext));
+				
+				formRuleContext.setActions(Collections.singletonList(formRuleActionContext));
+				
+				returnMap.put(formRuleActionFieldContext.getFormFieldId(), formRuleContext);
+			}
+		}
+		return returnMap;
 	}
 	
 	public static void addFormRuleActionContext(FormRuleActionContext formRuleActionContext) throws Exception {
@@ -150,7 +202,7 @@ public class FormRuleAPI {
 		return null;
 	}
 	
-	public static FormRuleContext getFormRuleContext(Long formId,Long formFieldId,TriggerType triggerType) throws Exception {
+	public static List<FormRuleContext> getFormRuleContext(Long formId,Long formFieldId,TriggerType triggerType) throws Exception {
 		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId <=0)) {
 			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
 		}
@@ -169,12 +221,13 @@ public class FormRuleAPI {
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<FormRuleContext> formRuleContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
 			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
-			return formRuleContext;
+			formRuleContexts.add(formRuleContext);
 		}
-		return null;
+		return formRuleContexts;
 	}
 	
 	public static List<FormRuleContext> getFormRuleContexts(String moduleName) throws Exception {
