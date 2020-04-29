@@ -61,6 +61,7 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class BIMIntegrationAction extends FacilioAction{
 
+	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(BIMIntegrationAction.class.getName());
 	
 	public String uploadBim() throws Exception {
@@ -307,6 +308,90 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				
 				addFieldsChain.execute();
 			}
+			if(!fieldsMap.containsKey("servingspacename")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("Serving space Name");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("servingspacenumber")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("Serving space Number");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("systemname")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("System Name");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("systemclassification")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("System Classification");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("uniclass")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("Uniclass");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
+			if(!fieldsMap.containsKey("uniclassname")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("Uniclass Name");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}	
 		}
 		if(thirdParty.equals(ThirdParty.YOUBIM)){
 			if(!fieldsMap.containsKey("2dviewid")){
@@ -517,6 +602,54 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			
 			String category = ((JSONObject)parser.parse(properties.get("dtType").toString())).get("val").toString();
 			
+			String servingSpaceName = "";
+			if(properties.containsKey("Containing Space Name")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Containing Space Name").toString());
+				if(snoObject.containsKey("val")){
+					servingSpaceName =  snoObject.get("val").toString();
+				}
+			}
+			
+			String servingSpaceNumber = "";
+			if(properties.containsKey("Containing Space Number")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Containing Space Number").toString());
+				if(snoObject.containsKey("val")){
+					servingSpaceNumber =  snoObject.get("val").toString();
+				}
+			}
+			
+			String systemName = "";
+			if(properties.containsKey("System Name")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("System Name").toString());
+				if(snoObject.containsKey("val")){
+					systemName =  snoObject.get("val").toString();
+				}
+			}
+			
+			String systemClassification = "";
+			if(properties.containsKey("System Classification")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("System Classification").toString());
+				if(snoObject.containsKey("val")){
+					systemClassification =  snoObject.get("val").toString();
+				}
+			}
+			
+			String uniclass = "";
+			if(properties.containsKey("UniClass 2015")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("UniClass 2015").toString());
+				if(snoObject.containsKey("val")){
+					uniclass =  snoObject.get("val").toString();
+				}
+			}
+			
+			String uniclassName = "";
+			if(properties.containsKey("Uniclass 2015 Name")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass 2015 Name").toString());
+				if(snoObject.containsKey("val")){
+					uniclassName =  snoObject.get("val").toString();
+				}
+			}
+			
 			String serialNumber = "";
 			if(properties.containsKey("Serial Number")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Serial Number").toString());
@@ -581,6 +714,12 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(assetId > 0){
 					AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setDatum("servingspacename", servingSpaceName);
+					asset.setDatum("servingspacenumber", servingSpaceNumber);
+					asset.setDatum("systemname", systemName);
+					asset.setDatum("systemclassification", systemClassification);
+					asset.setDatum("uniclass", uniclass);
+					asset.setDatum("uniclassname", uniclassName);
 					asset.setDatum("runstatus",false);
 					asset.setName(assetName);
 					asset.setDescription(description);
@@ -599,6 +738,12 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 					
 					AssetContext asset = new AssetContext();
 					asset.setDatum("thirdpartyid", thirdPartyId);
+					asset.setDatum("servingspacename", servingSpaceName);
+					asset.setDatum("servingspacenumber", servingSpaceNumber);
+					asset.setDatum("systemname", systemName);
+					asset.setDatum("systemclassification", systemClassification);
+					asset.setDatum("uniclass", uniclass);
+					asset.setDatum("uniclassname", uniclassName);
 					asset.setDatum("runstatus",false);
 					asset.setName(assetName);
 					asset.setDescription(description);
