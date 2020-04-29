@@ -98,6 +98,7 @@
 		
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
+				<param name="shouldApplySwitchScope">false</param>
 		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">

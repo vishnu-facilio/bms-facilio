@@ -148,17 +148,18 @@ public class ScopeHandlerImpl extends ScopeHandler {
     }
     
     private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
-    	if(CollectionUtils.isEmpty(joinModules)) {
+    	if(joinModules == null) {
     		joinModules = new ArrayList<FacilioModule>();
-    		joinModules.add(primaryModule);
     	}
+    	joinModules.add(primaryModule);
+    	List<FacilioField> fields = new ArrayList<FacilioField>();
+		Criteria criteria = null;
+	    
     	for(FacilioModule module : joinModules) {
     		Map<String, Object> moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
 	    	if(MapUtils.isNotEmpty(moduleScoping)) {
 				Iterator<Map.Entry<String, Object>> itr = moduleScoping.entrySet().iterator(); 
-				List<FacilioField> fields = new ArrayList<FacilioField>();
-				Criteria criteria = null;
-			    
+				
 				while(itr.hasNext()) 
 		        { 
 					 Map.Entry<String, Object> entry = itr.next(); 
@@ -179,10 +180,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			             }
 		             }
 		        }
-				return ScopeFieldsAndCriteria.of(fields, criteria);
 			}
     	}
-    	return null;
+		return ScopeFieldsAndCriteria.of(fields, criteria);
     }
 
     

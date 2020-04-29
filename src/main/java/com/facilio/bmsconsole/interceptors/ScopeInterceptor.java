@@ -154,6 +154,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
         try {
             Account currentAccount = AccountUtil.getCurrentAccount();
             if (currentAccount != null) {
+            	String shouldApplySwitchScope = ActionContext.getContext().getParameters().get("shouldApplySwitchScope").getValue();
+            	if(StringUtils.isEmpty(shouldApplySwitchScope) || shouldApplySwitchScope.equals("true")) {
+            		AccountUtil.setShouldApplySwitchScope(true);
+            	}
+            	else {
+            		AccountUtil.setShouldApplySwitchScope(false);
+            	}
                 if (request.getAttribute("isPortal") != null && (Boolean) request.getAttribute("isPortal")) {
                     PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(currentAccount.getOrg().getOrgId(), false);
                     currentAccount.getOrg().setPortalId(portalInfo.getPortalId());

@@ -371,16 +371,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 
 		updateFields.addAll(FieldUtil.removeMultiRecordFields(fields));
-		if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
-			updateFields.addAll(scopeFieldsAndCriteria.getFields());
-		}
-		if (FieldUtil.isSystemFieldsPresent(module)) {
-			updateFields.addAll(FieldFactory.getSystemFields(module));
-		}
-		if (FieldUtil.isBaseEntityRootModule(module)) {
-			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
-		}
-
+		
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
 		builder.setBaseTableName(prevModule.getTableName());
@@ -390,6 +381,16 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
+		}
+
+		if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+			updateFields.addAll(scopeFieldsAndCriteria.getFields());
+		}
+		if (FieldUtil.isSystemFieldsPresent(module)) {
+			updateFields.addAll(FieldFactory.getSystemFields(module));
+		}
+		if (FieldUtil.isBaseEntityRootModule(module)) {
+			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
 
 		builder.andCustomWhere(where.getWhereClause(), where.getValues());

@@ -477,4 +477,20 @@ public class AccountUtil {
 		return FacilioProperties.getAppDomain();
 	}
 	
+	public static void setShouldApplySwitchScope(Boolean shouldApplySwitchScope) throws Exception {
+		if(shouldApplySwitchScope == null){
+			shouldApplySwitchScope = true;
+		}
+		getCurrentAccount().setShouldApplySwitchScope(shouldApplySwitchScope);
+	}
+	
+	
+	public static Boolean getShouldApplySwitchScope() {
+		if (currentAccount.get() != null && currentAccount.get().getShouldApplySwitchScope() != null) {
+			return currentAccount.get().getShouldApplySwitchScope();
+		}
+		return true;
+	}
+		
+	
 }

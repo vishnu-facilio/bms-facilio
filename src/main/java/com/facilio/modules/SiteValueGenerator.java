@@ -1,6 +1,6 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,7 +20,7 @@ public class SiteValueGenerator extends ValueGenerator {
 		List<Object> values = new ArrayList<Object>(); 
 		try {
 			Long currentSiteId = (Long)AccountUtil.getGlobalScopingFieldValue("siteId");
-			if(currentSiteId != null && currentSiteId > 0) {
+			if(AccountUtil.getShouldApplySwitchScope() && currentSiteId != null && currentSiteId > 0) {
 				values.add(String.valueOf(currentSiteId));
 				return StringUtils.join(values, ",");
 			}

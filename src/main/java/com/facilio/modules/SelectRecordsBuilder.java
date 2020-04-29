@@ -585,6 +585,17 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				deleteFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
 				deleteFields.add(FieldFactory.getSysDeletedByField(parentModule));
 			}
+			
+			FacilioModule prevModule = module;
+			FacilioModule extendedModule = module.getExtendModule();
+			while (extendedModule != null) {
+				addJoinModules(Collections.singletonList(extendedModule));
+				builder.innerJoin(extendedModule.getTableName())
+						.on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+				prevModule = extendedModule;
+				extendedModule = extendedModule.getExtendModule();
+			}
+			
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, joinModules);
 
 			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields);
@@ -602,15 +613,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 			handlePermissionAndScope();
 
-			FacilioModule prevModule = module;
-			FacilioModule extendedModule = module.getExtendModule();
-			while (extendedModule != null) {
-				addJoinModules(Collections.singletonList(extendedModule));
-				builder.innerJoin(extendedModule.getTableName())
-						.on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
-				prevModule = extendedModule;
-				extendedModule = extendedModule.getExtendModule();
-			}
 			builder.getJoinBuilder().append(joinBuilder.toString());
 			actualSelectFields = selectFields;
 		}

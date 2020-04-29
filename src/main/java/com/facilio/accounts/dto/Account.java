@@ -67,6 +67,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long publicRedisDeleteTime = 0L;
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, Map<String, Object>> scopingMap;
+	private Boolean shouldApplySwitchScope;
 
 
 	private RemoteScreenContext remoteScreen;
@@ -650,5 +651,21 @@ public class Account implements AccountsInterface<User>, Serializable{
 	public void setAppScopingMap(Map<Long, Map<String, Object>> scoping) {
 		this.scopingMap = scoping;
 	}
+
+	public Boolean getShouldApplySwitchScope() {
+		if(shouldApplySwitchScope == null) {
+			return true;
+		}
+		return shouldApplySwitchScope;
+	}
+
+	public void setShouldApplySwitchScope(Boolean shouldApplySwitchScope) {
+		if(shouldApplySwitchScope == null) {
+			shouldApplySwitchScope = true;
+		}
+		this.shouldApplySwitchScope = shouldApplySwitchScope;
+	}
+	
+	
 }
 
