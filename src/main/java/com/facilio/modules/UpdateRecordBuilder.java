@@ -500,7 +500,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	//will be an interface method once i check in in framework
 		public void addJoinModules(Collection<FacilioModule> joinModules) {
-			if(joinModules == null) {
+			if(this.joinModules == null) {
 				this.joinModules = new ArrayList<FacilioModule>();  
 			}
 			this.joinModules.addAll(joinModules);

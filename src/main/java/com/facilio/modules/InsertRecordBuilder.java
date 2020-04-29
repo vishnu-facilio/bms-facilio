@@ -254,7 +254,15 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 
 				Collection<FacilioField> scopeFields = ScopeHandler.getInstance().updateValuesForInsertAndGetFields(currentModule, props);
 				if (CollectionUtils.isNotEmpty(scopeFields)) {
-					currentFields.addAll(scopeFields);
+					for(FacilioField field : scopeFields) {
+						FacilioField fieldAlreadyPresent = currentFields.stream()
+								  .filter(currentField -> (field.getName().equals(currentField.getName())))
+								  .findAny()
+								  .orElse(null);
+						if(fieldAlreadyPresent == null) {
+							currentFields.add(field);
+						}
+					}
 				}
 
 				if (FieldUtil.isSystemFieldsPresent(currentModule)) {

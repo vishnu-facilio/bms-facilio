@@ -93,6 +93,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
 
 		this.skipPermission = selectBuilder.skipPermission;
+		this.joinModules = selectBuilder.joinModules;
 	}
 	
 	@Override
@@ -780,10 +781,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	//will be an interface method once i check in in framework
 	public void addJoinModules(Collection<FacilioModule> joinModules) {
-		if(joinModules == null) {
+		if(this.joinModules == null) {
 			this.joinModules = new ArrayList<FacilioModule>();  
 		}
 		this.joinModules.addAll(joinModules);
 	}
-
+	
 }
