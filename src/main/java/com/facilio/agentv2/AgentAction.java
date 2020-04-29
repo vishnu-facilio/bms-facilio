@@ -425,6 +425,12 @@ public class AgentAction extends AgentActionV2 {
             if( AccountUtil.getCurrentOrg()!= null ) {
                 JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
                 setResult(AgentConstants.DATA, alertsPoints);
+                if ( ! alertsPoints.isEmpty())	{
+                    JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size()-1);
+                    if(lastRecord != null && lastRecord.containsKey("arrivalTime")){
+                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,lastRecord.get("arrivalTime"));
+                    }
+                }
                 ok();
             }
         } catch (Exception e) {
@@ -434,6 +440,7 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
 
     public String downloadCertificate(){
         try{
