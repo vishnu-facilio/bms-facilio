@@ -25,9 +25,9 @@ public class GetFieldsByModuleType extends FacilioCommand {
         for (FacilioField field: allFields) {
             FieldType dataTypeEnum = field.getDataTypeEnum();
             if (dataTypeEnum == FieldType.LOOKUP) {
-//                if (field.getName().equals("status") && moduleName.equals("workorder")) {
-//                    continue;
-//                }
+                if ((field.getName().equals("status") || field.getName().equals("approvalStatus")) && moduleName.equals("workorder")) {
+                    continue;
+                }
                 LookupField lookupField = (LookupField) field;
                 long lookupModuleId = lookupField.getLookupModuleId();
                 FacilioModule lookupModule = modBean.getModule(lookupModuleId);
