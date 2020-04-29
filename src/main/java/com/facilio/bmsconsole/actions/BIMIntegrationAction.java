@@ -635,16 +635,16 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			}
 			
 			String uniclass = "";
-			if(properties.containsKey("UniClass 2015")){
-				JSONObject snoObject = (JSONObject)parser.parse(properties.get("UniClass 2015").toString());
+			if(properties.containsKey("Uniclass2015")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass2015").toString());
 				if(snoObject.containsKey("val")){
 					uniclass =  snoObject.get("val").toString();
 				}
 			}
 			
 			String uniclassName = "";
-			if(properties.containsKey("Uniclass 2015 Name")){
-				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass 2015 Name").toString());
+			if(properties.containsKey("Uniclass2015 Name")){
+				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass2015 Name").toString());
 				if(snoObject.containsKey("val")){
 					uniclassName =  snoObject.get("val").toString();
 				}
