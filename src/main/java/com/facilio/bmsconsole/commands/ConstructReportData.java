@@ -231,11 +231,26 @@ public class ConstructReportData extends FacilioCommand {
 			for (int i = 0; i < sortFields.size(); i++) {
 				Map object = (Map) sortFields.get(i);
 				Object fieldId = object.get("field_id");
-				if (fieldId instanceof String && ((String) fieldId).equals("y-field")) {
+				if (fieldId instanceof String) {
+					if(((String) fieldId).equals("y-field")) {
 					orderBy.add(yAggr.getSelectField(yField).getCompleteColumnName());
+					} else {
+						FacilioField orderByField = getField(modBean,fieldId);
+						if (object.containsKey("aggr")) {
+							AggregateOperator orderByAggr = AggregateOperator.getAggregateOperator(((Number) object.get("aggr")).intValue());
+							orderBy.add(orderByAggr.getSelectField(orderByField).getCompleteColumnName());
+						} else{
+							orderBy.add(orderByField.getCompleteColumnName());
+						}
+					}
 				} else if (fieldId instanceof Long) {
 					FacilioField orderByField = modBean.getField((Long) fieldId);
-					orderBy.add(orderByField.getCompleteColumnName());
+					if (object.containsKey("aggr")) {
+						AggregateOperator orderByAggr = AggregateOperator.getAggregateOperator(((Number) object.get("aggr")).intValue());
+						orderBy.add(orderByAggr.getSelectField(orderByField).getCompleteColumnName());
+					} else{
+						orderBy.add(orderByField.getCompleteColumnName());
+					}
 				}
 			}
 			dataPointContext.setOrderBy(orderBy);
