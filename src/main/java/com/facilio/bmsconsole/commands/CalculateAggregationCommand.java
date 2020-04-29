@@ -12,7 +12,8 @@ import java.util.Set;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -23,7 +24,7 @@ import com.facilio.report.context.ReportDataPointContext;
 
 public class CalculateAggregationCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = Logger.getLogger(CalculateAggregationCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(CalculateAggregationCommand.class.getName());
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -72,7 +73,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 				reportAggrData.putAll(aggrData);
 			}
 		}
-//		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
+		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
 		return false;
 	}
 	
@@ -86,15 +87,14 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		Iterator<Map<String, Object>> itr = csvData.iterator();
 		Map<String, Object> currentData = itr.next();
 		boolean isNoData = false;
-		ArrayList<Long> parentIds = dp.getMetaData() != null ? (ArrayList<Long>) dp.getMetaData().get("parentIds") : null;
+		ArrayList<Object> parentIds = dp.getMetaData() != null ? (ArrayList) dp.getMetaData().get("parentIds") : null;
+		
 		long dataInterval = 0;
 		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL) {
 			isNoData = true;
 			if(CollectionUtils.isNotEmpty(parentIds) && dp.getyAxis().getField() != null) {
-				LOGGER.info("parentId--------------->"+parentIds.get(0));
-				LOGGER.info("interval--------------->"+ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField()));
-				LOGGER.info("datainteval--------------->"+ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField())*60*1000);
-				dataInterval = ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField())*60*1000;
+				Long parentId = Long.valueOf(String.valueOf(parentIds.get(0)));
+				dataInterval = ReadingsAPI.getDataInterval(parentId, dp.getyAxis().getField())*60*1000;
 				Map<Integer, Object> enumMap = dp.getyAxis().getEnumMap();
 				enumMap.put(enumMap.size(), "No Data");
 				dp.getyAxis().setEnumMap(enumMap);
