@@ -288,13 +288,16 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				mailExp.setStackTrace(stack);
 			}
 			
-			if(!isManualFailed) {
-				CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run Failed for Reading_Rule_Resource_Event_Logger : "+jobId, mailExp);
-				LOGGER.log(Level.SEVERE, exceptionMessage);		
-			}
-			
 			if(workflowRuleHistoricalLogsContext != null)	{	
-				NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
+				
+				if(isManualFailed) { //Failed by us
+					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.SKIPPED.getIntVal()));
+				}
+				else {
+					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
+					CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run Failed for Reading_Rule_Resource_Event_Logger : "+jobId, mailExp);
+					LOGGER.log(Level.SEVERE, exceptionMessage);	
+				}
 			
 				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
 				long activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsCountByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
@@ -683,8 +686,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 						}
 					}							
 				}
-				throw new Exception("Please check the trigger metric readings (" + readingRule.getReadingField().getDisplayName() +fieldReading+ 
-						") for this asset (" +currentResourceContext.getName()+ "). It seems to have duplicates at "
+				throw new Exception("Trigger metric readings (" + readingRule.getReadingField().getDisplayName() +fieldReading+ 
+						") for this asset (" +currentResourceContext.getName()+ ") seems to have duplicates at "
 						+DateTimeUtil.getFormattedTime(reading.getTtime(), "dd-MMM-yyyy HH:mm")+ ".");
 			}
 			else {
