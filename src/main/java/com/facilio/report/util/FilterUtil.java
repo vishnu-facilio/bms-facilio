@@ -136,7 +136,6 @@ public class FilterUtil {
 		FacilioField orgIdField = AccountConstants.getOrgIdField(selectField.getModule());
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(selectField.getModule());
 		
-		ReadingsAPI.getDataInterval(parentId, conditionField, selectField.getModule());
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(tableName)
 				.select(Collections.singletonList(selectField))

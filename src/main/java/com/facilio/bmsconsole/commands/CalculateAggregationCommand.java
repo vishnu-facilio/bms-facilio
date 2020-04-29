@@ -91,7 +91,10 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		long dataInterval = 0;
 		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL) {
 			isNoData = true;
-			if(CollectionUtils.isNotEmpty(parentIds)) {
+			if(CollectionUtils.isNotEmpty(parentIds) && dp.getyAxis().getField() != null) {
+				LOGGER.info("parentId--------------->"+parentIds.get(0));
+				LOGGER.info("interval--------------->"+ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField()));
+				LOGGER.info("datainteval--------------->"+ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField())*60*1000);
 				dataInterval = ReadingsAPI.getDataInterval(parentIds.get(0), dp.getyAxis().getField())*60*1000;
 				Map<Integer, Object> enumMap = dp.getyAxis().getEnumMap();
 				enumMap.put(enumMap.size(), "No Data");
@@ -113,7 +116,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".timeline"));
 	}
 
-	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isNoData, Map<String, SimpleEntry<Long, Integer>> previousRecords, Long dataInterval) {
+	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isNoData, Map<String, SimpleEntry<Long, Integer>> previousRecords, long dataInterval) {
 		long startTime = -1, endTime = -1, nextStartTime = -1;
 
 		if (currentData != null) {

@@ -469,28 +469,19 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				if(operatingHourList != null) {
 					BusinessHoursList operatingHourObj = BusinessHoursAPI.getBusinessHours(operatingHourList);
 					if(CollectionUtils.isNotEmpty(operatingHourObj)) {
+						Long startMillis = start.toInstant().toEpochMilli();
+			    		Map<String, Object> startObj = new HashMap();
+			    		startObj.put("key", startMillis);
+			    		startObj.put("value", 0);
+				    	timeline.add(startObj);
 						do {
 							for (BusinessHourContext operatingHour : operatingHourObj) {
 								if (operatingHour.getDayOfWeek() == start.getDayOfWeek().getValue()) {
 									if(operatingHour.getStartTime() != null) {
-										Map<String, Object> obj = new HashMap();
-						    			Map<String, Object> obj1 = new HashMap();
-							    		Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
+										Long startTime = (long) (LocalTime.parse(operatingHour.getStartTime()).toSecondOfDay()*1000);
 								    	Long endTime = (long) (LocalTime.parse(operatingHour.getEndTime()).toSecondOfDay()*1000);
-								    	Long startMillis = start.toInstant().toEpochMilli();
-								    	Long endMillis = end.toInstant().toEpochMilli();
-								    	if(!startMillis.equals(startMillis+startTime)) {
-								    		Map<String, Object> startObj = new HashMap();
-								    		startObj.put("key", startMillis);
-								    		startObj.put("value", 0);
-									    	timeline.add(startObj);
-								    	}
-								    	if(!endMillis.equals(endMillis+endTime)) {
-								    		Map<String, Object> endObj = new HashMap();
-								    		endObj.put("key", endMillis);
-								    		endObj.put("value", 0);
-								    		timeline.add(endObj);
-								    	}
+						    			Map<String, Object> obj1 = new HashMap();
+						    			Map<String, Object> obj = new HashMap();
 								    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
 								    	obj.put("value", 1);
 								    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
@@ -498,15 +489,20 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 								    	timeline.add(obj);
 								    	timeline.add(obj1);
 									}else {
-										timeline.addAll(prepareDateRangeTimeLine(start, DateTimeUtil.getDayEndTimeOf(start)));
+										timeline.addAll(prepareDateRangeTimeLine(start, DateTimeUtil.getDayEndTimeOf(start), 1));
 									}
 								}
 							}
 							start = start.plusDays(1);
 						}  while (start.toEpochSecond() <= end.toEpochSecond());
+						Long endMillis = end.toInstant().toEpochMilli();
+						Map<String, Object> endObj = new HashMap();
+			    		endObj.put("key", endMillis);
+			    		endObj.put("value", 0);
+			    		timeline.add(endObj);
 					}
 					else{
-						timeline.addAll(prepareDateRangeTimeLine(start, end));
+						timeline.addAll(prepareDateRangeTimeLine(start, end, 1));
 					}
 				}
 				operatingHoursObj.put("operatingHours.timeline", timeline);
@@ -515,12 +511,12 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		return operatingHoursObj;
 	}
 	
-	private static List<Map<String, Object>> prepareDateRangeTimeLine(ZonedDateTime start, ZonedDateTime end){
+	private static List<Map<String, Object>> prepareDateRangeTimeLine(ZonedDateTime start, ZonedDateTime end, int status){
 		List<Map<String, Object>> timeLine = new ArrayList();
 		Map<String, Object> obj = new HashMap();
 		Map<String, Object> obj1 = new HashMap();
     	obj.put("key", start.toInstant().toEpochMilli());
-    	obj.put("value", 1);
+    	obj.put("value", status);
     	obj1.put("key", end.toInstant().toEpochMilli());
     	obj1.put("value", 0);
     	timeLine.add(obj);
