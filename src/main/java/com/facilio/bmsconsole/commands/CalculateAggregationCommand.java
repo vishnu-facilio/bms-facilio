@@ -12,8 +12,7 @@ import java.util.Set;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -24,7 +23,7 @@ import com.facilio.report.context.ReportDataPointContext;
 
 public class CalculateAggregationCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = LogManager.getLogger(CalculateAggregationCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(CalculateAggregationCommand.class.getName());
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
