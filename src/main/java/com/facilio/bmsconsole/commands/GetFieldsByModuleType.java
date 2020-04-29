@@ -25,6 +25,9 @@ public class GetFieldsByModuleType extends FacilioCommand {
         for (FacilioField field: allFields) {
             FieldType dataTypeEnum = field.getDataTypeEnum();
             if (dataTypeEnum == FieldType.LOOKUP) {
+//                if (field.getName().equals("status") && moduleName.equals("workorder")) {
+//                    continue;
+//                }
                 LookupField lookupField = (LookupField) field;
                 long lookupModuleId = lookupField.getLookupModuleId();
                 FacilioModule lookupModule = modBean.getModule(lookupModuleId);
@@ -46,7 +49,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
                 modMap.put("displayName", lookupModule.getDisplayName());
                 modMap.put("options", values);
-                result.put(lookupModule.getName(), modMap);
+                result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.ENUM) {
                 EnumField enumField = (EnumField) field;
                 List<EnumFieldValue> enumValues = enumField.getValues();
@@ -61,7 +64,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 Map<String, Object> modMap = new HashMap<>();
                 modMap.put("displayName", enumField.getDisplayName());
                 modMap.put("options", options);
-                result.put(enumField.getName(), modMap);
+                result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.MULTI_ENUM) {
                 MultiEnumField multiEnumField = (MultiEnumField) field;
                 List<EnumFieldValue> multiEnumFieldValues = multiEnumField.getValues();
@@ -76,7 +79,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 Map<String, Object> modMap = new HashMap<>();
                 modMap.put("displayName", multiEnumField.getDisplayName());
                 modMap.put("options", options);
-                result.put(multiEnumField.getName(), modMap);
+                result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.MULTI_LOOKUP) {
                 MultiLookupField multiLookupField = (MultiLookupField) field;
                 long lookupModuleId = multiLookupField.getLookupModuleId();
@@ -99,7 +102,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 List<Map<String, Object>> values = getValues(lookupModule, mainField.get(), moduleId);
                 modMap.put("displayName", lookupModule.getDisplayName());
                 modMap.put("options", values);
-                result.put(lookupModule.getName(), modMap);
+                result.put(field.getName(), modMap);
             } else if (dataTypeEnum == FieldType.SYSTEM_ENUM) {
                 SystemEnumField systemEnumField = (SystemEnumField) field;
                 List<EnumFieldValue> systemEnumFieldValues = systemEnumField.getValues();
@@ -114,7 +117,7 @@ public class GetFieldsByModuleType extends FacilioCommand {
                 Map<String, Object> modMap = new HashMap<>();
                 modMap.put("displayName", systemEnumField.getDisplayName());
                 modMap.put("options", options);
-                result.put(systemEnumField.getName(), modMap);
+                result.put(field.getName(), modMap);
             }
         }
 
