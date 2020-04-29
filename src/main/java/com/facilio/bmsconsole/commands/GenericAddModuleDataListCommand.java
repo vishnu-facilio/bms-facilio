@@ -6,10 +6,10 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -47,6 +47,7 @@ public class GenericAddModuleDataListCommand extends FacilioCommand{
 			}
 			List<Long> ids = new ArrayList<>();
 			for(ModuleBaseWithCustomFields rec : record) {
+				CommonCommandUtil.handleLookupFormData(fields, rec.getData());
 				insertRecordBuilder.addRecord(rec);
 			}
 			insertRecordBuilder.save();
