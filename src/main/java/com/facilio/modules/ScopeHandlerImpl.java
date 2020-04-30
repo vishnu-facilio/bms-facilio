@@ -63,7 +63,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
 					if(MapUtils.isNotEmpty(moduleScoping)) {
 						ScopeFieldsAndCriteria scopeFieldCriteria = constructScopingFieldsAndCriteria(module, joinModules, false);
-						Map<String, Object> globalScopingValues = AccountUtil.getGlobalScopingFieldMap();
+						Map<String, Object> globalScopingValues = AccountUtil.getSwitchScopingFieldMap();
 						if(MapUtils.isNotEmpty(globalScopingValues)) {
 							for(FacilioField field : scopeFieldCriteria.getFields()) {
 								if(globalScopingValues.containsKey(field.getName())) {

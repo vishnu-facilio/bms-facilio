@@ -28,7 +28,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private static final long serialVersionUID = 1L;
 	private User user;
 	private long siteId = -1;
-	private Map<String, Object> globlaScopingMap;
+	private Map<String, Object> switchScopingMap;
 
 	private String deviceType;
 	private String appVersion;
@@ -122,30 +122,30 @@ public class Account implements AccountsInterface<User>, Serializable{
 		return -1;
 	}
 
-	public Map<String, Object> getGloblaScopingMap() {
+	public Map<String, Object> getSwitchScopingMap() {
 		if(isScoped()) {
-			return globlaScopingMap;
+			return switchScopingMap;
 		}
 		return null;
 	}
 
-	public void setGloblaScopingMap(Map<String, Object> globlaScopingMap) {
-		this.globlaScopingMap = globlaScopingMap;
+	public void setSwitchScopingMap(Map<String, Object> switchScopingMap) {
+		this.switchScopingMap = switchScopingMap;
 	}
 
 	public void setCurrentSiteId(long siteId) {
 		this.siteId = siteId;
 		if(siteId > 0) {
-			addToGlobalScopingMap("siteId", siteId);
+			addToSwitchScopingMap("siteId", siteId);
 		}
 		
 	}
 	
-	private void addToGlobalScopingMap(String key, Object value) {
-		if(this.globlaScopingMap == null) {
-			this.globlaScopingMap = new HashMap<String, Object>();
+	private void addToSwitchScopingMap(String key, Object value) {
+		if(this.switchScopingMap == null) {
+			this.switchScopingMap = new HashMap<String, Object>();
 		}
-		this.globlaScopingMap.put(key, value);
+		this.switchScopingMap.put(key, value);
 	}
 
 	public Boolean isFromMobile() {

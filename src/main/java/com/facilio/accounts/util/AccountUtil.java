@@ -98,11 +98,11 @@ public class AccountUtil {
 		currentAccount.remove();
 	}
 	
-	public static Object getGlobalScopingFieldValue(String fieldName) {
+	public static Object getSwitchScopingFieldValue(String fieldName) {
 		if (currentAccount.get() != null) {
-			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
-			if(MapUtils.isNotEmpty(globalScopingMap)) {
-				return globalScopingMap.get(fieldName);
+			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
+			if(MapUtils.isNotEmpty(switchScopingMap)) {
+				return switchScopingMap.get(fieldName);
 			}
 		}
 		return null;
@@ -115,20 +115,20 @@ public class AccountUtil {
 		return -1;
 	}
 	
-	public static void setGlobalScopingFieldValue(String fieldName, Object value) {
+	public static void setSwitchScopingFieldValue(String fieldName, Object value) {
 		if (currentAccount.get() != null) {
-			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
-			if(MapUtils.isEmpty(globalScopingMap)) {
-				globalScopingMap = new HashMap<String, Object>();
+			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
+			if(MapUtils.isEmpty(switchScopingMap)) {
+				switchScopingMap = new HashMap<String, Object>();
 			}
-			globalScopingMap.put(fieldName, value);
+			switchScopingMap.put(fieldName, value);
 		}
 	}
 	
-	public static Map<String, Object> getGlobalScopingFieldMap() {
+	public static Map<String, Object> getSwitchScopingFieldMap() {
 		if (currentAccount.get() != null) {
-			Map<String, Object> globalScopingMap = currentAccount.get().getGloblaScopingMap();
-			return globalScopingMap;
+			Map<String, Object> switchScopingMap = currentAccount.get().getSwitchScopingMap();
+			return switchScopingMap;
 		}
 		return null;
 	}

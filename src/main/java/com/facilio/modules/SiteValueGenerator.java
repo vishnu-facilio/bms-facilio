@@ -30,7 +30,7 @@ public class SiteValueGenerator extends ValueGenerator {
 	public String generateValueForCondition(int appType) {
 		List<Object> values = new ArrayList<Object>(); 
 		try {
-			Long currentSiteId = (Long)AccountUtil.getGlobalScopingFieldValue("siteId");
+			Long currentSiteId = (Long)AccountUtil.getSwitchScopingFieldValue("siteId");
 			if(AccountUtil.getShouldApplySwitchScope() && currentSiteId != null && currentSiteId > 0) {
 				values.add(String.valueOf(currentSiteId));
 				return StringUtils.join(values, ",");
