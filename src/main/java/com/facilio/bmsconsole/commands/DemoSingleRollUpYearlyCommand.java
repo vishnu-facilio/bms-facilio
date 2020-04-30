@@ -165,9 +165,16 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 	}
 	
 	private List<FacilioModule> fetchAllReadingModules() throws Exception {
+		
+		List<FacilioField> selectFields = new ArrayList<FacilioField>();
+		for(FacilioField field: FieldFactory.getModuleFields()) {
+			if(field != null && field.getName() != null && !field.getName().equals("createdBy")) {
+				selectFields.add(field);
+			}
+		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getModuleModule().getTableName())
-				.select(FieldFactory.getModuleFields());
+				.select(selectFields);
 		
 		List<Map<String, Object>> props = builder.get();
 		List<FacilioModule> readingModules = new ArrayList<FacilioModule>();
