@@ -202,7 +202,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 
 	RequestConfig config = RequestConfig
 	      .custom()
-	      .setConnectTimeout(30000)
+	      .setConnectTimeout(50000)
 	      .setConnectionRequestTimeout(30000)
 	      .setSocketTimeout(300000)
 	      .build();
