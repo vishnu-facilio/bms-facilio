@@ -1908,9 +1908,9 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="calculateAggregatedEnergyConsumption">
 		</action>
-		<action name="runMigForAggregatedEnergyConsumption"
+		<action name="runMigForDemoReadingsRollUp"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="runMigForAggregatedEnergyConsumption">
+			method="runMigForDemoReadingsRollUp">
 		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"

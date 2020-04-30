@@ -60,6 +60,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -1320,11 +1321,18 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;	
 	}
 	
-	public String runMigForAggregatedEnergyConsumption() throws Exception
+	public String runMigForDemoReadingsRollUp() throws Exception
 	{
-		AggregatedEnergyConsumptionUtil.addMFMigField();
-	    AggregatedEnergyConsumptionUtil.addAggregatedEnergyConsumptionMigFields();
-		setResult("success", "Migration for AggregatedEnergyConsumption is done.");
+		try{
+        	LOGGER.info("DemoSingleRollUpYearlyCommand runMigForDemoReadingsRollUp start orgid -- "+AccountUtil.getCurrentOrg().getId());
+			FacilioTimer.scheduleOneTimeJobWithDelay(321l, "DemoSingleRollUpYearlyJob", 30, "facilio");				
+        	LOGGER.info("DemoSingleRollUpYearlyCommand runMigForDemoReadingsRollUp end orgid -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "Migration for DemoReadingsRollUp is done.");
+        }
+        catch(Exception e){
+        	LOGGER.error("DemoSingleRollUpYearlyCommand Error Mig" +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "Failed DemoReadingsRollUp Migration.");
+        }
 		return SUCCESS;	
 	}
 	

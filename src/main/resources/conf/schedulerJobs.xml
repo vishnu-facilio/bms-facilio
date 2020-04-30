@@ -90,6 +90,7 @@
      
 	 <!-- Facilio DemoJob -->
 	 <job name='DemoRollUpJob' classname='com.facilio.bmsconsole.jobs.DemoRollUpJob' transactionTimeout='900000'/> 
+	 <job name='DemoSingleRollUpYearlyJob' classname='com.facilio.bmsconsole.jobs.DemoSingleRollUpYearlyJob' transactionTimeout='7200000'/>
 	 <!-- Facilio DeltaCalculation -->
 	 <job name='AdminDeltaCalculation' classname='com.facilio.bmsconsole.jobs.AdminDeltaCalculationJobs' transactionTimeout='36000000'/>
 	 
