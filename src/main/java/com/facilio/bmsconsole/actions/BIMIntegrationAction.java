@@ -630,7 +630,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("System Classification")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("System Classification").toString());
 				if(snoObject.containsKey("val")){
-					systemClassification =  snoObject.get("val").toString();
+					systemClassification =  snoObject.get("val").toString().substring(0, 49);
 				}
 			}
 			
