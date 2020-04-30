@@ -606,7 +606,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("Containing Space Name")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Containing Space Name").toString());
 				if(snoObject.containsKey("val")){
-					servingSpaceName =  snoObject.get("val").toString();
+					servingSpaceName =  snoObject.get("val").toString().substring(0, 48);;
 				}
 			}
 			
@@ -614,7 +614,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("Containing Space Number")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Containing Space Number").toString());
 				if(snoObject.containsKey("val")){
-					servingSpaceNumber =  snoObject.get("val").toString();
+					servingSpaceNumber =  snoObject.get("val").toString().substring(0, 48);;
 				}
 			}
 			
@@ -622,7 +622,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("System Name")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("System Name").toString());
 				if(snoObject.containsKey("val")){
-					systemName =  snoObject.get("val").toString();
+					systemName =  snoObject.get("val").toString().substring(0, 48);;
 				}
 			}
 			
@@ -630,7 +630,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("System Classification")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("System Classification").toString());
 				if(snoObject.containsKey("val")){
-					systemClassification =  snoObject.get("val").toString().substring(0, 49);
+					systemClassification =  snoObject.get("val").toString().substring(0, 48);
 				}
 			}
 			
@@ -638,7 +638,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("Uniclass2015")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass2015").toString());
 				if(snoObject.containsKey("val")){
-					uniclass =  snoObject.get("val").toString();
+					uniclass =  snoObject.get("val").toString().substring(0, 48);;
 				}
 			}
 			
@@ -646,7 +646,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			if(properties.containsKey("Uniclass2015 Name")){
 				JSONObject snoObject = (JSONObject)parser.parse(properties.get("Uniclass2015 Name").toString());
 				if(snoObject.containsKey("val")){
-					uniclassName =  snoObject.get("val").toString();
+					uniclassName =  snoObject.get("val").toString().substring(0, 48);;
 				}
 			}
 			
