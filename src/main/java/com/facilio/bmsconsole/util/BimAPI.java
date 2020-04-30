@@ -664,7 +664,7 @@ public class BimAPI {
 			thirdPartyDetailsMap.put("userName", "swathi@facilio.com");
 			thirdPartyDetailsMap.put("password", "Facilio@123");
 			thirdPartyDetailsMap.put("grant_type", "password");
-			thirdPartyDetailsMap.put("tokenURL", "https://dt-demo.invicara.com/passportsvc/api/v1/oauth/token");
+			thirdPartyDetailsMap.put("tokenURL", "https://facilio-api:5RTyKv4NvVstckcx5E78EM4RyAttoI@dt-demo.invicara.com/passportsvc/api/v1/oauth/token");
 			thirdPartyDetailsMap.put("assetURL", "https://dt-demo.invicara.com/platformapisvc/api/v0.9/assets?nsfilter=iputex_kAWm4M97&page={\"_pageSize\":1000,\"_offset\":0}&dtCategory=[\"Mechanical Equipment\"]");			
 		
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
