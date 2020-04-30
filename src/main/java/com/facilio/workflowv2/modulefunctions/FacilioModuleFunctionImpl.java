@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -283,6 +285,17 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
+			}
+			
+			if (AccountUtil.getCurrentUser() == null) {
+				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+				if(user != null) {
+					AccountUtil.getCurrentAccount().setUser(user);
+				}
+			}
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
+			if (scopeCriteria != null) {
+				selectBuilder.andCriteria(scopeCriteria);
 			}
 			
 			boolean isLimitApplied = false;
