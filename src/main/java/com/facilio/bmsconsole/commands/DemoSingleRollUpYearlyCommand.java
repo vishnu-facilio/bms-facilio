@@ -100,6 +100,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		
 		LOGGER.info("####DemoSingleRollUpYearlyCommand ReadingModules size : " + readingModules.size());
 		int i=0;
+		long totalSize = 0;
 		
 		for(FacilioModule readingModule :readingModules) 
 		{
@@ -158,6 +159,8 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 								
 								LOGGER.info("###DemoSingleRollUpYearlyCommand " + readings.size() + " of rows updated in  " + readingModuleTableName + " successfully. lastYearWeekStart: "
 										+ lastYearWeekStart + " lastYearWeekEnd: " + lastYearWeekEnd + " weekDiff: " + weekDiff);
+								
+								totalSize += readings.size();
 						   }
 						} catch (Exception e) {
 							LOGGER.error("###Exception occurred in  DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
@@ -169,9 +172,11 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. ReadingModule: " + readingModule + " readingModuleTableName " + readingModuleTableName + "Exception: " +e);
 					throw e;
 				}	
-			}
-			
+			}	
 		}
+		
+		LOGGER.info("####DemoSingleRollUpYearlyCommand ReadingModules Inserted totalSize: " +totalSize+ "lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
+			 " weekDiff : " +weekDiff);
 							
 	}
 	
