@@ -608,6 +608,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						servingSpaceName =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						servingSpaceName =  snoObject.get("val").toString();
 					}
 				}
 			}
@@ -618,6 +620,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						servingSpaceNumber =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						servingSpaceNumber =  snoObject.get("val").toString();
 					}
 				}
 			}
@@ -628,6 +632,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						systemName =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						systemName =  snoObject.get("val").toString();
 					}
 				}
 			}
@@ -638,6 +644,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						systemClassification =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						systemClassification =  snoObject.get("val").toString();
 					}
 				}
 			}
@@ -648,6 +656,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						uniclass =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						uniclass =  snoObject.get("val").toString();
 					}
 				}
 			}
@@ -658,6 +668,8 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				if(snoObject.containsKey("val")){
 					if(snoObject.get("val").toString().length()>48){
 						uniclassName =  snoObject.get("val").toString().substring(0, 48);
+					}else{
+						uniclassName =  snoObject.get("val").toString();
 					}
 				}
 			}
