@@ -98,6 +98,9 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		List<FacilioModule> readingModules = fetchAllReadingModules();
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
+		LOGGER.info("####DemoSingleRollUpYearlyCommand ReadingModules size : " + readingModules.size());
+		int i=0;
+		
 		for(FacilioModule readingModule :readingModules) 
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -105,59 +108,67 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 			
 			if(readingTableNamesVsColumns.containsKey(readingModuleTableName)) 
 			{
-				List<String> readingModuleColumnNames = readingTableNamesVsColumns.get(readingModuleTableName);
-				Map<String, FacilioField> allModuleFields = FieldFactory.getAsMap(modBean.getAllFields(readingModule.getName()));
-				
-				SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-	    				.module(readingModule)
-	    				.select(modBean.getAllFields(readingModule.getName()))
-	    				.table(readingModuleTableName)
-	    				.beanClass(ReadingContext.class)
-	    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), lastYearWeekStart+","+lastYearWeekEnd, DateOperators.BETWEEN));
-				
-				SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches("ID", 5000);
-				while (bs.hasNext()) 
-				{
-				   try {
-					   List<ReadingContext> readings = bs.get();
-					   if(readings != null && !readings.isEmpty()) 
-					   {
-						   for (ReadingContext reading: readings) 
-							{
-								for (String columnName :readingModuleColumnNames) 
+				try {
+					LOGGER.info("####DemoSingleRollUpYearlyCommand Entered ReadingModuleName : " + readingModule.getName() +" ReadingModule Count: " + ++i);
+
+					List<String> readingModuleColumnNames = readingTableNamesVsColumns.get(readingModuleTableName);
+					Map<String, FacilioField> allModuleFields = FieldFactory.getAsMap(modBean.getAllFields(readingModule.getName()));
+					
+					SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+		    				.module(readingModule)
+		    				.select(modBean.getAllFields(readingModule.getName()))
+		    				.table(readingModuleTableName)
+		    				.beanClass(ReadingContext.class)
+		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), lastYearWeekStart+","+lastYearWeekEnd, DateOperators.BETWEEN));
+					
+					SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches("ID", 5000);
+					while (bs.hasNext()) 
+					{
+					   try {
+						   List<ReadingContext> readings = bs.get();
+						   if(readings != null && !readings.isEmpty()) 
+						   {
+							   for (ReadingContext reading: readings) 
 								{
-									switch(columnName) {
-										case "ACTUAL_TTIME":
-											reading.setActualTtime(reading.getActualTtime()+weekDiff);
-											break;
-										case "TTIME":
-											reading.setTtime(reading.getTtime()+weekDiff);
-											break;
-										case "CREATED_TTIME":
-											if(reading.getSysCreatedTime() != -1) {
-												reading.setSysCreatedTime(reading.getSysCreatedTime()+weekDiff);
-											}
-											break;
-										default: break;
-									}
-								}	
-							}
-							
-							InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()
-									.module(readingModule)
-				    				.table(readingModuleTableName)
-				    				.fields(modBean.getAllFields(readingModule.getName()));					
-							insertBuilder.addRecords(readings);
-							insertBuilder.save();
-							
-							LOGGER.info("###DemoSingleRollUpYearlyCommand " + readings.size() + " of rows updated in  " + readingModuleTableName + " successfully. lastYearWeekStart: "
-									+ lastYearWeekStart + " lastYearWeekEnd: " + lastYearWeekEnd + " weekDiff: " + weekDiff);
-					   }
-					} catch (Exception e) {
-						LOGGER.error("###Exception occurred in  DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
-						throw e;
-					}
+									for (String columnName :readingModuleColumnNames) 
+									{
+										switch(columnName) {
+											case "ACTUAL_TTIME":
+												reading.setActualTtime(reading.getActualTtime()+weekDiff);
+												break;
+											case "TTIME":
+												reading.setTtime(reading.getTtime()+weekDiff);
+												break;
+											case "CREATED_TTIME":
+												if(reading.getSysCreatedTime() != -1) {
+													reading.setSysCreatedTime(reading.getSysCreatedTime()+weekDiff);
+												}
+												break;
+											default: break;
+										}
+									}	
+								}
+								
+								InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()
+										.module(readingModule)
+					    				.table(readingModuleTableName)
+					    				.fields(modBean.getAllFields(readingModule.getName()));					
+								insertBuilder.addRecords(readings);
+								insertBuilder.save();
+								
+								LOGGER.info("###DemoSingleRollUpYearlyCommand " + readings.size() + " of rows updated in  " + readingModuleTableName + " successfully. lastYearWeekStart: "
+										+ lastYearWeekStart + " lastYearWeekEnd: " + lastYearWeekEnd + " weekDiff: " + weekDiff);
+						   }
+						} catch (Exception e) {
+							LOGGER.error("###Exception occurred in  DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
+							throw e;
+						}
+					}	
 				}
+				catch (Exception e) {
+					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. ReadingModule: " + readingModule + " readingModuleTableName " + readingModuleTableName + "Exception: " +e);
+					throw e;
+				}	
 			}
 			
 		}

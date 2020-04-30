@@ -90,7 +90,6 @@
      
 	 <!-- Facilio DemoJob -->
 	 <job name='DemoRollUpJob' classname='com.facilio.bmsconsole.jobs.DemoRollUpJob' transactionTimeout='900000'/> 
-	 <job name='DemoSingleRollUpYearlyJob' classname='com.facilio.bmsconsole.jobs.DemoSingleRollUpYearlyJob' transactionTimeout='7200000'/>
 	 <!-- Facilio DeltaCalculation -->
 	 <job name='AdminDeltaCalculation' classname='com.facilio.bmsconsole.jobs.AdminDeltaCalculationJobs' transactionTimeout='36000000'/>
 	 
@@ -127,6 +126,7 @@
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>
+	<job name='DemoSingleRollUpYearlyJob' classname='com.facilio.bmsconsole.jobs.DemoSingleRollUpYearlyJob' transactionTimeout='21600000'/>
 	<job name = 'DemoAlarmPropagationJob' classname = 'com.facilio.bmsconsole.jobs.DemoAlarmPropagationJob' transactionTimeout = '3600000'></job>
 	
 	<!--  OperationAlarm -->
