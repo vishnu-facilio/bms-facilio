@@ -58,10 +58,6 @@ public class AddVirtualMeterRelCommand extends FacilioCommand {
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 			DeviceAPI.addHistoricalVMCalculationJob(historicalLoggerContext.getId(),meter.getId(),startTime, endTime,true);
 		}	
-
-		if(meter != null && meter.getMultiplicationFactor() != -1 && meter.getMultiplicationFactor() != 1l) {
-			AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(-1l, -1l, Collections.singletonList(meter.getId()));
-		}	
 		return false;
 	}
 

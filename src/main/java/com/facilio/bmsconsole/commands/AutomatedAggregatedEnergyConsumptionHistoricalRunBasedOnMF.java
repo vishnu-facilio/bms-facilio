@@ -8,12 +8,18 @@ import java.util.Map.Entry;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF extends FacilioCommand{
@@ -35,16 +41,36 @@ public class AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF extends 
 				if(entry.getKey() == null || !entry.getKey().equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 					continue;
 				}
-				List<EnergyMeterContext> energyMeterList = entry.getValue();
+				List<AssetContext> assetList = entry.getValue();
 				
-				if(energyMeterList != null && !energyMeterList.isEmpty()) 
+				if(assetList != null && !assetList.isEmpty()) 
 				{	
-					for(EnergyMeterContext energyMeter:energyMeterList) 
+					AssetCategoryContext energyMeterCategoryContext = AssetsAPI.getCategory("Energy Meter");
+					if(energyMeterCategoryContext != null && energyMeterCategoryContext.getId() != -1) 
 					{
-						if(energyMeter != null && energyMeter.getMultiplicationFactor() != -1 && energyMeter.getMultiplicationFactor() != 1l) {
-							AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(-1l, -1l, Collections.singletonList(energyMeter.getId()));
+						for(AssetContext asset:assetList) 
+						{
+							boolean isEnergyMeterCategory = (asset != null && asset.getCategory() != null && asset.getCategory().getId() != -1l && asset.getCategory().getId() == energyMeterCategoryContext.getId());
+							EnergyMeterContext energyMeterContext = DeviceAPI.getEnergyMeter(asset.getId());
+							boolean isEnergyMeterAtUpdate = (energyMeterContext != null) ? true : false;
+
+							if(isEnergyMeterCategory || isEnergyMeterAtUpdate) 
+							{
+								EnergyMeterContext energyMeter = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(asset), EnergyMeterContext.class);
+								if(energyMeter != null && !energyMeter.isConnected()) 
+								{
+									if(energyMeter.getMultiplicationFactor() == -99l || energyMeter.getMultiplicationFactor() == -1) {									
+										asset.setDatum("multiplicationFactor", 1l);;
+										energyMeter.setMultiplicationFactor(1l); 
+									}
+									if(isEnergyMeterAtUpdate && energyMeterContext.getMultiplicationFactor() != -1 &&  energyMeterContext.getMultiplicationFactor() == energyMeter.getMultiplicationFactor()) {
+										continue;
+									}
+									AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(-1l, -1l, Collections.singletonList(energyMeter.getId()), Collections.singletonList(energyMeter));
+								}
+							}			
 						}
-					}
+					}	
 				}		
 			}
 		}

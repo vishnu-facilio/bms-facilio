@@ -777,6 +777,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
+			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ConstructAddAssetActivityCommand());
 			c.addCommand(new AddRotatingItemToolCommand());
@@ -791,12 +792,12 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
+			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ConstructEditAssetActivityCommand());
-			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());

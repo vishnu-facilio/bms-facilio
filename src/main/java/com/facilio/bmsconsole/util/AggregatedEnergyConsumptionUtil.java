@@ -146,7 +146,8 @@ public class AggregatedEnergyConsumptionUtil {
 					.select(selectFields)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), resourceIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dayStartTimeList, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(aggregatedEnergyConsumptionField, "", CommonOperators.IS_NOT_EMPTY));
+					.andCondition(CriteriaAPI.getCondition(aggregatedEnergyConsumptionField, "", CommonOperators.IS_NOT_EMPTY))
+					.skipUnitConversion();
 
 			List<ReadingContext> alreadyPresentAggregatedReadings = selectBuilder.get();
 
@@ -274,7 +275,8 @@ public class AggregatedEnergyConsumptionUtil {
 				.aggregate(AggregateOperator.getAggregateOperator(BmsAggregateOperators.NumberAggregateOperator.SUM.getValue()), readingDeltaField)
 				.andCondition(CriteriaAPI.getCondition(readingDeltaField, "", CommonOperators.IS_NOT_EMPTY))
 				.groupBy(energyDataFieldMap.get("parentId").getCompleteColumnName()+","+groupingTimeField.getCompleteColumnName())
-				.andCriteria(criteria);
+				.andCriteria(criteria)
+				.skipUnitConversion();
 		
 		List<ReadingContext> aggregatedReadings = selectBuilder.get();
 		LOGGER.info("AggregatedEnergyConsumptionUtil delta aggregation -- "+selectBuilder.toString()+ " for meterIdVsMaxDateRange -- "+meterIdVsMaxDateRange+ " aggregatedReadings --" + aggregatedReadings);
@@ -348,9 +350,15 @@ public class AggregatedEnergyConsumptionUtil {
 		}
 	}
 	
-	public static void calculateHistoryForAggregatedEnergyConsumption(long startTime, long endTime, List<Long> resourceIds) throws Exception
+	public static void calculateHistoryForAggregatedEnergyConsumption(long startTime, long endTime, List<Long> resourceIds) throws Exception{
+		calculateHistoryForAggregatedEnergyConsumption(startTime, endTime, resourceIds, null);
+	}
+	
+	public static void calculateHistoryForAggregatedEnergyConsumption(long startTime, long endTime, List<Long> resourceIds, List<EnergyMeterContext> energyMeters) throws Exception
 	{
-		List<EnergyMeterContext> energyMeters = AggregatedEnergyConsumptionUtil.getAllEnergyMetersWithMultiplicationFactor(resourceIds);		 
+		if(energyMeters == null || energyMeters.isEmpty()) {
+			energyMeters = AggregatedEnergyConsumptionUtil.getAllEnergyMetersWithMultiplicationFactor(resourceIds);	
+		}
 		
 		LinkedHashMap<Long,DateRange> meterIdVsMaxDateRange = new LinkedHashMap<Long,DateRange>();
 		HashMap<Long, Long> energyMeterMFMap = new HashMap<Long,Long>();
@@ -361,9 +369,12 @@ public class AggregatedEnergyConsumptionUtil {
 			{
 				for(EnergyMeterContext energyMeter :energyMeters)
 				{
-					DateRange dateRange = new DateRange(startTime, endTime);
-					meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
-					energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+					if(energyMeter.getMultiplicationFactor() != - 1)
+					{
+						DateRange dateRange = new DateRange(startTime, endTime);
+						meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
+						energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+					}
 				}
 			}
 			else 
@@ -380,7 +391,7 @@ public class AggregatedEnergyConsumptionUtil {
 						endTime = lastReading.getTtime();
 					}
 				
-					if(startTime != -1 && endTime != -1) 
+					if(startTime != -1 && endTime != -1 && energyMeter.getMultiplicationFactor() != - 1) 
 					{
 						DateRange dateRange = new DateRange(startTime, endTime);
 						meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
@@ -424,7 +435,8 @@ public class AggregatedEnergyConsumptionUtil {
 					.aggregate(AggregateOperator.getAggregateOperator(BmsAggregateOperators.NumberAggregateOperator.SUM.getValue()), readingDeltaField)
 					.andCondition(CriteriaAPI.getCondition(readingDeltaField, "", CommonOperators.IS_NOT_EMPTY))
 					.groupBy(energyDataFieldMap.get("parentId").getCompleteColumnName()+","+groupingTimeField.getCompleteColumnName())
-					.andCriteria(criteria);
+					.andCriteria(criteria)
+					.skipUnitConversion();
 			
 			SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches(energyDataFieldMap.get("ttime").getColumnName(), 5000);
 			while (bs.hasNext()) 
@@ -460,6 +472,7 @@ public class AggregatedEnergyConsumptionUtil {
 																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(readingDeltaField, CommonOperators.IS_NOT_EMPTY))
 																.orderBy(orderBy).limit(1)
+																.skipUnitConversion()
 																;
 		
 		return selectBuilder.fetchFirst();
@@ -532,13 +545,14 @@ public class AggregatedEnergyConsumptionUtil {
 				.beanClass(EnergyMeterContext.class);
 //				.andCondition(CriteriaAPI.getCondition(fieldMap.get("multiplicationFactor"), "", CommonOperators.IS_NOT_EMPTY))
 		
-		Criteria subCriteria = new Criteria();
-		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("connected"), "", CommonOperators.IS_EMPTY));
-		subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("connected"), ""+false, NumberOperators.EQUALS));
-		selectBuilder.andCriteria(subCriteria);
-		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
+		}
+		else {
+			Criteria subCriteria = new Criteria();
+			subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("connected"), "", CommonOperators.IS_EMPTY));
+			subCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("connected"), ""+false, NumberOperators.EQUALS));
+			selectBuilder.andCriteria(subCriteria);		
 		}
 		return selectBuilder.get();
 	}

@@ -976,6 +976,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddAdditionalPropsForEnergyMeterCommand());
+		c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new AddVirtualMeterRelCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
@@ -988,6 +989,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 		c.addCommand(new UpdateAdditionalPropsForEnergyMeterCommand());
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new AddVirtualMeterRelCommand());
