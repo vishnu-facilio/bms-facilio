@@ -362,12 +362,12 @@ public class LoginAction extends FacilioAction {
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
-//		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-//			data.put("sites", CommonCommandUtil.getMySites());
-//		}
-//		else {
+		if (AccountUtil.getCurrentAccount().isFromMobile()) {
+			data.put("sites", CommonCommandUtil.getMySites());
+		}
+		else {
 		data.put("sites", SpaceAPI.getAllSites());
-		//}
+		}
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		
 		// temp	
@@ -465,7 +465,7 @@ public class LoginAction extends FacilioAction {
 			data.put("forms", forms);
 			data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		}
-		data.put("mysites", SpaceAPI.getAllSites());
+		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("sites", SpaceAPI.getAllSites());
 		

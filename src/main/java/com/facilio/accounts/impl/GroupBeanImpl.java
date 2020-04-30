@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -352,9 +353,9 @@ public class GroupBeanImpl implements GroupBean {
 		if (siteId > 0) {
 			siteIds.add(siteId);
 		} else {
-			List<SiteContext> sites = SpaceAPI.getAllSites();
+			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
 			if (sites != null && !sites.isEmpty()) {
-				for (SiteContext b: sites) {
+				for (BaseSpaceContext b: sites) {
 					siteIds.add(b.getSiteId());
 				}
 			}
@@ -399,9 +400,9 @@ public class GroupBeanImpl implements GroupBean {
 		if (siteId > 0) {
 			siteIds.add(siteId);
 		} else {
-			List<SiteContext> sites = SpaceAPI.getAllSites();
+			List<BaseSpaceContext> sites = CommonCommandUtil.getMySites();
 			if (sites != null && !sites.isEmpty()) {
-				for (SiteContext b: sites) {
+				for (BaseSpaceContext b: sites) {
 					siteIds.add(b.getSiteId());
 				}
 			}
