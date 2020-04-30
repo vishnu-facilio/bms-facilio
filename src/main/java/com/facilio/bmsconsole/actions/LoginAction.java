@@ -893,7 +893,7 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getMySiteList() throws Exception {
-		setResult("site", SpaceAPI.getAllSites());
+		setResult("site", CommonCommandUtil.getMySites());
 		return SUCCESS;
 	}
 	
