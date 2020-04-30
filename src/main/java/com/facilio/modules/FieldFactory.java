@@ -8394,7 +8394,17 @@ public class FieldFactory {
 	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
 	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
 	        fields.add(getField("fieldValueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
-	     	      
+	         	      
+	        return fields;
+	 }
+	 
+	 public static List<FacilioField> getScopingFields() {
+		 List<FacilioField> fields = new ArrayList<>();
+	        FacilioModule module = ModuleFactory.getScopingModule();
+
+	        fields.add(getIdField(module));
+	        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
+		     	      
 	        return fields;
 	 }
 }

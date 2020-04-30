@@ -3703,5 +3703,13 @@ public class ModuleFactory {
 		module.setDisplayName("Scoping Config");
 		return module;
 	}
+	
+	public static FacilioModule getScopingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scoping");
+		module.setTableName("Scoping");
+		module.setDisplayName("Scoping");
+		return module;
+	}
 
 }

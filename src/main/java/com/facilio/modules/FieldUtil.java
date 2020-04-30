@@ -546,4 +546,8 @@ public class FieldUtil {
         }
         return selectedFields;
     }
+    
+    public static Set<String> getSiteIdAllowedModules() {
+    	return SITE_ID_ALLOWED_MODULES;
+    }
 }
