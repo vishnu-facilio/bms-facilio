@@ -385,7 +385,7 @@ public class ApplicationApi {
 				.on("Scoping.ID = Scoping_Config.SCOPING_ID")
 				.innerJoin("Application")
 				.on("Application.SCOPING_ID = Scoping.ID")
-				.andCondition(CriteriaAPI.getCondition("APPLICATION.ID","appId" , String.valueOf(appId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("Application.ID","appId" , String.valueOf(appId), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<Long, Map<String, Object>> moduleScoping = new HashMap<Long, Map<String,Object>>();
