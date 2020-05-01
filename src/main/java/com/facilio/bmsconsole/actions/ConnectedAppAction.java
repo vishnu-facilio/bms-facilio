@@ -318,6 +318,7 @@ public class ConnectedAppAction extends FacilioAction {
 		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
 		String viewURL = (String) viewConnectedAppWidgetChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP_VIEW_URL);
 
+		setResult("connectedAppWidget", connectedAppWidget);
 		handleSAMLResponse(connectedApp, viewURL);
 
 		return SUCCESS;
