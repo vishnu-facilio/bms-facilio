@@ -197,6 +197,12 @@ public class FormRuleAPI {
 		if (props != null && !props.isEmpty()) {
 			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
 			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+			
+			if (formRuleContext.getCriteriaId() > 0) {
+				
+				formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
+				
+			}
 			return formRuleContext;
 		}
 		return null;
