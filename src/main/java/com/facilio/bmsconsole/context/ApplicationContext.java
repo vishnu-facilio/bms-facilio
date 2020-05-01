@@ -158,14 +158,14 @@ public class ApplicationContext implements Serializable{
 		}
 	}
 	
-	private ScopingContext scoping;
+	private long scopingId;
 
-	public ScopingContext getScoping() {
-		return scoping;
+	public long getScopingId() {
+		return scopingId;
 	}
 
-	public void setScoping(ScopingContext scoping) {
-		this.scoping = scoping;
+	public void setScopingId(long scopingId) {
+		this.scopingId = scopingId;
 	}
 	
 	
