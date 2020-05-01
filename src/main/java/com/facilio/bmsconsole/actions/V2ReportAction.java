@@ -185,6 +185,15 @@ public class V2ReportAction extends FacilioAction {
 	private void setReportWithDataContext(FacilioContext context) throws Exception {
 		reportContext = ReportUtil.getReport(reportId);
 		
+		if(reportContext != null) {
+		 	if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+		 		if(reportContext.getReportState().containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)) {
+		 		AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext.getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue()) ;
+			 	reportContext.setgroupByTimeAggr(groupByAggr);
+		 		}
+		 	}
+		 }
+		
 		if(startTime > 0 && endTime > 0) {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
 			reportContext.setDateValue(new DateRange(startTime, endTime).toString());
@@ -206,7 +215,10 @@ public class V2ReportAction extends FacilioAction {
 		if(hmAggr!= null) {
 			reportContext.addToReportState(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
 		}
-		
+		if(groupByTimeAggr!= null) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
+			reportContext.setgroupByTimeAggr(groupByTimeAggr);
+		}
 		if (xAggr != null) {
 			reportContext.setxAggr(xAggr);
 		}
@@ -319,6 +331,9 @@ public class V2ReportAction extends FacilioAction {
 		if(hmAggr != null) {
 			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
 		}
+		if(groupByTimeAggr != null) {
+			context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr);
+		}
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		
@@ -371,7 +386,19 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setReportState(reportState);
 			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
 		}
-		
+		 if(reportContext != null && groupByTimeAggr != null) {
+		 	JSONObject reportState;
+		 	if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+		 		reportState = reportContext.getReportState();
+		 	}
+		 	else {
+		 		reportState = new JSONObject();
+		 	}
+		 	reportState.put("groupByTimeAggr", groupByTimeAggr.getValue());
+		 	reportContext.setReportState(reportState);
+		 	reportContext.setgroupByTimeAggr(groupByTimeAggr);
+		 	context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr);
+		 }
 		context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -944,6 +971,17 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void sethmAggr(String hmAggr) {
 		this.hmAggr = hmAggr;
+	}
+	
+	private AggregateOperator groupByTimeAggr;
+	public int getgroupByTimeAggr() {
+		if (groupByTimeAggr != null) {
+			return groupByTimeAggr.getValue();
+		}
+		return -1;
+	}
+	public void setgroupByTimeAggr(int groupByTimeAggr) {
+		this.groupByTimeAggr = AggregateOperator.getAggregateOperator(groupByTimeAggr);
 	}
 	
 	private int analyticsType = -1;

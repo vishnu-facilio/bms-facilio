@@ -454,6 +454,26 @@ public class ReportContext {
 		this.hmAggr = hmAggr;
 	}
 
+	private AggregateOperator groupByTimeAggr;
+
+	public int getgroupByTimeAggr() {
+		if (groupByTimeAggr != null) {
+			return groupByTimeAggr.getValue();
+		}
+		return -1;
+	}
+
+	public void setgroupByTimeAggr(int groupByTimeAggr) {
+		this.groupByTimeAggr = AggregateOperator.getAggregateOperator(groupByTimeAggr);
+	}
+
+	public AggregateOperator getgroupByTimeAggrEnum() {
+		return groupByTimeAggr;
+	}
+
+	public void setgroupByTimeAggr(AggregateOperator groupByTimeAggr) {
+		this.groupByTimeAggr = groupByTimeAggr;
+	}
 	private AnalyticsType analyticsType;
 
 	public int getAnalyticsType() {

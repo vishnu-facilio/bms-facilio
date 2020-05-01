@@ -223,6 +223,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 		List<FacilioField> fields = new ArrayList<>();
 		StringJoiner groupBy = new StringJoiner(",");
 		FacilioField xAggrField = applyXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
+		if(report.getgroupByTimeAggr()>0){
+			applygroupByTimeAggr(dp,report.getgroupByTimeAggrEnum(),groupBy);
+		}
 		setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
 		List<FacilioField> cloneFields = new ArrayList<>();
 		for(FacilioField field : fields) {
@@ -807,6 +810,16 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		handleJoin(dp.getxAxis(), selectBuilder, addedModules);
 		return xAggrField;
+	}
+	
+	private void applygroupByTimeAggr(ReportDataPointContext dp, AggregateOperator groupByTimeAggr, StringJoiner groupBy) throws Exception {
+		FacilioField groupByTimeField = null;
+		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
+			if (groupByTimeAggr != null && groupByTimeAggr.getValue()!= 0) {
+				groupByTimeField = groupByTimeAggr.getSelectField(dp.getxAxis().getField());
+				groupBy.add(groupByTimeField.getCompleteColumnName());
+			}
+		}
 	}
 
 	private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {

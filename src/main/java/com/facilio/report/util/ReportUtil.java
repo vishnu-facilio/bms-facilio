@@ -116,6 +116,13 @@ public class ReportUtil {
 			report.sethmAggr(hmAggr);
 		}
 		
+		AggregateOperator groupByTimeAggr= (AggregateOperator) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR);
+		
+		if(groupByTimeAggr!= null) {
+			report.setgroupByTimeAggr(groupByTimeAggr);
+			report.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
+		}
+		
 		WorkflowContext transformWorkflow = (WorkflowContext)context.get(FacilioConstants.Workflow.WORKFLOW);
 		if (transformWorkflow != null) {
 			report.setTransformWorkflow(transformWorkflow);

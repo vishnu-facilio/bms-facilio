@@ -23,8 +23,8 @@ public class HandleGroupByDataCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		if(!(report.getgroupByTimeAggr()>0 && report.getxAggr() > 0)) {
 		JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
-		
 		List<Map<String, Object>> dataFormatted = new ArrayList<>();
 		
 		List<ReportDataPointContext> dataPoints = report.getDataPoints();
@@ -87,6 +87,7 @@ public class HandleGroupByDataCommand extends FacilioCommand {
 		}
 		data.put("data", dataFormatted);
 //		context.put(FacilioConstants.ContextNames.REPORT_DATA, dataFormated);
+		}
 		
 		return false;
 	}

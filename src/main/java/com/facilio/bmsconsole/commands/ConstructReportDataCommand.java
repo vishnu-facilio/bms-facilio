@@ -90,6 +90,28 @@ public class ConstructReportDataCommand extends FacilioCommand {
 				}
 			}
 		}
+		if(report.getgroupByTimeAggr()>0 && isTimeSeries(reportData) && report.getxAggr() > 0){
+			Collection<Map<String, Object>> groupedData = new ArrayList<>();
+			Map<Object,List<Map<String, Object>>> rawData = new HashMap<>();
+			for (Map<String, Object> dataMap: transformedData) {
+				Object xVal = ((DateAggregateOperator)report.getxAggrEnum()).getAdjustedTimestamp((long) dataMap.get(xAlias));
+				if(rawData.containsKey(xVal)) {
+					(rawData.get(xVal)).add(dataMap);
+				}
+				else {
+					List<Map<String, Object>> inputData = new ArrayList<>();
+					inputData.add(dataMap);
+					rawData.put(xVal, inputData);
+				}
+			}
+			for(Object xKey : rawData.keySet()) {
+				Map<String,Object> regroup = new HashMap<>();
+				regroup.put(xAlias, xKey);
+				regroup.put("group", rawData.get(xKey));
+				groupedData.add(regroup);			
+				}
+			transformedData = groupedData;
+		}
 		JSONObject data = new JSONObject();
 		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
 //		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
@@ -116,7 +138,6 @@ public class ConstructReportDataCommand extends FacilioCommand {
 						}
 
 						StringJoiner key = new StringJoiner("|");
-						key.add(formattedxVal.toString());
 						Map<String, Object> data = null;
 						if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
 							data = new HashMap<>();
@@ -128,8 +149,17 @@ public class ConstructReportDataCommand extends FacilioCommand {
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
 						}
-						constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
-					}
+						if(report.getgroupByTimeAggr()>0){
+							key.add(xVal.toString());
+							constructAndAddData(key.toString(), data, xVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+
+						} 
+						else {
+							key.add(formattedxVal.toString());
+							constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+
+						}					
+						}
 				}
 			}
 			updateLookupMap(dpLookUpMap, report.getxAggrEnum());

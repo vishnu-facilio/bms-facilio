@@ -536,6 +536,7 @@ public class FacilioConstants {
 		public static final String REPORT_FILTER_MODE = "reportFilterMode";
 		public static final String REPORT_X_AGGR = "xAggr"; 
 		public static final String HEATMAP_AGGR = "hmAggr";
+		public static final String REPORT_GROUP_BY_TIME_AGGR ="groupByTimeAggr";
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
 		public static final String REPORT_HANDLE_BOOLEAN = "reportHandleBoolean";
