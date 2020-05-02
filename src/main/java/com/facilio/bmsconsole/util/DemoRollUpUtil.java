@@ -132,7 +132,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Tool_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tool_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Gate_Pass_Line_Items" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
-		tablesContainsDateField.put("ConnectedApps" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
+//		tablesContainsDateField.put("ConnectedApps" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Connection" , Arrays.asList("ACCESS_EXPIRY_TIME","REFRESH_EXPIRY_TIME", "SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Visitor_Logging", Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME","CHECKIN_TIME", "CHECKOUT_TIME", "LOG_GENERATED_UPTO", "EXPECTED_CHECKIN_TIME", "EXPECTED_CHECKOUT_TIME"));
 		tablesContainsDateField.put("Visitor_Logging_Attachments", Arrays.asList("CREATED_TIME"));
