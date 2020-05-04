@@ -285,7 +285,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 								if (column.get("enumModeEnum") == null) {	// High-res
 									List<SimpleEntry<Long, Integer>> timeline = enumVal.getTimeline();
 									if (timeline != null && !timeline.isEmpty()) {
-										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).getValue());
+										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(timeline.size()-1).getValue());
 									}
 								}
 								else if (column.get("enumModeEnum") == EnumMode.PERCENT) {
