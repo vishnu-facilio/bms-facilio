@@ -22,20 +22,21 @@ public class AddRequesterCommand extends FacilioCommand {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
-			List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, orgid);
-			if(CollectionUtils.isNotEmpty(appDomain)) {
-				long appId = ApplicationApi.getApplicationIdForApp(appDomain.get(0));
+			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+			AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
+			
+			if(appId > 0 && appDomain != null) {
 				
 				User portalUser = AccountUtil.getUserBean().getAppUserForUserName(requester.getUserName(), appId, orgid);
 				Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 				requester.setApplicationId(appId);
-				requester.setAppDomain(appDomain.get(0));
+				requester.setAppDomain(appDomain);
 			
 				if (portalUser != null) {
 					requester.setId(portalUser.getOuid());
 				}
 				else {
-					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, appDomain.get(0).getIdentifier(), true, false));
+					requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true, false, appDomain.getIdentifier(), true, false));
 				}
 				
 				if (isPublicRequest != null && isPublicRequest) {

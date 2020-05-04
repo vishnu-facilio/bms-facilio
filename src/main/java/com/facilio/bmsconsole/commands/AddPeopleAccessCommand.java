@@ -19,15 +19,14 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-	    List<PeopleContext> people = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-	   Long occupantPortalAppId = (Long)context.getOrDefault(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, -1l);
+	   List<PeopleContext> people = (List<PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 	   Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
 		
 	    if(CollectionUtils.isNotEmpty(people)  && MapUtils.isNotEmpty(changeSet)) {
     		for(PeopleContext ppl : people) {
     			List<UpdateChangeSet> changes = changeSet.get(ppl.getId());
 				if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.PEOPLE)) {
-					PeopleAPI.updatePeoplePortalAccess(ppl, AppDomainType.SERVICE_PORTAL, occupantPortalAppId);
+					PeopleAPI.updatePeoplePortalAccess(ppl, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 				}
 			}
 	    }

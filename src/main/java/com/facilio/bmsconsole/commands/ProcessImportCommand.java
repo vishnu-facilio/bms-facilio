@@ -778,8 +778,8 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				
-				AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+				long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+				AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
 			    User user = AccountUtil.getUserBean().getUser(value.toString(), appDomainObj != null ? appDomainObj.getIdentifier() : null);
 				if(user == null) {
 					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
@@ -787,7 +787,6 @@ public class ProcessImportCommand extends FacilioCommand {
 					}
 					user = new User();
 					user.setEmail(value.toString());
-					long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 					user.setApplicationId(appId);
 					user.setAppDomain(appDomainObj);
 					

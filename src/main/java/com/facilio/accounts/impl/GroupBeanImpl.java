@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -193,8 +194,7 @@ public class GroupBeanImpl implements GroupBean {
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		
-		String appDomain = AccountUtil.getDefaultAppDomain();
-		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
+		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

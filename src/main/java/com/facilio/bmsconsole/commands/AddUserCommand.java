@@ -22,15 +22,13 @@ public class AddUserCommand extends FacilioCommand {
 		boolean isEmailverificationNeeded = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_EMAIL_VERIFICATION_NEEDED, true);
 		if ( (user != null) && (AccountUtil.getCurrentOrg() != null)) {
 			user.setUserType(AccountConstants.UserType.USER.getValue());
-			AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
+			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomainObj == null) {
 				throw new IllegalArgumentException("Invalid App Domain");
 			}
-			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 			user.setApplicationId(appId);
 			user.setAppDomain(appDomainObj);
-			
-			
 			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailverificationNeeded, false);
 		}
 		else {

@@ -38,6 +38,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
@@ -108,7 +109,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		
 	    	if(appId <= 0) {
-	    		appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
+	    		appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 	    	}
 	    	
 		List<FacilioField> fields = new ArrayList<>();
@@ -221,7 +222,7 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getDefaultAppUsers(long orgId) throws Exception {
-		return getAppUsers(orgId, ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), false);
+		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), false);
 	}
 	
 	@Override
@@ -284,8 +285,7 @@ public class OrgBeanImpl implements OrgBean {
 	public User getSuperAdmin(long orgId) throws Exception {
 		
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
-		String appDomain = AccountUtil.getDefaultAppDomain();
-		long applicationId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
+		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		
 		if(superAdminRole == null) {
 			return null;
@@ -378,47 +378,43 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override 
     public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception { 
-      	List<AppDomain> portalAppDomains = IAMAppUtil.getPortalAppDomains();
-      	
-      	if(CollectionUtils.isNotEmpty(portalAppDomains)) {
-      		StringJoiner appIds = new StringJoiner(",");
-      		for(AppDomain portalDomain : portalAppDomains) {
-      			long appId = ApplicationApi.getApplicationIdForApp(portalDomain);
-      			appIds.add(String.valueOf(appId));
-      		}
-			List<FacilioField> fields = new ArrayList<>();
-			fields.addAll(AccountConstants.getAppOrgUserFields());
-			
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(fields)
-					.table("ORG_Users")
-			;
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+  		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
-			fields.add(AccountConstants.getApplicationIdField());
-			selectBuilder.innerJoin("ORG_User_Apps")
-				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
-				selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", appIds.toString(), NumberOperators.EQUALS));
-						
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (props != null && !props.isEmpty()) {
-				List<User> users = new ArrayList<>();
-				IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-				for(Map<String, Object> prop : props) {
-					User user = UserBeanImpl.createUserFromProps(prop, false, false, false);
-					if(status) {
-						if(user.isActive()) {
-							users.add(user);
-						}
-					}
-					else {
+		String mainAppLinkNames = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP +","+ FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP;
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+		;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+	
+		fields.add(AccountConstants.getApplicationIdField());
+		selectBuilder.innerJoin("ORG_User_Apps")
+			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+			.innerJoin("Application")
+			.on("Application.ID = ORG_User_Apps.APPLICATION_ID")
+			;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Application", "linkName", mainAppLinkNames, StringOperators.ISN_T));
+					
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
+			for(Map<String, Object> prop : props) {
+				User user = UserBeanImpl.createUserFromProps(prop, false, false, false);
+				if(status) {
+					if(user.isActive()) {
 						users.add(user);
 					}
 				}
-				return users;
+				else {
+					users.add(user);
+				}
 			}
-      	}
-		return null;
+			return users;
+		}
+      	return null;
     }
 
 	@Override

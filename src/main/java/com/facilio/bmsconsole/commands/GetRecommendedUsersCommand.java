@@ -139,7 +139,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(role.getRoleId()), PickListOperators.IS));
         
-        long appId = ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain());
+        long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         
         GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(appId, criteria, AccountUtil.getCurrentOrg().getOrgId());
 

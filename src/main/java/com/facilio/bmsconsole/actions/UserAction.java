@@ -130,7 +130,7 @@ public class UserAction extends FacilioAction {
 				this.users.addAll(memberList);
 			}
 		} else {
-			setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
+			setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true));
 		}
 		return SUCCESS;
 	}
@@ -142,14 +142,14 @@ public class UserAction extends FacilioAction {
 	}
 	public String userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true));
 		
 		return SUCCESS;
 	}
 	
 	public String v2userList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true));
+		setUsers(AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true));
 		setResult("users", getUsers());
 		return SUCCESS;
 	}
@@ -157,13 +157,10 @@ public class UserAction extends FacilioAction {
 	public String portalUserList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
 		//now showing only service portal user listing here
-		
-		List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
-		if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
-			if(servicePortalDomain.size() == 1) {
-				setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0))));
-				return SUCCESS;
-			}
+		long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+		if(appId > 0) {
+			setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId(), appId));
+			return SUCCESS;
 		}
 		return ERROR;
 		
@@ -177,13 +174,10 @@ public class UserAction extends FacilioAction {
 			HttpServletRequest request = ServletActionContext.getRequest(); 
 		long appId = -1;
 		try {
-			List<AppDomain> servicePortalDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
-			if(CollectionUtils.isNotEmpty(servicePortalDomain)) {
-				if(servicePortalDomain.size() > 1) {
-					return ERROR;
-				}
-				appId = ApplicationApi.getApplicationIdForApp(servicePortalDomain.get(0));
-				User orgUser = AccountUtil.getUserBean().getUser(user.getEmail(), servicePortalDomain.get(0).getIdentifier()) ;
+			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+			if(appId > 0) {
+				AppDomain servicePortalDomain = ApplicationApi.getAppDomainForApplication(appId);
+				User orgUser = AccountUtil.getUserBean().getUser(user.getEmail(), servicePortalDomain.getIdentifier()) ;
 				if(ApplicationApi.deleteUserFromApp(orgUser, appId) > 0) {
 					setUserId(orgUser.getOuid());
 				    return SUCCESS;
@@ -277,23 +271,9 @@ public class UserAction extends FacilioAction {
 		try {
 			AppDomain appDomain = null;
 			if(getAppId() <= 0) {
-				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getOrgId());
-			       if(CollectionUtils.isNotEmpty(appDomains)) {
-			    	   if(appDomains.size() > 1) {
-			    		   addFieldError("error", "Please send the appId as there are multiple apps configured for this type");
-			    		   return ERROR;
-			    	   }
-			    	   appDomain = appDomains.get(0);
-			    	   setAppId(ApplicationApi.getApplicationIdForApp(appDomain));
-			       }
-			       else {
-			    	   addFieldError("error", "No Service Portal configured");
-			    	   return ERROR;
-			       }
+				appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 			}
-			else {
-				appDomain = ApplicationApi.getAppDomainForApplication(getAppId());
-			}
+			appDomain = ApplicationApi.getAppDomainForApplication(getAppId());
 			user.setApplicationId(getAppId());
 			user.setAppDomain(appDomain);
 			
@@ -406,13 +386,10 @@ public class UserAction extends FacilioAction {
 			AppDomain appDomain = null;
 			//temp handling
 			if(appId <= 0) {
-				String appDomainString = isPortal ? (AccountUtil.getCurrentOrg().getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com")) : AccountUtil.getDefaultAppDomain();
-				appDomain = IAMAppUtil.getAppDomain(appDomainString);
-				appId = ApplicationApi.getApplicationIdForApp(appDomain);
+				String linkname = isPortal ? FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP : FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+				appId = ApplicationApi.getApplicationIdForLinkName(linkname);
 			}
-			else {
-				appDomain = ApplicationApi.getAppDomainForApplication(appId);
-			}
+			appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
 				User appUser = AccountUtil.getUserBean().getUser(userId, false);
 				if(appUser != null) {

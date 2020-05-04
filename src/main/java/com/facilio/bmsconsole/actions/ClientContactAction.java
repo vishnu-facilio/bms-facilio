@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,7 +10,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ClientContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -91,21 +89,12 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
-	private long clientPortalAppId;
-	
-	public long getClientPortalAppId() {
-		return clientPortalAppId;
-	}
-	public void setClientPortalAppId(long clientPortalAppId) {
-		this.clientPortalAppId = clientPortalAppId;
-	}
 	public String addClientContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(clientContacts)) {
 			FacilioChain c = TransactionChainFactory.addClientContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(ClientContactContext cc : clientContacts) {
@@ -124,7 +113,6 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(clientContacts)) {
 			FacilioChain c = TransactionChainFactory.updateClientContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(ClientContactContext cc : clientContacts) {
@@ -213,7 +201,6 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(clientContacts)) {
 			FacilioChain c = TransactionChainFactory.updateClientContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clientContacts);
-			c.getContext().put(FacilioConstants.ContextNames.CLIENT_PORTAL_APP_ID, getClientPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,8 +10,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EmployeeContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -92,31 +89,12 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
-	private long appId;
-	
-	public long getAppId() {
-		return appId;
-	}
-	public void setAppId(long appId) {
-		this.appId = appId;
-	}
-	
-	private long occupantPortalAppId;
-	public long getOccupantPortalAppId() {
-		return occupantPortalAppId;
-	}
-	public void setOccupantPortalAppId(long occupantPortalAppId) {
-		this.occupantPortalAppId = occupantPortalAppId;
-	}
-	
 	public String addEmployees() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.addEmployeeChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(EmployeeContext emp : employees) {
@@ -135,8 +113,6 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(EmployeeContext emp : employees) {
@@ -226,7 +202,6 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
-			c.getContext().put(FacilioConstants.ContextNames.APP_ID, getAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
@@ -240,7 +215,6 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeAppAccessChain();
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);

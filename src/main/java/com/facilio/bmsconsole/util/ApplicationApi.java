@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -88,6 +89,21 @@ public class ApplicationApi {
             return applications.get(0);
         }
         return null;
+    }
+
+    
+    public static long getApplicationIdForLinkName(String appLinkName) throws Exception {
+    	if(StringUtils.isNotEmpty(appLinkName)) {
+	        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+	                .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
+	                .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
+	        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+	                ApplicationContext.class);
+	        if (applications != null && !applications.isEmpty()) {
+	            return applications.get(0).getId();
+	        }
+    	}
+        return -1;
     }
 
     public static List<WebTabGroupContext> getWebTabgroups() throws Exception {
@@ -220,38 +236,8 @@ public class ApplicationApi {
 		return userExisitsInApp;
 	}
 		
-	public static int deleteUserFromApp(User user, AppDomain appDomain) throws Exception {
-		long applicationId = getApplicationIdForApp(appDomain);
-	   return AccountUtil.getUserBean().deleteUserFromApps(user, applicationId);
-	}
-	
 	public static int deleteUserFromApp(User user, long appId) throws Exception {
 	   return AccountUtil.getUserBean().deleteUserFromApps(user, appId);
-	}
-	
-	public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
-		List<FacilioField> fields = FieldFactory.getApplicationFields();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-									.select(fields)
-									.table(ModuleFactory.getApplicationModule().getTableName())
-									;
-		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> list = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(list)) {
-			return (long)list.get(0).get("id");
-		}
-		return -1;
-	}
-	
-	public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
-		
-		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-		if(appDomainObj == null) {
-			throw new IllegalArgumentException("Invalid app domain");
-		}
-		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
-		return appId;
 	}
 	
 	public static AppDomain getAppDomainForApplication(long applicationId) throws Exception {
@@ -278,22 +264,22 @@ public class ApplicationApi {
 
 		Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
 		AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId(), "newapp", ApplicationContext.AppLayoutType.DUAL.getIndex());
+		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex());
 
 		
 		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
-		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getId(),"portal", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getId(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
-		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId(),"tenant", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliovendors.com");
-		ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId(),"vendor", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".facilioclients.com");
-		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId(),"client", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
-		ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getId(), "agent", ApplicationContext.AppLayoutType.SINGLE.getIndex());
+		ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getId(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
 		List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
 		applicationsDefault.add(facilioApplication);
@@ -424,4 +410,31 @@ public class ApplicationApi {
        	 	
 		}
 	}
+	
+	public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
+		List<FacilioField> fields = FieldFactory.getApplicationFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+									.select(fields)
+									.table(ModuleFactory.getApplicationModule().getTableName())
+									;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return (long)list.get(0).get("id");
+		}
+		return -1;
+	}
+	
+	public static long getApplicationIdForAppDomain(String appDomain) throws Exception {
+		
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new IllegalArgumentException("Invalid app domain");
+		}
+		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+		return appId;
+	}
+	
+
 }

@@ -1,26 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
-import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
+import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.Collections;
-import java.util.List;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.TenantContactContext;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TenantContactAction extends FacilioAction{
 
@@ -96,31 +89,6 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 	
-	private long appId;
-	
-	public long getAppId() {
-		return appId;
-	}
-	public void setAppId(long appId) {
-		this.appId = appId;
-	}
-	
-	private long tenantPortalAppId;
-	
-	public long getTenantPortalAppId() {
-		return tenantPortalAppId;
-	}
-	public void setTenantPortalAppId(long tenantPortalAppId) {
-		this.tenantPortalAppId = tenantPortalAppId;
-	}
-	private long occupantPortalAppId;
-	
-	public long getOccupantPortalAppId() {
-		return occupantPortalAppId;
-	}
-	public void setOccupantPortalAppId(long occupantPortalAppId) {
-		this.occupantPortalAppId = occupantPortalAppId;
-	}
 	public String addTenantContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(tenantContacts) || tenantContact != null) {
@@ -134,8 +102,6 @@ private static final long serialVersionUID = 1L;
 				RecordAPI.handleCustomLookup(tc.getData(), FacilioConstants.ContextNames.TENANT_CONTACT);
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
-			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 				
 			c.execute();
 			setResult(FacilioConstants.ContextNames.TENANT_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -150,8 +116,6 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateTenantContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 		
 			for(TenantContactContext tc : tenantContacts) {
 				tc.parseFormData();
@@ -239,7 +203,6 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(tenantContacts)) {
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
-			c.getContext().put(FacilioConstants.ContextNames.TENANT_PORTAL_APP_ID, getTenantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.execute();
@@ -253,7 +216,6 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(tenantContacts)) {
 			FacilioChain c = TransactionChainFactory.updateTenantContactAppAccessChain();
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, tenantContacts);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			

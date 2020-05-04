@@ -135,7 +135,7 @@ public class ContactsAPI {
 	
 	public static void addUserAsRequester(ContactsContext contact, AppDomain appDomain, long identifier) throws Exception {
 		
-		long appId = ApplicationApi.getApplicationIdForApp(appDomain);
+	//	long appId = ApplicationApi.getApplicationIdForApp(appDomain);
 		
 		User user = new User();
 		user.setEmail(contact.getEmail());
@@ -146,7 +146,7 @@ public class ContactsAPI {
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		
-		user.setApplicationId(appId);
+		user.setApplicationId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
 		user.setAppDomain(appDomain);
 		long id = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain.getIdentifier(), false, false);
 		user.setId(id);

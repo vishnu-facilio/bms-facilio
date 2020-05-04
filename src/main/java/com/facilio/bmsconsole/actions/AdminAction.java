@@ -116,18 +116,14 @@ public class AdminAction extends ActionSupport {
 		newUser.setInvitedTime(System.currentTimeMillis());
 		newUser.setUserStatus(true);
 		try {
-			AppDomain appDomainObj = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-			if(appDomainObj == null) {
-				throw new IllegalArgumentException("Invalid App Domain");
-			}
-			     
 			AccountUtil.setCurrentAccount(orgId);
-			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+			AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
 				//for now add main app users only from admin console
 			newUser.setApplicationId(appId);
-			newUser.setAppDomain(appDomainObj);
+			newUser.setAppDomain(appDomain);
 			
-			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, appDomainObj.getIdentifier(), false, false);
+			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, appDomain.getIdentifier(), false, false);
 			PeopleAPI.addPeopleForUser(newUser, false);
 			AccountUtil.cleanCurrentAccount();
 			

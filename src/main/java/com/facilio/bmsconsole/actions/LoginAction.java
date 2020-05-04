@@ -343,7 +343,7 @@ public class LoginAction extends FacilioAction {
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("portalInfo", AccountUtil.getPortalInfo());
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		Map<String, Object> data = new HashMap<>();
 		
 		
@@ -403,7 +403,7 @@ public class LoginAction extends FacilioAction {
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
@@ -495,7 +495,7 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
@@ -595,7 +595,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -876,7 +876,7 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForAppDomain(AccountUtil.getDefaultAppDomain()), true);
+		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -949,8 +949,9 @@ public class LoginAction extends FacilioAction {
 			
 			long appId = -1;
 			try {
+				//handling permalinks on super admin scope
 				AccountUtil.setCurrentAccount(iamAccount.getOrg().getOrgId());
-				appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
+				appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
 			catch(Exception e) {
 				account =null;

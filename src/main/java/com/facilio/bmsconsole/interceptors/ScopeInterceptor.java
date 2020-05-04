@@ -124,6 +124,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             appId = application.getId();
                         }
                     }
+                    //temp handling. will be removed once we get app link name in every api call from client
                     if (appId <= 0) {
                         appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
                     }

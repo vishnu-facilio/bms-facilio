@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,7 +9,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -90,13 +88,6 @@ public class VendorContactAction extends FacilioAction{
 		this.id = id;
 	}
 	
-	private long vendorPortalAppId;
-	public long getVendorPortalAppId() {
-		return vendorPortalAppId;
-	}
-	public void setVendorPortalAppId(long vendorPortalAppId) {
-		this.vendorPortalAppId = vendorPortalAppId;
-	}
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -109,7 +100,6 @@ public class VendorContactAction extends FacilioAction{
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 		
@@ -124,7 +114,6 @@ public class VendorContactAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(VendorContactContext vc : vendorContacts) {
@@ -212,7 +201,6 @@ public class VendorContactAction extends FacilioAction{
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
 			FacilioChain c = TransactionChainFactory.updateVendorContactAppAccessChain();
-			c.getContext().put(FacilioConstants.ContextNames.VENDOR_PORTAL_APP_ID, getVendorPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);

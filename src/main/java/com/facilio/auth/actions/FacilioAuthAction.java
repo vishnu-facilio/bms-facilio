@@ -900,10 +900,10 @@ public class FacilioAuthAction extends FacilioAction {
 				+ getEmailaddress() );
 		HttpServletRequest req = ServletActionContext.getRequest();
 		
-		return addPortalUser(getUsername(), getPassword(), getEmailaddress(), req.getServerName());
+		return addPortalUser(getUsername(), getPassword(), getEmailaddress(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 	}
 
-	private String addPortalUser(String username, String password, String emailaddress, String appDomain)
+	private String addPortalUser(String username, String password, String emailaddress, String linkname)
 			throws Exception {
 		LOGGER.info("### addPortalUser() :" + emailaddress);
 
@@ -961,13 +961,9 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
-				if(appDomainObj == null) {
-					setJsonresponse("message", "Invalid app domain");
-					return ERROR;
-				}
-				long applicationId = ApplicationApi.getApplicationIdForApp(appDomainObj);
+				long applicationId = ApplicationApi.getApplicationIdForLinkName(linkname);
 				user.setApplicationId(applicationId);
+				AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(applicationId);
 				user.setAppDomain(appDomainObj);
 				
 				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, true, appDomainObj.getIdentifier(), true, true);

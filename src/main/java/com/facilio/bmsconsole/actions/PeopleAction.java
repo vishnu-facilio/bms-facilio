@@ -92,30 +92,12 @@ public class PeopleAction extends FacilioAction{
 		this.peopleIds = peopleIds;
 	}
 	
-	private long appId;
-	
-	public long getAppId() {
-		return appId;
-	}
-	public void setAppId(long appId) {
-		this.appId = appId;
-	}
-	
-	private long occupantPortalAppId;
-	
-	public long getOccupantPortalAppId() {
-		return occupantPortalAppId;
-	}
-	public void setOccupantPortalAppId(long occupantPortalAppId) {
-		this.occupantPortalAppId = occupantPortalAppId;
-	}
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(PeopleContext ppl : peopleList) {
@@ -134,7 +116,6 @@ public class PeopleAction extends FacilioAction{
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, occupantPortalAppId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			for(PeopleContext ppl : peopleList) {
@@ -222,7 +203,6 @@ public class PeopleAction extends FacilioAction{
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
 			FacilioChain c = TransactionChainFactory.updatePeopleAppAccessChain();
-			c.getContext().put(FacilioConstants.ContextNames.SERVICE_PORTAL_APP_ID, getOccupantPortalAppId());
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, peopleList);
