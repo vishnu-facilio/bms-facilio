@@ -418,7 +418,7 @@ public class ApplicationApi {
 									.table(ModuleFactory.getApplicationModule().getTableName())
 									;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
-		
+		selectBuilder.orderBy("ID asc");
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
 			return (long)list.get(0).get("id");
