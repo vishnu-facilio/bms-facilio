@@ -108,6 +108,11 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 						Long currentValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName()));
 						Long newValue = previousValue == null && currentValue == null ? null : previousValue == null ? currentValue : currentValue == null ? previousValue : previousValue + currentValue;
 						data.put(ttime, newValue);
+					}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.BOOLEAN)){
+						Boolean previousValue = (Boolean) data.get(ttime);
+						Boolean currentValue = (Boolean) prop.get(variableField.getName());
+						Boolean newValue = previousValue == null && currentValue == null ? null : previousValue == null ? currentValue : currentValue == null ? previousValue : currentValue;
+						data.put(ttime, newValue);
 					}else{
 						if(variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 							data.put(ttime,(Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
