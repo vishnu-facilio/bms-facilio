@@ -4229,6 +4229,11 @@
 			<param name="isNewPermission">true</param>
 		</action>
 		
+		<action name="getVariable"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="getVariableByName">
+		</action>
+		
 		<action name="downloadCertificate"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="downloadCertificate">

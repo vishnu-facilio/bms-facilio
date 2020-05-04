@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,12 +32,16 @@ import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class ConnectedAppAction extends FacilioAction {
@@ -154,9 +159,27 @@ public class ConnectedAppAction extends FacilioAction {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getVariablesModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(variable.getId(), ModuleFactory.getVariablesModule()));
+				.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID","connectedAppId",String.valueOf(connectedAppId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("NAME","name",name, StringOperators.IS));
 
 		builder.delete();
+		
+		return SUCCESS;
+	}
+	
+	public String getVariableByName() throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVariablesFields())
+				.table(ModuleFactory.getVariablesModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(connectedAppId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("NAME","name",name, StringOperators.IS));
+		
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (props != null && !props.isEmpty()) {
+			variable = FieldUtil.getAsBeanFromMap(props, VariableContext.class);
+		}
+		setResult("variable", variable);
 		
 		return SUCCESS;
 	}
@@ -197,6 +220,7 @@ public class ConnectedAppAction extends FacilioAction {
 	
 	public String addOrUpdateVariable() throws Exception {
 		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateVariableChain();
+		addItem.getContext().put("upsert", upsert);
 		addItem.getContext().put(FacilioConstants.ContextNames.RECORD, variable);
 		addItem.execute();
 		
@@ -377,7 +401,16 @@ public class ConnectedAppAction extends FacilioAction {
 		this.downloadStream = new FileInputStream(privateKeyFile); 
 		return SUCCESS;
 	}
+	private String name;
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private String linkName;
 
 	public void setLinkName(String linkName) {
@@ -402,6 +435,16 @@ public class ConnectedAppAction extends FacilioAction {
 		handleSAMLResponse(connectedApp, viewURL);
 
 		return SUCCESS;
+	}
+	
+	private boolean upsert = false;
+	
+	public boolean isUpsert() {
+		return upsert;
+	}
+
+	public void setUpsert(boolean upsert) {
+		this.upsert = upsert;
 	}
 
 	private long widgetId;

@@ -8,8 +8,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -20,11 +22,28 @@ public class AddOrUpdateVariableCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		VariableContext variable = (VariableContext) context.get(FacilioConstants.ContextNames.RECORD);
+		
+		boolean upsert = (boolean) context.get("upsert");
+		
 		if (variable != null) {
+			VariableContext oldVariable = null;
+			if(upsert){
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getVariablesFields())
+						.table(ModuleFactory.getVariablesModule().getTableName())
+						.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(variable.getConnectedAppId()), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition("NAME","name",variable.getName(), NumberOperators.EQUALS));
+				
+				Map<String, Object> props = selectBuilder.fetchFirst();
+				if (props != null && !props.isEmpty()) {
+					oldVariable = FieldUtil.getAsBeanFromMap(props, VariableContext.class);
+				}
+			}
+			
 			variable.setOrgId(AccountUtil.getCurrentOrg().getId());
 			variable.setSysModifiedTime(System.currentTimeMillis());
 			variable.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
-			if (variable.getId() > 0) {
+			if ((upsert && oldVariable != null) ||variable.getId() > 0) {
 				
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getVariablesModule().getTableName())
