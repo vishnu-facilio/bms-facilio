@@ -107,17 +107,17 @@ public class FacilioCorsFilter implements Filter {
             response.addHeader("internal", ip);
         }
 
-        /* response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
+        response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
         response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
         response.setHeader(X_CONTENT_TYPE_OPTIONS , "nosniff");
-        response.setHeader( REFERRER_POLICY, "strict-origin-when-cross-origin");
+        response.setHeader(REFERRER_POLICY, "strict-origin-when-cross-origin");
         
-        if (! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+        if (! (FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
         	response.setHeader(CONTENT_SECURITY_POLICY , "default-src https: data: self: 'unsafe-inline'; form-action https:; connect-src wss: https:; upgrade-insecure-requests");
         }
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
-        */
+
         String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
         if(forwardedProtocol != null) {
             if ("http".equalsIgnoreCase(forwardedProtocol)){
