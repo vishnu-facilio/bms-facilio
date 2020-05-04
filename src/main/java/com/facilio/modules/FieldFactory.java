@@ -3413,6 +3413,29 @@ public class FieldFactory {
 
         return fields;
 	}
+	
+	public static List<FacilioField> getConnectedAppConnectorsFields() {
+		FacilioModule module = ModuleFactory.getConnectedAppConnectorsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("connectorId", "CONNECTOR_ID", module, FieldType.NUMBER));
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+
+        return fields;
+	}
+	
+	public static List<FacilioField> getVariablesFields() {
+		FacilioModule module = ModuleFactory.getVariablesModule();
+
+        List<FacilioField> fields = getSystemFields(module);
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("value", "VALUE", module, FieldType.STRING));
+        fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+
+        return fields;
+	}
     
 
     public static List<FacilioField> getConnectionFields() {

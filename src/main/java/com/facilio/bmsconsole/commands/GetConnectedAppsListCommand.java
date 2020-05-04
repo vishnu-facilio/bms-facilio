@@ -8,9 +8,11 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -68,6 +70,40 @@ public class GetConnectedAppsListCommand extends FacilioCommand{
 						ca.setConnectedAppWidgetsList(new ArrayList<>());
 					}
 					ca.getConnectedAppWidgetsList().add(connectedAppWidget);
+				});
+			}
+		}
+		
+		selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVariablesFields())
+				.table(ModuleFactory.getVariablesModule().getTableName())
+				;
+		props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				VariableContext variable = FieldUtil.getAsBeanFromMap(prop, VariableContext.class);
+				connectedApps.stream().filter(ca->ca.getId()==variable.getConnectedAppId()).findFirst().ifPresent(ca -> {
+					if(ca.getVariablesList() == null){
+						ca.setVariablesList(new ArrayList<>());
+					}
+					ca.getVariablesList().add(variable);
+				});
+			}
+		}
+		
+		selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppConnectorsFields())
+				.table(ModuleFactory.getConnectedAppConnectorsModule().getTableName())
+				;
+		props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				ConnectedAppConnectorContext connector = FieldUtil.getAsBeanFromMap(prop, ConnectedAppConnectorContext.class);
+				connectedApps.stream().filter(ca->ca.getId()==connector.getConnectedAppId()).findFirst().ifPresent(ca -> {
+					if(ca.getConnectedAppConnectorsList() == null){
+						ca.setConnectedAppConnectorsList(new ArrayList<>());
+					}
+					ca.getConnectedAppConnectorsList().add(connector);
 				});
 			}
 		}

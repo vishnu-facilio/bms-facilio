@@ -21,7 +21,25 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private Boolean showInLauncher;
 	private ConnectedAppSAMLContext connectedAppSAML;
 	private List<ConnectedAppWidgetContext> connectedAppWidgetsList;
+	private List<VariableContext> variablesList;
+	private List<ConnectedAppConnectorContext> connectedAppConnectorsList;
 	
+	public List<ConnectedAppConnectorContext> getConnectedAppConnectorsList() {
+		return connectedAppConnectorsList;
+	}
+
+	public void setConnectedAppConnectorsList(List<ConnectedAppConnectorContext> connectedAppConnectorsList) {
+		this.connectedAppConnectorsList = connectedAppConnectorsList;
+	}
+
+	public List<VariableContext> getVariablesList() {
+		return variablesList;
+	}
+
+	public void setVariablesList(List<VariableContext> variablesList) {
+		this.variablesList = variablesList;
+	}
+
 	public List<ConnectedAppWidgetContext> getConnectedAppWidgetsList() {
 		return connectedAppWidgetsList;
 	}

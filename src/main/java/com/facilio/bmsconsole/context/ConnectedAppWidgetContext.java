@@ -112,7 +112,8 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 		WEB_TAB,
 		SUMMARY_PAGE,
 		DASHBOARD_WIDGET,
-		DIALER;
+		DIALER,
+		RELATED_LIST;
 
 		public int getValue() {
 			return ordinal() + 1;

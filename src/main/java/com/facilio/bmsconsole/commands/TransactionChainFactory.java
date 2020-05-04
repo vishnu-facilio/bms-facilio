@@ -1702,6 +1702,18 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateConnectedAppWidgetCommand());
 			return c;
 		}
+		
+		public static FacilioChain getAddOrUpdateVariableChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateVariableCommand());
+			return c;
+		}
+		
+		public static FacilioChain getAddOrUpdateConnectedAppConnectorChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateConnectedAppConnectorCommand());
+			return c;
+		}
 
 		public static FacilioChain getDeleteConnectedAppChain() {
 			FacilioChain c = getDefaultChain();

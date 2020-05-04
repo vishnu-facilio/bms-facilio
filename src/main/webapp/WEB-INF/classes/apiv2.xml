@@ -4174,6 +4174,22 @@
 			<param name="isNewPermission">true</param>
 		</action>
 		
+		<action name="addOrUpdateVariable"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="addOrUpdateVariable">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
+		<action name="addOrUpdateConnector"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="addOrUpdateConnectedAppConnector">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
 		<action name="viewWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="viewWidget">
@@ -4184,9 +4200,30 @@
 			method="connectedAppWidgetList">
 		</action>
 		
+		<action name="modules"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="getConnectedAppModules">
+		</action>
+		
 		<action name="deleteWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedAppWidget">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
+		<action name="deleteVariable"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="deleteVariable">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONNECTED_APPS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+		
+		<action name="deleteConnector"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="deleteConnectedAppConnector">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>

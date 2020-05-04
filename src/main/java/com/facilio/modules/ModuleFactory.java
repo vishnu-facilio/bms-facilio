@@ -1113,6 +1113,22 @@ public class ModuleFactory {
 		return connectedApp;
 	}
 	
+	public static FacilioModule getVariablesModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("variables");
+		connectedApp.setDisplayName("Variables");
+		connectedApp.setTableName("Variables");
+		return connectedApp;
+	}
+	
+	public static FacilioModule getConnectedAppConnectorsModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connectedAppConnectors");
+		connectedApp.setDisplayName("Connected App Connectors");
+		connectedApp.setTableName("ConnectedApp_Connectors");
+		return connectedApp;
+	}
+	
 	public static FacilioModule getConnectionModule() {
 		FacilioModule connectedApp = new FacilioModule();
 		connectedApp.setName("connection");

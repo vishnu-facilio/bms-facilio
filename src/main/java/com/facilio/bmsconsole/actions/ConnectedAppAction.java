@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,20 +18,25 @@ import org.w3c.dom.Element;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext.HostingType;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 
 public class ConnectedAppAction extends FacilioAction {
@@ -66,6 +73,26 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedAppWidget(ConnectedAppWidgetContext connectedAppWidget) {
 		this.connectedAppWidget = connectedAppWidget;
 	}
+	
+	private ConnectedAppConnectorContext connectedAppConnector;
+
+	public ConnectedAppConnectorContext getConnectedAppConnector() {
+		return connectedAppConnector;
+	}
+
+	public void setConnectedAppConnector(ConnectedAppConnectorContext connectedAppConnector) {
+		this.connectedAppConnector = connectedAppConnector;
+	}
+
+	private VariableContext variable;
+	
+	public VariableContext getVariable() {
+		return variable;
+	}
+
+	public void setVariable(VariableContext variable) {
+		this.variable = variable;
+	}
 
 	private long connectedAppId;
 
@@ -97,6 +124,17 @@ public class ConnectedAppAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String deleteConnectedAppConnector() throws Exception {
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getConnectedAppConnectorsModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(connectedAppConnector.getId(), ModuleFactory.getConnectedAppConnectorsModule()));
+
+		builder.delete();
+		
+		return SUCCESS;
+	}
+	
 	public String deleteConnectedAppWidget() throws Exception {
 
 		if (connectedAppWidget.getCriteriaId() > 0) {
@@ -106,6 +144,17 @@ public class ConnectedAppAction extends FacilioAction {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(connectedAppWidget.getId(), ModuleFactory.getConnectedAppWidgetsModule()));
+
+		builder.delete();
+		
+		return SUCCESS;
+	}
+	
+	public String deleteVariable() throws Exception {
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getVariablesModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(variable.getId(), ModuleFactory.getVariablesModule()));
 
 		builder.delete();
 		
@@ -132,6 +181,28 @@ public class ConnectedAppAction extends FacilioAction {
 		connectedAppWidget = (ConnectedAppWidgetContext) addItem.getContext().get(FacilioConstants.ContextNames.RECORD);
 		
 		setResult("connectedAppWidget", connectedAppWidget);
+		return SUCCESS;
+	}
+	
+	public String addOrUpdateConnectedAppConnector() throws Exception {
+		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppConnectorChain();
+		addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedAppConnector);
+		addItem.execute();
+		
+		connectedAppConnector = (ConnectedAppConnectorContext) addItem.getContext().get(FacilioConstants.ContextNames.RECORD);
+		
+		setResult("connectedAppConnector", connectedAppConnector);
+		return SUCCESS;
+	}
+	
+	public String addOrUpdateVariable() throws Exception {
+		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateVariableChain();
+		addItem.getContext().put(FacilioConstants.ContextNames.RECORD, variable);
+		addItem.execute();
+		
+		variable = (VariableContext) addItem.getContext().get(FacilioConstants.ContextNames.RECORD);
+		
+		setResult("variable", variable);
 		return SUCCESS;
 	}
 
@@ -186,6 +257,52 @@ public class ConnectedAppAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String getConnectedAppModules() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioModule> sysytemModules = new ArrayList<>();
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
+//        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
+        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR));
+//        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
+        }
+       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS));
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS));
+        }
+       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
+       }
+//       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+//    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+//    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+//       }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
+            sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+        }
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE));
+        
+        List<FacilioModule> customModules = new ArrayList<>();
+
+        customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
+        
+        List<FacilioModule> modules = new ArrayList<FacilioModule>();
+        modules.addAll(sysytemModules);
+        modules.addAll(customModules);
+        
+        modules =  modules.stream().filter(m->m!= null).collect(Collectors.toList());
+        
+		setResult("modules", modules);
+		
+		return SUCCESS;
+	}
+	
 
 	private List<ConnectedAppContext> connectedAppList;
 

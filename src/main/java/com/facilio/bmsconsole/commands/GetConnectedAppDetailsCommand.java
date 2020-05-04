@@ -6,9 +6,12 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -62,6 +65,50 @@ public class GetConnectedAppDetailsCommand extends FacilioCommand{
 				}
 				connectedAppContext.setConnectedAppWidgetsList(connectedAppWidgetsList);
 			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getVariablesFields())
+					.table(ModuleFactory.getVariablesModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(connectedAppId), NumberOperators.EQUALS))
+					;
+			props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<VariableContext> variablesList = new ArrayList<>();
+				for(Map<String, Object> prop : props) {
+					VariableContext variable = FieldUtil.getAsBeanFromMap(prop, VariableContext.class);
+					variablesList.add(variable);
+				}
+				connectedAppContext.setVariablesList(variablesList);
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getConnectedAppConnectorsFields())
+					.table(ModuleFactory.getConnectedAppConnectorsModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(connectedAppId), NumberOperators.EQUALS))
+					;
+			props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<ConnectedAppConnectorContext> connectedAppConnectorsList = new ArrayList<>();
+				for(Map<String, Object> prop : props) {
+					ConnectedAppConnectorContext connectedAppConnector = FieldUtil.getAsBeanFromMap(prop, ConnectedAppConnectorContext.class);
+					
+					GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+							.table(ModuleFactory.getConnectionModule().getTableName())
+							.select(FieldFactory.getConnectionFields())
+							.andCondition(CriteriaAPI.getIdCondition(connectedAppConnector.getConnectorId(), ModuleFactory.getConnectionModule()));
+
+					Map<String, Object> props2 = select.fetchFirst();
+
+					if(props2 != null && !props2.isEmpty()) {
+						ConnectionContext connection = FieldUtil.getAsBeanFromMap(props2, ConnectionContext.class);
+						connectedAppConnector.setConnection(connection);
+					}
+					
+					connectedAppConnectorsList.add(connectedAppConnector);
+				}
+				connectedAppContext.setConnectedAppConnectorsList(connectedAppConnectorsList);
+			}
+			
 			context.put(FacilioConstants.ContextNames.RECORD, connectedAppContext);
 			
 		}
