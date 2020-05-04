@@ -646,7 +646,7 @@ public class AccountConstants {
 		FacilioModule groupModule = new FacilioModule();
 		groupModule.setName("groups");
 		groupModule.setDisplayName("Groups");
-		groupModule.setTableName("Groups");
+		groupModule.setTableName("FacilioGroups");
 
 		return groupModule;
 	}
@@ -655,7 +655,7 @@ public class AccountConstants {
 		FacilioModule groupMemberModule = new FacilioModule();
 		groupMemberModule.setName("groupmember");
 		groupMemberModule.setDisplayName("Group Members");
-		groupMemberModule.setTableName("GroupMembers");
+		groupMemberModule.setTableName("FacilioGroupMembers");
 
 		return groupMemberModule;
 	}

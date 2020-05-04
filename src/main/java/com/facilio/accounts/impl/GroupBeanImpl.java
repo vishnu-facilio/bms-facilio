@@ -200,11 +200,11 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
-				.innerJoin("GroupMembers")
-				.on("GroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
+				.innerJoin("FacilioGroupMembers")
+				.on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_User_Apps.ORG_USERID = ORG_Users.ORG_USERID")
-				.andCustomWhere("GroupMembers.GROUPID = ?", groupId)
+				.andCustomWhere("FacilioGroupMembers.GROUPID = ?", groupId)
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS))
 				
@@ -461,10 +461,10 @@ public class GroupBeanImpl implements GroupBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
-				.table("Groups")
-				.innerJoin("GroupMembers")
-				.on("Groups.GROUPID = GroupMembers.GROUPID")
-				.andCustomWhere("GroupMembers.ORG_USERID = ? and Groups.IS_ACTIVE = true", ouid);
+				.table(AccountConstants.getGroupModule().getTableName())
+				.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
+				.on("FacilioGroups.GROUPID = FacilioGroupMembers.GROUPID")
+				.andCustomWhere("FacilioGroupMembers.ORG_USERID = ? and FacilioGroups.IS_ACTIVE = true", ouid);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
