@@ -12,8 +12,8 @@ public class RuleRollUpEvent extends BaseEventContext {
 
     @Override
     public String constructMessageKey() {
-        if (getResource() != null && getRule() != null) {
-            return rule.getId() + "_" + getEventType();
+        if (getRule() != null) {
+            return "RuleRollUp_ " + getRule().getId() + "_" + getEventType();
         }
         return null;
     }
@@ -21,22 +21,22 @@ public class RuleRollUpEvent extends BaseEventContext {
     @Override
     public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
         if (add && baseAlarm == null) {
-            baseAlarm = new ReadingAlarm();
+            baseAlarm = new RuleRollUpAlarm();
         }
         super.updateAlarmContext(baseAlarm, add);
-        ReadingAlarm readingAlarm = (ReadingAlarm) baseAlarm;
+        RuleRollUpAlarm ruleRollUpAlarm = (RuleRollUpAlarm) baseAlarm;
 
-        if (readingAlarmCategory == null) {
-            if (getResource() != null) {
-                readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
-            }
-        }
-        readingAlarm.setReadingAlarmCategory(readingAlarmCategory);
+//        if (readingAlarmCategory == null) {
+//            if (getResource() != null) {
+//                readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
+//            }
+//        }
+//        ruleRollUpAlarm.setReadingAlarmCategory(readingAlarmCategory);
 
-        readingAlarm.setRule(rule);
-        readingAlarm.setSubRule(subRule);
+        ruleRollUpAlarm.setRule(rule);
+        ruleRollUpAlarm.setSubRule(subRule);
         if (readingFieldId != -1) {
-            readingAlarm.setReadingFieldId(readingFieldId);
+            ruleRollUpAlarm.setReadingFieldId(readingFieldId);
         }
         return baseAlarm;
     }
@@ -44,21 +44,21 @@ public class RuleRollUpEvent extends BaseEventContext {
     @Override
     public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
         if (add && alarmOccurrence == null) {
-            alarmOccurrence = new ReadingAlarmOccurrenceContext();
+            alarmOccurrence = new RuleRollUpOccurrence();
         }
 
-        ReadingAlarmOccurrenceContext readingOccurrence = (ReadingAlarmOccurrenceContext) alarmOccurrence;
+        RuleRollUpOccurrence rollUpOccurrence = (RuleRollUpOccurrence) alarmOccurrence;
         if (readingAlarmCategory == null) {
             if (getResource() != null) {
                 readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
             }
         }
-        readingOccurrence.setReadingAlarmCategory(readingAlarmCategory);
+        rollUpOccurrence.setReadingAlarmCategory(readingAlarmCategory);
 
-        readingOccurrence.setRule(rule);
-        readingOccurrence.setSubRule(subRule);
+        rollUpOccurrence.setRule(rule);
+        rollUpOccurrence.setSubRule(subRule);
         if (readingFieldId != -1) {
-            readingOccurrence.setReadingFieldId(readingFieldId);
+            rollUpOccurrence.setReadingFieldId(readingFieldId);
         }
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.accounts.dto.User;
@@ -190,6 +191,26 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		List<BaseEventContext> additionalEvents = getAdditionalEvents();
 		setAdditionalEvents(null);
 		return additionalEvents;
+	}
+
+	@JsonIgnore
+	private List<NewEventsToAlarmsConversionCommand.PostTransactionEventListener> posList;
+	public void addPostTransactionEventListener(NewEventsToAlarmsConversionCommand.PostTransactionEventListener pos) {
+		if (pos == null) {
+			return;
+		}
+		if (posList == null) {
+			posList = new ArrayList<>();
+		}
+		posList.add(pos);
+	}
+	public List<NewEventsToAlarmsConversionCommand.PostTransactionEventListener> getPosList() {
+		return posList;
+	}
+	public List<NewEventsToAlarmsConversionCommand.PostTransactionEventListener> removePosList() {
+		List<NewEventsToAlarmsConversionCommand.PostTransactionEventListener> posList = getPosList();
+		this.posList = null;
+		return posList;
 	}
 
 	public static enum Type implements FacilioEnum {

@@ -38,6 +38,6 @@ public class RuleRollUpOccurrence extends AlarmOccurrenceContext {
 
     @Override
     public Type getTypeEnum() {
-        return Type.READING;
+        return Type.RULE_ROLLUP;
     }
 }

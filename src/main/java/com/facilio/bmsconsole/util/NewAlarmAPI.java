@@ -7,15 +7,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.activity.AlarmActivityType;
-import com.facilio.agent.AgentContent;
-import com.facilio.agent.AgentUtil;
 import com.facilio.agent.alarms.*;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
@@ -130,6 +126,8 @@ public class NewAlarmAPI {
 				return PreAlarmOccurrenceContext.class;
 			case OPERATION_OCCURRENCE:
 				return OperationAlarmOccurenceContext.class;
+			case RULE_ROLLUP:
+				return RuleRollUpOccurrence.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -156,6 +154,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE;
 			case OPERATION_OCCURRENCE:
 				return FacilioConstants.ContextNames.OPERATION_OCCURRENCE;
+			case RULE_ROLLUP:
+				return FacilioConstants.ContextNames.RULE_ROLLUP_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -187,6 +187,8 @@ public class NewAlarmAPI {
 				return PreAlarmContext.class;
 			case OPERATION_ALARM:
 				return OperationAlarmContext.class;
+			case RULE_ROLLUP_ALARM:
+				return RuleRollUpAlarm.class;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -249,6 +251,8 @@ public class NewAlarmAPI {
 				return "prealarm";
 			case OPERATION_ALARM:
 				return "operationalarm";
+			case RULE_ROLLUP_ALARM:
+				return FacilioConstants.ContextNames.RULE_ROLLUP_ALARM;
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -1171,5 +1175,18 @@ public class NewAlarmAPI {
 		selectbuilder.andCriteria(criteria);
 		AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();
 		return  newLatestAlarmOccurrence;
+	}
+
+	public static List<? extends BaseAlarmContext> getExtendedAlarms(Type alarmType, Criteria criteria) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String alarmModule = getAlarmModuleName(alarmType);
+		SelectRecordsBuilder builder = new SelectRecordsBuilder<BaseAlarmContext>()
+				.select(modBean.getAllFields(alarmModule))
+				.module(modBean.getModule(alarmModule))
+				.beanClass(getAlarmClass(alarmType));
+		if (criteria != null) {
+			builder.andCriteria(criteria);
+		}
+		return builder.get();
 	}
 }

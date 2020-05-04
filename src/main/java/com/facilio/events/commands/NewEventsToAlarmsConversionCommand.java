@@ -3,7 +3,10 @@ package com.facilio.events.commands;
 import java.util.*;
 
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,13 +26,18 @@ import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import org.json.simple.JSONObject;
 
-public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
+public class NewEventsToAlarmsConversionCommand extends FacilioCommand implements PostTransactionCommand {
 
-	private Set<String> eventKeys1 = new HashSet<>();
+	public interface PostTransactionEventListener {
+		List<BaseEventContext> getPostTransactionEvents() throws Exception;
+	}
+
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
 	private Map<String, BaseAlarmContext> alarmMap = new HashMap<>();
 	private List<BaseEventContext> baseEvents;
 	private AlarmSeverityContext clearSeverity;
+
+	private List<PostTransactionEventListener> postTransactionEventListeners;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -48,6 +56,14 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 				events = new ArrayList<>();
 				for (BaseAlarmContext baseAlarm : values) {
+					List<PostTransactionEventListener> posList = baseAlarm.removePosList();
+					if (CollectionUtils.isNotEmpty(posList)) {
+						if (postTransactionEventListeners == null) {
+							postTransactionEventListeners = new ArrayList<>();
+						}
+						postTransactionEventListeners.addAll(posList);
+					}
+
 					List<BaseEventContext> baseEventContexts = baseAlarm.removeAdditionalEvents();
 					if (CollectionUtils.isNotEmpty(baseEventContexts)) {
 						events.addAll(baseEventContexts);
@@ -270,10 +286,6 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			this.position = position;
 		}
 
-//		public boolean add(E e) {
-//			return super.add(e);
-//		}
-		
 		public boolean isCurrentLast() {
 			return position == (size() - 1);
 		}
@@ -290,4 +302,20 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		}
 	}
 
+	@Override
+	public boolean postExecute() throws Exception {
+		if (CollectionUtils.isNotEmpty(postTransactionEventListeners)) {
+			List<BaseEventContext> baseEventContexts = new ArrayList<>();
+			for (PostTransactionEventListener ptel : postTransactionEventListeners) {
+				baseEventContexts.addAll(ptel.getPostTransactionEvents());
+			}
+			if (CollectionUtils.isNotEmpty(baseEventContexts)) {
+				FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
+				Context context = chain.getContext();
+				context.put(EventConstants.EventContextNames.EVENT_LIST, baseEventContexts);
+				chain.execute();
+			}
+		}
+		return false;
+	}
 }

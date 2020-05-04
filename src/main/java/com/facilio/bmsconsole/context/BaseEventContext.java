@@ -252,14 +252,18 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
+
+	public boolean isClearEvent() throws Exception {
+		AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity("Clear");
+		return clearSeverity.equals(getSeverity());
+	}
 	
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (StringUtils.isNotEmpty(getEventMessage())) {
 			baseAlarm.setSubject(getEventMessage());
 		}
 		else {
-			AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity("Clear");
-			if (getSeverity().equals(clearSeverity)) {
+			if (isClearEvent()) {
 				setEventMessage("Clear Event");
 			}
 		}
@@ -359,18 +363,18 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			case OPERATION_ALARM:
 				baseEvent = new OperationAlarmEventContext();
 				break;
-		case RULE_ROLLUP_ALARM:
-			baseEvent = new RuleRollUpEvent();
-			break;
-		case ASSET_ROLLUP_ALARM:
-			baseEvent = new AssetRollUpEvent();
-			break;
+			case RULE_ROLLUP_ALARM:
+				baseEvent = new RuleRollUpEvent();
+				break;
+			case ASSET_ROLLUP_ALARM:
+				baseEvent = new AssetRollUpEvent();
+				break;
 
 
-		default:
-			throw new IllegalArgumentException("Invalid type");
+			default:
+				throw new IllegalArgumentException("Invalid type");
 		}
-		
+
 		if (createdTime == -1) {
 			createdTime = DateTimeUtil.getCurrenTime();
 		}

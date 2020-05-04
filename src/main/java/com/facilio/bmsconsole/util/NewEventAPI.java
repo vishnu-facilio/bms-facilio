@@ -12,6 +12,7 @@ import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.bmsconsole.context.*;
 
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -34,7 +35,7 @@ public class NewEventAPI {
 
 	public static Class getEventClass(Type type) {
 		if (type == null) {
-			throw new IllegalArgumentException("Invalid alarm type");
+			throw new IllegalArgumentException("Invalid event type");
 		}
 
 		switch (type) {
@@ -64,16 +65,18 @@ public class NewEventAPI {
 				return PreEventContext.class;
 			case OPERATION_ALARM:
 				return OperationAlarmEventContext.class;
+			case RULE_ROLLUP_ALARM:
+				return RuleRollUpEvent.class;
 
 
 			default:
-				throw new IllegalArgumentException("Invalid alarm type");
+				throw new IllegalArgumentException("Invalid event type");
 		}
 	}
 
 	public static String getEventModuleName(Type type) {
 		if (type == null) {
-			throw new IllegalArgumentException("Invalid alarm type");
+			throw new IllegalArgumentException("Invalid event type");
 		}
 
 		switch (type) {
@@ -102,8 +105,12 @@ public class NewEventAPI {
 				return "preevent";
 			case OPERATION_ALARM:
 				return "operationevent";
+
+			case RULE_ROLLUP_ALARM:
+				return "rulerollupevent";
+
 			default:
-				throw new IllegalArgumentException("Invalid alarm type");
+				throw new IllegalArgumentException("Invalid event type");
 		}
 	}
 
@@ -201,5 +208,18 @@ public class NewEventAPI {
 			}	
 		}
 		return null;
+	}
+
+	public static List<? extends BaseEventContext> getExtendedEvents(Type alarmType, Criteria criteria) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String eventModuleName = getEventModuleName(alarmType);
+		SelectRecordsBuilder builder = new SelectRecordsBuilder<BaseEventContext>()
+				.select(modBean.getAllFields(eventModuleName))
+				.module(modBean.getModule(eventModuleName))
+				.beanClass(getEventClass(alarmType));
+		if (criteria != null) {
+			builder.andCriteria(criteria);
+		}
+		return builder.get();
 	}
 }
