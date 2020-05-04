@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.actions;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
@@ -12,8 +14,10 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fs.FileInfo;
@@ -116,12 +120,17 @@ public class AdminAction extends ActionSupport {
 			if(appDomainObj == null) {
 				throw new IllegalArgumentException("Invalid App Domain");
 			}
+			     
+			AccountUtil.setCurrentAccount(orgId);
 			long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 				//for now add main app users only from admin console
 			newUser.setApplicationId(appId);
 			newUser.setAppDomain(appDomainObj);
 			
 			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser, appDomainObj.getIdentifier(), false, false);
+			PeopleAPI.addPeopleForUser(newUser, false);
+			AccountUtil.cleanCurrentAccount();
+			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
