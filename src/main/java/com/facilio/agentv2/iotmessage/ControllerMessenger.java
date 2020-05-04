@@ -1,6 +1,5 @@
 package com.facilio.agentv2.iotmessage;
 
-import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -185,8 +184,8 @@ public static boolean discoverPoints(long controllerId) throws Exception {
         return false;
     }
 
-    public static void configurePoints(List<Point> points, FacilioControllerType controllerType) throws Exception {
-        IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE);
+    public static void configurePoints(List<Point> points, Controller controller) throws Exception {
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE,controller);
         MessengerUtil.addAndPublishNewAgentData(iotData);
 
     }

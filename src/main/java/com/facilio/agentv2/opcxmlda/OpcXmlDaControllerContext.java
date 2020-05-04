@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class OpcXmlDaControllerContext extends Controller {
 
@@ -88,16 +89,27 @@ public class OpcXmlDaControllerContext extends Controller {
     public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        FacilioField userNameField = fieldsMap.get(AgentConstants.USER_NAME);
+        Objects.requireNonNull(userNameField,"userName field is null");
+
+        FacilioField urlField = fieldsMap.get(AgentConstants.URL);
+        Objects.requireNonNull(userNameField,"url field is null");
+
+
+        FacilioField passwordField = fieldsMap.get(AgentConstants.PASSWORD);
+        Objects.requireNonNull(userNameField,"passWord field is null");
+
+        LOGGER.info(" fields "+userNameField+"-----"+urlField+"-----"+passwordField);
         if(userName == null){
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),"NULL", CommonOperators.IS_EMPTY));
+            conditions.add(CriteriaAPI.getCondition(userNameField,"NULL", CommonOperators.IS_EMPTY));
         }else {
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),getUserName(), StringOperators.IS));
+            conditions.add(CriteriaAPI.getCondition(userNameField,getUserName(), StringOperators.IS));
         }
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(),StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(urlField,getUrl(),StringOperators.IS));
         if(password == null){
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),"NULL", CommonOperators.IS_EMPTY));
+            conditions.add(CriteriaAPI.getCondition(passwordField,"NULL", CommonOperators.IS_EMPTY));
         }else {
-            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),getPassword(),StringOperators.IS));
+            conditions.add(CriteriaAPI.getCondition(passwordField,getPassword(),StringOperators.IS));
         }
         return conditions;
     }

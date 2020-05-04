@@ -64,6 +64,7 @@ public class ControllerUtilV2 {
                 Controller controllerFromDb = null;//ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
                 GetControllerRequest getControllerRequest = new GetControllerRequest()
                         .withAgentId(device.getAgentId())
+                        .ofType(FacilioControllerType.valueOf(device.getControllerType()))
                         .withControllerProperties(controller.getChildJSON(),FacilioControllerType.valueOf(controller.getControllerType()));
                 controllerFromDb = getControllerRequest.getController();
                 if (controllerFromDb != null) {

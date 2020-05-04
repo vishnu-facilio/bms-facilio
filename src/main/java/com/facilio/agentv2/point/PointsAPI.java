@@ -363,8 +363,8 @@ public class PointsAPI {
         }
     }
 
-    private static void sendConfigurePointCommand(List<Point> points, FacilioControllerType controllerType) throws Exception {
-        ControllerMessenger.configurePoints(points, controllerType);
+    private static void sendConfigurePointCommand(List<Point> points, Controller controller) throws Exception {
+        ControllerMessenger.configurePoints(points, controller);
     }
 
     public static void handlePointConfigurationAndSubscription(FacilioCommand command,List<Long> pointIds) throws Exception {
@@ -389,7 +389,7 @@ public class PointsAPI {
     }
 
     public static boolean configurePoints(List<Point> points, Controller controller) throws Exception {
-        ControllerMessenger.configurePoints(points, FacilioControllerType.valueOf(controller.getControllerType()));
+        ControllerMessenger.configurePoints(points, controller);
         if ((points != null) && (!points.isEmpty())) {
             List<Long> pointIds = new ArrayList<>();
             for (Point point : points) {
