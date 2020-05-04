@@ -14,10 +14,11 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 		
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
 		
-		CriteriaAPI.deleteCriteria(formRule.getCriteriaId());
+		long oldCriteriaId = formRule.getCriteriaId();
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 		formRule.setCriteriaId(id);
 		FormRuleAPI.updateFormRuleContext(formRule);
+		CriteriaAPI.deleteCriteria(oldCriteriaId);
 		return false;
 	}
 
