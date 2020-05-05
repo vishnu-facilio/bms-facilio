@@ -220,14 +220,6 @@ public class ImportFieldFactory {
 		case "building":
 		case "floor":
 		case "space": {
-			removedFields.add("site");
-			removedFields.add("building");
-			removedFields.add("floor");
-			removedFields.add("space");
-			removedFields.add("space1");
-			removedFields.add("space2");
-			removedFields.add("space3");
-			removedFields.add("space4");
 			removedFields.add("cdd");
 			removedFields.add("hdd");
 			removedFields.add("wdd");
