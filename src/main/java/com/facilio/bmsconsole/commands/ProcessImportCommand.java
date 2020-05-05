@@ -42,13 +42,13 @@ public class ProcessImportCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ProcessImportCommand.class.getName());
 	private static ArrayListMultimap<String, String> groupedFields;
-	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
+	private static ArrayListMultimap<String, Long> recordsList;
 	
 	@Override
 	public boolean executeCommand(Context c) throws Exception {
 
 		HashMap<String, List<ReadingContext>> groupedContext = new HashMap<String, List<ReadingContext>>();
-		
+		recordsList = ArrayListMultimap.create();
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
@@ -442,6 +442,16 @@ public class ProcessImportCommand extends FacilioCommand {
 												props.put(facilioField.getName(), enumIndex);
 											}
 										}
+										else if (facilioField.getName().equals(FacilioConstants.ContextNames.SITE_ID)) {
+											String cellValueString = cellValue.toString();
+											if (StringUtils.isNotEmpty(cellValueString)) {
+												SiteContext site = SpaceAPI.getSite(cellValueString);
+												if (site != null && site.getId() > 0) {
+													props.put(facilioField.getName(), site.getId());
+												}
+											}
+											isfilledByLookup = true;
+										}
 										else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
 											String cellValueString = cellValue.toString();
 											if(cellValueString.contains(",")) {
@@ -602,7 +612,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						if(field.getDataType() == FieldType.ENUM.getTypeAsInt()) {
 							EnumField enumField = (EnumField) field;
 							String enumString = (String)colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName()));
-							int enumIndex = enumField.getIndex(enumString.toLowerCase());
+							int enumIndex = enumField.getIndex(enumString);
 							lookupFieldMap.put(field.getName(),enumIndex);
 						}
 						else if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
