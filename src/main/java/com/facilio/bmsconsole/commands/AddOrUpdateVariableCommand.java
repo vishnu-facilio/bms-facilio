@@ -44,7 +44,17 @@ public class AddOrUpdateVariableCommand extends FacilioCommand {
 			variable.setOrgId(AccountUtil.getCurrentOrg().getId());
 			variable.setSysModifiedTime(System.currentTimeMillis());
 			variable.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
-			if ((upsert && oldVariable != null) ||variable.getId() > 0) {
+			if((upsert && oldVariable != null)){
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getVariablesModule().getTableName())
+						.fields(FieldFactory.getVariablesFields())
+						.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(variable.getConnectedAppId()), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition("NAME","name",variable.getName(), StringOperators.IS));
+				
+				Map<String, Object> props = FieldUtil.getAsProperties(variable);
+				updateBuilder.update(props);
+			}
+			else if (variable.getId() > 0) {
 				
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getVariablesModule().getTableName())
