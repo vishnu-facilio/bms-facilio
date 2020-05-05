@@ -853,6 +853,9 @@ public class FormsAPI {
 			if (field != null) {
 				mutatedField.setField(field);
 				mutatedField.setFieldId(field.getFieldId());
+				if (field instanceof LookupField) {
+					mutatedField.setLookupModuleName(((LookupField)field).getLookupModule().getName());
+				}
 			}
 			fields.set(i, mutatedField);
 		}
