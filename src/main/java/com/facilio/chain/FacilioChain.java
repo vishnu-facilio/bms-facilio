@@ -18,6 +18,7 @@ import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class FacilioChain extends ChainBase {
@@ -206,12 +207,17 @@ public class FacilioChain extends ChainBase {
 			if (currenttrans == null) {
 				tm.begin();
 			}
-			for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
-				if (onSuccess) {
-					postTransactionCommand.postExecute();
-				}
-				else {
-					postTransactionCommand.onError();
+			while (CollectionUtils.isNotEmpty(postTransactionChains)) {
+				List<PostTransactionCommand> newList = new ArrayList<>(postTransactionChains);
+				postTransactionChains.clear();
+				Iterator<PostTransactionCommand> iterator = newList.iterator();
+				while (iterator.hasNext()) {
+					PostTransactionCommand postTransactionCommand = iterator.next();
+					if (onSuccess) {
+						postTransactionCommand.postExecute();
+					} else {
+						postTransactionCommand.onError();
+					}
 				}
 			}
 
