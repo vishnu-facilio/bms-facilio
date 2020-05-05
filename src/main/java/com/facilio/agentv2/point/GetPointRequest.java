@@ -29,7 +29,7 @@ public class GetPointRequest {
     private GenericSelectRecordBuilder selectRecordBuilder = null;
     private Criteria criteria = new Criteria();
     private FacilioControllerType controllerType = null;
-    private int limit = 150 ;
+    private int limit = 50 ;
     private int offset = 0;
     private String orderBy;
 
@@ -147,23 +147,25 @@ public class GetPointRequest {
                     if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                         selectRecordBuilder.andCriteria(criteria);
                     }
-                    selectRecordBuilder.limit(30);
+                    selectRecordBuilder.limit(limit);
                     data.addAll(selectRecordBuilder.get());
                     if(FacilioProperties.isDevelopment()){
-                        LOGGER.info(controllerType.asString()+" Query "+selectRecordBuilder.toString());
+                        LOGGER.info(controllerType.asString()+"Getpoints query "+selectRecordBuilder.toString());
                     }
                 }catch (Exception e){
                     LOGGER.info("Exceptio  while getting points for type "+controllerType.asString()+" "+e);
                 }
             }
         }
-
         else {
             if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
                 selectRecordBuilder.andCriteria(criteria).orderBy(orderBy)
                         .limit(limit).offset(offset);
             }
             data = selectRecordBuilder.get();
+            if(FacilioProperties.isDevelopment()){
+                LOGGER.info("Getpoints query "+selectRecordBuilder.toString());
+            }
         }
         if( ! data.isEmpty()){
             handlePointToggleFlag(data);

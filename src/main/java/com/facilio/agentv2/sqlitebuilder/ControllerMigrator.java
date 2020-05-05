@@ -13,7 +13,6 @@ import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.modules.FieldUtil;
 import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
 import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
 import com.facilio.sqlUtils.contexts.modbus.rtu.ModbusRtuController;
@@ -58,7 +57,7 @@ public class ControllerMigrator {
                         LOGGER.info("failed adding controller " + controller.getName());
                     }else {
                         LOGGER.info(" added controller " + controllerId + " to sqlite " + controller.getId()+" of type "+controllerType);
-                        List<Point> points = new GetPointRequest().ofType(controllerType).forController(controllerId).getPoints();
+                        List<Point> points = new GetPointRequest().ofType(controllerType).forController(controllerId).limit(10000).getPoints();
                         if ((points != null) && (!points.isEmpty())) {
                             LOGGER.info(" fetched points for controller " + controllerId + " are " + points.size());
                             PointMigrator.setNewControllerId(controller.getId(), points);
@@ -89,9 +88,6 @@ public class ControllerMigrator {
         int confPts = 0;
         int commPts = 0;
         for (Point point : points) {
-            LOGGER.info(" point id" + point.getId());
-            LOGGER.info(" point " + FieldUtil.getAsJSON(point));
-            LOGGER.info(" point sub" + point.getSubscribeStatus());
             if (point.getConfigureStatusEnum().equals(PointEnum.ConfigureStatus.CONFIGURED)) {
                 confPts++;
                 if (PointsAPI.checkIfComissioned(point)) {
@@ -100,7 +96,6 @@ public class ControllerMigrator {
             }
             if (point.getSubscribestatusEnum().equals(PointEnum.SubscribeStatus.SUBSCRIBED)) {
                 subPts++;
-                LOGGER.info(" yes subscribed " + subPts);
             }
         }
         pointCountData.put(AgentConstants.TOTAL_COUNT, points.size());

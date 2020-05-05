@@ -5,7 +5,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.sqlUtils.sqllite.SQLiteUtil;
@@ -30,31 +29,25 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
             Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIdsType(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
-            if(! controllerIdsType.isEmpty()){
+            if (!controllerIdsType.isEmpty()) {
                 ControllerMigrator.migrateControllers(agentId, controllerIdsType);
                 //PointMigrator.migratePoints(agentId, controllerIdsType);
                 SQLiteUtil.closeConnection();
-                if(FacilioProperties.isProduction() ){
-                    FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
-                    long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
-                    LOGGER.info(" fileId is ->" + fileId);
-                    context.put(AgentConstants.FILE_ID, fileId);
-                    if (fileId <= 0) {
-                        throw new Exception(" fileId cant be less than 1, ->"+fileId);
-                    }
-                }else{
-                    System.out.println(" file saved ");
+                FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
+                long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
+                LOGGER.info(" fileId is ->" + fileId);
+                context.put(AgentConstants.FILE_ID, fileId);
+                if (fileId <= 0) {
+                    throw new Exception(" fileId cant be less than 1, ->" + fileId);
                 }
 
-            }else {
+            } else {
                 file.delete();
-                throw new Exception(" no controllers found for agent "+agentId);
+                throw new Exception(" no controllers found for agent " + agentId);
             }
         }
         return false;
     }
-
-
 
 
 }
