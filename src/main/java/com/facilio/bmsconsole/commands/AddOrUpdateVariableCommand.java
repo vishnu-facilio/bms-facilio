@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -32,7 +33,7 @@ public class AddOrUpdateVariableCommand extends FacilioCommand {
 						.select(FieldFactory.getVariablesFields())
 						.table(ModuleFactory.getVariablesModule().getTableName())
 						.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(variable.getConnectedAppId()), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition("NAME","name",variable.getName(), NumberOperators.EQUALS));
+						.andCondition(CriteriaAPI.getCondition("NAME","name",variable.getName(), StringOperators.IS));
 				
 				Map<String, Object> props = selectBuilder.fetchFirst();
 				if (props != null && !props.isEmpty()) {
