@@ -26,22 +26,29 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
             long agentId = Long.parseLong(String.valueOf(context.get(AgentConstants.AGENT_ID)));
             SqliteBridge bridge = new SqliteBridge();
             File file = bridge.getSqliteFile(agentId);
+            LOGGER.info("---------------SQLITE FILE LOADED-----------------");
             Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIdsType(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
-            ControllerMigrator.migrateControllers(agentId, controllerIdsType);
-            //PointMigrator.migratePoints(agentId, controllerIdsType);
-            SQLiteUtil.closeConnection();
-            if(FacilioProperties.isProduction() ){
-                FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
-                long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
-                LOGGER.info(" fileId is ->" + fileId);
-                context.put(AgentConstants.FILE_ID, fileId);
-                if (fileId <= 0) {
-                    throw new Exception(" fileId cant be less than 1, ->"+fileId);
+            if(! controllerIdsType.isEmpty()){
+                ControllerMigrator.migrateControllers(agentId, controllerIdsType);
+                //PointMigrator.migratePoints(agentId, controllerIdsType);
+                SQLiteUtil.closeConnection();
+                if(FacilioProperties.isProduction() ){
+                    FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
+                    long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
+                    LOGGER.info(" fileId is ->" + fileId);
+                    context.put(AgentConstants.FILE_ID, fileId);
+                    if (fileId <= 0) {
+                        throw new Exception(" fileId cant be less than 1, ->"+fileId);
+                    }
+                }else{
+                    System.out.println(" file saved ");
                 }
-            }else{
-                System.out.println(" file saved ");
+
+            }else {
+                file.delete();
+                throw new Exception(" no controllers found for agent "+agentId);
             }
         }
         return false;

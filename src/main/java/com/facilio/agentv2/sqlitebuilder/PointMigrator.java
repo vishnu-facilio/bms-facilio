@@ -100,7 +100,9 @@ public class PointMigrator {
                 LOGGER.info(" No implemenration found for point of type " + controllerType.asString());
         }
         if (pointToInsert != null) {
-            return SQLiteUtil.addPoint(pointToInsert) > 0;
+            long newPointId = SQLiteUtil.addPoint(pointToInsert);
+            LOGGER.info(pointToInsert.getControllerId()+" point added "+point.getId()+" as "+newPointId +" "+ (newPointId > 0));
+            return  newPointId > 0;
         }
         return false;
     }

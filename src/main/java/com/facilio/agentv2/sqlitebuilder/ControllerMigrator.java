@@ -9,11 +9,10 @@ import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
 import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
@@ -34,14 +33,13 @@ public class ControllerMigrator {
     private static final Logger LOGGER = LogManager.getLogger(ControllerMigrator.class.getName());
 
     public static boolean migrateControllers(long agentId, Map<Long, FacilioControllerType> controllerIdsType) throws Exception {
-        LOGGER.info(" agentId is " + agentId);
+        LOGGER.info("MIGRATION CONTROLLERS TO SQLITE FOR AGENT" + agentId);
         for (Long controllerId : controllerIdsType.keySet()) {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);
             LOGGER.info(" migrating controller " + controllerId + " of type " + controllerType.asString());
             if (controllerIdsType != null) {
                 Controller controller;
                 try {
-
                     GetControllerRequest getControllerRequest = new GetControllerRequest()
                             .withControllerId(controllerId)
                             .ofType(controllerType);
@@ -55,20 +53,15 @@ public class ControllerMigrator {
                     LOGGER.info("Exception while fetching controller ",e);
                     continue;
                 }
-                LOGGER.info(" got controller " + controller.getName());
                 try {
                     if (!addControllersToSqlite(controller, controllerType)) {
                         LOGGER.info("failed adding controller " + controller.getName());
                     }else {
-                        LOGGER.info(" added controller " + controllerId + " to sqlite " + controller.getId());
-                        FacilioContext context = new FacilioContext();
-                        long pointsCount = PointsAPI.getPointsCount(controllerId, -1);
-                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE, pointsCount + 100);
-                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId, context);
+                        LOGGER.info(" added controller " + controllerId + " to sqlite " + controller.getId()+" of type "+controllerType);
+                        List<Point> points = new GetPointRequest().ofType(controllerType).forController(controllerId).getPoints();
                         if ((points != null) && (!points.isEmpty())) {
                             LOGGER.info(" fetched points for controller " + controllerId + " are " + points.size());
                             PointMigrator.setNewControllerId(controller.getId(), points);
-                            LOGGER.info(" set new controller id ");
                             try {
                                 LOGGER.info("point count data " + getPointCountDataJSON(points));
                             } catch (Exception e) {
@@ -118,7 +111,6 @@ public class ControllerMigrator {
     }
 
     private static boolean addControllersToSqlite(Controller controller, FacilioControllerType facilioControllerType) throws Exception {
-        LOGGER.info(" adding controller to sqlite " + controller.getName() + "  of type " + facilioControllerType.asString());
         FacilioJavaController controllerToInsert = null;
         switch (facilioControllerType) {
             case BACNET_IP:
@@ -151,7 +143,7 @@ public class ControllerMigrator {
         }
         if (controllerToInsert != null) {
             long controllerId = SQLiteUtil.addController(controllerToInsert);
-            LOGGER.info(" controller added and id is " + controllerId);
+            LOGGER.info(" added controller to sqlite " + controller.getId() + "  of type " + facilioControllerType.asString()+" new id "+controllerId);
             controller.setId(controllerId);
             return (controllerId > 0);
         }
