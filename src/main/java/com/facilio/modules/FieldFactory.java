@@ -1737,7 +1737,7 @@ public class FieldFactory {
         FacilioField lastValue = new FacilioField();
         lastValue.setName("lastValue");
         lastValue.setDataType(FieldType.NUMBER);
-        lastValue.setColumnName("LAST_VALUE");
+        lastValue.setColumnName("LATEST_VALUE");
         lastValue.setModule(module);
         fields.add(lastValue);
 
