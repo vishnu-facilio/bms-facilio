@@ -41,6 +41,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -434,18 +435,19 @@ public class AdminAction extends ActionSupport {
 		String agentVersion = request.getParameter("version");
 		String user = request.getParameter("user");
 		String description = request.getParameter("desc");
-		if (((agentVersion != null) && (!agentVersion.isEmpty())) && ((user != null) && (!user.isEmpty()))
-				&& ((description != null) && (!description.isEmpty()))) {
+		String url = request.getParameter("url");
+		if (StringUtils.isNotBlank(url) && StringUtils.isNotBlank(description) && StringUtils.isNotBlank(user) && StringUtils.isNotBlank(agentVersion)) {
 
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 			Context context = new FacilioContext();
 			context.put(ContextNames.TABLE_NAME, "Agent_Version");
 			context.put(ContextNames.FIELDS, FieldFactory.getAgentVersionFields());
 			Map<String, Object> toInsertMap = new HashMap<>();
-			toInsertMap.put(AgentConstants.VERSION_ID, agentVersion);
+			toInsertMap.put(AgentConstants.VERSION, agentVersion);
 			toInsertMap.put(AgentConstants.CREATED_BY, user);
 			toInsertMap.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 			toInsertMap.put(AgentConstants.DESCRIPTION, description);
+			toInsertMap.put(AgentConstants.URL, url);
 			context.put(ContextNames.TO_INSERT_MAP, toInsertMap);
 			bean.genericInsert(context);
 			return SUCCESS;

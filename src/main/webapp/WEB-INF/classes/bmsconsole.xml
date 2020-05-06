@@ -1225,9 +1225,18 @@
 			</action>
 			<action name="demoRollUpYearly" class="com.facilio.bmsconsole.actions.AdminAction" method ="demoRollUpYearly">
 			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
-			</action>			
-			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
-			</action>
+			</action>	
+			<action name="agentversion" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/agentversion.jsp</result>
+			</action>	
+			
+			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="addAgentVersion">
+			<result type="tiles">adminpage/agentversion.jsp</result>
+			</action>	
+			<action name="upgradeAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="upgradeAgentVersion">
+			<result type="tiles">adminpage/agentversion.jsp</result>
+			</action>	
+			
 		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/upload.jsp</result>
 		</action>

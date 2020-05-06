@@ -61,7 +61,15 @@ if (buildinfo == null) {
                <span class="nav-title">Copy PM</span>
                </a>
            </li> --%>
-        
+
+        	<li> 
+               <a href="agentversion">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Agent Version</span>
+               </a>
+           </li>
+
            <li> 
                <a href="anomalyconsole">
                <span class="nav-icon">
