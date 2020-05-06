@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -19,6 +13,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 
@@ -55,14 +54,18 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 
 						boolean isCounterField = ReadingsAPI.isCounterField(field, moduleName);
 						ReadingDataMeta rdm = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
-						boolean resetvalidation;
+						boolean resetvalidation = false;
 						if (isCounterField){
 							if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 								Double readingVal = (Double) FacilioUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
-								resetvalidation = (Double) rdm.getValue() > readingVal;
+								if (readingVal != null) {
+									resetvalidation = (Double) rdm.getValue() > readingVal;
+								}
 							} else {
 								Long readingVal = (Long) FacilioUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
-								resetvalidation = (Long) rdm.getValue() > readingVal;
+								if (readingVal != null) {
+									resetvalidation = (Long) rdm.getValue() > readingVal;
+								}
 							}
 
 							if (resetvalidation) {
