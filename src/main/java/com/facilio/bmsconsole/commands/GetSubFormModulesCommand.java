@@ -59,6 +59,9 @@ public class GetSubFormModulesCommand extends FacilioCommand {
         case FacilioConstants.ContextNames.HAZARD:
             return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.HAZARD_PRECAUTION));
           
+        case FacilioConstants.ContextNames.INVENTORY_REQUEST:
+            return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS));
+      
         }
         return null;
     }

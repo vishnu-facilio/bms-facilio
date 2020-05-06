@@ -68,6 +68,8 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 			}
 			context.put(FacilioConstants.ContextNames.CHANGE_SET, map);
 			context.put(FacilioConstants.ContextNames.RECORD, inventoryRequestContext);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventoryRequestContext.getId()));
+			
 		}
 		return false;
 	}

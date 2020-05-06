@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -140,11 +141,32 @@ public class InventoryRequestAction extends FacilioAction {
 	public void setLineItems(List<InventoryRequestLineItemContext> lineItems) {
 		this.lineItems = lineItems;
 	}
+	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+	
+	
 	public String addOrUpdateInventoryRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryRequest);
-		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 		
+		if(inventoryRequest.getId() > 0) {
+			context.put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+			context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+			
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+		}
+		
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+	
 		
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateInventoryRequestChain();
 		chain.execute(context);

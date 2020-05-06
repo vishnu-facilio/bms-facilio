@@ -108,6 +108,9 @@ public class StateFlowRuleContext extends AbstractStateFlowRuleContext {
 		matchedFormLevel = false;
 
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		if (moduleRecord != null && moduleRecord.getStateFlowId() > 0) {
+			return false;
+		}
 		if (isShouldCheckOnlyFormBased()) {
 			if (moduleRecord.getFormId() > 0) {
 				Criteria criteria = new Criteria();
