@@ -1035,6 +1035,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getConnectedAppExecuteAPIChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetConnectedAppConnectorCommand());
+		c.addCommand(new GetConnectedAppExecuteAPICommand());
+		return c;
+	}
+	
 	public static FacilioChain getConnectedAppWidgetChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetConnectedAppDetailsCommand());

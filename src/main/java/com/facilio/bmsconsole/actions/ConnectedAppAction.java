@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext.HostingType;
+import com.facilio.bmsconsole.context.ConnectedAppRequestContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
 import com.facilio.bmsconsole.context.VariableContext;
@@ -542,5 +543,27 @@ public class ConnectedAppAction extends FacilioAction {
 		}
 
 		setResult("viewUrl", viewURL);
+	}
+	
+	private ConnectedAppRequestContext apiRequest;
+	
+	public void setApiRequest(ConnectedAppRequestContext apiRequest) {
+		this.apiRequest = apiRequest;
+	}
+	
+	public ConnectedAppRequestContext getApiRequest() {
+		return this.apiRequest;
+	}
+	
+	public String executeAPI() throws Exception {
+		
+		FacilioChain executeApiChain = ReadOnlyChainFactory.getConnectedAppExecuteAPIChain();
+		executeApiChain.getContext().put(FacilioConstants.ContextNames.CONNECTED_APP_REQUEST, apiRequest);
+		executeApiChain.execute();
+
+		String apiResponse = (String) executeApiChain.getContext().get(FacilioConstants.ContextNames.RESULT);
+		setResult("apiResponse", apiResponse);
+		
+		return SUCCESS;
 	}
 }

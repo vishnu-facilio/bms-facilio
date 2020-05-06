@@ -238,7 +238,7 @@ public class ConnectionUtil {
 		}
 	}
 
-	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
+	public static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
 
 		
 		if(method == HttpMethod.GET) {

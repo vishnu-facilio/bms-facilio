@@ -4234,6 +4234,11 @@
 			method="getVariableByName">
 		</action>
 		
+		<action name="executeAPI"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="executeAPI">
+		</action>
+		
 		<action name="downloadCertificate"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="downloadCertificate">

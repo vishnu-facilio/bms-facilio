@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
@@ -14,9 +15,11 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -143,6 +146,33 @@ public class ConnectedAppAPI {
 			}
 			
 			return filteredSummaryPageWidgets;
+		}
+		return null;
+	}
+	
+	public static ConnectedAppConnectorContext getConnector(long connectedAppId, String connectionName) throws Exception {
+		
+		FacilioField connectedAppIdField = FieldFactory.getField("connectedAppId", "CONNECTEDAPP_ID", ModuleFactory.getConnectedAppConnectorsModule(), FieldType.NUMBER);
+		FacilioField connectorNameField = FieldFactory.getField("name", "NAME", ModuleFactory.getConnectionModule(), FieldType.STRING);
+		FacilioField connectedAppIsActiveField = FieldFactory.getField("isActive", "IS_ACTIVE", ModuleFactory.getConnectedAppsModule(), FieldType.BOOLEAN);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppConnectorsFields())
+				.table(ModuleFactory.getConnectedAppConnectorsModule().getTableName())
+				.innerJoin("ConnectedApps")
+				.on("ConnectedApp_Connectors.CONNECTEDAPP_ID=ConnectedApps.ID")
+				.innerJoin("Connection")
+				.on("ConnectedApp_Connectors.CONNECTOR_ID=Connection.ID")
+				.andCondition(CriteriaAPI.getCondition(connectedAppIdField, connectedAppId + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(connectorNameField, connectionName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(connectedAppIsActiveField, "true", BooleanOperators.IS));
+		
+		
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (props != null) {
+			ConnectedAppConnectorContext connectedAppConnector = FieldUtil.getAsBeanFromMap(props, ConnectedAppConnectorContext.class);
+			connectedAppConnector.setConnection(ConnectionUtil.getConnection(connectedAppConnector.getConnectorId()));
+			return connectedAppConnector;
 		}
 		return null;
 	}

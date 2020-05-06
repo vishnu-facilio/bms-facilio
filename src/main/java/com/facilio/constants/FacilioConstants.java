@@ -132,6 +132,7 @@ public class FacilioConstants {
 		public static final String TO_UPDATE_CHILD_MAP = "toUpdateChildMap";
 		public static final String CHILD_CRITERIA = "childCriteria";
 		public static final String CONNECTION = "connectionContext";
+		public static final String CONNECTION_NANE = "connectionName";
 		public static final String OFFSET = "offset";
 		public static final String TABLE_NAME = "tableName";
 		public static final String CRITERIA = "criteria";
@@ -1294,6 +1295,8 @@ public class FacilioConstants {
 		public static final String CONNECTED_APP_WIDGET = "connectedAppWidget";
 		public static final String CONNECTED_APP_WIDGETS = "connectedAppWidgets";
 		public static final String CONNECTED_APP_VIEW_URL = "connectedAppViewURL";
+		public static final String CONNECTED_APP_CONNECTOR = "connectedAppConnector";
+		public static final String CONNECTED_APP_REQUEST = "connectedAppRequest";
 
 		public static final String CUSTOM_BUTTONS = "customButtons";
 
