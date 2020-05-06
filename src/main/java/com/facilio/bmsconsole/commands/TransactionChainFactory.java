@@ -2780,6 +2780,7 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			chain.addCommand(new GenericGetModuleDataListCommand());
+			chain.addCommand(new VerifyApprovalCommand());
 			chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			chain.addCommand(new ExecuteStateFlowCommand());
 			chain.addCommand(new UpdateStateForModuleDataCommand());
