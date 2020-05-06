@@ -42,6 +42,7 @@ public class ValidatePMReadingCorrection extends FacilioCommand {
         if (oldTasks != null && !oldTasks.isEmpty()) {
             Collection<TaskContext> values = oldTasks.values();
             context.put(FacilioConstants.ContextNames.OLD_TASKS, new ArrayList<>(values));
+            context.put(FacilioConstants.ContextNames.TASK_MAP, oldTasks);
         }
 
         for(int i = 0; i < recordIds.size(); i++) {

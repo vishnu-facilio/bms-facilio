@@ -61,6 +61,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
@@ -93,24 +94,38 @@ public class WorkOrderAPI {
          }
       }
    }
+   
    public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
-      List<WorkOrderContext> workorders = getWorkOrders(Collections.singletonList(ticketId));
+	   return getWorkOrder(ticketId, null);
+   }
+   
+   public static WorkOrderContext getWorkOrder(long ticketId, List<String> lookupFieldList) throws Exception {
+      List<WorkOrderContext> workorders = getWorkOrders(Collections.singletonList(ticketId), lookupFieldList);
       if (CollectionUtils.isNotEmpty(workorders)) {
          return workorders.get(0);
       }
       return null;
    }
    
-   public static List<WorkOrderContext> getWorkOrders(List<Long> ticketIds) throws Exception {
+   public static List<WorkOrderContext> getWorkOrders(List<Long> ticketIds, List<String> lookupFieldList) throws Exception {
       
       ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
       FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+      List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+      Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
       SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
                                           .module(module)
                                           .beanClass(WorkOrderContext.class)
-                                          .select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+                                          .select(fields)
                                           .andCondition(CriteriaAPI.getIdCondition(ticketIds, module))
                                           ;
+      if (CollectionUtils.isNotEmpty(lookupFieldList)) {
+    	  	List<LookupField> lookupFields = new ArrayList<>();
+    	  	for(String fieldName: lookupFieldList) {
+    	  		lookupFields.add((LookupField)fieldMap.get(fieldName));
+    	  	}
+    	  	builder.fetchSupplements(lookupFields);
+      }
       
       List<WorkOrderContext> workOrders = builder.get();
       return workOrders;
@@ -135,7 +150,7 @@ public class WorkOrderAPI {
    }
    
    public static Map<Long, WorkOrderContext> getWorkOrdersAsMap(List<Long> workorderIds) throws Exception {
-      List<WorkOrderContext> workorders = getWorkOrders(workorderIds);
+      List<WorkOrderContext> workorders = getWorkOrders(workorderIds, null);
       if (CollectionUtils.isNotEmpty(workorders)) {
          return workorders.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
       }

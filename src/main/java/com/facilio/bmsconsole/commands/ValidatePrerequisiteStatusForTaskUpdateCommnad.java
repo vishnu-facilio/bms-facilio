@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioCommand {
 
@@ -25,10 +24,14 @@ public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioComma
 		if(task != null) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			if(recordIds != null && !recordIds.isEmpty()) {
-				List<TaskContext> oldTasks = getTasks(recordIds);
-				long parentId = oldTasks.get(0).getParentTicketId();
-			    WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId);
-			    context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
+				context.put(FacilioConstants.ContextNames.TASK_MAP, oldTasks);
+				long parentId = oldTasks.get(recordIds.get(0)).getParentTicketId();
+				
+			    WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId, Collections.singletonList("moduleState"));
+			    context.put(FacilioConstants.TicketActivity.OLD_TICKETS, Collections.singletonList(wo));
+			    context.put(ContextNames.WORK_ORDER, new WorkOrderContext());	// For verify approval command
+			    
 				if(wo.isPrerequisiteEnabled() && ((AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(wo.getAllowNegativePreRequisiteEnum()) && !PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum()))
 						||(AllowNegativePreRequisite.YES_WITH_WARNING.equals(wo.getAllowNegativePreRequisiteEnum()) && !(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE.equals(wo.getPreRequestStatusEnum()) || PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum())) ) )){
 					throw new IllegalArgumentException("Prerequisite has to be completed before task updation");
@@ -37,20 +40,5 @@ public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioComma
 		}
 		
 		return false;
-	}
-	private List<TaskContext> getTasks(List<Long> ids) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-														.module(module)
-														.beanClass(TaskContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		
-		List<TaskContext> tasks = builder.get();
-		if(tasks != null && !tasks.isEmpty()) {
-			return tasks;
-		}
-		return null;
 	}
 }

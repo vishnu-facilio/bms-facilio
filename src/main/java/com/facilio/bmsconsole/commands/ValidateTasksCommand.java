@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -29,7 +30,9 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -74,6 +77,9 @@ public class ValidateTasksCommand extends FacilioCommand {
 					if(task != null) {
 						tasks = Collections.singletonList(task);
 						maxUniqueId = getMaxUniqueIdFromExistingTasks(task.getParentTicketId());
+						 WorkOrderContext wo = WorkOrderAPI.getWorkOrder(task.getParentTicketId(), Collections.singletonList("moduleState"));
+						 context.put(FacilioConstants.TicketActivity.OLD_TICKETS, Collections.singletonList(wo));
+						 context.put(ContextNames.WORK_ORDER, new WorkOrderContext());	// For verify approval command
 					}
 				}
 			}

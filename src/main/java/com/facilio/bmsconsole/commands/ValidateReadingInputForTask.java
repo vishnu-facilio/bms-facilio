@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -17,9 +16,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskErrorContext;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -27,8 +24,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
-import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -85,7 +80,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				if(currentTask != null && currentTask.getInputValue() != null) {
 					List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 					if(recordIds != null && !recordIds.isEmpty()) {
-						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
+						Map<Long, TaskContext> oldTasks = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 						for(int i = 0; i < recordIds.size(); i++) {
 							TaskContext taskContext = oldTasks.get(recordIds.get(i));
 							if(taskContext.getInputTypeEnum() != null)

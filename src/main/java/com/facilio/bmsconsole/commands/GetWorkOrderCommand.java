@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,10 +21,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.twilio.rest.serverless.v1.service.Build;
 
 public class GetWorkOrderCommand extends FacilioCommand {
 
@@ -77,6 +76,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 			}
 			builder.fetchSupplements(customLookupFields);
 			builder.fetchSupplement((LookupField) fieldMap.get("client"));
+			builder.fetchSupplement((LookupField) fieldMap.get("type"));
 			
 			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {

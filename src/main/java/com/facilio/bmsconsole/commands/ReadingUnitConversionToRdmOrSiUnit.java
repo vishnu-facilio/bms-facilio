@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
@@ -56,7 +55,7 @@ public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 
 			ReadingContext reading = taskReadingsMap.get(currentTask);
 
-			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);
+			Map<Long, TaskContext> tasks = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 			if(tasks != null && currentTask != null && reading != null) {
 				TaskContext taskContext = tasks.get(recordIds.get(0));
 				if(taskContext.getInputTypeEnum() != null) {

@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
@@ -25,7 +24,7 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 		
 		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && currentTask.getReadingFieldUnitEnum() != null) 
 		{
-			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
+			Map<Long, TaskContext> tasks = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);		
 			if(tasks != null && reading != null) 
 			{
 				TaskContext taskContext= tasks.get(recordIds.get(0));

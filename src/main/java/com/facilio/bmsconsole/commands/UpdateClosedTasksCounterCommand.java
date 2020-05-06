@@ -29,10 +29,6 @@ public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 		if(task != null) {
 			if(task.getStatusNew() != -1) {
 				long parentTicketId = task.getParentTicketId();
-				if (parentTicketId == -1) {
-					TaskContext oldTask = ((List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS)).get(0);
-					parentTicketId = oldTask.getParentTicketId();
-				}
 				
 				TicketContext ticket = new TicketContext();
 				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));

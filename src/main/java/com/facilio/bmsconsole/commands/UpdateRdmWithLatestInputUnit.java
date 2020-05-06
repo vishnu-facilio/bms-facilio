@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 
@@ -11,7 +10,6 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 
@@ -28,7 +26,7 @@ public class UpdateRdmWithLatestInputUnit extends FacilioCommand {
 	
 		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && reading!= null && currentTask.getReadingFieldUnit() > 0 ) 
 		{
-			Map<Long, TaskContext> taskMap = TicketAPI.getTaskMap(recordIds);		
+			Map<Long, TaskContext> taskMap = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);		
 			if(MapUtils.isNotEmpty(taskMap)) 
 			{
 				TaskContext taskContext= taskMap.get(recordIds.get(0));

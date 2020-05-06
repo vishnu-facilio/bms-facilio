@@ -1171,6 +1171,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 //			c.addCommand(new ToVerifyStateFlowForParticularRecord());
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
+			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
@@ -1180,7 +1181,6 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateTaskCommand());
 			c.addCommand(new UpdateClosedTasksCounterCommand());
-			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());

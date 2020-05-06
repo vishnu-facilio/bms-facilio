@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -17,10 +16,6 @@ import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.time.DateTimeUtil;
@@ -37,7 +32,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		if(task != null) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			if(recordIds != null && !recordIds.isEmpty()) {
-				Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
+				Map<Long, TaskContext> oldTasks = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 				// Bulk operation for closing multiple tasks check only.
 				for(int i = 0; i < recordIds.size(); i++) {
 					TaskContext completeRecord = oldTasks.get(recordIds.get(i));
@@ -127,8 +122,12 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 	}
 
 	private void validateReading(Context context, TaskContext task) throws Exception {
-		WorkOrderContext workOrderContext = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		if (workOrderContext == null) {
+		WorkOrderContext workOrderContext = null;
+		List<WorkOrderContext> wos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		if (wos != null && !wos.isEmpty()) {
+			workOrderContext = wos.get(0);
+		}
+		else {
 			return;
 		}
 
@@ -151,22 +150,6 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		}
 	}
 
-	
-	private WorkOrderContext getWO(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-														.module(module)
-														.beanClass(WorkOrderContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		List<WorkOrderContext> workorders = builder.get();
-		if(workorders != null && !workorders.isEmpty()) {
-			return workorders.get(0);
-		}
-		return null;
-	}
 
 	private boolean checkIfRemarksRequired (TaskContext dbRecord, TaskContext task) throws Exception {
 

@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -22,7 +20,6 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
-import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
@@ -68,10 +65,14 @@ public class UpdateTaskCommand extends FacilioCommand {
 					task.setReadingDataId(reading.getId());
 				}
 			}
-				
-			List<TaskContext> oldTasks = getTasks(recordIds);
+			
+			Map<Long, TaskContext> taskMap = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+			if (taskMap == null) {
+				taskMap = TicketAPI.getTaskMap(recordIds);
+				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+			}
+			List<TaskContext> oldTasks = taskMap.values().stream().collect(Collectors.toList());
 			TicketAPI.setTasksInputData(oldTasks);
-			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));
 		   long parentId = oldTasks.get(0).getParentTicketId();
 				if(task.getInputValue() != null) {
 					long newTaskId = recordIds.get(0);
@@ -190,7 +191,6 @@ public class UpdateTaskCommand extends FacilioCommand {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
-			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
 			int prerequestStatus;
 			if (task.isPreRequest()) {
 				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(parentId);
@@ -198,6 +198,8 @@ public class UpdateTaskCommand extends FacilioCommand {
 			} else {
 				prerequestStatus = WorkOrderAPI.getWorkOrder(parentId).getPreRequestStatus();
 			}
+			
+			task.setParentTicketId(parentId);
 			context.put(FacilioConstants.ContextNames.PRE_REQUEST_STATUS, prerequestStatus);
 			context.put(FacilioConstants.ContextNames.RECORD, task);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -205,122 +207,67 @@ public class UpdateTaskCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private List<TaskContext> getTasks(List<Long> ids) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-														.module(module)
-														.beanClass(TaskContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		
-		List<TaskContext> tasks = builder.get();
-		if(tasks != null && !tasks.isEmpty()) {
-			return tasks;
-		}
-		return null;
-	}
 	
 	private void updateParentTicketStatus(Context context, EventType activityType, TaskContext task) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(FacilioConstants.ContextNames.TASK);
 		
-		// Assuming that parent ticket will be always Workorder
+		List<WorkOrderContext> tickets = (List<WorkOrderContext>)context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> woFields = modBean.getAllFields(woModule.getName());
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(woFields);
-		
-		List<LookupField> lookupList = new ArrayList<>();
-		lookupList.add((LookupField) fieldMap.get("status"));
-		if (fieldMap.containsKey("moduleState")) {
-			lookupList.add((LookupField) fieldMap.get("moduleState"));
-		}
-		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-				.select(woFields)
-				.module(woModule)
-				.beanClass(WorkOrderContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.fetchSupplements(lookupList);
-				;
-		
-		List<WorkOrderContext> tickets = builder.get();
-		if(tickets != null && !tickets.isEmpty()) {
-			TicketContext ticket = tickets.get(0);
+		if (tickets == null) {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(woFields);
 			
-			if (ticket.getStateFlowId() > 0) {
-				FacilioStatus statusObj = ticket.getModuleState();
-				if (statusObj != null && statusObj.isRecordLocked()) {
-					throw new IllegalArgumentException("Task cannot be updated for locked work orders");
-				}
-				StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
-				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
-					if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
-						if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
-							throw new IllegalArgumentException("Scan the QR before starting the task");
-						}
-						
-					}
-					
-					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-						throw new IllegalArgumentException("Task cannot be updated for completed tickets");
-					}
-					
-					if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
-						FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
-						if (ticket.getAssignedTo() == null) {
-							ticket.setAssignedTo(AccountUtil.getCurrentUser());
-							UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-									.module(woModule)
-									.fields(woFields)
-									.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
-
-							updateBuilder.update(ticket);
-						}
-						StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
-					}
-				}
-			} 
-			else {
-				FacilioStatus statusObj = ticket.getStatus();
-				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-					throw new IllegalArgumentException("Task cannot be updated for completed work orders");
-				}
-				
-				if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
+			List<LookupField> lookupList = new ArrayList<>();
+			lookupList.add((LookupField) fieldMap.get("status"));
+			if (fieldMap.containsKey("moduleState")) {
+				lookupList.add((LookupField) fieldMap.get("moduleState"));
+			}
+			SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+					.select(woFields)
+					.module(woModule)
+					.beanClass(WorkOrderContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
+					.fetchSupplements(lookupList);
+			;
+			
+			tickets = builder.get();
+		}
+		
+		WorkOrderContext ticket = tickets.get(0);
+		
+		if (ticket.getStateFlowId() > 0) {
+			FacilioStatus statusObj = ticket.getModuleState();
+			StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
+			if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
+				if (ticket.getQrEnabled() != null && ticket.getQrEnabled() && ticket.getResource() != null) {
 					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
 						throw new IllegalArgumentException("Scan the QR before starting the task");
 					}
 					
 				}
 				
+				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
+					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
+				}
+				
 				if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
-					TicketContext newTicket = new TicketContext();
-					newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
-					TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);	
-					
-					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-																.module(woModule)
-																.fields(woFields)
-																.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
-					
-					updateBuilder.update(newTicket);
-				}
-				try {
-					if (ticket.getAssignedTo() != null) {
-						List<ReadingContext> readings = ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
-						Map<String, List<ReadingContext>> readingMap = new HashMap<>();
-						readingMap.put("userworkhoursreading", readings);
-						context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
-						context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+					FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
+					if (ticket.getAssignedTo() == null) {
+						TicketContext newTicket = new TicketContext(); 
+						newTicket.setAssignedTo(AccountUtil.getCurrentUser());
+						newTicket.setAssignedBy(AccountUtil.getCurrentUser());
+						UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+								.module(woModule)
+								.fields(woFields)
+								.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
+
+						updateBuilder.update(ticket);
 					}
-				}
-				catch(Exception e) {
-					log.info("Exception occurred while handling work hours", e);
-					CommonCommandUtil.emailException(UpdateTaskCommand.class.getName(), "Exception occurred while handling work hours", e);
+					StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
 				}
 			}
-			
 		}
 	}
 }

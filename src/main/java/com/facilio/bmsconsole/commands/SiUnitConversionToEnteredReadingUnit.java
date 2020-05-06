@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import org.apache.commons.collections.MapUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.UnitsUtil;
@@ -31,7 +29,7 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 		
 		if(recordIds != null && !recordIds.isEmpty()) 
 		{
-			Map<Long, TaskContext> taskMap= TicketAPI.getTaskMap(recordIds);
+			Map<Long, TaskContext> taskMap = (Map<Long, TaskContext>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 			if(MapUtils.isNotEmpty(taskMap))
 			{
 				taskContext = taskMap.get(recordIds.get(0));						

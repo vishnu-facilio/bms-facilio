@@ -374,11 +374,11 @@ public class FacilioChainFactory {
 		//c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new ValidateTasksCommand());
+		c.addCommand(new VerifyApprovalCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
-		c.addCommand(new AddTaskTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
