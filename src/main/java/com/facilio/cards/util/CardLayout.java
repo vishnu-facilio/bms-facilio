@@ -159,6 +159,10 @@ public enum CardLayout {
 			returnValue.put("title", title);
 			returnValue.put("value", jobj);
 			
+			if(dateRange != null) {
+			returnValue.put("period", dateRange);
+			}
+			
 			return returnValue;
 		}
 	},
