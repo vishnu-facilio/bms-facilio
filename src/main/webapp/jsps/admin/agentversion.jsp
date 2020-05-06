@@ -62,10 +62,11 @@ function validateForm() {
 	  var desc = document.forms["myForm"]["desc"].value;
 	  var createdby =document.forms["myForm"]["user"].value;
 	  var url = document.forms["myForm"]["url"].value;	  
-	  if (ver == "" || ver == null) {
-	    alert("version must be filled out");
+	  if (ver == "" || ver == null ||ver.indexOf('.') === -1) {
+	    alert("version must be filled out and include with (.) dot (eg.2.0)");
 	    return false;
-	  }else if(desc == "" || desc == null){
+	  }
+	  else if(desc == "" || desc == null){
 		  alert("description must be filled out");
 		  return false;
 	  }else if(createdby == "" || createdby == null){
@@ -79,14 +80,14 @@ function validateForm() {
 </script>
 <body>
 <br><br><br>
-<h5>UPGRADE VERSION</h5>
+<h5><b>Agent Upgrade</b></h5>
 
 
 <form action = "upgradeAgentVersion">
 </br></br>
 	<div >
 			<fieldset>
-			<label for="txtClassroomName"><h5>Organization :</h5> </label>	<select class="admin-data-select"
+			<label for="txtClassroomName"><h5><b>Organization</b> </h5> </label>	<select class="admin-data-select"
 					name="orgId" id="orgId" onChange="changeOrg()">
 					<option value="" disabled selected>Select</option>
 					<%
@@ -100,20 +101,8 @@ function validateForm() {
 								}
 							%>
 				</select></br></br>
-			<label for="txtClassroomName"><h5>Version :</h5> </label>	<select class="admin-data-select"
-					name="version" id="version">
-					<option value="" disabled selected>Select</option>
-					<%
-								for (Map<String,Object> agentVersion : agentVersions) {
-									
-							%>
-					<option value="<%=agentVersion.get("id")%>"><%=agentVersion.get("version")%></option>
-								<%
-								}
-								%>
-							
-				</select> </br></br>	
-			<label for="txtClassroomName"><h5>Agent :</h5> </label>	<select class="admin-data-select"
+				
+				<label for="txtClassroomName"><h5><b>Agent</b></h5> </label>	<select class="admin-data-select"
 					name="agentId" id="agentId">
 					<option value="" disabled selected>Select</option>
 					
@@ -130,7 +119,21 @@ function validateForm() {
 							}
 						}
 				%>
-				</select></br></br>		
+				</select></br></br>	
+			<label for="txtClassroomName"><h5><b>Version</b> </h5> </label>	<select class="admin-data-select"
+					name="version" id="version">
+					<option value="" disabled selected>Select</option>
+					<%
+								for (Map<String,Object> agentVersion : agentVersions) {
+									
+							%>
+					<option value="<%=agentVersion.get("id")%>"><%=agentVersion.get("version")%></option>
+								<%
+								}
+								%>
+							
+				</select> </br></br>	
+				
 			</fieldset>
 			</br></br>
 			
@@ -143,17 +146,17 @@ function validateForm() {
 
 </form>
 
-<button onclick="myFunction()" class="button button1">ADD VERSION</button>
+<button onclick="myFunction()" class="button button1"><b>Add Version</b></button>
 <div id="new" style="display:none">
 
 <form name="myForm" action = "addAgentVersion"  onsubmit="return validateForm()" required>
 </br></br>
 	<div >
 			<fieldset>
-			<label for="txtClassroomName"><h5>Enter Version: </h5> </label><input type = "text" name = "version" size="5"/></br></br>
-			<label for="txtClassroomName"><h5>Enter Description:</h5>  </label><input type = "text" name = "desc"   size="5"/></br></br>
-			<label for="txtClassroomName"><h5>Enter CreatedBy:</h5> </label><input type = "text" name = "user"   size="5"/></br></br>
-			<label for="txtClassroomName"><h5>Enter URL:</h5>    </label><input type = "text" name = "url"  size="5"/>
+			<label for="txtClassroomName"><h5><b>Version<span class="required"></span> </b></p> </h5> </label><input type = "text" name = "version" size="10"/></br></br>
+			<label for="txtClassroomName"><h5><b>Description<span class="required"></b></h5>  </label><input type = "text" name = "desc"   size="5"/></br></br>
+			<label for="txtClassroomName"><h5><b>CreatedBy<span class="required"></b></h5> </label><input type = "text" name = "user"   size="5"/></br></br>
+			<label for="txtClassroomName"><h5><b>URL<span class="required"></b></h5>    </label><input type = "text" name = "url"  size="5"/>
 			</fieldset>
 			</br></br>
 			
@@ -213,10 +216,15 @@ input[type=submit]:hover {
 label{
 display:inline-block;
 width:150px;
-margin-left:40px;
+margin-left:100px;
 text-align:left;
 }
 
+
+  .required:after {
+    content:" *";
+    color: red;
+  }
 
 .admin-data-select {
 	font-size: 14px;
