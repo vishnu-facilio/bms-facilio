@@ -28,10 +28,10 @@ public class SecurityFilter implements Filter {
 
     private static List<String> initWhiteListedUrls() {
         List<String> urls = new ArrayList<>();
-        urls.add("/api/v2/files/");
         urls.add("/api/v2/files");
-        urls.add("/api/v3/files/");
+        urls.add("/api/v2/service/files");
         urls.add("/api/v3/files");
+        urls.add("/api/v3/service/files");
         urls.add("/api/integ/loadWebView");
         urls.add("/websocket/");
         return urls;
