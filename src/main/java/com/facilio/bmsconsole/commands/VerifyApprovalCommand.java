@@ -10,41 +10,44 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VerifyApprovalCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
+		boolean skipChecking = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
 		
-		if (oldWos != null && !oldWos.isEmpty() && workOrder != null) {
-			for (WorkOrderContext wo : oldWos) {
-				if (wo.getModuleState() != null) {
-					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
-					Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
+		if (oldRecords != null && !oldRecords.isEmpty()) {
+			for (ModuleBaseWithCustomFields record : oldRecords) {
+				if (record.getModuleState() != null) {
+					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(record.getModuleState().getId());
+					
 					if ((stateContext.isRecordLocked())) {
 						boolean cannotEdit = false;
 						if ((stateTransitionId == null || stateTransitionId == -1)) {
 							cannotEdit = true;
 						}
-						if (workOrder.getRequester() != null) {
+						if ( workOrder != null && workOrder.getRequester() != null) {
 							cannotEdit = false;
+							skipChecking = true;
 							User requester = workOrder.getRequester();
 							workOrder = new WorkOrderContext();
 							workOrder.setRequester(requester);
 							context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 						}
 						if (cannotEdit) {
-							throw new IllegalArgumentException("Workorder with lock cannot be updated");
+							throw new IllegalArgumentException("Record with lock cannot be updated");
 						}
 					}
 
-					if (wo.getApprovalFlowId() > 0 && wo.getApprovalStatus() != null) {
-						boolean skipChecking = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
+					if (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null) {
 						if (!skipChecking) {
-							FacilioStatus status = TicketAPI.getStatus(wo.getApprovalStatus().getId());
+							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
 							if (status.isRequestedState()) {
 								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
 							}

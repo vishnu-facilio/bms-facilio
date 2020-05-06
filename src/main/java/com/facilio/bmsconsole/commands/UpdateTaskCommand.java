@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
@@ -201,6 +202,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 			
 			task.setParentTicketId(parentId);
 			context.put(FacilioConstants.ContextNames.PRE_REQUEST_STATUS, prerequestStatus);
+			context.put(ContextNames.RECORD_LIST, null);
 			context.put(FacilioConstants.ContextNames.RECORD, task);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		}
@@ -213,7 +215,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(FacilioConstants.ContextNames.TASK);
 		
-		List<WorkOrderContext> tickets = (List<WorkOrderContext>)context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		List<WorkOrderContext> tickets = (List<WorkOrderContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> woFields = modBean.getAllFields(woModule.getName());
 		if (tickets == null) {

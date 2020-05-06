@@ -123,7 +123,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 
 	private void validateReading(Context context, TaskContext task) throws Exception {
 		WorkOrderContext workOrderContext = null;
-		List<WorkOrderContext> wos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		List<WorkOrderContext> wos = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (wos != null && !wos.isEmpty()) {
 			workOrderContext = wos.get(0);
 		}

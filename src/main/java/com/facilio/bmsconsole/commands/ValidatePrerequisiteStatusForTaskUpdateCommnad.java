@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioCommand {
 
@@ -29,8 +28,7 @@ public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioComma
 				long parentId = oldTasks.get(recordIds.get(0)).getParentTicketId();
 				
 			    WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId, Collections.singletonList("moduleState"));
-			    context.put(FacilioConstants.TicketActivity.OLD_TICKETS, Collections.singletonList(wo));
-			    context.put(ContextNames.WORK_ORDER, new WorkOrderContext());	// For verify approval command
+			    context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(wo));
 			    
 				if(wo.isPrerequisiteEnabled() && ((AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(wo.getAllowNegativePreRequisiteEnum()) && !PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum()))
 						||(AllowNegativePreRequisite.YES_WITH_WARNING.equals(wo.getAllowNegativePreRequisiteEnum()) && !(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE.equals(wo.getPreRequestStatusEnum()) || PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum())) ) )){
