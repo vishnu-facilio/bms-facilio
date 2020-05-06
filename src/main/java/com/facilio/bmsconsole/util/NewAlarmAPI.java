@@ -602,6 +602,7 @@ public class NewAlarmAPI {
 			.on("AlarmOccurrence.ID = " + readingOccurrence.getTableName() + ".ID");
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingOccurrenceFields.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
 		}
+		selectBuilder.orderBy("CREATED_TIME asc");
 		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
 		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
 		updateAlarmObject(occurrenceContexts);

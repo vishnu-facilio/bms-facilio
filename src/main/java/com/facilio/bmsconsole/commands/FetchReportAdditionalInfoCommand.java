@@ -1,14 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
@@ -367,10 +359,39 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		
 		JSONArray alarmMetaList = new JSONArray();
 		List<Long> timesList = new ArrayList<>(times);
+
+		int startOccurrenceIndex = 0;
+		int endOccurrenceIndex = 0;
+
+		List<AlarmOccurrenceContext> activeOccurrences = new ArrayList<>();
 		for (int i = 0; i < timesList.size() - 1; i++) {
 			long startTime = timesList.get(i);
 			long endTime = timesList.get(i+1);
-			alarmMetaList.add(getAlarmOccurrenceMeta(startTime, endTime, alarmOccurrences, alarmMap));
+
+			boolean foundStartIndex = false;
+			for (int j = startOccurrenceIndex; j < alarmOccurrences.size(); j++) {
+				AlarmOccurrenceContext a = alarmOccurrences.get(j);
+				if (a.getClearedTime() == -1) {
+					activeOccurrences.add(a);
+					continue;
+				}
+//				if (!(a.getCreatedTime() < endTime && a.getClearedTime() > startTime)) {
+				if (!foundStartIndex && a.getClearedTime() > startTime) {
+					startOccurrenceIndex = j;
+					endOccurrenceIndex = j + 1;
+					foundStartIndex = true;
+				}
+				if (a.getCreatedTime() < endTime) {
+					endOccurrenceIndex = j + 1;
+				}
+				else {
+					break;
+				}
+			}
+
+			List<AlarmOccurrenceContext> alarmOccurrenceContexts = alarmOccurrences.subList(startOccurrenceIndex, endOccurrenceIndex);
+			alarmOccurrenceContexts.addAll(activeOccurrences);
+			alarmMetaList.add(getAlarmOccurrenceMeta(startTime, endTime, alarmOccurrenceContexts, alarmMap));
 		}
 		alarmMetaList.add(getAlarmOccurrenceMeta(timesList.get(timesList.size() - 1), -1, null, alarmMap));
 		
@@ -422,7 +443,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 														.collect(Collectors.toList());
 			
 			if (!currentOccurrences.isEmpty()) {
-				List<Long> occurrenceIds = new ArrayList<>();
+				Set<Long> occurrenceIds = new HashSet<>();
 				for (int i = 0; i < currentOccurrences.size(); i++) {
 					AlarmOccurrenceContext alarmOccurrence = currentOccurrences.get(i);
 					occurrenceIds.add(alarmOccurrence.getId());

@@ -230,10 +230,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 
-		selectFields.add(ruleField);
 		selectFields.add(durationField);
-		selectFields.add(resourceFieldColumn);
-		selectFields.add(alarmIdField);
 		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
 		FacilioField alarmField = fieldMap.get("alarmId");
 
@@ -267,18 +264,22 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		}
 
 		if (assetId > 0 ) {
+			selectFields.add(ruleField);
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
 					.groupBy(ruleField.getCompleteColumnName());
 		}
 		if ((assetIds != null && assetIds.size() > 0)) {
+			selectFields.add(resourceFieldColumn);
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), StringUtils.join(assetIds, ",") , NumberOperators.EQUALS))
 			.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		}
 		if (ruleId > 0) {
+			selectFields.add(resourceFieldColumn);
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS))
 			.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		}
 		if (alarmId > 0) {
+			selectFields.add(alarmIdField);
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
 			.groupBy(alarmField.getCompleteColumnName());
 		}
