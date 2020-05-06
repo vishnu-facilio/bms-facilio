@@ -1,11 +1,11 @@
 system_greet_intent: 
     - "Hi there! How can I help you?"
     - "Hello there! Ask me for help on any of these tasks below:"
-    - "Hey there! Here’s all the things I can assist you with:"
+    - "Hey there! Here's all the things I can assist you with:"
     - "Hi! Can I help you with any of the following tasks?"
     
 system_intent_not_fount_intent: 
-    - "Sorry, I’m not sure if I understood you correctly. Please select one of the following to proceed."
+    - "Sorry, I'm not sure if I understood you correctly. Please select one of the following to proceed."
     - "I didn't understand that. Maybe I can assist you with one of these."
     - "I am not able to understand that. Did you want help with any of the tasks below?"
     - "I didn't get that. But, I'd be happy to help you with these tasks"
