@@ -1,5 +1,22 @@
+<%@page import="com.facilio.logging.SysOutLogger"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@page import="com.facilio.accounts.bean.OrgBean"%>
+<%@page import="com.facilio.accounts.util.AccountUtil"%>
+<%@page import="com.facilio.accounts.dto.Organization"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.Iterator" %>
+<%@page import="com.facilio.service.FacilioService" %>    
+<%@page import="com.facilio.bmsconsole.actions.AdminAction"%>
+ <%
+ List<Organization> org = null;
+ OrgBean bean =  AccountUtil.getOrgBean();
+ org = bean.getOrgs();
+ List<Map<String , Object>> orgList = AdminAction.getOrgsList();
+ List<Map<String , Object>> agentVersions = AdminAction.getAgentVersions();
+ long text=-1L;
+ %>   
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,6 +32,29 @@ function myFunction() {
     x.style.display = "block";
   }
 }
+function upgradeFunction() {
+	  var x = document.getElementById("upgrade");
+	  if (x.style.display === "block") {
+	    x.style.display = "none";
+	  } else {
+	    x.style.display = "block";
+	  }
+	}
+
+</script>
+
+<script>
+
+function changeOrg(){
+	var selectedOption = "agentversion?orgId="+ $("#orgId").val()
+	location.href=selectedOption;
+}
+function changeVersion(){
+	var selectedOption = "agentversion?orgId="+ $("#orgId").val()+ "&" + "version=" + $("#version").val();
+	location.href = selectedOption;
+}
+
+
 </script>
 <script>
 function validateForm() {
@@ -38,6 +78,71 @@ function validateForm() {
 	}
 </script>
 <body>
+<br><br><br>
+<h5>UPGRADE VERSION</h5>
+
+
+<form action = "upgradeAgentVersion">
+</br></br>
+	<div >
+			<fieldset>
+			<label for="txtClassroomName"><h5>Organization :</h5> </label>	<select class="admin-data-select"
+					name="orgId" id="orgId" onChange="changeOrg()">
+					<option value="" disabled selected>Select</option>
+					<%
+								for (Map<String,Object> domain : orgList) {
+									
+							%>
+					<option value="<%=domain.get("orgId")%>"<%=(request.getParameter("orgId") != null && request.getParameter("orgId").equals(domain.get("orgId") + "")) ? "selected" : " "%>><%=domain.get("orgId")%>
+						-
+						<%=domain.get("domain")%> </option>
+					<%
+								}
+							%>
+				</select></br></br>
+			<label for="txtClassroomName"><h5>Version :</h5> </label>	<select class="admin-data-select"
+					name="version" id="version">
+					<option value="" disabled selected>Select</option>
+					<%
+								for (Map<String,Object> agentVersion : agentVersions) {
+									
+							%>
+					<option value="<%=agentVersion.get("id")%>"><%=agentVersion.get("version")%></option>
+								<%
+								}
+								%>
+							
+				</select> </br></br>	
+			<label for="txtClassroomName"><h5>Agent :</h5> </label>	<select class="admin-data-select"
+					name="agentId" id="agentId">
+					<option value="" disabled selected>Select</option>
+					
+				<%
+				
+					if ((request.getParameter("orgId") != null)) {
+						
+						long orgId = Long.parseLong(request.getParameter("orgId"));
+							List<Map<String,Object>> agentIds= AdminAction.getAgentList(orgId);
+							for (Map<String,Object> list : agentIds) {
+				%>
+				<option value="<%=list.get("id")%>"><%=list.get("displayName") %></option> 
+				<%
+							}
+						}
+				%>
+				</select></br></br>		
+			</fieldset>
+			</br></br>
+			
+			<input type = "submit"  style="margin-left: 200px" name="upgradeAgentVersion"  value = "Submit"/> 
+			
+			<br>
+			<br>
+			<br>
+		</div> 
+
+</form>
+
 <button onclick="myFunction()" class="button button1">ADD VERSION</button>
 <div id="new" style="display:none">
 
@@ -61,6 +166,8 @@ function validateForm() {
 
 </form>
 </div>
+<br><br><br>
+
 </body>
 <style>
 input[type=text] {
@@ -111,6 +218,17 @@ text-align:left;
 }
 
 
+.admin-data-select {
+	font-size: 14px;
+	color: #333;
+	background: #fff;
+	padding: 12px 15px;
+	margin: 8px 16px;
+	margin-top: 5px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
 
 .button1 {
   background-color: white; 

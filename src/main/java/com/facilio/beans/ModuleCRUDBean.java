@@ -136,4 +136,6 @@ public interface ModuleCRUDBean {
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception;
 
 	public void deleteOlderFiles(long deletedTime)throws Exception;
+	
+	public List<Map<String,Object>> getOrgSpecificAgentList() throws Exception;
 }

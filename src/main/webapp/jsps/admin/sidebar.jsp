@@ -66,9 +66,16 @@ if (buildinfo == null) {
                <a href="agentversion">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">Agent Version</span>
+               <span class="nav-title">Agent Upgrade</span>
                </a>
            </li>
+           <li>
+               <a href="data">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">Agent Data</span>
+               </a>
+           </li> 
 
            <li> 
                <a href="anomalyconsole">
@@ -106,13 +113,7 @@ if (buildinfo == null) {
                <span class="nav-title">Reading Tools</span>
                </a>
            </li>
-           <li>
-               <a href="data">
-               <span class="nav-icon">
-              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">Data</span>
-               </a>
-           </li> 
+           
            <li>
                <a href="deletemessagequeue">
                <span class="nav-icon">

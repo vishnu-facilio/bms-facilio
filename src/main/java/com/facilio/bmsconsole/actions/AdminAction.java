@@ -5,6 +5,9 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.actions.AgentVersionAction;
+import com.facilio.agentv2.actions.VersionLogAction;
+import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.aws.util.DescribeInstances;
 import com.facilio.aws.util.FacilioProperties;
@@ -18,6 +21,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
@@ -27,6 +32,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
@@ -41,6 +47,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -65,6 +72,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 public class AdminAction extends ActionSupport {
@@ -430,24 +438,23 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public String addAgentVersion() throws Exception {
+	public String addAgentVersions() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String agentVersion = request.getParameter("version");
 		String user = request.getParameter("user");
 		String description = request.getParameter("desc");
-		String url = request.getParameter("url");
-		if (StringUtils.isNotBlank(url) && StringUtils.isNotBlank(description) && StringUtils.isNotBlank(user) && StringUtils.isNotBlank(agentVersion)) {
+		if (((agentVersion != null) && (!agentVersion.isEmpty())) && ((user != null) && (!user.isEmpty()))
+				&& ((description != null) && (!description.isEmpty()))) {
 
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 			Context context = new FacilioContext();
 			context.put(ContextNames.TABLE_NAME, "Agent_Version");
 			context.put(ContextNames.FIELDS, FieldFactory.getAgentVersionFields());
 			Map<String, Object> toInsertMap = new HashMap<>();
-			toInsertMap.put(AgentConstants.VERSION, agentVersion);
+			toInsertMap.put(AgentConstants.VERSION_ID, agentVersion);
 			toInsertMap.put(AgentConstants.CREATED_BY, user);
 			toInsertMap.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 			toInsertMap.put(AgentConstants.DESCRIPTION, description);
-			toInsertMap.put(AgentConstants.URL, url);
 			context.put(ContextNames.TO_INSERT_MAP, toInsertMap);
 			bean.genericInsert(context);
 			return SUCCESS;
@@ -530,16 +537,49 @@ public class AdminAction extends ActionSupport {
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
 				.table(IAMAccountConstants.getOrgModule().getTableName())
-				.innerJoin(ModuleFactory.getAgentDataModule().getTableName()).on("Agent_Data.ORGID=Organizations.ORGID")
-				.groupBy("Agent_Data.ORGID");
+				.innerJoin(ModuleFactory.getNewAgentModule().getTableName()).on("Agent.ORGID=Organizations.ORGID")
+				.groupBy("Agent.ORGID");
 		return builder.get();
 	}
-
+	
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
 		return FacilioService.runAsServiceWihReturn(() -> getOrgsList());
 	}
 
+	public String addAgentVersion() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String version = request.getParameter("version");
+		String user = request.getParameter("user");
+		String description = request.getParameter("desc");
+		String url = request.getParameter("url");
+		AgentVersionAction context = new AgentVersionAction();
+		context.setVersion(version);
+		context.setDescription(description);
+		context.setCreatedBy(user);
+		context.setFileName(url);
+		context.addAgentVersion();
+		return SUCCESS;
+	}
+	
+	public String upgradeAgentVersion() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long versionId = Long.parseLong(request.getParameter("version"));
+		long agentId = Long.parseLong(request.getParameter("agentId"));
+		VersionLogAction context = new VersionLogAction();
+		context.setAgentId(agentId);
+		context.setVersionId(versionId);
+		context.upgradeAgent();
+		return SUCCESS;
+	}
+	public static List<Map<String,Object>> getAgentVersions() throws Exception{
+		return AgentVersionApi.listAgentVersions(new FacilioContext());
+	}
+	
+	public static List<Map<String, Object>> getAgentList(long orgId) throws Exception{
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		return bean.getOrgSpecificAgentList();
+	}
 	private String orgDomain;
 
 	public String getOrgDomain() {
