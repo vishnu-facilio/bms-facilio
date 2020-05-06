@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
@@ -28,9 +29,11 @@ public class DemoAlarmPropagationJob extends FacilioJob{
 			context.getContext().put(ContextNames.START_TIME, currentZdt);
 			context.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
 			context.execute();
+			LOGGER.info("DemoAlarmPropagationJob Started Daily Demo Historical rule evaluation");
 		} catch (Exception e) {
+        	LOGGER.error("DemoAlarmPropagationJob Error -- "  +e+ " OrgId -- "+AccountUtil.getCurrentOrg().getId());
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 			CommonCommandUtil.emailException("DemoAlarmPropagationJob", "DemoAlarmPropagationJob Failed - Orgid -- " + jc.getOrgId(), e);
-				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 		}
 	}
 
