@@ -53,7 +53,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
 	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER, EventType.STATE_TRANSITION);
-	
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -90,7 +90,8 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			}
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-			
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+
 			addActivity(workOrder, oldWos, changeSets, recordIds, modBean, moduleName, context);
 		}
 		
@@ -330,8 +331,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			}
 		}
 		else if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
-			context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-			
+
 			Iterator it = recordIds.iterator();
 			List<UpdateChangeSet> changeSetList = null;
 			while (it.hasNext()) {
