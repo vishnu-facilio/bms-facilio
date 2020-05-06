@@ -91,7 +91,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		
 		long dataInterval = 0;
 		if(report.getxAggrEnum() == CommonAggregateOperator.ACTUAL) {
-			isNoData = true;
+//			isNoData = true;
 			if(CollectionUtils.isNotEmpty(parentIds) && dp.getyAxis().getField() != null) {
 				Long parentId = Long.valueOf(String.valueOf(parentIds.get(0)));
 				dataInterval = ReadingsAPI.getDataInterval(parentId, dp.getyAxis().getField())*60*1000;
