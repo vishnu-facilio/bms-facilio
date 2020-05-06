@@ -2780,8 +2780,8 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			chain.addCommand(new GenericGetModuleDataListCommand());
-			chain.addCommand(new VerifyApprovalCommand());
 			chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+			chain.addCommand(new VerifyApprovalCommand());
 			chain.addCommand(new ExecuteStateFlowCommand());
 			chain.addCommand(new UpdateStateForModuleDataCommand());
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -4396,6 +4396,7 @@ public class TransactionChainFactory {
 		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+		c.addCommand(new VerifyApprovalCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));

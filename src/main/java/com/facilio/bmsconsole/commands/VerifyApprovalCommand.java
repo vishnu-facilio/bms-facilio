@@ -26,13 +26,22 @@ public class VerifyApprovalCommand extends FacilioCommand {
 			for (ModuleBaseWithCustomFields record : oldRecords) {
 				if (record.getModuleState() != null) {
 					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(record.getModuleState().getId());
-					
-					if ((stateContext.isRecordLocked())) {
+
+					// -99 will be set when he approved the module record, so should go to the if-block
+					if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
+						if (!skipChecking) {
+							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
+							if (status.isRequestedState()) {
+								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
+							}
+						}
+					}
+ 					else if ((stateContext.isRecordLocked())) {
 						boolean cannotEdit = false;
 						if ((stateTransitionId == null || stateTransitionId == -1)) {
 							cannotEdit = true;
 						}
-						if ( workOrder != null && workOrder.getRequester() != null) {
+						if ( workOrder != null && workOrder.getRequester() != null && workOrder.getRequester().getUid() > 0) {
 							cannotEdit = false;
 							skipChecking = true;
 							User requester = workOrder.getRequester();
@@ -45,14 +54,7 @@ public class VerifyApprovalCommand extends FacilioCommand {
 						}
 					}
 
-					if (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null) {
-						if (!skipChecking) {
-							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
-							if (status.isRequestedState()) {
-								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
-							}
-						}
-					}
+
 				}
 			}
 		}
