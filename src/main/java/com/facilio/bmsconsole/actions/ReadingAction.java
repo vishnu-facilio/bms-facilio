@@ -54,6 +54,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -1331,7 +1332,26 @@ public class ReadingAction extends FacilioAction {
         }
         catch(Exception e){
         	LOGGER.error("DemoSingleRollUpYearlyCommand Error Mig" +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
     		setResult("success", "Failed DemoReadingsRollUp Migration.");
+        }
+		return SUCCESS;	
+	}
+	
+	public String runDefaultFieldsMigration() throws Exception
+	{
+		try{
+    	 	LOGGER.info("AHUFieldMigration Started For -- "+AccountUtil.getCurrentOrg().getId());     
+            FacilioChain chain = TransactionChainFactory.runDefaultFieldsMigration();
+        	chain.execute();
+ 			LOGGER.info("AHUFieldMigration Completed For -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "AHUFieldMigration Done.");
+        }
+        catch(Exception e){
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
+        	LOGGER.error("AHUFieldMigration Error Mig"  +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "Failed AHUFieldMigration.");
+
         }
 		return SUCCESS;	
 	}

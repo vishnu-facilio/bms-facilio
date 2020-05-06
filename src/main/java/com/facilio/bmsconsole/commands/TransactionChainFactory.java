@@ -60,6 +60,12 @@ public class TransactionChainFactory {
 			
 			return c;
 		}
+		
+		public static FacilioChain runDefaultFieldsMigration() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new RunDefaultFieldsMigration());
+			return c;
+		}
 
 		public static FacilioChain getpopulateDefaultChatBotIntentChain() {
 			FacilioChain c = getDefaultChain();

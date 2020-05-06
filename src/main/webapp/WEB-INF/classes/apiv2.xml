@@ -1912,6 +1912,10 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="runMigForDemoReadingsRollUp">
 		</action>
+		<action name="runDefaultFieldsMigration"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runDefaultFieldsMigration">
+		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"
 		namespace="/api/v2/scheduled/rule/historicalrun" extends="v2Api">
