@@ -12,7 +12,7 @@ public class GetConnectedAppConnectorCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		long connectedAppId = (long) context.get(FacilioConstants.ContextNames.ID);
+		Long connectedAppId = (Long) context.get(FacilioConstants.ContextNames.ID);
 		String connectorName = (String) context.get(FacilioConstants.ContextNames.CONNECTION_NANE);
 		ConnectedAppRequestContext apiRequest = (ConnectedAppRequestContext) context.get(FacilioConstants.ContextNames.CONNECTED_APP_REQUEST);
 		
@@ -21,7 +21,7 @@ public class GetConnectedAppConnectorCommand extends FacilioCommand {
 			connectorName = apiRequest.getConnector();
 		}
 		
-		if (connectedAppId > 0 && connectorName != null) {
+		if (connectedAppId != null && connectedAppId > 0 && connectorName != null) {
 			ConnectedAppConnectorContext connectedAppConnector = ConnectedAppAPI.getConnector(connectedAppId, connectorName);
 		
 			context.put(FacilioConstants.ContextNames.CONNECTED_APP_CONNECTOR, connectedAppConnector);
