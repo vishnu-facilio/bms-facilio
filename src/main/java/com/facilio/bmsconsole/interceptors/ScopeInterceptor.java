@@ -136,8 +136,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 	if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
 	                	user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
 	                    if (user == null) {
-	                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - " + request.getServerName());
-	                        return "usernotinapp";
+	                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - id " + appId +" of org - id "+ iamAccount.getOrg().getOrgId());
+	                    //   return "usernotinapp";
+	                        //temporary handling.once the logs are proper , we shall remove this snippet and uncomment the above line. 
+	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+	                        if(user == null) {
+	                        	return "unauthorized";
+	                        }
 	                    }
                 	}
                 	else {
