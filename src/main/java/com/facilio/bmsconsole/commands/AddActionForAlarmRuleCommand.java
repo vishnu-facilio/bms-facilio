@@ -17,12 +17,16 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-//		ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
-		
-//		if(alarmTriggerRule != null) {
-//			actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
-//			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
-//		}
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+
+		if(eventType != null && eventType == EventType.CREATE) {
+			ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
+			
+			if(alarmTriggerRule != null) {
+				List<ActionContext> actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
+				ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
+			}
+		}
 
 		WorkflowRuleContext reportDowntimeRule=alarmRule.getReportDowntimeRule();
 		if(reportDowntimeRule!=null){
