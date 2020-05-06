@@ -16,12 +16,22 @@ public class EnergyStarEnableCommand extends FacilioCommand {
 		EnergyStarCustomerContext customer = (EnergyStarCustomerContext) context.get(EnergyStarUtil.ENERGY_STAR_CUSTOMER_CONTEXT);
 		
 		if(customer == null) {
-			customer = EnergyStarUtil.getEnergyStarCustomerContext();
 			
-			String id = EnergyStarSDK.createCustomer(customer);
+			boolean createAccount = (boolean) context.get(EnergyStarUtil.IS_CREATE_ACCOUNT);
 			
-			customer.setEnergyStarCustomerId(id);
+			customer = EnergyStarUtil.getEnergyStarCustomerContext(createAccount);
 			
+			if(createAccount) {
+				
+				String id = EnergyStarSDK.createCustomer(customer);
+				
+				customer.setEnergyStarCustomerId(id);
+				
+				customer.setType(EnergyStarCustomerContext.Type.CREATED.getIntVal());
+			}
+			else {
+				customer.setType(EnergyStarCustomerContext.Type.SHARED.getIntVal());
+			}
 			customer = EnergyStarUtil.addEnergyStarCustomer(customer);
 		}
 		

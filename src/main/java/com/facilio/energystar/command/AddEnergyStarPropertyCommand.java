@@ -20,11 +20,15 @@ public class AddEnergyStarPropertyCommand extends FacilioCommand {
 		
 		propContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
-		propContext.setBuildingContext(SpaceAPI.getBuildingSpace(propContext.getBuildingId()));
+		if(propContext.getBuildingId() > 0) {
+			propContext.setBuildingContext(SpaceAPI.getBuildingSpace(propContext.getBuildingId()));
+		}
 		
-		String propertId = EnergyStarSDK.addProperty(customer, propContext);
-		
-		propContext.setEnergyStarPropertyId(propertId);
+		if(propContext.getEnergyStarPropertyId() == null) {
+			String propertId = EnergyStarSDK.addProperty(customer, propContext);
+			
+			propContext.setEnergyStarPropertyId(propertId);
+		}
 		
 		EnergyStarUtil.addEnergyStarProperty(propContext);
 		return false;

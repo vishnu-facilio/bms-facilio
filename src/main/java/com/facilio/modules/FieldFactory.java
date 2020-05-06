@@ -8151,6 +8151,9 @@ public class FieldFactory {
         fields.add(getField("userName", "USERNAME", module, FieldType.STRING));
         fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
         fields.add(getField("dataExchangeMode", "DATA_EXCHANGE_MODE", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("shareKey", "SHARE_KEY", module, FieldType.STRING));
+        fields.add(getField("shareStatus", "SHARE_STATUS", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -8167,6 +8170,7 @@ public class FieldFactory {
         fields.add(getField("energyStarDesignId", "ES_DESIGN_ID", module, FieldType.STRING));
         fields.add(getField("yearBuild", "YEAR_BUILD", module, FieldType.STRING));
         fields.add(getField("occupancyPercentage", "OCCUPANCY_PERCENTAGE", module, FieldType.STRING));
+        fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
 
         return fields;
     }
@@ -8195,6 +8199,7 @@ public class FieldFactory {
         fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.STRING));
         fields.add(getField("meterDataFieldId", "METER_DATA_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("firstBillDate", "FIRST_BILL_DATE", module, FieldType.STRING));
+        fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
 
         return fields;
     }

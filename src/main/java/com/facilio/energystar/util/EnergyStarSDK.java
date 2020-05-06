@@ -2,11 +2,15 @@ package com.facilio.energystar.util;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.http.HttpHeaders;
+import org.json.simple.JSONObject;
 
 import com.amazonaws.HttpMethod;
 import com.facilio.accounts.dto.Organization;
@@ -22,6 +26,7 @@ import com.facilio.xml.builder.XMLBuilder;
 
 public class EnergyStarSDK {
 	
+	private static final Logger LOGGER = Logger.getLogger(EnergyStarSDK.class.getName());
 	
 	public static String ENERGY_STAR_SANDBOX_ENDPOINT = "https://portfoliomanager.energystar.gov/wstest/";
 	
@@ -54,7 +59,6 @@ public class EnergyStarSDK {
 									.element("primaryBusiness").text("Other").p()
 									.element("otherBusinessDescription").text("other").p()
 									.element("energyStarPartner").text(Boolean.FALSE.toString()).p().p()
-								.element("emailPreferenceCanadianAccount").t(Boolean.FALSE.toString());
 								;
 								
 		String xmlString = builder.getAsXMLString();	
@@ -182,19 +186,158 @@ public class EnergyStarSDK {
 		return id;
 	}
 	
+	public static String confirmAccountShare(String shareKey) throws Exception {
+		
+		String response = sendAPI("connect/account/pending/list", HttpMethod.GET, null);
+		
+		List<XMLBuilder> accounts = XMLBuilder.parse(response).getElementList("account");
+		
+		String id = null;
+		for(XMLBuilder account :accounts) {
+			String key = account.getElement("customFieldList").getElement("customField").getText();
+			LOGGER.info("parsed key -- "+key);
+			if(key.equals(shareKey)) {
+				id = account.getElement("accountId").getText();
+				sendConfirmAccountShare(id);
+				break;
+			}
+		}
+		
+		return id;
+	}
+	
+	public static List<EnergyStarPropertyContext> confirmPropertyShare(String accountId) throws Exception {
+		
+		String response = sendAPI("share/property/pending/list", HttpMethod.GET, null);
+		
+		List<XMLBuilder> properties = XMLBuilder.parse(response).getElementList("property");
+		
+		List<EnergyStarPropertyContext> propertyList = new ArrayList<EnergyStarPropertyContext>();
+		for(XMLBuilder property :properties) {
+			String localAccountID = property.getElement("accountId").getText();
+			if(localAccountID.equals(accountId)) {
+			
+				String propertyId = property.getElement("propertyId").getText();
+				
+				sendConfirmPropertyShare(propertyId);
+				
+				String propertyName = property.getElement("propertyInfo").getElement("name").getText();
+				
+				JSONObject json = new JSONObject();
+				
+				json.put("name", propertyName);
+				
+				EnergyStarPropertyContext propertyContext = new EnergyStarPropertyContext();
+				
+				propertyContext.setMeta(json.toJSONString());
+				
+				propertyContext.setEnergyStarPropertyId(propertyId);
+				
+				propertyList.add(propertyContext);
+			}
+		}
+		
+		return propertyList;
+	}
+	
+	public static List<EnergyStarMeterContext> confirmMeterShare(String accountId) throws Exception {
+		
+		String response = sendAPI("share/meter/pending/list", HttpMethod.GET, null);
+		
+		List<XMLBuilder> meters = XMLBuilder.parse(response).getElementList("meter");
+		
+		List<EnergyStarMeterContext> meterList = new ArrayList<EnergyStarMeterContext>();
+		for(XMLBuilder meter :meters) {
+			String localAccountID = meter.getElement("accountId").getText();
+			if(localAccountID.equals(accountId)) {
+				
+				String meterId = meter.getElement("meterId").getText();
+				
+				sendConfirmMeterShare(meterId);
+			
+				String propertyId = meter.getElement("propertyId").getText();
+				
+				String meterName = meter.getElement("meterInfo").getElement("name").getText();
+				String type = meter.getElement("meterInfo").getElement("type").getText();
+				String firstBillDate = meter.getElement("meterInfo").getElement("firstBillDate").getText();
+				
+				
+				JSONObject json = new JSONObject();
+				
+				json.put("name", meterName);
+				
+				EnergyStarMeterContext meterContext = new EnergyStarMeterContext();
+				meterContext.setFirstBillDate(firstBillDate);
+				meterContext.setType(EnergyStarCustomerContext.Data_Exchange_Mode.getAllTypes().get(type).getIntVal());
+				
+				meterContext.setMeta(json.toJSONString());
+				meterContext.setEnergyStarMeterId(meterId);
+				
+				meterContext.setEnergyStarPropertyId(propertyId);
+				
+				meterList.add(meterContext);
+			}
+		}
+		
+		return meterList;
+	}
+	
+	private static String sendConfirmAccountShare(String accountId) throws Exception {
+		
+		String payload = XMLBuilder.create("sharingResponse").element("action").text("Accept").getAsXMLString();
+		
+		String response = sendAPI("connect/account/"+accountId, HttpMethod.POST, payload);
+		
+		LOGGER.info("CONFIRM ACCOUNT RESP - "+response);
+		
+		return response;
+	}
+	
+	private static String sendConfirmPropertyShare(String propertyId) throws Exception {
+		
+		String payload = XMLBuilder.create("sharingResponse").element("action").text("Accept").getAsXMLString();
+		
+		String response = sendAPI("share/property/"+propertyId, HttpMethod.POST, payload);
+		
+		LOGGER.info("CONFIRM PROPERTY RESP - "+response);
+		
+		return response;
+	}
+	
+	private static String sendConfirmMeterShare(String meterId) throws Exception {
+		
+		String payload = XMLBuilder.create("sharingResponse").element("action").text("Accept").getAsXMLString();
+		
+		String response = sendAPI("share/meter/"+meterId, HttpMethod.POST, payload);
+		
+		LOGGER.info("CONFIRM METER RESP - "+response);
+		
+		return response;
+	}
+	
+	public static String fetchMetrics(EnergyStarPropertyContext property,String year,String month) throws Exception {
+		
+		String response = sendAPI("/property/"+property.getEnergyStarPropertyId()+"/metrics?year="+year+"&month="+month+"&measurementSystem=EPA", HttpMethod.GET, null);
+		
+		System.out.println(response);
+
+		return response;
+	}
+	
 	
 	private static String sendAPI(String action,HttpMethod method, String payload) throws IOException {
 		
 		Map<String,String> headers = new HashMap<>();
 		
 		headers.put(HttpHeaders.AUTHORIZATION, getAuthentication());
-		headers.put(HttpHeaders.CONTENT_TYPE, "application/xml");
 		
 		switch (method) {
 			case POST :
-					return FacilioHttpUtils.doHttpPost(ENERGY_STAR_SANDBOX_ENDPOINT+action, headers, null, payload);
+				headers.put(HttpHeaders.CONTENT_TYPE, "application/xml");
+				return FacilioHttpUtils.doHttpPost(ENERGY_STAR_SANDBOX_ENDPOINT+action, headers, null, payload);
 			case GET:
-				break;
+//				headers.put("PM-Metrics", "score,siteTotal");
+				return FacilioHttpUtils.doHttpGet(ENERGY_STAR_SANDBOX_ENDPOINT+action, headers, null);
 			case PUT:
 				break;
 			

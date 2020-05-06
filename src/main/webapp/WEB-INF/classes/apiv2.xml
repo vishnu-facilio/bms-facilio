@@ -5979,6 +5979,10 @@
 		extends="v2Api">
 		<action name="enable"
 			class="com.facilio.energystar.action.EnergyStarAction" method="enable" />
+		<action name="confirmAccountShare"
+			class="com.facilio.energystar.action.EnergyStarAction" method="confirmAccountShare" />
+		<action name="confirmPendingShares"
+			class="com.facilio.energystar.action.EnergyStarAction" method="confirmPendingShares" />
 		<action name="addProperty"
 			class="com.facilio.energystar.action.EnergyStarAction" method="addEnergyStarProperty" />
 		<action name="updateProperty"

@@ -24,7 +24,16 @@ public class EnergyStarPropertyContext {
 	String occupancyPercentage;
 	
 	BuildingContext buildingContext;
+	String meta;
 	
+	public String getMeta() {
+		return meta;
+	}
+
+	public void setMeta(String meta) {
+		this.meta = meta;
+	}
+
 	public BuildingContext getBuildingContext() {
 		return buildingContext;
 	}

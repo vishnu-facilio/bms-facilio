@@ -1,8 +1,10 @@
 package com.facilio.energystar.util;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -27,7 +29,11 @@ import com.facilio.time.DateTimeUtil;
 
 public class EnergyStarUtil {
 	
+	private static final Logger LOGGER = Logger.getLogger(EnergyStarUtil.class.getName());
+	
 	public static final String ENERGY_STAR_CUSTOMER_CONTEXT = "energyStarCustomerContext";
+	
+	public static final String IS_CREATE_ACCOUNT = "isCreateAccount";
 	
 	public static final String ENERGY_STAR_PROPERTY_CONTEXT = "energyStarPropertyContext";
 	
@@ -68,7 +74,7 @@ public class EnergyStarUtil {
 		return userName;
 	}
 	
-	public static EnergyStarCustomerContext getEnergyStarCustomerContext() {
+	public static EnergyStarCustomerContext getEnergyStarCustomerContext(boolean createAccount) {
 		
 		EnergyStarCustomerContext customerContext = new EnergyStarCustomerContext();
 		
@@ -77,29 +83,41 @@ public class EnergyStarUtil {
 		customerContext.setOrgId(org.getId());
 		customerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
 		customerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
-		customerContext.setUserName(getUserNameFromOrgName(org.getName()));
-		customerContext.setPassword(getPasswordFromUserName(customerContext.getUserName()));
 		
-		List<Data_Exchange_Mode> exchangeModeList = customerContext.getAvailableDataExchangeModes() == null ? new ArrayList<>() : customerContext.getAvailableDataExchangeModes();
-		
-		exchangeModeList.add(Data_Exchange_Mode.ELECTRIC);
-		
-		customerContext.setAvailableDataExchangeModes(exchangeModeList);
-		
-		long total = 0;
-		if(customerContext.getAvailableDataExchangeModes() != null) {
-			for(Data_Exchange_Mode dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
-				total = total | dataExchangeMode.getLicence();
+		if(createAccount) {
+			customerContext.setUserName(getUserNameFromOrgName(org.getName()));
+			customerContext.setPassword(getPasswordFromUserName(customerContext.getUserName()));
+			
+			List<Data_Exchange_Mode> exchangeModeList = customerContext.getAvailableDataExchangeModes() == null ? new ArrayList<>() : customerContext.getAvailableDataExchangeModes();
+			
+			exchangeModeList.add(Data_Exchange_Mode.ELECTRIC);
+			
+			customerContext.setAvailableDataExchangeModes(exchangeModeList);
+			
+			long total = 0;
+			if(customerContext.getAvailableDataExchangeModes() != null) {
+				for(Data_Exchange_Mode dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
+					total = total | dataExchangeMode.getLicence();
+				}
 			}
+			
+			customerContext.setDataExchangeMode(total);
 		}
-		
-		customerContext.setDataExchangeMode(total);
+		else {
+			String shareKeyString = getUserNameFromOrgName(org.getName()) + DateTimeUtil.getCurrenTime();
+			
+			String shareKey = Base64.getEncoder().encodeToString(shareKeyString.getBytes());
+			
+			LOGGER.info("shareKey --- "+shareKey);
+			
+			customerContext.setShareKey(shareKey.substring(0, shareKey.length() >= 20 ? 20 : shareKey.length()));
+			customerContext.setShareStatus(EnergyStarCustomerContext.Share_Status.CREATED.getIntVal());
+		}
 		
 		return customerContext;
 	}
 	
 	public static EnergyStarCustomerContext addEnergyStarCustomer(EnergyStarCustomerContext customerContext) throws Exception {
-		
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getEnergyStarCustomerModule().getTableName())

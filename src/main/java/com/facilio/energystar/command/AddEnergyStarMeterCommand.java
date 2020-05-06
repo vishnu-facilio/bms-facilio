@@ -1,5 +1,7 @@
 package com.facilio.energystar.command;
 
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -18,18 +20,28 @@ public class AddEnergyStarMeterCommand extends FacilioCommand {
 		
 		EnergyStarCustomerContext customer = (EnergyStarCustomerContext) context.get(EnergyStarUtil.ENERGY_STAR_CUSTOMER_CONTEXT);
 		
-		if(propContext.getMeterContexts() != null) {
+		List<EnergyStarMeterContext> meters = (List<EnergyStarMeterContext>) context.get(EnergyStarUtil.ENERGY_STAR_METER_CONTEXTS);
+		
+		if(meters == null && propContext != null && propContext.getMeterContexts() != null) {
+			meters = propContext.getMeterContexts();
+		}
+		
+		if(meters != null) {
 			
-			
-			for(EnergyStarMeterContext meter : propContext.getMeterContexts()) {
+			for(EnergyStarMeterContext meter : meters) {
 				
-				meter.setMeterContext(AssetsAPI.getAssetInfo(meter.getMeterId()));
+				if(meter.getMeterId() > 0) {
+					meter.setMeterContext(AssetsAPI.getAssetInfo(meter.getMeterId()));
+				}
 				
-				String energyStarMeterId = EnergyStarSDK.addPropertyMeter(customer, propContext, meter);
-				
-				meter.setEnergyStarMeterId(energyStarMeterId);
-				
-				meter.setProperyId(propContext.getId());
+				if(meter.getEnergyStarMeterId() == null) {
+					String energyStarMeterId = EnergyStarSDK.addPropertyMeter(customer, propContext, meter);
+					
+					meter.setEnergyStarMeterId(energyStarMeterId);
+				}
+				if(meter.getPropertyId() < 0 && propContext != null) {
+					meter.setPropertyId(propContext.getId());
+				}
 				EnergyStarUtil.addEnergyStarMetercontext(meter);
 			}
 		}

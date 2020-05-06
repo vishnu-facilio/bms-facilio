@@ -1,5 +1,7 @@
 package com.facilio.energystar.context;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mode;
 
@@ -14,6 +16,23 @@ public class EnergyStarMeterContext {
 	long meterDataFieldId = -1;
 	String energyStarMeterId;
 	String firstBillDate;
+	String meta;
+	String energyStarPropertyId;
+	public String getEnergyStarPropertyId() {
+		return energyStarPropertyId;
+	}
+
+	@JSON(serialize=false)
+	public void setEnergyStarPropertyId(String energyStarPropertyId) {
+		this.energyStarPropertyId = energyStarPropertyId;
+	}
+	public String getMeta() {
+		return meta;
+	}
+
+	public void setMeta(String meta) {
+		this.meta = meta;
+	}
 	
 	public String getFirstBillDate() {
 		return firstBillDate;
@@ -44,7 +63,7 @@ public class EnergyStarMeterContext {
 	public long getPropertyId() {
 		return propertyId;
 	}
-	public void setProperyId(long properyId) {
+	public void setPropertyId(long properyId) {
 		this.propertyId = properyId;
 	}
 	public int getType() {

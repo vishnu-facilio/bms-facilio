@@ -21,27 +21,55 @@ public class EnergyStarCustomerContext {
 	String password;
 	long dataExchangeMode = -1;
 	List<Data_Exchange_Mode> availableDataExchangeModes;
+	Type type;
+	String shareKey;
+	Share_Status shareStatus;
 	
-	
+	public int getShareStatus() {
+		if(shareStatus != null) {
+			return shareStatus.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setShareStatus(int shareStatus) {
+		this.shareStatus = Share_Status.getAllAppTypes().get(shareStatus);
+	}
+
+	public String getShareKey() {
+		return shareKey;
+	}
+
+	public void setShareKey(String shareKey) {
+		this.shareKey = shareKey;
+	}
+
+	public int getType() {
+		if(type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setType(int type) {
+		this.type = Type.getAllAppTypes().get(type);
+	}
+
 	public long getId() {
 		return id;
 	}
-
 
 	public void setId(long id) {
 		this.id = id;
 	}
 
-
 	public long getOrgId() {
 		return orgId;
 	}
 
-
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-
 
 	public long getCreatedTime() {
 		return createdTime;
@@ -162,6 +190,8 @@ public class EnergyStarCustomerContext {
 		}
 
 		private static final Map<Integer, Data_Exchange_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());
+		
+		private static final Map<String, Data_Exchange_Mode> TypeStringMap = Collections.unmodifiableMap(initTypeStringMap());
 
 		private static Map<Integer, Data_Exchange_Mode> initTypeMap() {
 			Map<Integer, Data_Exchange_Mode> typeMap = new HashMap<>();
@@ -171,8 +201,97 @@ public class EnergyStarCustomerContext {
 			}
 			return typeMap;
 		}
+		
+		private static Map<String, Data_Exchange_Mode> initTypeStringMap() {
+			Map<String, Data_Exchange_Mode> typeMap = new HashMap<>();
+
+			for (Data_Exchange_Mode type : values()) {
+				typeMap.put(type.getName(), type);
+			}
+			return typeMap;
+		}
 
 		public static Map<Integer, Data_Exchange_Mode> getAllAppTypes() {
+			return optionMap;
+		}
+		public static Map<String, Data_Exchange_Mode> getAllTypes() {
+			return TypeStringMap;
+		}
+	}
+	
+	public enum Type {
+		CREATED(1, "Created"),
+		SHARED(2, "Shared"),
+		;
+
+		int intVal;
+		String name;
+		
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Type(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Type> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Type> initTypeMap() {
+			Map<Integer, Type> typeMap = new HashMap<>();
+
+			for (Type type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Type> getAllAppTypes() {
+			return optionMap;
+		}
+	}
+	
+	public enum Share_Status {
+		CREATED(1, "Created"),
+		SHARED(2, "Shared"),
+		REJECTED(3, "Rejected"),
+		;
+
+		int intVal;
+		String name;
+		
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Share_Status(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Share_Status> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Share_Status> initTypeMap() {
+			Map<Integer, Share_Status> typeMap = new HashMap<>();
+
+			for (Share_Status type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Share_Status> getAllAppTypes() {
 			return optionMap;
 		}
 	}
