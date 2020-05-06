@@ -24,7 +24,7 @@ public class UpgradeAgentCommand extends AgentV2Command {
                 Map<String, Object> agentVersion = FacilioService.runAsServiceWihReturn(() -> AgentVersionApi.getAgentVersion(versionId));
                 if (containsCheck(AgentConstants.VERSION, agentVersion)) {
                     String url = AgentVersionApi.getAgentDownloadUrl();
-                    String version = (String) agentVersion.get(AgentConstants.VERSION);
+                    String version = agentVersion.get(AgentConstants.VERSION).toString();
                     String authKey = AgentVersionApi.getAuthKey();
                     Organization currentOrg = AccountUtil.getCurrentOrg();
                     Objects.requireNonNull(currentOrg);

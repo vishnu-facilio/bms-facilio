@@ -261,7 +261,7 @@ public class AgentMessenger {
     public static IotData sendAgentUpgradeCommand(long agentId, String version, String url, String authKey) throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(AgentConstants.HEADER, authKey);
-        context.put(AgentConstants.VERSION, "v" + version);
+        context.put(AgentConstants.VERSION, version);
         context.put(AgentConstants.URL, url);
         return constructNewIotAgentMessage(agentId, FacilioCommand.UPGRADE, context, (FacilioControllerType) null);
     }
