@@ -59,6 +59,8 @@ public class ConnectionUtil {
 	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
 	public static final String SECRET_STATE = "state";
+	
+	public static final long MAX_TIME = 4102425000000l;
 
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
@@ -200,15 +202,21 @@ public class ConnectionUtil {
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 
-				if(resultJson.containsKey(ACCESS_TOKEN_STRING) && resultJson.containsKey(EXPIRES_IN_STRING)) {
+				if(resultJson.containsKey(ACCESS_TOKEN_STRING)) {
 					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
+					
+					if(resultJson.containsKey(EXPIRES_IN_STRING)) {
+						long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
 
-					long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
+						expireTimeInSec = expireTimeInSec - 60;
 
-					expireTimeInSec = expireTimeInSec - 60;
+						connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
 
-					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
-
+					}
+					else {
+						connectionContext.setExpiryTime(MAX_TIME);
+					}
+					
 					updateConnectionContext(connectionContext);
 				}
 				else {
