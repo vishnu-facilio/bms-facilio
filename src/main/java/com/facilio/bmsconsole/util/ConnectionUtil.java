@@ -161,25 +161,34 @@ public class ConnectionUtil {
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 
-				if(resultJson.containsKey(ACCESS_TOKEN_STRING) && resultJson.containsKey(EXPIRES_IN_STRING) && resultJson.containsKey(REFRESH_TOKEN_STRING)) {
+				if(resultJson.containsKey(ACCESS_TOKEN_STRING)) {
 					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
-					connectionContext.setRefreshToken((String)resultJson.get(REFRESH_TOKEN_STRING));
-
-					long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
-
-					expireTimeInSec = expireTimeInSec - 60;
-
-					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
 					
-					if(resultJson.containsKey(REFRESH_TOKEN_EXPIRES_IN_STRING)) {
+					if(resultJson.containsKey(REFRESH_TOKEN_STRING)) {
+						connectionContext.setRefreshToken((String)resultJson.get(REFRESH_TOKEN_STRING));
 						
-						long refreshTokenExpireTimeInSec = (long) resultJson.get(REFRESH_TOKEN_EXPIRES_IN_STRING);
-						
-						refreshTokenExpireTimeInSec = refreshTokenExpireTimeInSec - 6000;
-						
-						connectionContext.setRefreshTokenExpiryTime(DateTimeUtil.getCurrenTime() + (refreshTokenExpireTimeInSec * 1000));
+						if(resultJson.containsKey(REFRESH_TOKEN_EXPIRES_IN_STRING)) {
+							
+							long refreshTokenExpireTimeInSec = (long) resultJson.get(REFRESH_TOKEN_EXPIRES_IN_STRING);
+							
+							refreshTokenExpireTimeInSec = refreshTokenExpireTimeInSec - 6000;
+							
+							connectionContext.setRefreshTokenExpiryTime(DateTimeUtil.getCurrenTime() + (refreshTokenExpireTimeInSec * 1000));
+						}
 					}
+					
+					if(resultJson.containsKey(EXPIRES_IN_STRING)) {
+						
+						long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
 
+						expireTimeInSec = expireTimeInSec - 60;
+
+						connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+					}
+					else {
+						connectionContext.setExpiryTime(MAX_TIME);
+					}
+					
 					updateConnectionContext(connectionContext);
 				}
 				else {
