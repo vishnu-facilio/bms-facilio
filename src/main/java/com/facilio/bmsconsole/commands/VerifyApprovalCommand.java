@@ -27,17 +27,8 @@ public class VerifyApprovalCommand extends FacilioCommand {
 				if (record.getModuleState() != null) {
 					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(record.getModuleState().getId());
 
-					// -99 will be set when he approved the module record, so should go to the if-block
-					if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
-						if (!skipChecking) {
-							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
-							if (status.isRequestedState()) {
-								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
-							}
-						}
-					}
- 					else if ((stateContext.isRecordLocked())) {
-						boolean cannotEdit = false;
+					boolean cannotEdit = false;
+					if (stateContext.isRecordLocked()) {
 						if ((stateTransitionId == null || stateTransitionId == -1)) {
 							cannotEdit = true;
 						}
@@ -49,6 +40,18 @@ public class VerifyApprovalCommand extends FacilioCommand {
 							workOrder.setRequester(requester);
 							context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 						}
+					}
+
+					// -99 will be set when he approved the module record, so should go to the if-block
+					if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
+						if (!skipChecking) {
+							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
+							if (status.isRequestedState()) {
+								throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
+							}
+						}
+					}
+ 					else if ((stateContext.isRecordLocked())) {
 						if (cannotEdit) {
 							throw new IllegalArgumentException("Record with lock cannot be updated");
 						}
