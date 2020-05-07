@@ -120,7 +120,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		    				.beanClass(ReadingContext.class)
 		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), lastYearWeekStart+","+lastYearWeekEnd, DateOperators.BETWEEN));
 					
-					SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches("ID", 15000);
+					SelectRecordsBuilder.BatchResult<ReadingContext> bs = selectBuilder.getInBatches("ID", 20000);
 					while (bs.hasNext()) 
 					{
 					   try {
