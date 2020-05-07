@@ -492,13 +492,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 
 			props = newSelect.get();
-			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
+//			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
 		}
 		else {
 			props = newSelectBuilder.getAsProps();
 		}
 
-		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+//		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 
 
 		 if(!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
