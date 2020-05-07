@@ -63,7 +63,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		List<FacilioModule> readingModules = fetchAllReadingModules();
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
-		for(int currentWeek = 20; currentWeek<=25; currentWeek++) 
+		for(int currentWeek = 26; currentWeek<=31; currentWeek++) 
 		{	
 			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
 			ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
