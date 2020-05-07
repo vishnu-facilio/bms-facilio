@@ -16,7 +16,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
 		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
-		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("FacilioGroups" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
 		tablesContainsDateField.put("BaseSpace_Photos" , Arrays.asList("TTIME"));
