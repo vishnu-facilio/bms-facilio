@@ -79,7 +79,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			}
 			Boolean isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
-			if(AccountUtil.getCurrentOrg().getId() == 155l || AccountUtil.getCurrentOrg().getId() == 231l || AccountUtil.getCurrentOrg().getId() == 238l || AccountUtil.getCurrentOrg().getId() == 78l) {
+			if(AccountUtil.getCurrentOrg().getId() == 155l || AccountUtil.getCurrentOrg().getId() == 231l || AccountUtil.getCurrentOrg().getId() == 238l || AccountUtil.getCurrentOrg().getId() == 78l
+					|| AccountUtil.getCurrentOrg().getId() == 134l || AccountUtil.getCurrentOrg().getId() == 114l
+ 					|| AccountUtil.getCurrentOrg().getId() == 169l || AccountUtil.getCurrentOrg().getId() == 232l) {
 				if(FacilioProperties.isProduction()) {
 					isParallelRuleExecution = true;
 				}
