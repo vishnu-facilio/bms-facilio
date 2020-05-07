@@ -60,6 +60,9 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		int presentWeek = DateTimeUtil.getWeekOfWeekBasedYear(presentWeekStartZdt);
 		LOGGER.info("DemoSingleRollUpYearlyCommand presentWeekStartZdt :"+presentWeekStartZdt + " presentWeekNo. : "+presentWeek);
 		
+		List<FacilioModule> readingModules = fetchAllReadingModules();
+		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
+		
 		for(int currentWeek = 20; currentWeek<=25; currentWeek++) 
 		{	
 			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
@@ -72,9 +75,6 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 			long weekDiff = (thisYearWeekStart - lastYearWeekStart);
 			
 			try {
-				List<FacilioModule> readingModules = fetchAllReadingModules();
-				HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
-				
 				rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
 				LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
 						"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
@@ -90,8 +90,8 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		return false;
 	}
 	
-	private void rollUpTtimeColumns(long lastYearWeekStart, long lastYearWeekEnd, long weekDiff, List<FacilioModule> readingModules, HashMap<String, List<String>> readingTableNamesVsColumns) throws Exception {
-		
+	private void rollUpTtimeColumns(long lastYearWeekStart, long lastYearWeekEnd, long weekDiff, List<FacilioModule> readingModules, HashMap<String, List<String>> readingTableNamesVsColumns) throws Exception 
+	{
 		if(readingModules == null || readingModules.isEmpty() || readingTableNamesVsColumns == null || readingTableNamesVsColumns.isEmpty() || lastYearWeekStart < 0 || weekDiff < 0) {
 			return;
 		}

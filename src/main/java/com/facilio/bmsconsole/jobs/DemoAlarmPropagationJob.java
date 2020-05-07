@@ -24,12 +24,12 @@ public class DemoAlarmPropagationJob extends FacilioJob{
 
 		ZonedDateTime currentZdt = DateTimeUtil.getDateTime();
 		try {
-			LOGGER.info("DemoAlarmPropagationJob Started");
+			LOGGER.info("DemoAlarmPropagationJob Started for zdt: " +currentZdt);
 			FacilioChain context = TransactionChainFactory.demoAlarmPropagationChain();
 			context.getContext().put(ContextNames.START_TIME, currentZdt);
 			context.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
 			context.execute();
-			LOGGER.info("DemoAlarmPropagationJob Started Daily Demo Historical rule evaluation");
+			LOGGER.info("DemoAlarmPropagationJob Started Daily Demo Historical rule evaluation for zdt: "+currentZdt);
 		} catch (Exception e) {
         	LOGGER.error("DemoAlarmPropagationJob Error -- "  +e+ " OrgId -- "+AccountUtil.getCurrentOrg().getId());
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
