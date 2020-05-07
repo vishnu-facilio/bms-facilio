@@ -92,7 +92,13 @@ public enum FloorPlanMode {
 					JSONObject area = new JSONObject();
 					area.put("label", space.getName());
 					area.put("spaceId", space.getId());
+					area.put("space", space);
 					area.put("markers", markers);
+					
+					JSONObject tooltipData = new JSONObject();
+					tooltipData.put("content", space.getName());
+					area.put("tooltipData", tooltipData);
+
 					areas.add(area);
 				}
 			}

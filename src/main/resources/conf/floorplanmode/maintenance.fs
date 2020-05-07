@@ -22,6 +22,9 @@ spaceIds = params.spaceId;
       area["label"] = label;
       area["values"] = workorder;
       area["icons"] = icons;
+      tooltipData = {};
+      tooltipData.content = "Total workorders is " + workorder.size();
+      area.tooltipData = tooltipData;
       areas.add(area);
      }
     else {
@@ -29,6 +32,9 @@ spaceIds = params.spaceId;
       area["spaceId"] = spaceId;
       area["label"] = "0";
       area["values"] = empty;
+      tooltipData = {};
+      tooltipData.content = "No workorder assigned yet";
+      area.tooltipData = tooltipData;
       areas.add(area);
     }
       }

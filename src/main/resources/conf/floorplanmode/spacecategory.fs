@@ -12,11 +12,14 @@ Map floorPlanMode(Map params) {
  areas = [];
   for each index, space in spacelist {
     area = {};
+    tooltipData = {};
     if(space.spaceCategory != null) {
       area["spaceId"] = space.id;
        for each idx, spaceCat in spaceCategory {
         if (space.spaceCategory.id == spaceCat.id) {
           area["label"] = spaceCat.name;
+          tooltipData.content = spaceCat.name;
+          area["tooltipData"] = tooltipData;
          }
       }
           areas.add(area);
