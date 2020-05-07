@@ -50,11 +50,11 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 		ZonedDateTime currentTimeZdt = (ZonedDateTime) context.get(ContextNames.START_TIME);
 		long currentTime = currentTimeZdt.toInstant().toEpochMilli();
 		long yesterdayTime = DateTimeUtil.addDays(currentTime, -1);
-	
-		FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
-		runThroughRuleChain.getContext().put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
-		runThroughRuleChain.getContext().put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
 
+		FacilioContext runThroughRuleChainContext = new FacilioContext();
+		runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
+		runThroughRuleChainContext.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
+		
 		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms();
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
@@ -62,9 +62,11 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			for(long ruleId :ruleIdVsResourceIds.keySet())
 			{
 				List<Long> resourceIds = ruleIdVsResourceIds.get(ruleId);
-				runThroughRuleChain.getContext().put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
-				runThroughRuleChain.getContext().put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
-				runThroughRuleChain.execute();
+				runThroughRuleChainContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
+				runThroughRuleChainContext.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
+				
+				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+				runThroughRuleChain.execute(runThroughRuleChainContext);
 				LOGGER.info("Daily Demo Historical rule evaluation has been started for the given rule " +ruleId+ " with resourceIds: "+resourceIds);
 			}	
 		} 	 
