@@ -777,7 +777,7 @@ public class SpaceAPI {
 				.beanClass(FloorContext.class)
 				.andCondition(CriteriaAPI.getCondition("BUILDING_ID","building",String.valueOf(buildingId),NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS))
-				.orderBy("Resources.NAME ASC")
+				.orderBy("Floor.FLOOR_LEVEL ASC,Resources.NAME ASC")
 		;
 
 		List<FloorContext> floors = selectBuilder.get();
