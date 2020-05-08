@@ -47,7 +47,10 @@ public class FormRuleActionContext {
 		return actionType;
 	}
 	public int getActionType() {
-		return actionType.getVal();
+		if(actionType != null) {
+			return actionType.getVal();
+		}
+		return -1;
 	}
 	public void setActionType(int actionType) {
 		this.actionType = FormActionType.getActionType(actionType);
