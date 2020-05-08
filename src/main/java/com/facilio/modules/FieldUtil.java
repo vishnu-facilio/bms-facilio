@@ -1,15 +1,24 @@
 package com.facilio.modules;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.FieldPermissionContext.CheckType;
+import com.facilio.bmsconsole.context.FieldPermissionContext.PermissionType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
@@ -23,6 +32,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -549,5 +559,61 @@ public class FieldUtil {
     
     public static Set<String> getSiteIdAllowedModules() {
     	return SITE_ID_ALLOWED_MODULES;
+    }
+    
+    public static FieldPermissionContext getFieldPermission(long fieldId, long moduleId) throws Exception {
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFieldModulePermissionFields())
+				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", String.valueOf(fieldId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			return getAsBeanFromMap(props.get(0), FieldPermissionContext.class);
+		}
+		return null;
+		
+    }
+    
+    public static List<String> getFieldPermission(FacilioModule module, PermissionType permissionType) throws Exception {
+    	List<String> permissableFieldNames = new ArrayList<String>();
+    	
+    	//get extended module permissable fields also
+    	FacilioModule extendedModule = module.getExtendModule();
+    	List<Long> extendedModuleIds = new ArrayList<Long>();
+        while(extendedModule != null) {
+        	extendedModuleIds.add(extendedModule.getModuleId());
+            extendedModule = extendedModule.getExtendModule();
+        }
+        extendedModuleIds.add(module.getModuleId());
+      	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFieldModulePermissionFields())
+				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", "1",CommonOperators.IS_NOT_EMPTY));
+				;
+    	
+    	if(permissionType == PermissionType.READ_ONLY) {
+    		Criteria criteria = new Criteria();
+    		criteria.addAndCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(PermissionType.READ_ONLY.getIndex()), NumberOperators.EQUALS));
+    		criteria.addOrCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(PermissionType.READ_WRITE.getIndex()), NumberOperators.EQUALS));
+    		selectBuilder.andCriteria(criteria);
+    	}
+    	else {
+    		selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
+    	}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> map :props) {
+				permissableFieldNames.add((String) map.get("name"));
+			}
+		}
+		return permissableFieldNames;
+		
     }
 }

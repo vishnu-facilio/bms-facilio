@@ -3731,6 +3731,14 @@ public class ModuleFactory {
 		module.setDisplayName("Scoping");
 		return module;
 	}
+	
+	public static FacilioModule getFieldModulePermissionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("fieldModulePermission");
+		module.setTableName("Field_Module_Permission");
+		module.setDisplayName("Field Module Permission");
+		return module;
+	}
 
 	public static FacilioModule getAgentStatsModule() {
 		FacilioModule facilioModule = new FacilioModule();

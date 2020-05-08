@@ -201,6 +201,8 @@ public class FacilioConstants {
 		public static final String PARENT_RECORD = "parentRecord";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
+		public static final String RECORD_LIST_MAP = "recordListMap";
+		
 		public static final String RECORD_ID = "recordId";
 		public static final String MODULE_ID = "moduleId";
 		public static final String RECORD_ID_LIST = "recordIds";
@@ -1618,7 +1620,8 @@ public class FacilioConstants {
 
 		public static final String TENANT_UNIT_SPACE = "tenantunit";
 		public static final String ALARM_TYPE = "alarmType";
-
+		public static final String PERMISSION_TYPE = "permissionType";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
