@@ -617,7 +617,7 @@ public class FieldUtil {
 				permissableFieldIds.add((Long) map.get("fieldId"));
 			}
 			for(FacilioField field : allFields) {
-				if(!permissableFieldIds.contains(field.getFieldId())) {
+				if(field.getFieldId() != -1 && !permissableFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
 					restrictedFields.add(field);
 				}
 			}
