@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,8 +46,8 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 	
 	private static final Logger LOGGER = Logger.getLogger(ExecuteRollUpFieldCommand.class.getName());
 	
-	private List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
-	private List<RollUpField> triggeringChildFields;
+	private LinkedHashMap<RollUpField,List<Long>> triggeringChildFieldVsChildGroupedIds = new LinkedHashMap<RollUpField,List<Long>>();
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -65,10 +66,11 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(moduleName);
-				
-					triggeringChildFields = new ArrayList<RollUpField>();
+					List<RollUpField> triggeringChildFields = new ArrayList<RollUpField>();
 					triggeringChildFields = RollUpFieldUtil.getRollUpFieldsByChildModuleId(module,true);
-					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) {		
+					
+					if(triggeringChildFields != null && !triggeringChildFields.isEmpty()) 
+					{	
 						for(RollUpField triggeringChildField:triggeringChildFields) 
 						{
 							List<Long> triggerChildGroupedIds = new ArrayList<Long>();
@@ -86,17 +88,15 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 										triggerChildGroupedIds.add((long)recordData.get(triggeringChildField.getChildField().getName()));
 									}
 								}
-							}				
-							if(triggerChildGroupedIds != null && !triggerChildGroupedIds.isEmpty()){						
-								RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
-							}	
+							}
+							triggeringChildFieldVsChildGroupedIds.put(triggeringChildField, triggerChildGroupedIds);								
 						}
 					}			
 				}	
 			}			
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
+			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+ 
 					" Exception: " + e.getMessage() , e);
 		}
 			
@@ -106,13 +106,25 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 	@Override
 	public boolean postExecute() throws Exception {
 		
-		if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
+		if(triggeringChildFieldVsChildGroupedIds != null && MapUtils.isNotEmpty(triggeringChildFieldVsChildGroupedIds)) 
 		{
 			try {
-				RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);
+				List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
+				for(RollUpField triggeringChildField :triggeringChildFieldVsChildGroupedIds.keySet()) 
+				{
+					List<Long> triggerChildGroupedIds = triggeringChildFieldVsChildGroupedIds.get(triggeringChildField);
+					if(triggerChildGroupedIds != null && !triggerChildGroupedIds.isEmpty())
+					{						
+						RollUpFieldUtil.aggregateFieldAndAddRollUpFieldData(triggeringChildField, triggerChildGroupedIds, rollUpFieldData);	
+					}
+				}
+				if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
+				{	
+					RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);
+				}
 			}
 			catch(Exception e) {
-				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- ChildFields: "+ triggeringChildFields + " rollUpFieldData: " + rollUpFieldData + 
+				LOGGER.log(Level.SEVERE, "Error while updating ExecuteRollUpFieldCommand in Post Execute -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+ 
 						" Exception: " + e.getMessage() , e);
 			}	
 		}	
