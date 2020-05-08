@@ -173,7 +173,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 			}	
 		}
 		
-		LOGGER.info("####DemoSingleRollUpYearlyCommand ReadingModules Inserted totalSize: " +totalSize+ "lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
+		LOGGER.info("####DemoSingleRollUpYearlyCommand Current Week ReadingModules Inserted recordSize: " +totalSize+ " lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
 			 " weekDiff : " +weekDiff);						
 	}
 	

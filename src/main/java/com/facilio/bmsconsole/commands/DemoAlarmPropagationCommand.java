@@ -59,6 +59,8 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
 		{
+			LOGGER.info("Daily DemoAlarmPropagationJob Started for the rules and resourceIds " +ruleIdVsResourceIds+ " with rules size: "+ruleIdVsResourceIds.size());
+			
 			for(long ruleId :ruleIdVsResourceIds.keySet())
 			{
 				List<Long> resourceIds = ruleIdVsResourceIds.get(ruleId);
