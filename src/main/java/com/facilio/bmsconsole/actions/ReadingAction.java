@@ -1341,16 +1341,16 @@ public class ReadingAction extends FacilioAction {
 	public String runDefaultFieldsMigration() throws Exception
 	{
 		try{
-    	 	LOGGER.info("AHUFieldMigration Started For -- "+AccountUtil.getCurrentOrg().getId());     
+    	 	LOGGER.info("NewSystemFieldsMigration Started For -- "+AccountUtil.getCurrentOrg().getId());     
             FacilioChain chain = TransactionChainFactory.runDefaultFieldsMigration();
         	chain.execute();
- 			LOGGER.info("AHUFieldMigration Completed For -- "+AccountUtil.getCurrentOrg().getId());
-    		setResult("success", "AHUFieldMigration Done.");
+ 			LOGGER.info("NewSystemFieldsMigration Completed For -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "NewSystemFieldsMigration Done.");
         }
         catch(Exception e){
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-        	LOGGER.error("AHUFieldMigration Error Mig"  +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
-    		setResult("success", "Failed AHUFieldMigration.");
+        	LOGGER.error("NewSystemFieldsMigration Error Mig -- " +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
+    		setResult("success", "Failed NewSystemFieldsMigration.");
 
         }
 		return SUCCESS;	
