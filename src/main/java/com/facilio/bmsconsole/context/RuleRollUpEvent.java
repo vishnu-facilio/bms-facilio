@@ -26,18 +26,7 @@ public class RuleRollUpEvent extends BaseEventContext {
         super.updateAlarmContext(baseAlarm, add);
         RuleRollUpAlarm ruleRollUpAlarm = (RuleRollUpAlarm) baseAlarm;
 
-//        if (readingAlarmCategory == null) {
-//            if (getResource() != null) {
-//                readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
-//            }
-//        }
-//        ruleRollUpAlarm.setReadingAlarmCategory(readingAlarmCategory);
-
         ruleRollUpAlarm.setRule(rule);
-        ruleRollUpAlarm.setSubRule(subRule);
-        if (readingFieldId != -1) {
-            ruleRollUpAlarm.setReadingFieldId(readingFieldId);
-        }
         return baseAlarm;
     }
 
@@ -48,27 +37,9 @@ public class RuleRollUpEvent extends BaseEventContext {
         }
 
         RuleRollUpOccurrence rollUpOccurrence = (RuleRollUpOccurrence) alarmOccurrence;
-        if (readingAlarmCategory == null) {
-            if (getResource() != null) {
-                readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
-            }
-        }
-        rollUpOccurrence.setReadingAlarmCategory(readingAlarmCategory);
 
         rollUpOccurrence.setRule(rule);
-        rollUpOccurrence.setSubRule(subRule);
-        if (readingFieldId != -1) {
-            rollUpOccurrence.setReadingFieldId(readingFieldId);
-        }
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
-    }
-
-    private ReadingAlarmCategoryContext readingAlarmCategory;
-    public ReadingAlarmCategoryContext getReadingAlarmCategory() {
-        return readingAlarmCategory;
-    }
-    public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
-        this.readingAlarmCategory = readingAlarmCategory;
     }
 
     private ReadingRuleContext rule;
@@ -77,22 +48,6 @@ public class RuleRollUpEvent extends BaseEventContext {
     }
     public void setRule(ReadingRuleContext rule) {
         this.rule = rule;
-    }
-
-    private ReadingRuleContext subRule;
-    public ReadingRuleContext getSubRule() {
-        return subRule;
-    }
-    public void setSubRule(ReadingRuleContext subRule) {
-        this.subRule = subRule;
-    }
-
-    private long readingFieldId = -1;
-    public long getReadingFieldId() {
-        return readingFieldId;
-    }
-    public void setReadingFieldId(long readingFieldId) {
-        this.readingFieldId = readingFieldId;
     }
 
     @Override
@@ -108,16 +63,6 @@ public class RuleRollUpEvent extends BaseEventContext {
             ReadingRuleContext ruleContext = new ReadingRuleContext();
             ruleContext.setId(ruleId);
             setRule(ruleContext);
-        }
-    }
-
-    @JsonIgnore
-    @JSON(deserialize = false)
-    public void setSubRuleId(long subRuleId) {
-        if (subRuleId > 0) {
-            ReadingRuleContext ruleContext = new ReadingRuleContext();
-            ruleContext.setId(subRuleId);
-            setSubRule(ruleContext);
         }
     }
 }

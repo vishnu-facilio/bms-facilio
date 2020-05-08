@@ -163,8 +163,9 @@ public class FacilioConstants {
         public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
 
         public static final String AGENT = "agent";
+		public static final Object ROLL_UP_TYPE = "rollUpType";
 
-        public static class Reservation {
+		public static class Reservation {
 			public static final String RESERVATION = "reservation";
 			public static final String RESERVATION_LIST = "reservations";
 			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
@@ -1885,6 +1886,7 @@ public class FacilioConstants {
 		public static final String CLEAR_SEVERITY = "Clear";
 		public static final String INFO_SEVERITY = "Info";
 		public static final String CRITICAL_SEVERITY = "Critical";
+		public static final String MAJOR_SEVERITY = "Major";
 	}
 	
 	public static class Criteria {

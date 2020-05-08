@@ -316,6 +316,11 @@
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="deleteCustomButton" />
 	</package>
 
+	<package name="ruleRoll" namespace="/api/v2/ruleRoleUp" extends="v2Api">
+		<action name="rule" class="com.facilio.bmsconsole.actions.RuleAction"
+				method="getRollup" />
+	</package>
+
 	<package name="stateFlow" namespace="/api/v2/stateflow"
 		extends="v2Api">
 		<action name="addOrUpdate"

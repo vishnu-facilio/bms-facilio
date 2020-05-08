@@ -128,6 +128,8 @@ public class NewAlarmAPI {
 				return OperationAlarmOccurenceContext.class;
 			case RULE_ROLLUP:
 				return RuleRollUpOccurrence.class;
+			case ASSET_ROLLUP:
+				return AssetRollUpOccurrence.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -156,6 +158,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.OPERATION_OCCURRENCE;
 			case RULE_ROLLUP:
 				return FacilioConstants.ContextNames.RULE_ROLLUP_OCCURRENCE;
+			case ASSET_ROLLUP:
+				return FacilioConstants.ContextNames.ASSET_ROLLUP_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -189,6 +193,9 @@ public class NewAlarmAPI {
 				return OperationAlarmContext.class;
 			case RULE_ROLLUP_ALARM:
 				return RuleRollUpAlarm.class;
+			case ASSET_ROLLUP_ALARM:
+				return AssetRollUpAlarm.class;
+
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -253,6 +260,8 @@ public class NewAlarmAPI {
 				return "operationalarm";
 			case RULE_ROLLUP_ALARM:
 				return FacilioConstants.ContextNames.RULE_ROLLUP_ALARM;
+			case ASSET_ROLLUP_ALARM:
+				return FacilioConstants.ContextNames.ASSET_ROLLUP_ALARM;
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");

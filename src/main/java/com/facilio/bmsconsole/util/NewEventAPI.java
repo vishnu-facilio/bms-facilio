@@ -67,7 +67,8 @@ public class NewEventAPI {
 				return OperationAlarmEventContext.class;
 			case RULE_ROLLUP_ALARM:
 				return RuleRollUpEvent.class;
-
+			case ASSET_ROLLUP_ALARM:
+				return AssetRollUpEvent.class;
 
 			default:
 				throw new IllegalArgumentException("Invalid event type");
@@ -108,6 +109,8 @@ public class NewEventAPI {
 
 			case RULE_ROLLUP_ALARM:
 				return "rulerollupevent";
+			case ASSET_ROLLUP_ALARM:
+				return FacilioConstants.ContextNames.ASSET_ROLLUP_EVENT;
 
 			default:
 				throw new IllegalArgumentException("Invalid event type");
