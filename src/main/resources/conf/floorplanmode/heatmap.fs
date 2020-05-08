@@ -41,12 +41,15 @@ Map floorPlanMode(Map params) {
       valueMap["unit"] = fieldMapInfo.get("unit");
       valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
     }
-    
+    unitData = "";
+    if (fieldMapInfo.get("unit") != null) {
+      unitData = fieldMapInfo.get("unit");
+    }
     area = {};
     area.spaceId = spaceId;
     area.value = valueMap;
     tooltipData = {};
-    tooltipData.content = fieldMapInfo.get("displayName") + "  " + readingValue;
+    tooltipData.content = fieldMapInfo.get("displayName") + "  " + readingValue +  " " + unitData;
     area.tooltipData = tooltipData;
     areas.add(area);
   }
