@@ -37,21 +37,29 @@ public class ValidateFieldPermissionCommand extends FacilioCommand {
 				if (CollectionUtils.isNotEmpty(restrictedFields)) {
 					for (ModuleBaseWithCustomFields rec : recordList) {
 						for (FacilioField field : restrictedFields) {
-							if(fieldPermissionType == PermissionType.READ_WRITE) {
-								throw new IllegalArgumentException("Not permitted to add/update the field - "+ field.getName());
+							try {
+								if(fieldPermissionType == PermissionType.READ_WRITE) {
+									throw new IllegalArgumentException("Not permitted to add/update the field - "+ field.getName());
+								}
+								if(field.isDefault()) {
+									PropertyUtils.setProperty(rec, field.getName(), null);
+								}
+								else {
+									PropertyUtils.setMappedProperty(rec, "data", field.getName(), null);//custom field handling
+								}
 							}
-							if(field.isDefault()) {
-								PropertyUtils.setProperty(rec, field.getName(), null);
+							catch (NoSuchMethodException e) {
+								e.printStackTrace();
+								//boolean fields will not work if the naming convention is wrong
 							}
-							else {
-								PropertyUtils.setMappedProperty(rec, "data", field.getName(), null);//custom field handling
-							}
+						
 						}
     
 					}
 				}
 			}
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;

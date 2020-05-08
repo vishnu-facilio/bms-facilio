@@ -385,6 +385,12 @@ public class FieldUtil {
 
 
 
+	private static final Set<String> PERMISSION_SKIPPED_FIELDS = Collections.unmodifiableSet(
+			new HashSet<>(Arrays.asList("localId"
+												)));
+
+
+
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return isSiteIdFieldPresent(module, false);
 	}
@@ -561,6 +567,15 @@ public class FieldUtil {
     	return SITE_ID_ALLOWED_MODULES;
     }
     
+    
+    public static Set<String> getPermissionSkippedFields() {
+    	return PERMISSION_SKIPPED_FIELDS;
+    }
+    
+    public static boolean skipPermissionForFields(String fieldName) {
+		return PERMISSION_SKIPPED_FIELDS.contains(fieldName);
+	}
+    
     public static FieldPermissionContext getFieldPermission(long fieldId, long moduleId) throws Exception {
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFieldModulePermissionFields())
@@ -598,36 +613,36 @@ public class FieldUtil {
       	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFieldModulePermissionFields())
 				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", "1",CommonOperators.IS_NOT_EMPTY));
 				;
     	
-    	if(permissionType == PermissionType.READ_ONLY) {
-    		Criteria criteria = new Criteria();
-    		criteria.addAndCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(PermissionType.READ_ONLY.getIndex()), NumberOperators.EQUALS));
-    		criteria.addOrCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(PermissionType.READ_WRITE.getIndex()), NumberOperators.EQUALS));
-    		selectBuilder.andCriteria(criteria);
+		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
+				
+		if(permissionType == PermissionType.READ_ONLY) {
+			String permVal = PermissionType.READ_ONLY.getIndex()+"," + PermissionType.READ_WRITE.getIndex();
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
     	}
     	else {
     		selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
     	}
 		
-    	if(AccountUtil.getCurrentUser().getRoleId() > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
-		}
-		
+    	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			for(Map<String,Object> map :props) {
 				permissableFieldIds.add((Long) map.get("fieldId"));
 			}
-			for(FacilioField field : allFields) {
-				if(field.getFieldId() != -1 && !permissableFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
-					restrictedFields.add(field);
-				}
+		}
+		for(FacilioField field : allFields) {
+			if(field.getFieldId() != -1 && !skipPermissionForFields(field.getName()) && !permissableFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
+				restrictedFields.add(field);
 			}
 		}
+	
 		return restrictedFields;
 		
     }
