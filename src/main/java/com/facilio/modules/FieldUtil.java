@@ -569,7 +569,9 @@ public class FieldUtil {
 				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", String.valueOf(fieldId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
 				;
-		
+		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			return getAsBeanFromMap(props.get(0), FieldPermissionContext.class);
@@ -610,6 +612,10 @@ public class FieldUtil {
     	else {
     		selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
     	}
+		
+    	if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
