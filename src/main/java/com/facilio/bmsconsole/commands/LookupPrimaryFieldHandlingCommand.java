@@ -39,6 +39,7 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		if (CollectionUtils.isNotEmpty(fields)) {
 		List<FacilioField> lookupFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP && ((LookupField) field).getSpecialType() == null).collect(Collectors.toList());
 		Map<String, FacilioField> primaryFieldMap = new HashMap<>();
 		for (FacilioField field : lookupFields) {
@@ -77,6 +78,7 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 				}
 			}
 		}
+	}
 		
 		
 		return false;

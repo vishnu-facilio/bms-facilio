@@ -2090,6 +2090,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetTenantListCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 

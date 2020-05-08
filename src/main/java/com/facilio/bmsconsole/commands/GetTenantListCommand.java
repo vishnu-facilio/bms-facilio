@@ -108,6 +108,21 @@ public class GetTenantListCommand extends FacilioCommand{
 			additionaLookups.add(contactField);
 			context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		}
+		
+		if(getCount == null || !getCount) {
+			
+			List<LookupField> lookupFields = new ArrayList<>();
+			for (FacilioField f : fields) {
+				if (f instanceof LookupField) {
+					lookupFields.add((LookupField) f);
+				}
+			}
+			
+			if (CollectionUtils.isNotEmpty(lookupFields)) {
+		    	builder.fetchSupplements(lookupFields);
+		    }
+			
+		}
 	
 		List<TenantContext> records = builder.get();
 		if (getCount != null && getCount) {

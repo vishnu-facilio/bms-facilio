@@ -246,6 +246,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AssociateTenantToContactCommand());
 			c.addCommand(new GetTenantDetailCommand());
 			c.addCommand(new SetTenantSpaceAndContactsCommand());
+			c.addCommand(new LookupPrimaryFieldHandlingCommand());
 			return c;
 		}
 		

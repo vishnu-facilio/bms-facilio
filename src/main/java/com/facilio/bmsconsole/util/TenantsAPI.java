@@ -221,13 +221,23 @@ public class TenantsAPI {
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> tenantFields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		List<LookupField> lookupFields = new ArrayList<>();
+		for (FacilioField f : tenantFields) {
+			if (f instanceof LookupField) {
+				lookupFields.add((LookupField) f);
+			}
+		}
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 	    SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
 														.module(module)
 														.beanClass(TenantContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.select(tenantFields)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
+	    if (CollectionUtils.isNotEmpty(lookupFields)) {
+	    	builder.fetchSupplements(lookupFields);
+	    }
 
 		return builder.fetchFirst();
 	}
