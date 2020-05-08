@@ -578,9 +578,13 @@ public class FieldUtil {
 		
     }
     
-    public static List<String> getFieldPermission(FacilioModule module, PermissionType permissionType) throws Exception {
-    	List<String> permissableFieldNames = new ArrayList<String>();
+    public static List<FacilioField> getPermissionRestrictedFields(FacilioModule module, PermissionType permissionType) throws Exception {
+    	List<Long> permissableFieldIds = new ArrayList<Long>();
     	
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
+        
     	//get extended module permissable fields also
     	FacilioModule extendedModule = module.getExtendModule();
     	List<Long> extendedModuleIds = new ArrayList<Long>();
@@ -610,10 +614,15 @@ public class FieldUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			for(Map<String,Object> map :props) {
-				permissableFieldNames.add((String) map.get("name"));
+				permissableFieldIds.add((Long) map.get("fieldId"));
+			}
+			for(FacilioField field : allFields) {
+				if(!permissableFieldIds.contains(field.getFieldId())) {
+					restrictedFields.add(field);
+				}
 			}
 		}
-		return permissableFieldNames;
+		return restrictedFields;
 		
     }
 }

@@ -30,12 +30,14 @@ public class ValidatePermissionForFieldListCommand extends FacilioCommand{
 			if(StringUtils.isNotEmpty(moduleName) && CollectionUtils.isNotEmpty(fieldList) && AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
-				List<String> permissableFields = FieldUtil.getFieldPermission(module, fieldPermissionType);
-				for(FacilioField field : fieldList) {
-				     if(!permissableFields.contains(field.getName())) {
-			        	 fieldList.remove(field);
-			         }
-			   }
+				List<FacilioField> restrictedFields = FieldUtil.getPermissionRestrictedFields(module, fieldPermissionType);
+				if(CollectionUtils.isNotEmpty(restrictedFields)) {
+					for(FacilioField field : fieldList) {
+					     if(restrictedFields.contains(field.getName())) {
+				        	 fieldList.remove(field);
+				         }
+					}
+				}
 				
 			}
 		} catch (Exception e) {
