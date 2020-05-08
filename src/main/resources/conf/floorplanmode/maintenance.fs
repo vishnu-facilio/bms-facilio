@@ -13,11 +13,12 @@ spaceIds = params.spaceId;
   workorder = Module("workorder").fetch(db);
     if (workorder != null) {
       icon = {};
+      label = "" + workorder.size();
       icon["type"] = "MAINTENANCE";
-      icon["position"] = "top-left";
+      icon["position"] = "center";
+      icon["label"] = label;
       icons = [];
       icons.add(icon);
-      label = "" + workorder.size();
       area["spaceId"] = spaceId;
       area["label"] = label;
       area["values"] = workorder;
