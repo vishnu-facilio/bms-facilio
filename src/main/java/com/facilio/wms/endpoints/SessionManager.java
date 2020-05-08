@@ -113,7 +113,7 @@ public class SessionManager {
 		
 		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 		
-		Collection<LiveSession> liveSessionList = getLiveSessions(message.getSessionType());
+		Collection<LiveSession> liveSessionList = liveSessions != null ? liveSessions.values() : null;
 		
 		if (liveSessionList != null && liveSessionList.size() > 0) {
 			for (LiveSession liveSession : liveSessionList) {

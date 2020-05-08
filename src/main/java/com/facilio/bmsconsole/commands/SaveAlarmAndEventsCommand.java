@@ -26,6 +26,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 import org.apache.commons.chain.Context;
@@ -341,6 +342,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 						event.setAction("refetch");
 						event.addData("record", record);
 						event.addData("sound", true);
+						event.setSessionType(LiveSessionType.APP);
 						
 						List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
 						List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());

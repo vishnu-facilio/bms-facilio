@@ -1,17 +1,19 @@
 package com.facilio.wms.message;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.iotmessage.IotData;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.modules.FieldUtil;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class WmsPublishResponse extends Message {
 	
@@ -20,6 +22,7 @@ public class WmsPublishResponse extends Message {
 	public WmsPublishResponse() {
 		setMessageType(MessageType.PUBLISH);
 		setNamespace("publishdata");
+		setSessionType(LiveSessionType.APP);
 	}
 	
 	public WmsPublishResponse publish(PublishData data, JSONObject info) throws Exception {
