@@ -1,16 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
+import com.facilio.bmsconsole.util.InsuranceAPI;
+import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.util.ContactsAPI;
-import com.facilio.bmsconsole.util.InsuranceAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
 
 public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioCommand{
 
@@ -21,8 +23,19 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 		if(CollectionUtils.isNotEmpty(insurances)) {
 			for(InsuranceContext ins : insurances) {
 				if(ins.getAddedBy() != null && ins.getAddedBy().getId() > 0 && ins.getVendor() == null) {
-					ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
-					ins.setVendor(contact.getVendor());
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
+						long pplId = PeopleAPI.getPeopleIdForUser(ins.getAddedBy().getOuid());
+						if(pplId > 0) {
+							VendorContactContext people = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
+							if(people != null) {
+								ins.setVendor(people.getVendor());
+							}
+						}
+					}
+					else {
+						ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
+						ins.setVendor(contact.getVendor());
+					}
 				}
 				if(ins.getVendor() != null) {
 					InsuranceAPI.updateVendorRollUp(ins.getVendor().getId());
