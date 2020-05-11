@@ -876,67 +876,6 @@ public class TicketAPI {
 			ticketContext.setAssignedBy(AccountUtil.getCurrentUser());
 		}
 	}
-
-
-	public static void updateTicketStatus(TicketContext ticket) throws Exception {
-		updateTicketStatus(null, ticket, null, false);
-	}
-	
-	public static void updateTicketStatus(EventType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
-		FacilioStatus statusObj = ticket.getStatus();
-		if(statusObj != null && statusObj.getId() > 0) {
-			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusObj.getId());
-		}
-		else {
-			ticket.setStatus(TicketAPI.getStatus("Submitted"));
-		}
-		
-		if(( (ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() > 0) || ( ticket.getAssignmentGroup() != null && ticket.getAssignmentGroup().getId() > 0) ) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
-			ticket.setStatus(TicketAPI.getStatus("Assigned"));
-		}
-		statusObj = ticket.getStatus();
-		
-		if (oldTicket != null && statusObj != null) {
-			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
-				if (oldTicket.getActualWorkStart() != -1) {
-					ticket.setResumedWorkStart(System.currentTimeMillis());
-				}
-				else {
-					assignTicketToCurrentUser(ticket, oldTicket);
-					// TODO remove offlinework start once mobile changes to new api
-					ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : ticket.getCurrentTime());
-				}
-			}
-			else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
-					|| ("Closed".equalsIgnoreCase(statusObj.getStatus()) && oldTicket.getStatus().getId() != TicketAPI.getStatus("Resolved").getId()) ) {
-
-				long estimatedDuration;
-				if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-					ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : ticket.getCurrentTime());
-					
-					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, ticket.getActualWorkEnd());
-					if(isWorkDurationChangeAllowed) {
-						long actualDuration = ticket.getActualWorkDuration() != -1 ? ticket.getActualWorkDuration() : ticket.getEstimatedWorkDuration();
-						ticket.setActualWorkDuration(actualDuration);
-						if (estimatedDuration == -1 && actualDuration != -1){
-							estimatedDuration = ticket.getActualWorkDuration();
-						}
-					}
-					else {
-						ticket.setActualWorkDuration(estimatedDuration);
-					}
-				}
-				else {
-					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, System.currentTimeMillis());
-				}
-				
-				if (estimatedDuration != -1) {
-					ticket.setEstimatedWorkDuration(estimatedDuration);
-				}
-			}
-		}
-		
-	}
 	
 	private static void assignTicketToCurrentUser(TicketContext ticket, TicketContext oldTicket) {
 		if (oldTicket.getAssignedTo() == null) {

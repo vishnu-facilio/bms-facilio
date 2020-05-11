@@ -90,7 +90,6 @@ public class UpdateAlarmCommand extends FacilioCommand {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, false);
 				if(alarmObj != null) {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
-					TicketAPI.updateTicketStatus(null, alarm, alarmObj, false);
 					TicketAPI.updateTicketAssignedBy(alarm);
 				}
 			}
@@ -106,7 +105,6 @@ public class UpdateAlarmCommand extends FacilioCommand {
 			CommonCommandUtil.addEventType(EventType.EDIT, (FacilioContext) context);
 			
 			TicketAPI.updateTicketAssignedBy(alarm);
-			TicketAPI.updateTicketStatus(alarm);
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
 																		.module(module)

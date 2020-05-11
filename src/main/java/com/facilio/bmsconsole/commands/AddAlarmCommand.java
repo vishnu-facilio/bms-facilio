@@ -12,7 +12,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.InsertRecordBuilder;
@@ -58,7 +57,6 @@ public class AddAlarmCommand extends FacilioCommand {
 //			LOGGER.info("Alarm Obj in insert : "+FieldUtil.getAsJSON(alarm).toJSONString());
 			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 //			LOGGER.info("Alarm Obj after ticket details : "+FieldUtil.getAsJSON(alarm).toJSONString());
-			TicketAPI.updateTicketStatus(alarm);
 //			LOGGER.info("Alarm Obj after status  : "+FieldUtil.getAsJSON(alarm).toJSONString());
 			long alarmId = builder.insert(alarm);
 			alarm.setId(alarmId);

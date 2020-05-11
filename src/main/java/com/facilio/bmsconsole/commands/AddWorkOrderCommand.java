@@ -76,7 +76,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
 
 			TicketAPI.updateTicketAssignedBy(workOrder);
-			TicketAPI.updateTicketStatus(workOrder);
 			
 			CommonCommandUtil.handleLookupFormData(fields, workOrder.getData());
 			

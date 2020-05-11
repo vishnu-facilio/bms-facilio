@@ -86,6 +86,9 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();
+				if (workOrder.getOfflineModifiedTime() != -1) {
+					workOrders.forEach(wo -> wo.setOfflineModifiedTime(workOrder.getOfflineModifiedTime()));
+				}
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
 			}
 			

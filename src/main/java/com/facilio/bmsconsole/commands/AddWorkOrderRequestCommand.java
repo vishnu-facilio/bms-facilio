@@ -37,8 +37,6 @@ public class AddWorkOrderRequestCommand extends FacilioCommand {
 			if (requester == null || requester.getEmail() == null || "".equals(requester.getEmail())) {
 				workOrderRequest.setRequester(AccountUtil.getCurrentUser());
 			}
-			TicketAPI.updateTicketStatus(workOrderRequest);
-			TicketAPI.updateTicketStatus(workOrderRequest);
 			
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()
 																.moduleName(moduleName)

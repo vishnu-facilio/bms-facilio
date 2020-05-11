@@ -151,7 +151,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					prop.put(timerField.getEndTimeFieldName(), -99);
 				}
 				if (prop.get(timerField.getStartTimeFieldName()) == null) {
-					prop.put(timerField.getStartTimeFieldName(), record.getCurrentTime());
+					prop.put(timerField.getStartTimeFieldName(), record.getSysModifiedTime());
 				}
 			}
 		}
