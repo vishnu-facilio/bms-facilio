@@ -1,6 +1,8 @@
 package com.facilio.beans;
 
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
@@ -203,12 +205,62 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
-	private List<FacilioModule> getSubModulesFromRS(ResultSet rs) throws SQLException, Exception {
+	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, boolean checkPermission, FieldPermissionContext.PermissionType permissionType) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
+		List<Long> permittedSubModuleIds = new ArrayList<Long>();
+		if(checkPermission){
+			permittedSubModuleIds = getPermissibleChildModules(getMod(rs.getLong("PARENT_MODULE_ID")), permissionType);
+		}
 		while(rs.next()) {
+			if(checkPermission && CollectionUtils.isNotEmpty(permittedSubModuleIds)){
+				if(!permittedSubModuleIds.contains(rs.getLong("CHILD_MODULE_ID"))){
+					continue;
+				}
+			}
 			subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
 		}
 		return Collections.unmodifiableList(subModules);
+	}
+
+	private List<Long> getPermissibleChildModules(FacilioModule parentModule, FieldPermissionContext.PermissionType permissionType) throws Exception{
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> permittedSubModuleIds = new ArrayList<Long>();
+		//get extended module permissable fields also
+		FacilioModule extendedModule = parentModule.getExtendModule();
+		List<Long> extendedModuleIds = new ArrayList<Long>();
+		while(extendedModule != null) {
+			extendedModuleIds.add(extendedModule.getModuleId());
+			extendedModule = extendedModule.getExtendModule();
+		}
+		extendedModuleIds.add(parentModule.getModuleId());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFieldModulePermissionFields())
+				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(FieldPermissionContext.CheckType.MODULE.getIndex()), NumberOperators.EQUALS))
+		;
+
+		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
+
+		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY) {
+			String permVal = FieldPermissionContext.PermissionType.READ_ONLY.getIndex()+"," + FieldPermissionContext.PermissionType.READ_WRITE.getIndex();
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
+		}
+
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> map :props) {
+				permittedSubModuleIds.add((Long) map.get("subModuleId"));
+			}
+		}
+		return permittedSubModuleIds;
 	}
 	
 	@Override
@@ -222,7 +274,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(4, moduleId);
 			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
+			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -255,7 +307,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setString(3, moduleName);
 			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
+			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -295,7 +347,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(4, moduleId);
 			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
+			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -331,7 +383,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setString(3, moduleName);
 			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
+			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -1517,4 +1569,38 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
 	}
+
+
+	//will be an interface method
+	public List<FacilioModule> getPermissibleSubModules(long moduleId, FieldPermissionContext.PermissionType permissionType, FacilioModule.ModuleType... types) throws Exception {
+		if (types == null || types.length == 0) {
+			return null;
+		}
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.id"), getTypes(types));
+		ResultSet rs = null;
+		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, moduleId);
+			pstmt.setLong(3, getOrgId());
+			pstmt.setLong(4, moduleId);
+			pstmt.setLong(5, getOrgId());
+			rs = pstmt.executeQuery();
+			return getSubModulesFromRS(rs, true, permissionType);
+		}
+		catch(Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+		finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				}
+				catch(SQLException e) {
+					log.info("Exception occurred ", e);
+				}
+			}
+		}
+	}
+
 }
