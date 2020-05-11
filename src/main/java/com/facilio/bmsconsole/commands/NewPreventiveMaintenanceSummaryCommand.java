@@ -146,7 +146,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 			}
 		}
 		if (workorder != null && workorder.getVendor() != null && workorder.getVendor().getId() > 0) {
-			workorder.setVendor((VendorContext)RecordAPI.getRecord("vendor", workorder.getVendor().getId()));
+			workorder.setVendor((VendorContext)RecordAPI.getRecord("vendors", workorder.getVendor().getId()));
 		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
