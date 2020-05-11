@@ -1,22 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.activation.DataSource;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.util.MimeMessageParser;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -40,6 +23,21 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.activation.DataSource;
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
@@ -147,7 +145,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					LOGGER.info("Parsed Attachments : "+attachedFiles);
 				}
 				serviceRequestContext.setSiteId(supportEmail.getSiteId());
-				serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST);
+				serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST.getIntVal());
 				serviceRequestContext.setRequester(requester);
 				requestId = bean.addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
 				LOGGER.info("Added servicerequest from Email Parser : " + requestId );	

@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	/**
@@ -87,9 +87,6 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	public void setSourceType(int type) {
 		this.sourceType = SourceType.typeMap.get(type);
 	}
-	public void setSourceType(SourceType type) {
-		this.sourceType = type;
-	}
 	public SourceType getSourceTypeEnum() {
 		return sourceType;
 	}
@@ -123,10 +120,7 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	public void setClassification(int type) {
 		this.classification = Classification.classificationType.get(type);
 	}
-	
-	public void setClassification(Classification classification) {
-		this.classification = classification;
-	}
+
 	
 	public Classification getClassificationEnum() {
 		return classification;
@@ -150,10 +144,6 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	
 	public void setRequestType(int type) {
 		this.requestType =ServiceRequestType.serviceRequestTypeMap.get(type);
-	}
-	
-	public void seRequestType(ServiceRequestType requestType) {
-		this.requestType = requestType;
 	}
 	
 	public ServiceRequestType getRequestTypeEnum() {

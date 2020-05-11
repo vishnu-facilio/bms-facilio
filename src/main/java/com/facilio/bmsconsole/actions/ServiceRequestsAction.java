@@ -1,21 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.List;
+import java.util.Map;
 
 public class ServiceRequestsAction extends FacilioAction {
 	/**
@@ -137,13 +135,16 @@ public class ServiceRequestsAction extends FacilioAction {
 
 	public String addServiceRequest() throws Exception {
 
-		if (!CollectionUtils.isEmpty(serviceRequests)) {
+		if (CollectionUtils.isNotEmpty(serviceRequests)) {
 			FacilioChain c = TransactionChainFactory.addServiceRequestChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			for(ServiceRequestContext sr : serviceRequests) {
+				sr.parseFormData();
+			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, serviceRequests);
 //			c.getContext().put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
 			c.execute();
-			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, serviceRequests);
+			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 
 		}
 		return SUCCESS;
@@ -153,6 +154,7 @@ public class ServiceRequestsAction extends FacilioAction {
 
 		if (!CollectionUtils.isEmpty(serviceRequestIds)) {
 			FacilioChain c = TransactionChainFactory.updateServiceRequestChain();
+			serviceRequest.parseFormData();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD, serviceRequest);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
