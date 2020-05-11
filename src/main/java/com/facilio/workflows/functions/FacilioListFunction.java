@@ -31,9 +31,19 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			
 			List<Object> list = (List<Object>) objects[0];
-			Object element = objects[1];
 			
-			list.add(element);
+			if(objects.length == 2) {
+				Object element = objects[1];
+				
+				list.add(element);
+			}
+			if(objects.length == 3) {
+				Integer pos = Integer.parseInt(objects[1].toString());
+				
+				Object element = objects[2];
+				
+				list.add(pos, element);
+			}
 			return list;
 		};
 		

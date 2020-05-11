@@ -782,6 +782,9 @@
     -
        sampleLocalId : 28
        sample: "What is the status of my complaint?"
+    -
+       sampleLocalId : 29
+       sample: "track status"
 
        
        
@@ -802,7 +805,7 @@
    localId : 15
    withParams : true
    editable : true
-   confirmationText : "Thanks for providing me the information. Please confirm the details to create and send the invites."
+   confirmationText : "You're all set! Please confirm the details to create the invite."
    childIntentNames:
       - "system_edit_invite_intent"
       - "system_delete_invite_intent"
@@ -967,13 +970,18 @@
                                   }
                                   if(data.client_message_local == "Edit checkout time") {
                                   
-                                     if(data.names.size() > 1 && data.name == null) {
-                                         askName = true;
+                                     data.client_message_local = null;
+                                     previousValue = null;
+                                     if(data.names.size() == 1) {
+                                        previousValue = data.get(data.names[0]).get("checkoutDate");
                                      }
                                      else {
-                                        data.client_message_local = null;
-                                       return chatBot().param("checkoutDate","Select the checkout time");
+                                        if(data.name != "All") {
+                                           previousValue = data.get(data.name).get("checkoutDate");
+                                        }
                                      }
+                                     return chatBot().param("checkoutDate","Select the checkout time",data.slot,previousValue);
+                                  
                                   }
                                   if(data.client_message_local == "Add people") {
                                     
@@ -1059,7 +1067,12 @@
                                 }
                               
                                 if(data.names == null) {
-                                  return chatBot().param("names","What is the name of the person?");
+                                    nameQueryList = [["Sure, I will be happy to set up an invite for you.","What''s the name of the person?"],
+                                                        ["I am on it. I need a few details to set up the invite for you.","What''s the name of the person?"],
+                                                        ["Ok, I need few quick details to register this invite for you.","What''s the name of the person?"]
+                                                      ];
+                                    data.put("isNameAsked",true);
+                                    return chatBot().param("names",nameQueryList.get(math().random(nameQueryList.size())));
                                 }
                                 else {
                                   for each index,name in data.names {
@@ -1101,7 +1114,25 @@
                                       data.phone = null;
                                     }
                                     else {
-                                      return chatBot().param("phone","What is "+name+"''s phone number?");
+                                       qString = "What is "+name+"''s phone number?";
+                                       qList = [qString];
+                                       if(index == 0) {
+                                          qList.add("Please include the country code. An SMS with the invite details will be sent.");
+                                       }
+                                       if(data.get("isNameAsked") != null && data.get("isNameAsked")) {
+                                          
+                                          return chatBot().param("phone",qList);
+                                       }
+                                       else {
+                                          if(data.names.size() == 1 && data.get(name).checkinDate != null) {
+                                             qString = "Alright! I will help you setup the invite for "+ date().getFormattedTime(data.get(name).checkinDate,"MMM dd hh:mm a");
+                                             qList.add(0,qString);
+                                          }
+                                          else {
+                                             qList.add(0,"Great! I need a few details to set up the invite for you.");
+                                          }                                             
+                                          return chatBot().param("phone",qList);
+                                       }
                                     }
                                   }
                               
@@ -1111,17 +1142,25 @@
                                       data.email = null;
                                     }
                                     else {
-                                      return chatBot().param("email","What is "+name+"''s email?");
+                                       qString = "Thanks!What is "+name+"''s Email ID?";
+                                       qList = [qString];
+                                       if(index == 0) {
+                                          qString = name+" will receive the invite details to their email as well.";
+                                          qList.add(qString);
+                                       }
+                                       return chatBot().param("email",qList);
                                     }
                                   }
                                 }
                                 
                                 if(data.checkinDateFilled == null) {
-                                   log "data.checkinDate -- "+data.checkinDate;
-                                   log "data."+data;
                                    if(data.checkinDate == null) {
+                                      qList = [
+                                                 ["Got it! One final thing.","When are they coming to visit?"],
+                                                 ["Awesome. One Last thing.","When are they coming to visit?"]
+                                              ];
                                       
-                                      return chatBot().param("checkinDate","When are they coming in?",data.slot);
+                                      return chatBot().param("checkinDate","When are they coming to visit?",data.slot);
                                    }
                                    else {
                                       for each index,name in data.names {
@@ -1213,7 +1252,7 @@
                                          }
                                          
                                          
-                                         resultMap.put("returnText","Invited successfully.");
+                                         resultMap.put("returnText","Thank you! Your invite has been successfuly created.");
                                         
                                          return resultMap;
                                        }'  
@@ -1291,6 +1330,7 @@
    type: 1
    localId : 16
    withParams : true
+   confirmationText : "Here's the invite details for you. Please select the changes you'd like to make from the suggestions below."
    childIntentNames:
       - "system_add_invite_intent"
       - "system_delete_invite_intent"
@@ -1359,6 +1399,15 @@
                                 log "data --- "+data;
                                 
                                 visit = null;
+                                if(data.slot == null) {
+                                   slot = {};
+                                   timeSlots = ["10:00","12:00","14:00","15:00"];
+                                   today = date().getDayStartTime();
+                                   slot[date().getFormattedTime(date().addDays(today,1),"dd/MM/yyyy")] = timeSlots;
+                                   slot[date().getFormattedTime(date().addDays(today,2),"dd/MM/yyyy")] = timeSlots;
+                                   slot[date().getFormattedTime(date().addDays(today,3),"dd/MM/yyyy")] = timeSlots;
+                                   data.slot = slot;
+                                }
                                 if(data.inviteId == null) {
                                   range1 = date().getDateRange("Today");
                                    visits = Module("visitorlogging").fetch([expectedCheckInTime > date().now() && expectedCheckInTime <= range1.getEndTime()]);    
@@ -1379,7 +1428,7 @@
                                              visitMap.label = labelString;
                                              visitList.add(visitMap);
                                         }
-                                        return chatBot().param("inviteId","Here are your invites. Please select the invite you want to update.",visitList);
+                                        return chatBot().param("inviteId","Please select the invite you''d like to edit",visitList);
                                    }
                                    else {
                                       data.inviteId = visits.get(0).id;
@@ -1417,10 +1466,10 @@
                                 if(data.client_message != null) {
                                   
                                   if(data.client_message == "Edit host") {
-                                     return chatBot().param("host","Select host",[id > 0],"contact");
+                                     return chatBot().param("host","Please select the host who will be meeting with the visitors",[id > 0],"contact");
                                   }
                                   if(data.client_message == "Edit Visitor Name") {
-                                     return chatBot().param("name","Enter the name");
+                                     return chatBot().param("name","Enter the visitor''s name");
                                   }
                                   if(data.client_message == "Edit type") {
                                      return chatBot().param("visitorType","Select visitor Type",[id > 0],"visitorType");
@@ -1429,13 +1478,13 @@
                                     return chatBot().param("email","Enter the email");
                                   }
                                   if(data.client_message == "Edit phone number") {
-                                    return chatBot().param("phone","Enter the phone number");
+                                    return chatBot().param("phone","Enter the new phone number");
                                   }
                                   if(data.client_message == "Edit checkin time") {
-                                    return chatBot().param("checkinDate","Edit the checkin time");
+                                    return chatBot().param("checkinDate","Please update the check-in time for the invite",data.slot);
                                   }
                                   if(data.client_message == "Edit checkout time") {
-                                    return chatBot().param("checkoutDate","Edit the checkout time");
+                                    return chatBot().param("checkoutDate","Please update the check out time",data.slot);
                                   }
                                 }
                               
@@ -1510,7 +1559,7 @@
                                             
                                             Module("visitorlogging").update([id == data.inviteId],visit);
                                             
-                                            resultMap.put("returnText","Invite Updated successfully.");
+                                            resultMap.put("returnText","Your changes have been successfully updated to the invite.");
                                          
                                          }
                                          else {
@@ -1659,7 +1708,7 @@
                                              
                                              visitList.add(visitMap);
                                         }
-                                        return chatBot().param("inviteId","Here are your invites. Please select the invite you want to delete.",visitList);
+                                        return chatBot().param("inviteId","Please select the invite you''d like to delete",visitList);
                                    }
                                    else {
                                       data.inviteId = visits.get(0).id;
@@ -1828,8 +1877,11 @@
         sampleLocalId : 2
         sample: "Who are coming in today"
     -
-        sampleLocalId : 2
+        sampleLocalId : 3
         sample: "Who are coming in today"
+    -
+        sampleLocalId : 4
+        sample: "show today's visitors" 
 
     
 - 

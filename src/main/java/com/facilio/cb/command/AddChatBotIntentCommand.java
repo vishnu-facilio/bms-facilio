@@ -32,8 +32,13 @@ public class AddChatBotIntentCommand extends FacilioCommand {
 		chatBotIntent.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
 		if(chatBotIntent.getContextWorkflow() != null) {
-			Long wfid = WorkflowUtil.addWorkflow(chatBotIntent.getContextWorkflow());
-			chatBotIntent.setContextWorkflowId(wfid);
+			if(chatBotIntent.getContextWorkflow().validateWorkflow()) {
+				Long wfid = WorkflowUtil.addWorkflow(chatBotIntent.getContextWorkflow());
+				chatBotIntent.setContextWorkflowId(wfid);
+			}
+			else {
+				throw new Exception(chatBotIntent.getContextWorkflow().getErrorListener().getErrorsAsString());
+			}
 		}
 		
 		ChatBotUtil.addChatbotIntent(chatBotIntent);
