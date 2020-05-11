@@ -141,7 +141,7 @@ public class ChatBotUtil {
 		return null;
 	}
 	
-	public static ChatBotSession getLastInvalidQuerySession() throws Exception {
+	public static ChatBotSession getLastInvalidQuerySession(ChatBotSession session) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getCBSessionFields();
 		
@@ -156,6 +156,10 @@ public class ChatBotUtil {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"), last5MinsStartTime+"", NumberOperators.GREATER_THAN))
 				.orderBy("ID desc")
 				.limit(1);
+		
+		if(session.getId() > 0 ) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), session.getId()+"", NumberOperators.LESS_THAN));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

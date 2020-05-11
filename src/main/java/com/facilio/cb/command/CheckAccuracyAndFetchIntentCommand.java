@@ -39,7 +39,9 @@ public class CheckAccuracyAndFetchIntentCommand extends FacilioCommand {
 		session.setIntentId(intent.getId());
 		session.setIntent(intent);
 		
-		session.setState(State.WAITING_FOR_PARAMS.getIntVal());
+		if(session.getState() != State.INVALID_QUERY.getIntVal()) {
+			session.setState(State.WAITING_FOR_PARAMS.getIntVal());
+		}
 		
 		ChatBotUtil.addChatBotSession(session);
 		return false;

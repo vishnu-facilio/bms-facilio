@@ -3304,6 +3304,7 @@ public class FieldFactory {
         parent.setDefault(true);
         parent.setModule(module);
         fields.add(parent);
+        
         SystemEnumField sourceTypeField = (SystemEnumField) getField("sourceType", "Source Type", "SOURCE_TYPE", module, FieldType.SYSTEM_ENUM);
         sourceTypeField.setEnumName("SourceType");
         sourceTypeField.setDefault(true);
