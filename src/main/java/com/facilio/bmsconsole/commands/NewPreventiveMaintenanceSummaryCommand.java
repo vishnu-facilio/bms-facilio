@@ -145,6 +145,9 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 				workorder.setSafetyPlan(HazardsAPI.fetchSafetyPlan(workorder.getSafetyPlan().getId()));
 			}
 		}
+		if (workorder != null && workorder.getVendor() != null && workorder.getVendor().getId() > 0) {
+			workorder.setVendor((VendorContext)RecordAPI.getRecord("vendor", workorder.getVendor().getId()));
+		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);

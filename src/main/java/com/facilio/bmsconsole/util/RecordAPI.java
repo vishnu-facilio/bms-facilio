@@ -9,7 +9,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -73,7 +72,7 @@ public class RecordAPI {
 		FacilioModule module = modBean.getModule(modName);
 		List<FacilioField> fields = modBean.getAllFields(modName);
 		
-		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(modName);
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
 		}

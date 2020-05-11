@@ -269,7 +269,7 @@ public class LookupSpecialTypeUtil {
 			return null; //Returning null for now
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
-			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(ids);
+			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI. getPMs(ids, null, null, null, null);
 			if (CollectionUtils.isNotEmpty(pms)) {
 				return pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			}
