@@ -48,9 +48,7 @@ Map floorPlanMode(Map params) {
     area = {};
     area.spaceId = spaceId;
     area.value = valueMap;
-    tooltipData = {};
-    tooltipData.content = fieldMapInfo.get("displayName") + "  " + readingValue +  " " + unitData;
-    area.tooltipData = tooltipData;
+    area.tooltip = valueMap;
     areas.add(area);
   }
   
