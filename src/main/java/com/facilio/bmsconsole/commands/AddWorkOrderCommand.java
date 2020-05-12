@@ -105,10 +105,9 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				//TODO remove single ACTIVITY_TYPE once handled in TicketActivity
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
-				/*String status = workOrder.getStatus().getStatus();
-				if (status != null && status.equals("Assigned")) {
+				if (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() > 0) {
 					activities.add(EventType.ASSIGN_TICKET);
-				}*/
+				}
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
 			}
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, builder.getChangeSet()));
