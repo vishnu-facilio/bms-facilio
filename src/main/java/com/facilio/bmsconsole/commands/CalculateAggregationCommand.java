@@ -133,7 +133,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		
 		Set<Integer> enumSet = dp.getyAxis().getEnumMap().keySet();
 		for (String alias : dp.getAliases().values()) {
-			EnumVal enumValue = calculateEnumAggr(report, enumSet, currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
+			EnumVal enumValue = calculateEnumAggr(report, enumSet, currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData, report.getxAggrEnum() == CommonAggregateOperator.ACTUAL); //Starttime is included and endtime is excluded
 			if (enumValue != null) {
 				currentData.put(alias, enumValue);
 				// For derivation since enumval will be passed as value for the alias
@@ -148,14 +148,14 @@ public class CalculateAggregationCommand extends FacilioCommand {
 				previousRecords.put(alias, val);
 				List<SimpleEntry<Long, Integer>> enumVal = new ArrayList();
 				enumVal.add(val);
-				EnumVal enumValue = calculateEnumAggr(report, enumSet, enumVal, alias, endTime, nextStartTime, previousRecords, aggrData);
+				EnumVal enumValue = calculateEnumAggr(report, enumSet, enumVal, alias, endTime, nextStartTime, previousRecords, aggrData, report.getxAggrEnum() == CommonAggregateOperator.ACTUAL);
 			}
 		}
 	}
 	
-	private EnumVal calculateEnumAggr (ReportContext report, Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
+	private EnumVal calculateEnumAggr (ReportContext report, Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData, boolean isHighRes) {
 		List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
-		EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+		EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, isHighRes ? null : previousRecords.get(alias));
 
 		if (enumValue != null) {
 			previousRecords.put(alias, enumValue.timeline.get(enumValue.timeline.size() - 1));
