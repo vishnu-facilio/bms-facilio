@@ -107,6 +107,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						if (writable) {
 							meta.setReadingType(ReadingType.WRITE);
 						}
+						unitRdmList.add(meta);
 					}
 					else {
 						if (writable) {
