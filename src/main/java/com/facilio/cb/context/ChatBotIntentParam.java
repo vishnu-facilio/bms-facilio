@@ -31,6 +31,7 @@ public class ChatBotIntentParam {
 	boolean multipleAllowed;
 	Date_Period datePeriod;
 	JSONObject dateSlot;
+	String orderByString;
 	
 	Object previousValue;
 	
@@ -248,6 +249,13 @@ public class ChatBotIntentParam {
 
 	public void setDatePeriod(Date_Period datePeriod) {
 		this.datePeriod = datePeriod;
+	}
+	
+	public String getOrderByString() {
+		return orderByString;
+	}
+	public void setOrderByString(String orderByString) {
+		this.orderByString = orderByString;
 	}
 
 

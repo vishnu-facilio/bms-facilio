@@ -442,7 +442,7 @@
                                 
                                 woAskList = ["Select the work request to add the comment to","Which of these requests do you want to add the comment to?"];
                                 
-                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder","createdTime desc");
                                
                              }
                              if(data.woId != null && data.comment == null) {
@@ -547,7 +547,7 @@
                                 
                                 woAskList = ["Select the work request to add the attachment to","Which of these requests do you want to add an attachment to?"];
                                 
-                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder","createdTime desc");
                                
                              }
                              if(data.woId != null && data.attachment == null) {
@@ -655,7 +655,7 @@
                                    return chatBot().execute();
                                 } 
                                 woAskList = ["Please select the Service request for which you’d like to check the status for:","Please select the service request you want to check the status for:"];
-                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder");
+                                return chatBot().param("woId",woAskList.get(math().random(woAskList.size())),criteria1,"workorder","createdTime desc");
                                
                              }
                              if(data.woId != null) {

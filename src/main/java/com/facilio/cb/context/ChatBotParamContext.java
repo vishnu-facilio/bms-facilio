@@ -18,6 +18,7 @@ public class ChatBotParamContext {
 	String paramName;
 	String moduleName;		// for criteria Type
 	Criteria criteria;
+	String orderByString;
 	JSONObject dateSlot;
 	List<JSONObject> options;
 	Object previousValue;
@@ -58,5 +59,11 @@ public class ChatBotParamContext {
 	}
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+	public String getOrderByString() {
+		return orderByString;
+	}
+	public void setOrderByString(String orderByString) {
+		this.orderByString = orderByString;
 	}
 }

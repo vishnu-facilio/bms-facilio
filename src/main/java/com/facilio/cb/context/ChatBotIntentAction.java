@@ -95,6 +95,7 @@ public class ChatBotIntentAction {
 		INTENT_LIST(8,"Intent List"),
 		SLOTED_DATES(9,"Sloted Dated"),
 		LIST_RESPONSE(10,"List Response"),
+		SUMMARY_CARD(11,"Summary Card"),
 		;
 
 		int intVal;

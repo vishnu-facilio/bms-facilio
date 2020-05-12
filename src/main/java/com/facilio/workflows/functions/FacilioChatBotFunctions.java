@@ -40,6 +40,9 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 				else if (objects[2] instanceof Criteria) {
 					params.setCriteria((Criteria)objects[2]);
 					params.setModuleName((String)objects[3]);
+					if(objects.length > 4) {
+						params.setOrderByString((String)objects[4]);
+					}
 				}
 				else if (objects[2] instanceof Map) {
 					params.setDateSlot((JSONObject) objects[2]);

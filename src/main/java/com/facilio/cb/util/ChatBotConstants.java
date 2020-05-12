@@ -94,6 +94,8 @@ public class ChatBotConstants {
 	public static final Long LAST_INVALID_SESSION_BUFFER_TIME = 300000l;													// 5 mins to millisec
 	
 	public static final Long LAST_SESSION_WAITING_FOR_PARAM_BUFFER_TIME = 1800000l;											// 30 mins to millisec
+
+	public static final String ORDER_BY = "orderBy";
 	
 	
 	public static Map<String,List<String>> defaultIntentResponse;
