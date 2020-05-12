@@ -784,20 +784,14 @@
        sample: "What is the status of my complaint?"
     -
        sampleLocalId : 29
-       sample: "track status"
+       sample: "track status of my request"
+    -
+       sampleLocalId : 30
+       sample: "track status of my work request"
+    -
+       sampleLocalId : 31
+       sample: "track status of my complaint"
 
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
 - 
    name: "system_add_invite_intent"
    displayName: "Invite Visitors"
@@ -969,19 +963,23 @@
                               
                                   }
                                   if(data.client_message_local == "Edit checkout time") {
-                                  
-                                     data.client_message_local = null;
-                                     previousValue = null;
-                                     if(data.names.size() == 1) {
-                                        previousValue = data.get(data.names[0]).get("checkoutDate");
+                                     
+                                     if(data.names.size() > 1 && data.name == null) {
+                                         askName = true;
                                      }
                                      else {
-                                        if(data.name != "All") {
-                                           previousValue = data.get(data.name).get("checkoutDate");
-                                        }
+                                           data.client_message_local = null;
+                                           previousValue = null;
+                                           if(data.names.size() == 1) {
+                                              previousValue = data.get(data.names[0]).get("checkoutDate");
+                                           }
+                                           else {
+                                              if(data.name != "All") {
+                                                 previousValue = data.get(data.name).get("checkoutDate");
+                                              }
+                                           }
+                                           return chatBot().param("checkoutDate","Select the checkout time",data.slot,previousValue);
                                      }
-                                     return chatBot().param("checkoutDate","Select the checkout time",data.slot,previousValue);
-                                  
                                   }
                                   if(data.client_message_local == "Add people") {
                                     
@@ -1129,7 +1127,9 @@
                                              qList.add(0,qString);
                                           }
                                           else {
-                                             qList.add(0,"Great! I need a few details to set up the invite for you.");
+                                             if(index == 0) {
+                                                qList.add(0,"Great! I need a few details to set up the invite for you.");
+                                             }
                                           }                                             
                                           return chatBot().param("phone",qList);
                                        }
