@@ -15,12 +15,12 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private long inventoryRequestId = -1;
+	private InventoryRequestContext inventoryRequestId;
 	
-	public long getInventoryRequestId() {
+	public InventoryRequestContext getInventoryRequestId() {
 		return inventoryRequestId;
 	}
-	public void setInventoryRequestId(long inventoryRequestId) {
+	public void setInventoryRequestId(InventoryRequestContext inventoryRequestId) {
 		this.inventoryRequestId = inventoryRequestId;
 	}
 

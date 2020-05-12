@@ -344,7 +344,8 @@ public class FormFactory {
 		List<FacilioForm> employeeFormsList = Arrays.asList(geEmployeeContactForm());
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
 		List<FacilioForm> rentalLeaseFormsList = Arrays.asList(getRentalLeaseContractForm());
-		
+		List<FacilioForm> invReqFormsList = Arrays.asList(getInventoryRequestForm());
+
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -373,6 +374,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getFormMap(reservationFormsList))
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
+				.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getFormMap(invReqFormsList))
 
 				.build();
 	}
@@ -1346,7 +1348,7 @@ public class FormFactory {
 	public static FacilioForm getInventoryRequestForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("INVENTORY REQUEST");
-		form.setName("web_default");
+		form.setName("default_inventoryrequest_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getInventoryRequestFormFields());

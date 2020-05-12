@@ -77,9 +77,11 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 	
 	private void updateLineItems(InventoryRequestContext inventoryRequestContext) throws Exception{
 		List<InventoryRequestLineItemContext> rotatingItems = new ArrayList<InventoryRequestLineItemContext>();
-		
+		InventoryRequestContext invReq = new InventoryRequestContext();
+		invReq.setId(inventoryRequestContext.getId());
+
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
-			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
+			lineItemContext.setInventoryRequestId(invReq);
 			lineItemContext.setIssuedQuantity(lineItemContext.getQuantity());
 			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
@@ -108,8 +110,8 @@ public class AddOrUpdateInventoryRequestCommand extends FacilioCommand{
 					 
 					 lineItem.setQuantity(1);
 					 lineItem.setIssuedQuantity(1);
-						
-					 lineItem.setInventoryRequestId(inventoryRequestContext.getId());
+
+					 lineItem.setInventoryRequestId(invReq);
 					 if(inventoryRequestContext.getParentId() > 0) {
 						 lineItem.setParentId(inventoryRequestContext.getParentId());
 					 }

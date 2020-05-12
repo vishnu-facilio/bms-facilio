@@ -23,7 +23,7 @@ public class AddOrUpdateInventoryRequestLineItemCommand extends FacilioCommand{
 		List<InventoryRequestLineItemContext> lineItems = (List<InventoryRequestLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(lineItems)) {
 			for(InventoryRequestLineItemContext lineItemContext : lineItems) {
-				if (lineItemContext.getInventoryRequestId() == -1) {
+				if (lineItemContext.getInventoryRequestId() ==  null) {
 					throw new Exception("Inventory Request cannot be null");
 				}
 				

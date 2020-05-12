@@ -2779,6 +2779,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUpdateInventoryRequestChain() {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new ValidateInventoryRequestUpdateCommand());
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			chain.addCommand(new GenericGetModuleDataListCommand());
 			chain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
