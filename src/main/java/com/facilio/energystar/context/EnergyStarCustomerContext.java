@@ -20,7 +20,7 @@ public class EnergyStarCustomerContext {
 	String userName;
 	String password;
 	long dataExchangeMode = -1;
-	List<Data_Exchange_Mode> availableDataExchangeModes;
+	List<Meter_Category> availableDataExchangeModes;
 	Type type;
 	String shareKey;
 	Share_Status shareStatus;
@@ -131,94 +131,16 @@ public class EnergyStarCustomerContext {
 	}
 
 
-	public List<Data_Exchange_Mode> getAvailableDataExchangeModes() {
+	public List<Meter_Category> getAvailableDataExchangeModes() {
 		return availableDataExchangeModes;
 	}
 
 
-	public void setAvailableDataExchangeModes(List<Data_Exchange_Mode> availableDataExchangeModes) {
+	public void setAvailableDataExchangeModes(List<Meter_Category> availableDataExchangeModes) {
 		this.availableDataExchangeModes = availableDataExchangeModes;
 	}
 
 
-	public enum Data_Exchange_Mode {
-		ELECTRIC(1, "Electric",1,"kWh (thousand Watt-hours)","energydata","totalEnergyConsumptionDelta",NumberAggregateOperator.SUM),
-		NATURAL_GAS(2, "Natural Gas",2,null,null,null,null),
-		PROPANE(3,"Propane",4,null,null,null,null);
-		;
-
-		int intVal;
-		String name;
-		long license;
-		String moduleName;
-		String unitOfMessure;
-		String fieldName;
-		NumberAggregateOperator aggr;
-		
-		public String getModule() {
-			return moduleName;
-		}
-		public String getField() {
-			return fieldName;
-		}
-		public NumberAggregateOperator getAggr() {
-			return aggr;
-		}
-		public String getUnitOfMessure() {
-			return unitOfMessure;
-		}
-
-		public int getIntVal() {
-			return intVal;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public long getLicence() {
-			return license;
-		}
-		private Data_Exchange_Mode(int intVal, String name,long licenceId,String unitOfMeasure,String moduleName,String fieldName,NumberAggregateOperator aggr) {
-			this.intVal = intVal;
-			this.name = name;
-			this.license = licenceId;
-			this.moduleName = moduleName;
-			this.unitOfMessure = unitOfMeasure;
-			this.fieldName = fieldName;
-			this.aggr = aggr;
-		}
-
-		private static final Map<Integer, Data_Exchange_Mode> optionMap = Collections.unmodifiableMap(initTypeMap());
-		
-		private static final Map<String, Data_Exchange_Mode> TypeStringMap = Collections.unmodifiableMap(initTypeStringMap());
-
-		private static Map<Integer, Data_Exchange_Mode> initTypeMap() {
-			Map<Integer, Data_Exchange_Mode> typeMap = new HashMap<>();
-
-			for (Data_Exchange_Mode type : values()) {
-				typeMap.put(type.getIntVal(), type);
-			}
-			return typeMap;
-		}
-		
-		private static Map<String, Data_Exchange_Mode> initTypeStringMap() {
-			Map<String, Data_Exchange_Mode> typeMap = new HashMap<>();
-
-			for (Data_Exchange_Mode type : values()) {
-				typeMap.put(type.getName(), type);
-			}
-			return typeMap;
-		}
-
-		public static Map<Integer, Data_Exchange_Mode> getAllAppTypes() {
-			return optionMap;
-		}
-		public static Map<String, Data_Exchange_Mode> getAllTypes() {
-			return TypeStringMap;
-		}
-	}
-	
 	public enum Type {
 		CREATED(1, "Created"),
 		SHARED(2, "Shared"),

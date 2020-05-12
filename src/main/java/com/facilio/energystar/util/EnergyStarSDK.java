@@ -21,6 +21,7 @@ import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.Meter_Category;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.xml.builder.XMLBuilder;
 
@@ -219,7 +220,7 @@ public class EnergyStarSDK {
 			
 				String propertyId = property.getElement("propertyId").getText();
 				
-				sendConfirmPropertyShare(propertyId);
+//				sendConfirmPropertyShare(propertyId);
 				
 				String propertyName = property.getElement("propertyInfo").getElement("name").getText();
 				
@@ -253,7 +254,7 @@ public class EnergyStarSDK {
 				
 				String meterId = meter.getElement("meterId").getText();
 				
-				sendConfirmMeterShare(meterId);
+//				sendConfirmMeterShare(meterId);
 			
 				String propertyId = meter.getElement("propertyId").getText();
 				
@@ -268,7 +269,7 @@ public class EnergyStarSDK {
 				
 				EnergyStarMeterContext meterContext = new EnergyStarMeterContext();
 				meterContext.setFirstBillDate(firstBillDate);
-				meterContext.setType(EnergyStarCustomerContext.Data_Exchange_Mode.getAllTypes().get(type).getIntVal());
+				meterContext.setType(Meter_Category.getAllTypes().get(type).getIntVal());
 				
 				meterContext.setMeta(json.toJSONString());
 				meterContext.setEnergyStarMeterId(meterId);
@@ -336,7 +337,6 @@ public class EnergyStarSDK {
 				headers.put(HttpHeaders.CONTENT_TYPE, "application/xml");
 				return FacilioHttpUtils.doHttpPost(ENERGY_STAR_SANDBOX_ENDPOINT+action, headers, null, payload);
 			case GET:
-//				headers.put("PM-Metrics", "score,siteTotal");
 				return FacilioHttpUtils.doHttpGet(ENERGY_STAR_SANDBOX_ENDPOINT+action, headers, null);
 			case PUT:
 				break;

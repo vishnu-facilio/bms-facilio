@@ -46,6 +46,8 @@ public class AddEnergyStarMeterCommand extends FacilioCommand {
 			}
 		}
 		
+		context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXTS, meters);
+		
 		return false;
 	}
 

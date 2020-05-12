@@ -16,10 +16,10 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
-import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mode;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.Meter_Category;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -37,6 +37,8 @@ public class EnergyStarUtil {
 	
 	public static final String ENERGY_STAR_PROPERTY_CONTEXT = "energyStarPropertyContext";
 	
+	public static final String ENERGY_STAR_METER_DATA_CONTEXTS = "meterDatas";
+	
 	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXTS = "energyStarPropertyUseContexts";
 	
 	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXT = "energyStarPropertyUseContext";
@@ -46,6 +48,8 @@ public class EnergyStarUtil {
 	public static final String ENERGY_STAR_METER_CONTEXT = "energyStarMeterContext";
 	
 	public static final String ENERGY_STAR_METER_ID = "energyStarMeterID";
+	
+	public static final String ENERGY_STAR_METER_DATA_MODULE_NAME = "energyStarMeterData";
 	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {
@@ -88,15 +92,15 @@ public class EnergyStarUtil {
 			customerContext.setUserName(getUserNameFromOrgName(org.getName()));
 			customerContext.setPassword(getPasswordFromUserName(customerContext.getUserName()));
 			
-			List<Data_Exchange_Mode> exchangeModeList = customerContext.getAvailableDataExchangeModes() == null ? new ArrayList<>() : customerContext.getAvailableDataExchangeModes();
+			List<Meter_Category> exchangeModeList = customerContext.getAvailableDataExchangeModes() == null ? new ArrayList<>() : customerContext.getAvailableDataExchangeModes();
 			
-			exchangeModeList.add(Data_Exchange_Mode.ELECTRIC);
+			exchangeModeList.add(Meter_Category.ELECTRIC);
 			
 			customerContext.setAvailableDataExchangeModes(exchangeModeList);
 			
 			long total = 0;
 			if(customerContext.getAvailableDataExchangeModes() != null) {
-				for(Data_Exchange_Mode dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
+				for(Meter_Category dataExchangeMode :customerContext.getAvailableDataExchangeModes()) {
 					total = total | dataExchangeMode.getLicence();
 				}
 			}

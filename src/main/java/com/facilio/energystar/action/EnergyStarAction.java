@@ -1,13 +1,15 @@
 package com.facilio.energystar.action;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.util.EnergyStarUtil;
-import com.facilio.v3.V3Action;
 
 public class EnergyStarAction extends FacilioAction {
 
@@ -20,7 +22,16 @@ public class EnergyStarAction extends FacilioAction {
 	long startTime;
 	long endTime;
 	boolean createAccount;
+	List<EnergyStarMeterDataContext> meterData;
 	
+	public List<EnergyStarMeterDataContext> getMeterData() {
+		return meterData;
+	}
+
+	public void setMeterData(List<EnergyStarMeterDataContext> meterData) {
+		this.meterData = meterData;
+	}
+
 	public boolean isCreateAccount() {
 		return createAccount;
 	}
@@ -142,6 +153,20 @@ public class EnergyStarAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		
 		context.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, getPropertyContext());
+		
+		chain.execute();
+		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String addUtilityData() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addEnergyStarUtilityDataChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(EnergyStarUtil.ENERGY_STAR_METER_DATA_CONTEXTS, getMeterData());
 		
 		chain.execute();
 		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));

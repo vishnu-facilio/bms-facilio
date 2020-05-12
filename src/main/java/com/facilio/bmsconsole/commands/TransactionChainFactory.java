@@ -5335,6 +5335,8 @@ public class TransactionChainFactory {
 	public static FacilioChain addEnergyStarMeterOnlyChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddEnergyStarMeterCommand());
+		c.addCommand(new PrepareEnergyStarMeterDataRDMEntry());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		return c;
 	}
 
@@ -5343,6 +5345,15 @@ public class TransactionChainFactory {
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new UpdateEnergyStarPropertyCommand());
 		c.addCommand(new UpdateEnergyStarPropertyUseCommand());
+		return c;
+	}
+	
+	public static FacilioChain addEnergyStarUtilityDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ESFillMeterDetails());
+		c.addCommand(new ValidateEnergyStarUtilityData());
+		c.addCommand(new EnergyStarPushDataForNonConnectedCommand());
+		c.addCommand(new AddEnergyStarUtilityData());
 		return c;
 	}
 	
@@ -5361,7 +5372,7 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain getEnergyStarPushDataChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new EnergyStarPushDataCommand());
+		c.addCommand(new EnergyStarPushDataForConnectedCommand());
 		return c;
 	}
 	

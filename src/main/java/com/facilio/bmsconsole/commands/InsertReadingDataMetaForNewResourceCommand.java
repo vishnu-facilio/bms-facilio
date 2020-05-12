@@ -108,7 +108,7 @@ public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand i
 				}
 				List<FacilioField> fieldsList= module.getFields();
 				List<FacilioField> dFields= FieldFactory.getDefaultReadingFields(module);
-				fieldsList.remove(dFields);
+				fieldsList.removeAll(dFields);
 				for(FacilioField field : fieldsList) {
 					ReadingDataMeta dataMeta = new ReadingDataMeta();
 					dataMeta.setOrgId(orgId);

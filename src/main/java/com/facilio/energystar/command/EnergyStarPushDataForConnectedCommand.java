@@ -5,29 +5,26 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mode;
 import com.facilio.energystar.context.EnergyStarMeterContext;
+import com.facilio.energystar.context.Meter_Category;
 import com.facilio.energystar.util.EnergyStarSDK;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class EnergyStarPushDataCommand extends FacilioCommand {
+public class EnergyStarPushDataForConnectedCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -44,7 +41,7 @@ public class EnergyStarPushDataCommand extends FacilioCommand {
 		
 		FacilioField field = null;
 		
-		Data_Exchange_Mode type = meter.getTypeEnum();
+		Meter_Category type = meter.getTypeEnum();
 		
 		if(meter.getMeterDataModuleId() > 0) {
 			module = modBean.getModule(meter.getMeterDataModuleId());

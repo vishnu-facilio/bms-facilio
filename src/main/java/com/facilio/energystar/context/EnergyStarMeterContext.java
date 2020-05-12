@@ -3,14 +3,13 @@ package com.facilio.energystar.context;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.energystar.context.EnergyStarCustomerContext.Data_Exchange_Mode;
 
 public class EnergyStarMeterContext {
 
 	long id = -1;
 	long orgId = -1;
 	long propertyId = -1; 
-	Data_Exchange_Mode type;
+	Meter_Category type;
 	long meterId = -1;
 	long meterDataModuleId = -1;
 	long meterDataFieldId = -1;
@@ -72,11 +71,11 @@ public class EnergyStarMeterContext {
 		}
 		return -1;
 	}
-	public Data_Exchange_Mode getTypeEnum() {
+	public Meter_Category getTypeEnum() {
 		return type;
 	}
 	public void setType(int type) {
-		this.type = Data_Exchange_Mode.getAllAppTypes().get(type);
+		this.type = Meter_Category.getAllAppTypes().get(type);
 	}
 	public long getMeterId() {
 		return meterId;
