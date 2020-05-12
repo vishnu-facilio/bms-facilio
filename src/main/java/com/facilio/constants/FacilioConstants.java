@@ -163,9 +163,10 @@ public class FacilioConstants {
         public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
 
         public static final String AGENT = "agent";
-		public static final Object ROLL_UP_TYPE = "rollUpType";
+		public static final String ROLL_UP_TYPE = "rollUpType";
+		public static final String APPROVAL_STATUS = "approvalStatus";
 
-		public static class Reservation {
+        public static class Reservation {
 			public static final String RESERVATION = "reservation";
 			public static final String RESERVATION_LIST = "reservations";
 			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";

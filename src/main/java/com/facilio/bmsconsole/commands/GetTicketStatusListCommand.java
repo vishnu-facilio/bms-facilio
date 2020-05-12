@@ -20,27 +20,34 @@ public class GetTicketStatusListCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
-		
-		FacilioModule module = null;
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (StringUtils.isNotBlank(parentModuleName)) {
-			module = modBean.getModule(parentModuleName);
+
+		Boolean approvalStatus = (Boolean) context.get(FacilioConstants.ContextNames.APPROVAL_STATUS);
+
+		List<FacilioStatus> statuses;
+		if (approvalStatus != null && approvalStatus) {
+			statuses = TicketAPI.getAllApprovalStatus();
 		}
-		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		
+		else {
+			FacilioModule module = null;
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if (StringUtils.isNotBlank(parentModuleName)) {
+				module = modBean.getModule(parentModuleName);
+			}
+			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+
 //		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 //														.table(dataTableName)
 //														.moduleName(moduleName)
 //														.beanClass(FacilioStatus.class)
 //														.select(fields)
 //														.orderBy("ID");
-		
-		List<FacilioStatus> statuses;
-		if (module == null) {
-			statuses = TicketAPI.getAllStatus(false);
-		} else {
-			statuses = TicketAPI.getAllStatus(module, false);
+
+			if (module == null) {
+				statuses = TicketAPI.getAllStatus(false);
+			} else {
+				statuses = TicketAPI.getAllStatus(module, false);
+			}
 		}
 		context.put(FacilioConstants.ContextNames.TICKET_STATUS_LIST, statuses);
 		

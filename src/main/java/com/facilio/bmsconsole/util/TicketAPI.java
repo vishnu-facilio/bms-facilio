@@ -477,6 +477,19 @@ public class TicketAPI {
 		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		return getAllStatus(workorderModule, ignorePreOpen);
 	}
+
+	public static List<FacilioStatus> getAllApprovalStatus() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
+
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+				.beanClass(FacilioStatus.class)
+				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", "", CommonOperators.IS_EMPTY))
+				.select(fields);
+
+		return builder.get();
+	}
 	
 	public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
 	{

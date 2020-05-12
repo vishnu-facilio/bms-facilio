@@ -40,10 +40,19 @@ public class TicketStatusAction extends FacilioAction {
 	public void setParentModuleName(String parentModuleName) {
 		this.parentModuleName = parentModuleName;
 	}
-	
+
+	private Boolean approvalStatus = false;
+	public Boolean getApprovalStatus() {
+		return approvalStatus;
+	}
+	public void setApprovalStatus(Boolean approvalStatus) {
+		this.approvalStatus = approvalStatus;
+	}
+
 	public String v2StatusList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
+		context.put(FacilioConstants.ContextNames.APPROVAL_STATUS, approvalStatus);
 		
 		FacilioChain statusListChain = FacilioChainFactory.getTicketStatusListChain();
 		statusListChain.execute(context);
