@@ -1,586 +1,701 @@
 package test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 
 public class DbShradingScript {
-	private static final String SOURCE_URL = "jdbc:mysql//localhost:3306/bmslocal";
+	private static final String SOURCE_URL = "localhost:3306/bmslocal";
 	private static final String SOURCE_USERNAME = "root", SOURCE_PASSWORD = "";
 
-	private static final String TARGET_URL = "jdbc:mysql//localhost:3306/bms_new_test";
+	private static final String TARGET_URL = "localhost:3306/bmslocal";
 	private static final String TARGET_USERNAME = "root", TARGET_PASSWORD = "";
 
-	private static final long ORGID = 210;
+	private static final long ORGID = 339;
 
 	private static int LIMIT = 50000;
-	private static HashMap<String, String> tableVsPrimaryField = new LinkedHashMap();
+	private static List<String> tables = init();
 
 	private static Connection getConn1() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
-		Connection con = DriverManager.getConnection(SOURCE_URL, SOURCE_USERNAME, SOURCE_PASSWORD);
+		Connection con = DriverManager.getConnection("jdbc:mysql://"+SOURCE_URL, SOURCE_USERNAME, SOURCE_PASSWORD);
 		return con;
 	}
 
 	private static Connection getConn2() throws ClassNotFoundException, SQLException {
-		Class.forName("com.amazon.redshift.jdbc.Driver");
-		Connection con = DriverManager.getConnection(TARGET_URL, TARGET_USERNAME, TARGET_PASSWORD);
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://"+TARGET_URL, TARGET_USERNAME, TARGET_PASSWORD);
 		con.setAutoCommit(false);
 		return con;
 	}
 
-	private static void init() {
-		//	tableVsPrimaryField.put("Role", "ROLE_ID");
-		//	tableVsPrimaryField.put("FacilioFile", "FILE_ID");
-		//	tableVsPrimaryField.put("Modules", "MODULEID");
-		//	tableVsPrimaryField.put("Permission", "ID");
-		//	tableVsPrimaryField.put("BusinessHours", "ID");
-		//	tableVsPrimaryField.put("Forms", "ID");
-		//	tableVsPrimaryField.put("SingleDayBusinessHours", "ID");
-		//	tableVsPrimaryField.put("Resources", "ID");
-		//	tableVsPrimaryField.put("ORG_Users", "ORG_USERID");
-		//	tableVsPrimaryField.put("Locations", "ID");
-		//	tableVsPrimaryField.put("BaseSpace", "ID");
-		//	tableVsPrimaryField.put("Site", "ID");
-		//	tableVsPrimaryField.put("Org_Units", "ID");
-//		tableVsPrimaryField.put("UtilityProviders", "UTILITYID");
-		//	tableVsPrimaryField.put("Groups", "GROUPID");
-		//	tableVsPrimaryField.put("GroupMembers", "MEMBERID");
-		//	tableVsPrimaryField.put("SubModulesRel", "PARENT_MODULE_ID, CHILD_MODULE_ID");
-		//	tableVsPrimaryField.put("Fields", "FIELDID");
-		//	tableVsPrimaryField.put("LookupFields", "FIELDID");
-		//	tableVsPrimaryField.put("NumberFields", "FIELDID");
-		//	tableVsPrimaryField.put("BooleanFields", "FIELDID");
-		//	tableVsPrimaryField.put("EnumFieldValues", "ID");
-		//	tableVsPrimaryField.put("SystemEnumFields", "FIELDID");
-		//	tableVsPrimaryField.put("FileFields", "FIELDID");
-		//	tableVsPrimaryField.put("Shift_Readings", "ID");
-		//	tableVsPrimaryField.put("ResizedFile", "ID");
-		//	tableVsPrimaryField.put("Common_Job_Props", "JOBID, JOBNAME");
-		//	tableVsPrimaryField.put("Workflow_Namespace", "ID");
-		//	tableVsPrimaryField.put("Workflow", "ID");
-		//	tableVsPrimaryField.put("Workflow_User_Function", "ID");
-		//	tableVsPrimaryField.put("Workflow_Field", "ID");
-		//	tableVsPrimaryField.put("Workflow_Log", "ID");
-		//	tableVsPrimaryField.put("Scheduled_Workflow", "ID");
-		//	tableVsPrimaryField.put("Accessible_Space", "ORG_USER_ID, BS_ID");
-		//	tableVsPrimaryField.put("Resource_Readings", "RESOURCE_ID,READING_ID");
-		//	tableVsPrimaryField.put("BaseSpace_Photos", "ID");
-		//	tableVsPrimaryField.put("BaseSpace_Attachments", "ID");
-		//	tableVsPrimaryField.put("BaseSpace_Notes", "ID");
-		//	tableVsPrimaryField.put("Form_Section", "ID");
-		//	tableVsPrimaryField.put("Form_Fields", "ID");
-		//	tableVsPrimaryField.put("Building", "ID");
-		//	tableVsPrimaryField.put("Agent_Data", "ID");
-		//	tableVsPrimaryField.put("Agent_Log", "ID");
-		//	tableVsPrimaryField.put("Agent_Metrics", "ID");
-		//	tableVsPrimaryField.put("Agent_Message", "ID");
-		//	tableVsPrimaryField.put("Agent_Integration", "ID");
-		//	tableVsPrimaryField.put("Controller", "ID");
-		//	tableVsPrimaryField.put("Controller_Activity", "ID");
-		//	tableVsPrimaryField.put("Controller_Activity_Records", "ID");
-		//	tableVsPrimaryField.put("Controller_Activity_Watcher", "ID");
-		//	tableVsPrimaryField.put("Controller_Building_Rel", "ORGID");
-		//	tableVsPrimaryField.put("Publish_Data", "ID");
-		//	tableVsPrimaryField.put("Publish_Message", "ID");
-		//	tableVsPrimaryField.put("Floor", "ID");
-		//	tableVsPrimaryField.put("Space_Category", "ID");
-		//	tableVsPrimaryField.put("Space_Category_Readings", "PARENT_CATEGORY_ID");
-		//	tableVsPrimaryField.put("Space", "ID");
-		//	tableVsPrimaryField.put("Zone", "ID");
-		//	tableVsPrimaryField.put("Zone_Space", "ZONE_ID, BASE_SPACE_ID");
-		//	tableVsPrimaryField.put("Store_room", "ID");
-		//	tableVsPrimaryField.put("Item_Types_category", "ID");
-		//	tableVsPrimaryField.put("Item_Type_Activity", "ID");
-		//	tableVsPrimaryField.put("Inventory_category", "ID");
-		//	tableVsPrimaryField.put("Item_Types_status", "ID");
-		//	tableVsPrimaryField.put("Item_Types", "ID");
-		//	tableVsPrimaryField.put("Item_status", "ID");
-		//	tableVsPrimaryField.put("Item", "ID");
-		//	tableVsPrimaryField.put("Tool_types_status", "ID");
-		//	tableVsPrimaryField.put("Tool_types", "ID");
-		//	tableVsPrimaryField.put("Tool_status", "ID");
-		//	tableVsPrimaryField.put("Tool", "ID");
-		//	tableVsPrimaryField.put("TicketStatus", "ID");
-		//	tableVsPrimaryField.put("Vendors", "ID");
-		//	tableVsPrimaryField.put("Contracts", "ID");
-		//	tableVsPrimaryField.put("Purchase_Orders", "ID");
-		//	tableVsPrimaryField.put("Asset_Types", "ID");
-		//	tableVsPrimaryField.put("Asset_Categories", "ID");
-		//	tableVsPrimaryField.put("Asset_Category_Readings", "PARENT_CATEGORY_ID, READING_MODULE_ID");
-		//	tableVsPrimaryField.put("Asset_Departments", "ID");
-		//	tableVsPrimaryField.put("Assets", "ID");
-		//	tableVsPrimaryField.put("Relationship", "ID");
-		//	tableVsPrimaryField.put("Related_Assets", "ID");
-		//	tableVsPrimaryField.put("Asset_Activity", "ID");
-		//	tableVsPrimaryField.put("Asset_Breakdown", "ID");
-		//	tableVsPrimaryField.put("Asset_BD_SourceDetails", "ID");
-		//	tableVsPrimaryField.put("Agent", "ID");
-		//	tableVsPrimaryField.put("Field_Device", "ID");
-		//	tableVsPrimaryField.put("Controllers", "ID");
-		//	tableVsPrimaryField.put("Misc_Controller", "ID");
-		//	tableVsPrimaryField.put("Custom_Controller", "ID");
-		//	tableVsPrimaryField.put("Rest_Controller", "ID");
-		//	tableVsPrimaryField.put("BACnet_IP_Controller", "ID");
-		//	tableVsPrimaryField.put("Niagara_Controller", "ID");
-		//	tableVsPrimaryField.put("LonWorks_Controller", "ID");
-		//	tableVsPrimaryField.put("Modbus_Rtu_Controller", "ID");
-		//	tableVsPrimaryField.put("Modbus_Tcp_Controller", "ID");
-		//	tableVsPrimaryField.put("OpcXMLDA_Controller", "ID");
-		//	tableVsPrimaryField.put("OpcUA_Controller", "ID");
-		//	tableVsPrimaryField.put("Iot_Data", "ID");
-		//	tableVsPrimaryField.put("Iot_Message", "ID");
-		//	tableVsPrimaryField.put("AssetCustomModuleData", "ID");
-		//	tableVsPrimaryField.put("Work_Order_Activity", "ID");
-		//	tableVsPrimaryField.put("Energy_Meter_Purpose", "ID");
-		//	tableVsPrimaryField.put("Energy_Meter", "ID");
-		//	tableVsPrimaryField.put("Controller_Asset", "ID");
-		//	tableVsPrimaryField.put("Virtual_Energy_Meter_Rel", "VIRTUAL_METER_ID, CHILD_METER_ID");
-		//	tableVsPrimaryField.put("Hvac", "ID");
-		//	tableVsPrimaryField.put("Chiller", "ID");
-		//	tableVsPrimaryField.put("Chiller_Plant_Manager", "ID");
-		//	tableVsPrimaryField.put("Chiller_Primary_Pump", "ID");
-		//
-		//	tableVsPrimaryField.put("Chiller_Secondary_Pump", "ID");
-		//	tableVsPrimaryField.put("Chiller_Condenser_Pump", "ID");
-		//	tableVsPrimaryField.put("AHU", "ID");
-		//	tableVsPrimaryField.put("FAHU", "ID");
-		//	tableVsPrimaryField.put("Cooling_Tower", "ID");
-		//	tableVsPrimaryField.put("FCU", "ID");
-		//	tableVsPrimaryField.put("Heat_Pump", "ID");
-		//	tableVsPrimaryField.put("Utility_Meters", "ID");
-		//	tableVsPrimaryField.put("Water_Meter", "ID");
-		//	tableVsPrimaryField.put("Asset_Photos", "ID");
-		//	tableVsPrimaryField.put("Asset_Attachments", "ID");
-		//	tableVsPrimaryField.put("Asset_Notes", "ID");
-		//	tableVsPrimaryField.put("TicketStatus", "ID");
-		//	tableVsPrimaryField.put("TicketStateFlow", "ACTIVITY_ID");
-		//	tableVsPrimaryField.put("Tenants", "ID");
-		//	tableVsPrimaryField.put("Contacts", "ID");
-		//	tableVsPrimaryField.put("Contacts_Attachments", "ID");
-		//	tableVsPrimaryField.put("Contacts_Notes", "ID");
-		//	tableVsPrimaryField.put("TicketPriority", "ID");
-		//	tableVsPrimaryField.put("TicketCategory", "ID");
-		//	tableVsPrimaryField.put("TicketType", "ID");
-		//	tableVsPrimaryField.put("Tickets", "ID");
-		//	tableVsPrimaryField.put("Ticket_Attachments", "ID");
-		//	tableVsPrimaryField.put("Ticket_Notes", "ID");
-		//	tableVsPrimaryField.put("WorkOrderRequests", "ID");
-		// tableVsPrimaryField.put("WorkOrderRequest_EMail", "ID");
-		//	tableVsPrimaryField.put("UserLocationCoverage", "USER_LOCATION_ID");
-		//	tableVsPrimaryField.put("GroupLocationCoverage", "GROUP_LOCATION_ID");
-		//	tableVsPrimaryField.put("Skills", "ID");
-		//	tableVsPrimaryField.put("UserSkills", "USER_SKILL_ID");
-		//	tableVsPrimaryField.put("GroupSkills", "GROUP_SKILL_ID");
-		//	tableVsPrimaryField.put("Alarm_Severity", "ID");
-		//	tableVsPrimaryField.put("Alarm_Entity", "ENTITY_ID");
-		//	tableVsPrimaryField.put("CustomModuleData", "ID");
-		//	tableVsPrimaryField.put("CMD_Notes", "ID");
-		//	tableVsPrimaryField.put("CMD_Attachments", "ID");
-		//	tableVsPrimaryField.put("Attachments", "ID");
-		//	tableVsPrimaryField.put("Notes", "ID");
-		//	tableVsPrimaryField.put("Criteria", "CRITERIAID");
-		//	tableVsPrimaryField.put("Conditions", "CONDITIONID");
-		//	tableVsPrimaryField.put("Form_Rule", "ID");
-		//	tableVsPrimaryField.put("Form_Rule_Action", "ID");
-		//	tableVsPrimaryField.put("Views", "ID");
-		//	tableVsPrimaryField.put("View_Sort_Columns", "ID");
-		//	tableVsPrimaryField.put("ImportProcess", "ID");
-		//	tableVsPrimaryField.put("ImportTemplate", "ID");
-//		tableVsPrimaryField.put("ImportProcessLog", "ID");
-		//	tableVsPrimaryField.put("Expression", "ID");
-		//	tableVsPrimaryField.put("KPI_Category", "ID");
-		//	tableVsPrimaryField.put("Formula_Field", "ID");
-		//	tableVsPrimaryField.put("Formula_Field_Inclusions", "ID");
-		//	tableVsPrimaryField.put("Formula_Field_Resource_Jobs", "ID");
-		//	tableVsPrimaryField.put("Job_Plan", "ID");
-		//	tableVsPrimaryField.put("Templates", "ID");
-		//	tableVsPrimaryField.put("EMail_Templates", "ID");
-		//	tableVsPrimaryField.put("Workflow_Template", "ID");
-		//	tableVsPrimaryField.put("Control_Groups", "ID");
-		//	tableVsPrimaryField.put("Control_Action_Template", "ID");
-		//	tableVsPrimaryField.put("SMS_Templates", "ID");
-		//	tableVsPrimaryField.put("Whatsapp_Message_Template", "ID");
-		//	tableVsPrimaryField.put("Call_Template", "ID");
-		//	tableVsPrimaryField.put("Assignment_Templates", "ID");
-		//	tableVsPrimaryField.put("SLA_Templates", "ID");
-		//	tableVsPrimaryField.put("Push_Notification_Templates", "ID");
-		// tableVsPrimaryField.put("Web_Notification_Templates", "ID");
-		//	tableVsPrimaryField.put("JSON_Template", "ID");
-		//	tableVsPrimaryField.put("Form_Template", "ID");
-		//	tableVsPrimaryField.put("Workorder_Template", "ID");
-		//	tableVsPrimaryField.put("Task_Section_Template", "ID");
-		//	tableVsPrimaryField.put("Prerequisite_Approvers_Template", "ID");
-		//	tableVsPrimaryField.put("Task_Template", "ID");
-		//	tableVsPrimaryField.put("Action", "ID");
-		//	tableVsPrimaryField.put("Workflow_Event", "ID");
-		//	tableVsPrimaryField.put("Workflow_Rule", "ID");
-		//	tableVsPrimaryField.put("Workflow_Field_Change_Fields", "ID");
-		//	tableVsPrimaryField.put("Workflow_Rule_Action", "WORKFLOW_RULE_ACTION_ID");
-		//	tableVsPrimaryField.put("Excel_Templates", "ID");
-		// tableVsPrimaryField.put("Tenant", "ID");
-		// tableVsPrimaryField.put("TenantZones", "TENANT_ID,ZONE_ID");
-		// tableVsPrimaryField.put("TenantMeters", "TENANT_ID,METER_ID");
-		//	tableVsPrimaryField.put("Preventive_Maintenance", "ID");
-		//	tableVsPrimaryField.put("PM_Include_Exclude_Resource", "ID");
-		//	tableVsPrimaryField.put("Approval_Rules", "ID");
-		//	tableVsPrimaryField.put("Approvers", "ID");
-		//	tableVsPrimaryField.put("Approver_Actions_Rel", "ID");
-		//	tableVsPrimaryField.put("Approval_Steps", "ID");
-		//	tableVsPrimaryField.put("PM_Triggers", "ID");
-		//	tableVsPrimaryField.put("WorkOrders", "ID");
-		//	tableVsPrimaryField.put("Related_Workorders", "SOURCE_WO,TARGET_WO");
-		//	tableVsPrimaryField.put("Prerequisite_Photos", "ID");
-		//	tableVsPrimaryField.put("Prerequisite_Approvers", "ID");
-		//	tableVsPrimaryField.put("WorkOrderTimeLog", "ID");
+	private static String getPKs (Connection conn, String tableName) throws SQLException {
+		StringJoiner builder = new StringJoiner(",");
+		DatabaseMetaData meta=conn.getMetaData();
+		try (ResultSet rs = meta.getPrimaryKeys(conn.getCatalog(), conn.getSchema(), tableName);) {
+			while (rs.next()) {
+				builder.add(rs.getString("COLUMN_NAME"));
+			}
+		}
+		return builder.toString();
+	}
 
-		// tableVsPrimaryField.put("AlarmFollowers", "ID");
-		//	tableVsPrimaryField.put("User_Workhour_Readings", "ID");
-		//	tableVsPrimaryField.put("SupportEmails", "ID");
-		//	tableVsPrimaryField.put("EmailSettings", "ID");
-		//	tableVsPrimaryField.put("PortalInfo", "PORTALID");
-		//	tableVsPrimaryField.put("Ticket_Activity", "ID");
-		//	tableVsPrimaryField.put("Connected_App", "CONNECTED_APP_ID");
-		//	tableVsPrimaryField.put("Tab_Widget", "TAB_WIDGET_ID");
-		//	tableVsPrimaryField.put("Notification", "ID");
-		//	tableVsPrimaryField.put("Report_Folder", "ID");
-		//	tableVsPrimaryField.put("Report_Formula_Field", "ID");
-		//	tableVsPrimaryField.put("Report_Field", "ID");
-		//	tableVsPrimaryField.put("Report_Entity", "ID");
-		//	tableVsPrimaryField.put("Report", "ID");
-		//	tableVsPrimaryField.put("Report_DateFilter", "ID");
-		//	tableVsPrimaryField.put("Report_EnergyMeter", "ID");
-		//	tableVsPrimaryField.put("Report_Criteria", "ID");
-		//	tableVsPrimaryField.put("Report_Threshold", "ID");
-		//	tableVsPrimaryField.put("Report_User_Filter", "ID");
-		//	tableVsPrimaryField.put("BaseLines", "ID");
-		//	tableVsPrimaryField.put("Benchmark", "ID");
-		//	tableVsPrimaryField.put("Report1_Folder", "ID");
-		//	tableVsPrimaryField.put("Report1", "ID");
-		//	tableVsPrimaryField.put("Report_Notes", "ID");
-		//	tableVsPrimaryField.put("Report_Fields", "ID");
-		//	tableVsPrimaryField.put("Dashboard_Folder", "ID");
-		//	tableVsPrimaryField.put("Dashboard", "ID");
-		//	tableVsPrimaryField.put("Dashboard_Tab", "ID");
-		//	tableVsPrimaryField.put("Dashboard_Notes", "ID");
-		//	tableVsPrimaryField.put("Space_Filtered_Dashboard_Settings", "ID");
-		//	tableVsPrimaryField.put("Widget", "ID");
-		//	tableVsPrimaryField.put("Widget_Chart", "ID");
-		//	tableVsPrimaryField.put("Widget_List_View", "ID");
-		//	tableVsPrimaryField.put("Widget_Static", "ID");
-		//	tableVsPrimaryField.put("Widget_Vs_Workflow", "ID");
-		//	tableVsPrimaryField.put("Widget_Web", "ID");
-		//	tableVsPrimaryField.put("Widget_Card", "ID");
-		//	tableVsPrimaryField.put("Screen_Dashboard_Rel", "ID");
-		//	tableVsPrimaryField.put("Formula", "ID");
-		//	tableVsPrimaryField.put("Report_SpaceFilter", "ID");
-		//	tableVsPrimaryField.put("Unmodeled_Instance", "ID");
-		//	tableVsPrimaryField.put("Points", "ID");
-		//	tableVsPrimaryField.put("Point", "ID");
-		//	tableVsPrimaryField.put("Misc_Point", "ID");
-		//	tableVsPrimaryField.put("BACnet_IP_Point", "ID");
-		//	tableVsPrimaryField.put("Niagara_Point", "ID");
-		//	tableVsPrimaryField.put("OPC_XML_DA_Point", "ID");
-		//	tableVsPrimaryField.put("Modbus_Tcp_Point", "ID");
-		//	tableVsPrimaryField.put("Modbus_Rtu_Point", "ID");
-		//	tableVsPrimaryField.put("OPC_UA_Point", "ID");
-		//	tableVsPrimaryField.put("Historical_Logger", "ID");
-		//	tableVsPrimaryField.put("Workflow_Rule_Historical_Logger", "ID");
-		//	tableVsPrimaryField.put("Formula_Field_Historical_Logger", "ID");
-		//	tableVsPrimaryField.put("Unmodeled_Data", "ID");
-		//	tableVsPrimaryField.put("Instance_To_Asset_Mapping", "ID");
-		//	tableVsPrimaryField.put("View_Column", "ID");
-		//	tableVsPrimaryField.put("License", "ID");
-		//	tableVsPrimaryField.put("FeatureLicense", "ORGID");
-		//	tableVsPrimaryField.put("OrgInfo", "ID");
-		//	tableVsPrimaryField.put("View_Schedule_Info", "ID");
-		//	tableVsPrimaryField.put("Report_Schedule_Info", "ID");
-		//	tableVsPrimaryField.put("Report_Schedule_Info1", "ID");
-		//	tableVsPrimaryField.put("Calendar_Color", "ID");
-		//	tableVsPrimaryField.put("Benchmark_Units", "ID");
-		//	tableVsPrimaryField.put("Report_Benchmark_Rel", "REPORT_ID");
-		//	tableVsPrimaryField.put("Reading_Rule", "ID");
-		//	tableVsPrimaryField.put("Reading_Alarm_Rule", "ID");
-		//	tableVsPrimaryField.put("Reading_Rule_Inclusions_Exclusions", "ID");
-
-		//	tableVsPrimaryField.put("SLA_Rule", "ID");
-		//	tableVsPrimaryField.put("Reading_Rule_Flaps", "ID");
-		//	tableVsPrimaryField.put("Reading_Rule_Metrics", "ID");
-		//	tableVsPrimaryField.put("Scheduled_Actions", "ID");
-		//	tableVsPrimaryField.put("Task_Section_Template_Triggers", "SECTION_ID, PM_TRIGGER_ID");
-		//	tableVsPrimaryField.put("PM_Jobs", "ID");
-		//	tableVsPrimaryField.put("PM_Reminders", "ID");
-		//	tableVsPrimaryField.put("PM_Reminder_Action", "ID");
-		//	tableVsPrimaryField.put("Before_PM_Reminder_Trigger_Rel", "ID");
-		//	tableVsPrimaryField.put("After_PM_Reminder_WO_Rel", "ID");
-		//	tableVsPrimaryField.put("PM_Resource_Planner", "ID");
-		//	tableVsPrimaryField.put("PM_Resource_Planner_Reminder", "ID");
-		//	tableVsPrimaryField.put("PM_Resource_Planner_Triggers", "PM_RESOURCE_PLANNER_ID, TRIGGER_ID");
-		//	tableVsPrimaryField.put("PM_Resource_Schedule_Rule_Rel", "PM_ID, RESOURCE_ID, SCHEDULE_RULE_ID");
-		//	tableVsPrimaryField.put("Report_BaseLine_Rel", "BASE_LINE_ID, REPORT_ID");
-		//	tableVsPrimaryField.put("Report_Columns", "ID");
-		//	tableVsPrimaryField.put("Reading_Data_Meta", "ID");
-		//
-		//	tableVsPrimaryField.put("Reading_Input_Values", "ORGID,RDMID,IDX");
-		//	tableVsPrimaryField.put("Dashboard_Sharing", "ID");
-		//	tableVsPrimaryField.put("View_Sharing", "ID");
-		//	tableVsPrimaryField.put("Pm_Exec_Sharing", "ID");
-		//	tableVsPrimaryField.put("Report_Folder_Sharing", "ID");
-		//	tableVsPrimaryField.put("Derivations", "ID");
-		//	tableVsPrimaryField.put("Tenant_Users", "TENANTID,ORG_USERID");
-		//	tableVsPrimaryField.put("Tenants_Utility_Mapping", "ID");
-		//	tableVsPrimaryField.put("Tenant_Attachments", "ID");
-		//	tableVsPrimaryField.put("Tenant_Notes", "ID");
-		//	tableVsPrimaryField.put("Rate_Card", "ID");
-		//	tableVsPrimaryField.put("Rate_Card_Services", "ID");
-		//	tableVsPrimaryField.put("Module_Local_ID", "MODULE_NAME,ORGID");
-		//	tableVsPrimaryField.put("Shift", "ID");
-		//	tableVsPrimaryField.put("Shift_User_Rel", "ID");
-		//	tableVsPrimaryField.put("Break", "ID");
-		//	tableVsPrimaryField.put("Shift_Break_Rel", "ID");
-		//	tableVsPrimaryField.put("Costs", "ID");
-		//	tableVsPrimaryField.put("Cost_Slabs", "ID");
-		//	tableVsPrimaryField.put("Additional_Costs", "ID");
-		//	tableVsPrimaryField.put("Cost_Assets", "ID");
-		// tableVsPrimaryField.put("Sync_Errors", "ORGID"); // check the primary key
-		//	tableVsPrimaryField.put("DeviceDetails", "ID");
-		// tableVsPrimaryField.put("ClientApp", "id");
-		// tableVsPrimaryField.put("MobileDetails", "ID");
-		//	tableVsPrimaryField.put("Workorder_cost", "ID");
-		//	tableVsPrimaryField.put("Gate_Pass", "ID");
-		//	tableVsPrimaryField.put("Gate_Pass_Notes", "ID");
-		//	tableVsPrimaryField.put("Gate_Pass_Attachments", "ID");
-		//	tableVsPrimaryField.put("Store_room_Notes", "ID");
-		//	tableVsPrimaryField.put("Store_room_Attachments", "ID");
-		//	tableVsPrimaryField.put("Store_Room_Photos", "ID");
-		//	tableVsPrimaryField.put("Vendors_Notes", "ID");
-		//	tableVsPrimaryField.put("Vendors_Attachments", "ID");
-		//	tableVsPrimaryField.put("Item_Types_Notes", "ID");
-		//	tableVsPrimaryField.put("Item_Types_Attachments", "ID");
-		//	tableVsPrimaryField.put("Purchased_Item", "ID");
-		//	tableVsPrimaryField.put("Inventory_Requests", "ID");
-		//	tableVsPrimaryField.put("Inventory_Request_Attachments", "ID");
-		//	tableVsPrimaryField.put("Inventory_Request_Notes", "ID");
-		//	tableVsPrimaryField.put("InventoryRequestLineItems", "ID");
-		//	tableVsPrimaryField.put("Shipment", "ID");
-		//	tableVsPrimaryField.put("Shipment_line_item", "ID");
-		//	tableVsPrimaryField.put("Shipment_Notes", "ID");
-		//	tableVsPrimaryField.put("Shipment_Attachments", "ID");
-		//	tableVsPrimaryField.put("Item_Transactions", "ID");
-		//	tableVsPrimaryField.put("Workorder_items", "ID");
-		//	tableVsPrimaryField.put("Item_Activity", "ID");
-		//	tableVsPrimaryField.put("Tool_types_category", "ID");
-		//	tableVsPrimaryField.put("Purchased_Tool", "ID");
-		//	tableVsPrimaryField.put("Tool_types_Notes", "ID");
-		//	tableVsPrimaryField.put("Tool_types_Attachments", "ID");
-		//	tableVsPrimaryField.put("Tool_transactions", "ID");
-		//	tableVsPrimaryField.put("Workorder_tools", "ID");
-		//	tableVsPrimaryField.put("Item_vendors", "ID");
-		//	tableVsPrimaryField.put("Tool_vendors", "ID");
-		//	tableVsPrimaryField.put("Labour", "ID");
-		//	tableVsPrimaryField.put("Workorder_labour", "ID");
-		// tableVsPrimaryField.put("Event_Property", "ID");
-		// tableVsPrimaryField.put("Event_Rule", "EVENT_RULE_ID");
-		// tableVsPrimaryField.put("Event_Rules", "ID");
-		// tableVsPrimaryField.put("Event", "ID");
-		// tableVsPrimaryField.put("Event_To_Alarm_Field_Mapping", "EVENT_TO_ALARM_FIELD_MAPPING_ID");
-		//	tableVsPrimaryField.put("Source_To_Resource_Mapping", "ID");
-		//	tableVsPrimaryField.put("Notification_Logger", "ID");
-		//	tableVsPrimaryField.put("Purchase_Requests", "ID");
-		//	tableVsPrimaryField.put("Purchase_Request_Attachments", "ID");
-		//	tableVsPrimaryField.put("Purchase_Request_Notes", "ID");
-		//	tableVsPrimaryField.put("Service", "ID");
-		//	tableVsPrimaryField.put("PurchaseRequestLineItems", "ID");
-		//	tableVsPrimaryField.put("Purchase_Order_Attachments", "ID");
-		//	tableVsPrimaryField.put("Purchase_Order_Notes", "ID");
-		//	tableVsPrimaryField.put("PurchaseOrderLineItems", "ID");
-		// tableVsPrimaryField.put("PurchaseRequest_PurchaseOrder", "PO_ID, PR_ID");
-		//	tableVsPrimaryField.put("Receivables", "ID");
-		//	tableVsPrimaryField.put("Receivables_Attachments", "ID");
-		//	tableVsPrimaryField.put("Receivables_Notes", "ID");
-		//	tableVsPrimaryField.put("Receipts", "ID");
-		//	tableVsPrimaryField.put("Contracts_Attachments", "ID");
-		//	tableVsPrimaryField.put("Contracts_Notes", "ID");
-		//	tableVsPrimaryField.put("Purchase_Contracts", "ID");
-		//	tableVsPrimaryField.put("PurchaseContractLineItems", "ID");
-		//	tableVsPrimaryField.put("Labour_Contracts", "ID");
-		//	tableVsPrimaryField.put("LabourContractLineItems", "ID");
-		//	tableVsPrimaryField.put("Storeroom_Sites", "ID");
-		//	tableVsPrimaryField.put("PO_Line_Item_Serial_Numbers", "ID");
-		//	tableVsPrimaryField.put("Item_Attachments", "ID");
-		//	tableVsPrimaryField.put("Item_Notes", "ID");
-		//	tableVsPrimaryField.put("Tool_Attachments", "ID");
-		//	tableVsPrimaryField.put("Tool_Notes", "ID");
-		//	tableVsPrimaryField.put("Gate_Pass_Line_Items", "ID");
-		//	tableVsPrimaryField.put("Workflow_RCA_Mapping", "RULE_ID,RCA_RULE_ID");
-		//	tableVsPrimaryField.put("AlarmWorkflow_Rule", "ID");
-		//	tableVsPrimaryField.put("StateFlow", "ID");
-		//	tableVsPrimaryField.put("StateFlowTransition", "ID");
-		//	tableVsPrimaryField.put("StateFlowScheduler", "ID");
-		//	tableVsPrimaryField.put("Workflow_Validation", "ID");
-		//	tableVsPrimaryField.put("CustomButton", "ID");
-		//	tableVsPrimaryField.put("ConnectedApps", "ID");
-		//	tableVsPrimaryField.put("Connection", "ID");
-		//	tableVsPrimaryField.put("Connection_Api", "ID");
-		//	tableVsPrimaryField.put("Connection_Params", "ID");
-		//	tableVsPrimaryField.put("ML", "ID");
-		//	tableVsPrimaryField.put("ML_Variables", "ID");
-		//	tableVsPrimaryField.put("ML_Model_Variables", "ID");
-		//	tableVsPrimaryField.put("ML_Asset_Variables", "ID");
-		//	tableVsPrimaryField.put("ML_Criteria_Variables", "ID");
-		//	tableVsPrimaryField.put("Rule_Templates_Rel", "ID");
-		//	tableVsPrimaryField.put("Shipped_Asset_Rel", "ID");
-		//	tableVsPrimaryField.put("PM_Planner_Settings", "ID");
-		//	tableVsPrimaryField.put("Attendance", "ID");
-		//	tableVsPrimaryField.put("Attendance_Transactions", "ID");
-		//	tableVsPrimaryField.put("Graphics_Folder", "ID");
-		//	tableVsPrimaryField.put("Graphics", "ID");
-		//	tableVsPrimaryField.put("Widget_Graphics", "ID");
-		//	tableVsPrimaryField.put("MV_Project", "ID");
-		//	tableVsPrimaryField.put("MV_Baseline", "ID");
-		//	tableVsPrimaryField.put("MV_Adjustment", "ID");
-		//	tableVsPrimaryField.put("Shift_Rotation", "ID");
-		//	tableVsPrimaryField.put("Shift_Rotation_Details", "ID");
-		//	tableVsPrimaryField.put("Shift_Rotation_Applicable_For", "ID");
-		//	tableVsPrimaryField.put("Store_Notification_config", "ID");
-		//	tableVsPrimaryField.put("Break_Transaction", "ID");
-		//	tableVsPrimaryField.put("Warranty_Contracts", "ID");
-		//	tableVsPrimaryField.put("Contracts_Associated_Assets", "ID");
-		//	tableVsPrimaryField.put("WarrantyContractLineItems", "ID");
-		//	tableVsPrimaryField.put("Workorder_service", "ID");
-		//	tableVsPrimaryField.put("Service_vendors", "ID");
-		//	tableVsPrimaryField.put("Rental_Lease_Contracts", "ID");
-		//	tableVsPrimaryField.put("RentalLeaseContractLineItems", "ID");
-		//	tableVsPrimaryField.put("Terms_And_Conditions", "ID");
-		//	tableVsPrimaryField.put("Terms_And_Conditions_Attachments", "ID");
-		//	tableVsPrimaryField.put("Terms_And_Conditions_Notes", "ID");
-		//	tableVsPrimaryField.put("Contracts_Associated_Terms", "ID");
-		//	tableVsPrimaryField.put("Digest_Configuration", "ID");
-		//	tableVsPrimaryField.put("Digest_Configuration_Users", "ID");
-		//	tableVsPrimaryField.put("Preference_Rules", "ID");
-		//	tableVsPrimaryField.put("Reading_Tools", "ID");
-		//	tableVsPrimaryField.put("Control_Group_Spaces", "ID");
-		//	tableVsPrimaryField.put("Control_Group_Include_Exclude_Resource", "ID");
-		//	tableVsPrimaryField.put("Control_Action_Command", "ID");
-		//	tableVsPrimaryField.put("Reservations", "ID");
-		//	tableVsPrimaryField.put("Reservation_Internal_Attendees", "ID");
-		//	tableVsPrimaryField.put("Reservation_External_Attendees", "ID");
-		//	tableVsPrimaryField.put("Reservation_Attachments", "ID");
-		//	tableVsPrimaryField.put("Reservation_Notes", "ID");
-		//	tableVsPrimaryField.put("Asset_Movement", "ID");
-		//	tableVsPrimaryField.put("PO_Associated_Terms", "ID");
-		//	tableVsPrimaryField.put("Devices", "ID");
-		//	tableVsPrimaryField.put("Digital_Log_Book", "ID");
-		//	tableVsPrimaryField.put("FacilioQueue", "ID");
-		//	tableVsPrimaryField.put("VisitorType", "ID");
-		//	tableVsPrimaryField.put("Visitor", "ID");
-		//	tableVsPrimaryField.put("Visitor_Attachments", "ID");
-		//	tableVsPrimaryField.put("Visitor_Notes", "ID");
-		//	tableVsPrimaryField.put("Visitor_Invites", "ID");
-		//	tableVsPrimaryField.put("Invite_Visitor_Rel", "ID");
-		//	tableVsPrimaryField.put("Visitor_Logging", "ID");
-		//	tableVsPrimaryField.put("VisitorLog_Triggers", "ID");
-		//	tableVsPrimaryField.put("Visitor_Logging_Attachments", "ID");
-		//	tableVsPrimaryField.put("Visitor_Logging_Notes", "ID");
-		//	tableVsPrimaryField.put("VisitorSettings", "VISITOR_TYPE_ID");
-		//	tableVsPrimaryField.put("Service_Catalog_Group", "ID");
-		//	tableVsPrimaryField.put("Service_Catalog", "ID");
-		//	tableVsPrimaryField.put("Insurance", "ID");
-		//	tableVsPrimaryField.put("Insurance_Attachments", "ID");
-		//	tableVsPrimaryField.put("Insurance_Notes", "ID");
-		//	tableVsPrimaryField.put("WatchList", "ID");
-		//	tableVsPrimaryField.put("WorkPermit", "ID");
-		//	tableVsPrimaryField.put("WorkPermit_Attachments", "ID");
-		//	tableVsPrimaryField.put("WorkPermit_Notes", "ID");
-		//	tableVsPrimaryField.put("Printers", "ID");
-		//	tableVsPrimaryField.put("Devices_Visitor_Kiosk", "ID");
-		//	tableVsPrimaryField.put("Devices_Feedback_Kiosk", "ID");
-		//	tableVsPrimaryField.put("Device_Catalog_Mapping", "ID");
-
-		//	tableVsPrimaryField.put("Reset_Counter_Meta", "ID");
-		//	tableVsPrimaryField.put("Task_Section", "ID");
-		//	tableVsPrimaryField.put("Tasks", "ID");
-		//	tableVsPrimaryField.put("Task_Attachments", "ID");
-		//	tableVsPrimaryField.put("Task_Input_Options", "ID");
-
-		//	tableVsPrimaryField.put("BaseAlarm", "ID");
-		//	tableVsPrimaryField.put("BaseAlarm_Notes", "ID");
-		//	tableVsPrimaryField.put("AlarmOccurrence", "ID");
-		//	tableVsPrimaryField.put("ReadingAlarmCategory", "ID");
-		//	tableVsPrimaryField.put("BaseEvent", "ID");
-		//	tableVsPrimaryField.put("Alarms", "ID");
-
-		//	tableVsPrimaryField.put("ReadingAlarmCategory", "ID");
-		////	tableVsPrimaryField.put("ReadingEvent", "ID");
-		//	tableVsPrimaryField.put("ReadingAlarmOccurrence", "ID");
-		//	tableVsPrimaryField.put("ReadingAlarm", "ID");
-		//	tableVsPrimaryField.put("BMSEvent", "ID");
-		//	tableVsPrimaryField.put("BMSAlarm", "ID");
-		//	tableVsPrimaryField.put("Reading_Alarms", "ID");
-		//	tableVsPrimaryField.put("ML", "ID");
-/*		tableVsPrimaryField.put("ML_Anomaly_Event", "ID");
-		tableVsPrimaryField.put("MLAlarmOccurence", "ID");
-		tableVsPrimaryField.put("ML_Anomaly_Alarm", "ID");
-		tableVsPrimaryField.put("RCA_Event", "ID");
-		tableVsPrimaryField.put("RCA_Alarm", "ID");
-		tableVsPrimaryField.put("ReadingRCAEvent", "ID");
-		tableVsPrimaryField.put("ReadingRCAAlarm", "ID");
-		tableVsPrimaryField.put("ML_Alarms", "ID");
-		tableVsPrimaryField.put("ML_Alarm_Occurrences", "ID");
-		tableVsPrimaryField.put("ReadingViolationEvent", "ID");
-		tableVsPrimaryField.put("ReadingViolationAlarm", "ID");
-		tableVsPrimaryField.put("ReadingViolationOccurrence", "ID");
-		tableVsPrimaryField.put("Reading_Rule_Alarm_Meta", "ID");
-		tableVsPrimaryField.put("Alarm_Activity", "ID");*/
-
-		tableVsPrimaryField.put("Energy_Data", "ID");/*
-		tableVsPrimaryField.put("Weather_Reading", "ID");
-		tableVsPrimaryField.put("Weather_Reading_Daily", "ID");
-		tableVsPrimaryField.put("Weather_Reading_Hourly_Forecast", "ID");
-		tableVsPrimaryField.put("Weather_Reading_Daily_Forecast", "ID");
-		tableVsPrimaryField.put("Psychrometric_Reading", "ID");
-		tableVsPrimaryField.put("CDD_Reading", "ID");
-		tableVsPrimaryField.put("HDD_Reading", "ID");
-		tableVsPrimaryField.put("WDD_Reading", "ID");
-		tableVsPrimaryField.put("Temperature_Reading", "ID");
-		tableVsPrimaryField.put("Humidity_Reading", "ID");
-		tableVsPrimaryField.put("CO2_Reading", "ID");
-		tableVsPrimaryField.put("Chiller_Readings", "ID");
-		tableVsPrimaryField.put("Chiller_Readings2", "ID");
-		tableVsPrimaryField.put("Chiller_Plant_Manager_Readings", "ID");
-		tableVsPrimaryField.put("Chiller_Condenser_Readings", "ID");
-		tableVsPrimaryField.put("Chiller_Primary_Pump_Readings", "ID");
-		tableVsPrimaryField.put("Chiller_Secondary_Pump_Readings", "ID");
-		tableVsPrimaryField.put("Current_Occupancy_Reading", "ID");
-		tableVsPrimaryField.put("Assigned_Occupancy_Reading", "ID");
-		tableVsPrimaryField.put("Set_Point_Reading", "ID");
-		tableVsPrimaryField.put("Chiller_Condenser_Pump_Readings", "ID");
-		tableVsPrimaryField.put("AHU_Readings", "ID");
-		tableVsPrimaryField.put("FAHU_Readings", "ID");
-		tableVsPrimaryField.put("FCU_Readings", "ID");
-		tableVsPrimaryField.put("Cooling_Tower_Readings", "ID");
-		tableVsPrimaryField.put("Heat_Pump_Readings", "ID");
-		tableVsPrimaryField.put("Utility_Bill_Readings", "ID");
-		tableVsPrimaryField.put("Water_Readings", "ID");
-		tableVsPrimaryField.put("Readings", "ID");
-		tableVsPrimaryField.put("Readings_2", "ID");
-		tableVsPrimaryField.put("Formula_Readings", "ID");
-		tableVsPrimaryField.put("Controller_Readings", "ID");
-		tableVsPrimaryField.put("Predicted_Readings", "ID");
-		tableVsPrimaryField.put("PM_Readings", "ID");
-		tableVsPrimaryField.put("Marked_Reading", "ID");
-		tableVsPrimaryField.put("Cost_Readings", "ID");
-		tableVsPrimaryField.put("ML_Readings", "ID");
-		tableVsPrimaryField.put("ML_Log_Readings", "ID");
-		tableVsPrimaryField.put("MV_Readings", "ID");
-		tableVsPrimaryField.put("MV_Adjustment_Readings", "ID");*/
-
+	private static List<String> init() {
+		return Arrays.asList(
+				"Role",
+				"FacilioFile",
+				"Modules",
+				"Permission",
+				"BusinessHours",
+				"Forms",
+				"SingleDayBusinessHours",
+				"Resources",
+				"BaseSpace",
+				"ORG_Users",
+				"People",
+				"Global_FacilioAuthToken",
+				"Global_Domain_Index",
+				"Locations",
+				"TicketStatus",
+				"Clients",
+				"Clients_Notes",
+				"Clients_Attachments",
+				"Site",
+				"Org_Units",
+				"UtilityProviders",
+				"FacilioGroups",
+				"FacilioGroupMembers",
+				"ORGCache",
+				"SubModulesRel",
+				"Fields",
+				"LookupFields",
+				"MultiLookupFields",
+				"MultiEnumFields",
+				"NumberFields",
+				"BooleanFields",
+				"EnumFieldValues",
+				"SystemEnumFields",
+				"FileFields",
+				"Shift_Readings",
+				"ResizedFile",
+				"Common_Job_Props",
+				"Workflow_Namespace",
+				"Workflow",
+				"Workflow_User_Function",
+				"Workflow_Field",
+				"Workflow_Log",
+				"Scheduled_Workflow",
+				"Accessible_Space",
+				"Resource_Readings",
+				"Current_Occupancy_Reading",
+				"Assigned_Occupancy_Reading",
+				"Temperature_Reading",
+				"Humidity_Reading",
+				"CO2_Reading",
+				"Set_Point_Reading",
+				"Weather_Reading",
+				"Weather_Reading_Daily",
+				"Weather_Reading_Hourly_Forecast",
+				"Weather_Reading_Daily_Forecast",
+				"Psychrometric_Reading",
+				"CDD_Reading",
+				"HDD_Reading",
+				"WDD_Reading",
+				"BaseSpace_Photos",
+				"BaseSpace_Attachments",
+				"BaseSpace_Notes",
+				"Form_Section",
+				"Form_Fields",
+				"Building",
+				"Agent_Data",
+				"Agent_Log",
+				"Agent_Metrics",
+				"Agent_Message",
+				"Agent_Integration",
+				"Controller",
+				"Controller_Activity",
+				"Controller_Activity_Records",
+				"Controller_Activity_Watcher",
+				"Controller_Building_Rel",
+				"Publish_Data",
+				"Publish_Message",
+				"Floor",
+				"Space_Category",
+				"Space_Category_Readings",
+				"Space",
+				"Zone",
+				"Zone_Space",
+				"Store_room",
+				"Item_Types_category",
+				"Item_Type_Activity",
+				"Inventory_category",
+				"Item_Types_status",
+				"Item_Types",
+				"Item_status",
+				"Item",
+				"Tool_types_status",
+				"Tool_types",
+				"Tool_status",
+				"Tool",
+				"Vendors",
+				"Contracts",
+				"Purchase_Orders",
+				"Asset_Types",
+				"Asset_Categories",
+				"RecommendedRule",
+				"Asset_Category_Readings",
+				"Asset_Departments",
+				"Assets",
+				"Relationship",
+				"Related_Assets",
+				"Asset_Activity",
+				"AssetDepreciation",
+				"Asset_Depreication_Rel",
+				"Asset_Depreciation_Calculation",
+				"Agent",
+				"Asset_Breakdown",
+				"Asset_BD_SourceDetails",
+				"Agent_V2_Metrics",
+				"Field_Device",
+				"Controllers",
+				"Misc_Controller",
+				"Custom_Controller",
+				"Rest_Controller",
+				"BACnet_IP_Controller",
+				"Niagara_Controller",
+				"LonWorks_Controller",
+				"Rtu_Network",
+				"Modbus_Rtu_Controller",
+				"Modbus_Tcp_Controller",
+				"OpcXMLDA_Controller",
+				"OpcUA_Controller",
+				"Iot_Data",
+				"Iot_Message",
+				"Modbus_Import",
+				"Agent_V2_Log",
+				"Agent_Thread_Dump",
+				"AssetCustomModuleData",
+				"Work_Order_Activity",
+				"Energy_Meter_Purpose",
+				"Energy_Meter",
+				"Controller_Asset",
+				"Virtual_Energy_Meter_Rel",
+				"Hvac",
+				"Chiller",
+				"Chiller_Readings",
+				"Chiller_Readings2",
+				"Chiller_Plant_Manager",
+				"Chiller_Plant_Manager_Readings",
+				"Chiller_Condenser_Readings",
+				"Chiller_Primary_Pump",
+				"Chiller_Primary_Pump_Readings",
+				"Chiller_Secondary_Pump",
+				"Chiller_Secondary_Pump_Readings",
+				"Chiller_Condenser_Pump",
+				"Chiller_Condenser_Pump_Readings",
+				"AHU",
+				"AHU_Readings_General",
+				"AHU_Readings_Supply_Air",
+				"AHU_Readings_Exhaust_Air",
+				"AHU_Readings_Mix_Air",
+				"FAHU",
+				"FAHU_Readings_General",
+				"FAHU_Readings_Supply_Air",
+				"FAHU_Readings_Return_Air",
+				"Cooling_Tower",
+				"Cooling_Tower_Readings",
+				"FCU",
+				"FCU_Readings_2",
+				"Heat_Pump",
+				"Heat_Pump_Readings",
+				"Utility_Meters",
+				"Utility_Bill_Readings",
+				"Water_Meter",
+				"Water_Readings",
+				"Asset_Photos",
+				"Asset_Attachments",
+				"Site_Attachments",
+				"Asset_Notes",
+				"TicketStateFlow",
+				"Tenants",
+				"Tenant_Unit_Space",
+				"Contacts",
+				"Contacts_Attachments",
+				"Contacts_Notes",
+				"ServiceRequestPriority",
+				"Service_Requests",
+				"TicketPriority",
+				"TicketCategory",
+				"TicketType",
+				"Tickets",
+				"Ticket_Attachments",
+				"Ticket_Notes",
+				"WorkOrderRequests",
+				"WorkOrderRequest_EMail",
+				"Task_Section",
+				"Tasks",
+				"Task_Attachments",
+				"Task_Input_Options",
+				"UserLocationCoverage",
+				"GroupLocationCoverage",
+				"Skills",
+				"UserSkills",
+				"GroupSkills",
+				"Alarm_Severity",
+				"Alarm_Entity",
+				"Readings",
+				"Readings_2",
+				"Readings_3",
+				"Formula_Readings",
+				"Aggregated_Readings",
+				"Controller_Readings",
+				"Predicted_Readings",
+				"CustomModuleData",
+				"Custom_Rel_Records",
+				"Custom_Multi_Enum_Values",
+				"CMD_Notes",
+				"CMD_Attachments",
+				"Attachments",
+				"Notes",
+				"Energy_Data_2",
+				"Criteria",
+				"Conditions",
+				"RollUpFields",
+				"Form_Rule",
+				"Form_Rule_Action",
+				"Form_Rule_Action_Field",
+				"Views",
+				"View_Sort_Columns",
+				"ImportProcess",
+				"ImportTemplate",
+				"ImportProcessLog",
+				"Expression",
+				"KPI_Category",
+				"Formula_Field",
+				"Formula_Field_Inclusions",
+				"Formula_Field_Resource_Jobs",
+				"Module_KPIs",
+				"Job_Plan",
+				"Templates",
+				"EMail_Templates",
+				"Workflow_Template",
+				"Control_Groups",
+				"Control_Action_Template",
+				"SMS_Templates",
+				"Whatsapp_Message_Template",
+				"Call_Template",
+				"Assignment_Templates",
+				"SLA_Templates",
+				"Push_Notification_Templates",
+				"JSON_Template",
+				"Form_Template",
+				"Safety_Plan",
+				"Workorder_Template",
+				"Task_Section_Template",
+				"Prerequisite_Approvers_Template",
+				"Task_Template",
+				"Action",
+				"Workflow_Rule",
+				"Workflow_Field_Change_Fields",
+				"Workflow_Rule_Action",
+				"Excel_Templates",
+				"Excel_PlaceHolders",
+				"Tenant_spaces",
+				"Preventive_Maintenance",
+				"PM_Include_Exclude_Resource",
+				"Approval_Rules",
+				"Approvers",
+				"Approver_Actions_Rel",
+				"Approval_Steps",
+				"PM_Triggers",
+				"WorkOrders",
+				"Related_Workorders",
+				"Prerequisite_Photos",
+				"Prerequisite_Approvers",
+				"WorkOrderTimeLog",
+				"BaseAlarm",
+				"BaseAlarm_Notes",
+				"AlarmOccurrence",
+				"ReadingAlarmCategory",
+				"BaseEvent",
+				"Alarms",
+				"AlarmFollowers",
+				"User_Workhour_Readings",
+				"PM_Readings",
+				"SupportEmails",
+				"EmailSettings",
+				"PortalInfo",
+				"Ticket_Activity",
+				"Connected_App",
+				"Tab_Widget",
+				"Notification",
+				"Report_Folder",
+				"Report_Formula_Field",
+				"Report_Field",
+				"Report_Entity",
+				"Report",
+				"Report_DateFilter",
+				"Report_EnergyMeter",
+				"Report_Criteria",
+				"Report_Threshold",
+				"Report_User_Filter",
+				"BaseLines",
+				"Benchmark",
+				"Report1_Folder",
+				"Report1",
+				"Report_Notes",
+				"Report_Fields",
+				"Dashboard_Folder",
+				"Dashboard",
+				"Dashboard_Tab",
+				"Dashboard_Notes",
+				"Space_Filtered_Dashboard_Settings",
+				"Widget",
+				"Widget_Chart",
+				"Widget_List_View",
+				"Widget_Static",
+				"Widget_Vs_Workflow",
+				"Widget_Web",
+				"Widget_Card",
+				"Screen_Dashboard_Rel",
+				"Formula",
+				"Report_SpaceFilter",
+				"Unmodeled_Instance",
+				"Points",
+				"Point",
+				"Misc_Point",
+				"BACnet_IP_Point",
+				"Niagara_Point",
+				"OPC_XML_DA_Point",
+				"Modbus_Tcp_Point",
+				"Modbus_Rtu_Point",
+				"OPC_UA_Point",
+				"Historical_Logger",
+				"Workflow_Rule_Historical_Logger",
+				"Formula_Field_Historical_Logger",
+				"Workflow_Rule_Logger",
+				"Workflow_Rule_Resource_Logger",
+				"Workflow_Rule_Historical_Logs",
+				"Unmodeled_Data",
+				"Instance_To_Asset_Mapping",
+				"View_Column",
+				"License",
+				"FeatureLicense",
+				"OrgInfo",
+				"View_Schedule_Info",
+				"Report_Schedule_Info",
+				"Report_Schedule_Info1",
+				"Calendar_Color",
+				"Benchmark_Units",
+				"Report_Benchmark_Rel",
+				"Reading_Rule",
+				"Reading_Alarm_Rule",
+				"Reading_Rule_Inclusions_Exclusions",
+				"ReadingEvent",
+				"ReadingAlarmOccurrence",
+				"ReadingAlarm",
+				"BMSEvent",
+				"BMSAlarm",
+				"Reading_Alarms",
+				"ML",
+				"ML_Anomaly_Event",
+				"MLAlarmOccurence",
+				"ML_Anomaly_Alarm",
+				"PreEvent",
+				"PreAlarmOccurrence",
+				"PreAlarm",
+				"RCA_Event",
+				"RCA_Alarm",
+				"ReadingRCAEvent",
+				"ReadingRCAAlarm",
+				"ML_Alarms",
+				"ML_Alarm_Occurrences",
+				"ReadingViolationEvent",
+				"ReadingViolationAlarm",
+				"ReadingViolationOccurrence",
+				"Reading_Rule_Alarm_Meta",
+				"SLA_Rule",
+				"Reading_Rule_Flaps",
+				"Reading_Rule_Metrics",
+				"Scheduled_Actions",
+				"Task_Section_Template_Triggers",
+				"PM_Jobs",
+				"PM_Reminders",
+				"PM_Reminder_Action",
+				"Before_PM_Reminder_Trigger_Rel",
+				"After_PM_Reminder_WO_Rel",
+				"PM_Resource_Planner",
+				"PM_Resource_Planner_Reminder",
+				"PM_Resource_Planner_Triggers",
+				"PM_Resource_Schedule_Rule_Rel",
+				"Report_BaseLine_Rel",
+				"Report_Columns",
+				"Reading_Data_Meta",
+				"Reset_Counter_Meta",
+				"Reading_Input_Values",
+				"Marked_Reading",
+				"Dashboard_Sharing",
+				"View_Sharing",
+				"Pm_Exec_Sharing",
+				"Report_Folder_Sharing",
+				"Derivations",
+				"Tenant_Users",
+				"Tenants_Utility_Mapping",
+				"Tenant_Attachments",
+				"Tenant_Notes",
+				"Rate_Card",
+				"Rate_Card_Services",
+				"Module_Local_ID",
+				"Shift",
+				"Shift_User_Rel",
+				"Break",
+				"Shift_Break_Rel",
+				"Costs",
+				"Cost_Slabs",
+				"Additional_Costs",
+				"Cost_Assets",
+				"Cost_Readings",
+				"Sync_Errors",
+				"DeviceDetails",
+				"Workorder_cost",
+				"Gate_Pass",
+				"Gate_Pass_Notes",
+				"Gate_Pass_Attachments",
+				"Store_room_Notes",
+				"Store_room_Attachments",
+				"Store_Room_Photos",
+				"Vendors_Notes",
+				"Vendors_Attachments",
+				"Item_Types_Notes",
+				"Item_Types_Attachments",
+				"Purchased_Item",
+				"StateFlow",
+				"Inventory_Requests",
+				"Inventory_Request_Attachments",
+				"Inventory_Request_Notes",
+				"InventoryRequestLineItems",
+				"Shipment",
+				"Shipment_line_item",
+				"Shipment_Notes",
+				"Shipment_Attachments",
+				"Item_Transactions",
+				"Workorder_items",
+				"Item_Activity",
+				"Tool_types_category",
+				"Purchased_Tool",
+				"Tool_types_Notes",
+				"Tool_types_Attachments",
+				"Tool_transactions",
+				"Workorder_tools",
+				"Item_vendors",
+				"Tool_vendors",
+				"Labour",
+				"Workorder_labour",
+				"Event_Property",
+				"Event_Rule",
+				"Event_Rules",
+				"Event",
+				"Event_To_Alarm_Field_Mapping",
+				"Source_To_Resource_Mapping",
+				"Notification_Logger",
+				"Purchase_Requests",
+				"Purchase_Request_Attachments",
+				"Purchase_Request_Notes",
+				"Service",
+				"PurchaseRequestLineItems",
+				"Purchase_Order_Attachments",
+				"Purchase_Order_Notes",
+				"PurchaseOrderLineItems",
+				"Receivables",
+				"Receivables_Attachments",
+				"Receivables_Notes",
+				"Receipts",
+				"Contracts_Attachments",
+				"Contracts_Notes",
+				"Purchase_Contracts",
+				"PurchaseContractLineItems",
+				"Labour_Contracts",
+				"LabourContractLineItems",
+				"Storeroom_Sites",
+				"PO_Line_Item_Serial_Numbers",
+				"Item_Attachments",
+				"Item_Notes",
+				"Tool_Attachments",
+				"Tool_Notes",
+				"Gate_Pass_Line_Items",
+				"Workflow_RCA_Mapping",
+				"AlarmWorkflow_Rule",
+				"StateFlowTransition",
+				"ParallelStateTransitionStatus",
+				"StateFlowScheduler",
+				"Workflow_Validation",
+				"CustomButton",
+				"SLA_Entity",
+				"SLA_Workflow_Commitment_Duration",
+				"SLA_Workflow_Escalation",
+				"SLA_Workflow_Escalation_Action",
+				"ConnectedApps",
+				"ConnectedApps_SAML",
+				"ConnectedApp_Widgets",
+				"Variables",
+				"Connection",
+				"ConnectedApp_Connectors",
+				"Connection_Api",
+				"Connection_Params",
+				"ML",
+				"ML_Variables",
+				"ML_Model_Variables",
+				"ML_Asset_Variables",
+				"ML_Criteria_Variables",
+				"ML_Readings",
+				"ML_Log_Readings",
+				"Rule_Templates_Rel",
+				"Shipped_Asset_Rel",
+				"PM_Planner_Settings",
+				"Attendance",
+				"Attendance_Transactions",
+				"Graphics_Folder",
+				"Graphics",
+				"Widget_Graphics",
+				"MV_Project",
+				"MV_Baseline",
+				"MV_Adjustment",
+				"Shift_Rotation",
+				"Shift_Rotation_Details",
+				"Shift_Rotation_Applicable_For",
+				"Store_Notification_config",
+				"Break_Transaction",
+				"Warranty_Contracts",
+				"Contracts_Associated_Assets",
+				"WarrantyContractLineItems",
+				"Workorder_service",
+				"Service_vendors",
+				"Rental_Lease_Contracts",
+				"RentalLeaseContractLineItems",
+				"Terms_And_Conditions",
+				"Terms_And_Conditions_Attachments",
+				"Terms_And_Conditions_Notes",
+				"Contracts_Associated_Terms",
+				"Digest_Configuration",
+				"Digest_Configuration_Users",
+				"Preferences",
+				"Preference_Rules",
+				"Reading_Tools",
+				"Control_Group_Spaces",
+				"Control_Group_Include_Exclude_Resource",
+				"Control_Action_Command",
+				"Reservations",
+				"Reservation_Internal_Attendees",
+				"Reservation_External_Attendees",
+				"Reservation_Attachments",
+				"Reservation_Notes",
+				"Asset_Movement",
+				"PO_Associated_Terms",
+				"Devices",
+				"Digital_Log_Book",
+				"FacilioQueue",
+				"VisitorType",
+				"Visitor",
+				"FaceCollections",
+				"Visitor_Faces",
+				"Visitor_Attachments",
+				"Visitor_Notes",
+				"Visitor_Invites",
+				"Invite_Visitor_Rel",
+				"Visitor_Logging",
+				"VisitorLog_Triggers",
+				"Visitor_Logging_Attachments",
+				"Visitor_Logging_Notes",
+				"VisitorSettings",
+				"Service_Catalog_Group",
+				"Service_Catalog",
+				"Insurance",
+				"Insurance_Attachments",
+				"Insurance_Notes",
+				"WatchList",
+				"WorkPermit",
+				"WorkPermit_Attachments",
+				"WorkPermit_Notes",
+				"MV_Readings",
+				"Alarm_Activity",
+				"Form_Site_Relation",
+				"MV_Adjustment_Readings",
+				"Printers",
+				"Devices_Visitor_Kiosk",
+				"Occupants",
+				"Occupants_Attachments",
+				"Occupants_Notes",
+				"Scoping",
+				"Application",
+				"WebTab_Group",
+				"WebTab",
+				"NewPermission",
+				"TABID_MODULEID_APPID_MAPPING",
+				"Service_Requests_Notes",
+				"Service_Requests_Attachments",
+				"Service_Requests_Activity",
+				"CB_Model",
+				"CB_Model_Versions",
+				"CB_Intent",
+				"CB_Intent_Action",
+				"CB_Intent_Invoke_Sample",
+				"CB_Intent_Params",
+				"CB_Intent_Child",
+				"CB_Session",
+				"CB_Session_Conversation",
+				"CB_Session_Params",
+				"Agent_Alarm",
+				"Agent_Event",
+				"Agent_AlarmOccurrence",
+				"AgentAlarm_Controller_Rel",
+				"AgentEvent_Controller_Rel",
+				"Vendor_Documents",
+				"Hazard",
+				"Safety_Plan_Attachments",
+				"Safety_Plan_Notes",
+				"Hazard_Attachments",
+				"Hazard_Notes",
+				"Precaution",
+				"Precaution_Attachments",
+				"Precaution_Notes",
+				"SafetyPlan_Hazard",
+				"Hazard_Precautions",
+				"Workorder_Hazards",
+				"Asset_Hazards",
+				"DEMO_ROLLUP_TOOL",
+				"Feedback_Type",
+				"Feedback_Type_Catalog_Mapping",
+				"Feedback_Kiosk",
+				"Rating",
+				"PM_Job_Plan",
+				"PM_Job_Plan_Triggers",
+				"Controllable_Asset_Category",
+				"Controllable_Point",
+				"Floor_Plan",
+				"Floorplan_Objects",
+				"Control_Point",
+				"Smart_Control_Kiosk",
+				"CommissioningLog",
+				"CommissioningLogController",
+				"Bim_Integration_Logs",
+				"Bim_Import_Process_Mapping",
+				"Bim_Default_Values",
+				"People_Attachments",
+				"People_Notes",
+				"Vendor_Contacts",
+				"Tenant_Contacts",
+				"Employee",
+				"Client_Contacts",
+				"ORG_User_Apps",
+				"Operation_Alarm",
+				"Operation_Event",
+				"Operation_Alarm_Occurrence",
+				"Operation_Alarm_Historical_Logs",
+				"Energy_Star_Customer",
+				"Energy_Star_Property",
+				"Energy_Star_Property_Use",
+				"Energy_Star_Meter",
+				"Scoping_Config"
+		);
 	}
 
 	private static String getInsertStatement(String tableName, String[] columns) {
@@ -610,9 +725,13 @@ public class DbShradingScript {
 	}
 
 	private static String getSelectStatement(String tableName, String fieldName, long offset) {
-		String sql = new StringBuilder("SELECT * FROM ").append(tableName).append(" WHERE ORGID = ").append(ORGID)
-				.append(" ORDER BY ").append(fieldName).append(" LIMIT ").append(LIMIT).append(" OFFSET ")
-				.append(offset).append(";").toString();
+		StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM ").append(tableName).append(" WHERE ORGID = ").append(ORGID);
+				if (fieldName != null && !fieldName.isEmpty()) {
+					sqlBuilder.append(" ORDER BY ").append(fieldName);
+				}
+				sqlBuilder.append(" LIMIT ").append(LIMIT).append(" OFFSET ")
+				.append(offset).append(";");
+		String sql = sqlBuilder.toString();
 		System.out.println("Select statement : " + sql);
 		return sql;
 	}
@@ -633,12 +752,12 @@ public class DbShradingScript {
 		Connection con2 = null;
 		try (Connection con1 = getConn1();) {
 			con2 = getConn2();
-			init();
-			for (Map.Entry<String, String> entry : tableVsPrimaryField.entrySet()) {
+			for (String tableName : tables) {
 				int totalCount = 0;
 				while (true) {
+					String pk = getPKs(con1, tableName);
 					try (PreparedStatement pstmt1 = con1
-							.prepareStatement(getSelectStatement(entry.getKey(), entry.getValue(), totalCount));
+							.prepareStatement(getSelectStatement(tableName, pk, totalCount));
 						 ResultSet rs = pstmt1.executeQuery()) {
 						long id = -1;
 						int count = 0;
@@ -649,7 +768,7 @@ public class DbShradingScript {
 							columns[i] = rdm.getColumnName(i + 1);
 						}
 						try (PreparedStatement pstmt2 = con2
-								.prepareStatement(getInsertStatement(entry.getKey(), columns));) {
+								.prepareStatement(getInsertStatement(tableName, columns));) {
 							int currentBatch = 0;
 							while (rs.next()) {
 								id = rs.getLong(1);
@@ -663,10 +782,10 @@ public class DbShradingScript {
 							if (currentBatch > 0) {
 								executeBatch(count, pstmt2, id);
 								con2.commit();
-								System.out.println("Migration done for table: " + entry.getKey());
+								System.out.println("Migration done for table: " + tableName);
 							}
 							else {
-								System.out.println("Migration done for table: " + entry.getKey());
+								System.out.println("Migration completed for table: " + tableName);
 								break;
 							}
 						} catch (Exception e) {
