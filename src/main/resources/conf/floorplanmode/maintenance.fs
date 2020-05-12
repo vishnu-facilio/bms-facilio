@@ -13,29 +13,24 @@ spaceIds = params.spaceId;
   workorder = Module("workorder").fetch(db);
     if (workorder != null) {
       icon = {};
-      label = "" + workorder.size();
+      label= {};
+      label["value"] = "" + workorder.size();
+      label["unit"] = "";
+
       icon["type"] = "MAINTENANCE";
       icon["position"] = "center";
-      icon["label"] = label;
+      icon["value"] = label;
       icons = [];
       icons.add(icon);
       area["spaceId"] = spaceId;
-      area["label"] = label;
       area["values"] = workorder;
       area["icons"] = icons;
-      tooltipData = {};
-      tooltipData.content = "Total workorders is " + workorder.size();
-      area.tooltipData = tooltipData;
       areas.add(area);
      }
     else {
       empty = [];
       area["spaceId"] = spaceId;
-      area["label"] = "0";
       area["values"] = empty;
-      tooltipData = {};
-      tooltipData.content = "No workorder assigned yet";
-      area.tooltipData = tooltipData;
       areas.add(area);
     }
       }
