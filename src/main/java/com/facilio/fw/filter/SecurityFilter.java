@@ -1,7 +1,6 @@
 package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.filters.AccessLogFilter;
 import com.facilio.fw.util.RequestUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -46,19 +45,19 @@ public class SecurityFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String requestUri = request.getRequestURI();
-        if (FacilioProperties.isProduction() && !isWhiteListedUri(requestUri)) {
+        if (true /*FacilioProperties.isProduction()*/ && !isWhiteListedUri(requestUri)) {
             String csrfCookieToken = FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE);
             if (StringUtils.isNotEmpty(csrfCookieToken)) {
                 String csrfHeaderToken = request.getHeader(CSRF_HEADER);
                 if (csrfHeaderToken == null) {
-                    handleInvalid(request, response, "header token is null when cookie is not null");
-//                    chain.doFilter(req, res);
+                    handleInvalid(request, "header token is null when cookie is not null");
+                    chain.doFilter(req, res);
                 }
                 else if (csrfCookieToken.equals(csrfHeaderToken)) {
                     chain.doFilter(req, res);
                 } else {
-                    handleInvalid(request, response, "header token didn't match with cookie");
-//                    chain.doFilter(req, res);
+                    handleInvalid(request, "header token didn't match with cookie");
+                    chain.doFilter(req, res);
                 }
             } else {
                 chain.doFilter(req, res);
@@ -79,7 +78,7 @@ public class SecurityFilter implements Filter {
         return false;
     }
 
-    private void handleInvalid(HttpServletRequest request, HttpServletResponse response, String reason) {
+    private void handleInvalid(HttpServletRequest request, String reason) {
         String uri = request.getRequestURI();
         String app = request.getServerName();
         String appName = (String) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME);
@@ -98,9 +97,9 @@ public class SecurityFilter implements Filter {
         event.setProperty("app", app);
 
         LOGGER.callAppenders(event);
-        response.setContentType("text/plain");
-        response.setStatus(403);
-        response.resetBuffer();
+//        response.setContentType("text/plain");
+//        response.setStatus(403);
+//        response.resetBuffer();
     }
 
     @Override
