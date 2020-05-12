@@ -1,8 +1,10 @@
 package com.facilio.energystar.context;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum Meter_Category_Points {
@@ -67,5 +69,24 @@ public enum Meter_Category_Points {
 	
 	public static Meter_Category_Points valueOf(int categoryId) {
 		return POINT_MAP.get(categoryId);
+	}
+	
+	private static final Map<Integer, List<Meter_Category_Points>> POINT_CATEGORY_MAP = Collections.unmodifiableMap(initPointCategoryMap());
+	
+	private static Map<Integer, List<Meter_Category_Points>> initPointCategoryMap() {
+		Map<Integer, List<Meter_Category_Points>> typeMap = new HashMap<>();
+		
+		for(Meter_Category_Points type : values()) {
+			List<Meter_Category_Points> pointList = typeMap.get(type.getparentMeterCategory().getIntVal()) == null ? new ArrayList<>() : typeMap.get(type.getparentMeterCategory().getIntVal()); 
+			pointList.add(type);
+			
+			typeMap.put(type.getparentMeterCategory().getIntVal(), pointList);
+		}
+		return typeMap;
+	}
+	
+	
+	public static List<Meter_Category_Points> getPointList(int parentCategoryId) {
+		return POINT_CATEGORY_MAP.get(parentCategoryId);
 	}
 }

@@ -50,6 +50,10 @@ public class EnergyStarUtil {
 	public static final String ENERGY_STAR_METER_ID = "energyStarMeterID";
 	
 	public static final String ENERGY_STAR_METER_DATA_MODULE_NAME = "energyStarMeterData";
+
+	public static final String ENERGY_STAR_METER_VS_ID_MAP = "energyStarMeterVsIDMap";
+
+	public static final String ENERGY_STAR_METER_VS_METER_DATA_MAP = "energyStarMeterVsMeterDataMap";
 	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {

@@ -1,5 +1,6 @@
 package com.facilio.energystar.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,18 +24,28 @@ public class ESFillMeterDetails extends FacilioCommand {
 		List<EnergyStarMeterDataContext> meterDatas = (List<EnergyStarMeterDataContext>)context.get(EnergyStarUtil.ENERGY_STAR_METER_DATA_CONTEXTS);
 		
 		Map<Long,EnergyStarMeterContext> meterMap = new HashMap<Long, EnergyStarMeterContext>();
-		for(EnergyStarMeterDataContext meterData : meterDatas) {
+		
+		Map<Long,List<EnergyStarMeterDataContext>> meterDataMap = new HashMap<>(); 
+		
+		for(EnergyStarMeterDataContext meterData :meterDatas) {
 			
-			if(!meterMap.containsKey(meterData.getParentId())) {
-				Map<String, Object> prop = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(), null, CriteriaAPI.getIdCondition(meterData.getParentId(), ModuleFactory.getEnergyStarMeterModule())).get(0);
-				
-				EnergyStarMeterContext meter = FieldUtil.getAsBeanFromMap(prop, EnergyStarMeterContext.class);
-				
-				meterMap.put(meter.getId(), meter);
-			}
+			Map<String, Object> prop = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(), null, CriteriaAPI.getIdCondition(meterData.getParentId(), ModuleFactory.getEnergyStarMeterModule())).get(0);
 			
-			meterData.setParent(meterMap.get(meterData.getParentId()));
+			EnergyStarMeterContext meter = FieldUtil.getAsBeanFromMap(prop, EnergyStarMeterContext.class);
+			
+			meterMap.put(meter.getId(), meter);
+			
+			meterData.setParent(meter);
+			
+			List<EnergyStarMeterDataContext> data = meterDataMap.get(meterData.getParentId()) == null ? new ArrayList<>() : meterDataMap.get(meterData.getParentId());
+			
+			data.add(meterData);
+			
+			meterDataMap.put(meterData.getParentId(), data);
 		}
+		
+		context.put(EnergyStarUtil.ENERGY_STAR_METER_VS_ID_MAP, meterMap);
+		context.put(EnergyStarUtil.ENERGY_STAR_METER_VS_METER_DATA_MAP, meterDataMap);
 		
 		return false;
 	}

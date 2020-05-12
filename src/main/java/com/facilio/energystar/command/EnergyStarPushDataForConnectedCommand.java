@@ -71,9 +71,9 @@ public class EnergyStarPushDataForConnectedCommand extends FacilioCommand {
 			
 			String to = DateTimeUtil.getFormattedTime(DateTimeUtil.addDays(startTime, 1), "yyyy-MM-dd");
 			
-			String id = EnergyStarSDK.addConsumptionData(meter, value.toString(), from, to);
-			
-			System.out.println("recieved id --- "+id);
+//			String id = EnergyStarSDK.addConsumptionData(meter, value.toString(), from, to);
+//			
+//			System.out.println("recieved id --- "+id);
 		}
 		return false;
 	}

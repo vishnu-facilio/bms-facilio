@@ -19,10 +19,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarMeterContext;
+import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarProperyUseContext;
 import com.facilio.energystar.context.Meter_Category;
+import com.facilio.energystar.context.Meter_Category_Points;
 import com.facilio.services.FacilioHttpUtils;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class EnergyStarSDK {
@@ -166,14 +169,39 @@ public class EnergyStarSDK {
 			
 	}
 	
-	public static String addConsumptionData(EnergyStarMeterContext meter,String value,String from,String to) throws Exception {
+	public static void addConsumptionData(EnergyStarMeterContext meter,List<EnergyStarMeterDataContext> datas,boolean isEstimated) throws Exception {
 		
-		XMLBuilder builder = XMLBuilder.create("meterData")
-								.element("meterConsumption")
-									.element("usage").t(value).p()
-									.element("startDate").t(from).p()
-									.element("endDate").t(to)
-								;
+		XMLBuilder builder = XMLBuilder.create("meterData");
+		
+		Map<String,EnergyStarMeterDataContext> dataStartTimeMap = new HashMap<>();
+		for(EnergyStarMeterDataContext data :datas) {
+			
+			dataStartTimeMap.put(data.getFormatedStartTime(), data);
+			
+			builder = builder.e("meterConsumption");
+			if(isEstimated) {
+				builder.a("estimatedValue", isEstimated+"");
+			}
+			builder = builder.element("startDate")
+						.t(data.getFormatedStartTime())
+						.p()
+					.element("endDate")
+						.t(data.getFormatedEndTime())
+						.p()
+						;
+			
+			List<Meter_Category_Points> points = Meter_Category_Points.getPointList(meter.getType());
+			
+			for(Meter_Category_Points point :points) {
+				
+				if(data.getDatum(point.getName()) != null) {
+					builder = builder.element(point.getName())
+								.t(data.getDatum(point.getName()).toString())
+								.p();
+				}
+			}
+			builder = builder.p();
+		}
 		
 		String xmlString = builder.getAsXMLString();	
 		
@@ -182,9 +210,12 @@ public class EnergyStarSDK {
 		
 		System.out.println(response);
 
-		String id = XMLBuilder.parse(response).getElement("meterConsumption").getElement("id").text();
+		List<XMLBuilder> respDataList = XMLBuilder.parse(response).getElementList("meterConsumption");
 		
-		return id;
+		for(XMLBuilder respData : respDataList) {
+			EnergyStarMeterDataContext data = dataStartTimeMap.get(respData.getElement("startDate").text());
+			data.setEnergyStarId(respData.getElement("id").text());
+		}
 	}
 	
 	public static String confirmAccountShare(String shareKey) throws Exception {
@@ -220,7 +251,7 @@ public class EnergyStarSDK {
 			
 				String propertyId = property.getElement("propertyId").getText();
 				
-//				sendConfirmPropertyShare(propertyId);
+				sendConfirmPropertyShare(propertyId);
 				
 				String propertyName = property.getElement("propertyInfo").getElement("name").getText();
 				
@@ -254,7 +285,7 @@ public class EnergyStarSDK {
 				
 				String meterId = meter.getElement("meterId").getText();
 				
-//				sendConfirmMeterShare(meterId);
+				sendConfirmMeterShare(meterId);
 			
 				String propertyId = meter.getElement("propertyId").getText();
 				
