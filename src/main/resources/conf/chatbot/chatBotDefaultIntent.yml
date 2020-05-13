@@ -665,7 +665,8 @@
                            }' 
    
    actions:
-    - 
+    -   
+        responseType : 11
         action: 
             actionType: 30
             status: 1
@@ -679,16 +680,35 @@
                                        	
                                          status = Module("ticketstatus").fetch([id == wo.status.id])[0];
                                          
-                                         resString = "This service request __[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__ is currently "+status.status;
+                                         summaryCard = {};
+                                   
+                                         summaryCard.mainField = "id";
+                                         
+                                         fieldNameList = [];
+                                         
+                                         fieldNameList.add("id");
+                                         fieldNameList.add("name");
+                                         fieldNameList.add("status");
+                                         fieldNameList.add("assignedTo");
+                                         
+                                         summaryCard.fieldNameList = fieldNameList;
+                                         
+                                         fields = {};
+                                         idString = "__[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__";
+                                         fields.put("id",idString);
+                                         fields.put("name",wo.subject);
+                                         fields.put("status",status.status);
                                          
                                          if(wo.assignedTo != null && wo.assignedTo.id != null) {
                                              users = Module("users").fetch([ouid == wo.assignedTo.id]);
                                           	 user = users[0];
-                                            resString = resString + " and is assigned to "+user.name+".";
+                                             fields.put("assignedTo",user);
                                          }
+                                         
+                                         summaryCard.fields = fields;
                                          resultMap = {};
                                          
-                                         resultMap.put("returnText",resString);
+                                         resultMap.put("summaryCard",summaryCard);
                                          
                                          extraParmas = {};
                                          extraParmas.put("woId",wo.id);
