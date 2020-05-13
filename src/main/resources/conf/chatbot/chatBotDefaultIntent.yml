@@ -682,7 +682,7 @@
                                          
                                          summaryCard = {};
                                    
-                                         summaryCard.mainField = "id";
+                                         summaryCard.mainField = "name";
                                          
                                          fieldNameList = [];
                                          
