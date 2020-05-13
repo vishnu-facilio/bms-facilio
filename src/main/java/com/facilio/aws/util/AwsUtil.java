@@ -115,25 +115,29 @@ public class AwsUtil
 		ResultSet rs;
 		String clientVersion = null;
 		boolean isNewClientBuild=false;
-				
-		try {
-			if(FacilioProperties.getEnvironment() != null ) {
-				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("SELECT * FROM ClientApp WHERE environment=?");
-				pstmt.setString(1, FacilioProperties.getEnvironment());
-				rs = pstmt.executeQuery();
-				if (rs.next()) {
-					clientVersion = rs.getString("version");
-					isNewClientBuild=rs.getBoolean("is_new_client_build");
-					
+		Map<String, Object> clientInfo=new HashMap<>();
+		if (FacilioProperties.getClientVersion() != null) {
+			clientVersion = FacilioProperties.getClientVersion();
+			isNewClientBuild = true;
+		} else {
+			try {
+				if (FacilioProperties.getEnvironment() != null) {
+					conn = FacilioConnectionPool.INSTANCE.getConnection();
+					pstmt = conn.prepareStatement("SELECT * FROM ClientApp WHERE environment=?");
+					pstmt.setString(1, FacilioProperties.getEnvironment());
+					rs = pstmt.executeQuery();
+					if (rs.next()) {
+						clientVersion = rs.getString("version");
+						isNewClientBuild = rs.getBoolean("is_new_client_build");
+
+					}
 				}
+			} catch(SQLException | RuntimeException e){
+				LOGGER.info("Exception while verifying password, ", e);
+			} finally{
+				DBUtil.closeAll(conn, pstmt);
 			}
-		} catch(SQLException | RuntimeException e) {
-			LOGGER.info("Exception while verifying password, ", e);
-		} finally {
-			DBUtil.closeAll(conn, pstmt);
 		}
-		Map<String, Object> clientInfo=new HashMap<String, Object>();
 		clientInfo.put("version",clientVersion);
 		clientInfo.put("isNewClientBuild", isNewClientBuild);
 		return clientInfo;

@@ -86,6 +86,7 @@ public class FacilioProperties {
 
     private static String localFileStorePath;
     private static boolean facilioResponse;
+    private static String clientVersion;
 
     static {
         loadProperties();
@@ -159,7 +160,7 @@ public class FacilioProperties {
                 }
 
                 localFileStorePath = PROPERTIES.getProperty("files.localFileStore.path");
-                
+                clientVersion = PROPERTIES.getProperty("client.version");
                 PROPERTIES.put("clientapp.url", clientAppUrl);
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
                 if(resourceDir != null) {
@@ -447,6 +448,9 @@ public class FacilioProperties {
     public static boolean enableFacilioResponse() {
         return facilioResponse;
     }
-    
-    
+
+
+    public static String getClientVersion() {
+        return clientVersion;
+    }
 }
