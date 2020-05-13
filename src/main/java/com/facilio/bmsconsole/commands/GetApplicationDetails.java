@@ -28,19 +28,9 @@ public class GetApplicationDetails extends FacilioCommand {
 		long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		ApplicationContext application = null;
 		if (appId <= 0) {
-			if(AccountUtil.getCurrentUser().getApplicationId() > 0) {
-				appId = AccountUtil.getCurrentUser().getApplicationId();
-			}
-			else {
-				String appLinkName = (String) context.get(FacilioConstants.ContextNames.LINK_NAME);
-				if(StringUtils.isNotEmpty(appLinkName)){
-					application = ApplicationApi.getApplicationForLinkName(appLinkName);
-				}
-			}
+			appId = AccountUtil.getCurrentUser().getApplicationId();
 		}
-		if(application == null) {
-			application = ApplicationApi.getApplicationForId(appId);
-		}
+		application = ApplicationApi.getApplicationForId(appId);
 
 		if (application != null) {
 			List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(application.getId());

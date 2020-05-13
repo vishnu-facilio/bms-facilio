@@ -435,6 +435,34 @@ public class ApplicationApi {
 		long appId = ApplicationApi.getApplicationIdForApp(appDomainObj);
 		return appId;
 	}
+
+	public static List<ApplicationContext> getApplicationsForOrgUser(long ouId) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(FieldFactory.getApplicationFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_User_Apps")
+				.innerJoin(ModuleFactory.getApplicationModule().getTableName())
+				.on("ORG_User_Apps.APPLICATION_ID = Application.ID")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID","ouid" , String.valueOf(ouId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
+		}
+		return null;
+
+
+	}
+
+	public static void setThisAppForUser(User user, long appId) throws Exception {
+        AppDomain appDomain = getAppDomainForApplication(appId);
+		user.setAppDomain(appDomain);
+		user.setApplicationId(appId);
+		user.setAppType(appDomain.getAppType());
+
+	}
 	
 
 }

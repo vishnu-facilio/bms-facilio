@@ -1,10 +1,7 @@
 
 package com.facilio.bmsconsole.interceptors;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
@@ -30,6 +27,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -143,6 +141,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 	                        if(user == null) {
 	                        	return "unauthorized";
 	                        }
+	                        ApplicationApi.setThisAppForUser(user, appId);
 	                    }
                 	}
                 	else {
