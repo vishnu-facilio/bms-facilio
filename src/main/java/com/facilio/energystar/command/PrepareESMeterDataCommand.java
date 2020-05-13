@@ -1,6 +1,7 @@
 package com.facilio.energystar.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +42,9 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
-		long endTime = (long) context.get(FacilioConstants.ContextNames.ENDTIME);
 		EnergyStarMeterContext meter = (EnergyStarMeterContext) context.get(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT);
 		
-		ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
-		List<DateRange> intervals =  schedule.getTimeIntervals(startTime, endTime);
+		List<DateRange> intervals = (List<DateRange>) context.get(FacilioConstants.ContextNames.INTERVAL);
 		
 		List<EnergyStarMeterDataContext> dataList = new ArrayList<EnergyStarMeterDataContext>(); 
 		for(DateRange interval :intervals) {

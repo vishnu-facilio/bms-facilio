@@ -11,6 +11,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -20,8 +22,10 @@ import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateRange;
 
 public class EnergyStarPushHistoricalData extends FacilioJob {
 	
@@ -42,9 +46,11 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			
 			FacilioContext context = chain.getContext();
 			
+			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
+			List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
+			
 			context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
-			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
-			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.INTERVAL, intervals);
 			
 			chain.execute();
 		}

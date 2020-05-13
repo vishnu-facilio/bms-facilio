@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class EnergyStarPushData extends FacilioJob {
@@ -42,9 +44,9 @@ public class EnergyStarPushData extends FacilioJob {
 					
 					context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
 					
-					context.put(FacilioConstants.ContextNames.START_TIME, DateTimeUtil.getMonthStartTime(-1));
+					List<DateRange> intervals = Collections.singletonList(new DateRange(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthEndTimeOf(DateTimeUtil.getMonthStartTime(-1))));
 					
-					context.put(FacilioConstants.ContextNames.END_TIME, DateTimeUtil.getMonthEndTimeOf(DateTimeUtil.getMonthStartTime(-1)));
+					context.put(FacilioConstants.ContextNames.INTERVAL, intervals);
 					
 					chain.execute();
 				}
