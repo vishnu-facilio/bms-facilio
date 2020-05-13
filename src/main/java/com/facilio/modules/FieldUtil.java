@@ -646,4 +646,44 @@ public class FieldUtil {
 		return restrictedFields;
 		
     }
+
+	public static List<Long> getPermissibleChildModules(FacilioModule parentModule, FieldPermissionContext.PermissionType permissionType) throws Exception{
+
+		List<Long> permittedSubModuleIds = new ArrayList<Long>();
+		//get extended modules' permissible sub modules also
+		FacilioModule extendedModule = parentModule.getExtendModule();
+		List<Long> extendedModuleIds = new ArrayList<Long>();
+		while(extendedModule != null) {
+			extendedModuleIds.add(extendedModule.getModuleId());
+			extendedModule = extendedModule.getExtendModule();
+		}
+		extendedModuleIds.add(parentModule.getModuleId());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFieldModulePermissionFields())
+				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(FieldPermissionContext.CheckType.MODULE.getIndex()), NumberOperators.EQUALS))
+				;
+
+		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
+
+		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY) {
+			String permVal = FieldPermissionContext.PermissionType.READ_ONLY.getIndex()+"," + FieldPermissionContext.PermissionType.READ_WRITE.getIndex();
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
+		}
+
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> map :props) {
+				permittedSubModuleIds.add((Long) map.get("subModuleId"));
+			}
+		}
+		return permittedSubModuleIds;
+	}
 }

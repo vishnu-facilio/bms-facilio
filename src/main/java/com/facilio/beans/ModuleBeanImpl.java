@@ -204,15 +204,21 @@ public class ModuleBeanImpl implements ModuleBean {
 			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
-	
+
+	private List<FacilioModule> getSubModulesFromRS(ResultSet rs) throws SQLException, Exception {
+		List<FacilioModule> subModules = new ArrayList<>();
+		while(rs.next()) {
+			subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
+		}
+		return Collections.unmodifiableList(subModules);
+	}
+
 	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, boolean checkPermission, FieldPermissionContext.PermissionType permissionType) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
 		List<Long> permittedSubModuleIds = new ArrayList<Long>();
-		if(checkPermission){
-			permittedSubModuleIds = getPermissibleChildModules(getMod(rs.getLong("PARENT_MODULE_ID")), permissionType);
-		}
+		permittedSubModuleIds = FieldUtil.getPermissibleChildModules(getMod(rs.getLong("PARENT_MODULE_ID")), permissionType);
 		while(rs.next()) {
-			if(checkPermission && CollectionUtils.isNotEmpty(permittedSubModuleIds)){
+			if(CollectionUtils.isNotEmpty(permittedSubModuleIds)){
 				if(!permittedSubModuleIds.contains(rs.getLong("CHILD_MODULE_ID"))){
 					continue;
 				}
@@ -222,47 +228,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		return Collections.unmodifiableList(subModules);
 	}
 
-	private List<Long> getPermissibleChildModules(FacilioModule parentModule, FieldPermissionContext.PermissionType permissionType) throws Exception{
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<Long> permittedSubModuleIds = new ArrayList<Long>();
-		//get extended module permissable fields also
-		FacilioModule extendedModule = parentModule.getExtendModule();
-		List<Long> extendedModuleIds = new ArrayList<Long>();
-		while(extendedModule != null) {
-			extendedModuleIds.add(extendedModule.getModuleId());
-			extendedModule = extendedModule.getExtendModule();
-		}
-		extendedModuleIds.add(parentModule.getModuleId());
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFieldModulePermissionFields())
-				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(FieldPermissionContext.CheckType.MODULE.getIndex()), NumberOperators.EQUALS))
-		;
-
-		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
-		}
-
-		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY) {
-			String permVal = FieldPermissionContext.PermissionType.READ_ONLY.getIndex()+"," + FieldPermissionContext.PermissionType.READ_WRITE.getIndex();
-			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
-		}
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
-		}
-
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(props)) {
-			for(Map<String,Object> map :props) {
-				permittedSubModuleIds.add((Long) map.get("subModuleId"));
-			}
-		}
-		return permittedSubModuleIds;
-	}
-	
 	@Override
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
 		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
@@ -1572,11 +1537,8 @@ public class ModuleBeanImpl implements ModuleBean {
 
 
 	//will be an interface method
-	public List<FacilioModule> getPermissibleSubModules(long moduleId, FieldPermissionContext.PermissionType permissionType, FacilioModule.ModuleType... types) throws Exception {
-		if (types == null || types.length == 0) {
-			return null;
-		}
-		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.id"), getTypes(types));
+	public List<FacilioModule> getPermissibleSubModules(long moduleId, FieldPermissionContext.PermissionType permissionType) throws Exception {
+		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -1602,5 +1564,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 	}
+
 
 }
