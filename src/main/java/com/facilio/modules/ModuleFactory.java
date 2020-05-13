@@ -317,6 +317,22 @@ public class ModuleFactory {
 		 fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
+	
+	public static FacilioModule getSensorRuleModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("sensorRule");
+		fieldModule.setDisplayName("Sensor Rule");
+		fieldModule.setTableName("Sensor_Rule");
+		return fieldModule;
+	}
+	
+	public static FacilioModule getSensorRulePropsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("sensorRuleProps");
+		fieldModule.setDisplayName("Sensor Rule Props");
+		fieldModule.setTableName("Sensor_Rule_Props");
+		return fieldModule;
+	}
 
 	public static FacilioModule getLookupFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();

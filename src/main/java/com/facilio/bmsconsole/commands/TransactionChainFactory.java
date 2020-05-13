@@ -1157,6 +1157,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CalculateDeltaCommand());
 			c.addCommand(new CalculateAggregatedEnergyConsumptionCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
+			c.addCommand(new ExecuteSensorRuleCommand());
 			c.addCommand(new ExecuteValidationRule());
 			c.addCommand(new AddOrUpdateReadingValuesCommand());
 			c.addCommand(new ValidateAndSetResetCounterMetaCommand());

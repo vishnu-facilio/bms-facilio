@@ -46,6 +46,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)
+				|| FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)

@@ -386,7 +386,10 @@ public class FacilioConstants {
 		public  static final String RULE_ROLLUP_EVENT="rulerollupevent";
 		public static final String ASSET_ROLLUP_ALARM ="assetrollupalarm";
 		public static final String ASSET_ROLLUP_OCCURRENCE="assetrollupoccurrence";
-		public  static final String ASSET_ROLLUP_EVENT="assetrollupevent";
+		public static final String ASSET_ROLLUP_EVENT="assetrollupevent";
+		public static final String SENSOR_ALARM ="sensoralarm";
+		public static final String SENSOR_ALARM_OCCURRENCE="sensoralarmoccurrence";
+		public static final String SENSOR_EVENT="sensorevent";
 
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
@@ -935,6 +938,7 @@ public class FacilioConstants {
 		public static final String READING_RULE_ID ="readingRuleId";
 		public static final String IS_READING_RULE_EXECUTE_FROM_JOB ="isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
+		public static final String SENSOR_RULE_MODULE = "sensorrule";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";
