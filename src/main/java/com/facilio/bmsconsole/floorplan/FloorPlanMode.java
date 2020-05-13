@@ -108,7 +108,7 @@ public enum FloorPlanMode {
 			return floorPlan;
 		}
 	},
-	HEATMAP("heatmap"),
+	READINGS("readings"),
 	ALARMS("alarms"),
 	MAINTENANCE("maintenance"),
 	PEOPLE("people");
