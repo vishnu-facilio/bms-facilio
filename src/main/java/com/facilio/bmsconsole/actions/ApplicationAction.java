@@ -11,6 +11,9 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ApplicationAction extends FacilioAction {
 
@@ -101,6 +104,12 @@ public class ApplicationAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getApplicationDetails();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if(request.getAttribute("facilio.app.name") != null) {
+			String appLinkName = (String) request.getAttribute("facilio.app.name");
+			context.put(FacilioConstants.ContextNames.LINK_NAME, appLinkName);
+		}
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		boolean isWebTabEnabled = AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB);

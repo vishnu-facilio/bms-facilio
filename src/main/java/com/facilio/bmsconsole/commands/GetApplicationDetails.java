@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class GetApplicationDetails extends FacilioCommand {
 
@@ -27,10 +28,20 @@ public class GetApplicationDetails extends FacilioCommand {
 		long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		ApplicationContext application = null;
 		if (appId <= 0) {
-			appId = AccountUtil.getCurrentUser().getApplicationId();
+			if(AccountUtil.getCurrentUser().getApplicationId() > 0) {
+				appId = AccountUtil.getCurrentUser().getApplicationId();
+			}
+			else {
+				String appLinkName = (String) context.get(FacilioConstants.ContextNames.LINK_NAME);
+				if(StringUtils.isNotEmpty(appLinkName)){
+					application = ApplicationApi.getApplicationForLinkName(appLinkName);
+				}
+			}
 		}
-		application = ApplicationApi.getApplicationForId(appId);
-		
+		if(application == null) {
+			application = ApplicationApi.getApplicationForId(appId);
+		}
+
 		if (application != null) {
 			List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(application.getId());
 			if (webTabGroups != null && !webTabGroups.isEmpty()) {
