@@ -18,6 +18,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -270,6 +271,14 @@ public class FacilioAction extends ActionSupport {
 		return this.orderType;
 	}
 	
+	private boolean overrideSorting;
+	
+	public boolean isOverrideSorting() {
+		return overrideSorting;
+	}
+	public void setOverrideSorting(boolean overrideSorting) {
+		this.overrideSorting = overrideSorting;
+	}
 	protected FacilioContext constructListContext(FacilioContext context) throws Exception {
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		if (getPage() == 0) {
@@ -299,6 +308,7 @@ public class FacilioAction extends ActionSupport {
  			sorting.put("orderType", getOrderType());
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 		context.put(ContextNames.OVERRIDE_SORTING, isOverrideSorting());
  		
  		return context;
 	}
