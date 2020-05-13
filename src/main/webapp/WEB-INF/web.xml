@@ -195,10 +195,10 @@
         <servlet-name>sandbox</servlet-name>
         <url-pattern>/sandbox/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+   <!--  <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
     <welcome-file-list>
         <welcome-file>/jsps/index.jsp</welcome-file>
     </welcome-file-list>
