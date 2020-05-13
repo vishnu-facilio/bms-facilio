@@ -34,18 +34,20 @@ public class EnergyStarPushData extends FacilioJob {
 			
 			for(EnergyStarMeterContext meter :meters) {
 				
-				FacilioChain chain = TransactionChainFactory.getEnergyStarPushDataChain();
-				
-				FacilioContext context = chain.getContext();
-				
-				context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
-				
-				context.put(FacilioConstants.ContextNames.START_TIME, DateTimeUtil.addDays(DateTimeUtil.getDayStartTime(), -1));
-				
-				context.put(FacilioConstants.ContextNames.END_TIME, DateTimeUtil.getDayStartTime());
-				
-				chain.execute();
-				
+				if(meter.getMeterId() > 0) {
+					
+					FacilioChain chain = TransactionChainFactory.getESPushMeterDataChain();
+					
+					FacilioContext context = chain.getContext();
+					
+					context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
+					
+					context.put(FacilioConstants.ContextNames.START_TIME, DateTimeUtil.getMonthStartTime(-1));
+					
+					context.put(FacilioConstants.ContextNames.END_TIME, DateTimeUtil.getMonthEndTimeOf(DateTimeUtil.getMonthStartTime(-1)));
+					
+					chain.execute();
+				}
 			}
 			
 			

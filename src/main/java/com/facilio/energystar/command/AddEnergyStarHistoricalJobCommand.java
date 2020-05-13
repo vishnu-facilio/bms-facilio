@@ -1,6 +1,5 @@
 package com.facilio.energystar.command;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -8,9 +7,8 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.util.EnergyStarUtil;
-import com.facilio.modules.FieldUtil;
 
-public class PushEnergyStarHistoricalCommand extends FacilioCommand {
+public class AddEnergyStarHistoricalJobCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

@@ -29,13 +29,19 @@ public class ESFillMeterDetails extends FacilioCommand {
 		
 		for(EnergyStarMeterDataContext meterData :meterDatas) {
 			
-			Map<String, Object> prop = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(), null, CriteriaAPI.getIdCondition(meterData.getParentId(), ModuleFactory.getEnergyStarMeterModule())).get(0);
-			
-			EnergyStarMeterContext meter = FieldUtil.getAsBeanFromMap(prop, EnergyStarMeterContext.class);
-			
-			meterMap.put(meter.getId(), meter);
-			
-			meterData.setParent(meter);
+			if(meterData.getParent() == null) {
+				Map<String, Object> prop = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(), null, CriteriaAPI.getIdCondition(meterData.getParentId(), ModuleFactory.getEnergyStarMeterModule())).get(0);
+				
+				EnergyStarMeterContext meter = FieldUtil.getAsBeanFromMap(prop, EnergyStarMeterContext.class);
+				
+				meterMap.put(meter.getId(), meter);
+				
+				meterData.setParent(meter);
+			}
+			else {
+				EnergyStarMeterContext meter = (EnergyStarMeterContext) meterData.getParent();
+				meterMap.put(meter.getId(), meter);
+			}
 			
 			List<EnergyStarMeterDataContext> data = meterDataMap.get(meterData.getParentId()) == null ? new ArrayList<>() : meterDataMap.get(meterData.getParentId());
 			

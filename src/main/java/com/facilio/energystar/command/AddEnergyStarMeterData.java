@@ -13,7 +13,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 
-public class AddEnergyStarUtilityData extends FacilioCommand {
+public class AddEnergyStarMeterData extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

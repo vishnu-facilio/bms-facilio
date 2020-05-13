@@ -11,7 +11,7 @@ import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.util.EnergyStarSDK;
 import com.facilio.energystar.util.EnergyStarUtil;
 
-public class EnergyStarPushDataForNonConnectedCommand extends FacilioCommand {
+public class EnergyStarPushDataCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
