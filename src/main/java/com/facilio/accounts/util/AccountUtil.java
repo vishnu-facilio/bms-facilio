@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.bean.GroupBean;
@@ -376,7 +375,8 @@ public class AccountUtil {
 		PEOPLE_CONTACTS(34359738368L),
 		NEW_APPROVALS(68719476736L),
 		CHATBOT(137438953472L),
-		SCOPING(274877906944L)
+		SCOPING(274877906944L),
+		OPERATIONAL_ALARM(549755813888L)	// 39
 		;
 		
 		private long license;

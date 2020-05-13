@@ -2446,6 +2446,11 @@
 			method="fetchAssetDowntimeMetrics">
 		</action>
 		
+		<action name="checkrunstatus"
+			class="com.facilio.bmsconsole.actions.AssetAction"
+			method="checkAssetRunStatus">
+		</action>
+		
 		<action name="assetAssociatedActiveContracts"
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="getAssetAssociatedActiveContracts">

@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -26,27 +29,15 @@ public class AddHistoricalOperationalAlarmCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+    		
+    		if (!AccountUtil.isFeatureEnabled(FeatureLicense.OPERATIONAL_ALARM)) {
+    			return false;
+    		}
+    	
         long assetId = (long) context.get(FacilioConstants.ContextNames.RESOURCE_ID);
+        
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioModule readingDataMeta = modBean.getModule(FacilioConstants.ContextNames.READING_DATA_META);
-        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
-        List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
-        fields.addAll(FieldFactory.getSelectFieldFields());
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .table(readingDataMeta.getTableName())
-                .select(fields)
-                .innerJoin(fieldsModule.getTableName())
-                .on(fieldsModule.getTableName() +".FIELDID = "+ readingDataMeta.getTableName()+".FIELD_ID")
-                .andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", assetId +"", NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(true), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition( "VALUE","value", "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition("NAME", "name",
-                        "runStatus", StringOperators.IS))
-                .orCondition(CriteriaAPI.getCondition("NAME", "name",
-                        "pumpRunStatus", StringOperators.IS));
-
-        List<Map<String, Object>> fieldIds = selectBuilder.get();
+        List<Map<String, Object>> fieldIds = AssetsAPI.getRunStatusFields(assetId);
         if (fieldIds != null && fieldIds.size() > 0 ) {
             for (Map<String, Object> field: fieldIds) {
                 // Max and Min date range to run historical
