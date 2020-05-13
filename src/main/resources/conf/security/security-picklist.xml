@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!--<url val="/api/picklist/addTicketCategory"></url>-->
+    <!--<url val="/api/picklist/updateTicketCategory"></url>-->
+    <!--<url val="/api/picklist/deleteTicketCategory"></url>-->
+    <!--<url val="/api/picklist/addTicketPriority"></url>-->
+    <!--<url val="/api/picklist/updateTicketPriority"></url>-->
+    <!--<url val="/api/picklist/deleteTicketPriority"></url>-->
+    <!--<url val="/api/picklist/addTicketType"></url>-->
+    <!--<url val="/api/picklist/updateTicketType"></url>-->
+    <!--<url val="/api/picklist/deleteTicketType"></url>-->
+    <!--<url val="/api/picklist/addAssetCategory"></url>-->
+    <!--<url val="/api/picklist/updateAssetCategory"></url>-->
+    <!--<url val="/api/picklist/deleteAssetCategory"></url>-->
+    <!--<url val="/api/picklist/addAssetDepartment"></url>-->
+    <!--<url val="/api/picklist/updateAssetDepartment"></url>-->
+    <!--<url val="/api/picklist/deleteAssetDepartment"></url>-->
+    <!--<url val="/api/picklist/addAssetType"></url>-->
+    <!--<url val="/api/picklist/updateAssetType"></url>-->
+    <!--<url val="/api/picklist/deleteAssetType"></url>-->
+    <!--<url val="/api/picklist/addAlarmSeverity"></url>-->
+</config>

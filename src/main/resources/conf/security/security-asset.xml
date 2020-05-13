@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!--<url val="/api/asset/layout"></url>-->
+    <!--<url val="/api/asset/assetCount"></url>-->
+    <!--<url val="/api/asset/add"></url>-->
+    <!--<url val="/api/asset/update"></url>-->
+    <!--<url val="/api/asset/delete"></url>-->
+    <!--<url val="/api/asset/reportcards"></url>-->
+    <!--<url val="/api/asset/getreadings"></url>-->
+    <!--<url val="/api/asset/getReadingsForSpecificAssetCategory"></url>-->
+    <!--<url val="/api/asset/getAssetCategoryWithReadings"></url>-->
+    <!--<url val="/api/asset/${viewName}"></url>-->
+</config>

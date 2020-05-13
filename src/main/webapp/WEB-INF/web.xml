@@ -92,18 +92,22 @@
         <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
     </filter>
 
-    <!--<filter>-->
-        <!--<filter-name>InputValidationFilter</filter-name>-->
-        <!--<filter-class>com.facilio.security.InputValidationFilter</filter-class>-->
-        <!--<init-param>-->
-            <!--<param-name>config</param-name>-->
-            <!--<param-value>conf/security.xml</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<param-name>antisamy-policy</param-name>-->
-            <!--<param-value>conf/antisamy-facilio.xml</param-value>-->
-        <!--</init-param>-->
-    <!--</filter>-->
+    <filter>
+        <filter-name>InputValidationFilter</filter-name>
+        <filter-class>com.facilio.security.InputValidationFilter</filter-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>conf/security/security-asset.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>antisamy-policy</param-name>
+            <param-value>conf/antisamy-facilio.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>filter-prefixes</param-name>
+            <param-value>/api/workorder,/api/v2/workorders,/api/v2/tasks</param-value>
+        </init-param>
+    </filter>
 
     <!-- <filter-mapping>
         <filter-name>InputValidationFilter</filter-name>
