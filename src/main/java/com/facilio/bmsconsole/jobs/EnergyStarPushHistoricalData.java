@@ -22,11 +22,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
 
 public class EnergyStarPushHistoricalData extends FacilioJob {
-
+	
 	private static final Logger LOGGER = LogManager.getLogger(AssetActionJob.class.getName());
 	@Override
 	public void execute(JobContext jc) {
@@ -40,23 +38,15 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			long startTime = (long) props.get(FacilioConstants.ContextNames.START_TIME);
 			long endTime = (long) props.get(FacilioConstants.ContextNames.END_TIME);
 			
-			List<DateRange> intervals = DateTimeUtil.getTimeIntervals(startTime, endTime, 1440);
+			FacilioChain chain = TransactionChainFactory.getESPushMeterDataChain();
 			
-			for(DateRange interval :intervals) {
-				
-				FacilioChain chain = TransactionChainFactory.getEnergyStarPushDataChain();
-				
-				FacilioContext context = chain.getContext();
-				
-				context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
-				
-				context.put(FacilioConstants.ContextNames.START_TIME, interval.getStartTime());
-				
-				context.put(FacilioConstants.ContextNames.END_TIME, interval.getEndTime());
-				
-				chain.execute();
-			}
+			FacilioContext context = chain.getContext();
 			
+			context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			
+			chain.execute();
 		}
 		catch(Exception e) {
 			LOGGER.error("Energy Star Push data Failed", e);

@@ -8196,11 +8196,22 @@ public class FieldFactory {
         fields.add(getField("propertyId", "PROPERTY_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
-        fields.add(getField("meterDataModuleId", "METER_DATA_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("energyStarMeterId", "ENERGY_STAR_METER_ID", module, FieldType.STRING));
-        fields.add(getField("meterDataFieldId", "METER_DATA_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("firstBillDate", "FIRST_BILL_DATE", module, FieldType.STRING));
         fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getEnergyStarMeterPointFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarMeterPointModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+        fields.add(getField("pointId", "POINT_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("aggr", "AGGR", module, FieldType.NUMBER));
 
         return fields;
     }

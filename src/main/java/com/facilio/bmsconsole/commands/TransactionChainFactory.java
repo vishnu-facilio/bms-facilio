@@ -5353,14 +5353,24 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ESFillMeterDetails());
 		c.addCommand(new ValidateEnergyStarUtilityData());
-		c.addCommand(new EnergyStarPushDataForNonConnectedCommand());
-		c.addCommand(new AddEnergyStarUtilityData());
+		c.addCommand(new EnergyStarPushDataCommand());
+		c.addCommand(new AddEnergyStarMeterData());
 		return c;
 	}
 	
-	public static FacilioChain pushEnergyStarHistoricalChain() {
+	public static FacilioChain addPushESHistoricalDataJobChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new PushEnergyStarHistoricalCommand());
+		c.addCommand(new ValidateForESPushHisoricalForConnectedCommand());
+		c.addCommand(new AddEnergyStarHistoricalJobCommand());
+		return c;
+	}
+	
+	public static FacilioChain getESPushMeterDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PrepareESMeterDataCommand());
+		c.addCommand(new ESFillMeterDetails());
+		c.addCommand(new EnergyStarPushDataCommand());
+		c.addCommand(new AddEnergyStarMeterData());
 		return c;
 	}
 
@@ -5368,12 +5378,6 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new DeleteEnergyStarPropertyCommand());
-		return c;
-	}
-	
-	public static FacilioChain getEnergyStarPushDataChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new EnergyStarPushDataForConnectedCommand());
 		return c;
 	}
 	

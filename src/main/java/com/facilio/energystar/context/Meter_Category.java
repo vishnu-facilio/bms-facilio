@@ -8,31 +8,15 @@ import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 
 public enum Meter_Category {
 
-	ELECTRIC(1, "Electric",1,"kWh (thousand Watt-hours)","energydata","totalEnergyConsumptionDelta",NumberAggregateOperator.SUM),
-	NATURAL_GAS(2, "Natural Gas",2,null,null,null,null),
-	PROPANE(3,"Propane",4,null,null,null,null);
+	ELECTRIC(1, "Electric",1,"kWh (thousand Watt-hours)"),
+	NATURAL_GAS(2, "Natural Gas",2,null),
+	PROPANE(3,"Propane",4,null);
 	;
 
 	int intVal;
 	String name;
 	long license;
-	String moduleName;
 	String unitOfMessure;
-	String fieldName;
-	NumberAggregateOperator aggr;
-	
-	public String getModule() {
-		return moduleName;
-	}
-	public String getField() {
-		return fieldName;
-	}
-	public NumberAggregateOperator getAggr() {
-		return aggr;
-	}
-	public String getUnitOfMessure() {
-		return unitOfMessure;
-	}
 
 	public int getIntVal() {
 		return intVal;
@@ -45,14 +29,15 @@ public enum Meter_Category {
 	public long getLicence() {
 		return license;
 	}
-	private Meter_Category(int intVal, String name,long licenceId,String unitOfMeasure,String moduleName,String fieldName,NumberAggregateOperator aggr) {
+	public String getUnitOfMessure() {
+		return unitOfMessure;
+	}
+	
+	private Meter_Category(int intVal, String name,long licenceId,String unitOfMessure) {
 		this.intVal = intVal;
 		this.name = name;
 		this.license = licenceId;
-		this.moduleName = moduleName;
-		this.unitOfMessure = unitOfMeasure;
-		this.fieldName = fieldName;
-		this.aggr = aggr;
+		this.unitOfMessure = unitOfMessure;
 	}
 
 	private static final Map<Integer, Meter_Category> optionMap = Collections.unmodifiableMap(initTypeMap());

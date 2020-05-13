@@ -176,7 +176,7 @@ public class EnergyStarAction extends FacilioAction {
 	
 	public String pushHistoricalData() throws Exception {
 		
-		FacilioChain chain = TransactionChainFactory.pushEnergyStarHistoricalChain();
+		FacilioChain chain = TransactionChainFactory.addPushESHistoricalDataJobChain();
 		
 		FacilioContext context = chain.getContext();
 		

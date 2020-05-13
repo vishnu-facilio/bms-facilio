@@ -11,8 +11,6 @@ public class EnergyStarMeterContext {
 	long propertyId = -1; 
 	Meter_Category type;
 	long meterId = -1;
-	long meterDataModuleId = -1;
-	long meterDataFieldId = -1;
 	String energyStarMeterId;
 	String firstBillDate;
 	String meta;
@@ -83,22 +81,10 @@ public class EnergyStarMeterContext {
 	public void setMeterId(long meterId) {
 		this.meterId = meterId;
 	}
-	public long getMeterDataModuleId() {
-		return meterDataModuleId;
-	}
-	public void setMeterDataModuleId(long meterDataModuleId) {
-		this.meterDataModuleId = meterDataModuleId;
-	}
 	public String getEnergyStarMeterId() {
 		return energyStarMeterId;
 	}
 	public void setEnergyStarMeterId(String energyStarMeterId) {
 		this.energyStarMeterId = energyStarMeterId;
-	}
-	public long getMeterDataFieldId() {
-		return meterDataFieldId;
-	}
-	public void setMeterDataFieldId(long meterDataFieldId) {
-		this.meterDataFieldId = meterDataFieldId;
 	}
 }

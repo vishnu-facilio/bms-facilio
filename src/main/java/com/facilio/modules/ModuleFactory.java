@@ -750,6 +750,10 @@ public class ModuleFactory {
 	public static FacilioModule getEnergyStarMeterModule() {
 		return constructModule("energyStarMeter", "Energy Star Meter", "Energy_Star_Meter");
 	}
+	
+	public static FacilioModule getEnergyStarMeterPointModule() {
+		return constructModule("energyStarMeterPoint", "Energy Star Meter Point", "Energy_Star_Meter_Point");
+	}
 
 	public static FacilioModule getPMJobPlanModule() {
 		return constructModule("pmjobplan", "pm job plan", "PM_Job_Plan");

@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+
 public enum Meter_Category_Points {
 	
-	ENERGY(1,"Usage kWh","usage",Meter_Category.ELECTRIC,"energydata","totalEnergyConsumptionDelta"),
-	ENERGY_COST(2,"Cost","cost",Meter_Category.ELECTRIC,null,null),
+	ENERGY(1,"Usage kWh","usage",Meter_Category.ELECTRIC,"energydata","totalEnergyConsumptionDelta",NumberAggregateOperator.SUM),
+	ENERGY_COST(2,"Cost","cost",Meter_Category.ELECTRIC,null,null,null),
 //	DEMAND(3,"Demand","demand",Meter_Category.ELECTRIC,"energydata","demand"),
 //	DEMAND_COST(4,"demandCost","Demand Cost",Meter_Category.ELECTRIC,null,null),
 	;
@@ -24,9 +26,14 @@ public enum Meter_Category_Points {
 	String name;
 	String moduleName;
 	String fieldName;
+	String unitOfMessure;
+	NumberAggregateOperator aggr;
 	
 	Meter_Category parentMeterCategory;
 	
+	public NumberAggregateOperator getAggr() {
+		return aggr;
+	}
 	public int getPointId() {
 		return pointId;
 	}
@@ -45,13 +52,14 @@ public enum Meter_Category_Points {
 	public Meter_Category getparentMeterCategory() {
 		return parentMeterCategory;
 	}
-	Meter_Category_Points(int pointId,String displayName, String name,Meter_Category parentCategory,String moduleName,String fieldName) {
+	Meter_Category_Points(int pointId,String displayName, String name,Meter_Category parentCategory,String moduleName,String fieldName,NumberAggregateOperator aggr) {
 		this.pointId = pointId;
 		this.name = name;
 		this.parentMeterCategory = parentCategory;
-		this.moduleName = moduleName;
 		this.displayName = displayName;
+		this.moduleName = moduleName;
 		this.fieldName = fieldName;
+		this.aggr = aggr;
 	}
 	
 	private static final Map<Integer, Meter_Category_Points> POINT_MAP = Collections.unmodifiableMap(initTypeMap());

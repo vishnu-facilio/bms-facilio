@@ -2,6 +2,7 @@ package com.facilio.energystar.util;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -15,8 +16,10 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarMeterContext;
+import com.facilio.energystar.context.EnergyStarMeterPointContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarProperyUseContext;
 import com.facilio.energystar.context.Meter_Category;
@@ -38,6 +41,8 @@ public class EnergyStarUtil {
 	public static final String ENERGY_STAR_PROPERTY_CONTEXT = "energyStarPropertyContext";
 	
 	public static final String ENERGY_STAR_METER_DATA_CONTEXTS = "meterDatas";
+	
+	public static final String ENERGY_STAR_METER_DATA_CONTEXT = "meterData";
 	
 	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXTS = "energyStarPropertyUseContexts";
 	
@@ -71,6 +76,29 @@ public class EnergyStarUtil {
 			return energyStarCustomerContext;
 		}
 		return null;
+	}
+	
+	public static Map<Integer,EnergyStarMeterPointContext> getEnergyStarMeterPointMap(long meterId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getEnergyStarMeterPointFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getEnergyStarMeterPointModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("meterId"), meterId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Map<Integer,EnergyStarMeterPointContext> pointMap = new HashMap<Integer, EnergyStarMeterPointContext>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				
+				EnergyStarMeterPointContext point = FieldUtil.getAsBeanFromMap(prop, EnergyStarMeterPointContext.class);
+				pointMap.put(point.getPointId(), point);
+			}
+		}
+		return pointMap;
 	}
 	
 	private static String getUserNameFromOrgName(String orgName) {
