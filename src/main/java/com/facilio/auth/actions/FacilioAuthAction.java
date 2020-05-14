@@ -529,6 +529,7 @@ public class FacilioAuthAction extends FacilioAction {
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+
 		if (portalUser) {
 			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
 		}
@@ -536,27 +537,29 @@ public class FacilioAuthAction extends FacilioAction {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
 		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
+		setCookieProperties(cookie, parentdomain, true);
+		response.addCookie(cookie);
+
+		//temp handling. will be removed once service portal xml files are removed.
+		if(portalUser) {
+			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
+			setCookieProperties(portalCookie, parentdomain, true);
+			response.addCookie(portalCookie);
+		}
+		Cookie authmodel = new Cookie("fc.authtype", "facilio");
+		setCookieProperties(authmodel, parentdomain, false);
+		response.addCookie(authmodel);
+	}
+
+	private void setCookieProperties(Cookie cookie, String parentdomain, boolean authModel) {
 		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		cookie.setPath("/");
-		cookie.setHttpOnly(true);
+		cookie.setHttpOnly(authModel);
 		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 			cookie.setSecure(true);
 		}
 		cookie.setDomain(parentdomain);
-		response.addCookie(cookie);
-
-		Cookie authmodel = new Cookie("fc.authtype", "facilio");
-		authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-		authmodel.setPath("/");
-		authmodel.setHttpOnly(false);
-		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-			authmodel.setSecure(true);
-		}
-
-		authmodel.setDomain(parentdomain);
-		response.addCookie(authmodel);
 	}
-
 	public String validateInviteLink() throws Exception {
 
 		JSONObject invitation = new JSONObject();
@@ -1023,7 +1026,10 @@ public class FacilioAuthAction extends FacilioAction {
 						HttpSession session = request.getSession();
 						session.invalidate();
 						String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
-						FacilioCookie.eraseUserCookie(request, response, portalUser ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
+						if(portalUser) {
+							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
+						}
 						FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
