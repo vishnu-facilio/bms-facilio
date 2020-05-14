@@ -6003,6 +6003,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="pushHistoricalData" />
 		<action name="addUtilityData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="addUtilityData" />
+		<action name="fetchHistoricalData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchHistoricalData" />
 	</package>
 
 </struts>

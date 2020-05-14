@@ -17,6 +17,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
@@ -24,6 +25,7 @@ import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarProperyUseContext;
 import com.facilio.energystar.context.Meter_Category;
 import com.facilio.energystar.context.Meter_Category_Points;
+import com.facilio.energystar.context.Property_Metrics;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.xml.builder.XMLBuilder;
@@ -67,10 +69,10 @@ public class EnergyStarSDK {
 								
 		String xmlString = builder.getAsXMLString();	
 		
-		System.out.println(xmlString);
+		LOGGER.info(xmlString);
 		String response = sendAPI("customer", HttpMethod.POST, xmlString);
 		
-		System.out.println(response);
+		LOGGER.info(response);
 		
 		return XMLBuilder.parse(response).getElement("id").text();
 	}
@@ -101,10 +103,10 @@ public class EnergyStarSDK {
 								
 		String xmlString = builder.getAsXMLString();	
 		
-		System.out.println(xmlString);
+		LOGGER.info(xmlString);
 		String response = sendAPI("account/"+customerContext.getEnergyStarCustomerId()+"/property", HttpMethod.POST, xmlString);
 		
-		System.out.println(response);
+		LOGGER.info(response);
 		
 		return XMLBuilder.parse(response).getElement("id").text();
 	}
@@ -132,11 +134,11 @@ public class EnergyStarSDK {
 								
 		String xmlString = builder.getAsXMLString();	
 		
-		System.out.println(xmlString);
+		LOGGER.info(xmlString);
 		
 		String response = sendAPI("property/"+propertyContext.getEnergyStarPropertyId()+"/propertyUse", HttpMethod.POST, xmlString);
 		
-		System.out.println(response);
+		LOGGER.info(response);
 		
 		return XMLBuilder.parse(response).getElement("id").text();
 	}
@@ -154,16 +156,16 @@ public class EnergyStarSDK {
 		
 		String xmlString = builder.getAsXMLString();	
 		
-		System.out.println(xmlString);
+		LOGGER.info(xmlString);
 		String response = sendAPI("property/"+propertyContext.getEnergyStarPropertyId()+"/meter", HttpMethod.POST, xmlString);
 		
-		System.out.println(response);
+		LOGGER.info(response);
 
 		String id = XMLBuilder.parse(response).getElement("id").text();
 		
 		String resp = sendAPI("association/property/"+propertyContext.getEnergyStarPropertyId()+"/meter/"+id, HttpMethod.POST, null);
 		
-		System.out.println("meter associate response "+ resp);
+		LOGGER.info("meter associate response "+ resp);
 		
 		return id;
 			
@@ -205,10 +207,10 @@ public class EnergyStarSDK {
 		
 		String xmlString = builder.getAsXMLString();	
 		
-		System.out.println(xmlString);
+		LOGGER.info(xmlString);
 		String response = sendAPI("meter/"+meter.getEnergyStarMeterId()+"/consumptionData", HttpMethod.POST, xmlString);
 		
-		System.out.println(response);
+		LOGGER.info(response);
 
 		List<XMLBuilder> respDataList = XMLBuilder.parse(response).getElementList("meterConsumption");
 		
@@ -347,19 +349,57 @@ public class EnergyStarSDK {
 		return response;
 	}
 	
-	public static String fetchMetrics(EnergyStarPropertyContext property,String year,String month) throws Exception {
+	public static ReadingContext fetchMetrics(EnergyStarPropertyContext property,String year,String month) throws Exception {
 		
-		String response = sendAPI("/property/"+property.getEnergyStarPropertyId()+"/metrics?year="+year+"&month="+month+"&measurementSystem=EPA", HttpMethod.GET, null);
+		Map<String,String> headers = new HashMap<>();
 		
-		System.out.println(response);
+		headers.put("PM-Metrics", getMetrics());
+		
+		String response = sendAPI("/property/"+property.getEnergyStarPropertyId()+"/metrics?year="+year+"&month="+month+"&measurementSystem=EPA", HttpMethod.GET, null,headers);
+		
+		LOGGER.info(response);
+		
+		List<XMLBuilder> metrics = XMLBuilder.parse(response).getElementList("metric");
+		
+		ReadingContext readingContext = null;
+		
+		for(XMLBuilder metric :metrics) {
+			
+			XMLBuilder value = metric.getElement("value");
+			String isNullstring = value.getAttribute("xsi:nil");
+			if(isNullstring == null || !Boolean.valueOf(isNullstring)) {
+				String name = metric.getAttribute("name");
+				String valueString = value.getText();
+				readingContext = readingContext == null ? new ReadingContext() : readingContext;
+				
+				readingContext.setDatum(name, valueString);
+			}
+			
+		}
 
-		return response;
+		return readingContext;
+	}
+	
+	private static String getMetrics() {
+		
+		String metrics = "";
+		for(Property_Metrics metric : Property_Metrics.values()) {
+			metrics += metric.getName() + ",";
+		}
+		metrics = metrics.substring(0, metrics.length()-1);
+		
+		return metrics;
 	}
 	
 	
 	private static String sendAPI(String action,HttpMethod method, String payload) throws IOException {
 		
-		Map<String,String> headers = new HashMap<>();
+		return sendAPI(action, method, payload,null);
+	}
+	
+	private static String sendAPI(String action,HttpMethod method, String payload,Map<String,String> headers) throws IOException {
+		
+		headers = headers == null ? new HashMap<>() : headers; 
 		
 		headers.put(HttpHeaders.AUTHORIZATION, getAuthentication());
 		

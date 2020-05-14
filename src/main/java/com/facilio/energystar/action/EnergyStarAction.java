@@ -19,6 +19,7 @@ public class EnergyStarAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	
 	long meterId;
+	long propertyId;
 	long startTime;
 	long endTime;
 	boolean createAccount;
@@ -27,7 +28,13 @@ public class EnergyStarAction extends FacilioAction {
 	public List<EnergyStarMeterDataContext> getMeterData() {
 		return meterData;
 	}
+	public long getPropertyId() {
+		return propertyId;
+	}
 
+	public void setPropertyId(long propertyId) {
+		this.propertyId = propertyId;
+	}
 	public void setMeterData(List<EnergyStarMeterDataContext> meterData) {
 		this.meterData = meterData;
 	}
@@ -181,6 +188,21 @@ public class EnergyStarAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		
 		context.put(EnergyStarUtil.ENERGY_STAR_METER_ID, getMeterId());
+		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
+		
+		chain.execute();
+		
+		return SUCCESS;
+	}
+	
+	public String fetchHistoricalData() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addFetchESHistoricalDataJobChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_ID, getPropertyId());
 		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
 		

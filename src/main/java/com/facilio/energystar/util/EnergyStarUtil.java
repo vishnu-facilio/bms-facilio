@@ -42,6 +42,8 @@ public class EnergyStarUtil {
 	
 	public static final String ENERGY_STAR_METER_DATA_CONTEXTS = "meterDatas";
 	
+	public static final String ENERGY_STAR_PROPERTY_DATA_CONTEXTS = "propertyDatas";
+	
 	public static final String ENERGY_STAR_METER_DATA_CONTEXT = "meterData";
 	
 	public static final String ENERGY_STAR_PROPERTY_USE_CONTEXTS = "energyStarPropertyUseContexts";
@@ -54,11 +56,17 @@ public class EnergyStarUtil {
 	
 	public static final String ENERGY_STAR_METER_ID = "energyStarMeterID";
 	
+	public static final String ENERGY_STAR_PROPERTY_ID = "energyStarPropertyID";
+	
 	public static final String ENERGY_STAR_METER_DATA_MODULE_NAME = "energyStarMeterData";
+	
+	public static final String ENERGY_STAR_PROPERTY_DATA_MODULE_NAME = "energyStarPropertyData";
 
 	public static final String ENERGY_STAR_METER_VS_ID_MAP = "energyStarMeterVsIDMap";
 
 	public static final String ENERGY_STAR_METER_VS_METER_DATA_MAP = "energyStarMeterVsMeterDataMap";
+	
+	public static final String ENERGY_STAR_FETCH_TIME_LIST = "energyStarFetchTimeList";
 	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {

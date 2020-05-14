@@ -5330,6 +5330,8 @@ public class TransactionChainFactory {
 	public static FacilioChain addEnergyStarProperyOnlyChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddEnergyStarPropertyCommand());
+		c.addCommand(new PrepareEnergyStarPropertyDataRDMEntry());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		return c;
 	}
 	
@@ -5361,7 +5363,14 @@ public class TransactionChainFactory {
 	public static FacilioChain addPushESHistoricalDataJobChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ValidateForESPushHisoricalForConnectedCommand());
-		c.addCommand(new AddEnergyStarHistoricalJobCommand());
+		c.addCommand(new EnergyStarHistoricalPushDataAddJobCommand());
+		return c;
+	}
+	
+	public static FacilioChain addFetchESHistoricalDataJobChain() {
+		FacilioChain c = getDefaultChain();
+//		c.addCommand(new ValidateForESPushHisoricalForConnectedCommand());
+		c.addCommand(new EnergyStarHistoricalFetchDataAddJobCommand());
 		return c;
 	}
 	
@@ -5384,6 +5393,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getEnergyStarFetchDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new EnergyStarFetchDataCommand());
+		c.addCommand(new AddEnergyStarPropertyData());
 		return c;
 	}
 	public static FacilioChain confirmESAccountShareChain() {
