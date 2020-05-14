@@ -107,9 +107,9 @@ public class ServerInfo extends TimerTask {
             		serverId = -1;
             	}
             }
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             hostname = "-1";
-            LOGGER.info("Unable to set IP ");
+            LOGGER.error("Unable to set IP ");
         }
     }
 

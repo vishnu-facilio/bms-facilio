@@ -146,11 +146,13 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			setVersion(event);
-			HealthCheckFilter.setStatus(200);
 
 		} catch (Exception e) {
 			sendFailureEmail(e);
 			LOGGER.info("Shutting down, because of an exception ", e);
+		}
+		finally {
+			HealthCheckFilter.setStatus(200);
 		}
 
 	}
