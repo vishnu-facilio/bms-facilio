@@ -103,10 +103,6 @@
             <param-name>antisamy-policy</param-name>
             <param-value>conf/antisamy-facilio.xml</param-value>
         </init-param>
-        <init-param>
-            <param-name>filter-prefixes</param-name>
-            <param-value>/api/workorder,/api/v2/workorders,/api/v2/tasks</param-value>
-        </init-param>
     </filter>
 
     <filter-mapping>
