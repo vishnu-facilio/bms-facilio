@@ -161,11 +161,10 @@ public class UserBeanImpl implements UserBean {
 		user.setUserStatus(true);
 		addToORGUsers(user);
 		addToORGUsersApps(user, isEmailVerificationNeeded);
-		addUserDetail(user);
-		
+
 	}
 	
-	private long checkIfExistsInOrgUsers(long uId, long orgId) throws Exception {
+	private User checkIfExistsInOrgUsers(long uId, long orgId) throws Exception {
 		List<FacilioField> orgUserFields = AccountConstants.getAppOrgUserFields();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -179,17 +178,17 @@ public class UserBeanImpl implements UserBean {
 		if(CollectionUtils.isNotEmpty(mapList)) {
 			IAMUserUtil.setIAMUserPropsv3(mapList, orgId, false);
 			if(CollectionUtils.isNotEmpty(mapList)) {
-				return (long)mapList.get(0).get("ouid");
+				return createUserFromProps(mapList.get(0), false, false, false);
 			}
 		}
-		return -1;
+		return null;
 
 	}
 	
 	private void addToORGUsers(User user) throws Exception {
 		
-		long ouId = checkIfExistsInOrgUsers(user.getUid(), user.getOrgId());
-		if(ouId <= 0) {
+		User orgUser = checkIfExistsInOrgUsers(user.getUid(), user.getOrgId());
+		if(orgUser == null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	
 			InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
@@ -221,9 +220,11 @@ public class UserBeanImpl implements UserBean {
 	
 			FacilioChain addRDMChain = FacilioChainFactory.addResourceRDMChain();
 			addRDMChain.execute(context);
+			addUserDetail(user);
 		}
 		else {
-			user.setOuid(ouId);
+			user.setOuid(orgUser.getOuid());
+			user.setInviteAcceptStatus(orgUser.isInviteAcceptStatus());
 		}
 	}
 	
@@ -300,7 +301,7 @@ public class UserBeanImpl implements UserBean {
 			}
 		} else {
 			String inviteLink = getUserLink(user, "/invitation/", appDomainObj.getDomain());
-			placeholders.put("appType", "Facilio Main app");
+			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			
 			placeholders.put("invitelink", inviteLink);
 			if(isInvitation) {
@@ -315,7 +316,6 @@ public class UserBeanImpl implements UserBean {
 
 
 	public void addUserDetail(User user) throws Exception {
-		
 		if (CollectionUtils.isNotEmpty(user.getAccessibleSpace())) {
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 		}

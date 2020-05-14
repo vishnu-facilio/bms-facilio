@@ -19,7 +19,7 @@
                                     <div class="td-width-mobile" style="padding-right: 30px;">
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; padding-top: 30px;letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${toUser.name},</div>
                                         <div style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
-                                          Welcome to ${org.name} organization. ${inviter.name} has added you to the ${appType} of the organization. 
+                                          Welcome to ${org.name} organization. ${inviter.name} has added you to the ${appType} application of the organization.
                                         </div>
                                     </div>
                               </td>
