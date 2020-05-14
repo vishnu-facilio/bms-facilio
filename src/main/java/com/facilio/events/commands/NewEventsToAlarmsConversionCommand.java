@@ -212,14 +212,24 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				oldObjectIndex ++;
 			}
 			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
-			pointedList.getLastRecord().setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - pointedList.getLastRecord().getClearedTime())/1000);
+			AlarmOccurrenceContext prevOccurrence = null;
 			if (mostRecent) {
 				pointedList.add(alarmOccurrence);
 				pointedList.moveNext();
 			} else {
+				if (oldObjectIndex == 0) {
+					prevOccurrence = NewAlarmAPI.getLatestAlarmOccurance(alarmOccurrence.getAlarm().getId(), alarmOccurrence.getCreatedTime());
+					if (prevOccurrence != null) {
+						pointedList.add(prevOccurrence);
+					}
+				}
 				pointedList.add(oldObjectIndex, alarmOccurrence);
 				pointedList.setPosition(oldObjectIndex);
 			}
+			if (prevOccurrence == null) {
+				prevOccurrence = pointedList.get(pointedList.getPosition()-1);
+			}
+			prevOccurrence.setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - prevOccurrence.getClearedTime())/1000);
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else { // if alarm is not cleared, only update in local object.
@@ -284,6 +294,10 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				position = size() - 1;
 			}
 			this.position = position;
+		}
+		
+		public int getPosition() {
+			return this.position;
 		}
 
 		public boolean isCurrentLast() {

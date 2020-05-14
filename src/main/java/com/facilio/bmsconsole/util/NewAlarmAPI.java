@@ -275,7 +275,12 @@ public class NewAlarmAPI {
 
 		return getLatestAlarmOccurance(baseAlarm.getId());
 	}
+	
 	public static AlarmOccurrenceContext getLatestAlarmOccurance(Long alarmId) throws Exception {
+		return getLatestAlarmOccurance(alarmId, -1);
+	}
+	
+	public static AlarmOccurrenceContext getLatestAlarmOccurance(Long alarmId, long fetchBeforeCreatedTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
         SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
@@ -283,7 +288,13 @@ public class NewAlarmAPI {
                 .select(fields).andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm",
                         String.valueOf(alarmId), NumberOperators.EQUALS))
                 .orderBy("CREATED_TIME DESC, ID DESC").limit(1);
+        if (fetchBeforeCreatedTime != -1) {
+        		builder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", String.valueOf(fetchBeforeCreatedTime), DateOperators.IS_BEFORE));
+        }
         AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
+        if (alarmOccurrenceContext == null) {  // if fetchBeforeCreatedTime criteria is applied and no prev occ
+        		return null;
+        }
         List<AlarmOccurrenceContext> extendedOccurrences = getExtendedOccurrence(Collections.singletonList(alarmOccurrenceContext));
         if (CollectionUtils.isNotEmpty(extendedOccurrences)) {
             alarmOccurrenceContext = extendedOccurrences.get(0);
@@ -292,7 +303,7 @@ public class NewAlarmAPI {
         }
         return null;
 	}
-
+	
 	public static Map<Long, AlarmOccurrenceContext> getLatestAlarmOccuranceMap(List<BaseAlarmContext> baseAlarms) throws Exception {
 		if (baseAlarms == null) {
 			return null;
