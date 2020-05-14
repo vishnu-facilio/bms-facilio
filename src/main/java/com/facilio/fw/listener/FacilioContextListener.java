@@ -274,7 +274,7 @@ public class FacilioContextListener implements ServletContextListener {
 				LOGGER.info("testing connection : " + rs.getInt(1));
 			}
 		} catch(Exception e) {
-			LOGGER.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 		}
 		finally {
 			DBUtil.closeAll(conn, stmt, rs);
