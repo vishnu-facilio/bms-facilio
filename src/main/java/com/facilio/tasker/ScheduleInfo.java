@@ -310,7 +310,7 @@ public class ScheduleInfo implements Serializable {
 				}
 				
 				addAndSortValue(zdt.getDayOfWeek().getValue());
-				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
+				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt, values) || zdt.toLocalTime().isAfter(times.get(times.size() - 1).plusSeconds(1))) {
 					zdt = firstMonthlyWeek(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -383,7 +383,7 @@ public class ScheduleInfo implements Serializable {
 
 				for (Integer allowedMonth: values) {
 					if (month == allowedMonth) {
-						if (checkWeekOfMonth(zdt)) {
+						if (checkWeekOfMonth(zdt, yearlyDayOfWeekValues)) {
 							for (int convertedDayOfWeek: convertedWeekDays) {
 								if (zdtAlignedWeekDay == convertedDayOfWeek) { // tested
 									if (zdt.toLocalTime().isBefore(times.get(times.size() - 1))) {
@@ -582,7 +582,7 @@ public class ScheduleInfo implements Serializable {
 				for (Integer allowedMonth : allowedMonths) {
 					if (quarterMonth == allowedMonth) {
 						if (offsetMonth == monthValue) {
-							if (checkWeekOfMonth(zdt)) {
+							if (checkWeekOfMonth(zdt, values)) {
 								for (int convertedDayOfWeek: convertedWeekdays) {
 									if (zdtAlignedWeekDay == convertedDayOfWeek) { // tested
 										if (zdt.toLocalTime().isBefore(times.get(times.size() - 1))) {
@@ -801,7 +801,7 @@ public class ScheduleInfo implements Serializable {
 				for (Integer allowedMonth : allowedMonths) {
 					if (halfYearlyMonth == allowedMonth) {
 						if (offsetMonth == monthValue) {
-							if (checkWeekOfMonth(zdt)) {
+							if (checkWeekOfMonth(zdt, values)) {
 								for (int convertedDayOfWeek: convertedWeekdays) {
 									if (zdtAlignedWeekDay == convertedDayOfWeek) { // tested
 										if (zdt.toLocalTime().isBefore(times.get(times.size() - 1))) {
@@ -969,9 +969,9 @@ public class ScheduleInfo implements Serializable {
 		}
 	}
 	
-	private boolean checkWeekOfMonth(ZonedDateTime zdt) {
+	private boolean checkWeekOfMonth(ZonedDateTime zdt, List<Integer> weekList) {
 		if(weekFrequency == LAST_WEEK) {
-			for(Integer value : values) {
+			for(Integer value : weekList) {
 				int lhs = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 				int rhs = shiftToDayOfWeek(zdt, value).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 				if(lhs == rhs) {
