@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1333,8 +1332,8 @@ public class AssetsAPI {
 		AssetContext asset = getAssetInfo(assetId);
 		AssetCategoryContext category = getCategoryForAsset(asset.getCategory().getId());
 		
-		List<String> statusFields = categoryVsRunStatus.get(category.getName());
-		if (CollectionUtils.isEmpty(statusFields)) {
+		String statusField = categoryVsRunStatus.get(category.getName());
+		if (statusField == null) {
 			return null;
 		}
 		
@@ -1357,24 +1356,24 @@ public class AssetsAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), assetId +"", NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("default"), String.valueOf(true), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), StringUtils.join(statusFields, ","), StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), statusField, StringOperators.IS));
                 ;
                 
          List<Map<String, Object>> list = selectBuilder.get();
          return list;
 	}
 	
-	private static Map<String, List<String>> categoryVsRunStatus = Collections.unmodifiableMap(initializeRunStatusFields());
-	private static Map<String, List<String>> initializeRunStatusFields() {
-		Map<String, List<String>> statusMap = new HashMap<String, List<String>>();
+	private static Map<String, String> categoryVsRunStatus = Collections.unmodifiableMap(initializeRunStatusFields());
+	private static Map<String, String> initializeRunStatusFields() {
+		Map<String, String> statusMap = new HashMap<String, String>();
 		// add more runstatus fields based on category
-		statusMap.put("Chiller", Arrays.asList("runStatus"));
-		statusMap.put("AHU", Arrays.asList("runStatus"));
-		statusMap.put("FAHU", Arrays.asList("runStatus"));
-		statusMap.put("Cooling Tower", Arrays.asList("runStatus"));
-		statusMap.put("Primary Pump", Arrays.asList("pumpRunStatus"));
-		statusMap.put("Secondary Pump", Arrays.asList("pumpRunStatus"));
-		statusMap.put("Condenser Pump", Arrays.asList("pumpRunStatus"));
+		statusMap.put("Chiller", "runStatus");
+		statusMap.put("AHU", "runStatus");
+		statusMap.put("FAHU", "runStatus");
+		statusMap.put("Cooling Tower", "runStatus");
+		statusMap.put("Primary Pump", "pumpRunStatus");
+		statusMap.put("Secondary Pump", "pumpRunStatus");
+		statusMap.put("Condenser Pump", "pumpRunStatus");
 		
 		return statusMap;
 	}

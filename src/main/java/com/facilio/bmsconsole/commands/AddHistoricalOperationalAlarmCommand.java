@@ -1,28 +1,29 @@
 package com.facilio.bmsconsole.commands;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.facilio.time.DateTimeUtil;
 
 public class AddHistoricalOperationalAlarmCommand extends FacilioCommand {
     private static final Logger LOGGER = LogManager.getLogger(AddHistoricalOperationalAlarmCommand.class.getName());
@@ -53,10 +54,14 @@ public class AddHistoricalOperationalAlarmCommand extends FacilioCommand {
                 List<FacilioField> selectField = new ArrayList<>();
                 selectField.add(maxField);
                 selectField.add(minField);
+                
+                
+                long startTime = DateTimeUtil.addYears(DateTimeUtil.getCurrenTime(), -1);
                 GenericSelectRecordBuilder getMaxTTime = new GenericSelectRecordBuilder()
                         .table(readingModule.getTableName())
                         .select(selectField)
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), assetId+"", NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+System.currentTimeMillis(), DateOperators.BETWEEN))
                         ;
                 List<Map<String, Object>> maxTimeProps = getMaxTTime.get();
                 if(!maxTimeProps.isEmpty()) {
