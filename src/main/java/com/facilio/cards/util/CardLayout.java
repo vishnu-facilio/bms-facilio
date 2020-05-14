@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.floorplan.FloorPlanViewContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -362,6 +363,7 @@ public enum CardLayout {
 			
 			String title = (String) cardParams.get("title");
 			Long floorPlanId = (Long) cardParams.get("floorPlanId");
+			String viewMode = (String) cardParams.get("viewMode");
 
 
 			
@@ -380,6 +382,30 @@ public enum CardLayout {
 				else {
 					returnValue.put("value", null);
 
+				}
+				
+				if (viewMode != null) {
+					int scriptModeInt = ((Long) cardParams.get("scriptModeInt")).intValue();
+					Map<Long,String> object = (Map<Long, String>) cardParams.get("viewParams");
+					JSONObject viewParams = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(object));
+
+					FloorPlanViewContext  floorPlanViewMode = new FloorPlanViewContext();
+					floorPlanViewMode.setViewMode(viewMode);
+					floorPlanViewMode.setFloorPlanId(floorPlanId);
+					floorPlanViewMode.setScriptModeInt(scriptModeInt);
+					
+					if (viewParams != null) {
+						floorPlanViewMode.setViewParams(viewParams);
+					}
+					
+					FacilioChain chain = TransactionChainFactory.getExecuteFloorPlanWorkflowChain();
+					chain.getContext().put(FacilioConstants.ContextNames.FLOORPLAN_VIEW_CONTEXT, floorPlanViewMode);
+					
+					chain.execute();
+					returnValue.put("viewMode", viewMode);
+					returnValue.put("floorPlanViewMode", chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT));
+					returnValue.put("data", chain.getContext().get(FacilioConstants.ContextNames.RESULT));
+					returnValue.put("state", ((FloorPlanViewContext) chain.getContext().get(FacilioConstants.ContextNames.FLOORPLAN_VIEW_CONTEXT)).getViewState());
 				}
 
 
