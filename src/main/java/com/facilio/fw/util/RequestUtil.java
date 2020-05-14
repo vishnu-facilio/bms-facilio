@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 
 public class RequestUtil {
@@ -31,6 +32,7 @@ public class RequestUtil {
 	public static final String REMOTE_IP = "remoteIp";
 	public static final String REFERER = "referer";
 	public static final String QUERY = "query";
+	public static final String DEVICE_TYPE = "deviceType";
 
 	public static String getDomainName()
 	{
@@ -115,7 +117,7 @@ public class RequestUtil {
 		if(deviceType == null) {
 			deviceType = DEFAULT_QUERY_STRING;
 		}
-		event.setProperty("deviceType", deviceType);
+		event.setProperty(DEVICE_TYPE, deviceType);
 
 		String appVersion = request.getHeader(X_APP_VERSION);
 		if(appVersion == null) {
