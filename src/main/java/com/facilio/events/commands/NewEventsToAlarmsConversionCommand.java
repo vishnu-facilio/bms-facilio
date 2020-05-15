@@ -147,6 +147,14 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				if (CollectionUtils.isEmpty(pointedList)) {
 					continue;
 				}
+				
+				if (pointedList.size() > 1 && pointedList.getLastRecord().getId() > 0) {	// fetching only if latest occurrence is not last new occurrence
+					AlarmOccurrenceContext lastOccurrence = pointedList.get(pointedList.size()-2);
+					AlarmOccurrenceContext nextOccurrence = NewAlarmAPI.getNextAlarmOccurrence(lastOccurrence.getAlarm().getId(), lastOccurrence.getCreatedTime());
+					if (nextOccurrence != null) {
+						lastOccurrence.setTimeBetweeenOccurrence((nextOccurrence.getCreatedTime() - lastOccurrence.getClearedTime()) / 1000);
+					}
+				}
 
 				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
@@ -227,10 +235,8 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				pointedList.add(oldObjectIndex, alarmOccurrence);
 				pointedList.setPosition(oldObjectIndex);
 			}
-			if (prevOccurrence == null) {
-				if (pointedList.getPosition() >= 1) {	// if there is no previous occurrence we need not get it
-					prevOccurrence = pointedList.get(pointedList.getPosition() - 1);
-				}
+			if (prevOccurrence == null && pointedList.getPosition() >= 1) { // if there is no previous occurrence we need not get it
+				prevOccurrence = pointedList.get(pointedList.getPosition() - 1);
 			}
 			if (prevOccurrence != null) {
 				prevOccurrence.setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - prevOccurrence.getClearedTime()) / 1000);
