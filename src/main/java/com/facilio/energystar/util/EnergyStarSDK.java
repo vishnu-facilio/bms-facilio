@@ -34,7 +34,7 @@ public class EnergyStarSDK {
 	
 	private static final Logger LOGGER = Logger.getLogger(EnergyStarSDK.class.getName());
 	
-	public static String ENERGY_STAR_SANDBOX_ENDPOINT = "https://portfoliomanager.energystar.gov/wstest/";
+	public static String ENERGY_STAR_SANDBOX_ENDPOINT = "https://portfoliomanager.energystar.gov/ws/";
 	
 	public static String ENERGY_STAR_FACILIO_USERNAME = "Krishnan123ek";
 	public static String ENERGY_STAR_FACILIO_PASSWORD = "Facilio@123";
