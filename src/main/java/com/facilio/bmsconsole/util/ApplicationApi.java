@@ -88,7 +88,7 @@ public class ApplicationApi {
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
         }
-        return null;
+        throw new IllegalArgumentException("Invalid link name");
     }
 
     
@@ -436,16 +436,24 @@ public class ApplicationApi {
 		return appId;
 	}
 
-	public static List<ApplicationContext> getApplicationsForOrgUser(long ouId) throws Exception {
+	public static List<ApplicationContext> getApplicationsForOrgUser(long ouId, String appDomain) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(FieldFactory.getApplicationFields());
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj == null){
+			throw new IllegalArgumentException("Invalid App Domain");
+		}
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_User_Apps")
 				.innerJoin(ModuleFactory.getApplicationModule().getTableName())
 				.on("ORG_User_Apps.APPLICATION_ID = Application.ID")
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID","ouid" , String.valueOf(ouId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID","ouid" , String.valueOf(ouId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Application.APP_DOMAIN_ID","appDomainId" , String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		;
+
+		selectBuilder.orderBy("ID asc");
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {

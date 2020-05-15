@@ -122,28 +122,43 @@ public class ScopeInterceptor extends AbstractInterceptor {
                             appId = application.getId();
                         }
                     }
-                    //temp handling. will be removed once we get app link name in every api call from client
-                    if (appId <= 0) {
-                        appId = ApplicationApi.getApplicationIdForAppDomain(request.getServerName());
-                    }
                 } catch (Exception e) {
-                    throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid appDomain");
+                    throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid app linkName");
                 }
                 if (iamAccount.getUser() != null) {
-                	String authorisationReqd = ActionContext.getContext().getParameters().get("authorise").getValue();
+                    String authorisationReqd = ActionContext.getContext().getParameters().get("authorise").getValue();
                 	if(StringUtils.isEmpty(authorisationReqd) || authorisationReqd.equals("true")) {
-	                	user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-	                    if (user == null) {
-	                        LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - id " + appId +" of org - id "+ iamAccount.getOrg().getOrgId());
-	                    //   return "usernotinapp";
-	                        //temporary handling.once the logs are proper , we shall remove this snippet and uncomment the above line. 
-	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-	                        if(user == null) {
-	                        	return "unauthorized";
-	                        }
-	                        ApplicationApi.setThisAppForUser(user, appId);
+                	    boolean relaxedAccess = false;
+                	    if(appId > 0) {
+                            user = AccountUtil.getUserBean().getUser(appId, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+                        }
+                        if (appId > 0 && user == null) {
+	                        //return "usernotinapp";
+                            //temp handling - need to be removed
+                            LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to this app - id " + appId + " of org - id " + iamAccount.getOrg().getOrgId());
+                            relaxedAccess = true;
+                        }
+	                    else if(appId <= 0) { // case whn there is no app link name in api(mainly for fetch details)
+	                        relaxedAccess = true;
 	                    }
-                	}
+	                    if(relaxedAccess) {
+	                        user = AccountUtil.getUserBean().getUser(-1, iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+                            if(user == null) {
+                                return "unauthorized";
+                            }
+                            //fetching permissible apps for this user corresponding to this domain
+                            //setting the first permissible application(corresponding to this domain) if exists to this user
+                            List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
+                            if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
+                                ApplicationApi.setThisAppForUser(user, permissibleAppsForThisDomain.get(0).getId());
+                            } else {
+                                //return "usernotinapp";
+                                //temp handling - need to be removed
+                                LOGGER.log(Level.DEBUG, "User - id " + iamAccount.getUser().getUid() + "doesnt have access to any of the apps belonging to this domain " + request.getServerName() + " of org - id " + iamAccount.getOrg().getOrgId());
+                                ApplicationApi.setThisAppForUser(user, ApplicationApi.getApplicationIdForAppDomain(request.getServerName()));
+                            }
+                        }
+                    }
                 	else {
                 		user = new User(iamAccount.getUser());
                 	}
