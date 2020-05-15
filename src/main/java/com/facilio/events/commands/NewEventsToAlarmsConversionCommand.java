@@ -220,16 +220,21 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				if (oldObjectIndex == 0) {
 					prevOccurrence = NewAlarmAPI.getLatestAlarmOccurance(alarmOccurrence.getAlarm().getId(), alarmOccurrence.getCreatedTime());
 					if (prevOccurrence != null) {
-						pointedList.add(prevOccurrence);
+						pointedList.add(oldObjectIndex, prevOccurrence);
+						oldObjectIndex ++;	// increase the index
 					}
 				}
 				pointedList.add(oldObjectIndex, alarmOccurrence);
 				pointedList.setPosition(oldObjectIndex);
 			}
 			if (prevOccurrence == null) {
-				prevOccurrence = pointedList.get(pointedList.getPosition()-1);
+				if (pointedList.getPosition() >= 1) {	// if there is no previous occurrence we need not get it
+					prevOccurrence = pointedList.get(pointedList.getPosition() - 1);
+				}
 			}
-			prevOccurrence.setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - prevOccurrence.getClearedTime())/1000);
+			if (prevOccurrence != null) {
+				prevOccurrence.setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - prevOccurrence.getClearedTime()) / 1000);
+			}
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else { // if alarm is not cleared, only update in local object.
