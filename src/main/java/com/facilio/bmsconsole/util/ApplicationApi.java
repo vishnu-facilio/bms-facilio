@@ -80,6 +80,13 @@ public class ApplicationApi {
     }
     
     public static ApplicationContext getApplicationForLinkName(String appLinkName) throws Exception {
+    	//temp handling for newapp and newtenant linkname
+		if(appLinkName.equals("app")){
+			appLinkName = "newapp";
+		}
+		else if(appLinkName.equals("tenant")){
+			appLinkName = "newtenants";
+		}
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
