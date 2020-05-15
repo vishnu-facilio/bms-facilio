@@ -65,7 +65,7 @@
                                 </div>
                                 <div
                                     style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:13px;text-align:left;font-weight:bold;letter-spacing: 0.6px;color: #19182e;">
-                                    Team {brandName}
+                                    Team ${brandName}
                                 </div>
                             </td>
                         </tr>
@@ -78,7 +78,7 @@
                             <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#282c36;font-size:11px;text-align:left;font-weight:300;letter-spacing:
                                 0.6px;color: #19182e;line-height: 20px;">
                                 If you have any trouble signing up, please reach out to <span
-                                    style="color:#ff2a80 !important;"><a style="color:#ff2a80;text-decoration: none;font-size:11px;" href="mailto:${rebrand.supportemail}" target="_blank">${rebrand.supportemail}</a></span>
+                                    style="color:#ff2a80 !important;"><a style="color:#ff2a80;text-decoration: none;font-size:11px;" href="mailto:${supportemail}" target="_blank">${supportemail}</a></span>
                             </div>
                         </td>
                     </tr>
