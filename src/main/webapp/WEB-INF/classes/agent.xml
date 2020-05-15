@@ -436,5 +436,12 @@
         <action name="getPolicyGist" class="com.facilio.agentv2.AgentAction" method="getPolicyGist">
         </action>
     </package>
+    <package name="altairSmartEdgeIntegration" namespace="/api/v2/agent/integration/altair" extends="agent">
+        <action name="getIntegrationList" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="getAltairIntegrations">
+        </action>
+        <action name="addIntegration" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="addAltairIntegration">
+        </action>
+    </package>
+
 
 </struts>

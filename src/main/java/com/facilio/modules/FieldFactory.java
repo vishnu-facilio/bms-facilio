@@ -66,8 +66,7 @@ public class FieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         return fields;
     }
-
-    public static Collection<FacilioField> getAgentMessageIntegrationFields() {
+    public static List<FacilioField> getAgentMessageIntegrationFields() {
         FacilioModule module = ModuleFactory.getAgentMessageIntegrationModule();
         List<FacilioField> fields = new ArrayList<>();
 
