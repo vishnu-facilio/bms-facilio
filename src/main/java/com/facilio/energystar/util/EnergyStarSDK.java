@@ -36,7 +36,7 @@ public class EnergyStarSDK {
 	
 	public static String ENERGY_STAR_SANDBOX_ENDPOINT = "https://portfoliomanager.energystar.gov/ws/";
 	
-	public static String ENERGY_STAR_FACILIO_USERNAME = "Krishnan123ek";
+	public static String ENERGY_STAR_FACILIO_USERNAME = "Facilio";
 	public static String ENERGY_STAR_FACILIO_PASSWORD = "Facilio@123";
 	
 	public static String createCustomer(EnergyStarCustomerContext customerContext) throws Exception {
