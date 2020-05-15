@@ -189,6 +189,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
+        <url-pattern>/newtenants/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
         <url-pattern>/vendor/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
