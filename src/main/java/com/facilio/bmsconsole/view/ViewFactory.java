@@ -515,21 +515,20 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getOperationalAlarmViews().setOrder(order++));
 		views.put("active", getOperationalAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("all", getOperationalAlarmViews().setOrder(order++));
 		views.put("cleared", getOperationalAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.OPERATION_ALARM, views);
+		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
-
 		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("controllerAll", getControllerAlarmOccurrenceViews().setOrder(order++));
-
 		viewsMap.put(FacilioConstants.ContextNames.CONTROLLER_ALARM, views);
 
 

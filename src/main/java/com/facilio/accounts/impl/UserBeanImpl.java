@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -28,7 +27,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
-import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -57,8 +55,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -304,6 +300,8 @@ public class UserBeanImpl implements UserBean {
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			
 			placeholders.put("invitelink", inviteLink);
+			addBrandPlaceHolders("brandName", placeholders);
+			addBrandPlaceHolders("supportemail", placeholders);
 			if(isInvitation) {
 				AccountEmailTemplate.INVITE_USER.send(placeholders, true);
 			}

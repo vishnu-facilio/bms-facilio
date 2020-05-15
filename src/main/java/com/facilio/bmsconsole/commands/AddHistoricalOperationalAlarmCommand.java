@@ -13,14 +13,16 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -57,13 +59,14 @@ public class AddHistoricalOperationalAlarmCommand extends FacilioCommand {
                 
                 
                 long startTime = DateTimeUtil.addYears(DateTimeUtil.getCurrenTime(), -1);
-                GenericSelectRecordBuilder getMaxTTime = new GenericSelectRecordBuilder()
-                        .table(readingModule.getTableName())
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> getMaxTTime = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+                        .module(readingModule)
                         .select(selectField)
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), assetId+"", NumberOperators.EQUALS))
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+System.currentTimeMillis(), DateOperators.BETWEEN))
+                        .andCondition(CriteriaAPI.getCondition(readingfield, CommonOperators.IS_NOT_EMPTY))
                         ;
-                List<Map<String, Object>> maxTimeProps = getMaxTTime.get();
+                List<Map<String, Object>> maxTimeProps = getMaxTTime.getAsProps();
                 if(!maxTimeProps.isEmpty()) {
                     for (Map<String, Object> prop : maxTimeProps) {
                         long maxTtime = (long) prop.get("max");

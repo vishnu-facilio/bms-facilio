@@ -25,6 +25,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -162,13 +163,24 @@ public class CommissioningApi {
 
 	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
 		List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
-			for(ReadingDataMeta rdm: rdmList) {
-				switch (rdm.getInputTypeEnum()) {
+		String message = null; 
+		for(ReadingDataMeta rdm: rdmList) {
+			switch (rdm.getInputTypeEnum()) {
 				case CONTROLLER_MAPPED:
-					throw new IllegalArgumentException(rdm.getField().getDisplayName() + " is already mapped");
+					message = " is already mapped";
+					break;
 				case FORMULA_FIELD:
 				case HIDDEN_FORMULA_FIELD:
-					throw new IllegalArgumentException(rdm.getField().getDisplayName() +" is formula field and therefore cannot be mapped");
+					throw new IllegalArgumentException(rdm.getField().getDisplayName() + " is formula field and therefore cannot be mapped");
+				case TASK:
+					message = " is already used in task and therefore cannot be mapped";
+					break;
+			}
+			if (message != null) {
+				ResourceContext resource = ResourceAPI.getResource(rdm.getResourceId());
+				StringBuilder builder = new StringBuilder(rdm.getField().getDisplayName())
+						.append(" reading of ").append(resource.getName()).append(message);
+				throw new IllegalArgumentException(builder.toString());
 			}
 		}
 		return rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity()));
