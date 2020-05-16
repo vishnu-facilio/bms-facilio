@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,700&display=swap" rel="stylesheet">
 </head>
 
-<body style="padding-left: 20px; padding-right: 20px;">
+<body style="padding-left: 20px; padding-right: 20px;background-image: linear-gradient(to bottom, #412689, #271556);">
     <div
         style="max-width: 554px;margin: 0 auto;display: block;padding-top: 30px;background-image: linear-gradient(to bottom, #412689, #271556);">
         <div style="max-width: 474px;margin: 0 auto;display: block;padding-left: 20px; padding-right: 20px;">
@@ -31,8 +31,7 @@
                                 </div>
                                 <div
                                     style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:13px;text-align:left;font-weight:300; padding-top:10px;letter-spacing: 0.6px;color: #19182e;line-height: 20px;">
-                                    Welcome to ${org.name} on ${brandName}! You have been invited by ${inviter.name} <br />
-                                    to register.
+                                    Welcome to ${org.name} on ${brandName}! You have been invited by ${inviter.name} to register.
                                 </div>
                                 <div
                                     style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:13px;text-align:left;font-weight:300;letter-spacing: 0.6px;color: #19182e;">
@@ -51,7 +50,7 @@
                                 <div>
                                     <a href="${invitelink}"
                                         style="font-weight: normal; font-stretch: normal; font-style: normal; line-height:
-                                    1.54; letter-spacing: 0.5px; color: #581dfb;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;text-decoration: none;font-size: 13px;">
+                                    1.54; letter-spacing: 0.5px; word-break:break-all; color: #581dfb;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;text-decoration: none;font-size: 13px;">
                                         ${invitelink}
                                     </a>
                                 </div>
@@ -149,7 +148,7 @@
                 <td colspan="100%;">
                     <div
                         style="text-align: center;font-size: 10px; font-weight: normal; font-stretch: normal; font-style: normal; line-height: 2; letter-spacing: 1px; text-align: center; color: #d0c5ff !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-top: 20px;">
-                        © 2020 <a href="${brandUrl}"
+                        &#169; 2020 <a href="${brandUrl}"
                             style="text-decoration: none;text-align: center;font-size: 10px; font-weight: normal; font-stretch: normal; font-style: normal; letter-spacing: 1px; text-align: center; color: #d0c5ff !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;">${brandUrl}</a>
                         | ALL RIGHTS RESERVED
                     </div>
