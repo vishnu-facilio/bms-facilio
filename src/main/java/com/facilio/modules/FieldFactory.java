@@ -129,6 +129,38 @@ public class FieldFactory {
     }
 
 
+    public static List<FacilioField> getAgentStatsField() {
+        FacilioModule agentStatsModule = ModuleFactory.getAgentStatsModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getNewAgentIdField(agentStatsModule));
+        fields.add(getSiteIdField(agentStatsModule));
+        fields.add(getCreatedTime(agentStatsModule));
+
+        fields.add(getField(AgentConstants.HEAP_INITIAL,"HEAP_INIT",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.HEAP_COMMITTED,"HEAP_COMMIT",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.HEAP_MAX,"HEAP_MAX",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.HEAP_FREE,"HEAP_FREE",agentStatsModule,FieldType.NUMBER));
+
+        fields.add(getField(AgentConstants.NON_HEAP_INITIAL,"NON_HEAP_INIT",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.NON_HEAP_COMMITTED,"NON_HEAP_COMMIT",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.NON_HEAP_MAX,"NON_HEAP_MAX",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.NON_HEAP_FREE,"NON_HEAP_FREE",agentStatsModule,FieldType.NUMBER));
+
+        fields.add(getField(AgentConstants.NUMNER_OF_PROCESSORS,"NO_OF_PROCESSORS",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.JAVA_VERSION,"JAVA_VERSION",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.USER_NAME,"USER_NAME",agentStatsModule,FieldType.NUMBER));
+
+        fields.add(getField(AgentConstants.MAX_MEMORY,"MAX_MEMORY",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.FREE_MOMORY,"FREE_MEMORY",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.PROCESS_LOAD,"PROCESS_LOAD",agentStatsModule,FieldType.NUMBER));
+        fields.add(getField(AgentConstants.SYSTEM_LOAD,"SYSTEM_LOAD",agentStatsModule,FieldType.NUMBER));
+
+        fields.add(getField(AgentConstants.MISC_DATA,"MISC_DATA",agentStatsModule,FieldType.NUMBER));
+
+        return fields;
+    }
+
+
     public static class Fields {
         public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 
@@ -1245,7 +1277,7 @@ public class FieldFactory {
         return field;
     }
 
-    public static List<FacilioField> getSystemFields(FacilioModule module) {
+    public static List<FacilioField> getSystemPointFields(FacilioModule module) {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getSystemField("sysCreatedTime", module));
@@ -1259,7 +1291,7 @@ public class FieldFactory {
         return fields;
     }
 
-    private static final List<String> systemFields = Collections.unmodifiableList(FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
+    private static final List<String> systemFields = Collections.unmodifiableList(FieldFactory.getSystemPointFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 
     public static boolean isSystemField(String fieldName) {
         return systemFields.contains(fieldName);
@@ -3428,7 +3460,7 @@ public class FieldFactory {
 	public static List<FacilioField> getVariablesFields() {
 		FacilioModule module = ModuleFactory.getVariablesModule();
 
-        List<FacilioField> fields = getSystemFields(module);
+        List<FacilioField> fields = getSystemPointFields(module);
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("value", "VALUE", module, FieldType.STRING));
@@ -6136,6 +6168,15 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
         return fields;
     }
+    public static List<FacilioField> getSystemPointFields(){
+        FacilioModule module = ModuleFactory.getSystemPointModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdNotPrimaryField(module));
+        fields.add(getControllerIdField(module));
+        fields.add(getNameField(module));
+        fields.add(getFieldDeviceId(module));
+        return fields;
+    }
 
     public static List<FacilioField> getRtuNetworkFields() {
         FacilioModule module = ModuleFactory.getRtuNetworkModule();
@@ -8304,7 +8345,7 @@ public class FieldFactory {
 	}
 	public static List<FacilioField> getFloorPlanFields() {
 		FacilioModule module = ModuleFactory.getFloorPlanModule();
-		List<FacilioField> fields = getSystemFields(module);
+		List<FacilioField> fields = getSystemPointFields(module);
 		fields.add(getIdField(module));
 		fields.add(getField("id", "ID", module, FieldType.ID));
 		fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
@@ -8346,7 +8387,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		fields.add(getIdField(module));
-		fields.addAll(getSystemFields(module));
+		fields.addAll(getSystemPointFields(module));
 		fields.add(getNewAgentIdField(module));
 		fields.add(getField("publishedTime", "PUBLISHED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));

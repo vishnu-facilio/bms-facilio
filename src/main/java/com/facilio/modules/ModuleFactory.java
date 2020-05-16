@@ -3732,4 +3732,19 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getAgentStatsModule() {
+		FacilioModule facilioModule = new FacilioModule();
+		facilioModule.setName(AgentConstants.STATS_MODULE_NAME);
+		facilioModule.setTableName("Agent_Stats");
+		facilioModule.setDisplayName("AgentStats");
+		return facilioModule;
+	}
+
+	public static FacilioModule getSystemPointModule() {
+		FacilioModule facilioModule = new FacilioModule();
+		facilioModule.setTableName(AgentConstants.SYSTEM_POINT_MODULE_NAME);
+		facilioModule.setTableName("System_Point");
+		facilioModule.setDisplayName("System Point");
+		return facilioModule;
+	}
 }

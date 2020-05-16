@@ -90,15 +90,8 @@ public class DataProcessorV2
             markMetrices(agent,payload);
             switch (publishType) {
             	case CUSTOM:
-            		Controller customController = getCachedControllerUsingPayload(payload,agent.getId());
-
-	                 JSONObject customPayload = (JSONObject) payload.clone();
-	                 if (customController != null) {
-	                	 customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
-	                	 customPayload.put(FacilioConstants.ContextNames.CONTROLLER, FieldUtil.getAsJSON(customController));
-	                 }
-	
-	                 processCustom(customPayload,customController);
+                    JSONObject customPayload = (JSONObject) payload.clone();
+                    processStatus = processCustom(agent,customPayload);
             		break;
                 case AGENT:
                     processStatus = processAgent(payload, agent);
@@ -137,10 +130,7 @@ public class DataProcessorV2
                     break;
                     //processTimeSeries(payload,)
                 case AGENT_EVENTS:
-                    AgentEvent eventType = getEventType(payload);
-                    if (eventType!=null){
-                        processStatus = processAgentEvents(payload, agent, eventType);
-                    }
+                    processStatus = processAgentEvents(agent, payload);
                     break;
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
@@ -168,12 +158,18 @@ public class DataProcessorV2
         return false;
     }
 
-    private boolean processAgentEvents(JSONObject payload, FacilioAgent agent, AgentEvent eventType) throws Exception {
-        if (eventType==AgentEvent.CONTROLLERS_MISSING){
-            return processControllerMissingEvent(payload, agent);
-        }else{
-            return false;
+    private boolean processAgentEvents(FacilioAgent agent, JSONObject payload) throws Exception {
+        try {
+            AgentEvent eventType = getEventType(payload);
+            if (eventType != null) {
+                if (eventType == AgentEvent.CONTROLLERS_MISSING) {
+                    return processControllerMissingEvent(payload, agent);
+                }
+            }
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while processing event ",e);
         }
+        return false;
     }
 
     private boolean processControllerMissingEvent(JSONObject payload, FacilioAgent agent) throws Exception {
@@ -376,17 +372,24 @@ public class DataProcessorV2
         return false;
     }
     
-    private boolean processCustom(JSONObject payload, Controller controller) {
+    private boolean processCustom(FacilioAgent agent,JSONObject payload) {
 
     	try {
-        	
+            Controller customController = getCachedControllerUsingPayload(payload,agent.getId());
+            JSONObject customPayload = (JSONObject) payload.clone();
+            if (customController != null) {
+                customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
+                customPayload.put(FacilioConstants.ContextNames.CONTROLLER, FieldUtil.getAsJSON(customController));
+            }
+
+
             FacilioChain chain = TransactionChainFactory.getAddCustomDataChain();
             FacilioContext context = chain.getContext();
             //TODO
-            context.put(AgentConstants.CONTROLLER, controller);
-            if (controller != null) {
-                context.put(AgentConstants.CONTROLLER_ID, controller.getId());
-                context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+            context.put(AgentConstants.CONTROLLER, customController);
+            if (customController != null) {
+                context.put(AgentConstants.CONTROLLER_ID, customController.getId());
+                context.put(AgentConstants.AGENT_ID, customController.getAgentId());
             } 
             
             context.put(AgentConstants.DATA, payload);
@@ -399,7 +402,7 @@ public class DataProcessorV2
             chain.execute();
             return true;
         } catch (Exception e) {
-            LOGGER.info("Exception while processing timeseries data ", e);
+            LOGGER.info("Exception while processing custom ", e);
         }
         return false;
     }

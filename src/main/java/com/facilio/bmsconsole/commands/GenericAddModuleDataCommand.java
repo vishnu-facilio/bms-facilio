@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +8,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class GenericAddModuleDataCommand extends FacilioCommand {
 
@@ -21,7 +20,7 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 		ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		if(record != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			
+			System.out.println(" module name "+moduleName);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 
@@ -31,7 +30,7 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 			}
 			
 			CommonCommandUtil.handleLookupFormData(fields, record.getData());
-			
+			fields.forEach(field-> System.out.println(field));
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
 																						.fields(fields)

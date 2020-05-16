@@ -1,16 +1,15 @@
 package com.facilio.agent.integration;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.agent.integration.wattsense.WattsenseUtil;
+import com.facilio.bmsconsole.actions.FacilioAction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.actions.FacilioAction;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AgentIntegrationAction extends FacilioAction
 {
@@ -33,7 +32,6 @@ public class AgentIntegrationAction extends FacilioAction
     private final String PASSWORD = "password";
 
     public String addWattsense(){
-        JSONObject userCredentials = getUserCredentials();
         if((getUserName()!=null && getPassword()!=null)){
            boolean status = WattsenseUtil.authenticateAndConfigureWattsense(getUserName(), getPassword());
            if(status) {

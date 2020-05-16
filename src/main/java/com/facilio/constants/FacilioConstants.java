@@ -165,6 +165,7 @@ public class FacilioConstants {
         public static final String AGENT = "agent";
 		public static final String ROLL_UP_TYPE = "rollUpType";
 		public static final String APPROVAL_STATUS = "approvalStatus";
+		public static final String SYSTEM_CONTROLLER_MODULE_NAME = "systemController";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

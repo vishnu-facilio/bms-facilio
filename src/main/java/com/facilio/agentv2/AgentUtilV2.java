@@ -3,6 +3,7 @@ package com.facilio.agentv2;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -35,7 +36,6 @@ public class AgentUtilV2
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
     private Map<Long, FacilioAgent> idVsAgentMap = new HashMap<>();
-
 
     public Map<Long, FacilioAgent> getAgentsFromIds(List<Long> agentIds) throws Exception {
         Map<Long, FacilioAgent> map = new HashMap<>();
@@ -132,7 +132,19 @@ public class AgentUtilV2
     public boolean processAgent(JSONObject payload, FacilioAgent agent) throws Exception {
         if (agent != null) {
             if (containsValueCheck(AgentConstants.COMMAND,payload)) {
-                AgentThreadDumpAPI.processThreadDump(payload,agent);
+                FacilioCommand command = FacilioCommand.valueOf(((Number)payload.get(AgentConstants.COMMAND)).intValue());
+                switch (command){
+                    case STATS:
+                       // AgentStatsApi.processStats(agent,payload);
+                        break;
+                    case THREAD_DUMP:
+                        AgentThreadDumpAPI.processThreadDump(payload,agent);
+                        break;
+                    case PING:
+                        break;
+                    case SHUTDOWN:
+                        break;
+                }
             }
             long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT

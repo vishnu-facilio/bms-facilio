@@ -16,6 +16,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
+import com.facilio.agentv2.system.SystemPointContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -62,6 +63,8 @@ public class PointsAPI {
                 return ModuleFactory.getMiscPointModule();
             case OPC_UA:
                 return ModuleFactory.getOPCUAPointModule();
+            case SYSTEM:
+                return ModuleFactory.getSystemPointModule();
             case REST:
             case CUSTOM:
             case LON_WORKS:
@@ -89,6 +92,8 @@ public class PointsAPI {
                 return FieldFactory.getMiscPointFields();
             case OPC_UA:
                 return FieldFactory.getOPCUAPointFields();
+            case SYSTEM:
+                return FieldFactory.getSystemPointFields();
             case REST:
             case CUSTOM:
             case LON_WORKS:
@@ -125,6 +130,8 @@ public class PointsAPI {
                     return NiagaraPointContext.getPointFromMap(payload);
                 case MISC:
                     return MiscPoint.getPointFromMap(payload);
+                case SYSTEM:
+                    return SystemPointContext.getPointFromMap(payload);
                 default:
                     throw new Exception("no implementation for " + controllerType.asString());
             }

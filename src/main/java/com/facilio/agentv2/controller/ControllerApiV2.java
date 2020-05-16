@@ -17,6 +17,7 @@ import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.agentv2.system.SystemControllerContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -175,6 +176,9 @@ public class ControllerApiV2 {
             case LON_WORKS:
                 controller = FieldUtil.getAsBeanFromMap(map, LonWorksControllerContext.class);
                 break;
+            case SYSTEM:
+                controller = FieldUtil.getAsBeanFromMap(map, SystemControllerContext.class);
+                break;
             case BACNET_MSTP:
             case KNX:
             default:
@@ -207,6 +211,8 @@ public class ControllerApiV2 {
                 return FacilioConstants.ContextNames.REST_CONTROLLER_MODULE_NAME;
             case CUSTOM:
                 return FacilioConstants.ContextNames.CUSTOM_CONTROLLER_MODULE_NAME;
+            case SYSTEM:
+                return FacilioConstants.ContextNames.SYSTEM_CONTROLLER_MODULE_NAME;
             default:
                 return null;
         }

@@ -257,6 +257,11 @@ public class GetPointRequest {
                 builder.select(fields).innerJoin(ModuleFactory.getNiagaraPointModule().getTableName())
                         .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getNiagaraPointModule().getTableName() + ".ID");
                 return builder;
+            case SYSTEM:
+                fields.addAll(FieldFactory.getSystemPointFields());
+                builder.select(fields).innerJoin(ModuleFactory.getSystemPointModule().getTableName())
+                        .on(AgentConstants.POINTS_TABLE+".ID="+ModuleFactory.getSystemPointModule().getTableName()+".ID");
+                return builder;
             default:
                 throw new Exception("FacilioControler type didnt match with cases " + controllerType.toString());
         }

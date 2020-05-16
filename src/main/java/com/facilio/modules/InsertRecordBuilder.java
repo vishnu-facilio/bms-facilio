@@ -1,15 +1,5 @@
 package com.facilio.modules;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
-
-import com.facilio.modules.fields.InsertSupplementHandler;
-import com.facilio.modules.fields.SupplementRecord;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -18,8 +8,17 @@ import com.facilio.db.builder.InsertBuilderIfc;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.InsertSupplementHandler;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -266,7 +265,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				}
 
 				if (FieldUtil.isSystemFieldsPresent(currentModule)) {
-					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
+					currentFields.addAll(FieldFactory.getSystemPointFields(currentModule));
 				}
 
 				if (FieldUtil.isBaseEntityRootModule(currentModule)) {

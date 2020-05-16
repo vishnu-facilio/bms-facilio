@@ -1,26 +1,5 @@
 package com.facilio.modules;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.facilio.db.builder.*;
-import com.facilio.db.util.DBConf;
-import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.modules.fields.FetchSupplementHandler;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -28,6 +7,7 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -36,7 +16,18 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FetchSupplementHandler;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.sql.Connection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 
@@ -436,7 +427,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			selectFields.add(moduleIdField);
 			selectFields.add(FieldFactory.getIdField(module));
 			if (FieldUtil.isSystemFieldsPresent(module)) {
-				selectFields.addAll(FieldFactory.getSystemFields(module));
+				selectFields.addAll(FieldFactory.getSystemPointFields(module));
 			}
 			if (FieldUtil.isBaseEntityRootModule(module)) {
 				selectFields.addAll(FieldFactory.getBaseModuleSystemFields(module));

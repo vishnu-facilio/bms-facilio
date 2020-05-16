@@ -181,4 +181,23 @@ public class AgentConstants
 
 
     public static final String WRITABLE_SWITCH = "writableSwitch";
+    public static final String STATS_MODULE_NAME = "agentStats";
+    public static final String HEAP_MAX = "heapMax";
+    public static final String HEAP_FREE = "heapFree";
+    public static final String NON_HEAP_INITIAL = "nonHeapInitial";
+    public static final String NON_HEAP_COMMITTED = "nonHeapCommitted";
+    public static final String NON_HEAP_MAX = "nonHeapMax";
+    public static final String NON_HEAP_FREE = "nonHeapFree";
+    public static final String NUMNER_OF_PROCESSORS = "numberOfProcessors";
+    public static final String JAVA_VERSION = "javaVersion";
+    public static final String HEAP_INITIAL = "heapInitial";
+    public static final String HEAP_COMMITTED = "heapCommitted";
+    public static final String MAX_MEMORY = "maxMemory";
+    public static final String FREE_MOMORY = "freeMemory";
+    public static final String PROCESS_LOAD = "processLoad";
+    public static final String SYSTEM_LOAD = "sysLoad";
+    public static final String MISC_DATA = "miscData";
+
+
+    public static final String SYSTEM_POINT_MODULE_NAME = "systemPoint";
 }

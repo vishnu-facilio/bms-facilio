@@ -1,14 +1,5 @@
 package com.facilio.modules;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.modules.fields.UpdateSupplementHandler;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -24,10 +15,18 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.UpdateSupplementHandler;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
 
@@ -387,7 +386,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateFields.addAll(scopeFieldsAndCriteria.getFields());
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
-			updateFields.addAll(FieldFactory.getSystemFields(module));
+			updateFields.addAll(FieldFactory.getSystemPointFields(module));
 		}
 		if (FieldUtil.isBaseEntityRootModule(module)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));

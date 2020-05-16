@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -331,6 +332,13 @@ public class AgentApiV2 {
             selectRecordBuilder.andCriteria(criteria);
         }
         List<Map<String, Object>> maps = selectRecordBuilder.get();
+        if(FacilioProperties.isDevelopment()){
+            LOGGER.info("get agent query "+selectRecordBuilder.toString());
+        }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
     }
+
+    /*public static long getWattsenseAgentCount(){
+        getAgentCount();
+    }*/
 }
