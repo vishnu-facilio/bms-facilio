@@ -564,17 +564,16 @@ public class FacilioAuthAction extends FacilioAction {
 
 		JSONObject invitation = new JSONObject();
 		HttpServletRequest request = ServletActionContext.getRequest();
-
+		Organization org = null;
 		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
 		if(user != null) {
-			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(-1, user.getOrgId(), user.getUid());
-			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+			user = AccountUtil.getUserBean(user.getOrgId()).getUser(-1, user.getOrgId(), user.getUid());
+			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
-			AccountUtil.setCurrentAccount(new Account(org, us));
+			AccountUtil.setCurrentAccount(new Account(org, user));
 		}
 		
-		if (user != null) {
-			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+		if (user != null && !user.isInviteAcceptStatus()) {
 			invitation.put("email", user.getEmail());
 			invitation.put("orgname", org.getName());
 			invitation.put("userid", user.getOuid());
