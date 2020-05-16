@@ -72,3 +72,9 @@ enums:
 
   - name: FrequencyType
     enumClassName: com.facilio.bmsconsole.context.AssetDepreciationContext$FrequencyType
+
+  - name: QuotationLineItemType
+    enumClassName: com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext$Type
+
+  - name: TaxType
+    enumClassName: com.facilio.bmsconsole.context.quotation.TaxContext$Type

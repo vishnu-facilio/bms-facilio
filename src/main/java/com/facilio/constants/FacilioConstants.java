@@ -13,6 +13,9 @@ import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.quotation.QuotationContext;
+import com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext;
+import com.facilio.bmsconsole.context.quotation.TaxContext;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
@@ -1621,7 +1624,11 @@ public class FacilioConstants {
 		public static final String TENANT_UNIT_SPACE = "tenantunit";
 		public static final String ALARM_TYPE = "alarmType";
 		public static final String PERMISSION_TYPE = "permissionType";
-		
+
+        public static final String QUOTATION = "quotation";
+        public static final String QUOTATION_LINE_ITEMS = "quotationlineitems";
+		public static final String TAX = "tax";
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1849,6 +1856,10 @@ public class FacilioConstants {
 			classMap.put(TENANT_UNIT_SPACE, TenantUnitSpaceContext.class);
 
 			classMap.put(ASSET_DEPRECIATION, AssetDepreciationContext.class);
+
+            classMap.put(QUOTATION, QuotationContext.class);
+            classMap.put(QUOTATION_LINE_ITEMS, QuotationLineItemsContext.class);
+			classMap.put(TAX, TaxContext.class);
 
 			return classMap;
 		}

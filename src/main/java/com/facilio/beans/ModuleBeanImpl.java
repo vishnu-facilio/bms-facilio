@@ -1472,7 +1472,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				.table("SubModulesRel")
 				.select(FieldFactory.getSubModuleRelFields())
 				.andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModuleId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("CHILD_MODULE_ID", "childModuleId", String.valueOf(parentModuleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHILD_MODULE_ID", "childModuleId", String.valueOf(childModuleId), NumberOperators.EQUALS))
 				;
 		Map<String, Object> existingRecord = selectRecordBuilder.fetchFirst();
 		// if existing is not found add

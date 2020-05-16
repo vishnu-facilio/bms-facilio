@@ -3771,4 +3771,12 @@ public class ModuleFactory {
 		facilioModule.setDisplayName("System Point");
 		return facilioModule;
 	}
+    public static FacilioModule getQuotationModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("quotation");
+        module.setDisplayName("Quotation");
+        module.setTableName("Quotation");
+        return module;
+    }
+
 }

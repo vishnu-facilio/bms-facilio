@@ -411,7 +411,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
-		
+
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
 		
 
@@ -766,6 +766,11 @@ public class ViewFactory {
 		views.put("all", getAllTenantSpaces().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.TENANT_SPACES, views);
+
+        order = 1;
+        views = new LinkedHashMap<>();
+        views.put("all", getAllQuotations().setOrder(order++));
+        viewsMap.put(FacilioConstants.ContextNames.QUOTATION, views);
 
 		return viewsMap;
 	}
@@ -6695,19 +6700,34 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
-	private static FacilioView getAllTenantSpaces() {
 
-		FacilioModule tenantSpaceModule = ModuleFactory.getTenantSpacesModule();
+    private static FacilioView getAllTenantSpaces() {
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id","ID",FieldType.NUMBER), true));
+        FacilioModule tenantSpaceModule = ModuleFactory.getTenantSpacesModule();
 
-		FacilioView allView = new FacilioView();
-		allView.setName("all");
-		allView.setDisplayName("All Tenant Spaces");
-		allView.setModuleName(tenantSpaceModule.getName());
-		allView.setSortFields(sortFields);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
 
-		return allView;
-	}
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Tenant Spaces");
+        allView.setModuleName(tenantSpaceModule.getName());
+        allView.setSortFields(sortFields);
+
+        return allView;
+    }
+
+    private static FacilioView getAllQuotations() {
+
+        FacilioModule module = ModuleFactory.getQuotationModule();
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Quotations");
+        allView.setModuleName(module.getName());
+        allView.setSortFields(sortFields);
+
+        return allView;
+    }
 }
