@@ -486,8 +486,12 @@ public class ControllerApiV2 {
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(AgentConstants.AGENT_ID, agentId);
             context.put(AgentConstants.CONTROLLER_ID, controllerId);
-            getControllerChain.execute();
-            controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            try {
+                getControllerChain.execute();
+                controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            }catch (Exception e){
+                LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+            }
             if (controllerData != null) {
                 try {
                     for (Map<String, Object> controllerDatum : controllerData) {

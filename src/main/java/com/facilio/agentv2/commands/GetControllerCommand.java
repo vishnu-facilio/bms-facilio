@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GetControllerCommand extends AgentV2Command {
     private static final Logger LOGGER = LogManager.getLogger(GetControllerCommand.class.getName());
@@ -36,6 +37,8 @@ public class GetControllerCommand extends AgentV2Command {
         FacilioModule childTableModule = modBean.getModule(childTableModuleName);
         FacilioModule resourceModule = ModuleFactory.getResourceModule();
         List<FacilioField> allFields = new ArrayList<>();
+        Objects.requireNonNull(childTableModule,"childTable module cant be empty, "+childTableModuleName);
+        Objects.requireNonNull(resourceModule,"respurce module module cant be empty");
         allFields.addAll(modBean.getModuleFields(controllerModule.getName()));
 
         allFields.addAll(modBean.getModuleFields(childTableModule.getName()));
