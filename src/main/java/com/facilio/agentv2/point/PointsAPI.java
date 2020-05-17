@@ -418,11 +418,13 @@ public class PointsAPI {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(pointModule.getTableName())
-                .fields(FieldFactory.getPointsFields())
+                .fields(FieldFactory.getPointFields())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(pointModule), String.valueOf(controller.getDeviceId()), NumberOperators.EQUALS));
         Map<String,Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentConstants.CONTROLLER_ID,controller.getId());
-        updateRecordBuilder.update(toUpdate);
+        if(updateRecordBuilder.update(toUpdate)>0){
+            LOGGER.info("____________________Updated points controllerId_____________________"+controller.getId());
+        }
     }
 
     public static boolean updatePointsConfigurationComplete(List<Long> pointIds) throws Exception {
