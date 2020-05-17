@@ -490,7 +490,11 @@ public class ControllerApiV2 {
                 getControllerChain.execute();
                 controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
             }catch (Exception e){
-                LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+                if(controllerType == FacilioControllerType.SYSTEM){
+                    LOGGER.info("Exception while fetching system controller "+e.getMessage());
+                }else {
+                    LOGGER.info("Exception while getting controller of type "+controllerType.asString()+" ",e);
+                }
             }
             if (controllerData != null) {
                 try {
