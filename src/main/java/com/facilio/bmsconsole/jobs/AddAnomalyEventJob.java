@@ -31,7 +31,8 @@ import com.facilio.tasker.job.JobContext;
 public class AddAnomalyEventJob extends FacilioJob {
 
     private static final Logger LOGGER = Logger.getLogger(AddAnomalyEventJob.class.getName());
-
+Long energyFieldId;
+Long upperAnomalyFieldId;
     private static DecimalFormat df = new DecimalFormat("#.##");
     @Override
     public void execute(JobContext jc) throws Exception
@@ -39,7 +40,9 @@ public class AddAnomalyEventJob extends FacilioJob {
     	try{
             LOGGER.info("generating Alarm ML started ");
             org.json.simple.JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-            generateAnomalyEvents(Long.parseLong(props.get("startTime").toString()),Long.parseLong(props.get("endTime").toString()));
+            energyFieldId = Long.parseLong(props.get("energyFieldId").toString());
+            upperAnomalyFieldId = Long.parseLong(props.get("upperAnomalyFieldId").toString());
+            generateAnomalyEvents(props);
             LOGGER.info("generating Alarm ML finished ");
     	}catch(Exception e){
     		LOGGER.fatal("ERROR in AddAnomalyEventJob"+e);
@@ -47,32 +50,44 @@ public class AddAnomalyEventJob extends FacilioJob {
     	}
     }
     
-    private void generateAnomalyEvents(long startTime,long endTime) throws Exception
+    private void generateAnomalyEvents(org.json.simple.JSONObject props) throws Exception
     {	
 //      select PARENT_METER_ID,MIN(TTIME),MAX(TTIME) from Energy_Data where ORGID=78 and PARENT_METER_ID in (1273322,1270982,1270992,1270961) group by PARENT_METER_ID
 //      start time is min time
 //      end time = max time+ interval
 //        long startTime = 1564646400000L;
 //        long endTime = 1581667200000L;
+    	long startTime = Long.parseLong(props.get("startTime").toString());
+		long endTime = 	Long.parseLong(props.get("endTime").toString());
         long interval = 3600000;
 
-        String checkGamParent="1273322,1270982,1270992,1270961";
+//        String checkGamParent="1273322,1270982,1270992,1270961";
+        String checkGamParent= props.get("checkGamParent").toString();
+        String ml= props.get("ml").toString();
         String[] checkGamParentList = checkGamParent.split(",");
+        String[] mlListStr = ml.split(",");
+        Long[] mlList = new Long[mlListStr.length];
+        for(int i=0;i<mlListStr.length;i++)
+        {	
+        	mlList[i] = Long.parseLong(mlListStr[i]);
+        }
         List<MLAnomalyEvent> eventList = new LinkedList<MLAnomalyEvent>();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         while(startTime<endTime)
         {
 //          SELECT DISTINCT PREDICTION_LOG_MODULEID from ML WHERE MODEL_PATH='checkGam1' and ORGID=?
-            long checkGamModuleid = 55443;
+//            long checkGamModuleid = 55443;
+        	long checkGamModuleid = Long.parseLong(props.get("checkGamModuleid").toString());
 //          SELECT DISTINCT PREDICTION_LOG_MODULEID from ML WHERE MODEL_PATH='ratioCheck' and ORGID=?   
-            long checkratioModuleid1 = 55445;
+//            long checkratioModuleid1 = 55445;
+        	long checkratioModuleid = Long.parseLong(props.get("checkratioModuleid").toString());
 //          long checkratioModuleid2 = 77887; // IF there is more than one set in ratio hierarchy [1,2,3,4] , [4,5,6,7]
 
             FacilioModule checkGamModule = modBean.getModule(checkGamModuleid);
             List<FacilioField> gamFields = modBean.getAllFields(checkGamModule.getName());
 
-            FacilioModule checkRatio1Module = modBean.getModule(checkratioModuleid1);
+            FacilioModule checkRatio1Module = modBean.getModule(checkratioModuleid);
             List<FacilioField> checkratio1Fields = modBean.getAllFields(checkRatio1Module.getName());
             
             Hashtable<String,JSONObject> checkGamData = new Hashtable<String,JSONObject>();
@@ -80,8 +95,8 @@ public class AddAnomalyEventJob extends FacilioJob {
 
             for(String parentID:checkGamParentList)
             {	
-                List<Map<String,Object>> props = getData(gamFields,checkGamModule,startTime, startTime+10000,parentID);
-                for(Map<String,Object> prop : props)
+                List<Map<String,Object>> props1 = getData(gamFields,checkGamModule,startTime, startTime+10000,parentID);
+                for(Map<String,Object> prop : props1)
                 {
                     JSONObject data = new JSONObject();
                     data.put("actualValue", prop.get("actualValue"));
@@ -90,73 +105,54 @@ public class AddAnomalyEventJob extends FacilioJob {
                 }
             }
 
-            List<Map<String, Object>> props = getData(checkratio1Fields,checkRatio1Module,startTime, startTime+360000,"1273322");
-            for(Map<String,Object> prop : props)
+            List<Map<String, Object>> props1 = getData(checkratio1Fields,checkRatio1Module,startTime, startTime+360000,checkGamParentList[0]);
+            for(Map<String,Object> prop : props1)
             {
-                ratio1data.put("1270982_ratio",prop.get("1270982_ratio"));
-                ratio1data.put("1270992_ratio",prop.get("1270992_ratio"));
-                ratio1data.put("1270961_ratio",prop.get("1270961_ratio"));
+            	for(int i=1;i<checkGamParentList.length;i++)
+                {
+            		 ratio1data.put(checkGamParentList[i]+"_ratio",prop.get(checkGamParentList[i]+"_ratio"));
+                 }
             }
             LOGGER.info("ratio1data length : "+ratio1data.length());
             if(ratio1data.length()>0)
             {
-                JSONObject data = checkGamData.get("1273322");
+                JSONObject data = checkGamData.get(checkGamParentList[0]);
                 Double actualValue = (Double)data.get("actualValue");
                 Double adjustedUpperBound = (Double)data.get("adjustedUpperBound");
                 if(actualValue>adjustedUpperBound)
                 {   // ML ID
                 	// select ML_ID from ML_Variables M inner JOIN Modules ms ON M.MODULEID=ms.MODULEID WHERE ms.NAME='energydata' AND IS_SOURCE=1 AND M.ORGID=? and M.PARENT_ID=? order by ID desc LIMIT 1
-                    MLAnomalyEvent parentEvent = generateMLAnomalyEvent(Long.parseLong("1273322"),actualValue,adjustedUpperBound,startTime,138);
+                    MLAnomalyEvent parentEvent = generateMLAnomalyEvent(Long.parseLong(checkGamParentList[0]),actualValue,adjustedUpperBound,startTime,mlList[0]);
 
                     eventList.add(parentEvent);
-
-                    if(ratio1data.has("1270982_ratio"))
+                    for(int i=1;i<mlList.length;i++)
                     {
-                        data = checkGamData.get("1270982");
-                        MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270982"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,139,(Double)ratio1data.get("1270982_ratio"),parentEvent);
-                        eventList.add(event);
-                    }
-                    if(ratio1data.has("1270992_ratio"))
-                    {
-                        data = checkGamData.get("1270992");
-                        MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270992"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,140,(Double)ratio1data.get("1270992_ratio"),parentEvent);
-                        eventList.add(event);
-                    }
-                    if(ratio1data.has("1270961_ratio"))
-                    {
-                        data = checkGamData.get("1270961");
-                        MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270961"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,141,(Double)ratio1data.get("1270961_ratio"),parentEvent);
-                        eventList.add(event);
+                    	if(ratio1data.has(checkGamParentList[i]+"_ratio"))
+                        {
+                            data = checkGamData.get(checkGamParentList[i]);
+                            MLAnomalyEvent event = generateRCAEvent(Long.parseLong(checkGamParentList[i]),(Double)data.get("actualValue"),
+                                            (Double)data.get("adjustedUpperBound"),startTime,mlList[i],(Double)ratio1data.get(checkGamParentList[i]+"_ratio"),parentEvent);
+                            eventList.add(event);
+                        }
                     }
                 }
             }
             else
             { //ML ID
-                MLAnomalyEvent event =checkAndGenerateMLAnomalyEvent(Long.parseLong("1273322"),checkGamData.get("1273322"),startTime,134);
+                MLAnomalyEvent event =checkAndGenerateMLAnomalyEvent(Long.parseLong(checkGamParentList[0]),checkGamData.get(checkGamParentList[0]),startTime,mlList[0]);
                 if(event!=null)
                 {
                     eventList.add(event);
                 }
-
-                event =checkAndGenerateMLAnomalyEvent(Long.parseLong("1270982"),checkGamData.get("1270982"),startTime,135);
-                if(event!=null)
+                for(int i=1;i<mlList.length;i++)
                 {
-                    eventList.add(event);
+                	event =checkAndGenerateMLAnomalyEvent(Long.parseLong(checkGamParentList[i]),checkGamData.get(checkGamParentList[i]),startTime,mlList[i]);
+                    if(event!=null)
+                    {
+                        eventList.add(event);
+                    }
                 }
-
-                event =checkAndGenerateMLAnomalyEvent(Long.parseLong("1270992"),checkGamData.get("1270992"),startTime,136);
-                if(event!=null)
-                {
-                    eventList.add(event);
-                }
-            	event =checkAndGenerateMLAnomalyEvent(Long.parseLong("1270961"),checkGamData.get("1270961"),startTime,137);
-                if(event!=null)
-                {
-                    eventList.add(event);
-                }
+                
             }
                    
             startTime = startTime+interval;
@@ -195,9 +191,11 @@ public class AddAnomalyEventJob extends FacilioJob {
         event.setReadingTime(ttime);
         event.setCreatedTime(ttime);
       //select * from Fields WHERE ORGID=? and NAME='totalEnergyConsumptionDelta'
-        event.setEnergyDataFieldid(541054);
+//        event.setEnergyDataFieldid(541054);
+        event.setEnergyDataFieldid(energyFieldId);
       //select FIELDID from Fields F INNER JOIN ML ml ON ml.PREDICTION_LOG_MODULEID = F.MODULEID WHERE ml.ID in (select ML_ID from ML_Variables M inner JOIN Modules ms ON M.MODULEID=ms.MODULEID WHERE ms.NAME='energydata' AND IS_SOURCE=1 AND M.ORGID=? and M.PARENT_ID=?)  and NAME='adjustedUpperBound'
-        event.setUpperAnomalyFieldid(764441);
+//        event.setUpperAnomalyFieldid(764441);
+        event.setUpperAnomalyFieldid(upperAnomalyFieldId);
         event.setmlid(mlid);
         event.setType(MLAlarmOccurenceContext.MLAnomalyType.Anomaly);
         event.setSiteId(resource.getSiteId());
@@ -243,9 +241,11 @@ public class AddAnomalyEventJob extends FacilioJob {
         event.setReadingTime(ttime);
         event.setCreatedTime(ttime);
         //select FIELDID from Fields WHERE ORGID=? and NAME='totalEnergyConsumptionDelta'
-        event.setEnergyDataFieldid(541054);
+//        event.setEnergyDataFieldid(541054);
+        event.setEnergyDataFieldid(energyFieldId);
         //select FIELDID from Fields F INNER JOIN ML ml ON ml.PREDICTION_LOG_MODULEID = F.MODULEID WHERE ml.ID in (select ML_ID from ML_Variables M inner JOIN Modules ms ON M.MODULEID=ms.MODULEID WHERE ms.NAME='energydata' AND IS_SOURCE=1 AND M.ORGID=? and M.PARENT_ID=?)  and NAME='adjustedUpperBound'
-        event.setUpperAnomalyFieldid(764441);
+//        event.setUpperAnomalyFieldid(764441);
+        event.setUpperAnomalyFieldid(upperAnomalyFieldId);
         event.setmlid(mlid);
         event.setSiteId(resource.getSiteId());
         return event;
