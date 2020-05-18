@@ -8,6 +8,7 @@ import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
@@ -213,7 +214,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return Collections.unmodifiableList(subModules);
 	}
 
-	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, boolean checkPermission, FieldPermissionContext.PermissionType permissionType) throws SQLException, Exception {
+	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, boolean checkPermission, int permissionType) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
 		List<Long> permittedSubModuleIds = new ArrayList<Long>();
 		permittedSubModuleIds = FieldUtil.getPermissibleChildModules(getMod(rs.getLong("PARENT_MODULE_ID")), permissionType);
@@ -239,7 +240,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(4, moduleId);
 			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
+			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -272,7 +273,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setString(3, moduleName);
 			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
+			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -312,7 +313,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(4, moduleId);
 			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
+			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -348,7 +349,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setString(3, moduleName);
 			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs, false, FieldPermissionContext.PermissionType.READ_ONLY);
+			return getSubModulesFromRS(rs);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
@@ -433,7 +434,12 @@ public class ModuleBeanImpl implements ModuleBean {
 			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
-	
+
+	@Override
+	public List<FacilioModule> get(FacilioModule parentModule) throws Exception {
+		return null;
+	}
+
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
@@ -1487,7 +1493,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public JSONObject getStateFlow(String module) throws Exception {
-	//String query = "select STATE_ID,TicketStatus.STATUS , GROUP_CONCAT(concat('{\"',NEXT_STATE_ID,'\":','\"',ts2.STATUS,'\"}')) from TicketStateFlow , TicketStatus, TicketStatus ts2 where TicketStatus.ID=TicketStateFlow.STATE_ID and TicketStateFlow.NEXT_STATE_ID=ts2.ID  group by STATE_ID";
+	//String query = "select STATE_ID,Ticke                                                                                                        tStatus.STATUS , GROUP_CONCAT(concat('{\"',NEXT_STATE_ID,'\":','\"',ts2.STATUS,'\"}')) from TicketStateFlow , TicketStatus, TicketStatus ts2 where TicketStatus.ID=TicketStateFlow.STATE_ID and TicketStateFlow.NEXT_STATE_ID=ts2.ID  group by STATE_ID";
 		
 		//FacilioModule fm = getModule("ticketstatus");
 		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID=" + getOrgId() +" group by STATE_ID ";
@@ -1536,8 +1542,8 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 
-	//will be an interface method
-	public List<FacilioModule> getPermissibleSubModules(long moduleId, FieldPermissionContext.PermissionType permissionType) throws Exception {
+	@Override
+	public List<FacilioModule> getPermissibleSubModules(long moduleId, int permissionType) throws Exception {
 		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -1565,5 +1571,47 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 
+	@Override
+	public List<Long> getPermissibleFieldIds(FacilioModule module, int permissionType) throws Exception {
+
+		List<Long> permissibleFieldIds = new ArrayList<Long>();
+
+		//get extended module permissable fields also
+		FacilioModule extendedModule = module.getExtendModule();
+		List<Long> extendedModuleIds = new ArrayList<Long>();
+		while(extendedModule != null) {
+			extendedModuleIds.add(extendedModule.getModuleId());
+			extendedModule = extendedModule.getExtendModule();
+		}
+		extendedModuleIds.add(module.getModuleId());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFieldModulePermissionFields())
+				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(FieldPermissionContext.CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", "1", CommonOperators.IS_NOT_EMPTY));
+
+		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+		}
+
+		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY.getIndex()) {
+			String permVal = FieldPermissionContext.PermissionType.READ_ONLY.getIndex()+"," + FieldPermissionContext.PermissionType.READ_WRITE.getIndex();
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType), NumberOperators.EQUALS));
+		}
+
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> map :props) {
+				permissibleFieldIds.add((Long) map.get("fieldId"));
+			}
+		}
+		return permissibleFieldIds;
+
+	}
 
 }

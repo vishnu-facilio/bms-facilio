@@ -29,7 +29,7 @@ public class CacheUtil {
 	public static final String RESPONSE = "response";
 	
 	public static final String USER = "user";
-	
+
 	public static String ORG_KEY(long orgId) {
 		return ORG + KEY_SEPARATOR + orgId;
 	}
@@ -65,7 +65,15 @@ public class CacheUtil {
 	public static String FIELDS_KEY(long orgId, String moduleName) {
 		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + FIELDS;
 	}
-	
+
+	public static String PERMISSIBLE_FIELDS_KEY(long orgId, String moduleName, int permissionType) {
+		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + FIELDS;
+	}
+
+	public static String PERMISSIBLE_SUB_MODULES_KEY(long orgId, long moduleId, int permissionType) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + moduleId + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + SUB_MODULES;
+	}
+
 	public static String FIELD_KEY(long orgId, long fieldId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + fieldId + KEY_SEPARATOR + FIELD;
 	}

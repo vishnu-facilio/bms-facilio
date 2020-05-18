@@ -1,11 +1,17 @@
 package com.facilio.beans;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -345,7 +351,33 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		return super.deleteFields(fieldIds);
 	}
 
-	
-	
-	
+	@Override
+	public List<Long> getPermissibleFieldIds(FacilioModule module, int permissionType) throws Exception {
+		FacilioCache cache = LRUCache.getModuleFieldsCache();
+		Object key = CacheUtil.PERMISSIBLE_FIELDS_KEY(getOrgId(), module.getName(), permissionType);
+		List<Long> permissibleFieldIds = (List<Long>) cache.get(key);
+		if (CollectionUtils.isEmpty(permissibleFieldIds)) {
+			permissibleFieldIds = super.getPermissibleFieldIds(module, permissionType);
+			if (CollectionUtils.isNotEmpty(permissibleFieldIds)) {
+				cache.put(key, permissibleFieldIds);
+			}
+		}
+		return permissibleFieldIds;
+	}
+
+	@Override
+	public List<FacilioModule> getPermissibleSubModules(long moduleId, int permissionType) throws Exception {
+		FacilioCache cache = LRUCache.getModuleFieldsCache();
+		Object key = CacheUtil.PERMISSIBLE_SUB_MODULES_KEY(getOrgId(), moduleId, permissionType);
+		List<FacilioModule> permissibleSubModules = (List<FacilioModule>) cache.get(key);
+		if (CollectionUtils.isEmpty(permissibleSubModules)) {
+			permissibleSubModules = super.getPermissibleSubModules(moduleId, permissionType);
+			if (CollectionUtils.isNotEmpty(permissibleSubModules)) {
+				cache.put(key, permissibleSubModules);
+			}
+		}
+		return permissibleSubModules;
+
+	}
+
 }

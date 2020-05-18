@@ -596,49 +596,14 @@ public class FieldUtil {
     }
     
     public static List<FacilioField> getPermissionRestrictedFields(FacilioModule module, PermissionType permissionType) throws Exception {
-    	List<Long> permissableFieldIds = new ArrayList<Long>();
-    	
+
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
         List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
         
-    	//get extended module permissable fields also
-    	FacilioModule extendedModule = module.getExtendModule();
-    	List<Long> extendedModuleIds = new ArrayList<Long>();
-        while(extendedModule != null) {
-        	extendedModuleIds.add(extendedModule.getModuleId());
-            extendedModule = extendedModule.getExtendModule();
-        }
-        extendedModuleIds.add(module.getModuleId());
-      	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFieldModulePermissionFields())
-				.table(ModuleFactory.getFieldModulePermissionModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("CHECK_TYPE", "checkType", String.valueOf(CheckType.FIELD.getIndex()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", "1",CommonOperators.IS_NOT_EMPTY));
-				;
-    	
-		if(AccountUtil.getCurrentUser().getRoleId() > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
-		}
-				
-		if(permissionType == PermissionType.READ_ONLY) {
-			String permVal = PermissionType.READ_ONLY.getIndex()+"," + PermissionType.READ_WRITE.getIndex();
-			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
-    	}
-    	else {
-    		selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
-    	}
-		
-    	
-		List<Map<String, Object>> props = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(props)) {
-			for(Map<String,Object> map :props) {
-				permissableFieldIds.add((Long) map.get("fieldId"));
-			}
-		}
-		for(FacilioField field : allFields) {
-			if(field.getFieldId() != -1 && !skipPermissionForFields(field.getName()) && !permissableFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
+    	List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
+    	for(FacilioField field : allFields) {
+			if(field.getFieldId() != -1 && !skipPermissionForFields(field.getName()) && !permissibleFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
 				restrictedFields.add(field);
 			}
 		}
@@ -647,7 +612,7 @@ public class FieldUtil {
 		
     }
 
-	public static List<Long> getPermissibleChildModules(FacilioModule parentModule, FieldPermissionContext.PermissionType permissionType) throws Exception{
+	public static List<Long> getPermissibleChildModules(FacilioModule parentModule, int permissionType) throws Exception{
 
 		List<Long> permittedSubModuleIds = new ArrayList<Long>();
 		//get extended modules' permissible sub modules also
@@ -669,12 +634,12 @@ public class FieldUtil {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
 		}
 
-		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY) {
+		if(permissionType == FieldPermissionContext.PermissionType.READ_ONLY.getIndex()) {
 			String permVal = FieldPermissionContext.PermissionType.READ_ONLY.getIndex()+"," + FieldPermissionContext.PermissionType.READ_WRITE.getIndex();
 			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", permVal, NumberOperators.EQUALS));
 		}
 		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType.getIndex()), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_TYPE", "permissionType", String.valueOf(permissionType), NumberOperators.EQUALS));
 		}
 
 

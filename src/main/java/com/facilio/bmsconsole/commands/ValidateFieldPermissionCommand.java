@@ -29,7 +29,7 @@ public class ValidateFieldPermissionCommand extends FacilioCommand {
 				.get(FacilioConstants.ContextNames.PERMISSION_TYPE);
 		try {
 			if (StringUtils.isNotEmpty(moduleName) && CollectionUtils.isNotEmpty(recordList)
-					&& AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+					&& AccountUtil.isFeatureEnabled(FeatureLicense.FIELD_PERMISSIONS)) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				List<FacilioField> restrictedFields = FieldUtil.getPermissionRestrictedFields(module,
