@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.forms;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -27,6 +16,10 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FormFactory {
 	
@@ -139,7 +132,8 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.EMPLOYEE, geEmployeeContactForm())
 						.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractForm())
 						.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationForm())
-							
+						.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesForm())
+						.put(FacilioConstants.ContextNames.TOOL_TYPES, getTooltypesForm())
 						.build())
         			
 				.build();
@@ -345,6 +339,8 @@ public class FormFactory {
 		List<FacilioForm> reservationFormsList = Arrays.asList(getReservationForm());
 		List<FacilioForm> rentalLeaseFormsList = Arrays.asList(getRentalLeaseContractForm());
 		List<FacilioForm> invReqFormsList = Arrays.asList(getInventoryRequestForm());
+		List<FacilioForm> itemTypesFormsList = Arrays.asList(getItemTypesForm());
+		List<FacilioForm> toolTypesFormsList = Arrays.asList(getTooltypesForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -375,7 +371,8 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getFormMap(rentalLeaseFormsList))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getFormMap(visitorLoggingForms))
 				.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getFormMap(invReqFormsList))
-
+				.put(FacilioConstants.ContextNames.ITEM_TYPES, getFormMap(itemTypesFormsList))
+				.put(FacilioConstants.ContextNames.TOOL_TYPES, getFormMap(toolTypesFormsList))
 				.build();
 	}
 	
@@ -575,7 +572,7 @@ public class FormFactory {
 	public static FacilioForm getItemTypesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW ITEM TYPE");
-		form.setName("web_default");
+		form.setName("default_itemTypes_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getItemTypesFormField());
@@ -609,7 +606,7 @@ public class FormFactory {
 	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW TOOL TYPE");
-		form.setName("web_default");
+		form.setName("default_toolTypes_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getToolTypesFormField());
