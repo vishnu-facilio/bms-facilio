@@ -74,6 +74,10 @@ public class ImportToolCommand extends FacilioCommand {
 				}
 				tool.setToolType(toolType);
 				tool.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
+				if (purchasedTool.getTool() != null && purchasedTool.getTool().getMinimumQuantity() > 0) {
+					tool.setMinimumQuantity(purchasedTool.getTool().getMinimumQuantity());
+				}
+
 				if (toolNameVsIndexMap.containsKey(purchasedTool.getToolType().getName())) {
 					int toolIndex = toolNameVsIndexMap.get(purchasedTool.getToolType().getName()).intValue();
 					ToolContext existingTool = toolsList.get(toolIndex);

@@ -45,6 +45,8 @@ public class ImportFieldFactory {
 			if(field.getModule().getName().equals("purchasedTool") && 
 					!field.getName().equals("isUsed") && !field.getName().equals("sysModifiedTime") && !field.getName().equals("sysCreatedTime")) {
 				selectedFields.add(field);
+			} else if (field.getModule().getName().equals("toolTypes") && field.getName().equals("minimumQuantity")) {
+				continue;
 			}
 			else if(field.getModule().getName().equals("purchasedTool") == false){
 				if(fieldsToBeRemoved.contains(field.getName())) {
@@ -77,6 +79,9 @@ public class ImportFieldFactory {
 			if(field.getModule().getName().equals("purchasedItem") && 
 					!field.getName().equals("isUsed") && !field.getName().equals("currentQuantity") && !field.getName().equals("sysModifiedTime") && !field.getName().equals("sysCreatedTime")) {
 				selectedFields.add(field);
+			}
+			else if (field.getModule().getName().equals("itemTypes") && field.getName().equals("minimumQuantity")) {
+				continue;
 			}
 			else if(field.getModule().getName().equals("purchasedItem") == false){
 				if(fieldsToBeRemoved.contains(field.getName())) {
@@ -189,7 +194,6 @@ public class ImportFieldFactory {
 			removedFields.add("lastPurchasedPrice");
 			removedFields.add("unit");
 			removedFields.add("serialNumber");
-			removedFields.add("minimumQuantity");
 			removedFields.add("photoId");
 			removedFields.add("individualTracking");
 			removedFields.add("sysCreatedTime");
@@ -208,7 +212,6 @@ public class ImportFieldFactory {
 			removedFields.add("lastPurchasedPrice");
 			removedFields.add("unit");
 			removedFields.add("serialNumber");
-			removedFields.add("minimumQuantity");
 			removedFields.add("photoId");
 			removedFields.add("individualTracking");
 			removedFields.add("sysCreatedTime");

@@ -75,6 +75,9 @@ public class ImportItemCommand extends FacilioCommand {
 				}
 				item.setItemType(itemType);
 				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
+				if (purchasedItem.getItem() != null && purchasedItem.getItem().getMinimumQuantity() > 0) {
+					item.setMinimumQuantity(purchasedItem.getItem().getMinimumQuantity());
+				}
 
 				if (purchasedItem.getQuantity() > 0) {
 					List<PurchasedItemContext> purItem = new ArrayList<>();
