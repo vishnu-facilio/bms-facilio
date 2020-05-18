@@ -3446,6 +3446,22 @@ public class ModuleFactory {
 		module.setDisplayName("Agent Alarm Occurrence");
 		return module;
 	}
+
+	public static FacilioModule getRuleRollupSummaryModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ruleRollupSummary");
+		module.setTableName("Rule_Rollup_Summary");
+		module.setDisplayName("Rule Rollup Summary");
+		return module;
+	}
+
+	public static FacilioModule getAssetRollupSummaryModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("assetRollupSummary");
+		module.setTableName("Asset_Rollup_Summary");
+		module.setDisplayName("Asset Rollup Summary");
+		return module;
+	}
 	
 	public static FacilioModule getHazardModule() {
 		FacilioModule module = new FacilioModule();

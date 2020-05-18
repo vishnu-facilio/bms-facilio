@@ -8382,6 +8382,26 @@ public class FieldFactory {
         fields.add(getField("tenantId", "TENANT_ID", module, FieldType.NUMBER));
         return fields;
     }
+
+    public static List<FacilioField> getRuleRollupSummaryFields() {
+        FacilioModule module = ModuleFactory.getRuleRollupSummaryModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("lastRolledUpDate", "LAST_ROLLED_UP_DATE", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getAssetRollupSummaryFields() {
+        FacilioModule module = ModuleFactory.getAssetRollupSummaryModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("lastRolledUpDate", "LAST_ROLLED_UP_DATE", module, FieldType.NUMBER));
+
+        return fields;
+    }
     
 	public static List<FacilioField> getCommissioningLogFields() {
 		List<FacilioField> fields = new ArrayList<>();

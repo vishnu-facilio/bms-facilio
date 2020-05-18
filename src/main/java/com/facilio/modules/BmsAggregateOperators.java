@@ -91,6 +91,17 @@ public class BmsAggregateOperators {
                 return FieldType.NUMBER;
             }
         },
+        DISTINCT(29, "distinct", "distinct({$place_holder$})") {
+            @Override
+            public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+                return props.size();
+            }
+
+            @Override
+            protected FieldType getFieldType() {
+                return FieldType.NUMBER;
+            }
+        }
         ;
 
         private int value;
@@ -113,6 +124,7 @@ public class BmsAggregateOperators {
                 case ACTUAL:
                     return field.clone();
                 case COUNT:
+                case DISTINCT:
                     String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
                     NumberField field1 = new NumberField();
                     field1.setDataType(FieldType.NUMBER);
