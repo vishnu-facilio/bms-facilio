@@ -435,11 +435,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 
-	@Override
-	public List<FacilioModule> get(FacilioModule parentModule) throws Exception {
-		return null;
-	}
-
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
