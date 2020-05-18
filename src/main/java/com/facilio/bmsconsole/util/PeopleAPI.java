@@ -86,6 +86,7 @@ public class PeopleAPI {
 			people.setPhone(user.getMobile());
 			people.setPeopleType(PeopleType.EMPLOYEE);
 			people.setIsAppAccess(true);
+			people.setRoleId(user.getRoleId());
 			
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			if(isSignup) {
