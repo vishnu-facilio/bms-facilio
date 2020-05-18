@@ -4355,7 +4355,7 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 INSERT INTO LookupFields (FIELDID, ORGID, SPECIAL_TYPE) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'users');
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @WORK_ORDER_ACTIVITY_MODULE_ID, 'infoJsonStr', 'Info', 2, 'INFO', 1, false, false, true);
 
-INSERT INTO PortalInfo (ORGID,PORTALTYPE,SIGNUP_ALLOWED,GMAILLOGIN_ALLOWED,IS_PUBLIC_CREATE_ALLOWED,IS_ANYDOMAIN_ALLOWED,SAML_ENABLED,LOGIN_URL,LOGOUT_URL,PASSWORD_URL) VALUES (${orgId},0,false,false,false,false,false,'http://orgdomainname.facilstack.com/idplogin','http://orgdomainname.facilstack.com/idplogout','http://orgdomainname.facilstack.com/idppassword');
+INSERT INTO PortalInfo (ORGID,PORTALTYPE,SIGNUP_ALLOWED,GMAILLOGIN_ALLOWED,IS_PUBLIC_CREATE_ALLOWED,IS_ANYDOMAIN_ALLOWED,SAML_ENABLED,LOGIN_URL,LOGOUT_URL,PASSWORD_URL) VALUES (${orgId},0,false,false,false,false,false,'http://orgdomainname.fazilio.com/idplogin','http://orgdomainname.fazilio.com/idplogout','http://orgdomainname.fazilio.com/idppassword');
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE) VALUES (${orgId}, 'workorderrequest', 'Work Order Requests', 'WorkOrderRequests', @TICKET_MODULE_ID, @BASE_ENTITY_MODULE_TYPE);
 SET @WORK_ORDER_REQUEST_MODULE_ID := (SELECT LAST_INSERT_ID());

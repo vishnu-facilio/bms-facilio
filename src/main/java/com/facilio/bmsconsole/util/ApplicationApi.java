@@ -281,7 +281,7 @@ public class ApplicationApi {
 		ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex());
 
 		
-		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ));
+		AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ "."+ FacilioProperties.getPortalDomain());
 		ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getId(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 		
 		AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain()+ ".faciliotenants.com");
@@ -311,7 +311,7 @@ public class ApplicationApi {
 	
 	public static void addDefaultAppDomains(long orgId) throws Exception {
 		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-		AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + (FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com" ), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
+		AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getPortalDomain(), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
 		AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId);
 		AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
 		AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId);

@@ -80,6 +80,7 @@ public class FacilioProperties {
     private static String pythonPath;
     private static String allowedAppDomains;
 
+    private static String portalDomains;
     private static String emailClient;
     private static String fileStore;
     private static boolean isServicesEnabled;
@@ -116,7 +117,8 @@ public class FacilioProperties {
                 clientAppUrl = "https://"+ appDomain;
                 allowedPortalDomains = PROPERTIES.getProperty("allowedportal.domains");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
-                
+                portalDomains = PROPERTIES.getProperty("portal.domain");
+
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -232,7 +234,11 @@ public class FacilioProperties {
     public static String getAllowedPortalDomainsUrl() {
         return allowedPortalDomains;
     }
-    
+
+    public static String getPortalDomain() {
+        return portalDomains;
+    }
+
     public static String getAllowedAppDomains() {
         return allowedAppDomains;
     }

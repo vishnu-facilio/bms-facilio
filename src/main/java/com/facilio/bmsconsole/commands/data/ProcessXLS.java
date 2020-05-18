@@ -411,7 +411,7 @@ public class ProcessXLS extends FacilioCommand {
 				case "assignedBy":
 				case "assignedTo":
 				case "requester": {
-					AppDomain appDomain = IAMAppUtil.getAppDomain(FacilioProperties.isProduction() ? ".facilioportal.com" : ".facilstack.com");
+					AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getCurrentOrg().getDomain() + "." + FacilioProperties.getPortalDomain());
 					User user = AccountUtil.getUserBean().getUser(value.toString(), appDomain.getIdentifier());
 					Map<String, Object> prop = FieldUtil.getAsProperties(user);
 					return prop;
