@@ -1221,4 +1221,19 @@ public class NewAlarmAPI {
 		}
 		return builder.get();
 	}
+
+	public static Long getReadingAlarmLastOccurredTime() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule baseAlarm = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+		FacilioField lastOccurredTime = FieldFactory.getField("lastOccurredTime", "LAST_OCCURRED_TIME", FieldType.NUMBER);
+		SelectRecordsBuilder<ReadingAlarmOccurrenceContext> occurrenceBuilder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>()
+				.aggregate(BmsAggregateOperators.NumberAggregateOperator.MAX, lastOccurredTime)
+				.module(baseAlarm);
+		List<Map<String, Object>> props = occurrenceBuilder.getAsProps();
+		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(props)) {
+			return (long) props.get(0).get("lastOccurredTime");
+		}
+		return -1l;
+	}
 }

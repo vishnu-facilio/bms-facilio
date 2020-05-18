@@ -48,7 +48,9 @@
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
 
 	<job name="RuleRollupJob" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />
+	<job name="RuleRollupJob-OneTime" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />
 	<job name="AssetRollupJob" classname="com.facilio.bmsconsole.jobs.AssetRollupJob" transactionTimeout="1800000" />
+	<job name="AssetRollupJob-OneTime" classname="com.facilio.bmsconsole.jobs.AssetRollupJob" transactionTimeout="1800000" />
 
 	 <!-- Shift jobs -->
 	 <job name='StartShift' classname= 'com.facilio.bmsconsole.jobs.ShiftStartJob' transactionTimeout='300000'/>

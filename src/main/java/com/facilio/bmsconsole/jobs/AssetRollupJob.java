@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.RuleRollupCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -99,6 +100,29 @@ public class AssetRollupJob extends FacilioJob {
             }
         }
 
+        if (nextRolledUpDate < dayStartTime) {
+            Long lastOccurredTime = NewAlarmAPI.getReadingAlarmLastOccurredTime();
+            if (nextRolledUpDate < lastOccurredTime) {
+                long nextExecutionTime = (System.currentTimeMillis() + (1000 * 60 * 1)) / 1000;
+                // schedule next job in next one hour
+                if ("AssetRollupJob-OneTime".equals(jc.getJobName())) {
+                    jc.setNextExecutionTime(nextExecutionTime);
+                } else {
+                    FacilioTimer.scheduleOneTimeJobWithTimestampInSec(AccountUtil.getCurrentOrg().getOrgId(),
+                            "AssetRollupJob-OneTime", nextExecutionTime,
+                            "facilio");
+                }
+            }
+            else {
+                nextRolledUpDate = dayStartTime;
+            }
+        }
+        else {
+            if ("AssetRollupJob-OneTime".equals(jc.getJobName())) {
+                jc.setNextExecutionTime(-1);
+            }
+        }
+
         if (map == null) {
             map = new HashMap<>();
             map.put("lastRolledUpDate", nextRolledUpDate);
@@ -118,11 +142,6 @@ public class AssetRollupJob extends FacilioJob {
             updateBuilder.update(map);
         }
 
-        if (nextRolledUpDate < dayStartTime) {
-            // schedule next job in next one hour
-            FacilioTimer.scheduleOneTimeJobWithTimestampInSec(AccountUtil.getCurrentOrg().getOrgId(),
-                    "AssetRollupJob", System.currentTimeMillis() + (1000 * 60 * 5), "facilio");
-        }
         return;
     }
 }
