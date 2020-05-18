@@ -216,5 +216,10 @@
                <taglib-uri>facilio-tags</taglib-uri> 
                <taglib-location>/WEB-INF/tags/facilio-tags.tld</taglib-location> 
         </taglib> 
-	</jsp-config> 
+	</jsp-config>
+
+    <error-page>
+        <location>/jsps/index.jsp</location>
+    </error-page>
+
 </web-app>
