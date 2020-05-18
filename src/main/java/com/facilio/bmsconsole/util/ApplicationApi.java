@@ -101,6 +101,13 @@ public class ApplicationApi {
     
     public static long getApplicationIdForLinkName(String appLinkName) throws Exception {
     	if(StringUtils.isNotEmpty(appLinkName)) {
+			//temp handling for newapp and newtenant linkname
+			if(appLinkName.equals("app")){
+				appLinkName = "newapp";
+			}
+			else if(appLinkName.equals("tenant")){
+				appLinkName = "newtenants";
+			}
 	        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 	                .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
 	                .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
