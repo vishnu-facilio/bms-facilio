@@ -16,8 +16,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -34,7 +34,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
@@ -306,11 +305,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				
 				FacilioField selectOriginal = modBean.getField(dbParamContext.getFieldName(), module.getName());
 				
-				FacilioField select = selectOriginal.clone();
-				
-				if(select == null) {
+				if(selectOriginal == null) {
 					throw new Exception("Field is null for FieldName - "+dbParamContext.getFieldName() +" moduleName - "+module.getName());
 				}
+				
+				FacilioField select = selectOriginal.clone();
 				
 				select.setName(RESULT_STRING);
 				
