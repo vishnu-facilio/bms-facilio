@@ -68,7 +68,7 @@ public class AgentIdAction extends AgentActionV2 {
             List<Map<String, Object>> devices = FieldDeviceApi.getDevices(getAgentId(), context);
             long count = 0;
             if (!devices.isEmpty()) {
-                count = devices.stream().count();
+                count = devices.size();
             }
             
             setResult(AgentConstants.DATA, count);

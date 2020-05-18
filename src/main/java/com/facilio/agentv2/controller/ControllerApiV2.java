@@ -322,7 +322,7 @@ public class ControllerApiV2 {
             }
             List<Map<String, Object>> result = builder.get();
             if ((result != null) && (!result.isEmpty())) {
-                return (long) result.get(0).get(AgentConstants.ID);
+                return result.size();
             }
         } catch (Exception e) {
             LOGGER.info("Exception while getting controller count ", e);
