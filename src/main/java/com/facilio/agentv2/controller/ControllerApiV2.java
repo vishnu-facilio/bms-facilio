@@ -74,6 +74,9 @@ public class ControllerApiV2 {
             if (agent != null) {
                 FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
                 FacilioContext context = addControllerChain.getContext();
+                if(controller.getControllerType() == FacilioControllerType.SYSTEM.asInt()){
+                    context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+                }
                 String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
                 AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
                 controller.setCategory(asset);
@@ -102,6 +105,10 @@ public class ControllerApiV2 {
         } else {
             throw new Exception(" controller can't be null ");
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
     }
 
 

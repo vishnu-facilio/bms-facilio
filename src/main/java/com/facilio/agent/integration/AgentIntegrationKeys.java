@@ -2,12 +2,11 @@ package com.facilio.agent.integration;
 
 public class AgentIntegrationKeys
 {
-    public static final String PROP_KEY = "propkey";
-    public static final String PROP_VALUE = "propValue";
-    public static final String TABLE_NAME = "Agent_Integration";
+
+    public static final String TABLE_NAME = "Wattsense_Integrations";
     public static final String API_KEY = "apiKey";
     public static final String API_SECRET = "apiSecret";
-    public static final String AUTH_STRING = "authStr";
+    public static final String AUTH_STRING_ENC= "authStringEncoded";
     public static final String INTEGRATION_TYPE = "type";
     public static final String NAME = "name";
     public static final String ID = "id";
@@ -16,7 +15,7 @@ public class AgentIntegrationKeys
 
 
     //wattsense
-    public static final String MQTT_ID = "mqttId";
+    public static final String MQTT_ID = "mqttConnectionId";
     public static final String CERTIFICATE_STORE_ID = "certificateStoreId";
     public static final String CLIENT_ID = "clientId";
     public static final String CERTIFICATE = "certificate";

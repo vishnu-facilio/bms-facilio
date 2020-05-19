@@ -12,6 +12,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.system.SystemControllerContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext;
@@ -169,6 +170,7 @@ public class FacilioConstants {
 		public static final String ROLL_UP_TYPE = "rollUpType";
 		public static final String APPROVAL_STATUS = "approvalStatus";
 		public static final String SYSTEM_CONTROLLER_MODULE_NAME = "systemController";
+		public static final String CONTROLLER_READINGS_MODULE_NAME = "controllerReadings";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -1688,6 +1690,7 @@ public class FacilioConstants {
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
 			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
 			classMap.put(AGENT_METRICS_MODULE, AgentMetrics.class);
+			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
 			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 

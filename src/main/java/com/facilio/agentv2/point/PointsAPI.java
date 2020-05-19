@@ -668,6 +668,8 @@ public class PointsAPI {
                 return ModbusRtuPointContext.class;
             case OPC_XML_DA:
                 return OpcXmlDaPointContext.class;
+            case SYSTEM:
+                return SystemPointContext.class;
             case BACNET_MSTP:
             default:
                 throw new Exception(" No implementation for " + type.asString() + " point");

@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentType;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
@@ -282,6 +283,54 @@ public class AgentApiV2 {
         return selectRecordBuilder.get();
     }
 
+    public static Map<String, FacilioAgent> getWattsenseAgentsMap() throws Exception {
+        Map<String, FacilioAgent> wattsenseAgentsMap = new HashMap<>();
+        FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.Wattsense.name(),StringOperators.IS));
+        criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        List<FacilioAgent> agents = getAgents(context);
+        if(agents != null){
+            for (FacilioAgent agent : agents) {
+                wattsenseAgentsMap.put(agent.getName(),agent);
+            }
+        }
+        return wattsenseAgentsMap;
+    }
+
+    public static FacilioAgent getWattsenseAgent() throws Exception {
+        FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(newAgentModule), AgentType.Wattsense.name(),StringOperators.IS));
+        criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        List<FacilioAgent> agents = getAgents(context);
+        if(agents != null){
+            return agents.get(0);
+        }
+        return null;
+    }
+
+    public static long getWattsenseAgentCount() {
+        FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
+        try {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .select(new HashSet<>())
+                    .table(agentDataModule.getTableName())
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(agentDataModule))
+                    .andCondition(getDeletedTimeNullCondition(agentDataModule))
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentTypeField(agentDataModule),AgentType.Wattsense.name(),StringOperators.IS));
+            List<Map<String, Object>> result = builder.get();
+            return (long) result.get(0).get(AgentConstants.ID);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agent count ",e);
+        }
+        return 0;
+    }
+
     private long getAgentSites(Long agentId) throws Exception {
         FacilioModule newAgentDataModule = ModuleFactory.getNewAgentModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -337,6 +386,7 @@ public class AgentApiV2 {
         }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
     }
+
 
     /*public static long getWattsenseAgentCount(){
         getAgentCount();

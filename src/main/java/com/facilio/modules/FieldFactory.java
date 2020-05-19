@@ -513,7 +513,7 @@ public class FieldFactory {
         fields.add(getAgentNameField(module));
         fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.AGENT_TYPE, "TYPE", module, FieldType.STRING));
+        fields.add(getNewAgentTypeField(module));
         fields.add(getField(AgentConstants.VERSION, "VERSION", module, FieldType.STRING));
         fields.add(getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getCreatedTime(module));
@@ -524,6 +524,10 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
         fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID, "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
         return fields;
+    }
+
+    public static FacilioField getNewAgentTypeField(FacilioModule module) {
+        return getField(AgentConstants.AGENT_TYPE, "TYPE", module, FieldType.STRING);
     }
 
     public static FacilioField getSubscribedPointCountConditionField() {
@@ -713,23 +717,18 @@ public class FieldFactory {
         return field;
     }
 
-    public static List<FacilioField> getAgentIntegrationFields() {
+    public static List<FacilioField> getWattsenseIntegrationField() {
         List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getAgentIntegrationModule();
+        FacilioModule module = ModuleFactory.getWattsenseIntegrationModule();
         fields.add(getIdField(module));
         fields.add(getField(AgentIntegrationKeys.NAME, "NAME", module, FieldType.STRING));
-        fields.add(getAgentIntegrationPropKeyField(module));
-        fields.add(getField(AgentIntegrationKeys.INTEGRATION_TYPE, "TYPE", module, FieldType.NUMBER));
-        fields.add(getAgentIntegrationPropValueField(module));
+        fields.add(getField(AgentIntegrationKeys.CLIENT_ID,"CLIENT_ID",module,FieldType.STRING));
+        fields.add(getField(AgentIntegrationKeys.MQTT_ID,"MQTT_CONN_ID",module,FieldType.STRING));
+        fields.add(getField(AgentIntegrationKeys.CERTIFICATE_STORE_ID,"CERT_STORE_ID",module,FieldType.STRING));
+        fields.add(getField(AgentIntegrationKeys.AUTH_STRING_ENC,"AUTH_STR_ENC",module,FieldType.STRING));
+        fields.add(getField(AgentIntegrationKeys.INTEGRATION_STATUS,"INTEGRATION_STATUS",module,FieldType.NUMBER));
+        fields.add(getDeletedTimeField(module));
         return fields;
-    }
-
-    public static FacilioField getAgentIntegrationPropKeyField(FacilioModule module) {
-        return getField(AgentIntegrationKeys.PROP_KEY, "PROP_KEY", module, FieldType.STRING);
-    }
-
-    public static FacilioField getAgentIntegrationPropValueField(FacilioModule module) {
-        return getField(AgentIntegrationKeys.PROP_VALUE, "PROP_VALUE", module, FieldType.STRING);
     }
 
     public static FacilioField getCreatedTime(FacilioModule module) {
@@ -6051,7 +6050,7 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.DEVICE_NAME, "DEVICE_NAME", module, FieldType.STRING));
         fields.add(getField(AgentConstants.PSEUDO, "PSEUDO", module, FieldType.BOOLEAN));
         //fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
-        fields.add(getControllerIdField(module));
+        fields.add(getNewControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getPointAssetCategoryIdField(module));
         fields.add(getPointResourceIdField(module));
