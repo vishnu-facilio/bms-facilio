@@ -43,7 +43,7 @@ public class ImportFieldFactory {
 		
 		for(FacilioField field : fields) {
 			if(field.getModule().getName().equals("purchasedTool") && 
-					!field.getName().equals("isUsed") && !field.getName().equals("sysModifiedTime") && !field.getName().equals("sysCreatedTime")) {
+					!field.getName().equals("isUsed") && !field.getName().equals("rate") && !field.getName().equals("sysModifiedTime") && !field.getName().equals("sysCreatedTime")) {
 				selectedFields.add(field);
 			} else if (field.getModule().getName().equals("toolTypes") && field.getName().equals("minimumQuantity")) {
 				continue;
@@ -205,7 +205,6 @@ public class ImportFieldFactory {
 		{
 			removedFields.add("currentQuantity");
 			removedFields.add("localId");
-			removedFields.add("rate");
 			removedFields.add("status");
 			removedFields.add("storeRoom");
 			removedFields.add("lastPurchasedDate");

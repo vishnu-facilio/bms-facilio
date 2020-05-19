@@ -74,8 +74,13 @@ public class ImportToolCommand extends FacilioCommand {
 				}
 				tool.setToolType(toolType);
 				tool.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
-				if (purchasedTool.getTool() != null && purchasedTool.getTool().getMinimumQuantity() > 0) {
-					tool.setMinimumQuantity(purchasedTool.getTool().getMinimumQuantity());
+				if (purchasedTool.getTool() != null) {
+					if (purchasedTool.getTool().getMinimumQuantity() > 0) {
+						tool.setMinimumQuantity(purchasedTool.getTool().getMinimumQuantity());
+					}
+					if (purchasedTool.getTool().getRate() > 0) {
+						tool.setRate(purchasedTool.getTool().getRate());
+					}
 				}
 
 				if (toolNameVsIndexMap.containsKey(purchasedTool.getToolType().getName())) {
