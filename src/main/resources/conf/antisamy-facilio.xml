@@ -265,6 +265,9 @@ Slashdot allowed tags taken from "Reply" page:
         </tag>
         <tag name="else" action="validate" />
         <tag name="result" action="validate"/>
+
+        <!-- tag used in /api/errors -->
+        <tag name="anonymous" action="validate" />
     </tag-rules>
 
 
