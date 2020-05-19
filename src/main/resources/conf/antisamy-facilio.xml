@@ -167,6 +167,104 @@ Slashdot allowed tags taken from "Reply" page:
         <tag name="ol" action="validate"/>
         <tag name="li" action="validate"/>
 
+        <!-- workflow tags -->
+
+        <tag name="workflow" action="validate"/>
+        <tag name="parameter" action="validate">
+            <attribute name="name">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+            <attribute name="type">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="expression" action="validate">
+            <attribute name="name">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="module" action="validate">
+            <attribute name="name">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="criteria" action="validate">
+            <attribute name="pattern">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="condition" action="validate">
+            <attribute name="sequence">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="field" action="validate">
+            <attribute name="name">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+            <attribute name="aggregate">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="orderBy" action="validate">
+            <attribute name="name">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+            <attribute name="sort">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="sort" action="validate"/>
+        <tag name="limit" action="validate"/>
+        <tag name="groupBy" action="validate"/>
+        <tag name="function" action="validate"/>
+        <tag name="constant" action="validate"/>
+        <tag name="expr" action="validate"/>
+        <tag name="print" action="validate"/>
+        <tag name="iterator" action="validate">
+            <attribute name="var">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="conditions" action="validate"/>
+        <tag name="if" action="validate">
+            <attribute name="criteria">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="elseif" action="validate">
+            <attribute name="criteria">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
+        <tag name="else" action="validate" />
+        <tag name="result" action="validate"/>
     </tag-rules>
 
 
