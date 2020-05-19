@@ -1,0 +1,418 @@
+openapi: "3.0.0"
+info:
+  version: "0.2.0"
+  title: Facilio
+  description: API Requests of Facilio
+  #termsOfService: https://facilio.com/terms/
+  contact:
+    name: Facilio
+    email: developers@facilio.com
+    url: https://facilio.com
+  #license:
+  #  name:
+
+servers:
+  - url: https://api.facilio.in/api
+    description: Stage server
+  - url: https://api.facilio.com/api
+    description: Production server
+security:
+  - BearerAuth: []
+paths:
+  /v2/agent/create:
+    post:
+      description: Create a new agent in Facilio
+      operationId: createAgent
+      tags:
+        - agent
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              properties:
+                agentName:
+                  description: Name of the agent to be added
+                  type: string
+                  pattern: '^[a-zA-Z0-9\-_]+$'
+                  example:
+                    'Facilio'
+                dataInterval:
+                  description: Data interval at which the agent will publish data
+                  type: integer
+                  format: int32
+                  multipleOf: 5
+                  minimum: 10
+                  example: 15
+
+                siteId:
+                  description: Id of the site where the agent is running
+                  type: number
+                  example: 1897
+              required:
+                - agentName
+                - dataInterval
+                - siteId
+
+      responses:
+        200:
+          description: A list of agents.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum: [200]
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum: [success]
+                      data:
+                        type: number
+
+
+
+  /v2/agent/edit:
+    post:
+      description: Edit an existing agent in Facilio
+      operationId: editAgent
+      tags:
+        - agent
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              properties:
+                agentId:
+                  description: Id of the site where the agent is running
+                  type: number
+                toUpdate:
+                  description: json object with values to edit
+                  type: object
+                  nullable: false
+                  properties:
+                    interval:
+                      nullable: false
+                      type: integer
+                      multipleOf: 5
+                    writable:
+                      nullable: false
+                      type: boolean
+              example:
+                toUpdate:
+                  interval: 15
+                  writable: true
+
+              required:
+                - agentId
+                - toUpdate
+
+      responses:
+        200:
+          description: Result of edit action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentStandardResponse'
+
+
+  /v2/agent/delete:
+    post:
+      description: Delete an existing agent in Facilio
+      operationId: deleteAgent
+      tags:
+        - agent
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              properties:
+                recordIds:
+                  description: Ids of the agent to be deleted
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+              required:
+                - recordIds
+
+      responses:
+        200:
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentStandardResponse'
+
+  /v2/agent/list:
+    get:
+      description: Get list of all available agents
+      operationId: listAgents
+      tags:
+        - agent
+      responses:
+        200:
+          description: List of avaiable agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum: [200]
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum: [success]
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Agent'
+
+
+  /api/v2/agent/overview:
+    get:
+      tags:
+        - agent
+      description: Get the overview of overall agents
+      operationId: agentOverview
+      responses:
+        200:
+          description: Overview of all agents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentOverview'
+
+  /v2/agent/get:
+    get:
+      tags:
+        - agent
+      description: Get Agent using id param
+      operationId: getAgent
+      parameters:
+        - $ref: '#/components/parameters/getAgentById'
+      responses:
+        200:
+          description: List of avaiable agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum: [200]
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum: [success]
+                      data:
+                        $ref: '#/components/schemas/Agent'
+
+  /v2/agent/count:
+    get:
+      tags:
+        - agent
+      description: Returns the number of agents available
+      responses:
+        200:
+          description: A list of agents.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum: [200]
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum: [success]
+                      data:
+                        type: number
+
+  /v2/agent/ping:
+    get:
+      tags:
+        - agent
+      description: Ping the Agent using id param
+      operationId: pingAgent
+      parameters:
+        - $ref: '#/components/parameters/getAgentById'
+      responses:
+        200:
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentStandardResponse'
+
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  parameters:
+    getAgentById:
+      in: query
+      description: value of agent id
+      name: agentId
+      required: true
+      schema:
+        type: number
+        minimum: 1
+        example: 6321
+
+    limit:
+      in: query
+      description: limit result size
+      name: limit
+      schema:
+        type: number
+        minimum: 1
+        example: 25
+
+    page:
+      in: query
+      description: Page number
+      name: page
+      schema:
+        type: number
+        minimum: 1
+        example: 1
+    perPage:
+      in: query
+      description: Items per page
+      name: perPage
+      schema:
+        type: number
+        minimum: 1
+        example:
+          thirty:
+            perPage: 30
+          fifty:
+            perPage: 50
+
+    fetchCount:
+      in: query
+      description: items to fetcch
+      name: fetchCount
+      schema:
+        type: number
+        minimum: 1
+        example: 50
+
+  schemas:
+
+    AgentStandardResponse:
+        type: object
+        properties:
+          responseCode:
+            type: integer
+            enum: [200]
+          result:
+            type: object
+            properties:
+              result:
+                type: string
+                enum: [success]
+
+    Agent:
+      type: object
+      properties:
+        deviceDetails:
+          type: string
+        lastModifiedTime:
+          type: number
+        displayName:
+          type: string
+        numberOfControllers:
+          type: integer
+        type:
+          type: string
+        lastDataReceivedTime:
+          type: number
+        version:
+          type: string
+        writable:
+          type: boolean
+        name:
+          type: string
+        connectionStatus:
+          type: boolean
+        siteId:
+          type: number
+        Deleted_Time:
+          type: number
+        createdTime:
+          type: number
+        interval:
+          type: integer
+        id:
+          type: number
+        state:
+          type: integer
+
+    AgentOverview:
+      type: object
+      properties:
+        responseCode:
+          type: number
+          format: int32
+        result:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                agent:
+                  type: object
+                  properties:
+                    activeCount:
+                      type: integer
+                      format: int32
+                    totalCount:
+                      type: integer
+                      format: int32
+                controller:
+                  type: object
+                  properties:
+                    configuredCount:
+                      type: integer
+                      format: int32
+                    totalCount:
+                      type: integer
+                      format: int32
+                points:
+                  type: object
+                  properties:
+                    totalCount:
+                      type: integer
+                      format: int32
+                    configuredCount:
+                      type: integer
+                      format: int32
+                    commissionedCount:
+                      type: integer
+                      format: int32
+                    subscribedCount:
+                      type: integer
+                      format: int32
+
