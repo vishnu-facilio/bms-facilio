@@ -133,15 +133,6 @@ public class FieldDeviceApi {
         return new ArrayList<>();
     }
     
-    public static void main(String[] args) throws Exception {
-    	FacilioContext constructListContext = new FacilioContext();
-    	long agentId=2;
-    	int controllerType=4;
-    	constructListContext.put(AgentConstants.AGENT_ID, agentId);
-    	constructListContext.put(AgentConstants.CONTROLLER_TYPE, controllerType);
-    	getDeviceData(constructListContext);
-    }
-
     private static List<Map<String, Object>> getDeviceData(FacilioContext context) throws Exception {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
