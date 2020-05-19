@@ -21,6 +21,7 @@ public class UriFilter implements Filter {
     private static final String URL_PATTERN = "/api/";
     private static final String AUTH_API = "/auth/api/";
     private static final String IOT_API = "/iot/api/";
+    private static final String MIGRATION_URI = "/internal/";
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -29,7 +30,7 @@ public class UriFilter implements Filter {
 
         if (StringUtils.isEmpty((CharSequence) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME))) {
             String reqUri = request.getRequestURI();
-            if (!reqUri.startsWith(AUTH_API) && !reqUri.startsWith(IOT_API)) {
+            if (!reqUri.startsWith(AUTH_API) && !reqUri.startsWith(IOT_API) && !reqUri.startsWith(MIGRATION_URI)) {
                 int idx = reqUri.indexOf(URL_PATTERN);
                 if (idx > 0) {
                     String appName = reqUri.substring(1, idx);
