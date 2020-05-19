@@ -1,27 +1,32 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.iotmessage.AgentMessenger;
-import com.facilio.chain.FacilioContext;
+import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.net.HttpURLConnection;
-import java.util.Map;
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.GetControllerRequest;
+import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.chain.FacilioContext;
+import com.facilio.modules.FieldUtil;
 
 public class TypeAgentAction extends AgentIdAction {
 
     private static final Logger LOGGER = LogManager.getLogger(TypeControllerAction.class.getName());
 
-
-    public Integer getControllerType() { return controllerType; }
+	public Integer getControllerType() { return controllerType; }
 
     public void setControllerType(Integer controllerType) { this.controllerType = controllerType; }
 
@@ -76,5 +81,18 @@ public class TypeAgentAction extends AgentIdAction {
         }
         return SUCCESS;
     }
-
+    
+    public String getControllerTypeList() throws Exception {
+        try {
+            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevicesControllerType(getAgentId(),getControllerType(), constructListContext(new FacilioContext())), Device.class);
+            setResult(AgentConstants.DATA, devices);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting device controller Type ", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+    	return SUCCESS;
+    }
 }

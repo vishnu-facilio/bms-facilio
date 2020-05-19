@@ -18,6 +18,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -130,11 +132,20 @@ public class FieldDeviceApi {
         }
         return new ArrayList<>();
     }
-
+    
+    public static void main(String[] args) throws Exception {
+    	FacilioContext constructListContext = new FacilioContext();
+    	long agentId=2;
+    	int controllerType=4;
+    	constructListContext.put(AgentConstants.AGENT_ID, agentId);
+    	constructListContext.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+    	getDeviceData(constructListContext);
+    }
 
     private static List<Map<String, Object>> getDeviceData(FacilioContext context) throws Exception {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+        Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
         List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -145,6 +156,9 @@ public class FieldDeviceApi {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        if((controllerType != null) && (controllerType > 0)) {
+        	criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(controllerType), NumberOperators.EQUALS));
         }
         if ((ids != null) && (!ids.isEmpty())) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));
@@ -298,7 +312,12 @@ public class FieldDeviceApi {
         constructListContext.put(AgentConstants.AGENT_ID, agentId);
         return getDeviceData(constructListContext);
     }
-
+    
+    public static List<Map<String,Object>> getDevicesControllerType(Long agentId,Integer controllerType,FacilioContext constructListContext)throws Exception{
+    	constructListContext.put(AgentConstants.AGENT_ID, agentId);
+    	constructListContext.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+    	return getDeviceData(constructListContext);
+    }
     public static void addControllerAsDevice(Controller controllerContext) throws Exception {
         Device device = new Device();
         device.setIdentifier(controllerContext.getIdentifier());
@@ -310,4 +329,5 @@ public class FieldDeviceApi {
         FieldDeviceApi.addFieldDevice(device);
         controllerContext.setDeviceId(device.getId());
     }
+    
 }

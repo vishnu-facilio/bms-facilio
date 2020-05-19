@@ -201,8 +201,13 @@
         <action name="discover" class="com.facilio.agentv2.actions.TypeAgentAction"
                 method="discoverControllers"> <!--DONE-->
         </action>
+		
+		<!--7-->
+		<action name="getControllerType" class="com.facilio.agentv2.actions.TypeAgentAction"
+                method="getControllerTypeList"> <!--DONE-->
+        </action>
 
-        <!--7-->
+        <!--8-->
         <action name="update" class="com.facilio.agentv2.actions.UpdateControllerAction" method="updateController">
         </action>
 
