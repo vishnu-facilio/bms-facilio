@@ -2,11 +2,13 @@ package com.facilio.agent.integration.wattsense;
 
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.*;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agent.integration.AgentIntegrationUtil;
 import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agent.integration.MultipartHttpPost;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -16,7 +18,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -33,7 +34,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -111,23 +111,20 @@ public class WattsenseUtil
         return authStringEncoded;
     }
 
-    private static boolean integrateWattsense(Wattsense wattsense){
+    private static boolean integrateWattsense(Wattsense wattsense) throws Exception {
         LOGGER.info(" iamcvijaylogs wattsense clientId "+wattsense.getClientId());
         String userName = wattsense.getUserName();
         String authStringEncoded = wattsense.getAuthStringEncoded();
-
-        AgentUtil util = new AgentUtil(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentOrg().getDomain());
-        util.populateAgentContextMap(null,AgentType.Wattsense); // must be null, to get agent count
-        Map<String, FacilioAgent> wattAgentMap = util.getAgentMap();
+        LOGGER.info("wattsense authStrEnc");
+        long wattIntegrationCount = AgentApiV2.getWattsenseAgentCount();
         String clientId = wattsense.getClientId();
-        int wattIntegrationCount = wattAgentMap.size();
-        if( ! wattAgentMap.isEmpty()) {
+        if( wattIntegrationCount > 0) {
             wattsense.setClientId(clientId); //naming starts with 0
             if(wattIntegrationCount > 1){
                 wattsense.setClientId(clientId+"-" + (wattIntegrationCount - 1)); //naming starts with 0
             }
-            if (util.getFacilioAgent(wattsense.getClientId(), AgentType.Wattsense) != null) {
-                wattsense = getWattsense(wattsense.getClientId()); // getting the last added wattsense connection
+            if (AgentApiV2.getWattsenseAgent() != null) {
+                wattsense = WattsenseApi.getWattsense(wattsense.getClientId()); // getting the last added wattsense connection
                 wattsense.setAuthStringEncoded(authStringEncoded);
                 wattsense.setUserName(userName);
                 if (  INTEGRATION_DONE.equals(wattsense.getIntegrationStatus()) ) {
@@ -143,59 +140,22 @@ public class WattsenseUtil
             }
         } // no else because
         FacilioAgent agent = new FacilioAgent();
-        agent.setAgentName(wattsense.getClientId());
-        agent.setAgentConnStatus(Boolean.FALSE);
+        agent.setName(wattsense.getClientId());
+        agent.setConnected(Boolean.FALSE);
         agent.setInterval(15L);
-        agent.setAgentState(1);
-        agent.setAgentType(AgentType.Wattsense.getLabel());
-        agent.setId(util.addAgent(agent));
-        if (agent.getId() < 1) {
-            LOGGER.info(" Exception occurred while creating agent ");
-            return false;
+        agent.setType(AgentType.Wattsense.getLabel());
+        AgentApiV2.addAgent(agent);
+        wattsense.setIntegrationStatus(NOT_INTEGRATED);
+        WattsenseApi.updateWattsenseIntegration(wattsense);
+        return createCertificateStoreId(wattsense); //create certificate store id
         }
-
-        wattsense.setClientId(wattsense.getClientId());
-        if (makeWattsenseEntry(AgentIntegrationKeys.USER_NAME, wattsense.getUserName(), wattsense)
-                && makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(), wattsense)
-                && makeWattsenseEntry(AgentIntegrationKeys.DELETED_TIME,NOT_DELETED,wattsense) ){
-
-            return createCertificateStoreId(wattsense); //create certificate store id
-        }
-
-
-       return false;
-    }
-
-    private static Wattsense getWattsense(String wattClientId) {
-        Wattsense wattsense = new Wattsense();
-        ModuleCRUDBean bean;
-        FacilioContext context = new FacilioContext();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
-        context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
-        context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentIntegrationFields());
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME), wattClientId,StringOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()), NumberOperators.EQUALS));
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
-            List<Map<String, Object>> rows = bean.getRows(context);
-            if(rows.isEmpty()){
-                return new Wattsense();
-            }
-        wattsense = getWattsenseFromList(rows);
-        } catch (Exception e) {
-            LOGGER.info("Exception Occurred ",e);
-        }
-        return wattsense;
-    }
 
 
     private static boolean createCertificateStoreId(Wattsense wattsense){
         String certificateStoreId = null;
         MultipartHttpPost multipart = null;
         try {
-            multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
+           multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
             /*if(DownloadCertFile.checkForCertificates(AgentType.Wattsense.getLabel())) {
@@ -232,11 +192,11 @@ public class WattsenseUtil
             if(certificateStoreResponse.containsKey(AgentIntegrationKeys.CERTIFICATE_STORE_ID)){
                 certificateStoreId = (String) certificateStoreResponse.get(AgentIntegrationKeys.CERTIFICATE_STORE_ID);
                 wattsense.setCertificateStoreId(certificateStoreId);
-                if(makeWattsenseEntry(AgentIntegrationKeys.CERTIFICATE_STORE_ID,certificateStoreId,wattsense) && updateStatus(wattsense,CERT_ID_GENERATED.toString())){
+              /*  if(makeWattsenseEntry(AgentIntegrationKeys.CERTIFICATE_STORE_ID,certificateStoreId,wattsense) && updateStatus(wattsense,CERT_ID_GENERATED.toString())){
                     if(createMqttConnection(wattsense)){
                         return true;
                     }
-                }
+                }*/
                 // enter certificate storeId.
             }
         } catch (IOException e) {
@@ -278,11 +238,11 @@ public class WattsenseUtil
                 if(jsonObject.containsKey(AgentIntegrationKeys.ID)){
                     String mqttConId = (String) jsonObject.get(AgentIntegrationKeys.ID);
                     wattsense.setMqttConnectionId(mqttConId);
-                    if(makeWattsenseEntry(AgentIntegrationKeys.MQTT_ID,mqttConId,wattsense) && updateStatus(wattsense,MQTT_ID_GENERATED.toString())) {
+                   /* if(makeWattsenseEntry(AgentIntegrationKeys.MQTT_ID,mqttConId,wattsense) && updateStatus(wattsense,MQTT_ID_GENERATED.toString())) {
                         if (initiateMQTTConnection(wattsense)) {
                             return true;
                         }
-                    }
+                    }*/
                 }
             } catch (ParseException e) {
                 LOGGER.info("Exception while parsing MQTTConnection response "+result);
@@ -341,34 +301,6 @@ public class WattsenseUtil
             LOGGER.info("Exception occurred ",e);
         }
         return false;
-    }
-
-    private static boolean makeWattsenseEntry(String propKey,String propValue,Wattsense wattsense) {
-        FacilioChain chain = TransactionChainFactory.createWattChain();
-        Map<String,Object> row = new HashMap<>();
-        List<Map<String,Object>> toInsert = new ArrayList<>();
-            row.put(AgentIntegrationKeys.PROP_KEY, propKey);
-            row.put(AgentIntegrationKeys.PROP_VALUE, propValue);
-            row.put(AgentIntegrationKeys.INTEGRATION_TYPE, AgentType.Wattsense.getKey());
-            row.put(AgentIntegrationKeys.NAME, wattsense.getClientId());
-            toInsert.add(row);
-        FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
-        context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentIntegrationFields());
-        context.put(FacilioConstants.ContextNames.TO_INSERT_MAP, toInsert);
-            try {
-                boolean insertionStatus = chain.execute(context);
-                if(!insertionStatus){
-                    LOGGER.info(" failed while making wattsense entry ");
-                    return false;
-                }
-            } catch (Exception e) {
-                LOGGER.info("Exception occured ",e);
-                return false;
-            }
-
-            toInsert.clear();
-        return true;
     }
 
     private static String getResponseString(HttpResponse response){
@@ -437,17 +369,17 @@ public class WattsenseUtil
 
     private static boolean updateStatus(Wattsense wattsense,String status){ // working good
         FacilioChain chain = TransactionChainFactory.updateWattStatusChain();
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWattsenseIntegrationField());
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
-        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentIntegrationFields());
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getWattsenseIntegrationField());
         Map<String,Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentIntegrationKeys.PROP_KEY, AgentIntegrationKeys.INTEGRATION_STATUS);
-        toUpdate.put(AgentIntegrationKeys.PROP_VALUE,status);
+       /* toUpdate.put(AgentIntegrationKeys.PROP_KEY, AgentIntegrationKeys.INTEGRATION_STATUS);
+        toUpdate.put(AgentIntegrationKeys.PROP_VALUE,status);*/
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME),wattsense.getClientId(),StringOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.INTEGRATION_STATUS,StringOperators.IS));
+       // criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.INTEGRATION_STATUS,StringOperators.IS));
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
         try {
@@ -460,10 +392,10 @@ public class WattsenseUtil
 
     public static List<Map<String, Object>> getWattsenseList(){
         ModuleCRUDBean bean;
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWattsenseIntegrationField());
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
-        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentIntegrationFields());
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getWattsenseIntegrationField());
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
@@ -480,7 +412,7 @@ public class WattsenseUtil
     }
 
     public static boolean deleteIntegration(String clientId,String userName, String password) {
-        Wattsense wattsense = getWattsense(clientId);
+        Wattsense wattsense = null;//getWattsense(clientId);
         String authString = getEncodedBasicAuthString(userName,password);
         wattsense.setAuthStringEncoded(authString);
         if(deleteMqttConnection(wattsense)){
@@ -497,20 +429,20 @@ public class WattsenseUtil
 
     private static boolean deleteWattsense(String clientId){
         FacilioChain chain = TransactionChainFactory.deleteWattsenseChain();
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWattsenseIntegrationField());
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
-        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentIntegrationFields());
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getWattsenseIntegrationField());
         context.put(AgentIntegrationKeys.CLIENT_ID,clientId);
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME),clientId,StringOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.DELETED_TIME,StringOperators.IS));
+        //criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.DELETED_TIME,StringOperators.IS));
 
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         HashMap<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentIntegrationKeys.PROP_VALUE, String.valueOf(System.currentTimeMillis()));
+        //toUpdate.put(AgentIntegrationKeys.PROP_VALUE, String.valueOf(System.currentTimeMillis()));
         context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
         try {
             return  chain.execute(context);
@@ -527,7 +459,7 @@ public class WattsenseUtil
         }
         String clientId = (String) rows.get(0).get(AgentIntegrationKeys.NAME);
         wattsense.setClientId(clientId);
-        for(Map<String, Object> row:rows){
+       /* for(Map<String, Object> row:rows){
             String key = (String) row.get(AgentIntegrationKeys.PROP_KEY);
             Object value = row.get(AgentIntegrationKeys.PROP_VALUE);
             if(AgentIntegrationKeys.CERTIFICATE_STORE_ID.equalsIgnoreCase(key)) {
@@ -542,8 +474,8 @@ public class WattsenseUtil
                 wattsense.setUserName((String) value);
             }else if(AgentIntegrationKeys.DELETED_TIME.equalsIgnoreCase(key)){
                 wattsense.setDeletedTime(value.toString());
-            }
-        }
+            }*/
+      //  }
         LOGGER.info(wattsense.getClientId()+" "+wattsense.getCertificateStoreId()+" "+wattsense.getType());
         return wattsense;
 
@@ -551,8 +483,7 @@ public class WattsenseUtil
 
     public static List<Map<String, Object>> getWattsenseList(List<Map<String, Object>> rows) {
         Map<String,Wattsense> wattsenseMap =  new HashMap<>();
-        List<Map<String, Object>> wattsenseList = new ArrayList<>();
-        for(Map<String,Object> row:rows){
+     /*   for(Map<String,Object> row:rows){
             Wattsense wattsense;
             String clientId = (String) row.get(AgentIntegrationKeys.NAME);
             if(!wattsenseMap.containsKey(clientId)){
@@ -583,13 +514,12 @@ public class WattsenseUtil
         for(String clientId:wattsenseMap.keySet()){
             Wattsense wattsense = wattsenseMap.get(clientId);
             if(wattsense.getDeletedTime().equalsIgnoreCase(NOT_DELETED)) {
-                wattsenseList.add((wattsenseMap.get(clientId).getAsMap()));
             }
-        }
-        return wattsenseList;
+        }*/
+        return null;
     }
 
-    public static JSONObject reFormatTimeSeriesData(JSONObject payload){
+  /*  public static JSONObject reFormatTimeSeriesData(JSONObject payload){
         System.out.println("payload in  "+payload);
         JSONObject wattPayload = new JSONObject();
         Map<String,JSONObject> controllerJsonMap = new HashMap<>();
@@ -615,9 +545,9 @@ public class WattsenseUtil
         wattPayload.put(AgentKeys.TIMESTAMP,timeStamp);
         LOGGER.info(" wattsense payload "+wattPayload);
         return wattPayload;
-    }
+    }*/
 
-    public static JSONObject reFormatPayload(JSONObject payload,String dataType){
+   /* public static JSONObject reFormatPayload(JSONObject payload,String dataType){
         JSONObject wattPayload = new JSONObject();
         String timeseries = PublishType.timeseries.getValue();
         if(payload.containsKey(AgentIntegrationKeys.MESSAGE)) {
@@ -637,5 +567,5 @@ public class WattsenseUtil
 
             }
             return wattPayload;
-        }
+        }*/
 }

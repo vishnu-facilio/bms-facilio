@@ -8,6 +8,7 @@ import org.apache.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConfigurePointCommand extends FacilioCommand {
 
@@ -20,6 +21,9 @@ public class ConfigurePointCommand extends FacilioCommand {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
             if (containsAndNotNull(context, AgentConstants.POINTS)) {
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);
+                Objects.requireNonNull(points,"points can't be null");
+                Objects.requireNonNull(controller,"controller can't be null");
+                LOGGER.info("------configuring "+points.size()+" points for "+controller.getId());
                 List<Point> pointsToConfigure = new ArrayList<>();
                 for (Point point : points) {
                     if ((point.getControllerId() < 1) || (point.getControllerId() == controller.getId())) {

@@ -227,7 +227,7 @@ public class ModuleFactory {
 	}
 	
 	
-	public static FacilioModule getAgentIntegrationModule() {
+	public static FacilioModule getWattsenseIntegrationModule() {
 		FacilioModule integrationModule = new FacilioModule();
 		integrationModule.setName(AgentIntegrationKeys.TABLE_NAME);
 		integrationModule.setDisplayName(AgentIntegrationKeys.TABLE_NAME);

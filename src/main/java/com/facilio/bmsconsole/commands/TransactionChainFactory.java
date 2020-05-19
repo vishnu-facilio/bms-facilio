@@ -3933,7 +3933,10 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getAddControllerChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new SetAssetCategoryCommand());
 		chain.addCommand(new GenericAddModuleDataCommand());
+		chain.addCommand(FacilioChainFactory.getCategoryReadingsChain());
+		chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		//chain.addCommand(new AddControllerCommand());
 		return chain;
 	}
