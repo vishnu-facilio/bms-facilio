@@ -9197,6 +9197,7 @@ CREATE TABLE IF NOT EXISTS BACnet_IP_Point
 CREATE TABLE IF NOT EXISTS System_Point(
                                            ID BIGINT PRIMARY KEY,
                                            ORGID BIGINT NOT NULL,
+                                           NAME VARCHAR(300),
                                            DEVICE_ID  BIGINT NOT NULL ,
                                            CONTROLLER_ID     BIGINT,
                                            CONSTRAINT System_Point_FK_DEVICE_ID FOREIGN KEY (DEVICE_ID) REFERENCES Field_Device (ID),
