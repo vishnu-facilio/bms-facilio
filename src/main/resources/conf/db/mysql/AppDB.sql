@@ -15670,7 +15670,7 @@ CREATE TABLE IF NOT EXISTS Energy_Star_Property_Data (
   SCORE DOUBLE,
   SOURCE_INTENSITY DOUBLE,
   PRIMARY KEY (ID),
-  CONSTRAINT Energy_Star_property_Data_parent_id FOREIGN KEY (PARENT_ID) REFERENCES Energy_Star_Propery (ID) ON DELETE CASCADE
+  CONSTRAINT Energy_Star_property_Data_parent_id FOREIGN KEY (PARENT_ID) REFERENCES Energy_Star_Property (ID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Energy_Star_Meter_Point (
