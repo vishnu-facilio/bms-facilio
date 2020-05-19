@@ -4,6 +4,11 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
+	<package name="app" namespace="/" extends="struts-default">
+		<action name="*">
+        	<result>/jsps/index.jsp</result>
+    	</action>
+	</package>
 	<package name="internalMig" strict-method-invocation="false"
 			 namespace="/internalmig" extends="struts-default,json-default">
 		<interceptors>
