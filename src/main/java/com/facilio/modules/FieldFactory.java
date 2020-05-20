@@ -8211,7 +8211,21 @@ public class FieldFactory {
         fields.add(getField("yearBuild", "YEAR_BUILD", module, FieldType.STRING));
         fields.add(getField("occupancyPercentage", "OCCUPANCY_PERCENTAGE", module, FieldType.STRING));
         fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
+        fields.add(getField("baselineMonth", "BASELINE_MONTH", module, FieldType.NUMBER));
 
+        return fields;
+    }
+    
+    public static List<FacilioField> getEnergyStarPropertyMetricsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEnergyStarPropertyMetricsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("propertyId", "PROPERTY_ID", module, FieldType.NUMBER));
+        fields.add(getField("metric", "METRIC_ID", module, FieldType.NUMBER));
+        fields.add(getField("target", "TARGET", module, FieldType.STRING));
+        fields.add(getField("nationalMedian", "NATIONAL_MEDIAN", module, FieldType.STRING));
+        
         return fields;
     }
     

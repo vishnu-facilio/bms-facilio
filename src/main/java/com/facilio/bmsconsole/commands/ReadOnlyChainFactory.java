@@ -12,8 +12,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceCommand;
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCommand;
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
+import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
-import com.facilio.v3.commands.SummaryCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Context;
@@ -2466,5 +2466,22 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetRDMForRestAPI());
 		return chain;
 		
+	}
+
+	public static FacilioChain getESfetchMainSummaryData() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new EnergyStarFetchDataMainSummaryCommand());
+		return chain;
+	}
+
+	public static FacilioChain getESfetchPropertyEnergyData() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new EnergyStarFetchDataPropertyEnergyCommand());
+		return chain;
+	}
+	public static FacilioChain getESfetchPropertyMetricData() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new EnergyStarFetchDataPropertyMetricCommand());
+		return chain;
 	}
 }

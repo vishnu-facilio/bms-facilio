@@ -8,12 +8,17 @@ import java.util.Map;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class EnergyStarPropertyContext {
+public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 
-	long id;
-	long orgId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	long buildingId;
 	Building_Type buildingType;
 	String energyStarPropertyId;
@@ -26,6 +31,26 @@ public class EnergyStarPropertyContext {
 	BuildingContext buildingContext;
 	String meta;
 	
+	long baselineMonth;
+	
+	List<EnergyStarMeterContext> meters;
+	
+	public List<EnergyStarMeterContext> getMeters() {
+		return meters;
+	}
+
+	public void setMeters(List<EnergyStarMeterContext> meters) {
+		this.meters = meters;
+	}
+
+	public long getBaselineMonth() {
+		return baselineMonth;
+	}
+
+	public void setBaselineMonth(long baselineMonth) {
+		this.baselineMonth = baselineMonth;
+	}
+
 	public String getMeta() {
 		return meta;
 	}
@@ -68,11 +93,6 @@ public class EnergyStarPropertyContext {
 		this.meterContexts = meterContexts;
 	}
 
-
-	public long getId() {
-		return id;
-	}
-	
 	public String getYearBuild() {
 		return yearBuild;
 	}
@@ -90,21 +110,6 @@ public class EnergyStarPropertyContext {
 
 	public void setOccupancyPercentage(String occupancyPercentage) {
 		this.occupancyPercentage = occupancyPercentage;
-	}
-
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-
-	public long getOrgId() {
-		return orgId;
-	}
-
-
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
 	}
 
 

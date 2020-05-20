@@ -744,6 +744,9 @@ public class ModuleFactory {
 	public static FacilioModule getEnergyStarPropertyModule() {
 		return constructModule("energyStarProperty", "Energy Star Property", "Energy_Star_Property");
 	}
+	public static FacilioModule getEnergyStarPropertyMetricsModule() {
+		return constructModule("energyStarPropertyMetrics", "Energy Star Property Metrics", "Energy_Star_Property_Metrics");
+	}
 	public static FacilioModule getEnergyStarPropertyUseModule() {
 		return constructModule("energyStarPropertyUse", "Energy Star Property Use", "Energy_Star_Property_Use");
 	}

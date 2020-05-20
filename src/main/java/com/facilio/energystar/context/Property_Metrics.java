@@ -7,7 +7,10 @@ import java.util.Map;
 public enum Property_Metrics {
 	
 	SCORE(1, "score"),
-	SOURCE_INTENSITY(2, "sourceIntensity"),
+	SOURCE_EUI(2, "sourceIntensity"),	
+	SITE_EUI(3, "siteIntensity"),		
+	Total_GHG_Emissions_Intensity(4, "totalGHGEmissionsIntensity"),
+	COST(5, "energyCost"),
 	;
 
 	int intVal;
@@ -28,6 +31,8 @@ public enum Property_Metrics {
 
 	private static final Map<Integer, Property_Metrics> optionMap = Collections.unmodifiableMap(initTypeMap());
 	
+	private static final Map<String, Property_Metrics> nameMap = Collections.unmodifiableMap(initNameTypeMap());
+	
 	private static Map<Integer, Property_Metrics> initTypeMap() {
 		Map<Integer, Property_Metrics> typeMap = new HashMap<>();
 
@@ -36,9 +41,22 @@ public enum Property_Metrics {
 		}
 		return typeMap;
 	}
+	
+	private static Map<String, Property_Metrics> initNameTypeMap() {
+		Map<String, Property_Metrics> typeMap = new HashMap<>();
+
+		for (Property_Metrics type : values()) {
+			typeMap.put(type.getName(), type);
+		}
+		return typeMap;
+	}
 
 	public static Map<Integer, Property_Metrics> getAllMetrics() {
 		return optionMap;
+	}
+	
+	public static Map<String, Property_Metrics> getNameMap() {
+		return nameMap;
 	}
 
 }

@@ -6017,6 +6017,12 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="addUtilityData" />
 		<action name="fetchHistoricalData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchHistoricalData" />
+		<action name="fetchMainSummaryData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMainSummaryData" />
+		<action name="fetchPropertyEnergyData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyEnergyData" />
+		<action name="fetchPropertyMetricsData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
 	</package>
 
 </struts>

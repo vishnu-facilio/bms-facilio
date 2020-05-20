@@ -3,11 +3,10 @@ package com.facilio.energystar.context;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class EnergyStarMeterContext {
+public class EnergyStarMeterContext extends ModuleBaseWithCustomFields {
 
-	long id = -1;
-	long orgId = -1;
 	long propertyId = -1; 
 	Meter_Category type;
 	long meterId = -1;
@@ -44,18 +43,6 @@ public class EnergyStarMeterContext {
 	}
 	public void setMeterContext(AssetContext meterContext) {
 		this.meterContext = meterContext;
-	}
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
 	}
 	public long getPropertyId() {
 		return propertyId;
