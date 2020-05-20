@@ -50,10 +50,10 @@ public class ListCommand extends FacilioCommand {
             selectRecordsBuilder.limit(perPage);
         }
 
-        List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
+        List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();
 
-        Map<String, List<Map<String, Object>>> recordMap = new HashMap<>();
-        recordMap.put(moduleName, asProps);
+        Map<String, List<? extends  ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        recordMap.put(moduleName, records);
 
         Boolean withCount = (Boolean) context.get(Constants.WITH_COUNT);
         if (withCount != null && withCount) {

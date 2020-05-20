@@ -3,6 +3,7 @@ package com.facilio.accounts.dto;
 import java.io.File;
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.license.LicenseContext.FacilioLicense;
 
 public class User extends IAMUser {
@@ -220,6 +221,19 @@ public class User extends IAMUser {
 		this.appType = appType;
 	}
 	
-	
+	public Boolean isSuperAdmin() {
+		if(roleId > 0){
+			Role role = null;
+			try {
+				role = AccountUtil.getRoleBean().getRole(roleId);
+				if (role != null && role.getName().equalsIgnoreCase("Super Administrator")) {
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
 	
 }

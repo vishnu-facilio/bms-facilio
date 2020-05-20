@@ -1630,6 +1630,8 @@ public class FacilioConstants {
         public static final String QUOTATION = "quotation";
         public static final String QUOTATION_LINE_ITEMS = "quotationlineitems";
 		public static final String TAX = "tax";
+		public static final String DO_FIELD_PERMISSIONS_VALIDATION = "doFieldPermissionValidation";
+
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

@@ -214,7 +214,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return Collections.unmodifiableList(subModules);
 	}
 
-	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, boolean checkPermission, int permissionType) throws SQLException, Exception {
+	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, int permissionType) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
 		List<Long> permittedSubModuleIds = new ArrayList<Long>();
 		permittedSubModuleIds = FieldUtil.getPermissibleChildModules(getMod(rs.getLong("PARENT_MODULE_ID")), permissionType);
@@ -1548,7 +1548,11 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(4, moduleId);
 			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs, true, permissionType);
+			//all sub modules are permissible to super admin
+			if(AccountUtil.getCurrentUser().isSuperAdmin()) {
+				return getSubModulesFromRS(rs);
+			}
+			return getSubModulesFromRS(rs, permissionType);
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);

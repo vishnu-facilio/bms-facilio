@@ -66,12 +66,12 @@ public class CacheUtil {
 		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + FIELDS;
 	}
 
-	public static String PERMISSIBLE_FIELDS_KEY(long orgId, String moduleName, int permissionType) {
-		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + FIELDS;
+	public static String PERMISSIBLE_FIELDS_KEY(long orgId, String moduleName, int permissionType, long roleId) {
+		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + roleId + KEY_SEPARATOR + FIELDS;
 	}
 
-	public static String PERMISSIBLE_SUB_MODULES_KEY(long orgId, long moduleId, int permissionType) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR + moduleId + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + SUB_MODULES;
+	public static String PERMISSIBLE_SUB_MODULES_KEY(long orgId, long moduleId, int permissionType, long roleId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + moduleId + KEY_SEPARATOR + permissionType + KEY_SEPARATOR + roleId + KEY_SEPARATOR + SUB_MODULES;
 	}
 
 	public static String FIELD_KEY(long orgId, long fieldId) {

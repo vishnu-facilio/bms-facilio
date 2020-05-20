@@ -597,13 +597,18 @@ public class FieldUtil {
 		
     }
     
-    public static List<FacilioField> getPermissionRestrictedFields(FacilioModule module, PermissionType permissionType) throws Exception {
+    public static List<FacilioField> getPermissionRestrictedFields(FacilioModule module, PermissionType permissionType, Boolean validateFieldPermissions) throws Exception {
 
-    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
         List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
-        
-    	List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
+
+		//all fields are permissible to super admin
+		if(AccountUtil.getCurrentUser().isSuperAdmin() || (validateFieldPermissions != null && !validateFieldPermissions)) {
+			return null;
+		}
+
+		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
     	for(FacilioField field : allFields) {
 			if(field.getFieldId() != -1 && !skipPermissionForFields(field.getName()) && !permissibleFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
 				restrictedFields.add(field);
@@ -613,6 +618,30 @@ public class FieldUtil {
 		return restrictedFields;
 		
     }
+
+	public static List<FacilioField> getPermissibleFields(List<FacilioField> neededFields, String moduleName, PermissionType permissionType, Boolean validateFieldPermissions) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		if(CollectionUtils.isEmpty(neededFields)){
+			neededFields = modBean.getAllFields(module.getName());
+		}
+
+		//all fields are permissible to super admin
+		if(AccountUtil.getCurrentUser().isSuperAdmin() || (validateFieldPermissions != null && !validateFieldPermissions)) {
+			return neededFields;
+		}
+
+		List<FacilioField> permissibleFields = new ArrayList<>();
+		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
+		for(FacilioField field : neededFields) {
+			if(permissibleFieldIds.contains(field.getFieldId())){
+				permissibleFields.add(field);
+			}
+		}
+		return permissibleFields;
+
+	}
 
 	public static List<Long> getPermissibleChildModules(FacilioModule parentModule, int permissionType) throws Exception{
 

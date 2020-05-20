@@ -354,7 +354,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public List<Long> getPermissibleFieldIds(FacilioModule module, int permissionType) throws Exception {
 		FacilioCache cache = LRUCache.getModuleFieldsCache();
-		Object key = CacheUtil.PERMISSIBLE_FIELDS_KEY(getOrgId(), module.getName(), permissionType);
+		Object key = CacheUtil.PERMISSIBLE_FIELDS_KEY(getOrgId(), module.getName(), permissionType, AccountUtil.getCurrentUser().getRoleId());
 		List<Long> permissibleFieldIds = (List<Long>) cache.get(key);
 		if (CollectionUtils.isEmpty(permissibleFieldIds)) {
 			permissibleFieldIds = super.getPermissibleFieldIds(module, permissionType);
@@ -368,7 +368,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public List<FacilioModule> getPermissibleSubModules(long moduleId, int permissionType) throws Exception {
 		FacilioCache cache = LRUCache.getModuleFieldsCache();
-		Object key = CacheUtil.PERMISSIBLE_SUB_MODULES_KEY(getOrgId(), moduleId, permissionType);
+		Object key = CacheUtil.PERMISSIBLE_SUB_MODULES_KEY(getOrgId(), moduleId, permissionType, AccountUtil.getCurrentUser().getRoleId());
 		List<FacilioModule> permissibleSubModules = (List<FacilioModule>) cache.get(key);
 		if (CollectionUtils.isEmpty(permissibleSubModules)) {
 			permissibleSubModules = super.getPermissibleSubModules(moduleId, permissionType);

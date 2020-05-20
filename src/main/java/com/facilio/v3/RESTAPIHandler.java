@@ -3,6 +3,7 @@ package com.facilio.v3;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -123,10 +124,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             nonTransactionChain.addCommand(afterFetchCommand);
         }
 
+        //validating field permissions in the record data being sent
+        nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
+
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(Constants.RECORD_ID, id);
-
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
         Class beanClass = getBeanClass(module);
         context.put(Constants.BEAN_CLASS, beanClass);
 
@@ -190,12 +194,17 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         nonTransactionChain.addCommand(new ListCommand(module));
 
+
         addIfNotNull(nonTransactionChain, afterFetchCommand);
+        //validating field permissions in the record data being sent
+        nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
+
 
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
 
         String filters = this.getFilters();
         if (filters != null && !filters.isEmpty()) {
@@ -260,6 +269,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Command afterTransactionCommand = null;
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
+        //field permissions validation in the object being added
+        transactionChain.addCommand(new ValidateFieldPermissionCommand());
+
 
         if (v3Config != null) {
             V3Config.CreateHandler createHandler = v3Config.getCreateHandler();
@@ -295,6 +307,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
         context.put(Constants.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+
         context.put(Constants.RAW_INPUT, createObj);
 
         Class beanClass = getBeanClass(module);
@@ -357,6 +371,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
+        //field permissions validation in the object being updated
+        transactionChain.addCommand(new ValidateFieldPermissionCommand());
+
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
             if (updateHandler != null) {
@@ -384,6 +401,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.RAW_INPUT, summaryRecord);
         context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         transactionChain.execute();
 
@@ -405,6 +423,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Command afterTransactionCommand = null;
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
+
+        //validate field permission in the data object being edited
+        transactionChain.addCommand(new ValidateFieldPermissionCommand());
 
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
@@ -431,6 +452,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.RECORD_ID, id);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, updateObj);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         Class beanClass = getBeanClass(module);
         context.put(Constants.BEAN_CLASS, beanClass);
