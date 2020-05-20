@@ -27,7 +27,7 @@ Map floorPlanMode(Map params) {
         enumMap = Reading(fieldId, assetId).getEnumMap();
       }
     }
-    
+    icon = {};
     valueMap = {};
     valueMap["value"] = readingValue;
     valueMap["label"] = fieldMapInfo.get("displayName");
@@ -41,19 +41,24 @@ Map floorPlanMode(Map params) {
       valueMap["unit"] = fieldMapInfo.get("unit");
       valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
     }
+    icon["type"] = "READINGS";
+    icon["position"] = "center";
+    icon["value"] = valueMap;
     unitData = "";
     if (fieldMapInfo.get("unit") != null) {
       unitData = fieldMapInfo.get("unit");
     }
+    icons = [];
+    icons.add(icon);
     area = {};
     area.spaceId = spaceId;
     area.value = valueMap;
-    area.tooltip = valueMap;
+    area["icons"] = icons;
     areas.add(area);
   }
   
   result = {};
   result.areas = areas;
-  result.layer = "heatmap";
+  result.layer = "readings";
   return result;
 }
