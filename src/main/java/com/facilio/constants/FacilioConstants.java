@@ -14,9 +14,7 @@ import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.system.SystemControllerContext;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.quotation.QuotationContext;
-import com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext;
-import com.facilio.bmsconsole.context.quotation.TaxContext;
+import com.facilio.bmsconsole.context.quotation.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
@@ -1632,6 +1630,8 @@ public class FacilioConstants {
 		public static final String TAX = "tax";
 		public static final String DO_FIELD_PERMISSIONS_VALIDATION = "doFieldPermissionValidation";
 
+		public static final String TAX_GROUPS = "taxgroup";
+		public static final String QUOTATION_ASSOCIATED_TERMS = "quotationterms";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1865,6 +1865,8 @@ public class FacilioConstants {
             classMap.put(QUOTATION, QuotationContext.class);
             classMap.put(QUOTATION_LINE_ITEMS, QuotationLineItemsContext.class);
 			classMap.put(TAX, TaxContext.class);
+			classMap.put(TAX_GROUPS, TaxGroupContext.class);
+			classMap.put(QUOTATION_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
 
 			return classMap;
 		}

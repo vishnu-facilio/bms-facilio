@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.quotation.QuotationContext;
-import com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext;
-import com.facilio.bmsconsole.context.quotation.TaxContext;
+import com.facilio.bmsconsole.context.quotation.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class QuotationAPI {
@@ -86,6 +86,78 @@ public class QuotationAPI {
             quotationTotalCost -= quotation.getDiscountAmount();
         }
         quotation.setTotalCost(quotationTotalCost);
+    }
+
+    public static void setLineItems(QuotationContext quotation) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String lineItemModuleName = FacilioConstants.ContextNames.QUOTATION_LINE_ITEMS;
+        List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+                (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("tax"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("labour"));
+        SelectRecordsBuilder<QuotationLineItemsContext> builder = new SelectRecordsBuilder<QuotationLineItemsContext>()
+                .moduleName(lineItemModuleName)
+                .select(fields)
+                .beanClass(QuotationLineItemsContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quotation"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
+                .fetchSupplements(fetchSupplementsList);
+        List<QuotationLineItemsContext> list = builder.get();
+        quotation.setLineItems(list);
+    }
+
+    public static void setQuotationAssociatedTerms(QuotationContext quotation) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<QuotationAssociatedTermsContext> builder = new SelectRecordsBuilder<QuotationAssociatedTermsContext>()
+                .module(module)
+                .beanClass(QuotationAssociatedTermsContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quotation"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
+                .fetchSupplement((LookupField) fieldsAsMap.get("terms"));
+        List<QuotationAssociatedTermsContext> list = builder.get();
+        quotation.setTermsAssociated(list);
+    }
+
+    public static List<TaxGroupContext> getTaxesForGroups(List<Long> parentTaxIds) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX_GROUPS);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TAX_GROUPS);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<TaxGroupContext> builder = new SelectRecordsBuilder<TaxGroupContext>()
+                .module(module)
+                .beanClass(TaxGroupContext.class)
+                .select(fields)
+                .fetchSupplement((LookupField) fieldsAsMap.get("childTax"));
+        if (CollectionUtils.isNotEmpty(parentTaxIds)) {
+            builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("parentTax"), StringUtils.join(parentTaxIds, ","), NumberOperators.EQUALS));
+        }
+        List<TaxGroupContext> records = builder.get();
+
+        return records;
+    }
+
+    public static void fillTaxDetails(List<TaxContext> taxList) throws Exception {
+        List<TaxContext> taxGroupsList = taxList.stream().filter(tax -> tax.getType() == TaxContext.Type.GROUP.getIndex()).collect(Collectors.toList());
+        List<Long> parentTaxIds = taxGroupsList.stream().map(TaxContext::getId).collect(Collectors.toList());
+        List<TaxGroupContext> taxGroups = getTaxesForGroups(parentTaxIds);
+        HashMap<Long,List<TaxContext>> parentTaxIdsVsChildTaxes = new HashMap<>();
+        for (TaxGroupContext taxGroup: taxGroups) {
+            if (taxGroup.getParentTax() != null) {
+                if (parentTaxIdsVsChildTaxes.get(taxGroup.getParentTax().getId()) == null ) {
+                    parentTaxIdsVsChildTaxes.put(taxGroup.getParentTax().getId(), new ArrayList<>());
+                }
+                parentTaxIdsVsChildTaxes.get(taxGroup.getParentTax().getId()).add(taxGroup.getChildTax());
+            }
+        }
+        for (TaxContext taxGroup: taxGroupsList) {
+            if (parentTaxIdsVsChildTaxes.get(taxGroup.getId()) != null) {
+                taxGroup.setChildTaxes(parentTaxIdsVsChildTaxes.get(taxGroup.getId()));
+            }
+        }
     }
 
 }

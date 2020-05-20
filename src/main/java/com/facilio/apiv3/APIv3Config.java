@@ -3,9 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
-import com.facilio.bmsconsole.commands.quotation.InsertQuotationLineItemsCommand;
-import com.facilio.bmsconsole.commands.quotation.QuotationValidationAndCostCalculationCommand;
-import com.facilio.bmsconsole.commands.quotation.TaxValidationCommand;
+import com.facilio.bmsconsole.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.context.quotation.TaxContext;
@@ -55,17 +53,31 @@ public class APIv3Config {
     @Module("quotation")
     public static V3Config getQuotation() {
         return new V3Config(QuotationContext.class)
+
                 .create()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
                 .afterSave(new InsertQuotationLineItemsCommand())
+
+                .summary()
+                .afterFetch(new QuotationFillDetailsCommand())
+
                 .build();
     }
 
     @Module("tax")
     public static V3Config getTax() {
         return new V3Config(TaxContext.class)
+
                 .create()
                 .beforeSave(new TaxValidationCommand())
+                .afterSave(new InsertTaxGroupsCommand())
+
+                .summary()
+                .afterFetch(new TaxFillDetailsCommand())
+
+                .list()
+                .afterFetch(new TaxFillDetailsCommand())
+
                 .build();
     }
 }
