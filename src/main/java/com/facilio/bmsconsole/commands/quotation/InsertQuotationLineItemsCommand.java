@@ -27,24 +27,20 @@ public class InsertQuotationLineItemsCommand extends FacilioCommand {
         List<QuotationContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
-
-                if (quotation.getLineItems() != null) {
-                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_LINE_ITEMS);
-                    DeleteRecordBuilder<QuotationLineItemsContext> deleteBuilder = new DeleteRecordBuilder<QuotationLineItemsContext>()
-                            .module(lineItemModule)
-                            .andCondition(CriteriaAPI.getCondition("QUOTATION_ID", "quotation", String.valueOf(quotation.getId()), NumberOperators.EQUALS));
-                    deleteBuilder.delete();
-                    if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
-                        QuotationContext quotationContext = new QuotationContext();
-                        quotationContext.setId(quotation.getId());
-                        for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
-                            lineItem.setQuotation(quotationContext);
-                        }
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_LINE_ITEMS);
+                DeleteRecordBuilder<QuotationLineItemsContext> deleteBuilder = new DeleteRecordBuilder<QuotationLineItemsContext>()
+                        .module(lineItemModule)
+                        .andCondition(CriteriaAPI.getCondition("QUOTATION_ID", "quotation", String.valueOf(quotation.getId()), NumberOperators.EQUALS));
+                deleteBuilder.delete();
+                if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
+                    QuotationContext quotationContext = new QuotationContext();
+                    quotationContext.setId(quotation.getId());
+                    for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
+                        lineItem.setQuotation(quotationContext);
                     }
-                    RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
-
                 }
+                RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
             }
         }
 
