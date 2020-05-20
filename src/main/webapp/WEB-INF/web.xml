@@ -154,8 +154,8 @@
         </taglib> 
 	</jsp-config>
 
-    <error-page>
-        <location>/jsps/index.jsp</location>
-    </error-page>
+<!--    <error-page>-->
+<!--        <location>/jsps/index.jsp</location>-->
+<!--    </error-page>-->
 
 </web-app>
