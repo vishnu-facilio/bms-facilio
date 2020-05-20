@@ -29,6 +29,7 @@ import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -1372,4 +1373,15 @@ public class ReadingsAPI {
 				reading.addReading((fieldName + "Delta"), value);
 			}
 	}
+	
+	public static List<ReadingDataMeta> getConnectedReadings(Long assetId) throws Exception {
+		 FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		 FacilioContext context = new FacilioContext();
+		 context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
+		 context.put(FacilioConstants.ContextNames.FILTER, "connected");
+		 latestAssetData.execute(context);
+		
+		return (List<ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
+	 }
+	
 }

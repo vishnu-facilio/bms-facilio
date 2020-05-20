@@ -236,7 +236,30 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	
 	return "";
 }
+	public String getYouBimAssetData() throws Exception {
+		thirdParty = ThirdParty.YOUBIM;
+		
+		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
+		setUserName(thirdPartyDetailsMap.get("userName"));
+		setPassword(thirdPartyDetailsMap.get("password"));
+		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
+		String assetDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("assetdataURL")+bimAssetId+"&limit=50",token);
+		JSONParser parser = new JSONParser();
+		JSONObject resultObj = (JSONObject) parser.parse(assetDataJsonString);
+		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+		List<JSONObject> fields = new ArrayList<JSONObject>();
+		for(int i=0;i<arr.length();i++){
 
+			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
+			JSONObject result1 =  new JSONObject();
+			result1.put("name", result.get("name").toString());
+			result1.put("value", result.get("value").toString());
+			fields.add(result1);
+		}
+		
+		setResult("fields",fields);
+		return SUCCESS;
+	}
 	public String bimJsonImport() throws Exception {
 		
 		FacilioModule module = ModuleFactory.getBimIntegrationLogsModule();
@@ -422,6 +445,21 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				
 				addFieldsChain.execute();
 			}
+			Map<String,FacilioField> buildingFieldsMap = FieldFactory.getAsMap(modBean.getAllFields("building"));
+			if(!buildingFieldsMap.containsKey("thirdpartyid")){
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "building");
+				FacilioField field =  new FacilioField();
+				field.setDataType(1);
+				field.setDisplayName("Third Party Id");
+				field.setDisplayType(FieldDisplayType.TEXTBOX);
+				field.setDisplayTypeInt(1);
+				field.setRequired(false);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
+				
+				addFieldsChain.execute();
+			}
 		}
 	}
 	
@@ -470,9 +508,13 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			
 			BuildingContext building = SpaceAPI.getBuilding(buildingName);
 			if(building != null){
+				building.setDatum("thirdpartyid", oldBuildingId);
+				building.setName(buildingName);
+				building.setSiteId(oldNewSiteIds.get(siteId));
 				updateBuilding(building);
 			}else{
 				building = new BuildingContext();
+				building.setDatum("thirdpartyid", oldBuildingId);
 				building.setName(buildingName);
 				building.setSiteId(oldNewSiteIds.get(siteId));
 				addBuilding(building);
@@ -918,6 +960,16 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		assetDetailsChain.execute();
 	}
 	
+	private long bimAssetId;
+	
+	public long getBimAssetId() {
+		return bimAssetId;
+	}
+
+	public void setBimAssetId(long bimAssetId) {
+		this.bimAssetId = bimAssetId;
+	}
+
 	private ThirdParty thirdParty;
 	
 	public ThirdParty getThirdParty() {

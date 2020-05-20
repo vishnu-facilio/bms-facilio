@@ -677,6 +677,7 @@ public class BimAPI {
 			thirdPartyDetailsMap.put("buildingURL", "https://api.youbim.com//buildings");
 			thirdPartyDetailsMap.put("assetCategoryURL", "https://api.youbim.com/types?limit=500&FilterBuilding_id=");
 			thirdPartyDetailsMap.put("assetURL", "https://api.youbim.com//assets?FilterType_id=");
+			thirdPartyDetailsMap.put("assetdataURL", "https://api.youbim.com/assetattributes?FilterAsset_id=");
 		
 		}
 		return thirdPartyDetailsMap;

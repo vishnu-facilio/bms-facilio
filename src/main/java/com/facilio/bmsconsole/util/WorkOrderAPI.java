@@ -2903,5 +2903,40 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			workOrder.setClient(null);
 		}
 	}
+   
+   public static List<WorkOrderContext> getOverdueWorkOrdersByResourceId(Long assetId,int limit) throws Exception {
+	      
+	      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	      FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	      SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+	                                          .module(module)
+	                                          .beanClass(WorkOrderContext.class)
+	                                          .select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+	                                          ;
+	      if(assetId != null && assetId > 0) {
+	         builder.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", assetId+"", NumberOperators.EQUALS));
+	      }
+	      builder.andCondition(CriteriaAPI.getCondition("ESTIMATED_END", "estimatedEnd", "NULL", CommonOperators.IS_NOT_EMPTY));
+	      builder.andCondition(CriteriaAPI.getCondition("ESTIMATED_END", "estimatedEnd", String.valueOf(DateTimeUtil.getCurrenTime()), NumberOperators.LESS_THAN));
+	      builder.limit(limit);
+	      
+	      List<WorkOrderContext> workOrders = builder.get();
+	      return workOrders;
+	   }
+   
+   public static List<FacilioStatus> getWorkorderTicketStatusList() throws Exception {
+		 
+	      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	      long woModuleId = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId();
+	      FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+	      SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+	                                          .module(module)
+	                                          .beanClass(FacilioStatus.class)
+	                                          .select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+	                                          .andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", woModuleId+"", NumberOperators.EQUALS));;
+	      
+	      List<FacilioStatus> workorderTicketStatusList = builder.get();
+	      return workorderTicketStatusList;
+	   }
   
  }

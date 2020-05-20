@@ -15,25 +15,42 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class AssetAction extends FacilioAction {
@@ -307,7 +324,52 @@ public class AssetAction extends FacilioAction {
 		setResult("relationsCount", relationsCount);
 		return SUCCESS;
 	}
+	public String get3dviewAssetDetails() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioField viewIdField = modBean.getField("3dviewid", module.getName());
+		
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+																.moduleName(module.getName())
+																.beanClass(AssetContext.class)
+																.select(modBean.getAllFields(module.getName()))
+																.table(module.getTableName())
+																.andCondition(CriteriaAPI.getCondition(viewIdField, viewId, StringOperators.IS));
+		
+		AssetContext asset = selectBuilder.fetchFirst();
+		if(asset!=null){
+			setResult("asset",asset);
+			BuildingContext building = SpaceAPI.getBuildingSpace(asset.getCurrentSpaceId());
+			setResult("bimBuildingId",building.getDatum("thirdpartyid"));
+			List<WorkOrderContext> workorders = WorkOrderAPI.getOverdueWorkOrdersByResourceId(asset.getId(),10);
+			setResult("workorders", workorders);
+			List<FacilioStatus> workorderTicketStatusList = WorkOrderAPI.getWorkorderTicketStatusList();
+			setResult("workorderTicketStatusList", workorderTicketStatusList);
+			List<AlarmContext> alarms = AlarmAPI.getAlarms(asset.getId());
+			setResult("alarms", alarms);
+			List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
+			setResult("alarmSeverityList", alarmSeverityList);
+			List<ReadingDataMeta> readings = ReadingsAPI.getConnectedReadings(asset.getId());
+			setResult("readings", readings);
+		}else{
+			setResult("asset",null);
+			setResult("workorders", new ArrayList<>());
+			setResult("alarms", new ArrayList<>());
+			setResult("readings", new ArrayList<>());
+		}
+		return SUCCESS;
+	}
 	
+	private String viewId;
+	
+	public String getViewId() {
+		return viewId;
+	}
+
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
+	}
+
 	private Boolean fetchHierarchy;
 	public Boolean getFetchHierarchy() {
 		if (fetchHierarchy == null) {

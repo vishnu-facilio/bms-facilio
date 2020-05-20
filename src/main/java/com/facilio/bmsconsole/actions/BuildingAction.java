@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
@@ -9,8 +10,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionContext;
 import org.json.simple.JSONArray;
@@ -67,6 +73,25 @@ public class BuildingAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+
+	
+	public String v2thirdPartyBuildingsList() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		FacilioField thirdpartyidField = modBean.getField("thirdpartyid", module.getName());
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																.moduleName(module.getName())
+																.beanClass(BuildingContext.class)
+																.select(modBean.getAllFields(module.getName()))
+																.table(module.getTableName())
+																.andCondition(CriteriaAPI.getCondition(thirdpartyidField,"NULL",CommonOperators.IS_NOT_EMPTY));
+		
+		List<BuildingContext> buildings = selectBuilder.get();
+		setResult(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
+		
+		return SUCCESS;
+	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String newBuilding() throws Exception 

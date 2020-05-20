@@ -17,9 +17,11 @@ import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
@@ -36,7 +38,10 @@ import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -1031,4 +1036,27 @@ public class AlarmAPI {
 				return AlarmContext.class;
 		}
 	}
+	
+	public static List<AlarmContext> getAlarms(Long assetId) throws Exception {
+		 
+		 FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
+			
+	 		FacilioContext context = alarmListChain.getContext();
+	 		context.put(FacilioConstants.ContextNames.CV_NAME, "active");
+	 		context.put(ContextNames.MODULE_NAME, "newreadingalarm");
+	 		String filters = "{\"resource\":[{\"operatorId\":36,\"value\":[\""+String.valueOf(assetId)+"\"]}]}";
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject filter = (JSONObject) parser.parse(filters);
+	 		context.put(FacilioConstants.ContextNames.FILTERS, filter);
+	 		JSONObject sorting = null;
+			sorting = new JSONObject();
+			sorting.put("orderBy", "lastOccurredTime");
+			sorting.put("orderType", "desc");
+	 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+	 		
+			alarmListChain.execute();
+			
+		return (List<AlarmContext>)context.get(ContextNames.RECORD_LIST);
+	 }
+	
 }
