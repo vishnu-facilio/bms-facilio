@@ -467,8 +467,8 @@ public class S3FileStore extends FileStore {
 			DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
 			List<DeletedObject> resultObj = delObjRes.getDeletedObjects();
 			if(CollectionUtils.isNotEmpty(resultObj)) {
-				int successfulDeletes = delObjRes.getDeletedObjects().size();
-				log.info(successfulDeletes + " objects successfully marked for deletion without versions." + " isDeleteMarker : "+delObjRes.getDeletedObjects().get(0).isDeleteMarker());
+//				int successfulDeletes = delObjRes.getDeletedObjects().size();
+//				log.info(successfulDeletes + " objects successfully marked for deletion without versions." + " isDeleteMarker : "+delObjRes.getDeletedObjects().get(0).isDeleteMarker());
 				List<KeyVersion> keyList = new ArrayList<KeyVersion>();
 				resultObj.forEach((DeletedObject deletedObject) -> {
 					keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
