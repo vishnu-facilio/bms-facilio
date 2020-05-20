@@ -1,28 +1,31 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.SensorRuleUtil;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidationInterface {
 
 	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
-		validatorProps.add("timeInterval");
+		validatorProps.add("averageBoundPercentage");
+		validatorProps.add("timeInteval");
 		validatorProps.add("subject");
 		validatorProps.add("severity");
 		return validatorProps;
@@ -31,8 +34,8 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Current reading seems to have a zero consumption");
-		defaultProps.put("comment", "Counter Field readings seems to have equal readings.");
+		defaultProps.put("subject", "Current reading's consumption deviates from the average consumption by 100 times");
+		defaultProps.put("comment", "Counter Field readings seems to high delta difference.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return null;
 	}
@@ -57,31 +60,55 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField = modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName());
 				Double currentDeltaValue = (Double)reading.getReading(deltaField.getName());
-				if(currentDeltaValue == null || !currentDeltaValue.equals(0.0)) {
+				if(currentDeltaValue == null) {
 					return false;
 				}
-				
+
 				Integer noOfHoursToBeFetched = (Integer)fieldConfig.get("timeInterval");
 				if(noOfHoursToBeFetched == null) {
-					noOfHoursToBeFetched = 12;
+					noOfHoursToBeFetched = 7*24;
+				}
+				Integer averageBoundPercentage = (Integer)fieldConfig.get("averageBoundPercentage");
+				if(averageBoundPercentage == null) {
+					averageBoundPercentage = 100;
 				}
 				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);
 				if(readings != null && !readings.isEmpty()) 
-				{ 
-					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
-					readingSet.addAll(readings);
-					if(readingSet != null && readingSet.size() == 1)
+				{ 	
+					Double averageValue = getAverage(readings);
+					if(averageValue != null && averageValue > 0) 
 					{
-						for(Double readingSetValue :readingSet) {
-							if(readingSetValue != null && readingSetValue.equals(currentDeltaValue)) {
-								return true;
-							}	
+						Double averageLowerLimit = averageValue - (averageValue * averageBoundPercentage/100);
+						Double averageHigherLimit = averageValue + (averageValue * averageBoundPercentage/100);
+
+						if(currentDeltaValue < averageLowerLimit || currentDeltaValue > averageHigherLimit) {	
+							return true;
 						}
-					}	
-				}									
+					}
+				}	
 			}
 		}
-		return false;	
+		
+		return false;
+	}
+	
+	private Double getAverage(List<Double> readings) {
+		
+		if(readings != null && !readings.isEmpty()) 
+		{ 			
+			double sum=0, avg=0, n=0;
+			for(Double reading: readings)
+			{	
+				sum+=(double)reading;
+				n++;				
+			}
+			if(n>2)
+			{
+				avg = sum/n;
+				return avg;
+			}
+		}
+		return null;
 	}
 
 }

@@ -1,5 +1,6 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext.Type;
 
 public class SensorAlarmOccurrenceContext extends AlarmOccurrenceContext {

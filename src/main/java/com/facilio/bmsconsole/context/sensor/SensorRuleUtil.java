@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.util;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,12 +23,9 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.RollUpField;
-import com.facilio.bmsconsole.context.SensorAlarmContext;
-import com.facilio.bmsconsole.context.SensorEventContext;
-import com.facilio.bmsconsole.context.SensorRuleAlarmMeta;
-import com.facilio.bmsconsole.context.SensorRuleContext;
-import com.facilio.bmsconsole.context.SensorRuleTypeValidationInterface;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;

@@ -1,20 +1,25 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.util.SensorRuleUtil;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateContinuouslyReceivingSameValueInSensorRule implements SensorRuleTypeValidationInterface{
 
 	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
@@ -29,15 +34,15 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 	@Override
 	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
-		defaultProps.put("subject", "Same reading is received continuously with an absolute zero value");
-		defaultProps.put("comment", "Same Zero-Valued reading is received continuously for a long time.");
+		defaultProps.put("subject", "Same reading is received continuously");
+		defaultProps.put("comment", "Same reading is received continuously for a long time.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
 		return null;
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
-		
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception
+	{
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
 
@@ -49,7 +54,7 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 			{		
 				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 				currentReadingValue = (Double) currentReadingValue;
-				if(currentReadingValue == null || !currentReadingValue.equals(0.0) || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
+				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
 					return false;
 				}
 				
@@ -58,7 +63,7 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 					noOfHoursToBeFetched = 6;
 				}
 				
-				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated(numberField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);						
+				List<Double> readings = SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated(numberField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);						
 				if(readings != null && !readings.isEmpty()) 
 				{ 	
 					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
@@ -71,7 +76,7 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 							}	
 						}
 					}	
-				}		
+				}	
 			}
 		}
 		return false;	

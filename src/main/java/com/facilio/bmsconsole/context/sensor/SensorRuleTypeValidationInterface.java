@@ -1,9 +1,11 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.context.ReadingContext;
 
 
 public interface SensorRuleTypeValidationInterface {

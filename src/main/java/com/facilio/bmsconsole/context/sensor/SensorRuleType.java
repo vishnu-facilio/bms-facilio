@@ -1,14 +1,13 @@
-package com.facilio.bmsconsole.enums;
+package com.facilio.bmsconsole.context.sensor;
 
-import com.facilio.bmsconsole.context.SensorRuleTypeValidationInterface;
-import com.facilio.bmsconsole.context.ValidateContinuouslyReceivingSameValueInSensorRule;
-import com.facilio.bmsconsole.context.ValidateContinuouslyReceivingZeroInSensorRule;
-import com.facilio.bmsconsole.context.ValidateDecrementalValueInSensorRule;
-import com.facilio.bmsconsole.context.ValidateMeanVariationInSensorRule;
-import com.facilio.bmsconsole.context.ValidateNegativeValueInSensorRule;
-import com.facilio.bmsconsole.context.ValidatePermissibleLimitViolationInSensorRule;
-import com.facilio.bmsconsole.context.ValidateSameValueWithZeroDeltaInSensorRule;
-import com.facilio.bmsconsole.context.SensorRuleContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
+import com.facilio.bmsconsole.context.sensor.ValidateContinuouslyReceivingSameValueInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidateContinuouslyReceivingZeroInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidateDecrementalValueInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidateMeanVariationInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidateNegativeValueInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidatePermissibleLimitViolationInSensorRule;
+import com.facilio.bmsconsole.context.sensor.ValidateSameValueWithZeroDeltaInSensorRule;
 import com.facilio.modules.FacilioEnum;
 
 public enum SensorRuleType implements FacilioEnum{

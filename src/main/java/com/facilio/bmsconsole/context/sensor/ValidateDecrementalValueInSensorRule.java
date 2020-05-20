@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +8,11 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.SensorRuleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;

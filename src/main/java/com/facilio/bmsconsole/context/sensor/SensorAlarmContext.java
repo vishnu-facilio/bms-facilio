@@ -1,5 +1,6 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
 public class SensorAlarmContext extends BaseAlarmContext{

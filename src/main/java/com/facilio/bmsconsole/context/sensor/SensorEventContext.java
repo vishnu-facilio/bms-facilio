@@ -1,9 +1,12 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;

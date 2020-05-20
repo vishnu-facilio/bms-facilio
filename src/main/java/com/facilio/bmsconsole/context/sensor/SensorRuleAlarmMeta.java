@@ -1,6 +1,8 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.context.sensor;
 
 import java.io.Serializable;
+
+import com.facilio.bmsconsole.context.ResourceContext;
 
 public class SensorRuleAlarmMeta implements Serializable {
 	
