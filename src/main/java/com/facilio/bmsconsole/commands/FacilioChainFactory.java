@@ -1,18 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -1796,6 +1793,12 @@ public class FacilioChainFactory {
 		c.addCommand(TransactionChainFactory.commonAddModuleChain());
 		c.addCommand(new UpdateCategoryAssetModuleIdCommand());
 		return c;
+	}
+
+	public static FacilioChain justAddAssetCategoryChain(){
+		FacilioChain chain =FacilioChain.getTransactionChain();
+		chain.addCommand(new GenericAddModuleDataCommand());
+		return chain;
 	}
 	
 	public static FacilioChain getUpdateAssetCategoryChain() {

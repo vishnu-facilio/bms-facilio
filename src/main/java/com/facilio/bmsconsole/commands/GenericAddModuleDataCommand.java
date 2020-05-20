@@ -30,7 +30,6 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 			}
 			
 			CommonCommandUtil.handleLookupFormData(fields, record.getData());
-			fields.forEach(field-> System.out.println(field));
 			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
 																						.module(module)
 																						.fields(fields)
