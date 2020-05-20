@@ -3,12 +3,12 @@ package com.facilio.accounts.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.RequestUtil;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.bean.GroupBean;
@@ -295,32 +295,7 @@ public class AccountUtil {
     }
 	public static void setRequestParams(Map<String, String[]> requestParams) {
 		if (currentAccount.get() != null && requestParams != null) {
-			StringBuilder builder = new StringBuilder("[");
-			boolean isFirst = true;
-			for (Map.Entry<String, String[]> param : requestParams.entrySet()) {
-				if (isFirst) {
-					isFirst = false;
-				}
-				else {
-					builder.append(",");
-				}
-
-				builder.append(param.getKey())
-						.append(" : ");
-				if (param.getValue() != null) {
-					if (param.getValue().length == 1) {
-						builder.append(param.getValue()[0]);
-					}
-					else {
-						builder.append(Arrays.toString(param.getValue()));
-					}
-				}
-				else {
-					builder.append(param.getValue());
-				}
-			}
-			builder.append("]");
-			currentAccount.get().setRequestParams(builder.toString());
+			currentAccount.get().setRequestParams(RequestUtil.prettifyRequestParamMap(requestParams));
 			try {
 				if(requestParams.containsKey("loggerLevel")) {
 					currentAccount.get().setLoggerLevel(Integer.parseInt(requestParams.get("loggerLevel")[0]));
@@ -329,8 +304,10 @@ public class AccountUtil {
 			}
 		}
 	}
-    
-    public static void setTimeZone(String timeZone) {
+
+
+
+	public static void setTimeZone(String timeZone) {
 		if (currentAccount.get() != null) {
 			currentAccount.get().setTimeZone(timeZone);
 		}

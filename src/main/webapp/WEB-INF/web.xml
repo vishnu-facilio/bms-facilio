@@ -103,6 +103,10 @@
             <param-name>antisamy-policy</param-name>
             <param-value>conf/antisamy-facilio.xml</param-value>
         </init-param>
+        <init-param>
+            <param-name>throw403</param-name>
+            <param-value>true</param-value>
+        </init-param>
     </filter>
 
     <filter-mapping>

@@ -1,16 +1,12 @@
 package com.facilio.fw.filter;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UriFilter implements Filter {
     @Override
@@ -28,7 +24,7 @@ public class UriFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        if (StringUtils.isEmpty((CharSequence) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME))) {
+        if (StringUtils.isEmpty((CharSequence) request.getAttribute(RequestUtil.REQUEST_APP_NAME))) {
             String reqUri = request.getRequestURI();
             if (!reqUri.startsWith(AUTH_API) && !reqUri.startsWith(IOT_API) && !reqUri.startsWith(MIGRATION_URI)) {
                 int idx = reqUri.indexOf(URL_PATTERN);
@@ -36,7 +32,7 @@ public class UriFilter implements Filter {
                     String appName = reqUri.substring(1, idx);
                     String newUri = reqUri.substring(idx);
                     System.out.println("Facilio filter called : " + newUri);
-                    request.setAttribute(IAMAppUtil.REQUEST_APP_NAME, appName);
+                    request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
                     req.getRequestDispatcher(newUri).forward(request, response);
                     System.out.println("Req completed");
                 } else {
@@ -48,7 +44,7 @@ public class UriFilter implements Filter {
             }
         }
         else {
-            System.out.println("Else of facilio filter : "+request.getAttribute(IAMAppUtil.REQUEST_APP_NAME));
+            System.out.println("Else of facilio filter : "+request.getAttribute(RequestUtil.REQUEST_APP_NAME));
             chain.doFilter(request, response);
         }
     }

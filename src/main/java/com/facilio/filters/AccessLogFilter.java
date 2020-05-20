@@ -1,14 +1,11 @@
 package com.facilio.filters;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.fw.util.RequestUtil;
 import com.facilio.server.ServerInfo;
+import com.facilio.util.RequestUtil;
 import com.facilio.util.SentryUtil;
-import org.apache.http.HttpHeaders;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;

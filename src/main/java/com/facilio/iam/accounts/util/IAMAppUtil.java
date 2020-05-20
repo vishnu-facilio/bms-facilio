@@ -8,7 +8,7 @@ import com.facilio.service.FacilioService;
 
 public class IAMAppUtil {
 
-	public static final String REQUEST_APP_NAME = "facilio.app.name";
+
 
 	public static int deleteAppDomain(long id) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteAppDomain(id));

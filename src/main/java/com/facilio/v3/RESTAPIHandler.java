@@ -201,6 +201,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
 
 
+
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());

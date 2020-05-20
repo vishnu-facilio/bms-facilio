@@ -2,9 +2,8 @@ package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.filters.AccessLogFilter;
-import com.facilio.fw.util.RequestUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -86,7 +85,7 @@ public class SecurityFilter implements Filter {
     private boolean handleInvalid(HttpServletRequest request, HttpServletResponse response, String reason) {
         String uri = request.getRequestURI();
         String app = request.getServerName();
-        String appName = (String) request.getAttribute(IAMAppUtil.REQUEST_APP_NAME);
+        String appName = (String) request.getAttribute(RequestUtil.REQUEST_APP_NAME);
         if (StringUtils.isNotEmpty(appName)) {
             app += "/" + appName;
         }
