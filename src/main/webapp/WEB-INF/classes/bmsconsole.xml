@@ -103,7 +103,7 @@
 			</result>
 			<result name="exception" type="chain">
 				<param name="actionName">handleException</param>
-				<param name="namespace">/v2/exception</param>
+				<param name="namespace">/v1/exception</param>
 			</result>
 		</global-results>
 		<global-exception-mappings>
@@ -402,6 +402,14 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+		</action>
+	</package>
+	<package name="internalV1" namespace="/v1/exception"
+			 extends="homeApi">
+		<action name="handleException"
+				class="com.facilio.bmsconsole.actions.FacilioAction"
+				method="handleException">
+			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"
