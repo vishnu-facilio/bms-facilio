@@ -6023,6 +6023,14 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyEnergyData" />
 		<action name="fetchPropertyMetricsData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
+		<action name="getMetricsList"
+			class="com.facilio.energystar.action.EnergyStarAction" method="getMetricsList">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
 	</package>
 
 </struts>

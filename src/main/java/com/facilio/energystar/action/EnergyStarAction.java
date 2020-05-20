@@ -10,6 +10,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
+import com.facilio.energystar.context.Property_Metrics;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.time.DateRange;
 
@@ -266,6 +267,13 @@ public class EnergyStarAction extends FacilioAction {
 		chain.execute();
 		
 		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String getMetricsList() throws Exception {
+		
+		setResult("metrics", Property_Metrics.values());
 		
 		return SUCCESS;
 	}
