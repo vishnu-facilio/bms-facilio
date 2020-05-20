@@ -10,8 +10,8 @@ public interface SensorRuleTypeValidationInterface {
 	
 	public List<String> getSensorRuleProps();
 	
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig) throws Exception;
+	public JSONObject getDefaultSeverityAndSubject();
 	
-	public JSONObject addDefaultSeverityAndSubject();
-
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception;
+	
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.facilio.util.FacilioUtil;
 
 public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTypeValidationInterface{
 
+	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -27,7 +29,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	}
 
 	@Override
-	public JSONObject addDefaultSeverityAndSubject() {
+	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Current reading seems to have a zero consumption");
 		defaultProps.put("comment", "Counter Field readings seems to have equal readings.");
@@ -36,7 +38,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -54,8 +56,8 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField = modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName());
-				Object currentDeltaValue = (Long)reading.getReading(deltaField.getName());
-				if(currentDeltaValue == null || !currentDeltaValue.equals(0l)) {
+				Double currentDeltaValue = (Double)reading.getReading(deltaField.getName());
+				if(currentDeltaValue == null || !currentDeltaValue.equals(0.0)) {
 					return false;
 				}
 				
@@ -63,15 +65,14 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 				if(noOfHoursToBeFetched == null) {
 					noOfHoursToBeFetched = 12;
 				}
-				
-				List<Long> readings = SensorRuleUtil.getReadingsBtwDayTimeInterval((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched);
+				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);
 				if(readings != null && !readings.isEmpty()) 
 				{ 
-					LinkedHashSet<Long> readingSet = new LinkedHashSet<Long>();
+					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
 					readingSet.addAll(readings);
 					if(readingSet != null && readingSet.size() == 1)
 					{
-						for(Long readingSetValue :readingSet) {
+						for(Double readingSetValue :readingSet) {
 							if(readingSetValue != null && readingSetValue.equals(currentDeltaValue)) {
 								return true;
 							}	

@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.enums.SensorRuleType;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SensorRuleUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
@@ -93,12 +94,13 @@ public class SensorRuleContext {
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-	private long resourceId = -1;
-	public long getResourceId() {
-		return resourceId;
+
+	private List<Long> matchedResourceIds;
+	public List<Long> getMatchedResourceIds() {
+		return matchedResourceIds;
 	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
+	public void setMatchedResourceIds(List<Long> matchedResourceIds) {
+		this.matchedResourceIds = matchedResourceIds;
 	}
 	
 	private long assetCategoryId = -1;
@@ -116,11 +118,11 @@ public class SensorRuleContext {
 	public void setAssetCategory(AssetCategoryContext assetCategory) {
 		this.assetCategory = assetCategory;
 	}
-	private Map<Long, ReadingRuleAlarmMeta> alarmMetaMap;
-	public Map<Long, ReadingRuleAlarmMeta> getAlarmMetaMap() {
+	private Map<Long, SensorRuleAlarmMeta> alarmMetaMap;
+	public Map<Long, SensorRuleAlarmMeta> getAlarmMetaMap() {
 		return alarmMetaMap;
 	}
-	public void setAlarmMetaMap(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap) {
+	public void setAlarmMetaMap(Map<Long, SensorRuleAlarmMeta> alarmMetaMap) {
 		this.alarmMetaMap = alarmMetaMap;
 	}
 	
@@ -133,7 +135,7 @@ public class SensorRuleContext {
 	}
 	public int getSensorRuleType() {
 		if(sensorRuleType != null) {
-			return sensorRuleType.getIntValue();
+			return sensorRuleType.getIndex();
 		}
 		return -1;
 	}
@@ -147,51 +149,6 @@ public class SensorRuleContext {
 	}
 	
 	private static final SensorRuleType[] SENSOR_RULE_TYPES = SensorRuleType.values();
-	
-	public enum SensorRuleType {
-		CONTINUOUSLY_RECEIVING_SAME_VALUE(new ValidateContinuouslyReceivingSameValueInSensorRule()), //SensorRuleType-1
-		CONTINUOUSLY_RECEIVING_ZERO(new ValidateContinuouslyReceivingZeroInSensorRule()),
-		PERMISSIBLE_LIMIT_VIOLATION(new ValidatePermissibleLimitViolationInSensorRule()),
-		NEGATIVE_VALUE(new ValidateNegativeValueInSensorRule(), true),
-		DECREMENTAL_VALUE(new ValidateDecrementalValueInSensorRule(), true),
-		SAME_VALUE_WITH_ZERO_DELTA(new ValidateSameValueWithZeroDeltaInSensorRule(),true),
-		MEAN_VARIATION(new ValidateMeanVariationInSensorRule(),true), //SensorRuleType-7
-		;
-		
-		public int getIntValue() {
-			return ordinal()+1;
-		}
-		
-		public static SensorRuleType valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-		
-		private SensorRuleTypeValidationInterface sensorRuleValidationType;
-		private boolean isCounterFieldType = false;
-
-		private SensorRuleType(){
-		}
-		
-		private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationTypeClass){
-			this.sensorRuleValidationType = sensorRuleValidationTypeClass;
-		}
-		
-		private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isCounterFieldType) {
-			this.sensorRuleValidationType = sensorRuleValidationType;
-			this.isCounterFieldType = isCounterFieldType;
-		}
-		
-		public boolean isCounterFieldType() {
-			return isCounterFieldType;
-		}
-		
-	    public SensorRuleTypeValidationInterface getSensorRuleValidationType() {
-	        return sensorRuleValidationType;
-	    }
-	}
 	
 	public SensorEventContext constructEvent(ReadingContext reading, JSONObject ruleValidatorProps, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
 		
@@ -227,8 +184,8 @@ public class SensorRuleContext {
 	
 	private static void processNewAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, long ttime, SensorEventContext sensorEvent, boolean isHistorical) throws Exception 
 	{
-		Map<Long, ReadingRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
-		ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+		Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
+		SensorRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
 		if (alarmMeta == null) {
 			metaMap.put(resource.getId(), SensorRuleUtil.constructNewAlarmMeta(-1, sensorRule, resource, false, sensorEvent.getEventMessage())); 	 //Assuming readings will come in ascending order of time and this is needed only for historical
 		} 
@@ -239,10 +196,10 @@ public class SensorRuleContext {
 
 	public SensorEventContext constructClearEvent(ReadingContext reading, JSONObject ruleValidatorProps, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
 		
-		Map<Long, ReadingRuleAlarmMeta> metaMap = this.getAlarmMetaMap();
+		Map<Long, SensorRuleAlarmMeta> metaMap = this.getAlarmMetaMap();
 		ResourceContext resource = (ResourceContext) reading.getParent();
 		
-		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resource.getId()) : null;
+		SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resource.getId()) : null;
 		if (alarmMeta != null && !alarmMeta.isClear()) 
 		{
 			alarmMeta.setClear(true); //Made cleared

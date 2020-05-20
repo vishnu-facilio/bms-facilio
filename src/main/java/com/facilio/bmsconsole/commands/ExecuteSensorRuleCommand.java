@@ -48,51 +48,8 @@ public class ExecuteSensorRuleCommand extends FacilioCommand {
 						LOGGER.log(Level.WARNING, "Module Name / Records is null/ empty while executing readings in ExecuteSensorRuleCommand ==> "+moduleName+"==>"+entry.getValue());
 						continue;
 					}
-					
-					Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
-					if (isHistorical == null) {
-						isHistorical = false;
-					}
-					
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule readingModule = modBean.getModule(moduleName);
-					FacilioModule categoryModule = modBean.getParentModule(readingModule.getModuleId());
-					List<SensorRuleContext> sensorRules = new ArrayList<SensorRuleContext>();
-					sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,true);					
-					
-					if(sensorRules != null && !sensorRules.isEmpty()) 
-					{		
-						List<Long> sensorRuleIds = sensorRules.stream().map(sensorRule -> sensorRule.getId()).collect(Collectors.toList());
-						HashMap<Long, JSONObject> sensorRuleValidatorPropsMap = SensorRuleUtil.getSensorRuleValidatorPropsByParentRuleIds(sensorRuleIds);
-						for(SensorRuleContext sensorRule:sensorRules) 
-						{
-							List<SensorEventContext> sensorEvents= new ArrayList<SensorEventContext>();
-							for(ReadingContext reading:readings) 
-							{
-								if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
-								{
-									boolean result = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType().evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()));
-									JSONObject defaultSeverityProps = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType().addDefaultSeverityAndSubject();
-									checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
-									
-									if(result) {
-										SensorEventContext sensorEvent = sensorRule.constructEvent(reading,sensorRuleValidatorPropsMap.get(sensorRule.getId()), defaultSeverityProps, isHistorical.booleanValue());
-										sensorEvents.add(sensorEvent);
-									}
-									else {
-										SensorEventContext sensorEvent = sensorRule.constructClearEvent(reading,sensorRuleValidatorPropsMap.get(sensorRule.getId()), defaultSeverityProps, isHistorical.booleanValue());
-										if(sensorEvent != null) {
-											sensorEvents.add(sensorEvent);
-										}
-									}
-								}
-							}
-							
-							FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(true);
-							addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, sensorEvents);
-							addEventChain.execute();
-						}
-					}			
+					List<SensorRuleContext> sensorRules = SensorRuleUtil.fetchSensorRulesByModule(moduleName, true);
+					SensorRuleUtil.executeSensorRules(sensorRules,readings, false);	
 				}	
 			}			
 		}
@@ -103,10 +60,5 @@ public class ExecuteSensorRuleCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void checkDefaultSeverityProps(JSONObject defaultSeverityProps, JSONObject ruleProps) {
-		if(ruleProps.get("severity") != null && ruleProps.get("subject") != null) {
-			defaultSeverityProps.put("severity", ruleProps.get("severity"));
-			defaultSeverityProps.put("subject", ruleProps.get("subject"));
-		}
-	}
+	
 }

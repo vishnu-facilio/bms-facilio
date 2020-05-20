@@ -25,7 +25,7 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 	}
 	
 	@Override
-	public JSONObject addDefaultSeverityAndSubject() {
+	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Current reading is not within its permissible limits.");
 		defaultProps.put("comment", "Current Reading doesn't lie between the limits of the reading field.");
@@ -34,7 +34,7 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig) {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -46,16 +46,17 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
 			{		
 				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+				currentReadingValue = (Double) currentReadingValue;
 				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
 					return false;
 				}
 				
-				Long lowerLimit = (Long)fieldConfig.get("lowerLimit");
-				Long upperLimit = (Long)fieldConfig.get("upperLimit");
+				Double lowerLimit = (Double)fieldConfig.get("lowerLimit");
+				Double upperLimit = (Double)fieldConfig.get("upperLimit");
 				if(lowerLimit == null || upperLimit == null) {
 					return false;
 				}
-				if((long)currentReadingValue < lowerLimit || (long)currentReadingValue > upperLimit) { 
+				if((double)currentReadingValue < lowerLimit || (double)currentReadingValue > upperLimit) { 
 					return true;
 				}	
 			}

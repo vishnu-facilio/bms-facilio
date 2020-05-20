@@ -1,21 +1,25 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SensorRuleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
 public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidationInterface {
 
+	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -27,7 +31,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 	}
 
 	@Override
-	public JSONObject addDefaultSeverityAndSubject() {
+	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Current reading's consumption deviates from the average consumption by 100 times");
 		defaultProps.put("comment", "Counter Field readings seems to high delta difference.");
@@ -36,7 +40,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -54,7 +58,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField = modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName());
-				Object currentDeltaValue = (Long)reading.getReading(deltaField.getName());
+				Double currentDeltaValue = (Double)reading.getReading(deltaField.getName());
 				if(currentDeltaValue == null) {
 					return false;
 				}
@@ -67,8 +71,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 				if(averageBoundPercentage == null) {
 					averageBoundPercentage = 100;
 				}
-				
-				List<Long> readings = SensorRuleUtil.getReadingsBtwDayTimeInterval((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched);
+				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);
 				if(readings != null && !readings.isEmpty()) 
 				{ 	
 					Double averageValue = getAverage(readings);
@@ -77,7 +80,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 						Double averageLowerLimit = averageValue - (averageValue * averageBoundPercentage/100);
 						Double averageHigherLimit = averageValue + (averageValue * averageBoundPercentage/100);
 
-						if((Double)currentDeltaValue < averageLowerLimit || (Double)currentDeltaValue > averageHigherLimit) {	
+						if(currentDeltaValue < averageLowerLimit || currentDeltaValue > averageHigherLimit) {	
 							return true;
 						}
 					}
@@ -88,12 +91,12 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 		return false;
 	}
 	
-	private Double getAverage(List<Long> readings) {
+	private Double getAverage(List<Double> readings) {
 		
 		if(readings != null && !readings.isEmpty()) 
 		{ 			
 			double sum=0, avg=0, n=0;
-			for(long reading: readings)
+			for(Double reading: readings)
 			{	
 				sum+=(double)reading;
 				n++;				

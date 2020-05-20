@@ -23,7 +23,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 	}
 	
 	@Override
-	public JSONObject addDefaultSeverityAndSubject() {
+	public JSONObject getDefaultSeverityAndSubject() {
 		JSONObject defaultProps = new JSONObject();
 		defaultProps.put("subject", "Current reading seems to be a non-positive reading");
 		defaultProps.put("comment", "Counter Field readings seems to have negative readings.");
@@ -32,7 +32,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig) {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -44,10 +44,11 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
 			{		
 				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+				currentReadingValue = (Double) currentReadingValue;
 				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
 					return false;
 				}
-				if((long)currentReadingValue < 0l){ 
+				if((double)currentReadingValue < 0.0){ 
 					return true;
 				}	
 			}
