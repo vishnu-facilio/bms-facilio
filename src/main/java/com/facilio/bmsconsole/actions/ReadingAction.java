@@ -1171,16 +1171,16 @@ public class ReadingAction extends FacilioAction {
 		this.isInclude = isInclude;
 	}
 	
-	private boolean isScaledFlow = false;
+	private Integer ruleJobType;	
 
-	public boolean getIsScaledFlow() {
-		return isScaledFlow;
+	public Integer getRuleJobType() {
+		return ruleJobType;
 	}
 
-	public void setIsScaledFlow(boolean isScaledFlow) {
-		this.isScaledFlow = isScaledFlow;
+	public void setRuleJobType(Integer ruleJobType) {
+		this.ruleJobType = ruleJobType;
 	}
-	
+
 	private List<Long> internalRuleIds;
 	
 	public List<Long> getInternalRuleIds() {
@@ -1213,41 +1213,31 @@ public class ReadingAction extends FacilioAction {
 	public String runThroughRule() throws Exception {
 		
 		try {
-			if(startTime >= endTime)
-			{
-				throw new Exception("Start time should be less than the Endtime");
-			}
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+			context.put(FacilioConstants.ContextNames.RULE_ID, id);
+			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE,getRuleJobType());
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
-			context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
-			context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,isScaledFlow);
+			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, getHistoricalLoggerAssetIds());
+			context.put(FacilioConstants.ContextNames.IS_INCLUDE, isInclude);
 			
-			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 			runThroughRuleChain.execute(context);
 			
 			setResult("success", "Rule evaluation for the readings in the given period has been started");	
 		}
-		catch(Exception userException)
-		{
+		catch(Exception userException) {
 			setResult("Failed", userException.getMessage());	
-		}
+		}	
 		
 		return SUCCESS;
 	}
 	
 	public String runHistoricalRule() throws Exception
 	{
-		if(startTime >= endTime)
-		{
-			throw new Exception("Start time should be less than the Endtime");
-		}
-		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-		context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
-
+		context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE,getRuleJobType());
+		
 		List<Long> ruleIds = null;
 		if(internalRuleIds != null && !internalRuleIds.isEmpty()) {
 			ruleIds = internalRuleIds;
@@ -1259,8 +1249,8 @@ public class ReadingAction extends FacilioAction {
 		if(ruleIds != null && !ruleIds.isEmpty()) {
 			for(long ruleId:ruleIds)
 			{
-				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
-				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+				context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(context);
 			}	
 			setResult("success", "Historical rule evaluation in the given period has been started for all the given rules");
@@ -1380,6 +1370,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioChain workflowRuleLoggersChain = ReadOnlyChainFactory.getWorkflowRuleLoggersCommand();
 		FacilioContext constructListContext = workflowRuleLoggersChain.getContext();
 		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, getRuleId());
+		constructListContext.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, getRuleJobType());
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleLoggerModule().getName());
 		constructListContext(constructListContext);
 		workflowRuleLoggersChain.execute();

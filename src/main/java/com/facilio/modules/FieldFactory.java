@@ -4145,6 +4145,7 @@ public class FieldFactory {
         fields.add(getField("noOfResources", "NO_OF_RESOURCES", module, FieldType.NUMBER));
         fields.add(getField("resolvedResourcesCount", "RESOLVED_RESOURCES_COUNT", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("ruleJobType", "RULE_JOB_TYPE", module, FieldType.NUMBER));
         fields.add(getField("totalAlarmCount", "TOTAL_ALARM_COUNT", module, FieldType.NUMBER));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
@@ -4162,7 +4163,9 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("parentRuleLoggerId", "PARENT_RULE_LOGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+        fields.add(getField("messageKey", "MESSAGE_KEY", module, FieldType.STRING));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("ruleJobType", "RULE_JOB_TYPE", module, FieldType.NUMBER));
         fields.add(getField("alarmCount", "ALARM_COUNT", module, FieldType.NUMBER));
         fields.add(getField("modifiedStartTime", "MODIFIED_START_TIME", module, FieldType.NUMBER));
         fields.add(getField("modifiedEndTime", "MODIFIED_END_TIME", module, FieldType.NUMBER));
@@ -4180,6 +4183,7 @@ public class FieldFactory {
         fields.add(getField("splitStartTime", "SPLIT_START_TIME", module, FieldType.NUMBER));
         fields.add(getField("splitEndTime", "SPLIT_END_TIME", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("ruleJobType", "RULE_JOB_TYPE", module, FieldType.NUMBER));
         fields.add(getField("logState", "LOG_STATE", module, FieldType.NUMBER));
         fields.add(getField("errorMessage", "ERROR_MESSAGE", module, FieldType.STRING));
         fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));

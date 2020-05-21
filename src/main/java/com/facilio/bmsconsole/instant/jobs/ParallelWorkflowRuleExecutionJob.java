@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.commands.HistoricalEventRunForReadingRuleCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FormRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.EventType;

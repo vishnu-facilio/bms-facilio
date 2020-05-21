@@ -15,15 +15,20 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -37,13 +42,37 @@ public class GetWorkflowRuleLoggersCommand extends FacilioCommand {
 		
 		long ruleId = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		
+		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
+		ruleJobType = (ruleJobType == null) ? RuleJobType.READING_ALARM.getIndex() : ruleJobType;
+		RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
+		Integer preAlarmRuleJobType = null;
+
+		if(ruleJobTypeEnum == RuleJobType.READING_ALARM) {
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+				preAlarmRuleJobType = RuleJobType.PRE_ALARM.getIndex();
+			}	
+		}
 			
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleLoggerFields());	
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), "" +ruleId, NumberOperators.EQUALS))
-				.orderBy("STATUS,CREATED_TIME DESC");
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), "" +ruleId, NumberOperators.EQUALS));
+			
+		if(preAlarmRuleJobType != null) {
+			Criteria criteria = new Criteria();
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"), "" +ruleJobType, NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"), "" +preAlarmRuleJobType, NumberOperators.EQUALS));
+			builder.andCriteria(criteria);
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"), "" +ruleJobType, NumberOperators.EQUALS));
+		}
+				
+		builder.orderBy("STATUS,CREATED_TIME DESC");
 		
 //		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 //		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);

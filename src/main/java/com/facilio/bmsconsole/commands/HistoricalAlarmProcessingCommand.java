@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,15 +13,19 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.bmsconsole.commands.RuleRollupCommand.RollupType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -29,7 +34,10 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class HistoricalAlarmProcessingCommand extends FacilioCommand implements PostTransactionCommand{
@@ -54,17 +62,19 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
 			Long lesserStartTime = parentRuleResourceLoggerContext.getModifiedStartTime();
 			Long greaterEndTime = parentRuleResourceLoggerContext.getModifiedEndTime();
+			String messageKey = parentRuleResourceLoggerContext.getMessageKey();
+			RuleJobType ruleJobType = parentRuleResourceLoggerContext.getRuleJobTypeEnum();
+			Type type = Type.valueOf(ruleJobType.getValue());
 			Long totalAlarmOccurrenceCount = 0l;
 
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
-			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
-			
-			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
-				WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, lesserStartTime, greaterEndTime, AlarmOccurrenceContext.Type.READING);
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM, totalAlarmOccurrenceCount);
+//			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+//			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();	
+			if(type == Type.PRE_ALARM) {
+				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAlarmOccurrencesEndToEnd(messageKey, lesserStartTime, greaterEndTime, Type.READING_ALARM);
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, messageKey, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
 			else {	
-				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime, Type.READING_ALARM, totalAlarmOccurrenceCount);				
+				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, messageKey, lesserStartTime, greaterEndTime, type, totalAlarmOccurrenceCount);				
 			}			
 		
 			if(parentRuleResourceLoggerContext.getStatus() == WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal()) {
@@ -86,19 +96,21 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		return false;
 	}
 	
-	private Long fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long ruleId, AlarmRuleContext alarmRule,long resourceId,long lesserStartTime,long greaterEndTime, Type type, Long totalAlarmOccurrenceCount) throws Exception
+	private Long fetchAndProcessAllEventsBasedOnAlarmDeletionRange(long ruleId, String messageKey,long lesserStartTime,long greaterEndTime, Type type, Long totalAlarmOccurrenceCount) throws Exception
 	{
 		final int EVENTS_FETCH_LIMIT_COUNT = 5000; 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = NewEventAPI.getEventModuleName(type);
 		FacilioModule eventModule = modBean.getModule(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
+
 		SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
 				.select(modBean.getAllFields(eventModule.getName()))
 				.module(eventModule)
 				.beanClass(NewEventAPI.getEventClass(type))
-				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN));	
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("messageKey"), messageKey, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))	
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
 		
 		HashMap<String, AlarmOccurrenceContext> lastOccurrenceOfPreviousBatchMap = new HashMap<String, AlarmOccurrenceContext>();
 		List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
@@ -115,7 +127,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 				addEvent.execute();
 				
-				LOGGER.info("Events added in alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
+				LOGGER.info("Events added in alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for messageKey : "+messageKey+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
 
 				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 				lastOccurrenceOfPreviousBatchMap = (HashMap<String,AlarmOccurrenceContext>) addEvent.getContext().get(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH);
@@ -124,7 +136,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				}
 			}	
 			baseEvents = batchSelect.get();
-			setHistoricalPropsForBaseEvents(baseEvents, alarmRule);		
+			setHistoricalSeverityPropsForBaseEvents(baseEvents, ruleId); //ruleId for PreEvents processing to ReadingEvents		
 		}
 		
 		//final batch of historical events to proceed with system autoclear
@@ -137,7 +149,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
 			addEvent.execute();
 			
-			LOGGER.info("Events added in final alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
+			LOGGER.info("Events added in final alarm processing job: "+parentRuleResourceLoggerId+" Reading Rule : "+ruleId+" for messageKey : "+messageKey+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
 		
 			Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 			if(alarmOccurrenceCount != null) {
@@ -151,6 +163,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 	@Override
 	public boolean postExecute() throws Exception {	
 		try {
+			
 			long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
 			WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
 			List<Map<String, Object>> props = WorkflowRuleResourceLoggerAPI.getResolvedWorkflowRuleResourceLogsAndAlarmCountByParentRuleLoggerId(parentRuleLoggerId); //checking all resource childs completion count
@@ -249,12 +262,31 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				else {
 					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal());
 				}
+				
+				if(parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
+					try {
+						DateRange dateRange = new DateRange(parentRuleLoggerContext.getStartTime(),parentRuleLoggerContext.getEndTime());
+						long ruleId = parentRuleLoggerContext.getRuleId();
+						List<WorkflowRuleResourceLoggerContext> ruleResourceLoggerList = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLogsByParentRuleLoggerId(parentRuleLoggerContext.getId());
+						if(ruleResourceLoggerList != null && !ruleResourceLoggerList.isEmpty()) {
+							List<Long> resourceIds = new ArrayList<Long>();
+							for(WorkflowRuleResourceLoggerContext ruleResourceLogger: ruleResourceLoggerList) {
+								resourceIds.add(ruleResourceLogger.getResourceId());
+							}
+							triggerRuleAssetRollUpJobs(resourceIds, RuleJobType.ASSET_ROLLUP_ALARM, dateRange);				
+						}
+						triggerRuleAssetRollUpJobs(Collections.singletonList(ruleId), RuleJobType.RULE_ROLLUP_ALARM, dateRange);				
+					}
+					catch (Exception error) {		
+						LOGGER.severe("HISTORICAL RULE/ASSET ROLLUP PROPAGATION ALARM PROCESSING JOB Post Execute Failed -- "+parentRuleResourceLoggerId+" Exception --  "+error);
+					}
+				}
 				parentRuleLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());	
 			}
 		}
 	}
 	
-	private void setHistoricalPropsForBaseEvents(List<BaseEventContext> baseEvents, AlarmRuleContext alarmRule) throws Exception
+	private void setHistoricalSeverityPropsForBaseEvents(List<BaseEventContext> baseEvents, long ruleId) throws Exception
 	{
 		if(baseEvents != null && !baseEvents.isEmpty())
 		{
@@ -266,12 +298,13 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			
 			for(BaseEventContext baseEvent :baseEvents)
 			{
-				if (baseEvent instanceof ReadingEventContext) {
-					ReadingEventContext readingEventContext = (ReadingEventContext) baseEvent;
-					readingEventContext.setRule(alarmRule.getPreRequsite());
-					readingEventContext.setSubRule(alarmRule.getAlarmTriggerRule());
-				}
-				else if (baseEvent instanceof PreEventContext) {
+//				if (baseEvent instanceof ReadingEventContext) {
+//					ReadingEventContext readingEventContext = (ReadingEventContext) baseEvent;
+//					readingEventContext.setRule(alarmRule.getPreRequsite());
+//					readingEventContext.setSubRule(alarmRule.getAlarmTriggerRule());
+//				}
+				if (baseEvent instanceof PreEventContext) {
+					AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
 					PreEventContext preEvent = (PreEventContext) baseEvent;
 					preEvent.setRule(alarmRule.getPreRequsite());
 					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
@@ -279,6 +312,23 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				baseEvent.getSeverity().setSeverity(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
 				baseEvent.setSeverityString(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
 			}				
+		}
+	}
+	
+	private void triggerRuleAssetRollUpJobs(List<Long> ids, RuleJobType ruleJobType, DateRange dateRange) throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, ruleJobType);
+		
+		if(ids != null && !ids.isEmpty()) {
+			for(long id:ids)
+			{
+				context.put(FacilioConstants.ContextNames.RULE_ID, id);
+				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
+				runThroughRuleChain.execute(context);
+			}	
+			LOGGER.info("Triggered RuleAssetRollUpJobs in HistoricalAlarmProcessing jobId: " +parentRuleResourceLoggerId+ " for rule/resourceIds: " +ids+ " with RuleJobType: " +ruleJobType.getValue());				
 		}
 	}
 }

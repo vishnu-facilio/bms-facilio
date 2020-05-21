@@ -142,13 +142,14 @@ public class WorkflowRuleHistoricalLogsAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));		
 	}
 	
-	public static WorkflowRuleHistoricalLogsContext setWorkflowRuleHistoricalLogsContext(long parentRuleResourceId, DateRange splitRange, Integer logState)
+	public static WorkflowRuleHistoricalLogsContext setWorkflowRuleHistoricalLogsContext(long parentRuleResourceId, DateRange splitRange, Integer logState, int ruleJobType)
 	{
 		WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 		workflowRuleHistoricalLogsContext.setParentRuleResourceId(parentRuleResourceId);
 		workflowRuleHistoricalLogsContext.setStatus(WorkflowRuleHistoricalLogsContext.Status.YET_TO_BE_SCHEDULED.getIntVal());
 		workflowRuleHistoricalLogsContext.setSplitStartTime(splitRange.getStartTime());
 		workflowRuleHistoricalLogsContext.setSplitEndTime(splitRange.getEndTime());
+		workflowRuleHistoricalLogsContext.setRuleJobType(ruleJobType);
 		if(logState != null)
 		{
 			workflowRuleHistoricalLogsContext.setLogState(logState);

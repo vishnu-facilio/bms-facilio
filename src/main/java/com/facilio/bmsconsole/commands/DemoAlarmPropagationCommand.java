@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.commands.DemoRollUpYearlyCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
@@ -53,8 +54,8 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 
 		FacilioContext runThroughRuleChainContext = new FacilioContext();
 		runThroughRuleChainContext.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(DateTimeUtil.getDayStartTimeOf(yesterdayTime), DateTimeUtil.getDayEndTimeOf(yesterdayTime)));
-		runThroughRuleChainContext.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
-		
+		runThroughRuleChainContext.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, RuleJobType.READING_ALARM.getIndex());
+
 		HashMap<Long, List<Long>> ruleIdVsResourceIds = getAllRulesFromReadingAlarms();
 		
 		if(ruleIdVsResourceIds != null && MapUtils.isNotEmpty(ruleIdVsResourceIds)) 
@@ -64,10 +65,10 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			for(long ruleId :ruleIdVsResourceIds.keySet())
 			{
 				List<Long> resourceIds = ruleIdVsResourceIds.get(ruleId);
-				runThroughRuleChainContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
+				runThroughRuleChainContext.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
 				runThroughRuleChainContext.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
 				
-				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(runThroughRuleChainContext);
 				LOGGER.info("Daily Demo Historical rule evaluation has been started for the given rule " +ruleId+ " with resourceIds: "+resourceIds);
 			}	

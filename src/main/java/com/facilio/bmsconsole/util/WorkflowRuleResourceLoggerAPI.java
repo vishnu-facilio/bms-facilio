@@ -124,7 +124,7 @@ public class WorkflowRuleResourceLoggerAPI {
 		return props;
 	}
 	
-	public static long getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds) throws Exception {
+	public static long getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds, Integer ruleJobType) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
 		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
@@ -138,7 +138,8 @@ public class WorkflowRuleResourceLoggerAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.PARTIALLY_COMPLETED_STATE.getIntVal(), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"),"" +ruleJobType, NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		long activeResourceLevelJobsCountForCurrentRule = 0l;
@@ -187,14 +188,15 @@ public class WorkflowRuleResourceLoggerAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));		
 	}
 	
-	public static WorkflowRuleResourceLoggerContext setWorkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange)
+	public static WorkflowRuleResourceLoggerContext setWorkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange, int ruleJobType, String messageKey)
 	{
 		WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = new WorkflowRuleResourceLoggerContext();
 		workflowRuleResourceLoggerContext.setParentRuleLoggerId(parentRuleLoggerId);
 		workflowRuleResourceLoggerContext.setResourceId(resourceId);
+		workflowRuleResourceLoggerContext.setMessageKey(messageKey);
 		workflowRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleResourceLoggerContext.setRuleJobType(ruleJobType);
 		workflowRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-		
 		if(modifiedRange != null)
 		{
 			workflowRuleResourceLoggerContext.setModifiedStartTime(modifiedRange.getStartTime());

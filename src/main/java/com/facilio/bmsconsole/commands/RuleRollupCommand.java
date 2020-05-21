@@ -34,6 +34,8 @@ public class RuleRollupCommand extends FacilioCommand {
         Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
         Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TIME);
         RollupType rollupType = (RollupType) context.get(FacilioConstants.ContextNames.ROLL_UP_TYPE);
+        Boolean isHistorical = (Boolean) context.get(FacilioConstants.ContextNames.IS_HISTORICAL);
+
         if (id != null && id > 0) {
             if (startTime == null || startTime < 0) {
                 throw new IllegalArgumentException("Start Time cannot be empty");
@@ -41,6 +43,7 @@ public class RuleRollupCommand extends FacilioCommand {
             if (endTime == null || endTime < 0) {
                 throw new IllegalArgumentException("End Time cannot be empty");
             }
+            isHistorical = (isHistorical == null) ? Boolean.FALSE : isHistorical;
 
             Object valid = null;
             if (rollupType == RollupType.RULE) {
@@ -105,10 +108,15 @@ public class RuleRollupCommand extends FacilioCommand {
                 }
             }
             if (CollectionUtils.isNotEmpty(list)) {
-                FacilioChain chain = TransactionChainFactory.getV2AddEventChain(true);
-                Context chainContext = chain.getContext();
-                chainContext.put(EventConstants.EventContextNames.EVENT_LIST, list);
-                chain.execute();
+            	if(!isHistorical) {
+            		 FacilioChain chain = TransactionChainFactory.getV2AddEventChain(true);
+                     Context chainContext = chain.getContext();
+                     chainContext.put(EventConstants.EventContextNames.EVENT_LIST, list);
+                     chain.execute();
+            	}
+            	else {
+            		context.put(EventConstants.EventContextNames.EVENT_LIST, list);
+            	}
             }
         }
         return false;

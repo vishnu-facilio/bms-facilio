@@ -54,14 +54,14 @@ public class WorkflowRuleLoggerAPI {
 		return null;
 	}
 	
-	public static List<WorkflowRuleLoggerContext> getWorkflowRuleLoggerContextByRuleId(long ruleId) throws Exception {
+	public static List<WorkflowRuleLoggerContext> getWorkflowRuleLoggerContextByRuleId(long ruleId, Integer ruleJobType) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleLoggerFields());
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), "" +ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleJobType"),"" +ruleJobType, NumberOperators.EQUALS))
 				.orderBy("STATUS");
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -92,13 +92,14 @@ public class WorkflowRuleLoggerAPI {
 		
 	}
 	
-	public static WorkflowRuleLoggerContext setWorkflowRuleLoggerContext(long ruleId, long noOfResources, DateRange range)
+	public static WorkflowRuleLoggerContext setWorkflowRuleLoggerContext(long ruleId, long noOfResources, DateRange range, int ruleJobType)
 	{
 		WorkflowRuleLoggerContext workflowRuleLoggerContext = new WorkflowRuleLoggerContext();
 		workflowRuleLoggerContext.setRuleId(ruleId);
 		workflowRuleLoggerContext.setNoOfResources(noOfResources);
 		workflowRuleLoggerContext.setResolvedResourcesCount(0);
 		workflowRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleLoggerContext.setRuleJobType(ruleJobType);
 		workflowRuleLoggerContext.setStartTime(range.getStartTime());
 		workflowRuleLoggerContext.setEndTime(range.getEndTime());
 		workflowRuleLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());

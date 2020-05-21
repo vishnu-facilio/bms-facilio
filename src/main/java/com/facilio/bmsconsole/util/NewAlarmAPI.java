@@ -835,7 +835,7 @@ public class NewAlarmAPI {
 						
 			if(MapUtils.isNotEmpty(delAlarmOccurrencesMap))
 			{
-				deleteAllAlarmOccurences(new ArrayList<Long>(delAlarmOccurrencesMap.keySet()));
+				deleteAllAlarmOccurencesWithIds(new ArrayList<Long>(delAlarmOccurrencesMap.keySet()));
 				updateBaseAlarmWithNoOfOccurences(baseAlarm);
 			}
 			changeLatestAlarmOccurrence(baseAlarmContext);
@@ -846,7 +846,6 @@ public class NewAlarmAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-//		AlarmOccurrenceContext firstOccurrence = alarmOccurrenceList.get(0);
 
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(modBean.getAllFields(module.getName()))
@@ -858,6 +857,25 @@ public class NewAlarmAPI {
 		if (newLatestAlarmOccurrence != null)
 		{
 			baseAlarmContext.setLastOccurrence(newLatestAlarmOccurrence);
+			
+			Map<Long, AlarmOccurrenceContext> latestAlarmOccurrenceMap = NewEventAPI.updateLatestOccurrenceFromEvent(Collections.singletonMap(newLatestAlarmOccurrence.getId(), newLatestAlarmOccurrence));
+			if(latestAlarmOccurrenceMap != null && MapUtils.isNotEmpty(latestAlarmOccurrenceMap) && latestAlarmOccurrenceMap.size() == 1) 
+			{	
+				for(Long id:latestAlarmOccurrenceMap.keySet()) 
+				{
+					AlarmOccurrenceContext latestOccurrence = latestAlarmOccurrenceMap.get(id);
+					if(latestOccurrence != null && latestOccurrence.getAlarm() != null && latestOccurrence.getAlarm().getId() != -1) 
+					{
+						if(latestOccurrence.getCreatedTime() != -1 && latestOccurrence.getLastOccurredTime() != -1) {
+							baseAlarmContext.setLastOccurredTime(latestOccurrence.getLastOccurredTime());
+							baseAlarmContext.setLastCreatedTime(latestOccurrence.getCreatedTime());								
+						}	
+						if (latestOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+							baseAlarmContext.setLastClearedTime(latestOccurrence.getLastOccurredTime());
+						}	
+					}
+				}
+			}	
 			updateBaseAlarmBuilder(baseAlarmContext);
 		}
 		
@@ -951,16 +969,16 @@ public class NewAlarmAPI {
 		updateBuilder.update(alarmOccurrence);
 	}
 	
-	public static void deleteAllAlarmOccurences(List<Long> delAlarmOccurrenceIds) throws Exception {
+	public static void deleteAllAlarmOccurencesWithIds(List<Long> delAlarmOccurrenceIds) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-
-		GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
+	
+		DeleteRecordBuilder<AlarmOccurrenceContext> deleteBuilder = new DeleteRecordBuilder<AlarmOccurrenceContext>()
+				.module(module)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(delAlarmOccurrenceIds, module));
-		deletebuilder.delete();
-
+		deleteBuilder.delete();
 	}
 	
 	public static void clearInitialEdgeAlarmOccurenceWithEvents(AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence, long startTime) throws Exception {

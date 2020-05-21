@@ -42,7 +42,7 @@
 	 
 	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='1800000'/>
 	 <job name='HistoricalAlarmOccurrenceDeletionJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalAlarmOccurrenceDeletionJob' transactionTimeout='900000'/>
-	 <job name='HistoricalEventRunForReadingRuleJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalEventRunForReadingRuleJob' transactionTimeout='900000'/>
+	 <job name='HistoricalRuleEventRunJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalRuleEventRunJob' transactionTimeout='900000'/>
 	 <job name='HistoricalAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalAlarmProcessingJob' transactionTimeout='1200000'/>
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>

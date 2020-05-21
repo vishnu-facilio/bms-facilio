@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -108,6 +109,29 @@ public class NewEventAPI {
 				throw new IllegalArgumentException("Invalid event type");
 		}
 	}
+	
+	public static String getMessageKey(RuleJobType ruleJobTypeEnum, long ruleId, long resourceId) {
+		if (ruleJobTypeEnum == null) {
+			throw new IllegalArgumentException("No event type to construct message key");
+		}
+
+		switch (ruleJobTypeEnum) {
+			case READING_ALARM:
+				return ruleId+ "_" +resourceId;
+			case  PRE_ALARM:
+				return ruleId+ "_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
+			case SENSOR_ALARM:
+				return ruleId+ "_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
+			case OPERATION_ALARM:
+				return resourceId+ "_" +ruleJobTypeEnum.getIndex();
+			case RULE_ROLLUP_ALARM:
+	            return "RuleRollUp_ " +ruleId+ "_" +ruleJobTypeEnum.getIndex();
+			case ASSET_ROLLUP_ALARM:
+	            return "AssetRollUp_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
+			default:
+				throw new IllegalArgumentException("Invalid event type to construct message key");
+		}
+	}
 
 	public static BMSEventContext transformEvent(BMSEventContext event, JSONTemplate template, Map<String, Object> placeHolders) throws Exception {
 		Map<String, Object> eventProp = FieldUtil.getAsProperties(event);
@@ -202,7 +226,7 @@ public class NewEventAPI {
 				latestOccurrence.setLastOccurredTime(newLatestEvent.getCreatedTime());
 			}	
 		}
-		return null;
+		return latestOccurrenceMap;
 	}
 
 	public static List<? extends BaseEventContext> getExtendedEvents(Type alarmType, Criteria criteria) throws Exception {

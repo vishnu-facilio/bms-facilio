@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -70,20 +71,24 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			Long actualStartTime = parentRuleLoggerContext.getStartTime();
 			Long actualEndTime = parentRuleLoggerContext.getEndTime();
 			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
-			if (ruleId == null || resourceId == null) {
+			String messageKey = parentRuleResourceLoggerContext.getMessageKey();
+			RuleJobType ruleJobType = parentRuleResourceLoggerContext.getRuleJobTypeEnum();
+			Type type = Type.valueOf(ruleJobType.getValue());
+			if (ruleId == null || messageKey == null || ruleJobType == null || type == null) {
 				return false;
 			}
 			
-			DateRange modifiedDateRange = new DateRange();	
-
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
-			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
-			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
-				modifiedDateRange = WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.PRE_OCCURRENCE);
-			}
-			else{
-				modifiedDateRange = WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.READING);
-			}
+			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAlarmOccurrencesEndToEnd(messageKey, actualStartTime, actualEndTime, type);
+//
+//			DateRange modifiedDateRange = new DateRange();	
+//			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+//			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+//			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+//				modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.PRE_OCCURRENCE);
+//			}
+//			else{
+//				modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.READING);
+//			}
 						 		
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			
@@ -136,7 +141,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		
 		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers)
 		{
-			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalEventRunForReadingRuleJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
+			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalRuleEventRunJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
 		}
 		return false;
 	}

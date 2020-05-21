@@ -151,9 +151,9 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain runThroughReadingRuleChain() {
+		public static FacilioChain runThroughHistoricalRuleChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new RunThroughReadingRulesCommand());
+			c.addCommand(new RunThroughHistoricalRuleCommand());
 			return c;
 		}
 		
@@ -3947,7 +3947,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getExecuteHistoricalEventRuleCalculation() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new HistoricalEventRunForReadingRuleCommand());
+			c.addCommand(new HistoricalRuleEventRunCommand());
 			return c;
 		}
 

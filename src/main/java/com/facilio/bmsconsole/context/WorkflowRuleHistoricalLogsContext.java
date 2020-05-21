@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.modules.FacilioEnum;
+
 
 public class WorkflowRuleHistoricalLogsContext {
 	
@@ -17,7 +21,8 @@ public class WorkflowRuleHistoricalLogsContext {
 	private long calculationStartTime;
 	private long calculationEndTime;
 	private String errorMessage;
-	
+	private RuleJobType ruleJobType;
+
 	public long getId() {
 		return id;
 	}
@@ -116,7 +121,26 @@ public class WorkflowRuleHistoricalLogsContext {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+	
+	public RuleJobType getRuleJobTypeEnum() {
+		return ruleJobType;
+	}
+	
+	public int getRuleJobType() {
+		if (ruleJobType == null) {
+			return -1;
+		}
+		return ruleJobType.getIndex();
+	}
 
+	public void setRuleJobType(RuleJobType ruleJobType) {
+		this.ruleJobType = ruleJobType;
+	}
+
+	public void setRuleJobType(int ruleJobType) {
+		this.ruleJobType = RuleJobType.valueOf(ruleJobType);
+	}
+	
 	public enum Status {
 		
 		IN_PROGRESS(1),
@@ -179,5 +203,4 @@ public class WorkflowRuleHistoricalLogsContext {
 			return optionMap;
 		}
 	}
-
 }

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.enums.RuleJobType;
+
 public class WorkflowRuleLoggerContext {
 	
 	private long id = -1;
@@ -19,7 +21,8 @@ public class WorkflowRuleLoggerContext {
 	private long createdBy;
 	private long calculationStartTime;
 	private long calculationEndTime;
-	
+	private RuleJobType ruleJobType;
+
 	public long getId() {
 		return id;
 	}
@@ -108,7 +111,21 @@ public class WorkflowRuleLoggerContext {
 	public void setCalculationEndTime(long calculationEndTime) {
 		this.calculationEndTime = calculationEndTime;
 	}
-
+	public RuleJobType getRuleJobTypeEnum() {
+		return ruleJobType;
+	}
+	public int getRuleJobType() {
+		if (ruleJobType == null) {
+			return -1;
+		}
+		return ruleJobType.getIndex();
+	}
+	public void setRuleJobType(RuleJobType ruleJobType) {
+		this.ruleJobType = ruleJobType;
+	}
+	public void setRuleJobType(int ruleJobType) {
+		this.ruleJobType = RuleJobType.valueOf(ruleJobType);
+	}
 
 	public enum Status {
 		
