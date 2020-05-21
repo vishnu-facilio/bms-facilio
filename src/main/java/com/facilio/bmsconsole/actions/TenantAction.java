@@ -659,9 +659,9 @@ private Map<String, Double> readingData;
    }
    
    public String v2deleteTenant() throws Exception {
-	   FacilioChain deleteTenant = TransactionChainFactory.v2DeleteTenantChain();
+	   FacilioChain deleteTenant = FacilioChainFactory.v2DeleteTenantChain();
 	   FacilioContext context = deleteTenant.getContext();
-	    context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+       context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
        context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
        deleteTenant.execute();
        setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));

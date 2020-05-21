@@ -380,14 +380,15 @@ public class FieldUtil {
                     FacilioConstants.ContextNames.TENANT_CONTACT,
                     // FacilioConstants.ContextNames.VENDOR_CONTACT,
                     FacilioConstants.ContextNames.CLIENT_CONTACT,
-                    FacilioConstants.ContextNames.EMPLOYEE,
+                    //FacilioConstants.ContextNames.EMPLOYEE,
                     FacilioConstants.ContextNames.QUOTATION
 			)));
 
 
 
-	private static final Set<String> PERMISSION_SKIPPED_FIELDS = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("localId"
+	private static final Set<String> SYSTEM_UPDATED_FIELDS = Collections.unmodifiableSet(
+			new HashSet<>(Arrays.asList("sysCreatedTime", "sysModifiedTime", "sysModifiedBy", "sysCreatedBy", "sysDeletedBy",
+					"sysDeletedTime", "localId", "moduleState", "stateFlowId", "approvalState", "approvalFlowId"
 												)));
 
 
@@ -570,12 +571,12 @@ public class FieldUtil {
     }
     
     
-    public static Set<String> getPermissionSkippedFields() {
-    	return PERMISSION_SKIPPED_FIELDS;
+    public static Set<String> getSystemUpdatedFields() {
+    	return SYSTEM_UPDATED_FIELDS;
     }
     
-    public static boolean skipPermissionForFields(String fieldName) {
-		return PERMISSION_SKIPPED_FIELDS.contains(fieldName);
+    public static boolean isSystemUpdatedField(String fieldName) {
+		return SYSTEM_UPDATED_FIELDS.contains(fieldName);
 	}
     
     public static FieldPermissionContext getFieldPermission(long fieldId, long moduleId) throws Exception {
@@ -610,7 +611,7 @@ public class FieldUtil {
 
 		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
     	for(FacilioField field : allFields) {
-			if(field.getFieldId() != -1 && !skipPermissionForFields(field.getName()) && !permissibleFieldIds.contains(field.getFieldId())) {//system fields are auto permissable
+			if(field.getFieldId() != -1 && (!permissibleFieldIds.contains(field.getFieldId()) || (permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())))) {
 				restrictedFields.add(field);
 			}
 		}
@@ -635,6 +636,9 @@ public class FieldUtil {
 		List<FacilioField> permissibleFields = new ArrayList<>();
 		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
 		for(FacilioField field : neededFields) {
+			if(permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())){
+				continue;
+			}
 			if(permissibleFieldIds.contains(field.getFieldId())){
 				permissibleFields.add(field);
 			}

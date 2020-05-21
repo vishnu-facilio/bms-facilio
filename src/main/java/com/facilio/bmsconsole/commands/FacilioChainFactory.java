@@ -2239,6 +2239,9 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeleteClientContactsCommand());
+		c.addCommand(deleteClientContactChain());
+
 		return c;
 	}
 	
@@ -2288,6 +2291,15 @@ public class FacilioChainFactory {
 	public static FacilioChain getFloorPlanChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new getFloorPlanCommand());
+		return c;
+	}
+
+	public static FacilioChain v2DeleteTenantChain () {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteTenantCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new DeleteTenantContactsCommand());
+		c.addCommand(deleteTenantContactChain());
 		return c;
 	}
 }

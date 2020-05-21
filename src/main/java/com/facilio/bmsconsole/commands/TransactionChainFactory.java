@@ -251,14 +251,6 @@ public class TransactionChainFactory {
 		}
 		
 		
-		
-		public static FacilioChain v2DeleteTenantChain () {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new DeleteTenantCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
-			return c;
-		}
-		
 		public static FacilioChain v2disassociateSpaceChain () {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DisassociateTenantSpaceRelationCommand());

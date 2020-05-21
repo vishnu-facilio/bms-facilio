@@ -1091,7 +1091,7 @@ public class FormFactory {
 	private static List<FormField> getVendorContactsFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 4, 1));
 		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Primary Contact", Required.OPTIONAL, 5, 1));

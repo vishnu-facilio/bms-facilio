@@ -440,6 +440,23 @@ public class PeopleAPI {
 			AccountUtil.getUserBean().deleteUser((long)list.get(0).get("ouid"), false);
 		}
 	}
+
+	public static void deletePeopleUsers(List<Long> peopleIds) throws Exception {
+		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleIds), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(Map<String, Object> map : list) {
+				AccountUtil.getUserBean().deleteUser((long) map.get("ouid"), false);
+			}
+		}
+	}
+
 	
 	public static int deletePeopleForUser(long ouId) throws Exception {
 		long peopleId = PeopleAPI.getPeopleIdForUser(ouId);
