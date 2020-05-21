@@ -236,6 +236,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(Constants.WITH_COUNT, getWithCount());
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         Class beanClass = getBeanClass(module);
         context.put(Constants.BEAN_CLASS, beanClass);
