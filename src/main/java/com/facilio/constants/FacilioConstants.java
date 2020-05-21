@@ -1,5 +1,13 @@
 package com.facilio.constants;
 
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.ControllerAlarmContext;
@@ -28,13 +36,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
-import org.json.simple.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 //import com.facilio.custom.CustomController;
 
@@ -259,6 +260,7 @@ public class FacilioConstants {
 		public static final String STARTING_NUMBER = "startingNumber";
 		public static final String LINK_NAME = "linkName";
 		public static final String PARENT_ID = "parentId";
+		public static final String PREV_PARENT_ID = "prevParentId";
 		public static final String PARENT_ID_LIST = "parentIds";
 		
 		public static final String TICKET_ID = "ticketId";
@@ -605,6 +607,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
 		public static final String CHECK_FIELD_DISPLAY_NAME_DUPLICATION= "avoidFieldDisplayNameDuplication";
 		public static final String FIELD_ID = "fieldId";
+		public static final String PREV_FIELD_ID = "prevFieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_LOOKUPS = "fetchLookups";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";

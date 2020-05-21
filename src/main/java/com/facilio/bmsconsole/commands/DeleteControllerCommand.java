@@ -85,7 +85,7 @@ public class DeleteControllerCommand extends FacilioCommand {
 				 for(Map.Entry<Long, List<FacilioField>> assetEntry :assetVsFields.entrySet()) {
 					 long assetId = assetEntry.getKey();
 					 List<FacilioField> fields = assetEntry.getValue();
-					 ReadingsAPI.deleteReadings(assetId, fields, bean.getModule(moduleName), null, null, null, deleteReadings);
+					 ReadingsAPI.deleteReadings(assetId, fields, null, deleteReadings);
 				 }
 			 }
 		 }

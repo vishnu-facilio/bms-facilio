@@ -27,5 +27,11 @@ public class MigrateReadingDataJob extends InstantJob {
 
 	}
 	
+	@Override
+	public void handleTimeOut() {
+		LOGGER.info("MigrateReadingDataJob timed out");
+		super.handleTimeOut();
+	}
+	
 
 }

@@ -40,7 +40,7 @@ public class WmsApi
 	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
 	private static String kinesisNotificationTopic = "notifications";
 	
-	private static String WEBSOCKET_URL = "ws://localhost:8080/ROOT/websocket";
+	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;
 	

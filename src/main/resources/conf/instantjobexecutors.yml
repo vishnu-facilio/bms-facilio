@@ -12,3 +12,8 @@ executors :
     queueSize : 100
     dataRetention : 1 #in days
     pollingFrequency : 5000 #in milliseconds
+
+  - name : datamigration
+    tableName : ReadingDataMigrationInstantJobQueue
+    dataRetention : 1 #in days
+    pollingFrequency : 5000 #in milliseconds

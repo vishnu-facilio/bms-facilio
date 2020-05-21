@@ -45,7 +45,7 @@ public class GetPointRequest {
 
     public GetPointRequest withCriteria(Criteria criteria) throws Exception {
         if (criteria != null) {
-            this.criteria.addAndConditions(new ArrayList<>(criteria.getConditions().values()));
+            this.criteria.andCriteria(criteria);
             return this;
         } else {
             throw new Exception(" criteria cant be null ");

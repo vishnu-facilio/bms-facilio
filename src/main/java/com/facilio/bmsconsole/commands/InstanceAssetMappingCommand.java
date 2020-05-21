@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -65,7 +66,8 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 			TimeSeriesAPI.updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit, skipValidation);
 			
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.RECORD, modeledData);
+			context.put(ContextNames.PREV_FIELD_ID, modeledData.get(ContextNames.FIELD_ID));
+			context.put(ContextNames.PREV_PARENT_ID, modeledData.get("resourceId"));
 			context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
 			

@@ -1158,11 +1158,12 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static void deleteReadings(long parentId, List<FacilioField> assetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
+	public static void deleteReadings(long parentId, List<FacilioField> readingFields, List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
 		ReadingDataMeta rdm = new ReadingDataMeta();
 		List<Long> fieldIds = new ArrayList<>();
 		ReadingContext reading = new ReadingContext();
-		assetFields.forEach(field -> {
+		List<FacilioField> fields = new ArrayList<>();
+		readingFields.forEach(field -> {
 			Object value;
 			if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
 				value = -99;
@@ -1172,22 +1173,26 @@ public class ReadingsAPI {
 			}
 			reading.addReading(field.getName(), value);
 			fieldIds.add(field.getFieldId());
+			fields.add(field);
 		});
 		
 		if (deleteReadings == null || deleteReadings.length == 0 || deleteReadings[0]) {
-			
-			if (fields == null) {
+			/*if (fields == null) {
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				fields = bean.getAllFields(module.getName());
 				fieldMap = FieldFactory.getAsMap(fields);
-			}
-			
+			}*/
+			FacilioModule module = fields.get(0).getModule();
 			UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 					.module(module)
 					.fields(fields)
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+					;
 			if (readingDataIds != null) {
 				updateBuilder.andCondition(CriteriaAPI.getIdCondition(readingDataIds, module));
+			}
+			else {
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				updateBuilder.andCondition(CriteriaAPI.getCondition(bean.getField("parentId", module.getName()), String.valueOf(parentId), NumberOperators.EQUALS));
 			}
 			updateBuilder.update(reading);
 			
