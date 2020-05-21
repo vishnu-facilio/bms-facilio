@@ -28,12 +28,12 @@ public class OpenUnOpenedWos extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-        if (superAdmin.getOuid() != AccountUtil.getCurrentUser().getOuid()) {
-            if (AccountUtil.getCurrentOrg().getOrgId() != 176L) { // FIXME
-                throw new IllegalArgumentException("You do not have the permission");
-            }
-        }
+//        User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+//        if (superAdmin.getOuid() != AccountUtil.getCurrentUser().getOuid()) {
+//            if (AccountUtil.getCurrentOrg().getOrgId() != 176L) { // FIXME
+//                throw new IllegalArgumentException("You do not have the permission");
+//            }
+//        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
