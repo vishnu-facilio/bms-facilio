@@ -478,6 +478,14 @@ public class ApplicationApi {
 
 	}
 
+	public static List<ApplicationContext> getAllApplications() throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getApplicationModule().getTableName())
+				.select(FieldFactory.getApplicationFields());
+		List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
+		return applications;
+	}
+
 	public static void setThisAppForUser(User user, long appId) throws Exception {
         AppDomain appDomain = getAppDomainForApplication(appId);
 		user.setAppDomain(appDomain);

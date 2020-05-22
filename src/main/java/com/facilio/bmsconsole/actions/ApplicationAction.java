@@ -24,6 +24,16 @@ public class ApplicationAction extends FacilioAction {
 
 	private ApplicationContext application;
 
+	private Boolean fetchMyApps = false;
+
+	public Boolean getFetchMyApps() {
+		return fetchMyApps;
+	}
+
+	public void setFetchMyApps(Boolean fetchMyApps) {
+		this.fetchMyApps = fetchMyApps;
+	}
+
 	public ApplicationContext getApplication() {
 		return application;
 	}
@@ -78,6 +88,11 @@ public class ApplicationAction extends FacilioAction {
 	public String getAllApplication() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getAllApplicationChain();
 		FacilioContext context = chain.getContext();
+		HttpServletRequest request = ServletActionContext.getRequest();
+
+		context.put(FacilioConstants.ContextNames.FETCH_MY_APPS, getFetchMyApps());
+		context.put(FacilioConstants.ContextNames.APP_DOMAIN, request.getServerName());
+
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));

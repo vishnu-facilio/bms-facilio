@@ -1636,6 +1636,10 @@ public class FacilioConstants {
 		public static final String TAX_GROUPS = "taxgroup";
 		public static final String QUOTATION_ASSOCIATED_TERMS = "quotationterms";
 
+		public static final String FETCH_MY_APPS = "fetchMyApps";
+		public static final String APP_DOMAIN = "applicationDomain";
+
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
