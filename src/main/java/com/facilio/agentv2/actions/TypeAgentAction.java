@@ -82,17 +82,17 @@ public class TypeAgentAction extends AgentIdAction {
         return SUCCESS;
     }
     
-    public String getControllerTypeList() throws Exception {
-        try {
-            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevicesControllerType(getAgentId(),getControllerType(), constructListContext(new FacilioContext())), Device.class);
-            setResult(AgentConstants.DATA, devices);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting device controller Type ", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-    	return SUCCESS;
-    }
+//    public String getControllerTypeList() throws Exception {
+//        try {
+//            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevicesControllerType(getAgentId(),getControllerType(), constructListContext(new FacilioContext())), Device.class);
+//            setResult(AgentConstants.DATA, devices);
+//            ok();
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred while getting device controller Type ", e);
+//            setResult(AgentConstants.RESULT, ERROR);
+//            setResult(AgentConstants.EXCEPTION, e.getMessage());
+//            internalError();
+//        }
+//    	return SUCCESS;
+//    }
 }
