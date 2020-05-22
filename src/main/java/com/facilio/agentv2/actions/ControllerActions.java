@@ -33,7 +33,25 @@ public class ControllerActions extends AgentActionV2 {
         this.controllerId = controllerId;
     }
 
-    public String getControllerUsingId() {
+    public Integer getControllerType() { return controllerType; }
+
+    public void setControllerType(Integer controllerType) { this.controllerType = controllerType; }
+
+    @NotNull
+    @Min(value = 0,message = "Controller type can't be less than 1")
+    private Integer controllerType;
+
+    private Long agentId =-1l;
+
+    public Long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+
+	public String getControllerUsingId() {
         try {
             List<Map<String, Object>> controller = ControllerApiV2.getControllerData(null,getControllerId(),constructListContext(new FacilioContext()));
             if (controller != null) {
@@ -149,22 +167,6 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getSearchControllerList() {
-    	
-       	try {
-    		FacilioContext context = new FacilioContext();
-    		context.put(AgentConstants.SEARCH_KEY, getName());
-    		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-    		setResult(AgentConstants.DATA,  ControllerApiV2.getControllerDataForAgent(null,context));
-    		ok();
-    	}catch(Exception e) {
-    		LOGGER.info("Exception occurred while searching devices +",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-    	}
-    	return SUCCESS;
-    }
-    
     private String name;
 
 	public String getName() {
@@ -174,4 +176,21 @@ public class ControllerActions extends AgentActionV2 {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+    public String getControllers() {
+        try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+			context.put(AgentConstants.SEARCH_KEY, getName());
+			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(getAgentId(),context);
+            setResult(AgentConstants.DATA, controllers);
+            ok();
+        } catch (Exception e) {
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+            LOGGER.info("exception while fetching controller data fro agent " + agentId + " ", e);
+        }
+        return SUCCESS;
+    }
 }

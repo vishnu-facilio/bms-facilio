@@ -194,6 +194,10 @@
         <action name="get" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getControllerUsingId">  <!--DONE-->
         </action>
+		
+		<action name="controllersList" class="com.facilio.agentv2.actions.ControllerActions"
+                method="getControllers">  <!--DONE-->
+        </action>
 
         <!--5-->
         <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteControllers">
@@ -205,11 +209,6 @@
                 method="discoverControllers"> <!--DONE-->
         </action>
 		
-		<!--7-->
-		<action name="getControllerType" class="com.facilio.agentv2.actions.TypeAgentAction"
-                method="getControllerTypeList"> <!--DONE-->
-        </action>
-
         <!--8-->
         <action name="update" class="com.facilio.agentv2.actions.UpdateControllerAction" method="updateController">
         </action>
@@ -217,9 +216,6 @@
         <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
         </action>
 
-		 <action name="controllerSearch" class="com.facilio.agentv2.actions.ControllerActions" method="getSearchControllerList">
-        </action>
-		
         <action name="getControllerForDevice" class="com.facilio.agentv2.AgentAction"
                 method="getControllerUsingIdentifier">
         </action> <!--testing purpose-->

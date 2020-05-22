@@ -3,9 +3,12 @@ package com.facilio.agentv2.actions;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,19 +18,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
 
 public class TypeControllerAction extends ControllerActions
 {
     private static final Logger LOGGER = LogManager.getLogger(TypeControllerAction.class.getName());
-
-
-    public Integer getControllerType() { return controllerType; }
-
-    public void setControllerType(Integer controllerType) { this.controllerType = controllerType; }
-
-    @NotNull
-    @Min(value = 0,message = "Controller type can't be less than 1")
-    private Integer controllerType;
 
     public String getControllerUsingIdType() {
         try {
@@ -78,4 +73,5 @@ public class TypeControllerAction extends ControllerActions
         }
         return SUCCESS;
     }
+    
 }
