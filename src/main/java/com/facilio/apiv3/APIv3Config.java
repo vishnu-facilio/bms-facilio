@@ -2,6 +2,7 @@ package com.facilio.apiv3;
 
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
+import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
