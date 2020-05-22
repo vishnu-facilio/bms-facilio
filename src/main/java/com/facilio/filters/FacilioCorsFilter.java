@@ -45,8 +45,6 @@ public class FacilioCorsFilter implements Filter {
 
 
     private static final boolean SUPPORTS_CREDENTIALS = true;
-    
-    private static  HashMap customdomains ;
 
     private static String allowedHeaderString = "";
     private static String exposedHeaderString = "";
@@ -90,16 +88,16 @@ public class FacilioCorsFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    		HttpServletRequest request = (HttpServletRequest) servletRequest;
-    		HttpServletResponse response = (HttpServletResponse) servletResponse;
-        String corsRequestType = getCorsRequestType(request);
-        
-        if(customdomains==null) {
-        	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
-        }
 
-        if (ip != null) {
-            response.addHeader("internal", ip);
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+        if(forwardedProtocol != null) {
+            if ("http".equalsIgnoreCase(forwardedProtocol)){
+                response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
+                return;
+            }
         }
         response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
         response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
@@ -112,20 +110,16 @@ public class FacilioCorsFilter implements Filter {
         }*/
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
 
-        String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
-        if(forwardedProtocol != null) {
-            if ("http".equalsIgnoreCase(forwardedProtocol)){
-                response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
-                return;
-            }
-        }
-
+        String corsRequestType = getCorsRequestType(request);
         switch (corsRequestType) {
             case CORS :
                 handleCors(request, response, filterChain);
                 break;
             case NO_CORS:
                 filterChain.doFilter(request, response);
+                if (ip != null) {
+                    response.addHeader("internal", ip);
+                }
                 break;
             case INVALID:
                 handleInvalid(request, response);
@@ -286,15 +280,9 @@ public class FacilioCorsFilter implements Filter {
             return true;
         }
 
-        String[] originHeaderdomain = originHeader.split("://");
-        if (customdomains != null) {
-			if (customdomains.containsKey(originHeaderdomain[1])) {
-				return true;
-			}
-		}
-
-        String protocol = originHeaderdomain[0];
-        originHeader = originHeaderdomain[1];
+        String[] originHeaderDomain = originHeader.split("://");
+        String protocol = originHeaderDomain[0];
+        originHeader = originHeaderDomain[1];
         String[] domains = originHeader.split("\\.");
         String domain = originHeader;
         int domainLength = domains.length;
