@@ -11,7 +11,7 @@ public class AgentDeviceAction extends AgentIdAction {
     private static final Logger LOGGER = LogManager.getLogger(TypeControllerAction.class.getName());
 
 
-    public Integer getControllerType() { return controllerType; }
+    public int getControllerType() { return controllerType; }
 
     public void setControllerType(Integer controllerType) { this.controllerType = controllerType; }
 
