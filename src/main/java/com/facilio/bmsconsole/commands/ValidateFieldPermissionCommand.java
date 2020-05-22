@@ -32,10 +32,6 @@ public class ValidateFieldPermissionCommand extends FacilioCommand {
 		Boolean validateFieldPermissions = (Boolean) context
 				.getOrDefault(FacilioConstants.ContextNames.DO_FIELD_PERMISSIONS_VALIDATION, true);
 
-		if(StringUtils.isEmpty(moduleName)){
-			throw new IllegalArgumentException("Module name cannot be null");
-		}
-
 		if(MapUtils.isNotEmpty(recordMap)) {
 			try {
 				List<ModuleBaseWithCustomFields> recordList = recordMap.get(moduleName);
