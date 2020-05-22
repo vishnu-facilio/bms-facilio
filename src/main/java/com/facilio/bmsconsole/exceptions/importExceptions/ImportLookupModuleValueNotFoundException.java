@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
-public class ImportLookupModuleValueNotFoundException extends Exception{
+import com.facilio.fw.FacilioException;
+
+public class ImportLookupModuleValueNotFoundException extends FacilioException {
 
     private int row_no;
     private String columnName;

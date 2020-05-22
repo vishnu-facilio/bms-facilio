@@ -1,6 +1,8 @@
 package com.facilio.v3.exception;
 
-public class RESTException extends Exception {
+import com.facilio.fw.FacilioException;
+
+public class RESTException extends FacilioException {
     private ErrorCode errorCode;
     private String message;
 

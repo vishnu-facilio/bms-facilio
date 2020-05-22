@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
-public class ImportFieldValueMissingException extends Exception{
+import com.facilio.fw.FacilioException;
+
+public class ImportFieldValueMissingException extends FacilioException {
 	private static final long serialVersionUID = 1L;
 	
 	private int row_no;

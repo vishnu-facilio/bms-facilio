@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
-public class ImportParseException extends Exception{
+import com.facilio.fw.FacilioException;
+
+public class ImportParseException extends FacilioException {
 	/**
 	 * 
 	 */

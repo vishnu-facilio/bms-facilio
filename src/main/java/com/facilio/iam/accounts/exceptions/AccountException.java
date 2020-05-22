@@ -1,6 +1,8 @@
 package com.facilio.iam.accounts.exceptions;
 
-public class AccountException extends Exception {
+import com.facilio.fw.FacilioException;
+
+public class AccountException extends FacilioException {
 
 	/**
 	 * 

@@ -1,6 +1,8 @@
 package com.facilio.exception;
 
-public class ReadingValidationException extends Exception {
+import com.facilio.fw.FacilioException;
+
+public class ReadingValidationException extends FacilioException {
 	/**
 	 * 
 	 */

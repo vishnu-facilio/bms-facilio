@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
+import com.facilio.fw.FacilioException;
+
 import java.util.ArrayList;
 
-public class ImportMandatoryFieldsException extends Exception{
+public class ImportMandatoryFieldsException extends FacilioException {
 	private static final long serialVersionUID = 1L;
 		
 	Integer row_no = null;

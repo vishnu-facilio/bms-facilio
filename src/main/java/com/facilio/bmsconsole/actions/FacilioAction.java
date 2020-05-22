@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.fw.FacilioException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -65,7 +67,8 @@ public class FacilioAction extends ActionSupport {
 	public String handleException() {
 		try {
 			this.responseCode = 1;
-			if (exception != null && exception instanceof IllegalArgumentException) {
+			if (exception != null && (exception instanceof IllegalArgumentException
+					|| exception instanceof FacilioException)) {
 				this.message = exception.getMessage();
 			} else {
 				this.message = FacilioConstants.ERROR_MESSAGE;
@@ -74,9 +77,25 @@ public class FacilioAction extends ActionSupport {
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occurred inside handle Exception: - ", e);
 		}
+		if (sendErrorCode && (
+						exception instanceof IllegalArgumentException
+					||	exception instanceof SQLException
+					|| exception instanceof FacilioException
+					)
+		) {
+			return INPUT;
+		}
 		return ERROR;
 	}
-	
+
+	private boolean sendErrorCode = false;
+	public boolean isSendErrorCode() {
+		return sendErrorCode;
+	}
+	public void setSendErrorCode(boolean sendErrorCode) {
+		this.sendErrorCode = sendErrorCode;
+	}
+
 	public String cachedResponse() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		if (request instanceof HttpServletRequestWrapper && ((MultiReadServletRequest) request).isCachedRequest()) {

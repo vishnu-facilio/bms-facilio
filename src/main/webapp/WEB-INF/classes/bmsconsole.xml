@@ -101,6 +101,11 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 				<param name="statusCode">500</param>
 			</result>
+			<result name="input" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="statusCode">400</param>
+			</result>
 			<result name="exception" type="chain">
 				<param name="actionName">handleException</param>
 				<param name="namespace">/v1/exception</param>
@@ -410,6 +415,7 @@
 				class="com.facilio.bmsconsole.actions.FacilioAction"
 				method="handleException">
 			<interceptor-ref name="defaultStack" />
+			<param name="sendErrorCode">true</param>
 		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"

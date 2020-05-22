@@ -1,6 +1,8 @@
 package com.facilio.workflows.exceptions;
 
-public class FunctionParamException extends Exception {
+import com.facilio.fw.FacilioException;
+
+public class FunctionParamException extends FacilioException {
 
 	/**
 	 * 
