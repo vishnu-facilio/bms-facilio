@@ -2034,6 +2034,14 @@ public class ModuleFactory {
 		commonJobProps.setTableName("Common_Job_Props");
 		return commonJobProps;
 	}
+	
+	public static FacilioModule getInstantJobDeletionPropsModule() {
+		FacilioModule commonJobProps = new FacilioModule();
+		commonJobProps.setName("instantJobDeletionProps");
+		commonJobProps.setDisplayName("Instant Job Deletion Props");
+		commonJobProps.setTableName("Instant_Job_Deletion_Props");
+		return commonJobProps;
+	}
 
 	public static FacilioModule getTenantsModule() {
 		FacilioModule tenants = new FacilioModule();

@@ -115,6 +115,7 @@
 
 	<!--DeleteInstantJobQueue -->
 	<job name = 'DeleteInstantJobQueue' classname ='com.facilio.bmsconsole.jobs.DeleteInstantJobQueue' transactionTimeout="900000"/>
+	<job name = 'IntervalBasedInstantJobQueueDeletion' classname ='com.facilio.bmsconsole.jobs.IntervalBasedInstantJobQueueDeletion' transactionTimeout="7200000"/>
 
 	<!--DeleteEmailExceptionQueue Job -->
 	<job name = 'DeleteEmailExceptioJob' classname='com.facilio.bmsconsole.jobs.DeleteEmailExceptionQueue' transactionTimeout="300000"/>
