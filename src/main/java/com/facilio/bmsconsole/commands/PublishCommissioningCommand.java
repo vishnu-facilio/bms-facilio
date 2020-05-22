@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
@@ -22,11 +26,15 @@ import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -40,6 +48,8 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 	
 	private FacilioModule module = ModuleFactory.getPointModule();
 	private List<FacilioField> fields = FieldFactory.getPointFields();
+	
+	Map<String, ReadingDataMeta> rdmMap;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -54,6 +64,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		List<ReadingDataMeta> unitRdmList = new ArrayList<>();
 		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
 		Set<Long> connectedAssetIds = new HashSet<>();
+		
+		Map<String, List<Map<String, Object>>> inputValuePoints = new HashMap<>();
+		List<Pair<Long, FacilioField>> remainingRdmPairs = new ArrayList<>();
 
 		List<Map<String, Object>> dbPoints = getDbPoints(log);
 		Map<Long, Map<String, Object>> pointMap = null;
@@ -62,6 +75,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		}
 		List<Map<String, Object>> points = log.getPoints();
 		migrationPoints = new ArrayList<>();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		for(int i = 0; i < points.size(); i++) {
 			Map<String, Object> point = (Map<String, Object>) points.get(i);
 			long pointId = (long) point.get("id");
@@ -96,6 +112,15 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					}
 					else {
 						migrationPoints.add(point);						
+					}
+					
+					if(point.get("inputValues") != null) {
+						List<Map<String, Object>> inputValues = (List<Map<String, Object>>) point.get("inputValues");
+						String rdmKey = resourceId+"_"+fieldId;
+						inputValuePoints.put(rdmKey, inputValues);
+						if (rdmMap == null || !rdmMap.containsKey(rdmKey)) {
+							remainingRdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
+						}
 					}
 					
 					ReadingDataMeta meta = new ReadingDataMeta();
@@ -137,15 +162,15 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (!remainingReadingList.isEmpty()){
 			ReadingsAPI.updateReadingDataMetaInputType(remainingReadingList, ReadingInputType.CONTROLLER_MAPPED, null);
 		}
+		if (!inputValuePoints.isEmpty()) {
+			addInputValueMapping(inputValuePoints, remainingRdmPairs);
+		}
 		if (!connectedAssetIds.isEmpty()) {
 			AssetsAPI.updateAssetConnectionStatus(connectedAssetIds, true);
 		}
 		
 		updateLog(publishTime, id);
 		
-		
-		// TODO
-		// Enum
 
 		return false;
 	}
@@ -154,7 +179,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if (log.getPoints() == null || log.getPoints().isEmpty()) {
 			throw new IllegalArgumentException("No points mapped");
 		}
-		CommissioningApi.filterAndValidatePointsOnUpdate(log, null);
+		rdmMap = CommissioningApi.filterAndValidatePointsOnUpdate(log, null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -215,6 +240,41 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		
 		// TODO set count of mapped points
 	}
+	
+	private void addInputValueMapping(Map<String, List<Map<String, Object>>> values, List<Pair<Long, FacilioField>> remainingRdmPairs) throws Exception {
+		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule module = ModuleFactory.getReadingInputValuesModule();
+		
+		if(!remainingRdmPairs.isEmpty()) {
+			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(remainingRdmPairs);
+			rdmMap.putAll(rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity())));
+		}
+
+		List<Long> inputRdmIds = new ArrayList<>();
+		for(Entry<String, List<Map<String, Object>>> entry: values.entrySet()) {
+			String rdmKey = entry.getKey();
+			long rdmId = rdmMap.get(rdmKey).getId();
+			inputRdmIds.add(rdmId);
+			entry.getValue().forEach(value -> {
+				value.put("rdmId", rdmId);
+			});
+		}
+		
+		
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), inputRdmIds, NumberOperators.EQUALS));
+		deleteBuilder.delete();
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.fields(fields)
+				.table(module.getTableName())
+				.addRecords(values.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+		insertBuilder.save();
+	}
+	
 	
 
 	@Override

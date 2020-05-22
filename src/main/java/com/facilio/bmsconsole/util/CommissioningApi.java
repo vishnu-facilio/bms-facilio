@@ -209,7 +209,7 @@ public class CommissioningApi {
 	}
 	
 	
-	public static void filterAndValidatePointsOnUpdate(CommissioningLogContext log, CommissioningLogContext oldLog) throws Exception {
+	public static  Map<String, ReadingDataMeta> filterAndValidatePointsOnUpdate(CommissioningLogContext log, CommissioningLogContext oldLog) throws Exception {
 		if (oldLog == null) {
 			oldLog = log;
 		}
@@ -273,8 +273,9 @@ public class CommissioningApi {
 //		log.setPoints(finalPoints);
 		
 		if (!rdmPairs.isEmpty()) {
-			checkRDMType(rdmPairs);
+			return checkRDMType(rdmPairs);
 		}
+		return null;
 	}
 	
 	public static Map<Long, String> getResources(Set<Long> resourceIds) throws Exception {

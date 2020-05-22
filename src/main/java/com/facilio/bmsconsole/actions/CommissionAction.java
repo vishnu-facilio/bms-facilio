@@ -4,12 +4,15 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -177,6 +180,30 @@ public class CommissionAction extends FacilioAction{
 		setResult(ContextNames.RESOURCE_LIST, context.get(ContextNames.RESOURCE_LIST));
 		setResult(ContextNames.FIELDS, context.get(ContextNames.FIELDS));
 		setResult(ContextNames.UNIT, context.get(ContextNames.UNIT));
+		
+		return SUCCESS;
+	}
+	
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
+	private long fieldId = -1;
+	public long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+
+	public String fetchInputValues() throws Exception {
+		
+		List<Map<String, Object>> readingInputValues = ReadingsAPI.getReadingInputValues(resourceId, fieldId);
+		setResult("inputValues", readingInputValues);
 		
 		return SUCCESS;
 	}
