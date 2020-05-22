@@ -21,10 +21,10 @@ public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
     private ServiceContext service;
     private LabourContext labour;
     private TaxContext tax;
-    private double quantity = -1;
-    private double unitPrice = -1;
-    private double cost = -1;
-    private double taxAmount = -1;
+    private Double quantity;
+    private Double unitPrice;
+    private Double cost;
+    private Double taxAmount;
     private String description;
 
     public TaxContext getTax() {
@@ -35,11 +35,11 @@ public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
         this.tax = tax;
     }
 
-    public double getTaxAmount() {
+    public Double getTaxAmount() {
         return taxAmount;
     }
 
-    public void setTaxAmount(double taxAmount) {
+    public void setTaxAmount(Double taxAmount) {
         this.taxAmount = taxAmount;
     }
 
@@ -97,27 +97,27 @@ public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
         this.labour = labour;
     }
 
-    public double getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 
-    public double getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 
@@ -133,8 +133,8 @@ public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
         ITEM_TYPE("Item Type"),
         TOOL_TYPE("Tool Type"),
         SERVICE("Service"),
-        LABOUR("Labour"),
-        OTHERS("Others");
+        OTHERS("Others"),
+        LABOUR("Labour");
         private String name;
 
         Type(String name) {

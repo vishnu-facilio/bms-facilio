@@ -18,22 +18,22 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private String description;
     private LocationContext billToAddress;
     private LocationContext shipToAddress;
-    private long billDate = -1;
-    private long expiryDate = -1;
-    private long signatureId;
+    private Long billDate;
+    private Long expiryDate;
+    private Long signatureId;
     private String signatureUrl;
     private File signature;
     private String signatureFileName;
     private String signatureContentType;
-    private double subTotal = -1;
-    private double totalTaxAmount = -1;
-    private double discountAmount = -1;
-    private double discountPercentage = -1;
-    private double shippingCharges = -1;
-    private double adjustmentsCost = -1;
+    private Double subTotal;
+    private Double totalTaxAmount;
+    private Double discountAmount;
+    private Double discountPercentage;
+    private Double shippingCharges;
+    private Double adjustmentsCost;
     private String adjustmentsCostName;
-    private double miscellaneousCharges = -1;
-    private double totalCost = -1;
+    private Double miscellaneousCharges;
+    private Double totalCost;
     private List<QuotationLineItemsContext> lineItems;
 
     public List<QuotationAssociatedTermsContext> getTermsAssociated() {
@@ -95,27 +95,27 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         this.shipToAddress = shipToAddress;
     }
 
-    public long getBillDate() {
+    public Long getBillDate() {
         return billDate;
     }
 
-    public void setBillDate(long billDate) {
+    public void setBillDate(Long billDate) {
         this.billDate = billDate;
     }
 
-    public long getExpiryDate() {
+    public Long getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(long expiryDate) {
+    public void setExpiryDate(Long expiryDate) {
         this.expiryDate = expiryDate;
     }
 
-    public long getSignatureId() {
+    public Long getSignatureId() {
         return signatureId;
     }
 
-    public void setSignatureId(long signatureId) {
+    public void setSignatureId(Long signatureId) {
         this.signatureId = signatureId;
     }
 
@@ -151,35 +151,35 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         this.signatureContentType = signatureContentType;
     }
 
-    public double getSubTotal() {
+    public Double getSubTotal() {
         return subTotal;
     }
 
-    public void setSubTotal(double subTotal) {
+    public void setSubTotal(Double subTotal) {
         this.subTotal = subTotal;
     }
 
-    public double getTotalTaxAmount() {
+    public Double getTotalTaxAmount() {
         return totalTaxAmount;
     }
 
-    public void setTotalTaxAmount(double totalTaxAmount) {
+    public void setTotalTaxAmount(Double totalTaxAmount) {
         this.totalTaxAmount = totalTaxAmount;
     }
 
-    public double getShippingCharges() {
+    public Double getShippingCharges() {
         return shippingCharges;
     }
 
-    public void setShippingCharges(double shippingCharges) {
+    public void setShippingCharges(Double shippingCharges) {
         this.shippingCharges = shippingCharges;
     }
 
-    public double getAdjustmentsCost() {
+    public Double getAdjustmentsCost() {
         return adjustmentsCost;
     }
 
-    public void setAdjustmentsCost(double adjustmentsCost) {
+    public void setAdjustmentsCost(Double adjustmentsCost) {
         this.adjustmentsCost = adjustmentsCost;
     }
 
@@ -191,36 +191,36 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         this.adjustmentsCostName = adjustmentsCostName;
     }
 
-    public double getMiscellaneousCharges() {
+    public Double getMiscellaneousCharges() {
         return miscellaneousCharges;
     }
 
-    public void setMiscellaneousCharges(double miscellaneousCharges) {
+    public void setMiscellaneousCharges(Double miscellaneousCharges) {
         this.miscellaneousCharges = miscellaneousCharges;
     }
 
-    public double getTotalCost() {
+    public Double getTotalCost() {
         return totalCost;
     }
 
-    public void setTotalCost(double totalCost) {
+    public void setTotalCost(Double totalCost) {
         this.totalCost = totalCost;
     }
 
 
-    public double getDiscountAmount() {
+    public Double getDiscountAmount() {
         return discountAmount;
     }
 
-    public void setDiscountAmount(double discountAmount) {
+    public void setDiscountAmount(Double discountAmount) {
         this.discountAmount = discountAmount;
     }
 
-    public double getDiscountPercentage() {
+    public Double getDiscountPercentage() {
         return discountPercentage;
     }
 
-    public void setDiscountPercentage(double discountPercentage) {
+    public void setDiscountPercentage(Double discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
 

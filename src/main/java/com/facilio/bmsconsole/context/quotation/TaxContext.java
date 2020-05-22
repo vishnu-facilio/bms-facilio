@@ -13,7 +13,7 @@ public class TaxContext extends ModuleBaseWithCustomFields {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private double rate = -1;
+    private Double rate;
     private boolean isActive;
     private Type type;
     private List<TaxContext> childTaxes;
@@ -34,11 +34,11 @@ public class TaxContext extends ModuleBaseWithCustomFields {
         this.name = name;
     }
 
-    public double getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(double rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 

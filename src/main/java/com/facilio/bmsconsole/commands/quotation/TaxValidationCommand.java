@@ -28,7 +28,7 @@ public class TaxValidationCommand extends FacilioCommand {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tax Name is mandatory");
                     }
                     if (tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
-                        if (tax.getRate() == -1) {
+                        if (tax.getRate() == null) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tax Rate is mandatory");
                         }
                     } else if (tax.getType() == TaxContext.Type.GROUP.getIndex()) {

@@ -73,16 +73,16 @@ public class QuotationAPI {
         quotation.setSubTotal(lineItemsSubtotal);
         quotation.setTotalTaxAmount(totalTaxAmount);
         Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
-        if (quotation.getShippingCharges() != -1) {
+        if (quotation.getShippingCharges() != null) {
             quotationTotalCost += quotation.getShippingCharges();
         }
-        if (quotation.getMiscellaneousCharges() != -1) {
+        if (quotation.getMiscellaneousCharges() != null) {
             quotationTotalCost += quotation.getMiscellaneousCharges();
         }
-        if (quotation.getAdjustmentsCost() != -1) {
+        if (quotation.getAdjustmentsCost() != null) {
             quotationTotalCost += quotation.getAdjustmentsCost();
         }
-        if (quotation.getDiscountAmount() != -1) {
+        if (quotation.getDiscountAmount() != null) {
             quotationTotalCost -= quotation.getDiscountAmount();
         }
         quotation.setTotalCost(quotationTotalCost);

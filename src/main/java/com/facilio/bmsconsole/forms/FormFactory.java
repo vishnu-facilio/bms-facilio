@@ -301,6 +301,56 @@ public class FormFactory {
 				sections.add(shippingSection);
 				sections.add(lineItemSection);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.QUOTATION)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+				List<FormField> additionalCostFields = new ArrayList<>();
+				List<FormField> discountFields = new ArrayList<>();
+				List<FormField> signatureFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Quotation", 1, defaultFields, false);
+				FormSection billingSection = new FormSection("BILLING Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+				FormSection additionalCostSection = new FormSection("Additional Cost", 5, additionalCostFields, true);
+				FormSection discountSection = new FormSection("Discounts", 6, discountFields, true);
+				FormSection signatureSection = new FormSection("Signature", 7, signatureFields, true);
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						lineItemFields.add(field);
+					}
+					else if (field.getDisplayTypeEnum() == FieldDisplayType.ADDRESS && field.getName().equals("billToAddress")) {
+						billingAddressFields.add(field);
+					}
+					else if (field.getDisplayTypeEnum() == FieldDisplayType.ADDRESS && field.getName().equals("shipToAddress")) {
+						shippingAddressFields.add(field);
+					} else if (Arrays.asList("shippingCharges", "adjustmentsCost", "miscellaneousCharges", "").contains(field.getName())) {
+						additionalCostFields.add(field);
+					}
+					else if (Arrays.asList("discountAmount", "discountPercentage").contains(field.getName())) {
+						discountFields.add(field);
+					}
+					else if (Arrays.asList("signature").contains(field.getName())) {
+						signatureFields.add(field);
+					}
+					else {
+						defaultFields.add(field);
+					}
+				});
+
+				sections.add(defaultSection);
+				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
+				sections.add(additionalCostSection);
+				sections.add(discountSection);
+				sections.add(signatureSection);
+			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
 				form.setSections(Collections.singletonList(section));
@@ -341,6 +391,7 @@ public class FormFactory {
 		List<FacilioForm> invReqFormsList = Arrays.asList(getInventoryRequestForm());
 		List<FacilioForm> itemTypesFormsList = Arrays.asList(getItemTypesForm());
 		List<FacilioForm> toolTypesFormsList = Arrays.asList(getTooltypesForm());
+		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -373,6 +424,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getFormMap(invReqFormsList))
 				.put(FacilioConstants.ContextNames.ITEM_TYPES, getFormMap(itemTypesFormsList))
 				.put(FacilioConstants.ContextNames.TOOL_TYPES, getFormMap(toolTypesFormsList))
+				.put(FacilioConstants.ContextNames.QUOTATION, getFormMap(quotationFormsList))
 				.build();
 	}
 	
@@ -2084,6 +2136,43 @@ public class FormFactory {
 		
 		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 5, 1));
 		
+		return fields;
+	}
+
+	private static FacilioForm getQuotationForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Quotation");
+		form.setName("default_quotation_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.QUOTATION));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getQuotationFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getQuotationFormFields() {
+
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("billDate", FieldDisplayType.DATE, "Bill Date", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
+
+		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 4, 1));
+
+		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 5, 1));
+
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "Line Items", Required.REQUIRED, 6, 1));
+
+		fields.add(new FormField("shippingCharges", FieldDisplayType.NUMBER, "Shipping Charges", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("adjustmentsCost", FieldDisplayType.NUMBER, "Adjustments Cost", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("miscellaneousCharges", FieldDisplayType.NUMBER, "Miscellaneous Charges", Required.OPTIONAL, 8, 2));
+
+		fields.add(new FormField("discountAmount", FieldDisplayType.NUMBER, "Discount Amount", Required.OPTIONAL, 9, 2));
+
+		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 10, 1));
+
 		return fields;
 	}
 
