@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,7 +58,7 @@ public class FacilioCorsFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         String originValues = FacilioProperties.getConfig("cors.allowed.origins");
         if(originValues == null) {
-            originValues = "https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com";
+            originValues = "https://facilio.ae,https://facilio.com,https://facilioportal.com,https://facilio.in,https://faciliovendors.com,https://faciliotenants.com";
         }
         initialize(ORIGINS, originValues);
         initialize(METHODS, filterConfig.getInitParameter("cors.allowed.methods"));
@@ -103,10 +98,9 @@ public class FacilioCorsFilter implements Filter {
         	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
         }
 
-        if(ip != null) {
+        if (ip != null) {
             response.addHeader("internal", ip);
         }
-
         response.setHeader(STRICT_TRANSPORT_SECURITY , "max-age=31556926; includeSubDomains");
         response.setHeader(X_FRAME_OPTIONS , "SAMEORIGIN");
         response.setHeader(X_XSS_PROTECTION , "1; mode=block");
@@ -146,7 +140,7 @@ public class FacilioCorsFilter implements Filter {
     private void handleCors(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestedMethod = request.getMethod();
         requestedMethod = requestedMethod.trim();
-        if(!isRequestedMethodAllowed(requestedMethod)) {
+        if(isRequestedMethodNotAllowed(requestedMethod)) {
             handleInvalid(request, response);
         } else {
 
@@ -176,7 +170,7 @@ public class FacilioCorsFilter implements Filter {
             handleInvalid(request, response);
         } else {
             requestedMethod = requestedMethod.trim();
-            if(!isRequestedMethodAllowed(requestedMethod)) {
+            if(isRequestedMethodNotAllowed(requestedMethod)) {
                 handleInvalid(request, response);
                 return;
             }
@@ -229,16 +223,16 @@ public class FacilioCorsFilter implements Filter {
         return ALLOWED_HEADERS.contains(header.trim().toLowerCase());
     }
 
-    private boolean isRequestedMethodAllowed(String requestedMethod) {
+    private boolean isRequestedMethodNotAllowed(String requestedMethod) {
         if(requestedMethod == null) {
-            return false;
-        }
-
-        if(METHODS.isEmpty()){
             return true;
         }
 
-        return METHODS.contains(requestedMethod.toLowerCase());
+        if(METHODS.isEmpty()){
+            return false;
+        }
+
+        return !METHODS.contains(requestedMethod.toLowerCase());
     }
 
     private String getCorsRequestType(HttpServletRequest request) {
@@ -246,7 +240,14 @@ public class FacilioCorsFilter implements Filter {
         String originHeader = request.getHeader(ORIGIN);
 
         if(originHeader == null) {
-            requestType = NO_CORS;
+            // this check is to avoid directly calling the server with external ip.
+            String serverName = request.getServerName();
+
+            // this value should be null if you are invoking directly from the machine or local development.
+            String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+            if(forwardedProtocol == null || isAllowedOrigin(forwardedProtocol+"://"+serverName)) {
+                requestType = NO_CORS;
+            }
         } else {
             if(isAllowedOrigin(originHeader) || request.getRequestURI().contains("tracklead")) {
                 String requestMethod = request.getMethod();
@@ -269,12 +270,11 @@ public class FacilioCorsFilter implements Filter {
                 }
             }
         }
-
         return requestType;
     }
 
     private boolean isAllowedOrigin(String originHeader) {
-        if(originHeader == null || originHeader.isEmpty()){
+        if(originHeader == null || originHeader.isEmpty()) {
             return false;
         }
 
@@ -282,40 +282,24 @@ public class FacilioCorsFilter implements Filter {
             return true;
         }
 
-        String[] originHeaderdomain = originHeader.split("://");
-        if (FacilioProperties.isDevelopment() && originHeaderdomain[0].equalsIgnoreCase("chrome-extension")) {
+        if (FacilioProperties.isDevelopment()) {
             return true;
         }
+
+        String[] originHeaderdomain = originHeader.split("://");
         if (customdomains != null) {
 			if (customdomains.containsKey(originHeaderdomain[1])) {
 				return true;
 			}
 		}
 
+        String protocol = originHeaderdomain[0];
         originHeader = originHeaderdomain[1];
         String[] domains = originHeader.split("\\.");
         String domain = originHeader;
         int domainLength = domains.length;
-        if(domainLength == 4 && domain.contains(":")) {
-            boolean ip = true;
-            for(String octet : domains) {
-                try {
-                    if (octet.contains(":")) {
-                        octet = octet.split(":")[0];
-                    }
-                    int i = Integer.parseInt(octet);
-                    if ((i < 0) || (i > 255)) {
-                        ip = false;
-                    }
-                } catch (Exception e) {
-                    LOGGER.info("Exception in cors ", e);
-                }
-            }
-            if(ip ) {
-               domain = "https://" + domain;
-            }
-        } else if(domainLength > 2) {
-            domain = "https://"+domains[domainLength-2]+"."+ domains[domainLength-1];
+        if(domainLength > 2) {
+            domain = protocol + "://"+domains[domainLength-2]+"."+ domains[domainLength-1];
         }
         return ifDomainExists(domain);
     }
