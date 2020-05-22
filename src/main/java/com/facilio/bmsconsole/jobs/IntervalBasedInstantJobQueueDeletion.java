@@ -39,14 +39,14 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(IntervalBasedInstantJobQueueDeletion.class.getName());
     
 	private static final String RULE_INSTANT_JOB_QUEUE_TABLE_NAME = "RuleInstantJobQueue";	
-	private static final String 
-	INSTANT_JOB_QUEUE_TABLE_NAME = "InstantJobQueue";	
+	private static final String INSTANT_JOB_QUEUE_TABLE_NAME = "InstantJobQueue";	
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			JSONObject timeProps = getInstantJobDeletionProps(jc.getJobId(), jc.getJobName());
+			//JSONObject timeProps = FacilioService.runAsServiceWihReturn(() -> getInstantJobDeletionProps(jc.getJobId(), jc.getJobName()));
 			LOGGER.info("IntervalBasedInstantJobQueueDeletion Started for jobId: " +jc.getJobId()+" at "+jobStartTime);				
 			if(timeProps != null) 
 			{
