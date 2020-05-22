@@ -176,10 +176,9 @@ public class CommissionAction extends FacilioAction{
 		context.put("controllerType", getControllerType());
 		
 		chain.execute();
-		setResult(ContextNames.LOG, context.get(ContextNames.LOG));
+		setResult("points", context.get("points"));
 		setResult(ContextNames.RESOURCE_LIST, context.get(ContextNames.RESOURCE_LIST));
 		setResult(ContextNames.FIELDS, context.get(ContextNames.FIELDS));
-		setResult(ContextNames.UNIT, context.get(ContextNames.UNIT));
 		
 		return SUCCESS;
 	}

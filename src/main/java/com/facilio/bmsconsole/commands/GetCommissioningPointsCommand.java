@@ -66,7 +66,7 @@ public class GetCommissioningPointsCommand extends FacilioCommand {
 				Map<Long, Map<String, Object>> readingFieldMap = CommissioningApi.getFields(fieldIds);
 				context.put(ContextNames.FIELDS, readingFieldMap);
 			}
-			
+			context.put("points", points);
 		}
 		
 		return false;
