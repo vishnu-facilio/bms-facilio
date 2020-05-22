@@ -83,7 +83,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					|| AccountUtil.getCurrentOrg().getId() == 134l || AccountUtil.getCurrentOrg().getId() == 114l
  					|| AccountUtil.getCurrentOrg().getId() == 169l || AccountUtil.getCurrentOrg().getId() == 232l) {
 				if(FacilioProperties.isProduction()) {
-//					isParallelRuleExecution = true;
+					isParallelRuleExecution = true;
 				}
 			}
 			
