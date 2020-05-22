@@ -43,16 +43,6 @@ public class AgentIdAction extends AgentActionV2 {
         this.agentId = agentId;
     }
     
-    private int controllerType = -1;
-    
-    public int getControllerType() {
-		return controllerType;
-	}
-
-	public void setControllerType(int controllerType) {
-		this.controllerType = controllerType;
-	}
-	
 	private String name;
 	
 	public String getName() {
@@ -67,7 +57,6 @@ public class AgentIdAction extends AgentActionV2 {
         try {
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.AGENT_ID, getAgentId());
-        	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
         	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
             setResult(AgentConstants.DATA, devices);
