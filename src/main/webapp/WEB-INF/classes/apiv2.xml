@@ -6003,8 +6003,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchHistoricalData" />
 		<action name="fetchMainSummaryData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMainSummaryData" />
-		<action name="fetchPropertyEnergyData"
-			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyEnergyData" />
+		<action name="fetchProperty"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchProperty" />
 		<action name="fetchPropertyMetricsData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
 		<action name="getMetricsList"

@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -47,6 +48,8 @@ public class EnergyStarFetchDataPropertyEnergyCommand extends FacilioCommand {
 			EnergyStarPropertyContext property = FieldUtil.getAsBeanFromMap(props.get(0), EnergyStarPropertyContext.class);
 			
 			props = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(), null, CriteriaAPI.getCondition("PROPERTY_ID", "propertyId", property.getId()+"", NumberOperators.EQUALS));
+			
+			property.setDatum("building", SpaceAPI.getBuildingSpace(property.getBuildingId()));
 			
 			List<EnergyStarMeterContext> meters = FieldUtil.getAsBeanListFromMapList(props, EnergyStarMeterContext.class);
 			

@@ -238,7 +238,7 @@ public class EnergyStarAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String fetchPropertyEnergyData() throws Exception {
+	public String fetchProperty() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getESfetchPropertyEnergyData();
 		
