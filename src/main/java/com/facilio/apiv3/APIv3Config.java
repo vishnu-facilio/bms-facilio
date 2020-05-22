@@ -20,6 +20,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermit
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
+import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
 import com.facilio.chain.FacilioChain;
@@ -128,7 +129,7 @@ public class APIv3Config {
 
     @Module("insurance")
     public static V3Config getInsurance() {
-        return new V3Config(V3WorkPermitContext.class)
+        return new V3Config(V3InsuranceContext.class)
                 .create()
                     .beforeSave(new AssociateVendorToInsuranceCommandV3())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())

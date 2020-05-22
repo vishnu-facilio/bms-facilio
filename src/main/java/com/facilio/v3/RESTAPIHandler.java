@@ -133,7 +133,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(Constants.RECORD_ID, id);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
-        Class beanClass = getBeanClass(module);
+        Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(Constants.MODULE_NAME, moduleName);
 
@@ -149,14 +149,16 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return list.get(0);
     }
 
-    private Class getBeanClass(FacilioModule module) {
-        Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-        if (beanClass == null) {
-            if (module.isCustom()) {
-                beanClass = CustomModuleData.class;
-            }
-            else {
-                beanClass = ModuleBaseWithCustomFields.class;
+    private Class getBeanClass(V3Config config, FacilioModule module) {
+        Class beanClass = null;
+        if(config != null) {
+            beanClass = config.getBeanClass();
+            if (beanClass == null) {
+                if (module.isCustom()) {
+                    beanClass = CustomModuleData.class;
+                } else {
+                    beanClass = ModuleBaseWithCustomFields.class;
+                }
             }
         }
         return beanClass;
@@ -239,7 +241,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.WITH_COUNT, getWithCount());
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
-        Class beanClass = getBeanClass(module);
+        Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
 
         nonTransactionChain.execute();
@@ -313,7 +315,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(Constants.RAW_INPUT, createObj);
 
-        Class beanClass = getBeanClass(module);
+        Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
 
         transactionChain.execute();
@@ -367,7 +369,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             }
         }
 
-        Class beanClass = getBeanClass(module);
+        V3Config v3Config = getV3Config(moduleName);
+
+        Class beanClass = getBeanClass(v3Config, module);
         List<Map<String, Object>> converted = FieldUtil.getAsMapList(Collections.singletonList(record), beanClass);
 
         JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
@@ -377,7 +381,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             summaryRecord.put(key, patchObj.get(key));
         }
 
-        V3Config v3Config = getV3Config(moduleName);
         Command initCommand = new DefaultInit();
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
@@ -471,7 +474,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.RAW_INPUT, updateObj);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
-        Class beanClass = getBeanClass(module);
+        Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
 
         transactionChain.execute();

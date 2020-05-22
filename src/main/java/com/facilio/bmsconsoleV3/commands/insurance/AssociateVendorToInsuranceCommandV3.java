@@ -2,10 +2,7 @@ package com.facilio.bmsconsoleV3.commands.insurance;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.InsuranceAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;

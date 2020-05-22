@@ -21,13 +21,13 @@ public class DefaultInit extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject data = (JSONObject) context.get(Constants.RAW_INPUT);
+        Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
 
         String moduleName = (String) context.get(Constants.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
 
-        Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(module);
-        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(data, classFromModule);
+        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(data, beanClass);
 
         Long id = (Long) context.get(Constants.RECORD_ID);
 

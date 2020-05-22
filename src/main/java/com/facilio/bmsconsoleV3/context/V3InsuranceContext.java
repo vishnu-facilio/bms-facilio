@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -41,7 +40,7 @@ public class V3InsuranceContext extends ModuleBaseWithCustomFields {
         this.vendor = vendor;
     }
 
-    private InsuranceContext.InsuranceType insuranceType;
+    private V3InsuranceContext.InsuranceType insuranceType;
     public int getInsuranceType() {
         if (insuranceType != null) {
             return insuranceType.getIndex();
@@ -49,12 +48,12 @@ public class V3InsuranceContext extends ModuleBaseWithCustomFields {
         return -1;
     }
     public void setInsuranceType(int insuranceType) {
-        this.insuranceType = InsuranceContext.InsuranceType.valueOf(insuranceType);
+        this.insuranceType = V3InsuranceContext.InsuranceType.valueOf(insuranceType);
     }
-    public InsuranceContext.InsuranceType getInsuranceTypeEnum() {
+    public V3InsuranceContext.InsuranceType getInsuranceTypeEnum() {
         return insuranceType;
     }
-    public void setInsuranceType(InsuranceContext.InsuranceType insuranceType) {
+    public void setInsuranceType(V3InsuranceContext.InsuranceType insuranceType) {
         this.insuranceType = insuranceType;
     }
 
