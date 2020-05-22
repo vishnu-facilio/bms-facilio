@@ -40,3 +40,14 @@
                          resMap["previousMonthresponseTime"] = previousMonthresponseTime;
       					return resMap; 
      			  	}'
+'54':
+  description: 'energy star score average'
+  usage: 'energy star main summary'
+  workflow: 'Number scoreAvg() {
+              db = {
+                criteria : [score != null],
+                field : "score",
+                aggregation : "avg",
+              };
+              return Module("energyStarPropertyData").fetch(db);
+            }'
