@@ -28,7 +28,6 @@ public class DefaultInit extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
 
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(data, beanClass);
-
         Long id = (Long) context.get(Constants.RECORD_ID);
 
         if (id != null) {

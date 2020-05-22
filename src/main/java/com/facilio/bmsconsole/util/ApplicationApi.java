@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,12 +21,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.GetApplicationDetails;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.Permission;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
-import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
-import com.facilio.bmsconsole.context.WebTabContext;
-import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -493,6 +488,33 @@ public class ApplicationApi {
 		user.setAppType(appDomain.getAppType());
 
 	}
-	
+
+	public static long addScoping(String appLinkName) throws Exception {
+		long appId = getApplicationIdForLinkName(appLinkName);
+		List<FacilioField> fields = FieldFactory.getScopingFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getScopingModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> scoping = new HashMap<>();
+		scoping.put("scopeName", "default scoping for app - " +appId);
+
+		insertBuilder.addRecord(scoping);
+		insertBuilder.save();
+		return (long)scoping.get("id");
+
+	}
+	public static void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
+		List<FacilioField> fields = FieldFactory.getScopingConfigFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getScopingConfigModule().getTableName())
+				.fields(fields);
+
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(scoping, ScopingConfigContext.class);
+
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+
+	}
 
 }

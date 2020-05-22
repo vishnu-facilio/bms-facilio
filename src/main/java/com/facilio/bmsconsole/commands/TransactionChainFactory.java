@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.commands.AddDefaultScopingCommandV3;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -55,6 +56,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
+			c.addCommand(new AddDefaultScopingCommandV3());
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());

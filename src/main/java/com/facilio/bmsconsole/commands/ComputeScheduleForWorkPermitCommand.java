@@ -3,23 +3,15 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
-import com.facilio.bmsconsole.util.BusinessHoursAPI;
-import com.facilio.bmsconsole.util.ContactsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
@@ -53,9 +45,17 @@ public class ComputeScheduleForWorkPermitCommand extends FacilioCommand{
 					}
 				}
 				if(permit.getRequestedBy() != null && permit.getRequestedBy().getId() > 0) {
-					ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
-					if(contact != null && contact.getTenant() != null) {
-						permit.setTenant(contact.getTenant());
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+						ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
+						if (contact != null && contact.getTenant() != null) {
+							permit.setTenant(contact.getTenant());
+						}
+					}
+					else {
+						TenantContext tc = PeopleAPI.getTenantForUser(permit.getRequestedBy().getId());
+						if(tc != null){
+							permit.setTenant(tc);
+						}
 					}
 				}
 				BusinessHoursContext visitTime = permit.getRecurringInfo();

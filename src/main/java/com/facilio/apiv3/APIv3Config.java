@@ -120,8 +120,8 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
                 .list()
                     .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
-                    .afterFetch(new GetStateflowsForModuleDataListCommandV3())
-                    //need to set the above command's response in action class result
+                  //.afterFetch(new GetStateflowsForModuleDataListCommandV3())
+                    //need to set the above command's response in action class result(will be a v3 feature)
                 .summary()
                     .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
                     .afterFetch(new LoadWorkPermitRecurringInfoCommandV3())
