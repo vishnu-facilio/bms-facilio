@@ -473,11 +473,11 @@ public class ControllerApiV2 {
         return getControllerCountData(Arrays.asList(agentId));
     }
 
-    public static List<Map<String, Object>> getControllerDataForAgent(Long agentId, FacilioContext paginationContext) throws Exception {
-        return getControllerData(agentId, null, paginationContext);
+    public static List<Map<String, Object>> getControllerDataForAgent(Long agentId, FacilioContext contextProps) throws Exception {
+        return getControllerData(agentId, null, contextProps);
     }
 
-    public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext paginationContext) throws Exception {
+    public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
         List<Map<String, Object>> controllers = new ArrayList<>();
         List<Map<String, Object>> controllerData = new ArrayList<>();
 
@@ -489,7 +489,8 @@ public class ControllerApiV2 {
                 continue;
             }
             FacilioContext context = getControllerChain.getContext();
-            context.putAll(paginationContext);
+            context.put(FacilioConstants.ContextNames.PAGINATION,contextProps.get(FacilioConstants.ContextNames.PAGINATION));
+            context.put(AgentConstants.SEARCH_KEY, contextProps.get(AgentConstants.SEARCH_KEY));
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(AgentConstants.AGENT_ID, agentId);
             context.put(AgentConstants.CONTROLLER_ID, controllerId);
@@ -517,7 +518,7 @@ public class ControllerApiV2 {
         }
         return controllers;
     }
-
+    
     public static List<Map<String, Object>> getControllerFilterData() throws Exception {
         return getAgentControllerFilterData(null);
     }

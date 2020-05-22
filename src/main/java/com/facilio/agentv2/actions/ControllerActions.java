@@ -3,8 +3,11 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -145,4 +148,30 @@ public class ControllerActions extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+    public String getSearchControllerList() {
+    	
+       	try {
+    		FacilioContext context = new FacilioContext();
+    		context.put(AgentConstants.SEARCH_KEY, getName());
+    		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+    		setResult(AgentConstants.DATA,  ControllerApiV2.getControllerDataForAgent(null,context));
+    		ok();
+    	}catch(Exception e) {
+    		LOGGER.info("Exception occurred while searching devices +",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+    	}
+    	return SUCCESS;
+    }
+    
+    private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

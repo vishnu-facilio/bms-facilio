@@ -17,6 +17,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators.StringAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -137,6 +138,7 @@ public class FieldDeviceApi {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
         Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
+        String searchKey = (String) context.get(AgentConstants.SEARCH_KEY);
         List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -153,6 +155,9 @@ public class FieldDeviceApi {
         }
         if ((ids != null) && (!ids.isEmpty())) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));
+        }
+        if(StringUtils.isNotEmpty(searchKey)) {
+        	builder.andCustomWhere("NAME = ? OR NAME LIKE ?",searchKey,searchKey + "%");
         }
         if (containsCheck(FacilioConstants.ContextNames.PAGINATION,context)) {
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
@@ -299,16 +304,10 @@ public class FieldDeviceApi {
         return (number.intValue() > 0);
     }
 
-    public static List<Map<String, Object>> getDevices(Long agentId, FacilioContext constructListContext) throws Exception {
-        constructListContext.put(AgentConstants.AGENT_ID, agentId);
-        return getDeviceData(constructListContext);
-    }
-    
-    public static List<Map<String,Object>> getDevicesControllerType(Long agentId,Integer controllerType,FacilioContext constructListContext)throws Exception{
-    	constructListContext.put(AgentConstants.AGENT_ID, agentId);
-    	constructListContext.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+    public static List<Map<String, Object>> getDevices(FacilioContext constructListContext) throws Exception{
     	return getDeviceData(constructListContext);
     }
+    
     public static void addControllerAsDevice(Controller controllerContext) throws Exception {
         Device device = new Device();
         device.setIdentifier(controllerContext.getIdentifier());

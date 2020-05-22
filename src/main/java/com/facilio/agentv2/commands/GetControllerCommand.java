@@ -13,6 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -29,6 +30,7 @@ public class GetControllerCommand extends AgentV2Command {
         // TODO Auto-generated method stub
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String childTableModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        String controllerName = (String) context.get(AgentConstants.SEARCH_KEY);
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         FacilioModule pointModule = ModuleFactory.getPointModule();
         if (childTableModuleName == null) {
@@ -83,7 +85,10 @@ public class GetControllerCommand extends AgentV2Command {
             selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule));
             selectRecordBuilder.select(new ArrayList<>());
         }
-
+        
+        if(StringUtils.isNotEmpty(controllerName)) {
+        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",controllerName,controllerName + "%");
+        }
         if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
             selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)), controllerModule));
             selectRecordBuilder.select(new ArrayList<>());

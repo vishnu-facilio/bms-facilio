@@ -138,6 +138,9 @@
 
         <action name="getIotMessage" class="com.facilio.agentv2.AgentAction" method="getIotMessage">
         </action>
+        
+        <action name="deviceSearch" class="com.facilio.agentv2.AgentAction" method="getDeviceSearchList">
+        </action>
 
         <action name="iotMessageCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessageCount">
         </action>
@@ -214,6 +217,9 @@
         <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
         </action>
 
+		 <action name="controllerSearch" class="com.facilio.agentv2.actions.ControllerActions" method="getSearchControllerList">
+        </action>
+		
         <action name="getControllerForDevice" class="com.facilio.agentv2.AgentAction"
                 method="getControllerUsingIdentifier">
         </action> <!--testing purpose-->

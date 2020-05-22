@@ -15,6 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -32,8 +33,19 @@ public class GetPointRequest {
     private int limit = 50 ;
     private int offset = 0;
     private String orderBy;
+    private String serarchPointName;
+    
+    public String getSerarchPointName() {
+		return serarchPointName;
+	}
 
-    public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
+
+	public void setSerarchPointName(String serarchPointName) {
+		this.serarchPointName = serarchPointName;
+	}
+
+
+	public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
         if (controllerType != null) {
             selectRecordBuilder = loadBuilder(controllerType);
             return this;
@@ -140,6 +152,9 @@ public class GetPointRequest {
 
     public List<Map<String, Object>> getPointsData() throws Exception {
         List<Map<String, Object>> data = new ArrayList<>();
+        if(StringUtils.isNotEmpty(serarchPointName)) {
+        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",serarchPointName,serarchPointName + "%");
+        }
         if(selectRecordBuilder == null){
             for (FacilioControllerType controllerType : FacilioControllerType.values()) {
                 try{

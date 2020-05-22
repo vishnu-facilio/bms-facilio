@@ -10,6 +10,7 @@ public class AgentConstants
     public static final String AGENT_TYPE = "type";
 
     public static final String TYPE = "type";
+    public static final String SEARCH_KEY = "searchKey";
 
     //controller constants
     public static final String NAME = "name";

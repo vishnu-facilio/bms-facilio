@@ -20,8 +20,11 @@ import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -384,6 +387,9 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            if(StringUtils.isNotEmpty(getName())) {
+            	getPointRequest.setSerarchPointName(getName());
+            }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
@@ -683,4 +689,20 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getDeviceSearchList() {
+    	try {
+    		FacilioContext context = new FacilioContext();
+    		context.put(AgentConstants.SEARCH_KEY, getName());
+    		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+    		setResult(AgentConstants.DATA, FieldDeviceApi.getDevices(context));
+    		ok();
+    	}catch(Exception e) {
+    		LOGGER.info("Exception occurred while searching devices +",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            internalError();
+    	}
+    	
+    	return SUCCESS;
+    }
+    
 }
