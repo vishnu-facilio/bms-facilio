@@ -108,6 +108,7 @@ public enum FloorPlanMode {
 			return floorPlan;
 		}
 	},
+	VAVREADINGS("vavreadings"),
 	READINGS("readings"),
 	ALARMS("alarms"),
 	MAINTENANCE("maintenance"),
