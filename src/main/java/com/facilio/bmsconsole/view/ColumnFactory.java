@@ -185,13 +185,15 @@ public class ColumnFactory {
 		columnMap.put("tenantspaces-default",getDefaultTenantSpacesColumns());
 		
 		columnMap.put("people-default",getDefaultPeopleColumns());
-		
+		columnMap.put("client-default", getDefaultClientColumns());
+
+		columnMap.put("quotation-default", getDefaultQuotationColumns());
+
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
-		columnMap.put("client-default", getDefaultClientColumns());
-		
+
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
 		
@@ -1414,6 +1416,30 @@ public class ColumnFactory {
 		columns.add(new ViewField("inTime", "Lease From", "tenant"));
 		columns.add(new ViewField("outTime", "Lease Till", "tenant"));
 		
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultQuotationColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		//primary
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("billDate", "Bill Date"));
+		columns.add(new ViewField("expiryDate", "Expiry Date"));
+
+		//cost
+		columns.add(new ViewField("totalCost", "Total Cost"));
+		columns.add(new ViewField("subTotal", "Sub Total"));
+		columns.add(new ViewField("totalTaxAmount", "Total Tax Amount"));
+		columns.add(new ViewField("discountAmount", "Discount Amount"));
+		columns.add(new ViewField("shippingCharges", "Shipping Charges"));
+		columns.add(new ViewField("adjustmentsCost", "Adjustments Cost"));
+		columns.add(new ViewField("miscellaneousCharges", "Miscellaneous Charges"));
+
+		columns.add(new ViewField("moduleState", "Status"));
+
 
 		return columns;
 	}

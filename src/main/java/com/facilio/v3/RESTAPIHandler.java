@@ -378,8 +378,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
-            if (updateHandler != null) {
-                initCommand = updateHandler.getInitCommand();
+            if (updateHandler != null)
+            {
+                if (updateHandler.getInitCommand() != null) {
+                    initCommand = updateHandler.getInitCommand();
+                }
                 beforeSaveCommand = updateHandler.getBeforeSaveCommand();
                 afterSaveCommand = updateHandler.getAfterSaveCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();
@@ -432,7 +435,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
             if (updateHandler != null) {
-                initCommand = updateHandler.getInitCommand();
+                if (updateHandler.getInitCommand() != null) {
+                    initCommand = updateHandler.getInitCommand();
+                }
                 beforeSaveCommand = updateHandler.getBeforeSaveCommand();
                 afterSaveCommand = updateHandler.getAfterSaveCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();

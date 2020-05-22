@@ -2145,7 +2145,7 @@ public class FormFactory {
 		form.setDisplayName("Quotation");
 		form.setName("default_quotation_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.QUOTATION));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getQuotationFormFields());
 		form.setFormType(FormType.WEB);
 		return form;

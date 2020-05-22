@@ -58,7 +58,12 @@ public class APIv3Config {
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
                 .afterSave(new InsertQuotationLineItemsCommand())
 
+                .update()
+                .beforeSave(new QuotationValidationAndCostCalculationCommand())
+                .afterSave(new InsertQuotationLineItemsCommand())
+
                 .summary()
+                .beforeFetch(new QuotationFillLookupFields())
                 .afterFetch(new QuotationFillDetailsCommand())
 
                 .build();

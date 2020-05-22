@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.quotation.*;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -157,6 +161,26 @@ public class QuotationAPI {
             if (parentTaxIdsVsChildTaxes.get(taxGroup.getId()) != null) {
                 taxGroup.setChildTaxes(parentTaxIdsVsChildTaxes.get(taxGroup.getId()));
             }
+        }
+    }
+
+    public static void addLocation(QuotationContext quotation, LocationContext location ) throws Exception {
+
+        FacilioContext context = new FacilioContext();
+        if (location != null && location.getId() > 0) {
+            context.put(FacilioConstants.ContextNames.RECORD, location);
+            context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+            FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
+            editLocation.execute(context);
+        }
+        else {
+            location.setName(quotation.getSubject() + "_location");
+            context.put(FacilioConstants.ContextNames.RECORD, location);
+            FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+            addLocation.execute(context);
+            long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+            location.setId(locationId);
         }
     }
 

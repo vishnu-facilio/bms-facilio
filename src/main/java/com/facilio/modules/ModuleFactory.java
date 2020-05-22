@@ -130,6 +130,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.SPACE, getSpaceModule());
 		moduleMap.put(ContextNames.TENANT_UNIT_SPACE, getTenantUnitSpaceModule());
 		moduleMap.put(ContextNames.EMPLOYEE, getEmployeeModule());
+		moduleMap.put(ContextNames.QUOTATION, getQuotationModule());
 
 		return moduleMap;
 	}

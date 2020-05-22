@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands.quotation;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.util.QuotationAPI;
 import com.facilio.v3.context.Constants;
@@ -20,6 +21,14 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
                 QuotationAPI.calculateQuotationCost(quotation);
+                if (quotation.getBillToAddress() != null) {
+                    LocationContext billToAddressLocation = quotation.getBillToAddress();
+                    QuotationAPI.addLocation(quotation, billToAddressLocation);
+                }
+                if (quotation.getShipToAddress() != null) {
+                    LocationContext shipToAddressLocation = quotation.getShipToAddress();
+                    QuotationAPI.addLocation(quotation, shipToAddressLocation);
+                }
             }
         }
 
