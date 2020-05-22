@@ -135,6 +135,7 @@ public class FacilioCorsFilter implements Filter {
         String requestedMethod = request.getMethod();
         requestedMethod = requestedMethod.trim();
         if(isRequestedMethodNotAllowed(requestedMethod)) {
+            LOGGER.info("Method is not allowed: " + requestedMethod);
             handleInvalid(request, response);
         } else {
 
@@ -198,7 +199,7 @@ public class FacilioCorsFilter implements Filter {
     }
 
     private void handleInvalid(HttpServletRequest request, HttpServletResponse response) {
-        LOGGER.info("send 403 for " + request.getRequestURI());
+        LOGGER.info("send 403 for " + request.getServerName()+request.getRequestURI() + " with origin " + request.getHeader(ORIGIN));
         response.setContentType("text/plain");
         response.setStatus(403);
         response.resetBuffer();
