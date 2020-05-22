@@ -604,16 +604,27 @@ public abstract class FileStore {
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {
 		List<FacilioField> fields = FieldFactory.getFileFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		fields = new ArrayList<>(3);
+		fields.add(fieldMap.get("isDeleted"));
+		fields.add(fieldMap.get("deletedTime"));
+		fields.add(fieldMap.get("deletedBy"));
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(fields)
 				.table(ModuleFactory.getFilesModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fileId"), fileIds, NumberOperators.EQUALS));
-		
+				;
+
 		Map<String, Object> props = new HashMap<>();
 		props.put("isDeleted", true);
 		props.put("deletedBy", AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId() : -1);
 		props.put("deletedTime", System.currentTimeMillis());
-		return builder.update(props);
+		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+		for (long fileId : fileIds) {
+			GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
+			batchUpdate.setUpdateValue(props);
+			batchUpdate.setWhereValue(Collections.singletonMap("fileId", fileId));
+			batchUpdateList.add(batchUpdate);
+		}
+		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
 	public String orginalFileUrl (long fileId) throws Exception {
 		return getOrgiDownloadUrl(fileId);
