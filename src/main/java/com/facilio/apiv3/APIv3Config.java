@@ -11,6 +11,8 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.GetRecordIdsFromRecordMapCommandV3;
 import com.facilio.bmsconsoleV3.commands.GetStateflowsForModuleDataListCommandV3;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
@@ -30,6 +32,8 @@ import com.facilio.v3.commands.DefaultInit;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
+
+import static com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain;
 
 @Config
 public class APIv3Config {
@@ -109,30 +113,9 @@ public class APIv3Config {
         return new V3Config(V3WorkPermitContext.class)
                 .create()
                     .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
-                    .afterSave(new FacilioCommand() {
-                        @Override
-                        public boolean executeCommand(Context context) throws Exception {
-                            new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW).executeCommand(context);
-                            new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand().executeCommand(context);
-                            new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3().executeCommand(context);
-                            return false;
-                        }
-                    })
+                    .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
                 .update()
-                    .afterSave(new FacilioCommand() {
-                        @Override
-                        public boolean executeCommand(Context context) throws Exception {
-                            new GetRecordIdsFromRecordMapCommandV3().executeCommand(context);
-                            new LoadWorkPermitLookUpsCommandV3().executeCommand(context);
-                            new GenericGetModuleDataListCommand().executeCommand(context);
-                            new ChangeApprovalStatusForModuleDataCommand().executeCommand(context);
-                            new VerifyApprovalCommand().executeCommand(context);
-                            new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW).executeCommand(context);
-                            new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand().executeCommand(context);
-                            new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3().executeCommand(context);
-                            return false;
-                        }
-                    })
+                    .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
                 .list()
                     .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
                     .afterFetch(new GetStateflowsForModuleDataListCommandV3())
@@ -148,13 +131,7 @@ public class APIv3Config {
         return new V3Config(V3WorkPermitContext.class)
                 .create()
                     .beforeSave(new AssociateVendorToInsuranceCommandV3())
-                    .afterSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand().executeCommand(context);
-                        return false;
-                    }
-                })
+                    .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
                 .update()
                 .list()
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
@@ -167,64 +144,16 @@ public class APIv3Config {
     public static V3Config getVisitorLogging() {
         return new V3Config(V3VisitorLoggingContext.class)
                 .create()
-                .beforeSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        new PutOldVisitRecordsInContextCommandV3().executeCommand(context);
-                        new AddNewVisitorWhileLoggingCommandV3().executeCommand(context);
-                        new AddOrUpdateVisitorFromVisitsCommandV3().executeCommand(context);
-                        new CheckForWatchListRecordCommandV3().executeCommand(context);
-                        return false;
-                    }
-                })
-                .afterSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        new UpdateVisitorInviteRelArrivedStateCommandV3().executeCommand(context);
-                        new ChangeVisitorInviteStateCommandV3().executeCommand(context);
-                        new ForkChainToInstantJobCommand()
-                                .addCommand(new AddNdaForVisitorLogCommandV3())
-                                .addCommand(new GenerateQrInviteUrlCommandV3())
-                                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
-                                .addCommand(new VisitorFaceRecognitionCommandV3()).executeCommand(context);
-                        new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand();
-                        return false;
-                    }
-                })
+                .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
+                .afterSave(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
                 .update()
-                   .beforeSave(new FacilioCommand() {
-                        @Override
-                        public boolean executeCommand(Context context) throws Exception {
-                            new PutOldVisitRecordsInContextCommandV3().executeCommand(context);
-                            new AddOrUpdateVisitorFromVisitsCommandV3().executeCommand(context);
-                            return false;
-                        }
-                    })
-                .afterSave(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        new GetRecordIdsFromRecordMapCommandV3().executeCommand(context);
-                        new LoadWorkPermitLookUpsCommandV3().executeCommand(context);
-                        new GenericGetModuleDataListCommand().executeCommand(context);
-                        new ChangeVisitorInviteStateCommandV3().executeCommand(context);
-                        new ForkChainToInstantJobCommand()
-                                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
-                        new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand();
-                        return false;
-                    }
-                })
+                   .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnUpdateChain())
+                   .afterSave(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnUpdateChain())
                 .list()
-                    .beforeFetch(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                       new SetInviteConditionForVisitsListCommandV3().executeCommand(context);
-                       new LoadVisitorLoggingLookupCommandV3().executeCommand(context);
-                       return false;
-                     }
-                   })
+                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLoggingBeforeFetchOnListChain())
                 .summary()
-                .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
-                .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
                 .build();
     }
 
