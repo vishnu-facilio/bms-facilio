@@ -604,14 +604,27 @@ public class FieldUtil {
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
         List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
 
+        if(permissionType == PermissionType.READ_WRITE) {
+			Set<String> systemFields = getSystemUpdatedFields();
+			if (CollectionUtils.isNotEmpty(systemFields)) {
+				for (String s : systemFields) {
+					restrictedFields.add(FieldFactory.getSystemField(s, module));
+				}
+			}
+		}
+
+
 		//all fields are permissible to super admin
 		if(AccountUtil.getCurrentUser().isSuperAdmin() || (validateFieldPermissions != null && !validateFieldPermissions)) {
-			return null;
+			return restrictedFields;
 		}
 
 		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
     	for(FacilioField field : allFields) {
-			if(field.getFieldId() != -1 && (!permissibleFieldIds.contains(field.getFieldId()) || (permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())))) {
+			if(permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())) {
+				continue;
+			}
+			if(field.getFieldId() != -1 && !permissibleFieldIds.contains(field.getFieldId())) {
 				restrictedFields.add(field);
 			}
 		}
@@ -620,7 +633,7 @@ public class FieldUtil {
 		
     }
 
-	public static List<FacilioField> getPermissibleFields(List<FacilioField> neededFields, String moduleName, PermissionType permissionType, Boolean validateFieldPermissions) throws Exception {
+	public static Collection<FacilioField> getPermissibleFields(Collection<FacilioField> neededFields, String moduleName, PermissionType permissionType, Boolean validateFieldPermissions) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -628,6 +641,20 @@ public class FieldUtil {
 			neededFields = modBean.getAllFields(module.getName());
 		}
 
+		if(permissionType == PermissionType.READ_WRITE) {
+			if (CollectionUtils.isNotEmpty(neededFields)) {
+				List<FacilioField> toRemove = new ArrayList<>();
+
+				for (FacilioField field : neededFields) {
+					if(isSystemUpdatedField(field.getName())){
+						toRemove.add(field);
+					}
+				}
+				if(CollectionUtils.isNotEmpty(toRemove)){
+					neededFields.removeAll(toRemove);
+				}
+			}
+		}
 		//all fields are permissible to super admin
 		if(AccountUtil.getCurrentUser().isSuperAdmin() || (validateFieldPermissions != null && !validateFieldPermissions)) {
 			return neededFields;
@@ -636,9 +663,6 @@ public class FieldUtil {
 		List<FacilioField> permissibleFields = new ArrayList<>();
 		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
 		for(FacilioField field : neededFields) {
-			if(permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())){
-				continue;
-			}
 			if(permissibleFieldIds.contains(field.getFieldId())){
 				permissibleFields.add(field);
 			}

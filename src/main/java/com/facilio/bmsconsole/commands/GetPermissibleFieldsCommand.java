@@ -5,6 +5,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+
+import java.util.Collection;
 import java.util.List;
 
 public class GetPermissibleFieldsCommand extends FacilioCommand{
@@ -18,7 +20,7 @@ public class GetPermissibleFieldsCommand extends FacilioCommand{
                 .getOrDefault(FacilioConstants.ContextNames.DO_FIELD_PERMISSIONS_VALIDATION, true);
 
         try {
-            List<FacilioField> permissibleFields = FieldUtil.getPermissibleFields(allFields, moduleName,
+            Collection<FacilioField> permissibleFields = FieldUtil.getPermissibleFields(allFields, moduleName,
                              fieldPermissionType, validateFieldPermissions);
             context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, permissibleFields);
         } catch (Exception e) {

@@ -65,10 +65,11 @@ public class ScopeHandlerImpl extends ScopeHandler {
 						ScopeFieldsAndCriteria scopeFieldCriteria = constructScopingFieldsAndCriteria(module, joinModules, false);
 						Map<String, Object> globalScopingValues = AccountUtil.getSwitchScopingFieldMap();
 						if(MapUtils.isNotEmpty(globalScopingValues)) {
+							List<FacilioField> toRemove = new ArrayList();
 							for(FacilioField field : scopeFieldCriteria.getFields()) {
 								if(globalScopingValues.containsKey(field.getName())) {
 									prop.remove(field.getName());
-									scopeFieldCriteria.getFields().remove(field);
+									toRemove.add(field);
 								}
 								else {
 									FacilioModule extendedModule = module.getExtendModule();
@@ -80,6 +81,9 @@ public class ScopeHandlerImpl extends ScopeHandler {
 					                    extendedModule = extendedModule.getExtendModule();
 					                }
 								}
+							}
+							if(CollectionUtils.isNotEmpty(toRemove)){
+								scopeFieldCriteria.getFields().removeAll(toRemove);
 							}
 							
 						}
