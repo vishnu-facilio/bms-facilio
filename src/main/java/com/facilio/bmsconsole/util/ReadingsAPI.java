@@ -1208,6 +1208,12 @@ public class ReadingsAPI {
 		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}
 	
+	public static List<Map<String, Object>> getReadingInputValues(long resourceId, long fieldId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ReadingDataMeta rdm = getReadingDataMeta(resourceId, modBean.getField(fieldId));
+		return getReadingInputValueProps(Collections.singletonList(rdm.getId()));
+	}
+	
 	public static Map<Long,Map<Integer, String>> getReadingIdxVsValuesMap(List<Long> rdmIds) throws Exception {
 		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
 		Map<Long, Map<Integer, String>> rdmValuesMap = null;
