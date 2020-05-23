@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,18 +53,24 @@ public class S3FileStore extends FileStore {
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static final String PRIVATE_KEY_FILE_PATH = "/home/ubuntu/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
 	private static final long EXPIRATION = 48 * 60* 60 * 1000;
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd/");
 
 
 	S3FileStore(long orgId, long userId) {
 		super(orgId, userId);
 	}
 	private String bucketName;
-	private String rootPath;
 	private static final String SECRET_ROOT_PATH="secrets";
+	private static final String FILES_DIR = "files";
 
 	@Override
 	protected String getRootPath() {
-		this.rootPath = getOrgId() + File.separator + "files";
+		String rootPath;
+		if(getOrgId() > 0) {
+			rootPath = getOrgId() + File.separator + FILES_DIR;
+		} else {
+			rootPath = getOrgId() + File.separator + DATE_FORMAT.format(new Date()) + FILES_DIR;
+		}
 		return rootPath;
 	}
 
@@ -142,12 +149,7 @@ public class S3FileStore extends FileStore {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
 		long fileId = addDummyFileEntry(fileName);
-		String filePath;
-		if(getOrgId() == -1 || AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == -1) {
-			filePath = getRootPath() + File.separator + fileName + "-" + fileId;
-		} else {
-			filePath = getRootPath() + File.separator + fileId + "-" + fileName;
-		}
+		String filePath = getRootPath() + File.separator + fileId + "-" + fileName;
 		long fileSize = content.length();
 		
 	    try {
