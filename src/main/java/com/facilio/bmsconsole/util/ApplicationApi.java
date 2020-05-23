@@ -95,7 +95,7 @@ public class ApplicationApi {
 
     
     public static long getApplicationIdForLinkName(String appLinkName) throws Exception {
-    	if(StringUtils.isNotEmpty(appLinkName)) {
+     	if(StringUtils.isNotEmpty(appLinkName)) {
 			//temp handling for newapp and newtenant linkname
 			if(appLinkName.equals("app")){
 				appLinkName = "newapp";
@@ -491,17 +491,30 @@ public class ApplicationApi {
 
 	public static long addScoping(String appLinkName) throws Exception {
 		long appId = getApplicationIdForLinkName(appLinkName);
-		List<FacilioField> fields = FieldFactory.getScopingFields();
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getScopingModule().getTableName())
-				.fields(fields);
 
-		Map<String, Object> scoping = new HashMap<>();
-		scoping.put("scopeName", "default scoping for app - " +appId);
+		if(appId > 0) {
+			ApplicationContext app = getApplicationForId(appId);
+			if (app.getScopingId() > 0) {
+				return app.getScopingId();
+			}
+			List<FacilioField> fields = FieldFactory.getScopingFields();
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getScopingModule().getTableName())
+					.fields(fields);
 
-		insertBuilder.addRecord(scoping);
-		insertBuilder.save();
-		return (long)scoping.get("id");
+			Map<String, Object> scoping = new HashMap<>();
+			scoping.put("scopeName", "default scoping for app - " + app.getId());
+
+			insertBuilder.addRecord(scoping);
+			insertBuilder.save();
+			long scopingId = (long) scoping.get("id");
+			app.setScopingId(scopingId);
+			updateScopingIdInApp(app);
+			return scopingId;
+		}
+
+		throw new IllegalArgumentException("Invalid application");
+
 
 	}
 	public static void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
@@ -515,6 +528,13 @@ public class ApplicationApi {
 		insertBuilder.addRecords(props);
 		insertBuilder.save();
 
+	}
+
+	private static void updateScopingIdInApp(ApplicationContext app) throws Exception {
+    	GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getApplicationModule().getTableName()).fields(FieldFactory.getApplicationFields())
+				.andCondition(CriteriaAPI.getIdCondition(app.getId(), ModuleFactory.getApplicationModule()));
+		builder.update(FieldUtil.getAsProperties(app));
 	}
 
 }

@@ -23,7 +23,7 @@ public class SetInviteConditionForVisitsListCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
         if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("preRegistered")){
-           JSONObject filters = (JSONObject)context.get(FacilioConstants.ContextNames.FILTERS);
+           JSONObject filters = (JSONObject)context.get(Constants.FILTERS);
            JSONObject isPreregistered = new JSONObject();
            JSONArray array = new JSONArray();
            array.add("true");
@@ -31,6 +31,9 @@ public class SetInviteConditionForVisitsListCommandV3 extends FacilioCommand {
            isPreregistered.put("operatorId", (long) BooleanOperators.IS.getOperatorId());
            isPreregistered.put("value", array);
 
+           if(filters == null){
+               filters = new JSONObject();
+           }
            filters.put("isPreregistered", isPreregistered);
 
            if(queryParams.containsKey("approvals")) {

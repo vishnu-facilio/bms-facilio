@@ -295,9 +295,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         transactionChain.addCommand(new SaveCommand(module));
 
         addIfNotNull(transactionChain, afterSaveCommand);
-        addIfNotNull(transactionChain, afterTransactionCommand);
 
         addWorkflowChain(transactionChain);
+        addIfNotNull(transactionChain, afterTransactionCommand);
+
+
 
         FacilioContext context = transactionChain.getContext();
 
@@ -409,9 +411,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
+        addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
-        addWorkflowChain(transactionChain);
 
         FacilioContext context = transactionChain.getContext();
 
@@ -463,9 +465,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         transactionChain.addCommand(new UpdateCommand(module));
 
         addIfNotNull(transactionChain, afterSaveCommand);
-        addIfNotNull(transactionChain, afterTransactionCommand);
 
         addWorkflowChain(transactionChain);
+        addIfNotNull(transactionChain, afterTransactionCommand);
 
         FacilioContext context = transactionChain.getContext();
 

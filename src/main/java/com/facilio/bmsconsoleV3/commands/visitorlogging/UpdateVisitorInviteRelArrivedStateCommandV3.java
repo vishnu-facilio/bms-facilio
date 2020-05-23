@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -37,7 +38,7 @@ public class UpdateVisitorInviteRelArrivedStateCommandV3 extends FacilioCommand 
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
                 long fieldId = modBean.getField("moduleState", module.getName()).getFieldId();
 
-                VisitorLoggingContext visitorLogging = VisitorManagementAPI.getVisitorLoggingTriggers(vl.getId(), null, false);
+                V3VisitorLoggingContext visitorLogging = V3VisitorManagementAPI.getVisitorLoggingTriggers(vl.getId(), null, false);
 
                 if(visitorLogging != null) {
                     updateChangeState.setFieldId(fieldId);

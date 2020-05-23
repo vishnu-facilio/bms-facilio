@@ -56,10 +56,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
-			c.addCommand(new AddDefaultScopingCommandV3());
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
+			c.addCommand(new AddDefaultScopingCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			
 			return c;
