@@ -334,7 +334,7 @@
                 qTerms.setTableName("QuotationAssociatedTerms");
                 qTerms.setType(FacilioModule.ModuleType.SUB_ENTITY);
 
-                long qTermsModuleId = modBean.addModule(taxGroupModule);
+                long qTermsModuleId = modBean.addModule(qTerms);
                 qTerms.setModuleId(qTermsModuleId);
 
                 // Quoation Terms Fields Addition
