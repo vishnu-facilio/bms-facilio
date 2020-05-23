@@ -677,10 +677,20 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+    private Boolean isLatestVersion;
+	public Boolean getIsLatestVersion() {
+		return isLatestVersion;
+	}
 
-    public String listAgentVersions(){
+	public void setIsLatestVersion(Boolean isLatestVersion) {
+		this.isLatestVersion = isLatestVersion;
+	}
+
+	public String listAgentVersions(){
         try{
-            setResult(AgentConstants.DATA, AgentVersionApi.listAgentVersions(constructListContext(new FacilioContext())));
+        	FacilioContext context = new FacilioContext();
+        	context.put(AgentConstants.IS_LATEST_VERSION, getIsLatestVersion());
+        	setResult(AgentConstants.DATA, AgentVersionApi.listAgentVersions(context));
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting versions +",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());

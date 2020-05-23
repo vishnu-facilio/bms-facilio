@@ -573,7 +573,10 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 	public static List<Map<String,Object>> getAgentVersions() throws Exception{
-		return AgentVersionApi.listAgentVersions(new FacilioContext());
+		Boolean isLatestVersion=false;
+		FacilioContext context = new FacilioContext();
+    	context.put(AgentConstants.IS_LATEST_VERSION, isLatestVersion);
+		return AgentVersionApi.listAgentVersions(context);
 	}
 	
 	public static List<Map<String, Object>> getAgentList(long orgId) throws Exception{

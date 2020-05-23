@@ -54,12 +54,16 @@ public class AgentVersionApi {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentVersionModule().getTableName())
                 .select(FieldFactory.getAgentVersionFields());
-        if(context != null){
-            selectRecordBuilder.limit(AgentUtilities.getlimit(context));
-            selectRecordBuilder.offset(AgentUtilities.getOffset(context));
-        }
-        if(criteria != null){
+        Boolean isLatest = (Boolean) context.get(AgentConstants.IS_LATEST_VERSION);
+        
+        if(criteria != null && !criteria.isEmpty()){
             selectRecordBuilder.andCriteria(criteria);
+        }
+        if(isLatest != null && isLatest) {
+        	return selectRecordBuilder.orderBy("ID DESC").limit(1).get();
+        }else if(context != null && !context.isEmpty()){
+        	selectRecordBuilder.limit(AgentUtilities.getlimit(context));
+            selectRecordBuilder.offset(AgentUtilities.getOffset(context));
         }
         return selectRecordBuilder.get();
 
