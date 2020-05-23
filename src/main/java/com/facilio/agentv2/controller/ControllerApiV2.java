@@ -494,6 +494,7 @@ public class ControllerApiV2 {
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(AgentConstants.AGENT_ID, agentId);
             context.put(AgentConstants.CONTROLLER_ID, controllerId);
+            context.put(AgentConstants.CONTROLLER_TYPE, contextProps.get(AgentConstants.CONTROLLER_TYPE));
             try {
                 getControllerChain.execute();
                 controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
@@ -31,6 +32,7 @@ public class GetControllerCommand extends AgentV2Command {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String childTableModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         String controllerName = (String) context.get(AgentConstants.SEARCH_KEY);
+        Integer controllerType = (Integer)context.get(AgentConstants.CONTROLLER_TYPE);
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         FacilioModule pointModule = ModuleFactory.getPointModule();
         if (childTableModuleName == null) {
@@ -85,9 +87,11 @@ public class GetControllerCommand extends AgentV2Command {
             selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(controllerModule));
             selectRecordBuilder.select(new ArrayList<>());
         }
-        
+        if(controllerType != null) {
+        	selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(controllerModule), String.valueOf(controllerType), NumberOperators.EQUALS));
+        }
         if(StringUtils.isNotEmpty(controllerName)) {
-        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",controllerName,controllerName + "%");
+        	selectRecordBuilder.andCustomWhere(controllerModule.getTableName()+".NAME = ?  OR  "+controllerModule.getTableName()+".NAME LIKE ?",controllerName,controllerName + "%");
         }
         if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
             selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)), controllerModule));

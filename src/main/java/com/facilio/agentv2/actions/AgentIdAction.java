@@ -31,9 +31,7 @@ import java.util.Map;
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
 
-    @NotNull
     private Long agentId;
-
 
     public Long getAgentId() {
         return agentId;
@@ -52,11 +50,22 @@ public class AgentIdAction extends AgentActionV2 {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public Integer controlType;
+	
+	public Integer getControlType() {
+		return controlType;
+	}
+
+	public void setControlType(Integer controlType) {
+		this.controlType = controlType;
+	}
 
 	public String devices() {
         try {
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.AGENT_ID, getAgentId());
+        	context.put(AgentConstants.CONTROLLER_TYPE, getControlType());
         	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
             setResult(AgentConstants.DATA, devices);
@@ -184,6 +193,8 @@ public class AgentIdAction extends AgentActionV2 {
     public String getControllers() {
         try {
 			FacilioContext context = new FacilioContext();
+			context.put(AgentConstants.SEARCH_KEY, getName());
+			context.put(AgentConstants.CONTROLLER_TYPE, getControlType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(getAgentId(),context);
             setResult(AgentConstants.DATA, controllers);
