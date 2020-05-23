@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.iterators.CollatingIterator;
 import org.apache.commons.collections4.ListUtils;
@@ -141,7 +142,12 @@ public class S3FileStore extends FileStore {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
 		long fileId = addDummyFileEntry(fileName);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		String filePath;
+		if(getOrgId() == -1 || AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == -1) {
+			filePath = getRootPath() + File.separator + fileName + "-" + fileId;
+		} else {
+			filePath = getRootPath() + File.separator + fileId + "-" + fileName;
+		}
 		long fileSize = content.length();
 		
 	    try {
