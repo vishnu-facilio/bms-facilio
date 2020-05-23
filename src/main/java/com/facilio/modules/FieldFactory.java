@@ -6545,7 +6545,7 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getInstantJobDeletionPropsModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getField("jobId", "JOBID", module, FieldType.NUMBER));
-        fields.add(getField("jobName", "JOBNAME", module, FieldType.STRING));
+        fields.add(getField("executorName", "EXECUTOR_NAME", module, FieldType.STRING));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         return fields;

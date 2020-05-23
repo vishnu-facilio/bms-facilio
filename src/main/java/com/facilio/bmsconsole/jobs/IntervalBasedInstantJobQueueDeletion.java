@@ -45,20 +45,16 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		try {
 			long jobStartTime = System.currentTimeMillis();
-			JSONObject timeProps = getInstantJobDeletionProps(jc.getJobId(), jc.getJobName());
-			//JSONObject timeProps = FacilioService.runAsServiceWihReturn(() -> getInstantJobDeletionProps(jc.getJobId(), jc.getJobName()));
-			LOGGER.info("IntervalBasedInstantJobQueueDeletion Started for jobId: " +jc.getJobId()+" at "+jobStartTime);				
+			JSONObject timeProps = getInstantJobDeletionProps(jc.getJobId(), jc.getExecutorName());
 			if(timeProps != null) 
 			{
 				Long startTime = (Long) timeProps.get("startTime");
 				Long endTime = (Long) timeProps.get("endTime");
+				LOGGER.info("IntervalBasedInstantJobQueueDeletion Started for jobId: " +jc.getJobId()+ " between " +startTime+ " and " +endTime+ " at "+jobStartTime);				
 				if(startTime != null && startTime != -1 && endTime != null && endTime != -1) 
 				{
-					deleteRuleInstantJobs(startTime, endTime, RULE_INSTANT_JOB_QUEUE_TABLE_NAME);
-					if(jc.getJobId() > 100l) {
-						LOGGER.info("InstantJobQueueDelete Started for jobId: " +jc.getJobId()+" at "+jobStartTime);				
-						deleteRuleInstantJobs(startTime, endTime, INSTANT_JOB_QUEUE_TABLE_NAME);
-					}
+					deleteInstantJobQueue(startTime, endTime, RULE_INSTANT_JOB_QUEUE_TABLE_NAME);
+					deleteInstantJobQueue(startTime, endTime, INSTANT_JOB_QUEUE_TABLE_NAME);	
 				}
 				LOGGER.info("Time taken for IntervalBasedInstantJobQueueDeletion for jobId: "+jc.getJobId()+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - jobStartTime));				
 			}	
@@ -68,15 +64,17 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 		}
 	}
 	
-	private static void deleteRuleInstantJobs(long startTime, long endTime, String tableName) throws Exception{	
+	private static void deleteInstantJobQueue(long startTime, long endTime, String tableName) throws Exception{	
 		try {
+			long processStartTime = System.currentTimeMillis();
+			int batchCount = 0;
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(getFacilioQueueFields()).table(tableName)
 					.andCondition(BaseCriteriaAPI.getCondition("DELETED_TIME", "deletedTime", null,
 							CommonOperators.IS_NOT_EMPTY))
 					.andCondition(BaseCriteriaAPI.getCondition("DELETED_TIME", "deletedTime",
 							startTime+","+endTime, DateOperators.BETWEEN))
 					.orderBy("ID")
-					.limit(30000);
+					.limit(2);
 
 			while (true) {
 				List<Map<String, Object>> props = select.get();
@@ -89,9 +87,9 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 				DBConf.getInstance().markFilesAsDeleted(fileIds);
 				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder().table(tableName);
 				int deletionCount = builder.batchDeleteById(ids);
-
-				LOGGER.info(tableName + " IntervalBasedInstantJobQueueDeletion deleted queue count is : " + deletionCount);
+				LOGGER.info(tableName + " IntervalBasedInstantJobQueueDeletion deleted queue count is : " +deletionCount+ ". DeletedBatchCount: "+ ++batchCount);
 			}
+			LOGGER.info("Time taken for InstantJobDeletionTable: "+tableName+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				
 		} catch (Exception e) {
 			LOGGER.info("IntervalBasedInstantJobQueueDeletion Exception occurred in FacilioInstantJobDeletion:  "+e);
 		}
@@ -138,18 +136,18 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 		return columnFld;
 	}
 	
-	public static JSONObject getInstantJobDeletionProps (long jobId, String jobName) throws Exception {
+	public static JSONObject getInstantJobDeletionProps (long jobId, String executorName) throws Exception {
 		FacilioModule module = ModuleFactory.getInstantJobDeletionPropsModule();
 		List<FacilioField> fields = FieldFactory.getInstantJobDeletionPropsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField jobIdField = fieldMap.get("jobId");
-		FacilioField jobNameField = fieldMap.get("jobName");
+		FacilioField executorNameField = fieldMap.get("executorName");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCondition(jobIdField, String.valueOf(jobId), NumberOperators.EQUALS))
-														.andCondition(CriteriaAPI.getCondition(jobNameField, jobName, StringOperators.IS));
+														.andCondition(CriteriaAPI.getCondition(executorNameField, executorName, StringOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
