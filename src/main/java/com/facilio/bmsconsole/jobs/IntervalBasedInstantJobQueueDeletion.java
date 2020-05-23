@@ -74,7 +74,7 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 					.andCondition(BaseCriteriaAPI.getCondition("DELETED_TIME", "deletedTime",
 							startTime+","+endTime, DateOperators.BETWEEN))
 					.orderBy("ID")
-					.limit(2);
+					.limit(30000);
 
 			while (true) {
 				List<Map<String, Object>> props = select.get();
