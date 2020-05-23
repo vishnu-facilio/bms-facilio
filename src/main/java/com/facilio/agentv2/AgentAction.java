@@ -339,6 +339,9 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
+            if(StringUtils.isNotEmpty(getName())) {
+            	getPointRequest.setSerarchPointName(getName());
+            }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
             setResult(AgentConstants.DATA, points);
@@ -362,6 +365,9 @@ public class AgentAction extends AgentActionV2 {
                 getPointRequest.withDeviceId(deviceId);
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
+            }
+            if(StringUtils.isNotEmpty(getName())) {
+            	getPointRequest.setSerarchPointName(getName());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -413,6 +419,10 @@ public class AgentAction extends AgentActionV2 {
                 getPointRequest.withDeviceId(deviceId);
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
+            }
+            
+            if(StringUtils.isNotEmpty(getName())) {
+            	getPointRequest.setSerarchPointName(getName());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
