@@ -63,14 +63,16 @@ public class QuotationAPI {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be negative for Line Item");
                 } else {
                     Double lineItemCost = lineItem.getQuantity() * lineItem.getUnitPrice();
+                    Double taxRate = 0d;
+                    Double taxAmount = 0d;
                     lineItem.setCost(lineItemCost);
                     if (lineItem.getTax() != null) {
-                        Double taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
-                        Double taxAmount = taxRate * lineItem.getCost() / 100;
-                        lineItem.setTaxAmount(taxAmount);
-                        totalTaxAmount += taxAmount;
-                        lineItemsSubtotal += lineItemCost;
+                        taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
+                        taxAmount = taxRate * lineItem.getCost() / 100;
                     }
+                    lineItem.setTaxAmount(taxAmount);
+                    totalTaxAmount += taxAmount;
+                    lineItemsSubtotal += lineItemCost;
                 }
             }
         }
