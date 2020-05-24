@@ -6,15 +6,16 @@ import java.util.Map;
 
 public enum Property_Metrics {
 	
-	SCORE(1, "score"),
-	SOURCE_EUI(2, "sourceIntensity"),	
-	SITE_EUI(3, "siteIntensity"),		
-	Total_GHG_Emissions_Intensity(4, "totalGHGEmissionsIntensity"),
-	COST(5, "energyCost"),
+	SCORE(1, "score","Score"),
+	SOURCE_EUI(2, "sourceIntensity","Source EUI"),	
+	SITE_EUI(3, "siteIntensity","Site EUI"),		
+	Total_GHG_Emissions_Intensity(4, "totalGHGEmissionsIntensity","Total GHG Emissions"),
+	COST(5, "energyCost","Energy Cost"),
 	;
 
 	int intVal;
 	String name;
+	String displayName;
 
 	public int getIntVal() {
 		return intVal;
@@ -23,10 +24,15 @@ public enum Property_Metrics {
 	public String getName() {
 		return name;
 	}
+	
+	public String getDisplayName() {
+		return displayName;
+	}
 
-	private Property_Metrics(int intVal, String name) {
+	private Property_Metrics(int intVal, String name,String displayName) {
 		this.intVal = intVal;
 		this.name = name;
+		this.displayName = displayName;
 	}
 
 	private static final Map<Integer, Property_Metrics> optionMap = Collections.unmodifiableMap(initTypeMap());
