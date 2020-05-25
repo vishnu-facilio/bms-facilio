@@ -5,8 +5,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
@@ -35,6 +46,43 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 					return AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(spaceID));
 				}
 			}
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_ASSETS_CATEGORY_FIELDS(1,"getAssetCategoryFields") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			long assetCategoryID = -1;
+			if(objects[0] instanceof String) {
+				
+				assetCategoryID = AssetsAPI.getCategory((String)objects[0]).getId();
+			}
+			else {
+				assetCategoryID = Long.parseLong(objects[0].toString());
+			}
+			
+			FacilioChain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+			
+			FacilioContext context = getCategoryReadingChain.getContext();
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, assetCategoryID);
+			
+			getCategoryReadingChain.execute();
+			
+			List<FacilioModule> readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			
+			List<FacilioField> fields = new ArrayList<>();
+			if (readings != null) {
+				fields = readings.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
+			}
+			
+			return FieldUtil.getAsMapList(fields, FacilioField.class);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
