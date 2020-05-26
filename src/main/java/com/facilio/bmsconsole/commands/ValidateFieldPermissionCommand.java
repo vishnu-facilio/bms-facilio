@@ -45,9 +45,6 @@ public class ValidateFieldPermissionCommand extends FacilioCommand {
 						for (ModuleBaseWithCustomFields rec : recordList) {
 							for (FacilioField field : restrictedFields) {
 								try {
-									if (fieldPermissionType == PermissionType.READ_WRITE) {
-										throw new IllegalArgumentException("Not permitted to add/update the field - " + field.getName());
-									}
 									if (field.isDefault()) {
 										PropertyUtils.setProperty(rec, field.getName(), null);
 									} else {

@@ -1,5 +1,6 @@
 package com.facilio.v3;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
@@ -271,9 +272,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Command afterTransactionCommand = null;
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
-        //field permissions validation in the object being added
-        transactionChain.addCommand(new ValidateFieldPermissionCommand());
-
 
         if (v3Config != null) {
             V3Config.CreateHandler createHandler = v3Config.getCreateHandler();
@@ -373,9 +371,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
 
-        //field permissions validation in the object being updated
-        transactionChain.addCommand(new ValidateFieldPermissionCommand());
-
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
             if (updateHandler != null)
@@ -428,9 +423,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Command afterTransactionCommand = null;
 
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
-
-        //validate field permission in the data object being edited
-        transactionChain.addCommand(new ValidateFieldPermissionCommand());
 
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
@@ -517,6 +509,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     public String create() throws Exception {
         try {
+            //removing permission restricted fields
+            removeRestrictedFields(this.getData(), this.getModuleName(), true);
+
             createHandler(this.getModuleName(), this.getData());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
@@ -556,6 +551,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     public String patch() throws Exception {
         try {
+            //removing permission restricted fields
+            removeRestrictedFields(this.getData(), this.getModuleName(), true);
             patchHandler(this.getModuleName(), this.getId(), this.getData());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
@@ -607,5 +604,18 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     @Override
     public void setServletResponse(HttpServletResponse httpServletResponse) {
         this.httpServletResponse = httpServletResponse;
+    }
+
+    private void removeRestrictedFields(Map<String, Object> dataMap, String moduleName, Boolean validatePermissions) throws Exception{
+        FacilioModule module = getModule(moduleName);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_PERMISSIONS)) {
+            List<FacilioField> restrictedFields = FieldUtil.getPermissionRestrictedFields(module,
+                    FieldPermissionContext.PermissionType.READ_WRITE, validatePermissions);
+            if (CollectionUtils.isNotEmpty(restrictedFields)) {
+                for (FacilioField field : restrictedFields) {
+                    dataMap.remove(field.getName());
+                }
+            }
+        }
     }
 }
