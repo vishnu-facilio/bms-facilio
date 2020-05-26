@@ -42,7 +42,13 @@ public class EditRDMWritableableCommand extends FacilioCommand {
 						meta.setFieldId((long) map.get(AgentConstants.FIELD_ID));
 						writableReadingList.add(meta);
 					});
-					int updatedRows = ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED,ReadingType.WRITE);
+					int updatedRows =0;
+					if(isWritable == true) {
+						updatedRows = ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED,ReadingType.WRITE);
+					}else {
+						updatedRows = ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED,null);
+					}
+					
 					LOGGER.info("RDM's Is_Controllable type updated rows count is  : "+updatedRows);
 				} else {
 					throw new IllegalArgumentException("Points are unmapped/empty. pointIds size is ::: "+ mappedPoints.size()+"  hence can't edit RDM controllable... ");
