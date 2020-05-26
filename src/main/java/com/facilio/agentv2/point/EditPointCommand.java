@@ -45,9 +45,7 @@ public class EditPointCommand extends FacilioCommand {
             if (alterChildtable && containsAndNotNull(context, AgentConstants.CONTROLLER_TYPE)) {
                 rowsUpdated += updateChild(context, (FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
             }
-            if (rowsUpdated > 0) {
-                return true;
-            }
+            
             Map<String, Object> props =  (Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP);
             Boolean isWritable = (Boolean) props.get(AgentConstants.WRITABLE);
             if(isWritable != null) {
@@ -56,6 +54,9 @@ public class EditPointCommand extends FacilioCommand {
             	chain.getContext().put(AgentConstants.CONTROLLER_ID,context.get(AgentConstants.CONTROLLER_ID));
             	chain.getContext().put(AgentConstants.POINT_IDS, context.get(FacilioConstants.ContextNames.CRITERIA));
                 chain.execute();
+            }
+            if (rowsUpdated > 0) {
+                return true;
             }
         } else {
             throw new Exception(" to-update-map missing");

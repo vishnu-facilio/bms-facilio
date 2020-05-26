@@ -4413,7 +4413,6 @@ public class TransactionChainFactory {
     public static FacilioChain getEditPointChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new EditPointCommand());
-        c.addCommand(editRDMWritableChain());
         return c;
 	}
 
