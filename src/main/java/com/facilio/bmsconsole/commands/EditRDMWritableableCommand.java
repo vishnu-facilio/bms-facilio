@@ -50,7 +50,7 @@ public class EditRDMWritableableCommand extends FacilioCommand {
 		Long controllerId = (Long) context.get(AgentConstants.CONTROLLER_ID);
 		Criteria pointIds = (Criteria) context.get(AgentConstants.POINT_IDS);
 		GetPointRequest getPoints = new GetPointRequest();
-		getPoints.filterConfigurePoints();
+		getPoints.filterCommissionedPoints();
 		if(pointIds != null && !pointIds.isEmpty()) {
 			getPoints.withCriteria((Criteria)context.get(AgentConstants.POINT_IDS));
 		}
