@@ -51,6 +51,7 @@ public class SetInviteConditionForVisitsListCommandV3 extends FacilioCommand {
 
                filters.put("moduleState", status);
            }
+           context.put(FacilioConstants.ContextNames.FILTERS, filters);
         }
         return false;
     }

@@ -184,8 +184,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
-        nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
-        nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
 
         if (v3Config != null) {
             V3Config.ListHandler listHandler = v3Config.getListHandler();
@@ -197,6 +195,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);
 
+        nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
+        nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
 
 
