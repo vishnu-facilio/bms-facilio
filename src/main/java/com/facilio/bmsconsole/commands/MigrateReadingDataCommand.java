@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -68,13 +67,12 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(oldModulefieldMap.get("parentId"), Collections.singletonList(oldAssetId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(oldField, CommonOperators.IS_NOT_EMPTY));
 		
-		BatchResult<ReadingContext> bs = builder.getInBatches(oldModulefieldMap.get("ttime").getCompleteColumnName(), 2);
+		BatchResult<ReadingContext> bs = builder.getInBatches(oldModulefieldMap.get("ttime").getCompleteColumnName(), 5000);
 		while (bs.hasNext()) {
 			List<ReadingContext> readingsList = bs.get();
 			if (readingsList != null && !readingsList.isEmpty()) {
 				addReading(oldField.getName(), newField, readingsList);
-				List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
-				ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), readingDataIds);
+				ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), readingsList);
 			}
 		}
 		

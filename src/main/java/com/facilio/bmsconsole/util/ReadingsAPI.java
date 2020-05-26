@@ -46,6 +46,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext;
+import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -130,6 +132,64 @@ public class ReadingsAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
 	
+	// values fieldNamesToUpdate should be available as prop, else will be set as null
+	public static int updateReadingDataMetaList (List<ReadingDataMeta> rdms, List<String> fieldNamesToUpdate) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		FacilioField resourceIdField = fieldMap.get("resourceId");
+		FacilioField fieldIdField = fieldMap.get("fieldId");
+		
+		List<FacilioField> updateFields = new ArrayList<>();
+		boolean shouldUpdateReadingType = false;
+		for(String fieldName: fieldNamesToUpdate) {
+			updateFields.add(fieldMap.get(fieldName));
+			if (fieldName.equals("readingType")) {
+				shouldUpdateReadingType = true;
+			}
+		}
+		if (shouldUpdateReadingType) {
+			updateFields.add(fieldMap.get("isControllable"));
+			updateFields.add(fieldMap.get("controlActionMode"));
+		}
+		
+		List<FacilioField> whereFields = new ArrayList<>();
+		whereFields.add(resourceIdField);
+		whereFields.add(fieldIdField);
+		
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(rdms, ReadingDataMeta.class);
+		List<BatchUpdateContext> batchUpdateList = new ArrayList<>();
+		for (Map<String, Object> prop: props) {
+			BatchUpdateContext updateVal = new BatchUpdateContext();
+			
+			if (shouldUpdateReadingType) {
+				Integer readingType = (Integer) prop.get("readingType");
+				if (readingType == null) {
+					readingType = ReadingType.READ.getValue();
+					prop.put("readingType", readingType);
+				}
+				setControllableprop(prop, readingType == ReadingType.WRITE.getValue());
+			}
+			
+			for(String fieldName: fieldNamesToUpdate) {
+				updateVal.addUpdateValue(fieldName,  prop.get(fieldName));
+			}
+			
+			updateVal.addWhereValue("resourceId",prop.get("resourceId"));
+			updateVal.addWhereValue("fieldId", prop.get("fieldId"));
+			
+			batchUpdateList.add(updateVal);
+		}
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.table(module.getTableName())
+														.fields(updateFields)
+														;
+		
+		return updateBuilder.batchUpdate(whereFields, batchUpdateList);
+	}
+	
 	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type, ReadingType readingType) throws SQLException {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
@@ -152,14 +212,8 @@ public class ReadingsAPI {
 			readingType = ReadingType.READ;
 		}
 		prop.put("readingType", readingType.getValue());
-		if (readingType == ReadingType.WRITE) {
-			prop.put("isControllable", true);
-			prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
-		}
-		else {
-			prop.put("isControllable", false);
-			prop.put("controlActionMode", null);
-		}
+		setControllableprop(prop, readingType == ReadingType.WRITE);
+		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
@@ -167,6 +221,17 @@ public class ReadingsAPI {
 														.andCriteria(pkCriteriaList);
 														
 		return updateBuilder.update(prop);
+	}
+	
+	private static void setControllableprop(Map<String, Object> prop, boolean isWritable) {
+		if (isWritable) {
+			prop.put("isControllable", true);
+			prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
+		}
+		else {
+			prop.put("isControllable", false);
+			prop.put("controlActionMode", null);
+		}
 	}
 	
 	public static int updateReadingDataMeta (List<Pair<Long, FacilioField>> resourceFieldPair, ReadingDataMeta rdm) throws Exception {
@@ -1163,48 +1228,42 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static void deleteReadings(long parentId, List<FacilioField> readingFields, List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
-		ReadingDataMeta rdm = new ReadingDataMeta();
-		List<Long> fieldIds = new ArrayList<>();
-		ReadingContext reading = new ReadingContext();
-		List<FacilioField> fields = new ArrayList<>();
-		readingFields.forEach(field -> {
-			Object value;
-			if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
-				value = -99;
-			}
-			else {
-				value = null;
-			}
-			reading.addReading(field.getName(), value);
-			fieldIds.add(field.getFieldId());
-			fields.add(field);
-		});
+	public static void deleteReadings(long parentId, List<FacilioField> readingFields, List<ReadingContext> readingsList) throws Exception {
 		
-		if (deleteReadings == null || deleteReadings.length == 0 || deleteReadings[0]) {
-			/*if (fields == null) {
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				fields = bean.getAllFields(module.getName());
-				fieldMap = FieldFactory.getAsMap(fields);
-			}*/
-			FacilioModule module = fields.get(0).getModule();
-			UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
-					.module(module)
-					.fields(fields)
-					;
-			if (readingDataIds != null) {
-				updateBuilder.andCondition(CriteriaAPI.getIdCondition(readingDataIds, module));
-			}
-			else {
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				updateBuilder.andCondition(CriteriaAPI.getCondition(bean.getField("parentId", module.getName()), String.valueOf(parentId), NumberOperators.EQUALS));
-			}
-			updateBuilder.update(reading);
+		List<Long> fieldIds = new ArrayList<>();
+		
+		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+		List<FacilioField> updateFields = new ArrayList<>();
+		
+		boolean isFirst = true;
+		for (ReadingContext readingData : readingsList) {
+			BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
+			batchValue.setWhereId(readingData.getId());
 			
-			rdm.setValue("-1");
-			rdm.setReadingDataId(-99);
+			
+			for(FacilioField field : readingFields) {
+				Object value = field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL ? -99 : null;
+				batchValue.addUpdateValue(field.getName(), value);
+				if (isFirst) {
+					fieldIds.add(field.getFieldId());
+					updateFields.add(field);
+				}
+			}
+			batchUpdateList.add(batchValue);
+			isFirst = false;
 		}
 		
+		FacilioModule module = readingFields.get(0).getModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(updateFields)
+				;
+		
+		updateBuilder.batchUpdateById(batchUpdateList);
+		
+		ReadingDataMeta rdm = new ReadingDataMeta();
+		rdm.setValue("-1");
+		rdm.setReadingDataId(-99);
 		rdm.setInputType(ReadingInputType.WEB);
 		rdm.setReadingType(ReadingType.READ);
 		rdm.setIsControllable(false);

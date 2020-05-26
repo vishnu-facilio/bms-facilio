@@ -409,19 +409,12 @@ public class FormsAPI {
 			updateFields.add(fieldMap.get(fieldName));
 		}
 
-		List<FacilioField> whereFields = new ArrayList<>();
-		whereFields.add(fieldMap.get("resourceId"));
-		whereFields.add(fieldMap.get("fieldId"));
-		
 		List<Map<String, Object>> props = FieldUtil.getAsMapList(formFields, FormField.class);
 		
 		List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = props.stream().map(field -> {
 			GenericUpdateRecordBuilder.BatchUpdateByIdContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
 			
-//			Map<String, Object> fieldMap = FieldUtil.getAsProperties(field);
-//			List<Map<String, Object>> props = FieldUtil.getAsPropertiesList(formFields);
 			for(String fieldName: fieldNamesToUpdate) {
-//				Object value = PropertyUtils.getProperty(field, fieldName);
 				updateVal.addUpdateValue(fieldName,  field.get(fieldName));
 			}
 			

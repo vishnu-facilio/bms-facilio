@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +31,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -37,7 +40,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
@@ -59,10 +61,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		validate(log);
 		
 		long publishTime = System.currentTimeMillis();
+		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
 		
-		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
-		List<ReadingDataMeta> unitRdmList = new ArrayList<>();
-		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
+		List<ReadingDataMeta> rdmList = new ArrayList<>();
 		Set<Long> connectedAssetIds = new HashSet<>();
 		
 		Map<String, List<Map<String, Object>>> inputValuePoints = new HashMap<>();
@@ -99,6 +100,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			boolean resourceAvailable = resourceId != null && resourceId > 0;
 			boolean fieldAvailable = fieldId != null && fieldId > 0;
 			boolean unitChanged = unit != null && unit > 0;
+			
 			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitChanged) {
 				
 				if (fieldAvailable && resourceAvailable) {
@@ -128,39 +130,26 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					meta.setFieldId(fieldId);
 					if (unitChanged) {
 						meta.setUnit(unit.intValue());
-						meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
-						if (writable) {
-							meta.setReadingType(ReadingType.WRITE);
-						}
-						unitRdmList.add(meta);
 					}
-					else {
-						if (writable) {
-							writableReadingList.add(meta);
-						}
-						else {
-							remainingReadingList.add(meta);
-						}
+					meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
+					if (writable) {
+						meta.setReadingType(ReadingType.WRITE);
 					}
+					
+					rdmList.add(meta);
 					connectedAssetIds.add(resourceId);
 				}
 				
-				updatePoint(point, publishTime);
+				addPointtoBatchUpdateProp(point, batchUpdateList, publishTime);
 			}
 			
 		}
 		
-		if (!unitRdmList.isEmpty()) {
-			// TODO update by case
-			for(ReadingDataMeta rdm: unitRdmList) {
-				ReadingsAPI.updateReadingDataMeta(rdm);
-			}
-		}
-		if (!writableReadingList.isEmpty()) {
-			ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.WRITE);
-		}
-		if (!remainingReadingList.isEmpty()){
-			ReadingsAPI.updateReadingDataMetaInputType(remainingReadingList, ReadingInputType.CONTROLLER_MAPPED, null);
+		updatePoint(batchUpdateList);
+		
+		if (!rdmList.isEmpty()) {
+			List<String> fields = Arrays.asList("unit", "inputType", "readingType");
+			ReadingsAPI.updateReadingDataMetaList(rdmList, fields);
 		}
 		if (!inputValuePoints.isEmpty()) {
 			addInputValueMapping(inputValuePoints, remainingRdmPairs);
@@ -206,30 +195,46 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		return getPointRequest.getPointsData();
 	}
 	
-	
-	private void updatePoint(Map<String, Object> point, long publishTime) throws Exception {
-		Map<String, Object> pointToUpdate = new HashMap<>();
+	private void addPointtoBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime) {
+		BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
+		
+		batchValue.setWhereId((long) point.get("id"));
+		
 		Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
 		if (fieldId != null && fieldId > 0) {
-			pointToUpdate.put(AgentConstants.FIELD_ID, fieldId);
+			batchValue.addUpdateValue(AgentConstants.FIELD_ID, fieldId);
 		}
 		Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
 		if (resourceId != null && resourceId > 0) {
-			pointToUpdate.put(AgentConstants.RESOURCE_ID, resourceId);
+			batchValue.addUpdateValue(AgentConstants.RESOURCE_ID, resourceId);
 		}
 		Long unit = (Long) point.get(AgentConstants.UNIT);
 		if (unit != null && unit > 0) {
-			pointToUpdate.put(AgentConstants.UNIT, unit);
+			batchValue.addUpdateValue(AgentConstants.UNIT, unit);
 		}
-		pointToUpdate.put(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
-		pointToUpdate.put(AgentConstants.MAPPED_TIME, publishTime);
+		batchValue.addUpdateValue(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
+		batchValue.addUpdateValue(AgentConstants.MAPPED_TIME, publishTime);
+		
+		batchUpdateList.add(batchValue);
+	}
+	
+	
+	private void updatePoint(List<BatchUpdateByIdContext> batchUpdateList) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updateFields = new ArrayList<>();
+		updateFields.add(fieldMap.get(AgentConstants.ASSET_CATEGORY_ID));
+		updateFields.add(fieldMap.get(AgentConstants.RESOURCE_ID));
+		updateFields.add(fieldMap.get(AgentConstants.FIELD_ID));
+		updateFields.add(fieldMap.get(AgentConstants.UNIT));
+		updateFields.add(fieldMap.get(AgentConstants.MAPPED_TIME));
+		
+		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition((long)point.get("id"), module));
+				.fields(updateFields)
+				;
 		
-		Map<String, Object> prop = FieldUtil.getAsProperties(pointToUpdate);
-		updateBuilder.update(prop);
+		updateBuilder.batchUpdateById(batchUpdateList);
 	}
 	
 	private void updateLog(long publishTime, long id) throws Exception {
@@ -261,12 +266,11 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			});
 		}
 		
-		
-		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), inputRdmIds, NumberOperators.EQUALS));
-		deleteBuilder.delete();
+		
+		deleteBuilder.batchDelete(Collections.singletonList(fieldMap.get("rdmId")), inputRdmIds.stream().map(id -> Collections.singletonMap("rdmId", (Object) id)).collect(Collectors.toList()));
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(fields)

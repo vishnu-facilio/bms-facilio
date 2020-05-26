@@ -9,7 +9,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,7 +26,7 @@ public class DeleteControllerCommand extends FacilioCommand {
 		long id = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		boolean deleteReadings = (boolean) context.get(FacilioConstants.ContextNames.DEL_READING_RULE);
 		
-		deleteReadings(id, deleteReadings);
+//		deleteReadings(id, deleteReadings);
 		
 		FacilioModule module = ModuleFactory.getControllerModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -85,7 +84,7 @@ public class DeleteControllerCommand extends FacilioCommand {
 				 for(Map.Entry<Long, List<FacilioField>> assetEntry :assetVsFields.entrySet()) {
 					 long assetId = assetEntry.getKey();
 					 List<FacilioField> fields = assetEntry.getValue();
-					 ReadingsAPI.deleteReadings(assetId, fields, null, deleteReadings);
+//					 ReadingsAPI.deleteReadings(assetId, fields, null, deleteReadings);
 				 }
 			 }
 		 }
