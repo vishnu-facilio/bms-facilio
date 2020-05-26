@@ -148,12 +148,17 @@ public class ReadingsAPI {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("inputType", type.getValue());
 		
-		if (readingType != null) {
-			prop.put("readingType", readingType.getValue());
-			if (readingType == ReadingType.WRITE) {
-				prop.put("isControllable", true);
-				prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
-			}
+		if (readingType == null) {
+			readingType = ReadingType.READ;
+		}
+		prop.put("readingType", readingType.getValue());
+		if (readingType == ReadingType.WRITE) {
+			prop.put("isControllable", true);
+			prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
+		}
+		else {
+			prop.put("isControllable", false);
+			prop.put("controlActionMode", null);
 		}
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
