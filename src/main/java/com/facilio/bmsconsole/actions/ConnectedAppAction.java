@@ -526,7 +526,21 @@ public class ConnectedAppAction extends FacilioAction {
 				relayState = viewURL;
 			}
 
-			String issuer = FacilioProperties.getClientAppUrl() + "/app/connectedapp/" + connectedApp.getLinkName(); 
+			String issuer = FacilioProperties.getClientAppUrl() + "/app/connectedapp/" + connectedApp.getLinkName();
+			
+			JSONObject customAttributes = new JSONObject();
+			customAttributes.put("USER_ID", AccountUtil.getCurrentUser().getOuid());
+			customAttributes.put("NAME", AccountUtil.getCurrentUser().getName());
+			customAttributes.put("LANGUAGE", AccountUtil.getCurrentUser().getLanguage());
+			customAttributes.put("COUNTRY", AccountUtil.getCurrentUser().getCountry());
+			if (AccountUtil.getCurrentUser().getRole() != null) {
+				customAttributes.put("ROLE", AccountUtil.getCurrentUser().getRole().getName());
+			}
+			customAttributes.put("TIMEZONE", AccountUtil.getCurrentUser().getTimezone());
+			customAttributes.put("ORG_ID", AccountUtil.getCurrentOrg().getId());
+			customAttributes.put("ORG_NAME", AccountUtil.getCurrentOrg().getName());
+			customAttributes.put("ORG_DOMAIN", AccountUtil.getCurrentOrg().getDomain());
+			customAttributes.put("ORG_TIMEZONE", AccountUtil.getCurrentOrg().getTimezone());
 
 			SAMLAttribute attr = new SAMLAttribute()
 					.setIssuer(issuer)
@@ -534,6 +548,8 @@ public class ConnectedAppAction extends FacilioAction {
 					.setInResponseTo(requestId)
 					.setRecipient(acsURL)
 					.setEmail(AccountUtil.getCurrentUser().getEmail());
+			
+			attr.setCustomAttr(customAttributes);
 
 			String samlResponse = SAMLUtil.generateSignedSAMLResponse(attr);
 
