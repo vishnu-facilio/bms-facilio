@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.util.VisitorFaceAPI;
+import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -45,7 +46,7 @@ public class VisitorFaceRecognitionCommandV3 extends FacilioCommand implements S
                     FacilioModule faceModule = null;
                     if (FacilioConstants.ContextNames.VISITOR.equals(moduleName)) {
                         faceModule = ModuleFactory.getVisitorFacesModule();
-                        VisitorContext visitor = V3VisitorManagementAPI.getVisitor(record.getId(), null);
+                        V3VisitorContext visitor = V3VisitorManagementAPI.getVisitor(record.getId(), null);
                         visitorId = visitor.getId();
                         photoId = visitor.getAvatarId();
                     }

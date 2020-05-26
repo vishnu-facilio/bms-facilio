@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -97,7 +98,7 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                     vL.setHostStatus(false);
                 }
                 if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
-                    if(!VisitorManagementAPI.checkForDuplicateVisitor(vL.getVisitor())) {
+                    if(!V3VisitorManagementAPI.checkForDuplicateVisitor(vL.getVisitor())) {
                         RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
                     }
                     else {

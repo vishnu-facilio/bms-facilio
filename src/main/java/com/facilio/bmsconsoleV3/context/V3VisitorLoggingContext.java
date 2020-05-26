@@ -29,7 +29,7 @@ public class V3VisitorLoggingContext extends ModuleBaseWithCustomFields {
     private ContactsContext host;
     private Long checkInTime;
     private Long checkOutTime;
-    private VisitorContext visitor;
+    private V3VisitorContext visitor;
     private BaseSpaceContext visitedSpace;
 
 
@@ -91,11 +91,11 @@ public class V3VisitorLoggingContext extends ModuleBaseWithCustomFields {
         return false;
     }
 
-    public VisitorContext getVisitor() {
+    public V3VisitorContext getVisitor() {
         return visitor;
     }
 
-    public void setVisitor(VisitorContext visitor) {
+    public void setVisitor(V3VisitorContext visitor) {
         this.visitor = visitor;
     }
 

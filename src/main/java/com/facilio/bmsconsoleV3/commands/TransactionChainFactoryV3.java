@@ -2,12 +2,11 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
-import com.facilio.cb.command.AddOrUpdateIntentToMLCommand;
-import com.facilio.cb.command.GetOrAddCurrentActiveModel;
-import com.facilio.cb.command.PopulateDefaultChatBotIntentCommand;
 import com.facilio.chain.FacilioChain;
 
 public class TransactionChainFactoryV3 {
@@ -81,6 +80,24 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         return c;
     }
+
+    public static FacilioChain getVisitorBeforeSaveOnAddChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new AddOrUpdateLocationForVisitorCommandV3());
+        c.addCommand(new CheckForVisitorDuplicationCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getVisitorAfterSaveOnAddChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new VisitorFaceRecognitionCommand()));
+        return c;
+    }
+
+
 
 
 }

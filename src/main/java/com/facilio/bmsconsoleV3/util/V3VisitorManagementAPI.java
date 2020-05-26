@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,7 +32,6 @@ import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.Preference;
-import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.WatchListContext;
@@ -441,7 +441,7 @@ public class V3VisitorManagementAPI {
         return record;
 
     }
-    public static VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
+    public static V3VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
 
         if(id <= 0 && StringUtils.isEmpty(phoneNumber)) {
             return null;
@@ -449,9 +449,9 @@ public class V3VisitorManagementAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR);
-        SelectRecordsBuilder<VisitorContext> builder = new SelectRecordsBuilder<VisitorContext>()
+        SelectRecordsBuilder<V3VisitorContext> builder = new SelectRecordsBuilder<V3VisitorContext>()
                 .module(module)
-                .beanClass(VisitorContext.class)
+                .beanClass(V3VisitorContext.class)
                 .select(fields)
                 ;
 
@@ -462,7 +462,7 @@ public class V3VisitorManagementAPI {
             builder.andCondition(CriteriaAPI.getIdCondition(id, module));
         }
 
-        VisitorContext records = builder.fetchFirst();
+        V3VisitorContext records = builder.fetchFirst();
         return records;
 
     }
@@ -596,7 +596,7 @@ public class V3VisitorManagementAPI {
     public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
 
         if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
-            VisitorContext visitor = getVisitor(-1, visitorPhoneNumber);
+            V3VisitorContext visitor = getVisitor(-1, visitorPhoneNumber);
             if(visitor == null) {
                 throw new IllegalArgumentException("Invalid phone number");
             }
@@ -616,7 +616,7 @@ public class V3VisitorManagementAPI {
     public static void getActiveLogExcludingCurrentLog(V3VisitorLoggingContext record, FacilioContext context) throws Exception {
 
         if(record.getVisitor() != null) {
-            VisitorContext visitor = getVisitor(record.getVisitor().getId(), null);
+            V3VisitorContext visitor = getVisitor(record.getVisitor().getId(), null);
             if(visitor != null) {
                 V3VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true, record.getId());
                 if(activeLog != null) {
@@ -655,7 +655,7 @@ public class V3VisitorManagementAPI {
                 updateMap.put("lastVisitedSpace", FieldUtil.getAsProperties(visitorLog.getVisitedSpace()));
                 updatedfields.add(lastVisitedSpace);
             }
-            VisitorContext visitor = getVisitor(visitorLog.getVisitor().getId(), null);
+            V3VisitorContext visitor = getVisitor(visitorLog.getVisitor().getId(), null);
             if(visitor.getFirstVisitedTime() <= 0) {
                 updateMap.put("firstVisitedTime", visitorLog.getCheckInTime());
                 updatedfields.add(firstVisitedTime);
@@ -753,7 +753,7 @@ public class V3VisitorManagementAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 
-        UpdateRecordBuilder<VisitorContext> updateBuilder = new UpdateRecordBuilder<VisitorContext>()
+        UpdateRecordBuilder<V3VisitorContext> updateBuilder = new UpdateRecordBuilder<V3VisitorContext>()
                 .module(module)
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(visitorId, module))
@@ -2412,8 +2412,8 @@ public class V3VisitorManagementAPI {
         return null;
     }
 
-    public static boolean checkForDuplicateVisitor(VisitorContext visitor) throws Exception {
-        VisitorContext visitorExisiting = getVisitor(-1, visitor.getPhone());
+    public static boolean checkForDuplicateVisitor(V3VisitorContext visitor) throws Exception {
+        V3VisitorContext visitorExisiting = getVisitor(-1, visitor.getPhone());
         if(visitorExisiting != null && visitor.getId() != visitorExisiting.getId()) {
             return true;
         }

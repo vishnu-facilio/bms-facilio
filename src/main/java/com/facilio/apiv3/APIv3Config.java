@@ -8,34 +8,24 @@ import com.facilio.bmsconsole.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.context.quotation.TaxContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.commands.GetRecordIdsFromRecordMapCommandV3;
-import com.facilio.bmsconsoleV3.commands.GetStateflowsForModuleDataListCommandV3;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
 import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
+import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.DefaultInit;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-
-import static com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain;
 
 @Config
 public class APIv3Config {
@@ -156,6 +146,21 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
                     .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                .build();
+    }
+
+    @Module("visitor")
+    public static V3Config getVisitor() {
+        return new V3Config(V3VisitorContext.class)
+                .create()
+                  .beforeSave(TransactionChainFactoryV3.getVisitorBeforeSaveOnAddChain())
+                  .afterSave(TransactionChainFactoryV3.getVisitorAfterSaveOnAddChain())
+                .update()
+                  .beforeSave(TransactionChainFactoryV3.getVisitorBeforeSaveOnAddChain())
+                .list()
+                  .beforeFetch(new LoadVisitorLookUpCommandV3())
+                .summary()
+                  .beforeFetch(new LoadVisitorLookUpCommandV3())
                 .build();
     }
 
