@@ -467,32 +467,19 @@ public class S3FileStore extends FileStore {
 
 		List<String> filePathList = getFilePathList(fileIds);
 		List<List<String>> partitionList = ListUtils.partition(filePathList, 1000);
+		try {
+			partitionList.forEach((List<String> chunckObjects) -> {
+				DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
+						.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
 
-		partitionList.forEach((List<String> chunckObjects) -> {
-			DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
-					.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
-
-			DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
-			List<DeletedObject> resultObj = delObjRes.getDeletedObjects();
-			if(CollectionUtils.isNotEmpty(resultObj)) {
-//				int successfulDeletes = delObjRes.getDeletedObjects().size();
-//				log.info(successfulDeletes + " objects successfully marked for deletion without versions." + " isDeleteMarker : "+delObjRes.getDeletedObjects().get(0).isDeleteMarker());
-				List<KeyVersion> keyList = new ArrayList<KeyVersion>();
-				resultObj.forEach((DeletedObject deletedObject) -> {
-					keyList.add(new KeyVersion(deletedObject.getKey(), deletedObject.getDeleteMarkerVersionId()));
-				});
-				multiObjectVersionedDeleteAndRemoveDeleteMarkers(keyList);
-			}
-		});
-
+				DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
+				 log.info("s3 object deleted size : "+delObjRes.getDeletedObjects().size());
+			});
+		}catch(Exception e) {
+			log.error("Exception occurred S3 file deletion...: ", e);
+			throw e;
+		}
 		return deleteFileEntries(fileIds);
 	}
 	
-	private void multiObjectVersionedDeleteAndRemoveDeleteMarkers(List<KeyVersion> keyList) {
-		DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(getBucketName()).withKeys(keyList)
-				.withQuiet(false);
-		DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(deleteRequest);
-		int successfulDeletes = delObjRes.getDeletedObjects().size();
-		log.info(successfulDeletes + " delete markers successfully deleted");
-	}
 }
