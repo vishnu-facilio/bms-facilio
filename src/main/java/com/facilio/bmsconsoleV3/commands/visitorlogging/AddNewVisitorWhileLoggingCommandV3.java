@@ -3,10 +3,7 @@ package com.facilio.bmsconsoleV3.commands.visitorlogging;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.VisitorContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.VisitorSettingsContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
@@ -45,17 +42,17 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                 if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
                     vL.setRequestedBy(AccountUtil.getCurrentUser());
                 }
-                //if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-                //need to uncomment when all users are migrated as employees
-                //	vL.setTenant(PeopleAPI.getTenantForUser(vL.getRequestedBy().getId()));
-                //}
-                //else {
+                //need to change this to tenant contact context once host is changed to people lookup
                 ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
                 if(contact != null && contact.getTenant() != null) {
                     vL.setTenant(contact.getTenant());
                 }
-                //}
-
+                if(vL.getTenant() == null && vL.getHost() != null) {
+                    ContactsContext host = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId());
+                    if (host != null) {
+                        vL.setTenant(host.getTenant());
+                    }
+                }
                 if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
                     vL.setIsReturningVisitor(true);
                     vL.getVisitor().setIsReturningVisitor(true);
