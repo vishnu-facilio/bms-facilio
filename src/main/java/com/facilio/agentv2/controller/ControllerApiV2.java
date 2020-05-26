@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ControllerApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
@@ -238,6 +239,12 @@ public class ControllerApiV2 {
             updateController(controller);
             jsonObject.put(AgentConstants.CONTROLLER, toUpdate);
             AgentMessenger.publishNewIotAgentMessage(controller, FacilioCommand.EDIT_CONTROLLER, jsonObject);
+            if (containsCheck(AgentConstants.WRITABLE, controllerData)){
+            	FacilioChain chain = TransactionChainFactory.getEditPointChain();
+            	chain.getContext().put(AgentConstants.WRITABLE, (Boolean) controllerData.get(AgentConstants.WRITABLE));
+            	chain.getContext().put(AgentConstants.CONTROLLER_ID, controllerId);
+            	chain.execute();
+            }
             return true;
         } else {
             throw new Exception(" controller not foung ");
@@ -540,5 +547,17 @@ public class ControllerApiV2 {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
+    }
+    
+    public static List<Long> getControllersUsingAgentId(long agentId) throws Exception{
+    	return getControllersList(Collections.singletonList(agentId));
+    }
+    
+    private static List<Long> getControllersList(List<Long> agentIds) throws Exception{
+    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+    	builder.select(FieldFactory.getControllersField()).table(ModuleFactory.getNewControllerModule().getTableName())
+    	.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getNewControllerModule()), String.valueOf(agentIds), NumberOperators.EQUALS));
+    	List<Map<String, Object>> props =  builder.get();
+    	return props.stream().map(p -> (long)p.get("id")).collect(Collectors.toList());
     }
 }

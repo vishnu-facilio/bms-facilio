@@ -4403,10 +4403,17 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-
+	
+	public static FacilioChain editRDMWritableChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new EditRDMWritableableCommand());
+		return c;
+	}
+	
     public static FacilioChain getEditPointChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new EditPointCommand());
+        c.addCommand(editRDMWritableChain());
         return c;
 	}
 

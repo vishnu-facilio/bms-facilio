@@ -3,6 +3,8 @@ package com.facilio.agentv2.point;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -46,10 +48,19 @@ public class EditPointCommand extends FacilioCommand {
             if (rowsUpdated > 0) {
                 return true;
             }
-
+            Map<String, Object> props =  (Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP);
+            Boolean isWritable = (Boolean) props.get(AgentConstants.WRITABLE);
+            if(isWritable != null) {
+            	FacilioChain chain = TransactionChainFactory.editRDMWritableChain();
+            	chain.getContext().put(AgentConstants.WRITABLE, isWritable);
+            	chain.getContext().put(AgentConstants.CONTROLLER_ID,context.get(AgentConstants.CONTROLLER_ID));
+            	chain.getContext().put(AgentConstants.POINT_IDS, context.get(FacilioConstants.ContextNames.CRITERIA));
+                chain.execute();
+            }
         } else {
             throw new Exception(" to-update-map missing");
         }
+        
         return false;
     }
 

@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
@@ -107,6 +108,14 @@ public class AgentApiV2 {
             if (agent.getWritable() != currWriteble) {
                 agent.setWritable(currWriteble);
                 agent.setLastModifiedTime(currTime);
+               List<Long> controllerIds =  ControllerApiV2.getControllersUsingAgentId(agent.getId());
+               controllerIds.forEach(controllerId -> {
+            	   try {
+					ControllerApiV2.editController(controllerId, jsonObject);
+				} catch (Exception e) {
+					LOGGER.error("Exception occurred while Controller writable updating....");
+				}
+               });
             }
         }
         return updateAgent(agent);
