@@ -9,15 +9,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
+public class VisitorLoggingScopingConfig extends ModuleScopingConfiguration {
     @Override
     public void addScopingConfiguration() {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule workPermitModule = modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT);
+            FacilioModule visitorLoggingModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 
             //adding vendor scope in vendor portal
             long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
@@ -26,7 +25,7 @@ public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
             scoping.setScopingId(vendorPortalScopingId);
             scoping.setOperatorId(36);
             scoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
-            scoping.setModuleId(workPermitModule.getModuleId());
+            scoping.setModuleId(visitorLoggingModule.getModuleId());
 
             //adding tenant scope in tenant portal
             long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
@@ -35,7 +34,7 @@ public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
             tenantScoping.setScopingId(tenantPortalScopingId);
             tenantScoping.setOperatorId(36);
             tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
-            tenantScoping.setModuleId(workPermitModule.getModuleId());
+            tenantScoping.setModuleId(visitorLoggingModule.getModuleId());
 
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             scopingConfig.add(scoping);
