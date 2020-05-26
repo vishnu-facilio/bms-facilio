@@ -48,7 +48,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 	private Collection<FacilioModule> joinModules;
 
-
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
 	}
@@ -201,6 +200,11 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateSupplements = new ArrayList<>();
 		}
 		updateSupplements.addAll(supplements);
+		return this;
+	}
+
+	public UpdateRecordBuilder<E> ignoreSplNullHandling() {
+		builder.ignoreSplNullHandling();
 		return this;
 	}
 

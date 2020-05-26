@@ -36,6 +36,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private int recordsPerBatch = -1;
 	private List<SupplementRecord> insertSupplements;
 
+	// TODO to be removed after everything is moved to v3
+	private boolean ignoreSplNullHandling = false;
+
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
 	}
@@ -159,6 +162,11 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 		return changeSet;
 	}
+
+	public InsertRecordBuilder<E> ignoreSplNullHandling() {
+		this.ignoreSplNullHandling = true;
+		return this;
+	}
 	
 	private void checkForNull() throws Exception {
 		
@@ -275,6 +283,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 						.table(currentModule.getTableName())
 						.fields(currentFields);
+
+				if (ignoreSplNullHandling) {
+					insertBuilder.ignoreSplNullHandling();
+				}
 
 				long moduleId = modulePair.getRight();
 				for(Map<String, Object> beanProp : props) {
