@@ -621,6 +621,7 @@ public class FacilioConstants {
 		public static final String PARENT_ROLLUP_FIELD_ID = "parentRollUpFieldId";
 		public static final String MODULE_CRITERIA_MAP = "moduleCriteriaMap";
 		public static final String ROLL_UP_FIELD_IDS = "rollUpFieldIds";
+		public static final String ROLL_UP_FIELDS = "rollUpFields";
 
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";

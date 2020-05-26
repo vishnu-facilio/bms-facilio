@@ -1084,6 +1084,31 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getAddRollUpFieldsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddFieldsCommand());
+			c.addCommand(new AddRollUpFieldsCommand());
+			return c;
+		}
+		
+		public static FacilioChain getUpdateRollUpFieldsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateRollUpFieldsCommand());
+			return c;
+		}
+		
+		public static FacilioChain getSubModuleLookUpFieldsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchSubModuleLookUpFields());
+			return c;
+		}
+		
+		public static FacilioChain getAllRollUpFieldsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetRollUpFieldsCommand());
+			return c;
+		}
+		
 		public static FacilioChain addFormulaFieldChain() {
 			return addFormulaFieldChain(false);
 		}

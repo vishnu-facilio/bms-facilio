@@ -1932,6 +1932,30 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	<package name="rollupField"
+		namespace="/api/v2/rollUpField"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addRollUpField">
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="updateRollUpField">
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="deleteFields">
+		</action>
+		<action name="getAllRollUpFields"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="getAllRollUpFields">
+		</action>
+		<action name="fetchRollUpSubModules"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="fetchSubModuleLookUpFields">
+		</action>
+	</package>
 	<package name="formulaApiv2"
 		namespace="/api/v2/reading/formula" extends="v2Api">
 		<action name="*"

@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -88,6 +89,20 @@ public class RollUpFieldUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		return getRollUpFieldFromProps(props, isFetchSubProps);
 	}
+	
+	public static int updateRollUpField(RollUpField rollUpFieldContext) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getRollUpFieldFields());
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+			.fields(FieldFactory.getRollUpFieldFields())
+			.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+			.andCondition(CriteriaAPI.getIdCondition(rollUpFieldContext.getId(), ModuleFactory.getRollUpFieldsModule()));
+			
+		Map<String, Object> props = FieldUtil.getAsProperties(rollUpFieldContext);
+		int rowsUpdated = updateBuilder.update(props);
+		return rowsUpdated;
+	}
 
 	public static List<RollUpField> getRollUpFieldsByChildModuleId(FacilioModule childModule, boolean isFetchSubProps) throws Exception {
 		
@@ -97,6 +112,19 @@ public class RollUpFieldUtil {
 			.select(FieldFactory.getRollUpFieldFields())
 			.table(ModuleFactory.getRollUpFieldsModule().getTableName())
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), childModule.getExtendedModuleIds(), NumberOperators.EQUALS));
+							
+		List<Map<String, Object>> props = selectBuilder.get();
+		return getRollUpFieldFromProps(props, isFetchSubProps);
+	}
+	
+	public static List<RollUpField> getRollUpFieldsByParentModuleId(FacilioModule parentModule, boolean isFetchSubProps) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getRollUpFieldFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(FieldFactory.getRollUpFieldFields())
+			.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), parentModule.getExtendedModuleIds(), NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
 		return getRollUpFieldFromProps(props, isFetchSubProps);

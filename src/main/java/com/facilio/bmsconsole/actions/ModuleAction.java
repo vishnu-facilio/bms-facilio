@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -483,6 +484,15 @@ public class ModuleAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private long childModuleId;
+	public long getChildModuleId() {
+		return childModuleId;
+	}
+
+	public void setChildModuleId(long childModuleId) {
+		this.childModuleId = childModuleId;
+	}
+
 	private String description;
 	public String getDescription() {
 		return description;
@@ -768,6 +778,78 @@ public class ModuleAction extends FacilioAction {
 			moduleData.addSubFormFiles(subFormFiles);
 		}
 	}
+	
+	public String addRollUpField() throws Exception {
+
+		FacilioChain addRollUpFieldsChain = TransactionChainFactory.getAddRollUpFieldsChain();
+		FacilioContext context = addRollUpFieldsChain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, getDescription());
+		context.put(FacilioConstants.ContextNames.CHILD_MODULE_ID, getChildModuleId());
+		context.put(FacilioConstants.ContextNames.CHILD_FIELD_ID, getFieldId());
+		context.put(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID, getAggregateFunctionId());
+		context.put(FacilioConstants.ContextNames.AGGREGATE_FIELD_ID, getAggregateFieldId());
+		context.put(FacilioConstants.ContextNames.CHILD_CRITERIA, getCriteria());	
+		addRollUpFieldsChain.execute();
+		
+		setResult(FacilioConstants.ContextNames.ROLL_UP_FIELDS,(List<RollUpField>) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELDS));	
+		return SUCCESS;
+	}
+	
+	public String updateRollUpField() throws Exception {
+
+		FacilioChain addRollUpFieldsChain = TransactionChainFactory.getUpdateRollUpFieldsChain();
+		FacilioContext context = addRollUpFieldsChain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS, getId());
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, getDescription());
+		context.put(FacilioConstants.ContextNames.CHILD_MODULE_ID, getChildModuleId());
+		context.put(FacilioConstants.ContextNames.CHILD_FIELD_ID, getFieldId());
+		context.put(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID, getAggregateFunctionId());
+		context.put(FacilioConstants.ContextNames.AGGREGATE_FIELD_ID, getAggregateFieldId());
+		context.put(FacilioConstants.ContextNames.CHILD_CRITERIA, getCriteria());	
+		addRollUpFieldsChain.execute();
+		
+		setResult(FacilioConstants.ContextNames.ROLL_UP_FIELDS,(List<RollUpField>) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELDS));	
+		return SUCCESS;
+	}
+	
+	public String fetchSubModuleLookUpFields() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getSubModuleLookUpFieldsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());	
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.SUB_MODULES,(List<FacilioModule>) chain.getContext().get(FacilioConstants.ContextNames.SUB_MODULES));	
+		return SUCCESS;
+	}
+	
+	public String getAllRollUpFields() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAllRollUpFieldsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());	
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.ROLL_UP_FIELDS,(List<RollUpField>) chain.getContext().get(FacilioConstants.ContextNames.ROLL_UP_FIELDS));	
+		return SUCCESS;
+	}
+	
+	private Integer aggregateFunctionId;
+	private long aggregateFieldId;
+
+	public Integer getAggregateFunctionId() {
+		return aggregateFunctionId;
+	}
+
+	public void setAggregateFunctionId(Integer aggregateFunctionId) {
+		this.aggregateFunctionId = aggregateFunctionId;
+	}
+
+	public long getAggregateFieldId() {
+		return aggregateFieldId;
+	}
+
+	public void setAggregateFieldId(long aggregateFieldId) {
+		this.aggregateFieldId = aggregateFieldId;
+	}
 
 	private List<ModuleBaseWithCustomFields> moduleDatas;
 	public List<ModuleBaseWithCustomFields> getModuleDatas() {
@@ -776,7 +858,7 @@ public class ModuleAction extends FacilioAction {
 	public void setModuleDatas(List<ModuleBaseWithCustomFields> moduleDatas) {
 		this.moduleDatas = moduleDatas;
 	}
-	
+
 	private CustomModuleData moduleData;
 	public CustomModuleData getModuleData() {
 		return moduleData;
