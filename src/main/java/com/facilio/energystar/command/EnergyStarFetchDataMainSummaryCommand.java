@@ -29,13 +29,12 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioModule propertyData = modBean.getModule(EnergyStarUtil.ENERGY_STAR_PROPERTY_DATA_MODULE_NAME);
-		
 		String fieldName = (String) context.get(FacilioConstants.ContextNames.MODULE_FIELD_NAME);
 		
-		Property_Metrics propertMetric = Property_Metrics.getNameMap().get(fieldName);
+		Property_Metrics propertMetric = null;
+		if(fieldName != null) {
+			propertMetric = Property_Metrics.getNameMap().get(fieldName);
+		}
 		
 		List<Map<String, Object>> props = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarPropertyModule(), FieldFactory.getEnergyStarPropertyFields(), null, CriteriaAPI.getCondition("BUILDING_ID", "buildingId", null, CommonOperators.IS_NOT_EMPTY));
 		
@@ -46,31 +45,36 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 			
 			prop.setDatum("building", SpaceAPI.getBuildingSpace(prop.getBuildingId()));
 			
-			Map<String, Object> values = EnergyStarUtil.fillEnergyStarCardData(prop, Collections.singletonList(propertMetric), null);
-			
-			if(propertMetric != Property_Metrics.SCORE) {
-				Map<String, Object> dataValue = (Map<String, Object>) values.get(propertMetric.getName());
+			if(propertMetric != null) {
+				Map<String, Object> values = EnergyStarUtil.fillEnergyStarCardData(prop, Collections.singletonList(propertMetric), null);
 				
-				double val = Double.parseDouble(dataValue.get("max").toString());
-				
-				if(val > max) {
-					max = val;
+				if(propertMetric != Property_Metrics.SCORE) {
+					Map<String, Object> dataValue = (Map<String, Object>) values.get(propertMetric.getName());
+					
+					double val = Double.parseDouble(dataValue.get("max").toString());
+					
+					if(val > max) {
+						max = val;
+					}
 				}
+				
+				prop.setDatum("values", values);
 			}
-			
-			prop.setDatum("values", values);
 		}
 		
-		if(propertMetric != Property_Metrics.SCORE) {
-			double maxValue = max + (max * 20 /100);
+		if(propertMetric != null) {
 			
-			for(EnergyStarPropertyContext prop :properties) {
+			if(propertMetric != Property_Metrics.SCORE) {
+				double maxValue = max + (max * 20 /100);
 				
-				Map<String, Object> values = (Map<String, Object>) prop.getDatum("values");
-				
-				Map<String, Object> dataValue = (Map<String, Object>)values.get(propertMetric.getName());
-				
-				dataValue.put("maxValue", maxValue);
+				for(EnergyStarPropertyContext prop :properties) {
+					
+					Map<String, Object> values = (Map<String, Object>) prop.getDatum("values");
+					
+					Map<String, Object> dataValue = (Map<String, Object>)values.get(propertMetric.getName());
+					
+					dataValue.put("maxValue", maxValue);
+				}
 			}
 		}
 		

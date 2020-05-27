@@ -29,8 +29,6 @@ public class EnergyStarAction extends FacilioAction {
 	List<EnergyStarMeterDataContext> meterData;
 	String fieldName;
 	
-	
-	
 	public String getFieldName() {
 		return fieldName;
 	}
