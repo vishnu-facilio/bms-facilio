@@ -15,11 +15,11 @@ if [ -z "$pid" ]; then
     echo "Java process is not running"
     exit 0;
 fi
-sudo kill -9 $pid
+kill -9 $pid
 # sh bin/shutdown.sh
 sh /home/facilio/move_logs.sh
 aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$servername/$ipAddress/catalinaout.$today.log
-sudo rm -rf $APP_HOME/logs/*
+rm -rf $APP_HOME/logs/*
 rm -rf webapps/ROOT
 rm -rf webapps/ROOT.war
 

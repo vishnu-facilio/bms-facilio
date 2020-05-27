@@ -13,7 +13,7 @@ if [ -z "$pid" ]; then
     echo "Java process is not running"
 else
     echo "Shutting down java process $pid"
-    sudo kill -9 $pid
+    kill -9 $pid
 fi
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
