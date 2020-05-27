@@ -1,4 +1,5 @@
-const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
+const homedir = require('os').homedir();
+const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 
 (async () => {
     const browser = await pupeteer.launch({headless: true, devtools: false, defaultViewport: null})
