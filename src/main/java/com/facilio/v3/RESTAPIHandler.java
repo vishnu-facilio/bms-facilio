@@ -329,6 +329,22 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
     }
 
+    private Long transitionId;
+    public Long getTransitionId() {
+        return transitionId;
+    }
+    public void setTransitionId(Long transitionId) {
+        this.transitionId = transitionId;
+    }
+
+    private Long approvalTransitionId;
+    public Long getApprovalTransitionId() {
+        return approvalTransitionId;
+    }
+    public void setApprovalTransitionId(Long approvalTransitionId) {
+        this.approvalTransitionId = approvalTransitionId;
+    }
+
     private void patchHandler(String moduleName, long id, Map<String, Object> patchObj) throws Exception {
         Object record = getRecord(moduleName, id);
 
@@ -346,11 +362,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             if (field != null) {
                 patchedFields.add(field);
             }
-        }
-
-        if (patchedFields.isEmpty()) {
-            summary();
-            return;
         }
 
         Class beanClass = getBeanClass(module);
@@ -388,6 +399,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+        transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
@@ -399,9 +412,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.RECORD_ID, id);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, summaryRecord);
-        context.put(Constants.PATCH_FIELDS, patchedFields);
+//        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+        context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
+        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
 
         transactionChain.execute();
 
