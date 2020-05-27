@@ -484,12 +484,12 @@ public class ModuleAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
-	private long childModuleId;
-	public long getChildModuleId() {
+	private Long childModuleId;
+	public Long getChildModuleId() {
 		return childModuleId;
 	}
 
-	public void setChildModuleId(long childModuleId) {
+	public void setChildModuleId(Long childModuleId) {
 		this.childModuleId = childModuleId;
 	}
 
@@ -832,8 +832,14 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteRollUpField() throws Exception {
+		deleteFields();
+		setResult("rowsDeleted", rowsDeleted);
+		return SUCCESS;
+	}
+	
 	private Integer aggregateFunctionId;
-	private long aggregateFieldId;
+	private Long aggregateFieldId;
 
 	public Integer getAggregateFunctionId() {
 		return aggregateFunctionId;
@@ -843,11 +849,11 @@ public class ModuleAction extends FacilioAction {
 		this.aggregateFunctionId = aggregateFunctionId;
 	}
 
-	public long getAggregateFieldId() {
+	public Long getAggregateFieldId() {
 		return aggregateFieldId;
 	}
 
-	public void setAggregateFieldId(long aggregateFieldId) {
+	public void setAggregateFieldId(Long aggregateFieldId) {
 		this.aggregateFieldId = aggregateFieldId;
 	}
 

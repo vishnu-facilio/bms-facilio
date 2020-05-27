@@ -28,7 +28,7 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 		Long childModuleId = (Long) context.get(FacilioConstants.ContextNames.CHILD_MODULE_ID);
 		Integer aggregateFunctionId = (Integer) context.get(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID);
 
-		if(rollUpFields == null || rollUpFields.isEmpty() || moduleName == null || childModuleId == null || aggregateFunctionId == null) {
+		if(childModuleId == null || aggregateFunctionId == null) {
 			throw new IllegalArgumentException("Insufficient params for the rollup field configuration.");
 		}
 		
@@ -39,13 +39,12 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 		{
 			if(rollUpField.getId() != - 1 && rollUpField.getModuleId() == parentModule.getModuleId()) 
 			{	Long childFieldId = (Long) context.get(FacilioConstants.ContextNames.CHILD_FIELD_ID);
+				FacilioModule childModule = modBean.getModule(childModuleId);
+				if(childModule == null) {
+					throw new IllegalArgumentException("Please provide a valid child Module in the configuration.");
+				}
 				if(childFieldId == null) 
-				{
-					FacilioModule childModule = modBean.getModule(childModuleId);
-					if(childModule == null) {
-						throw new IllegalArgumentException("Please provide a valid child Module in the configuration.");
-					}
-					
+				{	
 					List<FacilioField> childFields = modBean.getAllFields(childModule.getName());
 					List<FacilioField> childLookUpFields = new ArrayList<FacilioField>();
 					if(childModule.getTypeEnum().isReadingType()) {
@@ -66,6 +65,9 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 				}
 				if(!isAllowedRollUpAggregationType(aggregateFunctionId)) {
 					throw new IllegalArgumentException("Please provide a valid rollup type in aggregation.");
+				}
+				if(!modBean.getField(childFieldId).getModule().equals(childModule)) {
+					throw new IllegalArgumentException("Please provide a valid child field module.");
 				}
 
 				Long aggregateFieldId = (Long) context.get(FacilioConstants.ContextNames.AGGREGATE_FIELD_ID);

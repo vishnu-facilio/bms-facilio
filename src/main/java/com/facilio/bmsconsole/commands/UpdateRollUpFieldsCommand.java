@@ -19,10 +19,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class UpdateRollUpFieldsCommand implements Command {
+public class UpdateRollUpFieldsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		Long rollUpFieldId = (Long) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS);
 		Long childModuleId = (Long) context.get(FacilioConstants.ContextNames.CHILD_MODULE_ID);
@@ -43,43 +43,52 @@ public class UpdateRollUpFieldsCommand implements Command {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule parentModule = rollUpField.getParentModule();
-		List<RollUpField> rollUpFieldContexts = new ArrayList<RollUpField>();
-		
-		if(childFieldId == null) 
-		{
+		if(childFieldId != null && childModuleId == null) {
+			throw new IllegalArgumentException("Not a valid child field module.");
+		}
+
+		if(childModuleId != null) {
 			FacilioModule childModule = modBean.getModule(childModuleId);
 			if(childModule == null) {
 				throw new IllegalArgumentException("Please provide a valid child Module in the configuration.");
 			}
-			
-			List<FacilioField> childFields = modBean.getAllFields(childModule.getName());
-			List<FacilioField> childLookUpFields = new ArrayList<FacilioField>();
-			if(!childModule.getTypeEnum().isReadingType()) {
-				childLookUpFields = getChildLookUpFields(childFields, parentModule);
+			if(childFieldId == null) 
+			{
+				List<FacilioField> childFields = modBean.getAllFields(childModule.getName());
+				List<FacilioField> childLookUpFields = new ArrayList<FacilioField>();
+				if(!childModule.getTypeEnum().isReadingType()) {
+					childLookUpFields = getChildLookUpFields(childFields, parentModule);
+				}
+				
+				if(childLookUpFields == null || childLookUpFields.isEmpty()) {
+					throw new IllegalArgumentException("No lookup fields in "+ childModule.getDisplayName() +" module, pointing to the rollup module "+parentModule.getDisplayName()+ ".");
+				}
+				if(childLookUpFields != null && childLookUpFields.size() > 1) {
+					throw new IllegalArgumentException("Multiple lookup fields in "+ childModule.getDisplayName() +" module, pointing to the rollup module "+parentModule.getDisplayName()+ ".");
+				}
+				childFieldId = childLookUpFields.get(0).getFieldId();			
 			}
-			
-			if(childLookUpFields == null || childLookUpFields.isEmpty()) {
-				throw new IllegalArgumentException("No lookup fields in "+ childModule.getDisplayName() +" module, pointing to the rollup module "+parentModule.getDisplayName()+ ".");
+			if(!modBean.getField(childFieldId).getModule().equals(childModule)) {
+				throw new IllegalArgumentException("Please provide a valid child field module.");
 			}
-			if(childLookUpFields != null && childLookUpFields.size() > 1) {
-				throw new IllegalArgumentException("Multiple lookup fields in "+ childModule.getDisplayName() +" module, pointing to the rollup module "+parentModule.getDisplayName()+ ".");
-			}
-			childFieldId = childLookUpFields.get(0).getFieldId();			
+			rollUpField.setChildModuleId(childModuleId);
+			rollUpField.setChildFieldId(childFieldId);
 		}
-		
+			
 		aggregateFieldId = (aggregateFieldId == null) ? childFieldId : aggregateFieldId;
-		rollUpField.setChildModuleId(childModuleId);
-		rollUpField.setChildFieldId(childFieldId);
-		rollUpField.setAggregateFunctionId(aggregateFunctionId);
-		rollUpField.setAggregateFieldId(aggregateFieldId);
-		
+		if(aggregateFieldId != null) {
+			rollUpField.setAggregateFieldId(aggregateFieldId);
+		}
+		if(aggregateFunctionId != null) {
+			rollUpField.setAggregateFunctionId(aggregateFunctionId);
+		}
 		if(criteria != null) {
 			long childCriteriaId = CriteriaAPI.addCriteria(criteria);
 			rollUpField.setChildCriteriaId(childCriteriaId);
 		}
 		
+		RollUpFieldUtil.updateRollUpField(rollUpField);	
 		context.put(FacilioConstants.ContextNames.ROLL_UP_FIELDS, rollUpFields);
-		RollUpFieldUtil.updateRollUpField(rollUpField);		
 		return false;
 	}
 	

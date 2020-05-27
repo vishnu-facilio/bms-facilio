@@ -1086,6 +1086,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getAddRollUpFieldsChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new CreateRollUpFieldDependenciesCommand());
 			c.addCommand(new AddFieldsCommand());
 			c.addCommand(new AddRollUpFieldsCommand());
 			return c;
