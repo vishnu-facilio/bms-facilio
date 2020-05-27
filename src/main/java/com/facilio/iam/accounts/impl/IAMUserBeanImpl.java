@@ -14,6 +14,7 @@ import java.util.Objects;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1062,7 +1063,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 
 		}
-		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Password");
+		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
 	}
 	
 	
@@ -1105,8 +1106,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					return (long)result.get("uid");
 				}
 			} else {
-				log.info("No records found for  " + username);
-				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
+				log.info("No records found for  " + username +" --> User doesn't exists");
+				throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
 			}
 
 		} catch (SQLException | RuntimeException e) {
