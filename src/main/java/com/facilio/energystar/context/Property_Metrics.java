@@ -14,7 +14,7 @@ public enum Property_Metrics {
 	SCORE(1, "score","Score"),
 	SOURCE_EUI(2, "sourceIntensity","Source EUI"),	
 	SITE_EUI(3, "siteIntensity","Site EUI"),		
-	Total_GHG_Emissions_Intensity(4, "totalGHGEmissionsIntensity","Total GHG Emissions"),
+	Total_GHG_Emissions(4, "totalGHGEmissions","Total GHG Emissions"),
 	COST(5, "energyCost","Energy Cost"),
 	;
 

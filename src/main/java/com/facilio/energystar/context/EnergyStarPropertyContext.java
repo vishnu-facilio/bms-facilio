@@ -32,7 +32,17 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 	String meta;
 	
 	long baselineMonth;
+	long lastMetricsRetrivedDate;
 	
+	public long getLastMetricsRetrivedDate() {
+		return lastMetricsRetrivedDate;
+	}
+
+	public void setLastMetricsRetrivedDate(long lastMetricsRetrivedDate) {
+		this.lastMetricsRetrivedDate = lastMetricsRetrivedDate;
+	}
+
+
 	List<EnergyStarMeterContext> meters;
 	
 	public List<EnergyStarMeterContext> getMeters() {

@@ -8222,6 +8222,7 @@ public class FieldFactory {
         fields.add(getField("occupancyPercentage", "OCCUPANCY_PERCENTAGE", module, FieldType.STRING));
         fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
         fields.add(getField("baselineMonth", "BASELINE_MONTH", module, FieldType.NUMBER));
+        fields.add(getField("lastMetricsRetrivedDate", "LAST_METRICS_FETCHED_DATE", module, FieldType.NUMBER));
 
         return fields;
     }
