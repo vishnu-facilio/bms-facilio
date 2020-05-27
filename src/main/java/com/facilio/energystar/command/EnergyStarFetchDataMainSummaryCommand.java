@@ -3,6 +3,7 @@ package com.facilio.energystar.command;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
@@ -31,6 +32,8 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 
 		String fieldName = (String) context.get(FacilioConstants.ContextNames.MODULE_FIELD_NAME);
 		
+		LOGGER.log(Level.SEVERE, "fieldName -- "+fieldName);
+		
 		Property_Metrics propertMetric = null;
 		if(fieldName != null) {
 			propertMetric = Property_Metrics.getNameMap().get(fieldName);
@@ -45,6 +48,7 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 			
 			prop.setDatum("building", SpaceAPI.getBuildingSpace(prop.getBuildingId()));
 			
+			LOGGER.log(Level.SEVERE, "propertMetric -- "+propertMetric);
 			if(propertMetric != null) {
 				Map<String, Object> values = EnergyStarUtil.fillEnergyStarCardData(prop, Collections.singletonList(propertMetric), null);
 				
