@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.energystar.util.EnergyStarUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+
 public enum Property_Metrics {
 	
 	SCORE(1, "score","Score"),
@@ -27,6 +32,11 @@ public enum Property_Metrics {
 	
 	public String getDisplayName() {
 		return displayName;
+	}
+	
+	public FacilioField getField() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return modBean.getField(getName(), EnergyStarUtil.ENERGY_STAR_PROPERTY_DATA_MODULE_NAME);
 	}
 
 	private Property_Metrics(int intVal, String name,String displayName) {
