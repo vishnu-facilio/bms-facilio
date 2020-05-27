@@ -29,7 +29,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		try {
 			long startTime = System.currentTimeMillis();
-			long deletedTime = DateTimeUtil.addMonths(startTime, -1);
+			long deletedTime = DateTimeUtil.addDays(startTime, -5);
 			deleteFiles(deletedTime);
 			LOGGER.info("DeleteFile time taken to complete is  :"+(System.currentTimeMillis()-startTime));
 		} catch (Exception e) {
