@@ -388,7 +388,7 @@ public class FieldUtil {
 
 	private static final Set<String> SYSTEM_UPDATED_FIELDS = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("sysCreatedTime", "sysModifiedTime", "sysModifiedBy", "sysCreatedBy", "sysDeletedBy",
-					"sysDeletedTime", "localId", "moduleState", "stateFlowId", "approvalState", "approvalFlowId", "id", "orgId"
+					"sysDeletedTime", "localId", "moduleState", "stateFlowId", "approvalState", "approvalFlowId", "id", "orgId", "moduleId"
 												)));
 
 

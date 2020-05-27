@@ -37,9 +37,19 @@ public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
             tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             tenantScoping.setModuleId(workPermitModule.getModuleId());
 
+            //adding site scope in Facilio
+            long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            ScopingConfigContext appScoping = new ScopingConfigContext();
+            appScoping.setFieldName("siteId");
+            appScoping.setScopingId(applicationScopingId);
+            appScoping.setOperatorId(36);
+            appScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            appScoping.setModuleId(workPermitModule.getModuleId());
+
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             scopingConfig.add(scoping);
             scopingConfig.add(tenantScoping);
+            scopingConfig.add(appScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingConfig);
         }

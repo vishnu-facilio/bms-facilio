@@ -5,6 +5,6 @@ import com.facilio.bmsconsoleV3.context.ModuleFieldPermission;
 public class InsuranceFieldPermission extends ModuleFieldPermission {
     @Override
     public void addModuleFieldPermission() {
-
+        //
     }
 }
