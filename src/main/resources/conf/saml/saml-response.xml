@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <samlp:Response ID="--ResponseID--" IssueInstant="--IssueInstant--"
                 Version="2.0" Destination="--Destination--" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"
-                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" InResponseTo="--InResponseTo--">
+                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" InResponseTo="--InResponseTo--" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Issuer>--Issuer--</Issuer>
 	<samlp:Status>
 		<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"></samlp:StatusCode>
