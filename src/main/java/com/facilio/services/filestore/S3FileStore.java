@@ -39,6 +39,7 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.DeleteObjectsResult.DeletedObject;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.MultiObjectDeleteException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
@@ -475,8 +476,10 @@ public class S3FileStore extends FileStore {
 				DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
 				 log.info("s3 object deleted size : "+delObjRes.getDeletedObjects().size());
 			});
-		}catch(Exception e) {
-			log.error("Exception occurred S3 file deletion...: ", e);
+		}catch(MultiObjectDeleteException e) {
+			log.error("Exception occurred S3 file deletion...: "+ e.getErrors());
+		}
+		catch(Exception e) {
 			throw e;
 		}
 		return deleteFileEntries(fileIds);
