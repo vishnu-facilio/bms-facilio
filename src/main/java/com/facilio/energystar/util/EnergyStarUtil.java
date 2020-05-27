@@ -89,6 +89,8 @@ public class EnergyStarUtil {
 		scoreMap.put(Property_Metrics.SCORE.getIntVal(), 50.0);
 		scoreMap.put(Property_Metrics.SOURCE_EUI.getIntVal(), 116.4);
 		scoreMap.put(Property_Metrics.SITE_EUI.getIntVal(), 52.9);
+		scoreMap.put(Property_Metrics.COST.getIntVal(), 427744.71);
+		scoreMap.put(Property_Metrics.TOTAL_GHG_EMISSION.getIntVal(), 2167.4);
 		
 		NATIONAL_MEDIAN.put(Building_Type.OFFICE.getIntVal(), scoreMap);
 	}
