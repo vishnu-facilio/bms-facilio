@@ -51,3 +51,45 @@
               };
               return Module("energyStarPropertyData").fetch(db);
             }'
+'55':
+  description: 'energy star energy consumption card'
+  usage: 'energy star property summary'
+  workflow: 'Map energyCons(Number meterId,Number lastDataRecivedTime,Number baseline){
+  
+                 st = NameSpace("date").getMonthStartTime(lastDataRecivedTime);
+                 et = NameSpace("date").getMonthEndTime(lastDataRecivedTime);
+                 
+                 max = 0;
+                 db = {
+                   	criteria : [parentId == meterId && ttime >= st && ttime <=et],
+                   	field : "totalEnergyConsumptionDelta",
+                   	aggregation : "sum",
+                 };
+                 
+                 current = Module("energydata").fetch(db);
+                 
+                 if(current > max) {
+                   max = current;
+                 }
+                 
+                 if(baseline != null) {
+                   st = NameSpace("date").getMonthStartTime(baseline);
+                   et = NameSpace("date").getMonthEndTime(baseline);
+                 
+                  db = {
+                   	criteria : [parentId == meterId && ttime >= st && ttime <=et],
+                   	field : "totalEnergyConsumptionDelta",
+                   	aggregation : "sum",
+                  };
+                 
+                   baseline = Module("energydata").fetch(db);
+                   if(baseline > max) {
+                   	max = baseline;
+                   }
+                 }
+                 res = {};
+                 res.current = current;
+                 res.baseline = baseline;
+                 res.maxValue = max;
+                 return res;
+               }'

@@ -715,7 +715,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
-	GET_MILLISEC_FROM_RFC_3339_FORMATED_DATE_STRING(33,"getMilliSecondFromRFC3339FormatedDateString") {
+	GET_MILLISEC_FROM_RFC_3339_FORMATED_DATE_STRING(34,"getMilliSecondFromRFC3339FormatedDateString") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
@@ -733,7 +733,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		}
 	},
 	
-	GET_MILLISEC_FROM_FORMATED_DATE_STRING(33,"getMilliSecondFromFormatedDateString") {
+	GET_MILLISEC_FROM_FORMATED_DATE_STRING(35,"getMilliSecondFromFormatedDateString") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
@@ -741,6 +741,41 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			String formatString = objects[1].toString();
 			
 			return DateTimeUtil.getTime(timeString, formatString);
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_MONTH_START_TIME(36,"getMonthStartTime") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			if(objects == null || objects.length == 0) {
+				return DateTimeUtil.getMonthStartTimeOf(DateTimeUtil.getCurrenTime());
+			}
+			else {
+				long time = (long) Double.parseDouble(objects[0].toString());
+				return DateTimeUtil.getMonthStartTimeOf(time);
+			}
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	
+	GET_MONTH_END_TIME(37,"getMonthEndTime") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			if(objects == null || objects.length == 0) {
+				return DateTimeUtil.getMonthEndTimeOf(DateTimeUtil.getCurrenTime());
+			}
+			else {
+				long time = (long) Double.parseDouble(objects[0].toString());
+				return DateTimeUtil.getMonthEndTimeOf(time);
+			}
 			
 		};
 		public void checkParam(Object... objects) throws Exception {
