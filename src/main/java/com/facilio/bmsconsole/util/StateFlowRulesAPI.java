@@ -1,5 +1,20 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
@@ -10,8 +25,15 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
+import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext.TransitionType;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
+import com.facilio.bmsconsole.workflow.rule.ApproverWorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.FormInterface;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.ValidationContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -26,19 +48,19 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -151,7 +173,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					prop.put(timerField.getEndTimeFieldName(), -99);
 				}
 				if (prop.get(timerField.getStartTimeFieldName()) == null) {
-					prop.put(timerField.getStartTimeFieldName(), record.getSysModifiedTime());
+					prop.put(timerField.getStartTimeFieldName(), record.getCurrentTime());
 				}
 			}
 		}
