@@ -43,20 +43,10 @@ public class ValidateFieldPermissionCommand extends FacilioCommand {
 							fieldPermissionType, validateFieldPermissions);
 					if (CollectionUtils.isNotEmpty(restrictedFields)) {
 						for (ModuleBaseWithCustomFields rec : recordList) {
+							Map<String, Object> map = FieldUtil.getAsProperties(rec);
 							for (FacilioField field : restrictedFields) {
-								try {
-									if (field.isDefault()) {
-										PropertyUtils.setProperty(rec, field.getName(), null);
-									} else {
-										PropertyUtils.setMappedProperty(rec, "data", field.getName(), null);//custom field handling
-									}
-								} catch (NoSuchMethodException e) {
-									e.printStackTrace();
-									//boolean fields will not work if the naming convention is wrong
-								}
-
+								map.remove(field.getName());
 							}
-
 						}
 					}
 				}

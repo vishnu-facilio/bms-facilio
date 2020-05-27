@@ -48,6 +48,7 @@ public class SaveCommand extends FacilioCommand {
         }
 
         insertRecordBuilder.withChangeSet();
+        insertRecordBuilder.ignoreSplNullHandling();
 
         List<ModuleBaseWithCustomFields> records = recordMap.get(module.getName());
 

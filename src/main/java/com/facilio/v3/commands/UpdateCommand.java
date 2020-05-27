@@ -56,8 +56,8 @@ public class UpdateCommand extends FacilioCommand {
 
             updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 
+            updateBuilder.ignoreSplNullHandling();
             totalCount += updateBuilder.update(record);
-
             Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
             allChangesets.putAll(changeSet);
         }
