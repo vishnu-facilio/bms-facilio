@@ -82,6 +82,10 @@
 			<param-name>throw403</param-name>
 			<param-value>true</param-value>
 		</init-param>
+		<init-param>
+			<param-name>exclude</param-name>
+			<param-value>/internal/addFromMail,/api/v2/alarm/rules/updateNew</param-value>
+		</init-param>
 	</filter>
 
 	<filter>
