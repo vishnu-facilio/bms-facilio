@@ -484,6 +484,7 @@ public class FacilioConstants {
 		public static final String SET_LOCAL_MODULE_ID = "setLocalModuleId";
 		public static final String SPACE_UPDATE = "spacesUpdate";
 		public static final String FETCH_EXTENDED_MODULE_FORMS = "fetchExtendedModuleForms";
+		public static final String FETCH_FORM_RULE_FIELDS = "fetchFormRuleFields";
 		public static final String FETCH_DISABLED_FORMS = "fetchDisabledForms";
 		public static final String IS_BEFORE = "isbefore";
 		public static final String DURATION = "duration";

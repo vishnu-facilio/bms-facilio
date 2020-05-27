@@ -17,13 +17,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}
 
-	public FacilioForm(long id, long orgId, String name, String displayName, long moduleId, List<FormField> fields, FacilioModule module, FormType formType, LabelPosition labelPosition) {
+	public FacilioForm(long id, long orgId, String name, String displayName, long moduleId, List<FormField> fields, List<Long> ruleFieldIds, FacilioModule module, FormType formType, LabelPosition labelPosition) {
 		this.id = id;
 		this.orgId = orgId;
 		this.name = name;
 		this.displayName = displayName;
 		this.moduleId = moduleId;
 		this.fields = fields;
+		this.ruleFieldIds = ruleFieldIds;
 		this.module = module;
 		this.formType = formType;
 		this.labelPosition = labelPosition;
@@ -32,7 +33,7 @@ public class FacilioForm implements Serializable {
 	}
 
 	public FacilioForm(FacilioForm form) {
-		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.module, form.formType, form.labelPosition);
+		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.ruleFieldIds, form.module, form.formType, form.labelPosition);
 		this.showInMobile = form.showInMobile;
 		this.showInWeb = form.showInWeb;
 		this.hideInList = form.hideInList;
@@ -108,6 +109,16 @@ public class FacilioForm implements Serializable {
 		this.fields = fields;
 	}
 	
+	private List<Long> ruleFieldIds;
+	
+	public List<Long> getRuleFieldIds() {
+		return ruleFieldIds;
+	}
+
+	public void setRuleFieldIds(List<Long> ruleFieldIds) {
+		this.ruleFieldIds = ruleFieldIds;
+	}
+
 	@JsonIgnore
 	@JSON(serialize=false)
 	public Map<String, FormField> getFieldsMap() {

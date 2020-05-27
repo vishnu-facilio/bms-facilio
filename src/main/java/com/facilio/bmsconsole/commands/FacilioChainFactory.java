@@ -2019,6 +2019,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getFormMetaChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
+		c.addCommand(new GetFormRuleFields());
 		return c;
 	}
 	

@@ -101,6 +101,16 @@ public class FormAction extends FacilioAction {
 	public void setFetchDisabledForms(Boolean fetchDisabledForms) {
 		this.fetchDisabledForms = fetchDisabledForms;
 	}
+	
+	private Boolean fetchFormRuleFields;
+
+	public Boolean getFetchFormRuleFields() {
+		return fetchFormRuleFields;
+	}
+
+	public void setFetchFormRuleFields(Boolean fetchFormRuleFields) {
+		this.fetchFormRuleFields = fetchFormRuleFields;
+	}
 
 	private long formId = -1;
     private long formFieldId;
@@ -338,6 +348,8 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FORM_TYPE, formType);
+		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
+		
 		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
