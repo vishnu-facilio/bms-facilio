@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-pid=`/home/ubuntu/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
+pid=`/home/facilio/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
 if [ -z "$pid" ]; then
     echo "Java process is not running"
     exit 0;
 fi
-export APP_HOME="/home/ubuntu/tomcat"
+export APP_HOME="/home/facilio/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 ipAddress=`hostname -I|awk '{$1=$1};1'`
 logsBucket=facilio-server-logs
@@ -17,7 +17,7 @@ logDir=threaddump_$today
 mkdir $logDir
 for i in 1 2 3 4 5;
 do
-/home/ubuntu/jdk/bin/jstack $pid > ${logDir}/td${i}.txt
+/home/facilio/jdk/bin/jstack $pid > ${logDir}/td${i}.txt
 sleep 5
 done
 zip -rq $logDir.zip $logDir/

@@ -2,70 +2,70 @@ version: 0.0
 os: linux
 files:
   - source: /ROOT.war
-    destination: /home/ubuntu/tomcat/webapps
+    destination: /home/facilio/tomcat/webapps
   - source: /kill_server.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /start_server.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /change_conf.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /move_logs.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /setenv.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /threaddump.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /oom.sh
-    destination: /home/ubuntu
+    destination: /home/facilio
   - source: /awsprops-scheduler.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-kinesis.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-stage.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-user.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-demo.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /log4j-user.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /log4j-stage.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /log4j-kinesis.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
-    destination: /home/ubuntu/deployment-files/
+    destination: /home/facilio/deployment-files/
 
 
 permissions:
-  - object: /home/ubuntu
+  - object: /home/facilio
     pattern: "deployment-files"
-    owner: ubuntu
-    group: ubuntu
+    owner: facilio
+    group: facilio
     mode: 755
     type:
       - directory
 
-  - object: /home/ubuntu/tomcat/webapps
+  - object: /home/facilio/tomcat/webapps
     pattern: "ROOT.war"
-    owner: ubuntu
-    group: ubuntu
+    owner: facilio
+    group: facilio
     mode: 644
 
-  - object: /home/ubuntu/deployment-files/
+  - object: /home/facilio/deployment-files/
     pattern: "**"
-    owner: ubuntu
-    group: ubuntu
+    owner: facilio
+    group: facilio
     mode: 644
     type:
       - file
 
-  - object: /home/ubuntu
+  - object: /home/facilio
     pattern: "*.sh"
-    owner: ubuntu
-    group: ubuntu
+    owner: facilio
+    group: facilio
     mode: 755
 
 
@@ -73,12 +73,12 @@ hooks:
   ApplicationStop:
     - location: /kill_server.sh
       timeout: 3600
-      runas: ubuntu
+      runas: facilio
   AfterInstall:
     - location: /change_conf.sh
       timeout: 3600
-      runas: ubuntu
+      runas: facilio
   ApplicationStart:
     - location: /start_server.sh
       timeout: 3600
-      runas: ubuntu
+      runas: facilio

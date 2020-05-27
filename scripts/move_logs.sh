@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export APP_HOME="/home/ubuntu/tomcat"
+export APP_HOME="/home/facilio/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 ipAddress=`hostname -I|awk '{$1=$1};1'`
