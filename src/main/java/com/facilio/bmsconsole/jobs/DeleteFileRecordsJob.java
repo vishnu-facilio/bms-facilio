@@ -47,7 +47,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 					.table(ModuleFactory.getFilesModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(deleteColumn, CommonOperators.IS_NOT_EMPTY))
 					.andCondition(CriteriaAPI.getCondition(deleteColumn,String.valueOf(deletedTime),DateOperators.IS_BEFORE))
-					.orderBy("FILE_ID").limit(30000);
+					.orderBy("FILE_ID").limit(10000);
 			while (true) {
 				List<Map<String, Object>> props = builder.get();
 				if (CollectionUtils.isEmpty(props)) {
