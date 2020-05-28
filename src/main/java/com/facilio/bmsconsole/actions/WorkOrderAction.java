@@ -1882,13 +1882,16 @@ public class WorkOrderAction extends FacilioAction {
 							Template t = null;
 							if (template != null) {
 								Object type = template.get("type");
-								if (type instanceof String) {
-
-								} else {
-									Type templateType = Type.getType(Integer.valueOf(((Long) type).toString()));
-									if (templateType == Type.PUSH_NOTIFICATION) {
-										t = FieldUtil.getAsBeanFromMap(template, PushNotificationTemplate.class);
-									}
+								Type templateType = Type.getType(Integer.valueOf(((Long) type).toString()));
+								if (templateType == Type.PUSH_NOTIFICATION) {
+									t = FieldUtil.getAsBeanFromMap(template, PushNotificationTemplate.class);
+								} else if (templateType == Type.DEFAULT) {
+									template.remove("originalTemplate");
+									t = FieldUtil.getAsBeanFromMap(template, DefaultTemplate.class);
+								} else if (templateType == Type.EMAIL) {
+									t = FieldUtil.getAsBeanFromMap(template, EMailTemplate.class);
+								} else if (templateType == Type.SMS) {
+									t = FieldUtil.getAsBeanFromMap(template, SMSTemplate.class);
 								}
 								action.remove("template");
 							}
