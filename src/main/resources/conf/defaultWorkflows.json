@@ -1894,7 +1894,7 @@
 						     lastMonthRange = date.getDateRange(\"Last Month\");
 						     
         			  	     resMap = {};
-						     if(cardId == 1){
+						     if(cardId == null || cardId == 1){
 	        			  	  	db = {
 								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
 								    field : \"alarm\",
@@ -1913,7 +1913,8 @@
 							      
 						       	  resMap[\"noOfOcc\"] = thisMonth;
 								  resMap[\"noOfOccLastMonth\"] = LastMonth;
-							  }else if(cardId == 2) {
+							  } 
+							  if(cardId == null || cardId == 2) {
 							      db = {
 								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
 								    field : \"duration\",
@@ -1932,7 +1933,8 @@
 	
 						       	  resMap[\"mttc\"] = thisMonth;
 								  resMap[\"mttcLastMonth\"] = LastMonth;
-							  }else if(cardId == 3) {
+							  } 
+							  if(cardId == null || cardId == 3) {
 							     db = {
 										criteria: [alarm == alarmId && createdTime == thisMonthRange],
 										field:\"timeBetweeenOccurrence\",

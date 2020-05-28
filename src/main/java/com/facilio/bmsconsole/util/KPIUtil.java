@@ -265,25 +265,9 @@ public class KPIUtil {
 		if (dateField != null) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
 		}
-		
-		/*Map<String, Object> params = new HashMap<>();
-		params.put("field", metric.getName());
-		params.put("aggregation", NumberAggregateOperator.SUM.name());
-		
-		List<Object> paramList = new ArrayList<>();
-		paramList.add(module.getName());
-		paramList.add(criteria);
-		paramList.add(params);*/
-		
-		
-		/*FacilioChain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
-		FacilioContext context = chain.getContext();
-		context.put(WorkflowV2Util.DEFAULT_WORKFLOW_ID, 109);
-		context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
-		chain.execute();
-		
-		System.out.println(context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
-		System.out.println(context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));*/
+		if (kpi.getSiteId() != -1) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
+		}
 		
 		DBParamContext dbParamContext = new DBParamContext();
 		dbParamContext.setFieldName(metric.getName());
