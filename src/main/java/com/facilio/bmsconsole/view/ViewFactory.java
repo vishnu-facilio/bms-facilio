@@ -778,6 +778,11 @@ public class ViewFactory {
 		views.put("active", getActiveTaxes().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TAX, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllQuotationTerms().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS, views);
+
 		return viewsMap;
 	}
 
@@ -6771,4 +6776,19 @@ public class ViewFactory {
 
 		return view;
 	}
+	private static FacilioView getAllQuotationTerms() {
+
+		FacilioModule module = ModuleFactory.getQuotationTermsModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Quotation Terms");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+
 }

@@ -2,12 +2,11 @@ package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNdaForVisitorLogCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -151,8 +150,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     private Class getBeanClass(V3Config config, FacilioModule module) {
         Class beanClass = null;
-        if(config != null) {
+        if (config != null) {
             beanClass = config.getBeanClass();
+        }
+        if (beanClass == null) {
+            beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
             if (beanClass == null) {
                 if (module.isCustom()) {
                     beanClass = CustomModuleData.class;

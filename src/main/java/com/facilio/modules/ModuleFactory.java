@@ -3800,4 +3800,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getQuotationTermsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("quotationterms");
+		module.setDisplayName("Quotation Associated Terms");
+		module.setTableName("QuotationAssociatedTerms");
+		return module;
+	}
+
 }

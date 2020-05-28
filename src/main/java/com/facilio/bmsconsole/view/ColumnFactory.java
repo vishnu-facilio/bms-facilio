@@ -188,6 +188,7 @@ public class ColumnFactory {
 		columnMap.put("client-default", getDefaultClientColumns());
 
 		columnMap.put("quotation-default", getDefaultQuotationColumns());
+		columnMap.put("quotationterms-default", getDefaultQuotationTermsColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -1440,6 +1441,16 @@ public class ColumnFactory {
 
 		columns.add(new ViewField("moduleState", "Status"));
 
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultQuotationTermsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name", "terms"));
+		columns.add(new ViewField("shortDesc", "Short Description", "terms"));
+		columns.add(new ViewField("longDesc", "Long Description", "terms"));
 
 		return columns;
 	}

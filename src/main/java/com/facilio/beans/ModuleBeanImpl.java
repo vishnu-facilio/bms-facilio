@@ -1258,8 +1258,9 @@ public class ModuleBeanImpl implements ModuleBean {
 															.table("Fields")
 															.fields(FieldFactory.getUpdateFieldFields())
 															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
-			
-			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
+
+			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
+			int count = updateBuilder.update(fieldProps);
 			field.setFieldId(fieldId);
 			
 			int extendendPropsCount = 0;
@@ -1278,6 +1279,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else if (field instanceof MultiEnumField) {
 				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
+			} else if (field instanceof LookupField) {
+				validateLookupField((LookupField) field, fieldProps, true);
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), field);
 			}
 
 			return Math.max(count, extendendPropsCount);

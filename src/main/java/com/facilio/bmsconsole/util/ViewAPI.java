@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -36,6 +27,15 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ViewAPI {
 
@@ -620,9 +620,9 @@ public class ViewAPI {
 			if(viewField.getParentFieldId() != -1) {
 				viewField.setParentField(modBean.getField(viewField.getParentFieldId()));
 			} else if (viewField.getParentFieldName() != null && StringUtils.isNotEmpty(viewField.getParentFieldName())) {
-				FacilioField parentField = modBean.getField(viewField.getParentFieldName(), moduleName);
-				if (parentField != null) {
-					FacilioField childField = modBean.getField(viewField.getName(), viewField.getParentFieldName());
+				LookupField parentField = (LookupField) modBean.getField(viewField.getParentFieldName(), moduleName);
+				if (parentField != null && parentField.getLookupModule() != null) {
+					FacilioField childField = modBean.getField(viewField.getName(), parentField.getLookupModule().getName());
 					viewField.setField(childField);
 					viewField.setParentField(parentField);
 				}
