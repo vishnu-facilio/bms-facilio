@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -402,6 +403,28 @@ public class ConnectedAppAction extends FacilioAction {
 		this.downloadStream = new FileInputStream(privateKeyFile); 
 		return SUCCESS;
 	}
+	
+	public String downloadIdPMetadata() throws Exception {
+		
+		FacilioChain viewConnectedAppChain = ReadOnlyChainFactory.getViewConnectedAppChain();
+		viewConnectedAppChain.getContext().put(FacilioConstants.ContextNames.ID, getConnectedAppId());
+		viewConnectedAppChain.getContext().put(FacilioConstants.ContextNames.LINK_NAME, getLinkName());
+
+		viewConnectedAppChain.execute();
+
+		ConnectedAppContext connectedApp = (ConnectedAppContext) viewConnectedAppChain.getContext().get(FacilioConstants.ContextNames.CONNECTED_APP);
+		
+		String loginURL = FacilioProperties.getClientAppUrl() + "/app/connectedapp/" + connectedApp.getLinkName();
+		
+		String logoutURL = FacilioProperties.getClientAppUrl() + "/app/logout";
+		
+		String xmlString = ConnectedAppAPI.getIdPMetadata(loginURL, loginURL, logoutURL);
+		
+		this.downloadStream = new ByteArrayInputStream(xmlString.getBytes());
+		
+		return SUCCESS;
+	}
+	
 	private String name;
 	
 	public String getName() {

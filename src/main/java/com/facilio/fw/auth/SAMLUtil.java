@@ -185,6 +185,7 @@ public class SAMLUtil {
 
 			if (x509cert != null && !"".equals(x509cert)) {
 				x509cert = x509cert.replace("-----BEGINCERTIFICATE-----", "").replace("-----ENDCERTIFICATE-----", "");
+				x509cert = x509cert.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "");
 			
 				if (heads) {
 					x509cert = "-----BEGIN CERTIFICATE-----\n" + chunkString(x509cert, 64) + "-----END CERTIFICATE-----";

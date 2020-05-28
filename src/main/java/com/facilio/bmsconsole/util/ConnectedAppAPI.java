@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,14 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.xml.builder.XMLBuilder;
 
 public class ConnectedAppAPI {
 	
@@ -40,6 +43,31 @@ public class ConnectedAppAPI {
 			return connectedApp;
 		}
 		return null;
+	}
+	
+	public static String getIdPMetadata(String entityId, String loginURL, String logoutURL) throws Exception {
+		
+		File privateKeyFile = new File(ConnectedAppAPI.class.getClassLoader().getResource("conf/saml/saml.crt").getFile());
+		
+		String x509Cert = SAMLUtil.getFileAsString(privateKeyFile);
+		
+		x509Cert = SAMLUtil.formatCert(x509Cert, false);
+		
+		XMLBuilder builder = XMLBuilder.create("EntityDescriptor").attr("xmlns", "urn:oasis:names:tc:SAML:2.0:metadata").attr("entityID", entityId);
+		
+		XMLBuilder idpsElm = builder.element("IDPSSODescriptor").attr("protocolSupportEnumeration", "urn:oasis:names:tc:SAML:2.0:protocol");
+		
+			idpsElm.element("KeyDescriptor").attr("use", "signing").element("KeyInfo").attr("xmlns", "http://www.w3.org/2000/09/xmldsig#")
+			.element("X509Data")
+			.element("X509Certificate").text(x509Cert);
+
+		idpsElm.element("NameIDFormat").text("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress").p()
+			.element("SingleSignOnService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", loginURL).p()
+			.element("SingleSignOnService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", loginURL)
+			.element("SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", logoutURL).p()
+			.element("SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", logoutURL);
+		
+		return builder.getAsXMLString();
 	}
 	
 	public static ConnectedAppWidgetContext getConnectedAppWidget(long widgetId) throws Exception {

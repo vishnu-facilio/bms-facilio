@@ -4267,17 +4267,6 @@
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="executeAPI">
 		</action>
-		
-		<action name="downloadCertificate"
-			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
-			method="downloadCertificate">
-			<result name="success" type="stream">
-				<param name="contentType">application/download</param>
-				<param name="contentDisposition">attachment;filename="facilio_idp_certificate.crt"</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
@@ -4288,6 +4277,31 @@
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="connectedAppList">
+		</action>
+	</package>
+	
+	<package name="connectedAppsDownload" namespace="/api/v2/connectedApps/download"
+		extends="v2Api">
+		<action name="certificate"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="downloadCertificate">
+			<result name="success" type="stream">
+				<param name="contentType">application/download</param>
+				<param name="contentDisposition">attachment;filename="facilio_idp_certificate.crt"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</action>
+		
+		<action name="metadata"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+			method="downloadIdPMetadata">
+			<result name="success" type="stream">
+				<param name="contentType">application/download</param>
+				<param name="contentDisposition">attachment;filename="idp_metadata.xml"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
 		</action>
 	</package>
 	
