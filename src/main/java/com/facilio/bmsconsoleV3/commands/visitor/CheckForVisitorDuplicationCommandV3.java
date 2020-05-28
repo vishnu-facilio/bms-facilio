@@ -8,6 +8,8 @@ import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,7 +28,7 @@ public class CheckForVisitorDuplicationCommandV3 extends FacilioCommand {
             for(V3VisitorContext visitor : visitors) {
                 boolean visitorExisiting = V3VisitorManagementAPI.checkForDuplicateVisitor(visitor);
                 if(visitorExisiting) {
-                    throw new IllegalArgumentException("A visitor already exists with this phone number");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "A visitor already exists with this phone number");
                 }
             }
         }
