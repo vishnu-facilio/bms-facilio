@@ -335,6 +335,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION)));
+        chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 
     private Long transitionId;

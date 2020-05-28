@@ -1103,6 +1103,14 @@ public class FieldFactory {
         defaultField.setModule(module);
         fields.add(defaultField);
 
+        FacilioField isSystemUpdatedField = new FacilioField();
+        isSystemUpdatedField.setName("isSystemUpdated");
+        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
+        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
+        isSystemUpdatedField.setModule(module);
+        fields.add(isSystemUpdatedField);
+
+
         return fields;
     }
 
@@ -1166,6 +1174,13 @@ public class FieldFactory {
         accessType.setColumnName("ACCESS_TYPE");
         accessType.setModule(module);
         fields.add(accessType);
+
+        FacilioField isSystemUpdatedField = new FacilioField();
+        isSystemUpdatedField.setName("isSystemUpdated");
+        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
+        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
+        isSystemUpdatedField.setModule(module);
+        fields.add(isSystemUpdatedField);
 
         return fields;
     }

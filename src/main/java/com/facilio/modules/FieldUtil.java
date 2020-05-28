@@ -605,10 +605,11 @@ public class FieldUtil {
         List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
 
         if(permissionType == PermissionType.READ_WRITE) {
-			Set<String> systemFields = getSystemUpdatedFields();
-			if (CollectionUtils.isNotEmpty(systemFields)) {
-				for (String s : systemFields) {
-					restrictedFields.add(FieldFactory.getSystemField(s, module));
+			if (CollectionUtils.isNotEmpty(allFields)) {
+				for (FacilioField field : allFields) {
+					if(field.isSystemUpdated()) {
+						restrictedFields.add(field);
+					}
 				}
 			}
 		}
@@ -621,7 +622,7 @@ public class FieldUtil {
 
 		List<Long> permissibleFieldIds = modBean.getPermissibleFieldIds(module, permissionType.getIndex());
     	for(FacilioField field : allFields) {
-			if(permissionType == PermissionType.READ_WRITE && isSystemUpdatedField(field.getName())) {
+			if(permissionType == PermissionType.READ_WRITE && field.isSystemUpdated()) {
 				continue;
 			}
 			if(field.getFieldId() != -1 && !permissibleFieldIds.contains(field.getFieldId())) {
@@ -646,7 +647,7 @@ public class FieldUtil {
 				List<FacilioField> toRemove = new ArrayList<>();
 
 				for (FacilioField field : neededFields) {
-					if(isSystemUpdatedField(field.getName())){
+					if(field.isSystemUpdated()){
 						toRemove.add(field);
 					}
 				}
