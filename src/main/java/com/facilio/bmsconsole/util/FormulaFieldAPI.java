@@ -494,13 +494,13 @@ public class FormulaFieldAPI {
 				formula.setReadingField(modBean.getField(formula.getReadingFieldId()));
 				FacilioModule module = modBean.getModule(formula.getModuleId());
 				formula.setModule(module);
+				formulaList.add(formula);
+				workflowIds.add(formula.getWorkflowId());
 				
 				if (fetchFormulaOnly) {
 					continue;
 				}
 				
-				formulaList.add(formula);
-				workflowIds.add(formula.getWorkflowId());
 				fetchInclusions(formula);
 				fetchMatchedResources(formula, fetchResources);
 				setKPITarget(formula);
