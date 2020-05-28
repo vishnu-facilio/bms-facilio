@@ -425,11 +425,21 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			}
 			
 			if(dbParamContext.getSortByFieldName() != null) {
-				FacilioField orderByField = modBean.getField(dbParamContext.getSortByFieldName(), module.getName());
-				String orderByString = orderByField != null ? orderByField.getColumnName() : dbParamContext.getSortByFieldName();
-				if(dbParamContext.getSortOrder() != null) {
-					orderByString = orderByString +" "+dbParamContext.getSortOrder();
+				String orderByString = null;
+				if(dbParamContext.getSortByFieldName().equals(WorkflowV2Util.WORKFLOW_SORT_BY_AGGR_STRING) && dbParamContext.getAggregateFieldName() != null) {	// this is only for dev purpose.. should not expose for client
+					orderByString = dbParamContext.getAggregateFieldName();
+					if(dbParamContext.getSortOrder() != null) {
+						orderByString = orderByString +" "+dbParamContext.getSortOrder();
+					}
 				}
+				else {
+					FacilioField orderByField = modBean.getField(dbParamContext.getSortByFieldName(), module.getName());
+					orderByString = orderByField != null ? orderByField.getColumnName() : dbParamContext.getSortByFieldName();
+					if(dbParamContext.getSortOrder() != null) {
+						orderByString = orderByString +" "+dbParamContext.getSortOrder();
+					}
+				}
+				
 				selectBuilder.orderBy(orderByString);
 			}
 			

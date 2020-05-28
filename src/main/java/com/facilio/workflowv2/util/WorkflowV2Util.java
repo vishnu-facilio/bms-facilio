@@ -63,6 +63,8 @@ public class WorkflowV2Util {
 	
 	private static JSONObject workflowTemplates = new JSONObject();
 	
+	public static final String WORKFLOW_SORT_BY_AGGR_STRING = "aggr";
+	
 	public static final String WORKFLOW_CONTEXT = "workflow";
 	public static final String WORKFLOW_RESPONSE = "workflowResponse";
 	public static final String WORKFLOW_LOG_STRING = "workflowLogString";
