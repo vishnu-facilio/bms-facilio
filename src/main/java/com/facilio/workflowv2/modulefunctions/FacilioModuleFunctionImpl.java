@@ -452,7 +452,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			}
 			if(dbParamContext.getGroupBy() != null) {
 				FacilioField groupByField = modBean.getField(dbParamContext.getGroupBy(), module.getName());
-				selectBuilder.groupBy(groupByField.getColumnName());
+				selectBuilder.groupBy(groupByField.getCompleteColumnName());
 			}
 			if(dbParamContext.getRange() != null) {
 //				selectBuilder.range															// check
