@@ -35,6 +35,7 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private Double miscellaneousCharges;
     private Double totalCost;
     private List<QuotationLineItemsContext> lineItems;
+    private List<QuotationAssociatedTermsContext> termsAssociated;
 
     public List<QuotationAssociatedTermsContext> getTermsAssociated() {
         return termsAssociated;
@@ -43,8 +44,6 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     public void setTermsAssociated(List<QuotationAssociatedTermsContext> termsAssociated) {
         this.termsAssociated = termsAssociated;
     }
-
-    private List<QuotationAssociatedTermsContext> termsAssociated;
 
     public List<QuotationLineItemsContext> getLineItems() {
         return lineItems;

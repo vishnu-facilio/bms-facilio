@@ -22,6 +22,8 @@ import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
+import com.facilio.bmsconsole.commands.quotation.AssociateQuotationTermsCommand;
+import com.facilio.bmsconsole.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
@@ -5448,6 +5450,17 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new RuleRollupCommand());
 		return chain;
+	}
+
+	public static FacilioChain getAssociateQuotationTermsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateQuotationTermsCommand());
+		return c;
+	}
+	public static FacilioChain getDisAssociateQuotationTermsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DisAssociateQuotationTermsCommand());
+		return c;
 	}
 }
 

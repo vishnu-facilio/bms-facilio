@@ -772,6 +772,12 @@ public class ViewFactory {
         views.put("all", getAllQuotations().setOrder(order++));
         viewsMap.put(FacilioConstants.ContextNames.QUOTATION, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTaxes().setOrder(order++));
+		views.put("active", getActiveTaxes().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TAX, views);
+
 		return viewsMap;
 	}
 
@@ -6730,4 +6736,39 @@ public class ViewFactory {
 
         return allView;
     }
+
+	private static FacilioView getAllTaxes() {
+
+		FacilioModule module = ModuleFactory.getTaxModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Taxes");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+
+	private static FacilioView getActiveTaxes() {
+
+		FacilioModule module = ModuleFactory.getTaxModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView view = new FacilioView();
+		view.setName("active");
+		view.setDisplayName("Active Taxes");
+		view.setModuleName(module.getName());
+		view.setSortFields(sortFields);
+
+		Criteria activeCriteria = new Criteria();
+		activeCriteria.addAndCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive",String.valueOf(true), BooleanOperators.IS));
+		view.setCriteria(activeCriteria);
+
+
+		return view;
+	}
 }

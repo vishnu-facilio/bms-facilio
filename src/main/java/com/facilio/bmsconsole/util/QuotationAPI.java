@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.quotation.*;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -150,39 +149,51 @@ public class QuotationAPI {
         List<TaxContext> taxGroupsList = taxList.stream().filter(tax -> tax.getType() == TaxContext.Type.GROUP.getIndex()).collect(Collectors.toList());
         List<Long> parentTaxIds = taxGroupsList.stream().map(TaxContext::getId).collect(Collectors.toList());
         List<TaxGroupContext> taxGroups = getTaxesForGroups(parentTaxIds);
-        HashMap<Long,List<TaxContext>> parentTaxIdsVsChildTaxes = new HashMap<>();
-        for (TaxGroupContext taxGroup: taxGroups) {
+        HashMap<Long, List<TaxContext>> parentTaxIdsVsChildTaxes = new HashMap<>();
+        for (TaxGroupContext taxGroup : taxGroups) {
             if (taxGroup.getParentTax() != null) {
-                if (parentTaxIdsVsChildTaxes.get(taxGroup.getParentTax().getId()) == null ) {
+                if (parentTaxIdsVsChildTaxes.get(taxGroup.getParentTax().getId()) == null) {
                     parentTaxIdsVsChildTaxes.put(taxGroup.getParentTax().getId(), new ArrayList<>());
                 }
                 parentTaxIdsVsChildTaxes.get(taxGroup.getParentTax().getId()).add(taxGroup.getChildTax());
             }
         }
-        for (TaxContext taxGroup: taxGroupsList) {
+        for (TaxContext taxGroup : taxGroupsList) {
             if (parentTaxIdsVsChildTaxes.get(taxGroup.getId()) != null) {
                 taxGroup.setChildTaxes(parentTaxIdsVsChildTaxes.get(taxGroup.getId()));
             }
         }
     }
 
-    public static void addLocation(QuotationContext quotation, LocationContext location ) throws Exception {
+    public static void addLocation(QuotationContext quotation, LocationContext location) throws Exception {
 
-        FacilioContext context = new FacilioContext();
         if (location != null && location.getId() > 0) {
-            context.put(FacilioConstants.ContextNames.RECORD, location);
-            context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
-            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
-            FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
-            editLocation.execute(context);
-        }
-        else {
+            FacilioChain chain = FacilioChainFactory.updateLocationChain();
+            chain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+            chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+            chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+            chain.execute();
+        } else {
             location.setName(quotation.getSubject() + "_location");
-            context.put(FacilioConstants.ContextNames.RECORD, location);
             FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-            addLocation.execute(context);
-            long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+            addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+            addLocation.execute();
+            long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
             location.setId(locationId);
+        }
+    }
+
+    public static void addQuotationTerms(Long id, List<QuotationAssociatedTermsContext> termsAssociated) throws Exception {
+        if (CollectionUtils.isNotEmpty(termsAssociated)) {
+            QuotationContext quotation = new QuotationContext();
+            quotation.setId(id);
+            for (QuotationAssociatedTermsContext term : termsAssociated) {
+                term.setQuotation(quotation);
+            }
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+            RecordAPI.addRecord(false, termsAssociated, module, fields);
         }
     }
 

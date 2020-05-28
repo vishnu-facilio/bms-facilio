@@ -6040,5 +6040,16 @@
 			</result>
 		</action>
 	</package>
+	<package name="quotationApi" namespace="/api/v2/quotation"
+			 extends="v2Api">
+		<action name="associateTerms"
+				class="com.facilio.bmsconsole.actions.QuotationAction"
+				method="associateTerms">
+		</action>
+		<action name="disassociateTerms"
+				class="com.facilio.bmsconsole.actions.QuotationAction"
+				method="disAssociateTerms">
+		</action>
+	</package>
 
 </struts>

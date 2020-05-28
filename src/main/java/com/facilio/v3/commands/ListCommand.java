@@ -6,16 +6,12 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,15 +55,10 @@ public class ListCommand extends FacilioCommand {
         if (withCount != null && withCount) {
             SelectRecordsBuilder countSelect = getSelectRecordsBuilder(context);
 
-            FacilioField countFld = new FacilioField();
-            countFld.setName("count");
-            countFld.setColumnName("COUNT(" + module.getTableName() + ".ID)");
-            countFld.setDataType(FieldType.NUMBER);
+            countSelect.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
 
-            countSelect.select(Collections.singletonList(countFld));
-
-            List<Map<String, Object>> countProps = countSelect.getAsProps();
-            context.put(Constants.COUNT, countProps.get(0).get("count"));
+            List<? extends ModuleBaseWithCustomFields> countRecord = countSelect.get();
+            context.put(Constants.COUNT, countRecord.get(0).getId());
         }
 
         context.put(Constants.RECORD_MAP, recordMap);

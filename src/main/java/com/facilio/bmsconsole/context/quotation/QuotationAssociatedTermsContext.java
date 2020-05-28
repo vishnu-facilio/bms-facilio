@@ -9,17 +9,17 @@ public class QuotationAssociatedTermsContext extends ModuleBaseWithCustomFields 
      *
      */
     private static final long serialVersionUID = 1L;
-    private QuotationContext quotation;
-    private TermsAndConditionContext terms;
 
-
-    public QuotationContext getContractId() {
+    public QuotationContext getQuotation() {
         return quotation;
     }
 
-    public void setContractId(QuotationContext quotation) {
+    public void setQuotation(QuotationContext quotation) {
         this.quotation = quotation;
     }
+
+    private QuotationContext quotation;
+    private TermsAndConditionContext terms;
 
     public TermsAndConditionContext getTerms() {
         return terms;

@@ -3783,6 +3783,7 @@ public class ModuleFactory {
 		facilioModule.setDisplayName("System Point");
 		return facilioModule;
 	}
+
     public static FacilioModule getQuotationModule() {
         FacilioModule module = new FacilioModule();
         module.setName("quotation");
@@ -3790,5 +3791,13 @@ public class ModuleFactory {
         module.setTableName("Quotation");
         return module;
     }
+
+	public static FacilioModule getTaxModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("tax");
+		module.setDisplayName("Tax");
+		module.setTableName("Tax");
+		return module;
+	}
 
 }
