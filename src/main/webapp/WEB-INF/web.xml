@@ -84,7 +84,7 @@
 		</init-param>
 		<init-param>
 			<param-name>exclude</param-name>
-			<param-value>/internal/addFromMail,/api/v2/alarm/rules/updateNew</param-value>
+			<param-value>/internal/addFromMail,/api/v2/alarm/rules/updateNew,/api/v2/graphics/update</param-value>
 		</init-param>
 	</filter>
 
