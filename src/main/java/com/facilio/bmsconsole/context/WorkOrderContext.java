@@ -1,22 +1,17 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.File;
-import java.text.ParseException;
-import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.text.ParseException;
+import java.util.List;
 
 public class WorkOrderContext extends TicketContext {
     /**
@@ -598,4 +593,21 @@ public class WorkOrderContext extends TicketContext {
 	public void setDeviationTaskUniqueId(String deviationTaskUniqueId) {
 		this.deviationTaskUniqueId = deviationTaskUniqueId;
 	}
+
+	public Boolean getQuotationNeeded() {
+		return isQuotationNeeded;
+	}
+
+	public void setQuotationNeeded(Boolean quotationNeeded) {
+		isQuotationNeeded = quotationNeeded;
+	}
+
+	public Boolean isQuotationNeeded() {
+		if(isQuotationNeeded != null) {
+			return isQuotationNeeded.booleanValue();
+		}
+		return false;
+	}
+
+	private Boolean isQuotationNeeded;
 }

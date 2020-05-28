@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context.quotation;
 
+import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.io.File;
@@ -36,6 +39,40 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private Double totalCost;
     private List<QuotationLineItemsContext> lineItems;
     private List<QuotationAssociatedTermsContext> termsAssociated;
+    private CustomerType customerType;
+    private TenantContext tenant;
+
+    public TenantContext getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(TenantContext tenant) {
+        this.tenant = tenant;
+    }
+
+    public ClientContext getClient() {
+        return client;
+    }
+
+    public void setClient(ClientContext client) {
+        this.client = client;
+    }
+
+    private ClientContext client;
+
+    public void setCustomerType(int customerType) {
+        this.customerType = CustomerType.valueOf(customerType);
+    }
+
+    public CustomerType getCustomerTypeEnum() {
+        return customerType;
+    }
+    public int getCustomerType() {
+        if (customerType != null) {
+            return customerType.getIndex();
+        }
+        return -1;
+    }
 
     public List<QuotationAssociatedTermsContext> getTermsAssociated() {
         return termsAssociated;
@@ -223,5 +260,31 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         this.discountPercentage = discountPercentage;
     }
 
+    public enum CustomerType implements FacilioEnum {
+        TENANT("Tenant"),
+        CLIENT("Client");
+        private String name;
+
+        CustomerType(String name) {
+            this.name = name;
+        }
+
+        public static CustomerType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+    }
 
 }

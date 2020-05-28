@@ -78,3 +78,6 @@ enums:
 
   - name: TaxType
     enumClassName: com.facilio.bmsconsole.context.quotation.TaxContext$Type
+
+  - name: CustomerType
+    enumClassName: com.facilio.bmsconsole.context.quotation.QuotationContext$CustomerType

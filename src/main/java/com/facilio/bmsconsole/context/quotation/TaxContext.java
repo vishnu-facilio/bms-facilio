@@ -14,7 +14,12 @@ public class TaxContext extends ModuleBaseWithCustomFields {
 
     private String name;
     private Double rate;
-    private boolean isActive;
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    private Boolean isActive;
     private Type type;
     private List<TaxContext> childTaxes;
 
@@ -42,11 +47,14 @@ public class TaxContext extends ModuleBaseWithCustomFields {
         this.rate = rate;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public Boolean isActive() {
+        if(isActive != null) {
+            return isActive.booleanValue();
+        }
+        return false;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         isActive = active;
     }
 
