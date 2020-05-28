@@ -1742,6 +1742,11 @@ public class PreventiveMaintenanceAPI {
 			
 			for(PMReminder reminder : reminders) {
 				reminder.setReminderActions(new ArrayList<>(pmReminderActionMap.get(reminder.getId())));
+				for (PMReminderAction reminderAction:  reminder.getReminderActions()) {
+					if (reminderAction.getAction().getDefaultTemplateId() > -1) {
+						reminderAction.getAction().setTemplate(TemplateAPI.getDefaultTemplate(DefaultTemplate.DefaultTemplateType.ACTION, reminderAction.getAction().getDefaultTemplateId()));
+					}
+				}
 			}
 			return reminders;
 		}

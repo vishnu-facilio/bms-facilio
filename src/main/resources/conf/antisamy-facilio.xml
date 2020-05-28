@@ -12,7 +12,7 @@ http://www.w3.org/TR/html401/struct/global.html
         <directive name="formatOutput" value="false"/>
         <directive name="embedStyleSheets" value="false"/>
         <directive name="embedStyleSheets" value="false"/>
-        <directive name="maxInputSize" value="5000000" />
+        <directive name="maxInputSize" value="5000000"/>
     </directives>
 
     <common-regexps>

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.templates.Template;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -75,11 +76,26 @@ public class AddPMReminderCommand extends FacilioCommand {
 							}
 							else {
 								for(PMReminderAction reminderAction :reminderActions) {
-									if(reminderAction.getAction() == null || reminderAction.getAction().getTemplate() == null) {
+									if(reminderAction.getAction() == null
+											|| (reminderAction.getAction().getTemplate() == null
+											&& reminderAction.getAction().getTemplateJson() == null
+											&& reminderAction.getAction().getTemplateId() == -1L)) {
 										throw new IllegalArgumentException("Reminder Action or Template cannot be null");
 									}
-									long templateId = TemplateAPI.addTemplate(reminderAction.getAction().getTemplate());
+									reminderAction.getAction().setId(-1L);
+									long templateId;
+									if (reminderAction.getAction().getTemplateId() > -1L) {
+										Template template = TemplateAPI.getTemplate(reminderAction.getAction().getTemplateId());
+										reminderAction.getAction().setTemplate(template);
+										templateId = template.getId();
+									} else if (reminderAction.getAction().getTemplate() != null) {
+										templateId = TemplateAPI.addTemplate(reminderAction.getAction().getTemplate());
+									} else {
+										ActionAPI.addActions(Collections.singletonList(reminderAction.getAction()), null, false);
+										templateId = reminderAction.getAction().getTemplateId();
+									}
 									reminderAction.getAction().setTemplateId(templateId);
+									actions.add(reminderAction.getAction());
 								}
 							}
 						}

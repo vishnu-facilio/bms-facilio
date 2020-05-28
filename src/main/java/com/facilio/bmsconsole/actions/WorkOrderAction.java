@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.templates.*;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,34 +40,12 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
-import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -1883,14 +1864,52 @@ public class WorkOrderAction extends FacilioAction {
 		this.reminderString = reminderString;
 	}
 	
-	public void setRemindercontex(String reminder_string) {
+	public void setRemindercontex(String reminder_string) throws ParseException {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray obj = (JSONArray) parser.parse(reminder_string);
-			this.reminders = FieldUtil.getAsBeanListFromJsonArray(obj, PMReminder.class);
+			this.reminders = new ArrayList<>();
+			for(Object reminderObj: obj){
+				if ( reminderObj instanceof JSONObject ) {
+					JSONObject reminderJson = ((JSONObject) reminderObj);
+					JSONArray reminderActions = (JSONArray) reminderJson.get("reminderActions");
+					List<PMReminderAction> reminderActionList= new ArrayList<>();
+					if (reminderActions != null) {
+						for (Object remAction: reminderActions) {
+							JSONObject remActionJson = ((JSONObject) remAction);
+							JSONObject action = (JSONObject) remActionJson.get("action");
+							JSONObject template = (JSONObject) action.get("template");
+							Template t = null;
+							if (template != null) {
+								Object type = template.get("type");
+								if (type instanceof String) {
 
+								} else {
+									Type templateType = Type.getType(Integer.valueOf(((Long) type).toString()));
+									if (templateType == Type.PUSH_NOTIFICATION) {
+										t = FieldUtil.getAsBeanFromMap(template, PushNotificationTemplate.class);
+									}
+								}
+								action.remove("template");
+							}
+
+							ActionContext actionContext = FieldUtil.getAsBeanFromMap(action, ActionContext.class);
+							actionContext.setTemplate(t);
+							remActionJson.remove("action");
+							PMReminderAction asBeanFromMap = FieldUtil.getAsBeanFromMap(remActionJson, PMReminderAction.class);
+							asBeanFromMap.setAction(actionContext);
+							reminderActionList.add(asBeanFromMap);
+						}
+					}
+					reminderJson.remove("reminderActions");
+					PMReminder asBeanFromMap = FieldUtil.getAsBeanFromMap(reminderJson, PMReminder.class);
+					asBeanFromMap.setReminderActions(reminderActionList);
+					reminders.add(asBeanFromMap);
+				}
+			}
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
+			throw e;
 		}
 	}
 	private String woIds;
