@@ -269,6 +269,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     private void createHandler(String moduleName, Map<String, Object> createObj) throws Exception {
         FacilioModule module = getModule(moduleName);
+
         V3Config v3Config = getV3Config(moduleName);
         Command initCommand = new DefaultInit();
         Command beforeSaveCommand = null;
@@ -636,7 +637,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                     FieldPermissionContext.PermissionType.READ_WRITE, validatePermissions);
             if (CollectionUtils.isNotEmpty(restrictedFields)) {
                 for (FacilioField field : restrictedFields) {
-                    dataMap.remove(field.getName());
+                    if(field != null) {
+                        dataMap.remove(field.getName());
+                    }
                 }
             }
         }
