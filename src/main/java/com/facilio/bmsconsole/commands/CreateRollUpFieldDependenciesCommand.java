@@ -34,6 +34,7 @@ public class CreateRollUpFieldDependenciesCommand extends FacilioCommand {
 			rollUpField.setDisplayTypeInt(FacilioField.FieldDisplayType.ENPI.getIntValForDB());
 			rollUpField.setDataType(FieldType.DECIMAL);
 			rollUpField.setRequired(false);
+			rollUpField.setIsSystemUpdated(true);
 		}
 		
 		return false;

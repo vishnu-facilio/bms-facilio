@@ -52,6 +52,7 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 	public boolean executeCommand(Context context) throws Exception {
 		
 		try {
+			long processStartTime = System.currentTimeMillis();
 			Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			if(recordMap != null && !recordMap.isEmpty()) 
 			{		
@@ -93,7 +94,9 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 						}
 					}			
 				}	
-			}			
+			}	
+			LOGGER.info("Time taken for ExecuteRollUpFieldCommand for triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+  " is: "+(System.currentTimeMillis() - processStartTime));
+
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, "Error in executeRollUpFieldCommand -- triggeringChildFieldVsChildGroupedIds: " +triggeringChildFieldVsChildGroupedIds+ 

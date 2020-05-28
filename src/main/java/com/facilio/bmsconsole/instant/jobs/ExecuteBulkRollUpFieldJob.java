@@ -47,7 +47,8 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 		List<ReadingDataMeta> rollUpFieldData = new ArrayList<ReadingDataMeta>();
 		List<RollUpField> triggeringChildFields = new ArrayList<RollUpField>();;
 			
-		try {				
+		try {
+			long processStartTime = System.currentTimeMillis();
 			Map<String, Criteria> moduleCriteriaMap = (Map<String, Criteria>) context.get(FacilioConstants.ContextNames.MODULE_CRITERIA_MAP);
 			List<Long> rollUpFieldRuleIds = (List<Long>) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS);
 			if(moduleCriteriaMap == null || moduleCriteriaMap.isEmpty()) {
@@ -84,7 +85,8 @@ public class ExecuteBulkRollUpFieldJob extends InstantJob{
 			
 			if(rollUpFieldData != null && !rollUpFieldData.isEmpty()) 
 			{		
-				RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);	
+				RollUpFieldUtil.updateRollUpFieldParentDataFromRDM(rollUpFieldData);
+				LOGGER.info("Time taken for ExecuteBulkRollUpFieldJob Run for moduleCriteriaMap: " +moduleCriteriaMap+ " RollUpFieldRuleIds: " +rollUpFieldRuleIds+ " rollUpFieldData: " +rollUpFieldData+ " with process time as: "+(System.currentTimeMillis() - processStartTime));
 				LOGGER.info("Update done OrgId -- " + AccountUtil.getCurrentOrg().getOrgId() + " rollUpFieldData : " + rollUpFieldData);
 			}
 		}
