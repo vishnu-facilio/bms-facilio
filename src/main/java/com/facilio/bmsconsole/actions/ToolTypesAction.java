@@ -22,6 +22,7 @@ public class ToolTypesAction extends FacilioAction{
 	public String addToolTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, toolTypes);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		FacilioChain addToolsChain = TransactionChainFactory.getAddToolTypesChain();
 		addToolsChain.execute(context);

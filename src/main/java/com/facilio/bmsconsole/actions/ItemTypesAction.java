@@ -52,6 +52,7 @@ public class ItemTypesAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, itemTypes);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		FacilioChain addItem = TransactionChainFactory.getAddItemTypesChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
