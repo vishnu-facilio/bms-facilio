@@ -31,7 +31,7 @@ import java.util.*;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
-    private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(SLAWorkflowCommitmentRuleContext.class.getName());
 
     private List<SLAEntityDuration> slaEntities;
     public List<SLAEntityDuration> getSlaEntities() {
