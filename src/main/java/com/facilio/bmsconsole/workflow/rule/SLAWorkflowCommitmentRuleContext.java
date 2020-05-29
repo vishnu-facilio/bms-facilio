@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -123,7 +124,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
                     if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
                         slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
+                        addEscalationJobs(getName(), getParentRuleId(), slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
                     }
                 }
             }
@@ -132,7 +133,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
+    public static void addEscalationJobs(String name, Long parentRuleId, List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
             int count = 0;
@@ -145,7 +146,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 }
 
                 WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-                workflowRuleContext.setName(getName() + "_Escalation_" + count);
+                workflowRuleContext.setName(name + "_Escalation_" + count);
                 workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
                 workflowRuleContext.setActivityType(EventType.SCHEDULED);
                 workflowRuleContext.setModule(module);
@@ -167,6 +168,14 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 actions.add(getDefaultSLAEscalationTriggeredAction(count, slaEntity));
                 recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
                 recordRuleChain.execute();
+
+                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                        .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())
+                        .fields(FieldFactory.getSLAEscalationWorkflowRuleRelFields());
+                Map<String, Object> map = new HashMap<>();
+                map.put("slaPolicyId", parentRuleId);
+                map.put("workflowRuleId", workflowRuleContext.getId());
+                insertRecordBuilder.insert(map);
             }
         }
     }
@@ -182,7 +191,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 (FacilioContext) context);
     }
 
-    private ActionContext getDefaultSLAEscalationTriggeredAction(int count, SLAEntityContext slaEntity) {
+    private static ActionContext getDefaultSLAEscalationTriggeredAction(int count, SLAEntityContext slaEntity) {
         ActionContext actionContext = new ActionContext();
         actionContext.setActionType(ActionType.ACTIVITY_FOR_MODULE_RECORD);
         JSONObject json = new JSONObject();

@@ -590,6 +590,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getSLAEscalationWorkflowRuleRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("slaWorkflowRuleRel");
+		module.setDisplayName("SLA WorkflowRule Rel");
+		module.setTableName("SLA_WorkflowRule_Rel");
+
+		return module;
+	}
+
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();
 		slarule.setName("slarule");

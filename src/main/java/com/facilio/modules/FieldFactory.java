@@ -1908,6 +1908,16 @@ public class FieldFactory {
 //		return fields;
 //	}
 
+    public static List<FacilioField> getSLAEscalationWorkflowRuleRelFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSLAEscalationWorkflowRuleRelModule();
+
+        fields.add(getField("slaPolicyId", "SLA_POLICY_ID", module, FieldType.NUMBER));
+        fields.add(getField("workflowRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getSLACommitmentDurationFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getSLACommitmentDurationModule();
