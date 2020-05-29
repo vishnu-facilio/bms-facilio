@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -16,12 +17,12 @@ public class SMSUtil extends TwilioUtil {
 
 	public static String sendSMS(JSONObject obj) {
 		
-//		if(!FacilioProperties.isProduction())
-//		{
-//			LOGGER.info("SMS restricted in development/stage  ");
-//			return "";
-//
-//		}
+		if(!FacilioProperties.isProduction())
+		{
+			LOGGER.info("SMS restricted in development/stage  ");
+			return "";
+
+		}
 		
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
