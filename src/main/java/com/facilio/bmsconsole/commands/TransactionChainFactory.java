@@ -1703,6 +1703,10 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTypes());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 			return c;
 		}
 		
@@ -1710,6 +1714,9 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTypes());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
@@ -1820,6 +1827,10 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTypes());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 			return c;
 		}
 		
@@ -1834,6 +1845,10 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTypes());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 			return c;
 		}
 		

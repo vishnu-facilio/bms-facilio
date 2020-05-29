@@ -25,7 +25,7 @@ public class PeopleScopingCofig extends ModuleScopingConfiguration {
             scoping.setOperatorId(36);
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
-            ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+      //      ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         }
         catch(Exception e){
             e.printStackTrace();
