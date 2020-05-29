@@ -301,6 +301,7 @@ public class CommissioningApi {
 				for(FacilioField field: fields) {
 					Map<String, Object> fieldDetail = new HashMap<>();
 					fieldDetail.put("name", field.getDisplayName());
+					fieldDetail.put("dataType", field.getDataType());
 					if (field instanceof NumberField) {
 						fieldDetail.put("metric", ((NumberField) field).getMetric());
 					}
