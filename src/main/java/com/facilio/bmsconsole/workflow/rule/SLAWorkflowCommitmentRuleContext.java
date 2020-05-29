@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.AddOrUpdateSLABreachJobCommand;
@@ -16,20 +17,21 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
+
+    private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
 
     private List<SLAEntityDuration> slaEntities;
     public List<SLAEntityDuration> getSlaEntities() {
@@ -43,12 +45,19 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
+        log("commitment rule id: " + getId() + "; policy id: " + getParentRuleId() + "; record: " + moduleRecord.getSlaPolicyId());
         // If the record is matched in another sla policy, execute false
         if (moduleRecord.getSlaPolicyId() > 0 && moduleRecord.getSlaPolicyId() != getParentRuleId()) {
             return false;
         }
 
         return super.evaluateMisc(moduleName, record, placeHolders, context);
+    }
+
+    private void log(Object log) {
+        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 324l) {
+            LOGGER.debug(log);
+        }
     }
 
     @Override
@@ -60,6 +69,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
             slaEntities = SLAWorkflowAPI.getSLAEntitiesForCommitment(getId());
         }
 
+        log("Sla entities: " + slaEntities);
         if (CollectionUtils.isNotEmpty(slaEntities)) {
             SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
             List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalations = slaPolicy.getEscalations();
@@ -78,7 +88,9 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
+                log("base field: " + baseField.getName() + "; due field: " + dueField.getName());
                 Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
+                log("Time value: " + timeValue);
                 if (timeValue == null) {
                     continue;
                 }
@@ -90,10 +102,12 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     BusinessHoursList businessHours = BusinessHoursAPI.getCorrespondingBusinessHours(moduleRecord.getSiteId());
                     timeValue = businessHours.getNextPossibleTime(timeValue, (int) slaEntityDuration.getAddDuration());
                 }
+                log("Updated Time value: " + timeValue);
 
                 Long oldTime = (Long) FieldUtil.getValue(moduleRecord, dueField);
                 if (oldTime != null && timeValue != null && oldTime.equals(timeValue)) {
                     // skip updating
+                    log("skip updated: " + oldTime + "; timevalue: " + timeValue);
                     continue;
                 }
                 addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue, slaEntity);
