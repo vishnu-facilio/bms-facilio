@@ -63,9 +63,9 @@ public class ConnectedAppAPI {
 
 		idpsElm.element("NameIDFormat").text("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress").p()
 			.element("SingleSignOnService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", loginURL).p()
-			.element("SingleSignOnService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", loginURL)
+			.element("SingleSignOnService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", loginURL).p()
 			.element("SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", logoutURL).p()
-			.element("SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", logoutURL);
+			.element("SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect").attr("Location", logoutURL).p();
 		
 		return builder.getAsXMLString();
 	}
