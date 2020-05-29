@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.SingleRecordRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -8,9 +9,12 @@ import com.facilio.bmsconsole.workflow.rule.SLAEntityContext;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -39,6 +43,12 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
             SLAWorkflowAPI.deleteSLAPolicyEscalation(slaPolicy);
             slaPolicy.setEscalations(slaEscalations);
             SLAWorkflowAPI.addEscalations(slaPolicy);
+
+            FacilioChain allSLAChain = ReadOnlyChainFactory.getAllSLAChain();
+            FacilioContext slaContext = allSLAChain.getContext();
+            slaContext.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
+            allSLAChain.execute();
+            List<SLAWorkflowCommitmentRuleContext> slaCommitments = (List<SLAWorkflowCommitmentRuleContext>) slaContext.get(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST);
 
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())
@@ -70,14 +80,6 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityId);
                     List<SLAWorkflowEscalationContext> levels = slaPolicyEntityEscalationContext.getLevels();
                     if (CollectionUtils.isNotEmpty(levels)) {
-//                        long maxInterval = 0;
-//                        for (SLAWorkflowEscalationContext level : levels) {
-//                            if (maxInterval < level.getInterval()) {
-//                                maxInterval = level.getInterval();
-//                            }
-//                        }
-//
-//                        maxInterval = maxInterval * 1000;
 
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                         FacilioModule module = slaPolicy.getModule();
@@ -97,8 +99,23 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                         while (batchResult.hasNext()) {
                             List<? extends ModuleBaseWithCustomFields> list = batchResult.get();
                             for (ModuleBaseWithCustomFields moduleRecord : list) {
-                                SLAWorkflowCommitmentRuleContext.addEscalationJobs("name", slaPolicyId, levels,
-                                        module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
+                                if (CollectionUtils.isNotEmpty(slaCommitments)) {
+                                    for (SLAWorkflowCommitmentRuleContext commitment : slaCommitments) {
+                                        Criteria criteria = commitment.getCriteria();
+                                        boolean evaluate = true;
+                                        if (criteria != null) {
+                                            Map<String, Object> prop = FieldUtil.getAsProperties(moduleRecord);
+                                            Map<String, Object> placeHolders = new HashMap<>();
+                                            CommonCommandUtil.appendModuleNameInKey(null, "workorder", prop, placeHolders);
+                                            evaluate = criteria.computePredicate(FieldUtil.getAsProperties(placeHolders)).evaluate(moduleRecord);
+                                        }
+                                        if (evaluate) {
+                                            SLAWorkflowCommitmentRuleContext.addEscalationJobs(commitment.getName(), slaPolicyId, levels,
+                                                    module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
