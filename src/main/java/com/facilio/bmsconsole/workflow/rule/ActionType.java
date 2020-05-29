@@ -327,7 +327,6 @@ public enum ActionType {
 								JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
 								for (int i = 0; i < workFlowId.size(); i++) {
 									long workFlowIds = (long) workFlowId.get(i);
-									WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(workFlowIds);
 									FacilioChain c = FacilioChain.getTransactionChain();
 									FacilioContext impactContext = c.getContext();
 									impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -1406,7 +1405,13 @@ public enum ActionType {
 					}
 					alarmId = (Long) currentRecordJson.get("id");
 				}
-
+				else if(currentRecord instanceof ReadingContext) {
+					currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+					 if(currentRecordJson.get("parent") != null) {
+						currentRecordJson.put("resourceId", ((Map)currentRecordJson.get("parent")).get("id"));
+					}
+				}
+	
 				WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 				workflowContext.setLogNeeded(true);
 				Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
