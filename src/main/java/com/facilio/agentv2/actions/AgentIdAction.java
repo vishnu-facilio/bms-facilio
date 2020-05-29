@@ -51,21 +51,21 @@ public class AgentIdAction extends AgentActionV2 {
 		this.name = name;
 	}
 	
-	public Integer controlType;
+	public Integer controllerType;
 	
-	public Integer getControlType() {
-		return controlType;
+	public Integer getControllerType() {
+		return controllerType;
 	}
 
-	public void setControlType(Integer controlType) {
-		this.controlType = controlType;
+	public void setControllerType(Integer controllerType) {
+		this.controllerType = controllerType;
 	}
 
 	public String devices() {
         try {
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.AGENT_ID, getAgentId());
-        	context.put(AgentConstants.CONTROLLER_TYPE, getControlType());
+        	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
         	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
             setResult(AgentConstants.DATA, devices);
@@ -83,6 +83,7 @@ public class AgentIdAction extends AgentActionV2 {
         try {
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.AGENT_ID, getAgentId());
+            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
             context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
             List<Map<String, Object>> devices = FieldDeviceApi.getDevices( context);
             long count = 0;
@@ -144,7 +145,7 @@ public class AgentIdAction extends AgentActionV2 {
     public String getControllerCount() {
         try {
             setResult(AgentConstants.RESULT, SUCCESS);
-            setResult(AgentConstants.DATA, ControllerApiV2.getCountForAgent(Arrays.asList(getAgentId())));
+            setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(Arrays.asList(getAgentId()),getControllerType()));
             ok();
             return SUCCESS;
         } catch (Exception e) {
@@ -194,7 +195,7 @@ public class AgentIdAction extends AgentActionV2 {
         try {
 			FacilioContext context = new FacilioContext();
 			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControlType());
+			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(getAgentId(),context);
             setResult(AgentConstants.DATA, controllers);

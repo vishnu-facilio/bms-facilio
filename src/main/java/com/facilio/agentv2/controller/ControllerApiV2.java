@@ -295,7 +295,7 @@ public class ControllerApiV2 {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0) {
-                return getCount(null);
+                return getCount(null,null);
             } else {
                 LOGGER.info("Exception while getting controller count, orgId can't be null or empty  ->" + orgId);
             }
@@ -309,7 +309,7 @@ public class ControllerApiV2 {
         try {
             long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
             if (orgId > 0 && (agentIds != null) && (!agentIds.isEmpty())) {
-                return getCount(agentIds);
+                return getCount(agentIds,null);
             } else {
                 LOGGER.info("Exception while getting controller count, agentId and orgId can't be null or empty -> " + agentIds + " ->" + orgId);
             }
@@ -318,9 +318,12 @@ public class ControllerApiV2 {
         }
         return 0;
     }
+    
+    public static long getControllersCount(List<Long> agentIds,Integer controllerType) {
+    	return getCount(agentIds, controllerType);
+    }
 
-
-    private static long getCount(List<Long> agentIds) {
+    private static long getCount(List<Long> agentIds,Integer controllerType) {
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         try {
             FacilioModule resourceModule = ModuleFactory.getResourceModule();
@@ -333,6 +336,9 @@ public class ControllerApiV2 {
             if ((agentIds != null) && (!agentIds.isEmpty())) {
                 LOGGER.info("applying agent filter");
                 builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), agentIds, NumberOperators.EQUALS));
+            }
+            if(controllerType != null && controllerType > 0) {
+            	builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(controllerModule), String.valueOf(controllerType), NumberOperators.EQUALS));
             }
             List<Map<String, Object>> result = builder.get();
             if ((result != null) && (!result.isEmpty())) {
@@ -472,7 +478,7 @@ public class ControllerApiV2 {
     public static JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
         JSONObject controlleCountData = new JSONObject();
         controlleCountData.put(AgentConstants.TOTAL_COUNT, FieldDeviceApi.getAgentDeviceCount(agentIds));
-        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds));
+        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null));
         return controlleCountData;
     }
 

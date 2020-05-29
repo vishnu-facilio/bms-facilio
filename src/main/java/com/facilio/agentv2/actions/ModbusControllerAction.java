@@ -27,17 +27,9 @@ public class ModbusControllerAction extends AgentIdAction {
     private String ip;
     @NotNull
     @Positive
-    private int controllerType;
+
     private Long netwokId;
-
-    public int getControllerType() {
-        return controllerType;
-    }
-
-    public void setControllerType(int controllerType) {
-        this.controllerType = controllerType;
-    }
-
+    
     public Long getSlaveId() {
         return slaveId;
     }
@@ -62,17 +54,6 @@ public class ModbusControllerAction extends AgentIdAction {
         this.netwokId = netwokId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    private String name;
-
-
     public String addModbusController() {
         try {
             FacilioControllerType controllerType = FacilioControllerType.valueOf(getControllerType());
@@ -81,7 +62,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setNetworkId(getNetwokId());
                 controllerContext.setSlaveId(getSlaveId().intValue());
-                controllerContext.setName(name);
+                controllerContext.setName(getName());
                 if (AgentMessenger.sendConfigureModbusRtuControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
@@ -96,7 +77,7 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setAgentId(getAgentId());
                 controllerContext.setIpAddress(getIp());
                 controllerContext.setSlaveId(slaveId.intValue());
-                controllerContext.setName(name);
+                controllerContext.setName(getName());
                 if (AgentMessenger.sendConfigModbusIpControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
