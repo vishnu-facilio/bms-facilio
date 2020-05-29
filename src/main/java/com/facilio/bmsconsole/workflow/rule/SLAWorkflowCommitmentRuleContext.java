@@ -55,9 +55,9 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     }
 
     private void log(Object log) {
-        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 324l) {
+//        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 324l) {
             LOGGER.debug(log);
-        }
+//        }
     }
 
     @Override
