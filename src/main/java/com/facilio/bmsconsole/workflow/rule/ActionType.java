@@ -336,8 +336,13 @@ public enum ActionType {
 									c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
 									c.execute(impactContext);
 									if (impactContext.containsKey("impact_value")) {
-										double impact_key = (double) impactContext.get("impact_value");
-										PropertyUtils.setProperty(event, fieldName , impact_key);
+										if(impactContext.get("impact_value") != null) {
+											double impact_key = (double) impactContext.get("impact_value");
+											PropertyUtils.setProperty(event, fieldName , impact_key);
+										}
+										else {
+											LOGGER.info("No impact value for workFlowIds: "+workFlowIds+" moduleName "+moduleName+" currentRecord : "+currentRecord);
+										}									
 									}
 								}
 							}
@@ -1416,9 +1421,11 @@ public enum ActionType {
 				workflowContext.setLogNeeded(true);
 				Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
 				context.put("impact_value", val);
+				LOGGER.info("Calculated impact value for currentRule: "+currentRule+" currentRecord : "+currentRecord+ " workflowContext:" +workflowContext+ " impactresultval "+val);
 				// impactContext.get("impact_key");
 			}
 			catch (Exception e) {
+				LOGGER.info("Error in impact value for currentRule: "+currentRule+" currentRecord : "+currentRecord);
 				System.out.println(e);
 			}
 		}
