@@ -44,6 +44,10 @@ public class TaxValidationCommand extends FacilioCommand {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Choose At least 2 Taxes for Tax Group");
                         }
                     }
+                    if (tax.getId() > 0) {
+                        QuotationAPI.setTaxAsInactive(tax);
+                        tax.setId(-1);
+                    }
                 }
             }
         }

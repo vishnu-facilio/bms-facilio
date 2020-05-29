@@ -594,11 +594,11 @@ public class WorkOrderContext extends TicketContext {
 		this.deviationTaskUniqueId = deviationTaskUniqueId;
 	}
 
-	public Boolean getQuotationNeeded() {
+	public Boolean getIsQuotationNeeded() {
 		return isQuotationNeeded;
 	}
 
-	public void setQuotationNeeded(Boolean quotationNeeded) {
+	public void setIsQuotationNeeded(Boolean quotationNeeded) {
 		isQuotationNeeded = quotationNeeded;
 	}
 

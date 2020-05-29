@@ -197,4 +197,15 @@ public class QuotationAPI {
         }
     }
 
+    public static void setTaxAsInactive(TaxContext tax) throws Exception {
+
+        TaxContext updateTaxContext = new TaxContext();
+        updateTaxContext.setId(tax.getId());
+        updateTaxContext.setIsActive(false);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        RecordAPI.updateRecord(updateTaxContext, module, fields);
+    }
+
 }

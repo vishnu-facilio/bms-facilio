@@ -15,7 +15,7 @@ public class TaxContext extends ModuleBaseWithCustomFields {
     private String name;
     private Double rate;
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
@@ -54,7 +54,7 @@ public class TaxContext extends ModuleBaseWithCustomFields {
         return false;
     }
 
-    public void setActive(Boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 
