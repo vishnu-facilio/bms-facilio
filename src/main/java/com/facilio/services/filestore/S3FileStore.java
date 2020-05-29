@@ -12,17 +12,12 @@ import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.facilio.accounts.util.AccountUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.iterators.CollatingIterator;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,11 +30,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
-import com.amazonaws.services.s3.model.DeleteObjectsResult.DeletedObject;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.MultiObjectDeleteException;
+import com.amazonaws.services.s3.model.MultiObjectDeleteException.DeleteError;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
@@ -477,7 +471,9 @@ public class S3FileStore extends FileStore {
 				 log.info("s3 object deleted size : "+delObjRes.getDeletedObjects().size());
 			});
 		}catch(MultiObjectDeleteException e) {
-			log.error("Exception occurred S3 file deletion...: "+ e.getErrors());
+			List<DeleteError> error = e.getErrors();
+			error.forEach(del -> log.info("Object Key is : "+del.getKey() + " ErrorMessage is  : "+ del.getMessage()+"  error code : "+del.getCode()));
+			throw e;
 		}
 		catch(Exception e) {
 			throw e;
