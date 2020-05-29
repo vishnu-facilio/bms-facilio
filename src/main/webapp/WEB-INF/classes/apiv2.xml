@@ -2495,6 +2495,13 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
+		
+		<action name="thirdParty3dViewAssets"
+			class="com.facilio.bmsconsole.actions.AssetAction"
+			method="v2thirdParty3dViewAssetsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 
 	</package>
 	
@@ -5834,7 +5841,7 @@
 	<package name="buildingsApiv2" namespace="/api/v2/building" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2buildingList" />
 		<action name="details" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2BuildingDetails" />
-		<action name="thirdPartyBuildings" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2thirdPartyBuildingsList" />
+		<action name="thirdParty3dViewBuildings" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2thirdParty3dViewBuildingsList" />
 	</package>
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
@@ -5979,8 +5986,8 @@
 			method="bimJsonImport"
 		/>
 		
-		<action name="assetdata" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
-			method="getYouBimAssetData"
+		<action name="youBimViewDetails" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="getYouBimViewDetails"
 		/>
 		
 	</package>

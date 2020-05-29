@@ -44,6 +44,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -873,6 +875,54 @@ public class AssetAction extends FacilioAction {
 		List<Map<String, Object>> runStatusFields = AssetsAPI.getRunStatusFields(assetId);
 		setResult("runStatusAvailable", CollectionUtils.isNotEmpty(runStatusFields));
 		return SUCCESS;
+	}
+	
+	public String v2thirdParty3dViewAssetsList() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		FacilioField thirdpartyidField = modBean.getField("thirdpartyid", module.getName());
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																.moduleName(module.getName())
+																.beanClass(BuildingContext.class)
+																.select(modBean.getAllFields(module.getName()))
+																.table(module.getTableName())
+																.andCondition(CriteriaAPI.getCondition(thirdpartyidField,String.valueOf(buildingThirdPartyId),NumberOperators.EQUALS));
+		
+		BuildingContext building = selectBuilder.fetchFirst();
+		
+		if(building != null){
+			module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			thirdpartyidField = modBean.getField("thirdpartyid", module.getName());
+			FacilioField viewidField = modBean.getField("3dviewid", module.getName());
+			FacilioField currentSpaceIdField = modBean.getField("currentSpaceId", module.getName());
+			
+			SelectRecordsBuilder<AssetContext> selectBuilder1 = new SelectRecordsBuilder<AssetContext>()
+																	.moduleName(module.getName())
+																	.beanClass(AssetContext.class)
+																	.select(modBean.getAllFields(module.getName()))
+																	.table(module.getTableName())
+																	.andCondition(CriteriaAPI.getCondition(thirdpartyidField,"NULL",CommonOperators.IS_NOT_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(viewidField,"NULL",CommonOperators.IS_NOT_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(currentSpaceIdField,String.valueOf(building.getId()),NumberOperators.EQUALS));
+			
+			List<AssetContext> assets = selectBuilder1.get();
+			setResult(FacilioConstants.ContextNames.ASSET_LIST, assets);
+		}else{
+			setResult(FacilioConstants.ContextNames.ASSET_LIST, null);
+		}
+		return SUCCESS;
+	}
+	
+	long buildingThirdPartyId;
+
+	public long getBuildingThirdPartyId() {
+		return buildingThirdPartyId;
+	}
+
+	public void setBuildingThirdPartyId(long buildingThirdPartyId) {
+		this.buildingThirdPartyId = buildingThirdPartyId;
 	}
 	
 }

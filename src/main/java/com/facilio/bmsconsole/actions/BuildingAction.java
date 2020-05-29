@@ -75,7 +75,7 @@ public class BuildingAction extends FacilioAction {
 
 
 	
-	public String v2thirdPartyBuildingsList() throws Exception {
+	public String v2thirdParty3dViewBuildingsList() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
 		FacilioField thirdpartyidField = modBean.getField("thirdpartyid", module.getName());
