@@ -141,6 +141,12 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 count++;
 
                 Long value = (Long) FieldUtil.getValue(moduleRecord, dueField);
+                if (value == null) {
+                    // don't assign any escalations
+                    continue;
+                }
+
+                value = value + (escalation.getInterval() * 1000);
                 if (!FacilioUtil.isEmptyOrNull(value) && (value) < System.currentTimeMillis()) {
                     continue;
                 }

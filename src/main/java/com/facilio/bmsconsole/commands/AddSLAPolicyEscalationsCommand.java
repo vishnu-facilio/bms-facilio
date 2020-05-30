@@ -80,6 +80,14 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityId);
                     List<SLAWorkflowEscalationContext> levels = slaPolicyEntityEscalationContext.getLevels();
                     if (CollectionUtils.isNotEmpty(levels)) {
+                        long maxInterval = 0;
+                        for (SLAWorkflowEscalationContext level : levels) {
+                            if (maxInterval < level.getInterval()) {
+                                maxInterval = level.getInterval();
+                            }
+                        }
+
+                        maxInterval = maxInterval * 1000;
 
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                         FacilioModule module = slaPolicy.getModule();
@@ -92,7 +100,7 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                                 .module(module)
                                 .select(allFields)
                                 .andCondition(CriteriaAPI.getCondition(dueField, CommonOperators.IS_NOT_EMPTY))
-                                .andCondition(CriteriaAPI.getCondition(dueField, String.valueOf(System.currentTimeMillis()), NumberOperators.GREATER_THAN))
+                                .andCondition(CriteriaAPI.getCondition(dueField, String.valueOf(System.currentTimeMillis() - maxInterval), NumberOperators.GREATER_THAN))
                                 .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
                         moduleRecordBuilder.andCriteria(slaEntity.getCriteria());
                         SelectRecordsBuilder.BatchResult batchResult = moduleRecordBuilder.getInBatches("ID", 5000);
