@@ -5,14 +5,13 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public abstract class MessageQueue {
     private static final HashSet<String> STREAMS = new HashSet<>();
     private static org.apache.log4j.Logger log = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
+    private static final HashSet<String> ORG_CHECK = new HashSet<>(Arrays.asList("rmzbangalore", "wtcb", "sutherland"));
 
 
     private static Properties getLoggingProps(){
@@ -55,7 +54,7 @@ public abstract class MessageQueue {
                 for (Organization org : orgs) {
                     Long orgId = org.getOrgId();
                     String orgDomainName = org.getDomain();
-                    if( ! EXISTING_ORGS.contains(orgDomainName)) {
+                    if( (! EXISTING_ORGS.contains(orgDomainName)) && ORG_CHECK.contains(orgDomainName)) {
                         try {
                             startProcessor(orgId, orgDomainName);
                         } catch (Exception e) {
