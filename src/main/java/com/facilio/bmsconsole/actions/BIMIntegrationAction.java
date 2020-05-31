@@ -7,11 +7,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
@@ -34,6 +36,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext.AssetCategoryType;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -44,17 +47,26 @@ import com.facilio.bmsconsole.context.BimIntegrationLogsContext.ThirdParty;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -236,7 +248,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	
 	return "";
 }
-	public String getYouBimAssetData() throws Exception {
+	public String getYouBimViewDetails() throws Exception {
 		thirdParty = ThirdParty.YOUBIM;
 		
 		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
@@ -244,8 +256,17 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		setPassword(thirdPartyDetailsMap.get("password"));
 		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
 		String assetDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("assetdataURL")+bimAssetId+"&limit=50",token);
+		
+//		String typeDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("typedataURL")+bimTypeId+"?ContainTypeattributes=all",token);
+		String workordersString= getResponse(thirdParty,thirdPartyDetailsMap.get("workordersURL")+bimAssetId,token);
+		String documentsString= getResponse(thirdParty,thirdPartyDetailsMap.get("documentsURL")+bimAssetId,token);
+		
 		JSONParser parser = new JSONParser();
 		JSONObject resultObj = (JSONObject) parser.parse(assetDataJsonString);
+		
+		
+		String assetData  = ((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString();
+		
 		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
 		List<JSONObject> fields = new ArrayList<JSONObject>();
 		for(int i=0;i<arr.length();i++){
@@ -274,7 +295,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		setUserName(userName !=null ? userName : thirdPartyDetailsMap.get("userName"));
 		setPassword(password !=null ? password : thirdPartyDetailsMap.get("password"));
 		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
-		addThirdPartyIdCustomFieldInAsset(thirdParty);
+		addThirdPartyIdCustomModuleFieldInAsset(thirdParty);
 		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
 			bimIntegrationLog.setNoOfModules(1);
@@ -289,36 +310,27 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			long bimid = BimAPI.addBimIntegrationLog(module,fields,bimIntegrationLog);
 			bimIntegrationLog.setId(bimid);
 
-			importYouBimSitesBuildingAssets(thirdParty,thirdPartyDetailsMap.get("siteURL"),thirdPartyDetailsMap.get("buildingURL"),thirdPartyDetailsMap.get("assetCategoryURL"),getAssetURL(),token);
+			importYouBimSitesBuildingAssets(thirdParty,thirdPartyDetailsMap,getAssetURL(),token);
 			bimIntegrationLog.setStatus(BimIntegrationLogsContext.Status.COMPLETED);
 			BimAPI.updateBimIntegrationLog(module,fields,bimIntegrationLog);
 		}
 		return SUCCESS;
 	}
 	
-	public void addThirdPartyIdCustomFieldInAsset(ThirdParty thirdParty) throws Exception {
+	public void addThirdPartyIdCustomModuleFieldInAsset(ThirdParty thirdParty) throws Exception {
+		List<FacilioField> assetCustomFields = new ArrayList<FacilioField>();
+		List<FacilioField> buildingCustomFields = new ArrayList<FacilioField>();
+		List<FacilioField> bimViewCustomFields = new ArrayList<FacilioField>();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields("asset"));
 		if(!fieldsMap.containsKey("thirdpartyid")){
-			FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-			FacilioContext context = addFieldsChain.getContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-			FacilioField field =  new FacilioField();
-			field.setDataType(1);
-			field.setDisplayName("Third Party Id");
-			field.setDisplayType(FieldDisplayType.TEXTBOX);
-			field.setDisplayTypeInt(1);
-			field.setRequired(false);
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-			
-			addFieldsChain.execute();
+			assetCustomFields.add(getCustomField("Third Party Id", FieldDisplayType.TEXTBOX, 1, 1, false));
 		}
+		
 		if(thirdParty.equals(ThirdParty.INVICARA)){
+			
 			if(!fieldsMap.containsKey("runstatus")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
 				BooleanField field =  new BooleanField();
 				field.setDataType(4);
 				field.setDisplayName("Run status");
@@ -327,149 +339,113 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				field.setRequired(false);
 				field.setTrueVal("On");
 				field.setFalseVal("Off");
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(field);
 			}
+			
 			if(!fieldsMap.containsKey("servingspacename")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("Serving space Name");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("Serving space Name", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("servingspacenumber")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("Serving space Number");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("Serving space Number", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("systemname")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("System Name");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("System Name", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("systemclassification")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("System Classification");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("System Classification", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("uniclass")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("Uniclass");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("Uniclass", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("uniclassname")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("Uniclass Name");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("Uniclass Name", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}	
 		}
 		if(thirdParty.equals(ThirdParty.YOUBIM)){
 			if(!fieldsMap.containsKey("2dviewid")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("2d View Id");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("2d View Id", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
 			if(!fieldsMap.containsKey("3dviewid")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("3d View Id");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				assetCustomFields.add(getCustomField("3d View Id", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
+			if(!fieldsMap.containsKey("thirdpartytypeid")){
+				assetCustomFields.add(getCustomField("Third Party Type Id", FieldDisplayType.TEXTBOX, 1, 1, false));
+			}
+			
+			if(!assetCustomFields.isEmpty()){
+				FacilioChain addAssetFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context = addAssetFieldsChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, assetCustomFields);
+				addAssetFieldsChain.execute();
+			}
+			
 			Map<String,FacilioField> buildingFieldsMap = FieldFactory.getAsMap(modBean.getAllFields("building"));
 			if(!buildingFieldsMap.containsKey("thirdpartyid")){
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				FacilioContext context = addFieldsChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, "building");
-				FacilioField field =  new FacilioField();
-				field.setDataType(1);
-				field.setDisplayName("Third Party Id");
-				field.setDisplayType(FieldDisplayType.TEXTBOX);
-				field.setDisplayTypeInt(1);
-				field.setRequired(false);
-				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(field));
-				
-				addFieldsChain.execute();
+				buildingCustomFields.add(getCustomField("Third Party Id", FieldDisplayType.TEXTBOX, 1, 1, false));
 			}
+
+			if(!buildingCustomFields.isEmpty()){
+				FacilioChain addBuildingFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context1 = addBuildingFieldsChain.getContext();
+				context1.put(FacilioConstants.ContextNames.MODULE_NAME, "building");
+				context1.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, buildingCustomFields);
+				addBuildingFieldsChain.execute();
+			}
+			
+			FacilioModule customBimViewModule = modBean.getModule("custom_bimview");
+			if(customBimViewModule == null){
+				FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
+				FacilioContext context = addModulesChain.getContext();
+				context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, "bimView");
+				context.put(FacilioConstants.ContextNames.MODULE_TYPE, 1);
+				context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, "bimView");
+				addModulesChain.execute();
+				customBimViewModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+			}
+			Map<String,FacilioField> bimViewFieldsMap = FieldFactory.getAsMap(modBean.getAllFields("custom_bimview"));
+			
+			if(!bimViewFieldsMap.containsKey("thirdpartyid")){
+				bimViewCustomFields.add(getCustomField("Third Party Id", FieldDisplayType.TEXTBOX, 1, 2, false));
+			}
+			
+			if(!bimViewFieldsMap.containsKey("valuetype")){
+				bimViewCustomFields.add(getCustomField("Value Type", FieldDisplayType.TEXTBOX, 1, 1, false));
+			}
+			
+			if(!bimViewFieldsMap.containsKey("value")){
+				bimViewCustomFields.add(getCustomField("Value", FieldDisplayType.TEXTBOX, 1, 1, false));
+			}
+			
+			if(!bimViewCustomFields.isEmpty()){
+				FacilioChain addBimViewFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				FacilioContext context1 = addBimViewFieldsChain.getContext();
+				context1.put(FacilioConstants.ContextNames.MODULE_NAME, "custom_bimview");
+				context1.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, bimViewCustomFields);
+				addBimViewFieldsChain.execute();
+			}
+			
 		}
 	}
 	
-	public void importYouBimSitesBuildingAssets(ThirdParty thirdParty,String siteURL,String buildingURL,String assetCategoryURL,String assetURL,String token) throws Exception {
+	public FacilioField getCustomField(String displayName,FieldDisplayType displayType,int displayTypeInt,int dataType,boolean required){
+		FacilioField field =  new FacilioField();
+		field.setDataType(dataType);
+		field.setDisplayName(displayName);
+		field.setDisplayType(displayType);
+		field.setDisplayTypeInt(displayTypeInt);
+		field.setRequired(required);
+		
+		return field;
+	}
+	
+	public void importYouBimSitesBuildingAssets(ThirdParty thirdParty,HashMap<String,String> thirdPartyDetailsMap,String assetURL,String token) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Map<Long,Long> oldNewSiteIds = new HashMap<>();
 		Map<Long,Long> oldNewBuildingIds = new HashMap<>();
 		
-		String sitesJsonString= getResponse(thirdParty,siteURL,token);
+		String sitesJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("siteURL"),token);
 		JSONParser parser = new JSONParser();
 		JSONObject resultObj = (JSONObject) parser.parse(sitesJsonString);
 		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
@@ -493,7 +469,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			oldNewSiteIds.put(oldSiteId, newSiteId);
 		}
 		
-		String buildingsJsonString= getResponse(thirdParty,buildingURL,token);
+		String buildingsJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("buildingURL"),token);
 		resultObj = (JSONObject) parser.parse(buildingsJsonString);
 		arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
 		HashMap<String,String> assetCategoryMap = BimAPI.getThirdPartyAssetCategoryNames(thirdParty);
@@ -523,7 +499,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 			long newBuildingId =  building.getId();
 			oldNewBuildingIds.put(oldBuildingId, newBuildingId);
 			
-			String assetCategorysJsonString= getResponse(thirdParty,assetCategoryURL+String.valueOf(oldBuildingId),token);
+			String assetCategorysJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("assetCategoryURL")+String.valueOf(oldBuildingId),token);
 			resultObj = (JSONObject) parser.parse(assetCategorysJsonString);
 			JSONArray arr1 = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
 			
@@ -567,10 +543,185 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						JSONObject viewIdJson = (JSONObject) parser.parse(result2.get("modeling_identifier").toString());
 
 						long assetId = AssetsAPI.getAssetId(assetName, AccountUtil.getCurrentOrg().getId());
-												
+							
+						String assetDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("assetdataURL")+thirdPartyId+"&limit=100",token);
+						String typeDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("typedataURL")+oldAssetCategoryId+"?ContainTypeattributes=all",token);
+						String workordersString= getResponse(thirdParty,thirdPartyDetailsMap.get("workordersURL")+thirdPartyId,token);
+						String documentsString= getResponse(thirdParty,thirdPartyDetailsMap.get("documentsURL")+thirdPartyId,token);
+						
+						resultObj = (JSONObject) parser.parse(assetDataJsonString);
+						JSONArray arr3  = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+						Map<String,String> assetDatas = new HashMap<String,String>();
+						int assetDatalength = arr3.length();
+						int l=1;
+						for(int o=0;o<assetDatalength;o+=25){
+							JSONArray arr4 = new JSONArray();
+							for(int m=o;m<o+25;m++){
+								if(m<assetDatalength){
+									JSONObject result3 = (JSONObject) parser.parse(arr3.get(m).toString());
+									JSONObject json = new JSONObject();
+									json.put(result3.get("name").toString(), result3.get("value").toString());
+									arr4.put(json);
+								}
+							}
+							assetDatas.put("assetData_"+l, arr4.toString());
+							l++;
+						}
+
+						if(thirdPartyId.equals("17057865")){
+							System.err.println("assetDatas :: "+assetDatas);
+						}
+						
+						resultObj = (JSONObject) parser.parse(typeDataJsonString);
+						JSONObject result4 = (JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString());
+						JSONArray arr5 = new JSONArray();
+
+						JSONObject json = new JSONObject();
+						json.put("Type", result4.get("name").toString());
+						arr5.put(json);
+						json = new JSONObject();
+						json.put("Description", result4.get("description").toString());
+						arr5.put(json);
+						json = new JSONObject();
+						json.put("AssetType", result4.get("assettype").toString());
+						arr5.put(json);
+						json = new JSONObject();
+						
+						if(result4.get("manufacturer_id") != null){
+							JSONObject manufacturer = (JSONObject)parser.parse(result4.get("manufacturer").toString());
+							json.put("Manufacturer", manufacturer.get("email").toString());
+						}else{
+							json.put("Manufacturer", "");
+						}
+						arr5.put(json);
+						
+						json = new JSONObject();
+						json.put("ModelNumber", result4.get("modelnumber").toString());
+						arr5.put(json);
+						json = new JSONObject();
+						if(result4.get("warrantydurationunit_id")!=null){
+							json.put("WarrantyDurationUnit", result4.get("warrantydurationunit_id").toString());
+						}else{
+							json.put("WarrantyDurationUnit", "");
+						}
+						
+						arr5.put(json);
+						json = new JSONObject();
+						
+						if(result4.get("warrantyguarantorparts_id") != null){
+							JSONObject guarantorparts = (JSONObject)parser.parse(result4.get("guarantorparts").toString());
+							json.put("WarrantyGuarantorParts", guarantorparts.get("email").toString());
+						}else{
+							json.put("WarrantyGuarantorParts", "");
+						}
+						arr5.put(json);
+						
+						json = new JSONObject();
+						json.put("WarrantyDurationParts", result4.get("warrantydurationparts").toString());
+						arr5.put(json);
+						json = new JSONObject();
+						
+						if(result4.get("warrantyguarantorlabor_id") != null){
+							JSONObject guarantorlabor = (JSONObject)parser.parse(result4.get("guarantorlabor").toString());
+							json.put("WarrantyGuarantorLabor", guarantorlabor.get("email").toString());
+						}else{
+							json.put("WarrantyGuarantorLabor", "");
+						}
+						arr5.put(json);
+						json = new JSONObject();
+						json.put("WarrantyDurationLabor", result4.get("warrantydurationlabor").toString());
+						arr5.put(json);
+						
+						String typeData = arr5.toString();
+						
+						resultObj = (JSONObject) parser.parse(workordersString);
+						JSONArray workorderDataJson  = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
+						
+						Map<String,String> woDatas = new HashMap<String,String>();
+						int woLength = workorderDataJson.length();
+						int p = 1;
+						for(int o=0;o<woLength;o+=10){
+							JSONArray arr6 = new JSONArray();
+							for(int m=o;m<o+10;m++){
+								if(m<woLength){
+									JSONObject json1 = (JSONObject) parser.parse(workorderDataJson.get(m).toString());
+									JSONObject json2 = new JSONObject();
+									json2.put("status", ((JSONObject)parser.parse(json1.get("status").toString())).get("name").toString());
+									json2.put("desc", json1.get("description").toString());
+									json2.put("priority", ((JSONObject)parser.parse(json1.get("priority").toString())).get("name").toString());
+									json2.put("assignee", ((JSONObject)parser.parse(json1.get("user").toString())).get("first_name").toString() + " " +((JSONObject)parser.parse(json1.get("user").toString())).get("last_name").toString());
+									arr6.put(json2);
+								}
+							}
+							woDatas.put("workorderData_"+p, arr6.toString());
+							p++;
+						}
+						
+						
+						
+						
+						resultObj = (JSONObject) parser.parse(documentsString);
+						JSONArray documentDataJson  = new JSONArray(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString());
+						JSONArray arr7 = new JSONArray();
+						for(int n=0;n<documentDataJson.length();n++){
+							JSONObject json1 = (JSONObject) parser.parse(documentDataJson.get(n).toString());
+							JSONObject json2 = new JSONObject();
+							json2.put("Type", ((JSONObject)parser.parse(json1.get("documentcategory").toString())).get("name").toString().toUpperCase());
+							json2.put("Filename", json1.get("name").toString());
+							
+							int size = Integer.parseInt(json1.get("file_size").toString());
+							DecimalFormat dec = new DecimalFormat("0.0");
+							double b = size;
+							double kb = size/1024.0;
+							double mb = size/1048576.0;
+							double gb = size/1073741824.0;
+							
+							if ( gb>1 ) {
+								json2.put("Size", dec.format(gb).concat(" GB"));
+						    } else if ( mb>1 ) {
+						    	json2.put("Size", dec.format(mb).concat(" MB"));
+						    } else if ( kb>1 ) {
+						    	json2.put("Size", dec.format(kb).concat(" KB"));
+						    } else {
+						    	json2.put("Size", dec.format(b).concat(" Bytes"));
+						    }
+							arr7.put(json2);
+						}
+						String documentData = arr7.toString();
+						
+						CustomModuleData bimView = new CustomModuleData();
+						if(!assetDatas.isEmpty()){
+							for(Entry<String,String> en:assetDatas.entrySet()){
+								bimView.setDatum("thirdpartyid",Long.parseLong(thirdPartyId));
+								bimView.setDatum("valuetype", en.getKey());
+								bimView.setDatum("value", en.getValue());
+								addOrupdateModuleData(bimView,thirdPartyId);
+							}
+						}
+						
+						bimView.setDatum("thirdpartyid",Long.parseLong(thirdPartyId));
+						bimView.setDatum("valuetype", "typeData");
+						bimView.setDatum("value", typeData);
+						addOrupdateModuleData(bimView,thirdPartyId);
+						
+						if(!woDatas.isEmpty()){
+							for(Entry<String,String> en:woDatas.entrySet()){
+								bimView.setDatum("thirdpartyid",Long.parseLong(thirdPartyId));
+								bimView.setDatum("valuetype", en.getKey());
+								bimView.setDatum("value", en.getValue());
+								addOrupdateModuleData(bimView,thirdPartyId);
+							}
+						}
+						
+						bimView.setDatum("thirdpartyid",Long.parseLong(thirdPartyId));
+						bimView.setDatum("valuetype", "documentData");
+						bimView.setDatum("value", documentData);
+						addOrupdateModuleData(bimView,thirdPartyId);
+						
 						if(assetId > 0){
 							AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setDatum("thirdpartytypeid", oldAssetCategoryId);
 							asset.setDatum("2dviewid", viewIdJson.get("2d").toString());
 							asset.setDatum("3dviewid", viewIdJson.get("3d").toString());
 							asset.setName(assetName);
@@ -583,6 +734,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						}else{
 							AssetContext asset = new AssetContext();
 							asset.setDatum("thirdpartyid", thirdPartyId);
+							asset.setDatum("thirdpartytypeid", oldAssetCategoryId);
 							asset.setDatum("2dviewid", viewIdJson.get("2d").toString());
 							asset.setDatum("3dviewid", viewIdJson.get("3d").toString());
 							asset.setName(assetName);
@@ -594,11 +746,52 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 							addAsset(asset,moduleName);
 						}
 						
+						
+						
 					}
 				}
 			}
 		}
 	}
+	
+	public void addOrupdateModuleData(CustomModuleData bimView,String thirdPartyId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule bimViewModule = modBean.getModule("custom_bimview");
+		List<FacilioField> bimViewFields = modBean.getAllFields("custom_bimview");
+		Map<String,FacilioField> bimViewFieldsMap = FieldFactory.getAsMap(bimViewFields);
+		
+		SelectRecordsBuilder<CustomModuleData> builder = new SelectRecordsBuilder<CustomModuleData>()
+				.select(bimViewFields).module(bimViewModule)
+				.beanClass(CustomModuleData.class)
+				.andCondition(CriteriaAPI.getCondition(bimViewFieldsMap.get("thirdpartyid"), thirdPartyId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(bimViewFieldsMap.get("valuetype"), bimView.getDatum("valuetype").toString(), StringOperators.IS));
+		CustomModuleData bimView1 = builder.fetchFirst();
+		
+		if(bimView1!=null){
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "custom_bimview");
+			context.put(FacilioConstants.ContextNames.RECORD, bimView);
+			bimView.parseFormData();
+			
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(bimView1.getId()));
+			
+			FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
+			updateModuleDataChain.execute(context);
+		}else{
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "custom_bimview");
+			context.put(FacilioConstants.ContextNames.RECORD, bimView);
+			bimView.parseFormData();
+			
+			FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+			addModuleDataChain.execute(context);
+		}
+		
+		
+	}
+	
 	
 	public void importInvicaraAssets(ThirdParty thirdParty,String assetURL,String token) throws Exception {
 		LOGGER.info("Inside importInvicaraAssets");	
@@ -958,6 +1151,18 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 		context.put(FacilioConstants.ContextNames.FETCH_HIERARCHY, false);
 		
 		assetDetailsChain.execute();
+	}
+	
+	public String getStatusAndSeverityList() throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioStatus> assetTicketStatusList = TicketAPI.getStatuses(module,null);
+		setResult("assetTicketStatusList",assetTicketStatusList);
+		List<FacilioStatus> workorderTicketStatusList = WorkOrderAPI.getWorkorderTicketStatusList();
+		setResult("workorderTicketStatusList", workorderTicketStatusList);
+		List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
+		setResult("alarmSeverityList", alarmSeverityList);
+		return SUCCESS;
 	}
 	
 	private long bimAssetId;

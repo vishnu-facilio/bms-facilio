@@ -263,6 +263,7 @@ public class TicketAPI {
 		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+				.beanClass(FacilioStatus.class)
 				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		if (criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);

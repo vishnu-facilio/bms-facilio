@@ -5990,6 +5990,10 @@
 			method="getYouBimViewDetails"
 		/>
 		
+		<action name="loadStatusSeverity" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
+			method="getStatusAndSeverityList"
+		/>
+		
 	</package>
 		<package name="clientContactViews" namespace="/api/v2/clientcontact/views"
 		extends="v2Api">

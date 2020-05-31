@@ -351,16 +351,10 @@ public class AssetAction extends FacilioAction {
 			setResult("currentBuilding",building);
 			BusinessHoursList businessHour = BusinessHoursAPI.getBusinessHours(asset.getOperatingHour());
 			setResult("businessHour",businessHour);
-			List<FacilioStatus> assetTicketStatusList = TicketAPI.getStatuses(module,null);
-			setResult("assetTicketStatusList",assetTicketStatusList);
 			List<WorkOrderContext> workorders = WorkOrderAPI.getOverdueWorkOrdersByResourceId(asset.getId(),10);
 			setResult("workorders", workorders);
-			List<FacilioStatus> workorderTicketStatusList = WorkOrderAPI.getWorkorderTicketStatusList();
-			setResult("workorderTicketStatusList", workorderTicketStatusList);
 			List<AlarmContext> alarms = AlarmAPI.getAlarms(asset.getId());
 			setResult("alarms", alarms);
-			List<AlarmSeverityContext> alarmSeverityList = AlarmAPI.getAlarmSeverityList();
-			setResult("alarmSeverityList", alarmSeverityList);
 			List<ReadingDataMeta> readings = ReadingsAPI.getConnectedReadings(asset.getId());
 			setResult("readings", readings);
 		}else{
