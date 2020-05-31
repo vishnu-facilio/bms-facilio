@@ -26,6 +26,8 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -34,8 +36,10 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -340,9 +344,15 @@ public class AssetAction extends FacilioAction {
 		
 		AssetContext asset = selectBuilder.fetchFirst();
 		if(asset!=null){
+			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(asset.getCategory().getId());
+			asset.getCategory().setDisplayName(assetCategory.getDisplayName());
 			setResult("asset",asset);
 			BuildingContext building = SpaceAPI.getBuildingSpace(asset.getCurrentSpaceId());
-			setResult("bimBuildingId",building.getDatum("thirdpartyid"));
+			setResult("currentBuilding",building);
+			BusinessHoursList businessHour = BusinessHoursAPI.getBusinessHours(asset.getOperatingHour());
+			setResult("businessHour",businessHour);
+			List<FacilioStatus> assetTicketStatusList = TicketAPI.getStatuses(module,null);
+			setResult("assetTicketStatusList",assetTicketStatusList);
 			List<WorkOrderContext> workorders = WorkOrderAPI.getOverdueWorkOrdersByResourceId(asset.getId(),10);
 			setResult("workorders", workorders);
 			List<FacilioStatus> workorderTicketStatusList = WorkOrderAPI.getWorkorderTicketStatusList();
