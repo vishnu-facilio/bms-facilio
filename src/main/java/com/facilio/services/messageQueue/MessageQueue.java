@@ -11,7 +11,6 @@ public abstract class MessageQueue {
     private static final HashSet<String> STREAMS = new HashSet<>();
     private static org.apache.log4j.Logger log = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
-    private static final HashSet<String> ORG_CHECK = new HashSet<>(Arrays.asList("rmzbangalore", "wtcb", "sutherland"));
 
 
     private static Properties getLoggingProps(){
@@ -54,7 +53,7 @@ public abstract class MessageQueue {
                 for (Organization org : orgs) {
                     Long orgId = org.getOrgId();
                     String orgDomainName = org.getDomain();
-                    if( (! EXISTING_ORGS.contains(orgDomainName)) && ORG_CHECK.contains(orgDomainName)) {
+                    if( (! EXISTING_ORGS.contains(orgDomainName))) {
                         try {
                             startProcessor(orgId, orgDomainName);
                         } catch (Exception e) {
