@@ -71,7 +71,7 @@ public class AggregationColumnMetaContext implements Serializable {
     public AggregateOperator getAggregateOperatorEnum() {
         return aggregateOperator;
     }
-    public void setAggregateOperator(AggregateOperator aggregateOperator) {
+    public void setAggregateOperatorEnum(AggregateOperator aggregateOperator) {
         this.aggregateOperator = aggregateOperator;
     }
 

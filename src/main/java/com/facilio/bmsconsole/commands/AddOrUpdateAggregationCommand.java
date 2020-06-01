@@ -29,7 +29,7 @@ public class AddOrUpdateAggregationCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         AggregationMetaContext aggregationMeta = (AggregationMetaContext) context.get(FacilioConstants.ContextNames.AGGREGATION_META);
         if (aggregationMeta != null) {
-            if (aggregationMeta.getAggregateOperatorEnum() == null) {
+            if (aggregationMeta.getFrequencyTypeEnum() == null) {
                 throw new IllegalArgumentException("Invalid date aggregation operator");
             }
 

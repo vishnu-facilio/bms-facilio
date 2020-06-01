@@ -328,6 +328,8 @@
 	<package name="aggregationMeta" namespace="/api/v2/aggregationMeta" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.AggregationAction" method="addOrUpdateAggregation">
 		</action>
+		<action name="run"
+				class="com.facilio.bmsconsole.actions.AggregationAction" method="runAggregationJob" />
 	</package>
 
 	<package name="stateFlow" namespace="/api/v2/stateflow"

@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.context;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
+import com.facilio.time.DateTimeUtil;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class AggregationMetaContext implements Serializable {
@@ -66,26 +69,23 @@ public class AggregationMetaContext implements Serializable {
         this.columnList = columnList;
     }
 
-    private BmsAggregateOperators.DateAggregateOperator aggregateOperator;
-    public Integer getAggregateOperator() {
-        if (aggregateOperator == null) {
+    private FrequencyType frequencyType;
+    public Integer getFrequencyType() {
+        if (frequencyType == null) {
             return null;
         }
-        return aggregateOperator.getValue();
+        return frequencyType.getIndex();
     }
-    public void setAggregateOperator(Integer operator) {
-        if (operator != null) {
-            AggregateOperator aggregateOperator = BmsAggregateOperators.getAggregateOperator(operator);
-            if (aggregateOperator instanceof BmsAggregateOperators.DateAggregateOperator) {
-                this.aggregateOperator = (BmsAggregateOperators.DateAggregateOperator) aggregateOperator;
-            }
+    public void setFrequencyType(Integer frequencyTypeInt) {
+        if (frequencyTypeInt != null) {
+            frequencyType = FrequencyType.valueOf(frequencyTypeInt);
         }
     }
-    public BmsAggregateOperators.DateAggregateOperator getAggregateOperatorEnum() {
-        return aggregateOperator;
+    public FrequencyType getFrequencyTypeEnum() {
+        return frequencyType;
     }
-    public void setAggregateOperator(BmsAggregateOperators.DateAggregateOperator aggregateOperator) {
-        this.aggregateOperator = aggregateOperator;
+    public void setFrequencyTypeEnum(FrequencyType frequencyType) {
+        this.frequencyType = frequencyType;
     }
 
     private Long interval;
@@ -102,5 +102,54 @@ public class AggregationMetaContext implements Serializable {
     }
     public void setLastSync(Long lastSync) {
         this.lastSync = lastSync;
+    }
+
+    public enum FrequencyType implements FacilioEnum {
+        HOURLY("Hourly", BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY.getValue()) {
+            @Override
+            public long getAggregatedTime(Long ttime) {
+                ZonedDateTime zonedDateTime = DateTimeUtil.getZonedDateTime(ttime);
+                zonedDateTime = zonedDateTime.withMinute(0)
+                        .withSecond(0);
+                return DateTimeUtil.getMillis(zonedDateTime, true);
+            }
+
+            @Override
+            public long getNextSyncTime(Long lastSync) {
+                return lastSync + (60 * 60 * 1000);
+            }
+        };
+
+        private String name;
+        private Integer aggregateOperatorInt;
+        FrequencyType (String name, Integer aggregateOperator) {
+            this.name = name;
+            this.aggregateOperatorInt = aggregateOperator;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        public BmsAggregateOperators.DateAggregateOperator getAggregateOperator() {
+            return (BmsAggregateOperators.DateAggregateOperator) AggregateOperator.getAggregateOperator(aggregateOperatorInt);
+        }
+
+        public static FrequencyType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        public abstract long getAggregatedTime(Long ttime);
+
+        public abstract long getNextSyncTime(Long lastSync);
     }
 }
