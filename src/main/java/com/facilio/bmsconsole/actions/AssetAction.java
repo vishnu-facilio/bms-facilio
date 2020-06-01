@@ -352,7 +352,7 @@ public class AssetAction extends FacilioAction {
 			setResult("workorders", workorders);
 			List<AlarmContext> alarms = AlarmAPI.getAlarms(asset.getId());
 			setResult("alarms", alarms);
-			List<ReadingDataMeta> readings = ReadingsAPI.getConnectedReadings(asset.getId());
+			List<ReadingDataMeta> readings = ReadingsAPI.getConnectedLoggedReadings(asset.getId());
 			setResult("readings", readings);
 		}else{
 			setResult("asset",null);

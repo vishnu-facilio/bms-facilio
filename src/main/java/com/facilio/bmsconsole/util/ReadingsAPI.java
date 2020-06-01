@@ -1449,14 +1449,21 @@ public class ReadingsAPI {
 			}
 	}
 	
-	public static List<ReadingDataMeta> getConnectedReadings(Long assetId) throws Exception {
+	public static List<ReadingDataMeta> getConnectedLoggedReadings(Long assetId) throws Exception {
 		 FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		 FacilioContext context = new FacilioContext();
 		 context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
-		 context.put(FacilioConstants.ContextNames.FILTER, "connected");
+		 List<String> filters = new ArrayList<>();
+		 filters.add("connected");
+		 filters.add("logged");
+		 context.put(FacilioConstants.ContextNames.FILTERS, filters);
 		 latestAssetData.execute(context);
-		
-		return (List<ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
+		 List<ReadingDataMeta> rdmList =  (List<ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
+		 if(rdmList == null){
+			 return new ArrayList<ReadingDataMeta>();
+		 }else{
+			return rdmList;
+		 }
 	 }
 	
 }

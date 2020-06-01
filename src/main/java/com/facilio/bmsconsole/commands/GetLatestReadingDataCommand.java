@@ -78,6 +78,38 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 				}
 			}
 			
+			List<String> inputTypes = (List<String>) context.get(FacilioConstants.ContextNames.FILTERS);
+			if(inputTypes !=null && !inputTypes.isEmpty()){
+				for(String inputType1:inputTypes){
+					if (inputType1.equals("connected")) {
+						readingInputTypes.add(ReadingInputType.CONTROLLER_MAPPED);
+						excludeEmptyFields = true;
+					}
+					else if (inputType1.equals("formula")) {
+						readingInputTypes.add(ReadingInputType.FORMULA_FIELD);
+					}
+					else if (inputType1.equals("nonformula") || inputType1.equals("available")) {
+						readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD)
+								.collect(Collectors.toList());
+						if (inputType.equals("available")) {
+							unused = true;
+						}
+						excludeEmptyFields = false;
+					}
+					else if (inputType1.equals("logged")) {
+						readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.CONTROLLER_MAPPED && type != ReadingInputType.FORMULA_FIELD)
+								.collect(Collectors.toList());
+						excludeEmptyFields = true;
+					}
+					else if (inputType1.equals("writable")) {
+						readingType = ReadingType.WRITE;
+					}
+					else if (inputType1.equals("readable")) {
+						readingType = ReadingType.READ;
+					}
+				}
+			}
+			
 			ReadingInputType[] types = null;
 			if (!readingInputTypes.isEmpty()) {
 				types = readingInputTypes.toArray(new ReadingInputType[readingInputTypes.size()]);
