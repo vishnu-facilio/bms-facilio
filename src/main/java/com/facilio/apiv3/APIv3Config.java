@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -28,12 +29,14 @@ import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.DefaultInit;
 
+import java.util.function.Supplier;
+
 @Config
 public class APIv3Config {
 
     @Module("custom_test")
-    public static V3Config customTest() {
-        return new V3Config(ModuleBaseWithCustomFields.class)
+    public static Supplier<V3Config> customTest() {
+        return () -> new V3Config(CustomModuleData.class)
                 .create()
                     .init(new DefaultInit())
                     .beforeSave(new SampleBeforeSaveCommand())
@@ -56,8 +59,8 @@ public class APIv3Config {
     }
 
     @Module("assetdepreciation")
-    public static V3Config getAssetDepreciation() {
-        return new V3Config(AssetDepreciationContext.class)
+    public static Supplier<V3Config> getAssetDepreciation() {
+        return () -> new V3Config(AssetDepreciationContext.class)
                 .create()
                     .beforeSave(new ValidateAssetDepreciationCommand())
                 .summary()
@@ -66,8 +69,8 @@ public class APIv3Config {
     }
 
     @Module("quotation")
-    public static V3Config getQuotation() {
-        return new V3Config(QuotationContext.class)
+    public static Supplier<V3Config> getQuotation() {
+        return () -> new V3Config(QuotationContext.class)
 
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
@@ -85,8 +88,8 @@ public class APIv3Config {
     }
 
     @Module("tax")
-    public static V3Config getTax() {
-        return new V3Config(TaxContext.class)
+    public static Supplier<V3Config> getTax() {
+        return () -> new V3Config(TaxContext.class)
 
                 .create()
                 .beforeSave(new TaxValidationCommand())
@@ -113,8 +116,8 @@ public class APIv3Config {
     }
 
     @Module("workpermit")
-    public static V3Config getWorkPermit() {
-        return new V3Config(V3WorkPermitContext.class)
+    public static Supplier<V3Config> getWorkPermit() {
+        return () -> new V3Config(V3WorkPermitContext.class)
                 .create()
                     .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
                     .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
@@ -131,8 +134,8 @@ public class APIv3Config {
     }
 
     @Module("insurance")
-    public static V3Config getInsurance() {
-        return new V3Config(V3InsuranceContext.class)
+    public static Supplier<V3Config> getInsurance() {
+        return () -> new V3Config(V3InsuranceContext.class)
                 .create()
                     .beforeSave(new AssociateVendorToInsuranceCommandV3())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
@@ -145,8 +148,8 @@ public class APIv3Config {
     }
 
     @Module("visitorlogging")
-    public static V3Config getVisitorLogging() {
-        return new V3Config(V3VisitorLoggingContext.class)
+    public static Supplier<V3Config> getVisitorLogging() {
+        return () -> new V3Config(V3VisitorLoggingContext.class)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
                 .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
@@ -162,8 +165,8 @@ public class APIv3Config {
     }
 
     @Module("visitor")
-    public static V3Config getVisitor() {
-        return new V3Config(V3VisitorContext.class)
+    public static Supplier<V3Config> getVisitor() {
+        return () -> new V3Config(V3VisitorContext.class)
                 .create()
                   .beforeSave(TransactionChainFactoryV3.getVisitorBeforeSaveOnAddChain())
                   .afterSave(TransactionChainFactoryV3.getVisitorAfterSaveOnAddChain())

@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
 public class RESTAPIHandler extends V3Action implements ServletRequestAware, ServletResponseAware {
     private static final Logger LOGGER = Logger.getLogger(RESTAPIHandler.class.getName());
 
-    private static final Map<String, V3Config> MODULE_HANDLER_MAP = new HashMap<>();
+    private static final Map<String, Supplier<V3Config>> MODULE_HANDLER_MAP = new HashMap<>();
 
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName), new MethodAnnotationsScanner());
@@ -63,7 +64,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                 throw new IllegalStateException("Module name cannot be empty.");
             }
 
-            V3Config config = (V3Config) method.invoke(null, null);
+            Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
 
             if (MODULE_HANDLER_MAP.containsKey(moduleName)) {
                 throw new IllegalStateException("Module config already present.");
@@ -88,8 +89,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         Class<?> returnType = method.getReturnType();
 
-        if (!returnType.equals(V3Config.class)) {
-            throw new IllegalStateException("Return type should be V3Config.");
+        if (!returnType.equals(Supplier.class)) {
+            throw new IllegalStateException("Return type should be Supplier<V3Config>.");
         }
     }
 
@@ -259,8 +260,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     }
 
     private static V3Config getV3Config(String moduleName) {
-        V3Config v3Config = MODULE_HANDLER_MAP.get(moduleName);
-        return v3Config;
+        Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(moduleName);
+        return v3Config.get();
     }
 
     private static void addIfNotNull(FacilioChain chain, Command command) {
