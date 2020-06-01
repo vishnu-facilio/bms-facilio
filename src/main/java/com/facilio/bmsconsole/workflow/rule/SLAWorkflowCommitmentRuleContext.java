@@ -124,7 +124,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
                     if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
                         slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(getName(), getParentRuleId(), slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
+                        addEscalationJobs(getParentRuleId(), slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    public static void addEscalationJobs(String name, Long parentRuleId, List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
+    public static void addEscalationJobs(Long parentRuleId, List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord, SLAEntityContext slaEntity) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(moduleRecord), "_Escalation_", StringOperators.CONTAINS, module);
             int count = 0;
@@ -152,7 +152,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 }
 
                 WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-                workflowRuleContext.setName(name + "_Escalation_" + count);
+                workflowRuleContext.setName(slaEntity.getName() + "_Escalation_" + count);
                 workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
                 workflowRuleContext.setActivityType(EventType.SCHEDULED);
                 workflowRuleContext.setModule(module);

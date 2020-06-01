@@ -107,23 +107,8 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
                         while (batchResult.hasNext()) {
                             List<? extends ModuleBaseWithCustomFields> list = batchResult.get();
                             for (ModuleBaseWithCustomFields moduleRecord : list) {
-                                if (CollectionUtils.isNotEmpty(slaCommitments)) {
-                                    for (SLAWorkflowCommitmentRuleContext commitment : slaCommitments) {
-                                        Criteria criteria = commitment.getCriteria();
-                                        boolean evaluate = true;
-                                        if (criteria != null) {
-                                            Map<String, Object> prop = FieldUtil.getAsProperties(moduleRecord);
-                                            Map<String, Object> placeHolders = new HashMap<>();
-                                            CommonCommandUtil.appendModuleNameInKey(null, "workorder", prop, placeHolders);
-                                            evaluate = criteria.computePredicate(FieldUtil.getAsProperties(placeHolders)).evaluate(moduleRecord);
-                                        }
-                                        if (evaluate) {
-                                            SLAWorkflowCommitmentRuleContext.addEscalationJobs(commitment.getName(), slaPolicyId, levels,
-                                                    module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
-                                            break;
-                                        }
-                                    }
-                                }
+                                SLAWorkflowCommitmentRuleContext.addEscalationJobs(slaPolicyId, levels,
+                                        module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
                             }
                         }
                     }
