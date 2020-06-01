@@ -909,7 +909,23 @@ public class AssetAction extends FacilioAction {
 																	.andCondition(CriteriaAPI.getCondition(currentSpaceIdField,String.valueOf(building.getId()),NumberOperators.EQUALS));
 			
 			List<AssetContext> assets = selectBuilder1.get();
+			List<String> overdueWorkorderAsset3dViewIds = new ArrayList<>();
+			List<String> alarmAsset3dViewIds = new ArrayList<>();
+			for(AssetContext asset:assets){
+				List<WorkOrderContext> workorders = WorkOrderAPI.getOverdueWorkOrdersByResourceId(asset.getId(),10);
+				if(!workorders.isEmpty()){
+					overdueWorkorderAsset3dViewIds.add(asset.getData().get("3dviewid").toString());
+				}
+				
+				List<AlarmContext> alarms = AlarmAPI.getAlarms(asset.getId());
+				if(!alarms.isEmpty()){
+					alarmAsset3dViewIds.add(asset.getData().get("3dviewid").toString());
+				}
+			}
+			
 			setResult(FacilioConstants.ContextNames.ASSET_LIST, assets);
+			setResult("overdueWorkorderAsset3dViewIds", overdueWorkorderAsset3dViewIds);
+			setResult("alarmAsset3dViewIds", alarmAsset3dViewIds);
 		}else{
 			setResult(FacilioConstants.ContextNames.ASSET_LIST, null);
 		}
