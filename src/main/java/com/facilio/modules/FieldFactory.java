@@ -8529,7 +8529,36 @@ public class FieldFactory {
 
  		return fields;
 	}
-	
+
+	public static List<FacilioField> getAggregationMetaFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAggregationMetaModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("storageModuleId", "STORAGE_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("aggregateOperator", "AGGREGATE_OPERATOR_ID", module, FieldType.NUMBER));
+        fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getField("lastSync", "LAST_SYNC", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getAggregationColumnMetaFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAggregationColumnMetaModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("aggregationMetaId", "AGGREGATION_META_ID", module, FieldType.NUMBER));
+        fields.add(getField("moduleId", "FIELD_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("aggregateOperator", "AGGREGATE_OPERATOR_ID", module, FieldType.NUMBER));
+        fields.add(getField("storageFieldId", "STORAGE_FIELD_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
 	public static List<FacilioField> getBimDefaultValuesFields()
 	{
  		List<FacilioField> fields = new ArrayList<>();

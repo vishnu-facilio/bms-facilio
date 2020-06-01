@@ -325,6 +325,11 @@
 				method="getRollup" />
 	</package>
 
+	<package name="aggregationMeta" namespace="/api/v2/aggregationMeta" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.AggregationAction" method="addOrUpdateAggregation">
+		</action>
+	</package>
+
 	<package name="stateFlow" namespace="/api/v2/stateflow"
 		extends="v2Api">
 		<action name="addOrUpdate"

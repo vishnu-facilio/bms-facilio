@@ -1677,6 +1677,22 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getAggregationMetaModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("aggregationMeta");
+		module.setDisplayName("Aggregation Meta");
+		module.setTableName("Aggregation_Meta");
+		return module;
+	}
+
+	public static FacilioModule getAggregationColumnMetaModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("aggregationColumnMeta");
+		module.setDisplayName("Aggregation Column Meta");
+		module.setTableName("Aggregation_Column_Meta");
+		return module;
+	}
+
 
 	public static FacilioModule getWorkflowUserFunctionModule() {
 		FacilioModule module = new FacilioModule();

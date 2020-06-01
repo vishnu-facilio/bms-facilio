@@ -181,6 +181,7 @@ public class FacilioConstants {
 		public static final String APPROVAL_STATUS = "approvalStatus";
 		public static final String SYSTEM_CONTROLLER_MODULE_NAME = "systemController";
 		public static final String CONTROLLER_READINGS_MODULE_NAME = "controllerReadings";
+		public static final String AGGREGATION_META = "aggregationMeta";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
