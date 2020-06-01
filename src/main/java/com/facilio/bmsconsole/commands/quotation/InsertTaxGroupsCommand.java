@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.quotation.TaxContext;
 import com.facilio.bmsconsole.context.quotation.TaxGroupContext;
+import com.facilio.bmsconsole.util.QuotationAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -50,6 +51,11 @@ public class InsertTaxGroupsCommand extends FacilioCommand {
                         }
                     }
                     RecordAPI.addRecord(false, taxGroups, taxGroupsModule, fields);
+                } else {
+                    Long oldTaxId = (Long) context.get(FacilioConstants.ContextNames.OLD_TAX_ID);
+                    if (oldTaxId != null && oldTaxId > 0) {
+                        QuotationAPI.updateTaxGroupsOnChildUpdate(tax, oldTaxId);
+                    }
                 }
             }
         }

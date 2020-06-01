@@ -98,6 +98,17 @@ public class APIv3Config {
                 .afterFetch(new TaxFillDetailsCommand())
 
                 .build();
+        /*
+            Using add handler for update too send with id for Updating
+            Bulk Add is Supported
+            Only single update is Supported (For Bulk update maintain old record id vs new record id map)
+
+            Tax Group Update => Sets current group as inactive and creates a new group
+
+            Tax Individual Update => 1. Current tax is set as Inactive,
+                                     2. List of All Groups with the updating tax as child will be set as inactive and new Tax
+                                        groups will be added with new tax id
+         */
     }
 
     @Module("workpermit")

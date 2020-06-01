@@ -41,6 +41,14 @@ public class QuotationAPI {
         return records;
     }
 
+    public static TaxContext getTaxDetails(Long taxId) throws Exception {
+        List<TaxContext> taxList = getTaxesForIdList(Collections.singletonList(taxId));
+        if (CollectionUtils.isNotEmpty(taxList)) {
+            return taxList.get(0);
+        }
+        return null;
+    }
+
     public static void calculateQuotationCost(QuotationContext quotation) throws Exception {
         /* Calculates the Total Cost and Tax Amount for Line Items
             Line item Cost = Unit Price * Qty
@@ -145,6 +153,25 @@ public class QuotationAPI {
         return records;
     }
 
+    public static List<TaxGroupContext> getTaxGroupsForChildTax(List<Long> childTaxIds) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX_GROUPS);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TAX_GROUPS);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<TaxGroupContext> builder = new SelectRecordsBuilder<TaxGroupContext>()
+                .module(module)
+                .beanClass(TaxGroupContext.class)
+                .select(fields)
+                .fetchSupplement((LookupField) fieldsAsMap.get("childTax"));
+        if (CollectionUtils.isNotEmpty(childTaxIds)) {
+            builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("childTax"), StringUtils.join(childTaxIds, ","), NumberOperators.EQUALS));
+        }
+        List<TaxGroupContext> records = builder.get();
+
+        return records;
+    }
+
     public static void fillTaxDetails(List<TaxContext> taxList) throws Exception {
         List<TaxContext> taxGroupsList = taxList.stream().filter(tax -> tax.getType() == TaxContext.Type.GROUP.getIndex()).collect(Collectors.toList());
         List<Long> parentTaxIds = taxGroupsList.stream().map(TaxContext::getId).collect(Collectors.toList());
@@ -206,6 +233,53 @@ public class QuotationAPI {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         RecordAPI.updateRecord(updateTaxContext, module, fields);
+    }
+
+    public static void updateTaxGroupsOnChildUpdate(TaxContext tax, Long oldTaxId) throws Exception {
+
+        if (tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule taxModule = modBean.getModule(FacilioConstants.ContextNames.TAX);
+            List<FacilioField> taxFields = modBean.getAllFields(taxModule.getName());
+            List<TaxGroupContext> taxGroupsForChildTax = getTaxGroupsForChildTax(Collections.singletonList(oldTaxId));
+            for (TaxGroupContext childTaxGroup : taxGroupsForChildTax) {
+                TaxContext taxGroupsParentTax = getTaxDetails(childTaxGroup.getParentTax().getId());
+                setTaxAsInactive(taxGroupsParentTax);
+                Long oldTaxGroupId = taxGroupsParentTax.getId();
+                List<TaxGroupContext> taxGroupsForParentTax = getTaxesForGroups(Collections.singletonList(oldTaxGroupId));
+                taxGroupsParentTax.setId(-1);
+
+                Double rate = 0d;
+                for (TaxGroupContext tg : taxGroupsForParentTax) {
+                    if (tg.getChildTax().getId() == oldTaxId) {
+                        tg.setChildTax(tax);
+                        rate += tax.getRate();
+                    } else {
+                        rate += tg.getChildTax().getRate();
+                    }
+                }
+                taxGroupsParentTax.setRate(rate);
+
+                RecordAPI.addRecord(false, Collections.singletonList(taxGroupsParentTax), taxModule, taxFields);
+
+                List<TaxGroupContext> taxGroups = new ArrayList<>();
+                FacilioModule taxGroupsModule = modBean.getModule(FacilioConstants.ContextNames.TAX_GROUPS);
+                List<FacilioField> taxGroupFields = modBean.getAllFields(FacilioConstants.ContextNames.TAX_GROUPS);
+                if (CollectionUtils.isNotEmpty(taxGroupsForParentTax)) {
+                    for (TaxGroupContext childTaxG2 : taxGroupsForParentTax) {
+                        TaxGroupContext taxGroup = new TaxGroupContext();
+                        taxGroup.setParentTax(taxGroupsParentTax);
+                        if (childTaxG2.getChildTax().getId() == oldTaxId) {
+                            taxGroup.setChildTax(tax);
+                        } else {
+                            taxGroup.setChildTax(childTaxG2.getChildTax());
+                        }
+                        taxGroups.add(taxGroup);
+                    }
+                }
+                RecordAPI.addRecord(false, taxGroups, taxGroupsModule, taxGroupFields);
+            }
+        }
     }
 
 }

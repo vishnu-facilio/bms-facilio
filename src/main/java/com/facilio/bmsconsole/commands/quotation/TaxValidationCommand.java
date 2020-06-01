@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands.quotation;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.quotation.TaxContext;
 import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -46,6 +47,7 @@ public class TaxValidationCommand extends FacilioCommand {
                     }
                     if (tax.getId() > 0) {
                         QuotationAPI.setTaxAsInactive(tax);
+                        context.put(FacilioConstants.ContextNames.OLD_TAX_ID, tax.getId());
                         tax.setId(-1);
                     }
                 }
