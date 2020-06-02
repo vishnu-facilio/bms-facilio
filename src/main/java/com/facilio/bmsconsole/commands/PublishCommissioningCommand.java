@@ -103,18 +103,19 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			
 			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitChanged) {
 				
+				boolean  mappingChanged = true;
 				if (fieldAvailable && resourceAvailable) {
 					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
-						if (dbResourceId != resourceId || dbFieldId != fieldId) {
+						if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
 							point.put(ContextNames.PREV_FIELD_ID, dbFieldId);
 							point.put(ContextNames.PREV_PARENT_ID, dbResourceId);
-							point.put("oldUnit", dbPoint.get(AgentConstants.UNIT));
-							migrationPoints.add(point);					
+							point.put("oldUnit", dbPoint.get(AgentConstants.UNIT))	;
+						}
+						else {
+							mappingChanged = false;
 						}
 					}
-					else {
-						migrationPoints.add(point);						
-					}
+					
 					
 					if(point.get("inputValues") != null) {
 						List<Map<String, Object>> inputValues = (List<Map<String, Object>>) point.get("inputValues");
@@ -125,22 +126,29 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						}
 					}
 					
-					ReadingDataMeta meta = new ReadingDataMeta();
-					meta.setResourceId(resourceId);
-					meta.setFieldId(fieldId);
-					if (unitChanged) {
-						meta.setUnit(unit.intValue());
-					}
-					meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
-					if (writable) {
-						meta.setReadingType(ReadingType.WRITE);
+					if (mappingChanged) {
+						migrationPoints.add(point);
+						
+						ReadingDataMeta meta = new ReadingDataMeta();
+						meta.setResourceId(resourceId);
+						meta.setFieldId(fieldId);
+						if (unitChanged) {
+							meta.setUnit(unit.intValue());
+						}
+						meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
+						if (writable) {
+							meta.setReadingType(ReadingType.WRITE);
+						}
+						
+						rdmList.add(meta);
+						connectedAssetIds.add(resourceId);
 					}
 					
-					rdmList.add(meta);
-					connectedAssetIds.add(resourceId);
 				}
 				
-				addPointtoBatchUpdateProp(point, batchUpdateList, publishTime);
+				if(mappingChanged) {
+					addPointtoBatchUpdateProp(point, batchUpdateList, publishTime);
+				}
 			}
 			
 		}
@@ -220,6 +228,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 	
 	
 	private void updatePoint(List<BatchUpdateByIdContext> batchUpdateList) throws Exception {
+		if (batchUpdateList.isEmpty()) {
+			return;
+		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		List<FacilioField> updateFields = new ArrayList<>();
 		updateFields.add(fieldMap.get(AgentConstants.ASSET_CATEGORY_ID));
