@@ -14,6 +14,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.util.FilterUtil;
+import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -77,8 +79,9 @@ public class AggregationJob extends FacilioCommand {
                 selectBuilder.andCondition(CriteriaAPI.getCondition("TTIME",
                         "ttime", lastSync + "," + nextSync, DateOperators.BETWEEN));
 
-                if (aggregationMeta.getCriteria() != null) {
-                    selectBuilder.andCriteria(aggregationMeta.getCriteria());
+                if (aggregationMeta.getFilterJSON() != null) {
+                    DateRange dateRange = new DateRange(lastSync, nextSync);
+                    FilterUtil.setDataFilterCriteria(module.getName(), aggregationMeta.getFilterJSON(), dateRange, selectBuilder, null);
                 }
                 List<Map<String, Object>> props = selectBuilder.getAsProps();
                 if (CollectionUtils.isNotEmpty(props)) {

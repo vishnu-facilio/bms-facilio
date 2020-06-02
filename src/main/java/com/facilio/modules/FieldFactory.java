@@ -8537,7 +8537,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("storageModuleId", "STORAGE_MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("filter", "FILTER_JSON", module, FieldType.STRING));
         fields.add(getField("frequencyType", "FREQUENCY_TYPE", module, FieldType.NUMBER));
         fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
         fields.add(getField("lastSync", "LAST_SYNC", module, FieldType.NUMBER));

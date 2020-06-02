@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.time.DateTimeUtil;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -45,20 +46,21 @@ public class AggregationMetaContext implements Serializable {
         this.storageModuleId = storageModuleId;
     }
 
-    private Long criteriaId;
-    public Long getCriteriaId() {
-        return criteriaId;
+    private String filter;
+    public String getFilter() {
+        return filter;
     }
-    public void setCriteriaId(Long criteriaId) {
-        this.criteriaId = criteriaId;
+    public void setFilter(String filter) {
+        if (filter != null) {
+            this.filter = filter;
+        }
     }
-
-    private Criteria criteria;
-    public Criteria getCriteria() {
-        return criteria;
-    }
-    public void setCriteria(Criteria criteria) {
-        this.criteria = criteria;
+    public JSONObject getFilterJSON() throws Exception {
+        if (filter != null) {
+            JSONParser parser = new JSONParser();
+            return (JSONObject)parser.parse(filter);
+        }
+        return new JSONObject();
     }
 
     private List<AggregationColumnMetaContext> columnList;

@@ -88,17 +88,17 @@ public class FilterUtil {
 		return CriteriaAPI.getCondition(timeField, value, operator);
 	}
 	
-	public static void setDataFilterCriteria(String parrentModuleName, JSONObject criteriaObj, DateRange range, SelectRecordsBuilder<ModuleBaseWithCustomFields> parrentBuilder, Long parentId) throws Exception{
+	public static void setDataFilterCriteria(String parrentModuleName, JSONObject criteriaObj, DateRange range, SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> parrentBuilder, Long parentId) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField timeField = modBean.getField("ttime", parrentModuleName);
-		
+
 		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
 		if(conditions != null && !conditions.isEmpty()) {
 			for(Object key : conditions.keySet()) {
 				JSONObject condition = (JSONObject)conditions.get((String)key);
-				
+
 				GenericSelectRecordBuilder builder = getDFConditionSelectBuilder(condition, range, parentId);
-						
+
 				parrentBuilder.andCustomWhere(timeField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 			}
 		}

@@ -30,11 +30,6 @@ public class AggregationAPI {
             FacilioModule storageModule = modBean.getModule(aggregationMeta.getStorageModuleId());
             aggregationMeta.setStorageModule(storageModule);
 
-            if (aggregationMeta.getCriteriaId() != null) {
-                Criteria criteria = CriteriaAPI.getCriteria(aggregationMeta.getCriteriaId());
-                aggregationMeta.setCriteria(criteria);
-            }
-
             if (withColumn) {
                 List<AggregationColumnMetaContext> aggregationColumnList = getAggregationColumnMetaList(aggregationMeta);
                 aggregationMeta.setColumnList(aggregationColumnList);
