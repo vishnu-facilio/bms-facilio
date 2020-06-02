@@ -1388,7 +1388,8 @@ public class FormFactory {
 		fields.add(new FormField("logoId", FieldDisplayType.IMAGE, "Logo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("sandBoxBaseUrl", FieldDisplayType.TEXTBOX, "Base URL", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("sandBoxBaseUrl", FieldDisplayType.TEXTBOX, "Sandbox Base URL", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("productionBaseUrl", FieldDisplayType.TEXTBOX, "Production Base URL", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("startUrl", FieldDisplayType.TEXTBOX, "Welcome URL", Required.REQUIRED, 5, 1));
 		fields.add(new FormField("showInLauncher", FieldDisplayType.DECISION_BOX, "Show in Launcher", Required.OPTIONAL, 6, 1));
 		return fields;
