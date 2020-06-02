@@ -1316,6 +1316,7 @@ public class FacilioConstants {
 		public static final String CONNECTED_APP_VIEW_URL = "connectedAppViewURL";
 		public static final String CONNECTED_APP_CONNECTOR = "connectedAppConnector";
 		public static final String CONNECTED_APP_REQUEST = "connectedAppRequest";
+		public static final String SANDBOX_MODE = "sandboxMode";
 
 		public static final String CUSTOM_BUTTONS = "customButtons";
 

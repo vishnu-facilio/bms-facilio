@@ -24,17 +24,23 @@ public class GetConnectedAppViewURLCommand extends FacilioCommand {
 		ConnectedAppContext connectedApp = (ConnectedAppContext) context.get(FacilioConstants.ContextNames.CONNECTED_APP);
 		ConnectedAppWidgetContext connectedAppWidget = (ConnectedAppWidgetContext) context.get(FacilioConstants.ContextNames.CONNECTED_APP_WIDGET);
 		Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		Boolean isSandbox = (Boolean) context.get(FacilioConstants.ContextNames.SANDBOX_MODE);
 		
 		String viewURL = null;
 		
+		String baseUrl = connectedApp.getProductionBaseUrl();
+		if (isSandbox != null && isSandbox == true) {
+			baseUrl = connectedApp.getSandBoxBaseUrl();
+		}
+		
 		if (connectedAppWidget != null) {
-			viewURL = connectedApp.getProductionBaseUrl() + connectedAppWidget.getResourcePath();
+			viewURL = baseUrl + connectedAppWidget.getResourcePath();
 			if (connectedAppWidget.getEntityTypeEnum() == ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE && recordId != null && recordId > 0) {
 				viewURL = replacePlaceholders(viewURL, connectedAppWidget.getEntityId(), recordId, connectedAppWidget.getCriteria());
 			}
 		}
 		else if (connectedApp != null) {
-			viewURL = connectedApp.getProductionBaseUrl();
+			viewURL = baseUrl;
 			if (connectedApp.getStartUrl() != null && !connectedApp.getStartUrl().trim().isEmpty()) {
 				viewURL = viewURL + connectedApp.getStartUrl();
 			}

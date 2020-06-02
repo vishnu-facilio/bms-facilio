@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -236,7 +237,9 @@ public class ConnectedAppAction extends FacilioAction {
 		
 		connectedApp.setHostingType(HostingType.EXTERNAL.getValue());
 		connectedApp.setIsActive(true);
-		connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		if (connectedApp.getProductionBaseUrl() == null) {
+			connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		}
 		
 		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
 		addItem.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
@@ -248,7 +251,9 @@ public class ConnectedAppAction extends FacilioAction {
 
 	public String updateConnectedApp() throws Exception {
 		
-		connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		if (connectedApp.getProductionBaseUrl() == null) {
+			connectedApp.setProductionBaseUrl(connectedApp.getSandBoxBaseUrl());
+		}
 
 		FacilioChain updateItemChain = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
 		updateItemChain.getContext().put(FacilioConstants.ContextNames.RECORD, connectedApp);
@@ -450,6 +455,7 @@ public class ConnectedAppAction extends FacilioAction {
 		FacilioChain viewConnectedAppChain = ReadOnlyChainFactory.getViewConnectedAppChain();
 		viewConnectedAppChain.getContext().put(FacilioConstants.ContextNames.ID, getConnectedAppId());
 		viewConnectedAppChain.getContext().put(FacilioConstants.ContextNames.LINK_NAME, getLinkName());
+		viewConnectedAppChain.getContext().put(FacilioConstants.ContextNames.SANDBOX_MODE, isSandboxMode());
 
 		viewConnectedAppChain.execute();
 
@@ -490,12 +496,22 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setRecordId(Long recordId) {
 		this.recordId = recordId;
 	}
+	
+	private boolean isSandboxMode() {
+		HttpServletRequest req = ServletActionContext.getRequest();
+		String value = FacilioCookie.getUserCookie(req, "fc.sandbox");
+		if (value != null && "true".equals(value)) {
+			return true;
+		}
+		return false;
+	}
 
 	public String viewWidget() throws Exception {
 
 		FacilioChain viewConnectedAppWidgetChain = ReadOnlyChainFactory.getViewConnectedAppWidgetChain();
 		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.ID, getWidgetId());
 		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.SANDBOX_MODE, isSandboxMode());
 
 		viewConnectedAppWidgetChain.execute();
 
