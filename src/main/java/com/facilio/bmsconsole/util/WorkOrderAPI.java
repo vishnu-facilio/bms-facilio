@@ -2917,9 +2917,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	      if(assetId != null && assetId > 0) {
 	         builder.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", assetId+"", NumberOperators.EQUALS));
 	      }
-	      builder.andCondition(CriteriaAPI.getCondition("ESTIMATED_END", "estimatedEnd", "NULL", CommonOperators.IS_NOT_EMPTY));
-	      builder.andCondition(CriteriaAPI.getCondition("ESTIMATED_END", "estimatedEnd", String.valueOf(DateTimeUtil.getCurrenTime()), NumberOperators.LESS_THAN));
+	      builder.andCondition(CriteriaAPI.getCondition("DUE_DATE", "dueDate", String.valueOf(DateTimeUtil.getCurrenTime()), NumberOperators.LESS_THAN));
+	      builder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
 	      builder.limit(limit);
+	      builder.orderBy("WorkOrders.CREATED_TIME IS NULL,WorkOrders.CREATED_TIME desc");
 	      
 	      List<WorkOrderContext> workOrders = builder.get();
 	      return workOrders;
