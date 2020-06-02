@@ -21,6 +21,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
                 QuotationAPI.calculateQuotationCost(quotation);
+                if(quotation.getRevisionNumber() == null){
+                    quotation.setRevisionNumber(0L);
+                }
                 if (quotation.getBillToAddress() != null) {
                     LocationContext billToAddressLocation = quotation.getBillToAddress();
                     QuotationAPI.addLocation(quotation, billToAddressLocation);

@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -41,6 +43,40 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private List<QuotationAssociatedTermsContext> termsAssociated;
     private CustomerType customerType;
     private TenantContext tenant;
+    private Long parentId;
+    private Long revisionNumber;
+
+    public QuotationContext() {
+
+    }
+    public QuotationContext(QuotationContext quotation) {
+        setName(quotation.getName());
+        setSubject(quotation.getSubject());
+        setDescription(quotation.getDescription());
+        setBillToAddress(quotation.getBillToAddress());
+        setShipToAddress(quotation.getShipToAddress());
+        setBillDate(quotation.getBillDate());
+        setExpiryDate(quotation.getExpiryDate());
+        setSubTotal(quotation.getSubTotal());
+        setTotalTaxAmount(quotation.getTotalTaxAmount());
+        setDiscountAmount(quotation.getDiscountAmount());
+        setDiscountPercentage(quotation.getDiscountPercentage());
+        setShippingCharges(quotation.getShippingCharges());
+        setAdjustmentsCost(quotation.getAdjustmentsCost());
+        setAdjustmentsCostName(quotation.getAdjustmentsCostName());
+        setMiscellaneousCharges(quotation.getMiscellaneousCharges());
+        setTotalCost(quotation.getTotalCost());
+        setLineItems(quotation.getLineItems());
+        setTermsAssociated(quotation.getTermsAssociated());
+        setCustomerType(quotation.getCustomerType());
+        setTotalCost(quotation.getTotalCost());
+        setTenant(quotation.getTenant());
+        setRevisionNumber(quotation.getRevisionNumber() + 1);
+        setParentId(quotation.getParentId());
+        setSiteId(quotation.getSiteId());
+        setFormId(quotation.getFormId());
+        setId(-1);
+    }
 
     public TenantContext getTenant() {
         return tenant;
@@ -286,5 +322,26 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
             return name;
         }
     }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public Long getRevisionNumber() {
+        return revisionNumber;
+    }
+
+    public void setRevisionNumber(Long revisionNumber) {
+        this.revisionNumber = revisionNumber;
+    }
+
+    public QuotationContext clone() {
+        return new QuotationContext(this);
+    }
+
 
 }

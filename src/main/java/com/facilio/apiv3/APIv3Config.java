@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
@@ -69,7 +70,7 @@ public class APIv3Config {
         return new V3Config(QuotationContext.class)
 
                 .create()
-                .beforeSave(new QuotationValidationAndCostCalculationCommand())
+                .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
 
                 .update()

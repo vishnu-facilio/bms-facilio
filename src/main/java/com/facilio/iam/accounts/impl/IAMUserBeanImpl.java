@@ -1566,7 +1566,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (CollectionUtils.isNotEmpty(props)) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
 		}
-		return null;
+		log.info("App domain doesnt exists -->  " + domain);
+    	return null;
 
 	}
 
