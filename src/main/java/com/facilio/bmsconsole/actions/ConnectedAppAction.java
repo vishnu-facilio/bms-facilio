@@ -294,9 +294,16 @@ public class ConnectedAppAction extends FacilioAction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> sysytemModules = new ArrayList<>();
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
-        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
-//        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+        
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SITE));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.FLOOR));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
+        
+//        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+//        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
+        
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
         	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR));
 //        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
@@ -310,9 +317,12 @@ public class ConnectedAppAction extends FacilioAction {
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
        }
+//       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+//    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
+//       }
 //       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-//    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
-//    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
 //       }
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
             sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
