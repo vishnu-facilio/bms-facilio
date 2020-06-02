@@ -678,7 +678,9 @@ public class BimAPI {
 			thirdPartyDetailsMap.put("assetCategoryURL", "https://api.youbim.com/types?limit=500&FilterBuilding_id=");
 			thirdPartyDetailsMap.put("assetURL", "https://api.youbim.com//assets?FilterType_id=");
 			thirdPartyDetailsMap.put("assetdataURL", "https://api.youbim.com/assetattributes?FilterAsset_id=");
-		
+			thirdPartyDetailsMap.put("typedataURL", "https://api.youbim.com//types/");
+			thirdPartyDetailsMap.put("workordersURL", "https://api.youbim.com//workorders?order=id%20desc&ContainStatuses=name&ContainUsers=first_name,last_name&ContainPriorities=name&FilterAsset_id=");
+			thirdPartyDetailsMap.put("documentsURL", "https://api.youbim.com//documentlibraries/assets/");
 		}
 		return thirdPartyDetailsMap;
 	}
@@ -703,12 +705,20 @@ public class BimAPI {
 		
 		}else if(thirdParty.equals(ThirdParty.YOUBIM)){
 			
-			thirdPartyDetailsMap.put("AHU", "AHU");
-			thirdPartyDetailsMap.put("Air Cooled Chiller", "Chiller");
-			thirdPartyDetailsMap.put("Primary_Pump_Primary_Pump","Primary Pump");
-			thirdPartyDetailsMap.put("Pump- Hot Water", "Secondary Pump");
-			thirdPartyDetailsMap.put("Pump- Cold Water", "Secondary Pump");
-			thirdPartyDetailsMap.put("Pump_Pump", "Secondary Pump");
+//			thirdPartyDetailsMap.put("AHU", "AHU");
+//			thirdPartyDetailsMap.put("Air Cooled Chiller", "Chiller");
+//			thirdPartyDetailsMap.put("Primary_Pump_Primary_Pump","Primary Pump");
+//			thirdPartyDetailsMap.put("Pump- Hot Water", "Secondary Pump");
+//			thirdPartyDetailsMap.put("Pump- Cold Water", "Secondary Pump");
+//			thirdPartyDetailsMap.put("Pump_Pump", "Secondary Pump");
+			
+			thirdPartyDetailsMap.put("CH-1, 2 Evap-Comp and Cond-Motor_CH-1, 2 Evap-Comp and Cond-Motor","Chiller");
+			thirdPartyDetailsMap.put("CT_No_Platform_Marley NC8409_steel", "Cooling Tower");
+			thirdPartyDetailsMap.put("Fan_Coil_Unit-Horizontal-Low_Profile-Exposed-JCI-FHX_4 Pipe, Reheat", "FCU");
+			thirdPartyDetailsMap.put("Primary_Pump_Primary_Pump", "Primary Chilled water Pump");
+			thirdPartyDetailsMap.put("Pump_Pump", "Secondary Chilled water Pump");
+			thirdPartyDetailsMap.put("Variable Frequency AC Drive_10-20 HP", "VFD");
+			thirdPartyDetailsMap.put("Variable Frequency AC Drive_25-50 HP", "VFD");
 		}
 		return thirdPartyDetailsMap;
 	}

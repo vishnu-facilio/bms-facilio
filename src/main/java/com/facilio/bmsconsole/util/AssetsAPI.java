@@ -23,6 +23,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
@@ -36,6 +37,9 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -312,6 +316,27 @@ public class AssetsAPI {
 				.select(modBean.getAllFields(module.getName()))
 				.table(module.getTableName())
 				.andCustomWhere("NAME = ?", name);
+		List<AssetContext> assets = selectBuilder.get();
+		if(assets != null && !assets.isEmpty()) {
+			return assets.get(0).getId();
+		}
+		return -1;
+	}
+	
+	public static long getAssetId(String name,String thirdpartyid) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		FacilioField thirdpartyidField= FieldFactory.getAsMap(fields).get("thirdpartyid");
+		
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.moduleName(module.getName())
+				.beanClass(AssetContext.class)
+				.select(fields)
+				.table(module.getTableName())
+				.andCustomWhere("NAME = ?", name)
+				.andCondition(CriteriaAPI.getCondition(thirdpartyidField, thirdpartyid, StringOperators.IS));
 		List<AssetContext> assets = selectBuilder.get();
 		if(assets != null && !assets.isEmpty()) {
 			return assets.get(0).getId();
@@ -1377,5 +1402,19 @@ public class AssetsAPI {
 		
 		return statusMap;
 	}
+	
+	public static void deleteAsset(List<Long> assetsId) throws Exception {
+		FacilioContext context = new FacilioContext();
+		AssetContext asset = new AssetContext();
+		asset.setDeleted(true);
+		
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD, asset);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
+		
+		FacilioChain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
+		deleteAssetChain.execute(context);
+	}
+	
 }
 
