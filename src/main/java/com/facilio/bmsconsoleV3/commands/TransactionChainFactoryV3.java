@@ -1,13 +1,16 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -94,6 +97,13 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new VisitorFaceRecognitionCommand()));
+        return c;
+    }
+
+    public static FacilioChain getQuotationAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
         return c;
     }
 

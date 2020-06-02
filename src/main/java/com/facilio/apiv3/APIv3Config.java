@@ -70,11 +70,11 @@ public class APIv3Config {
 
                 .create()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
-                .afterSave(new InsertQuotationLineItemsCommand())
+                .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
 
                 .update()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
-                .afterSave(new InsertQuotationLineItemsCommand())
+                .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
 
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())

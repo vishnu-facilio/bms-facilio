@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -45,6 +45,16 @@ public class QuotationPageFactory extends PageFactory {
             Page.Section tab3Sec1 = page.new Section();
             tab3.addSection(tab3Sec1);
             addRelatedListWidget(tab3Sec1, "quotationterms", quotationModule.getModuleId());
+
+
+        Page.Tab tab4 = page.new Tab("Activity");
+        page.addTab(tab4);
+        Page.Section tab4Sec1 = page.new Section();
+        tab4.addSection(tab4Sec1);
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(tab4Sec1, 24, 10);
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
+        tab4Sec1.addWidget(activityWidget);
 
 
         return page;

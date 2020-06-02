@@ -1,19 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -26,6 +16,16 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class AddAttachmentRelationshipCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -95,15 +95,8 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
      		
      		
      		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
-			for(AttachmentContext attaches : attachments) {
-				attachmentNames.add(attaches.getFileName());
-		  		JSONObject info = new JSONObject();
-						info.put("Filename", attaches.getFileName());
-						info.put("Url", attaches.getPreviewUrl());
-						attachmentActivity.add(info);
-			}
-			attach.put("attachment", attachmentActivity);
-			 CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
      		else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
     			TaskContext task = getTask(recordId);
@@ -121,33 +114,34 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
     			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
      		} 
      		else if(moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
-     			for(AttachmentContext attaches : attachments) {
-    				attachmentNames.add(attaches.getFileName());
-    		  		JSONObject info = new JSONObject();
-    						info.put("Filename", attaches.getFileName());
-    						info.put("Url", attaches.getPreviewUrl());
-    						attachmentActivity.add(info);
-    			}
-    			attach.put("attachment", attachmentActivity);
-    			 CommonCommandUtil.addActivityToContext(recordId, -1, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
      		}
      		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
-     			for(AttachmentContext attaches : attachments) {
-    				attachmentNames.add(attaches.getFileName());
-    		  		JSONObject info = new JSONObject();
-    						info.put("Filename", attaches.getFileName());
-    						info.put("Url", attaches.getPreviewUrl());
-    						attachmentActivity.add(info);
-    			}
-    			attach.put("attachment", attachmentActivity);
-    			 CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
+			else if(moduleName.equals(FacilioConstants.ContextNames.QUOTATION_ATTACHMENTS)) {
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, QuotationActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+			}
 
 		}
 		
 		return false;
 	}
-	
+
+	private void setAttachmentsActivityContext(List<AttachmentContext> attachments, JSONArray attachmentNames, JSONObject attach, List<Object> attachmentActivity) throws Exception {
+		for(AttachmentContext attaches : attachments) {
+			attachmentNames.add(attaches.getFileName());
+			JSONObject info = new JSONObject();
+			info.put("Filename", attaches.getFileName());
+			info.put("Url", attaches.getPreviewUrl());
+			attachmentActivity.add(info);
+		}
+		attach.put("attachment", attachmentActivity);
+	}
+
 	@Override
 	public boolean postExecute() throws Exception {
 		if (StringUtils.isNotEmpty(moduleName) && CollectionUtils.isNotEmpty(idsToUpdateChain)) {

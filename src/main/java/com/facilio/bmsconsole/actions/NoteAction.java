@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 public class NoteAction extends FacilioAction {
 
@@ -95,6 +94,8 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
 			context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID, alarmOccurrenceId);
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ALARM_ACTIVITY);
+		} else if (moduleName.equals(FacilioConstants.ContextNames.QUOTATION_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
 		}
 		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);

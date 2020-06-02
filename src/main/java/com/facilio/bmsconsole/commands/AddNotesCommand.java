@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -16,6 +7,7 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -32,6 +24,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
@@ -102,6 +102,8 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	     		} else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
 	     			long occurrenceId = (long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
 					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
+				} else if(moduleName.equals(FacilioConstants.ContextNames.QUOTATION_NOTES)) {
+					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, QuotationActivityType.ADD_NOTES, info, (FacilioContext) context);
 				}
 				
 				noteBuilder.addRecord(note);

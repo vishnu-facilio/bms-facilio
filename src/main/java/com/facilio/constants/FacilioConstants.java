@@ -1,13 +1,5 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.ControllerAlarmContext;
@@ -22,7 +14,6 @@ import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.system.SystemControllerContext;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
@@ -30,12 +21,20 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 //import com.facilio.custom.CustomController;
 
@@ -1639,6 +1638,11 @@ public class FacilioConstants {
 		public static final String TAX_GROUPS = "taxgroup";
 		public static final String QUOTATION_ASSOCIATED_TERMS = "quotationterms";
 		public static final String OLD_TAX_ID = "oldTaxId";
+		public static final String QUOTATION_NOTES = "quotationnotes";
+		public static final String QUOTATION_ATTACHMENTS = "quotationattachments";
+		public static final String QUOTATION_ACTIVITY = "quotationactivity";
+		public static final String OLD_TOTAL_COST_MAP = "oldTotalCostMap";
+		public static final String OLD_TOTAL_COST = "oldTotalCost";
 
 		public static final String FETCH_MY_APPS = "fetchMyApps";
 		public static final String APP_DOMAIN = "applicationDomain";
@@ -1878,6 +1882,7 @@ public class FacilioConstants {
 			classMap.put(TAX, TaxContext.class);
 			classMap.put(TAX_GROUPS, TaxGroupContext.class);
 			classMap.put(QUOTATION_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
+			classMap.put(QUOTATION_ACTIVITY, ActivityContext.class);
 
 			return classMap;
 		}
