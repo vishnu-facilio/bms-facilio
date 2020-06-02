@@ -59,7 +59,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
 			
-			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
 				WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, lesserStartTime, greaterEndTime, AlarmOccurrenceContext.Type.READING);
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
