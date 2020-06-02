@@ -1053,7 +1053,7 @@ public class AlarmAPI {
 			sorting.put("orderBy", "lastOccurredTime");
 			sorting.put("orderType", "desc");
 	 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
-	 		
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
 			alarmListChain.execute();
 			
 		return (List<AlarmContext>)context.get(ContextNames.RECORD_LIST);
