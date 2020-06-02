@@ -226,6 +226,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantUserCommand());
 			c.addCommand(new AddTenantSpaceRelationCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			return c;
 		}
@@ -240,6 +241,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantUnitSpaceRelationCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			return c;
 		}
