@@ -74,10 +74,10 @@ enums:
     enumClassName: com.facilio.bmsconsole.context.AssetDepreciationContext$FrequencyType
 
   - name: QuotationLineItemType
-    enumClassName: com.facilio.bmsconsole.context.quotation.QuotationLineItemsContext$Type
+    enumClassName: com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext$Type
 
   - name: TaxType
-    enumClassName: com.facilio.bmsconsole.context.quotation.TaxContext$Type
+    enumClassName: com.facilio.bmsconsoleV3.context.quotation.TaxContext$Type
 
   - name: CustomerType
-    enumClassName: com.facilio.bmsconsole.context.quotation.QuotationContext$CustomerType
+    enumClassName: com.facilio.bmsconsoleV3.context.quotation.QuotationContext$CustomerType

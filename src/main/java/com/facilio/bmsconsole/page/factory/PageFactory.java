@@ -1,9 +1,8 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -15,20 +14,15 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PageFactory {
 

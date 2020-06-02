@@ -1,16 +1,5 @@
 package com.facilio.accounts.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.util.RequestUtil;
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -33,6 +22,16 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
+import com.facilio.util.RequestUtil;
+import org.apache.commons.collections4.MapUtils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AccountUtil {
 
@@ -353,8 +352,9 @@ public class AccountUtil {
 		NEW_APPROVALS(68719476736L),
 		CHATBOT(137438953472L),
 		SCOPING(274877906944L),
-		OPERATIONAL_ALARM(549755813888L),	// 39
-		FIELD_PERMISSIONS(1099511627776L)
+		OPERATIONAL_ALARM(549755813888L),
+		FIELD_PERMISSIONS(1099511627776L),
+		QUOTATION(2199023255552L), // 2^41
 		;
 		
 		private long license;

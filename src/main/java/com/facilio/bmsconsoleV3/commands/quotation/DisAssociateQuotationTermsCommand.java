@@ -1,8 +1,8 @@
-package com.facilio.bmsconsole.commands.quotation;
+package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.quotation.QuotationAssociatedTermsContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.constants.FacilioConstants;

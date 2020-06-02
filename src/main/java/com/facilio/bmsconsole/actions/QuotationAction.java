@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.quotation.QuotationAssociatedTermsContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
