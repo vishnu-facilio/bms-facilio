@@ -155,7 +155,15 @@ public class WorkflowRuleAPI {
 
 		return rule.getId();
 	}
-	
+
+	private static void deleteFieldChangeFields(WorkflowRuleContext rule) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowFieldChangeFieldsModule();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
+		builder.delete();
+	}
+
 	private static void addFieldChangeFields(WorkflowRuleContext rule) throws Exception {
 		if (rule.getFields() == null || rule.getFields().isEmpty()) {
 			throw new IllegalArgumentException("Atleast one field has to be added for Workflow Rule with Field Change activity");
@@ -242,7 +250,12 @@ public class WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
-		
+
+		if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
+			deleteFieldChangeFields(rule);
+			addFieldChangeFields(rule);
+		}
+
 		if(EventType.SCHEDULED.isPresent(oldRule.getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
 			if (rule.getTimeObj() != null) {
 				ScheduledRuleAPI.validateScheduledRule(rule, true);
