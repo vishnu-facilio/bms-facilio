@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.context;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.enums.RuleJobType;
 
@@ -12,7 +15,7 @@ public class WorkflowRuleResourceLoggerContext {
 	private long orgId;
 	private long parentRuleLoggerId;
 	private long resourceId;
-	private String messageKey;
+	public JSONObject loggerInfo;
 	private ResourceContext resourceContext;
 	private Status status;
 	private long alarmCount;
@@ -52,12 +55,30 @@ public class WorkflowRuleResourceLoggerContext {
 	public void setResourceContext(ResourceContext resourceContext) {
 		this.resourceContext = resourceContext;
 	}
-	public String getMessageKey() {
-		return messageKey;
+	
+	public JSONObject getLoggerInfo() {
+		return loggerInfo;
 	}
-	public void setMessageKey(String messageKey) {
-		this.messageKey = messageKey;
+	public void setLoggerInfo(JSONObject loggerInfo) {
+		this.loggerInfo = loggerInfo;
 	}
+	public void addLoggerInfo(String key, Object value) {
+		if(this.loggerInfo == null) {
+			this.loggerInfo =  new JSONObject();
+		}
+		this.loggerInfo.put(key,value);
+	}
+	public String getLoggerInfoJsonStr() {
+		if(loggerInfo != null) {
+			return loggerInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setLoggerInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		loggerInfo = (JSONObject) parser.parse(jsonStr);
+	}
+	
 	public int getStatus() {
 		if (status != null) {
 			return status.getIntVal();

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -39,18 +40,16 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class WorkflowRuleHistoricalAlarmsAPI {
 	
-	public static DateRange deleteAlarmOccurrencesEndToEnd(String messageKey, long startTime, long endTime, Type type) throws Exception 
+	public static DateRange deleteAllAlarmOccurrencesBasedonCriteria(Criteria criteria, long startTime, long endTime, Type type) throws Exception 
 	{		
-		List<Long> distinctAlarmOccurrenceIds = getDistinctOccurrenceIdsFromEventsInExactWindow(messageKey, startTime, endTime, type);
-		deleteAllEventsInExactWindow(messageKey, startTime, endTime, type);
-
-		List<AlarmOccurrenceContext> alarmOccurrenceList = getAlarmOccurrencesAtEdgeCases(distinctAlarmOccurrenceIds);
+		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(criteria, startTime, endTime, type);
 		
+		deleteAllEventsInExactWindow(criteria, startTime, endTime, type);
+	
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{
 			AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
-			BaseAlarmContext baseAlarm =  lastAlarmOccurrence.getAlarm();
-			BaseAlarmContext baseAlarmContext = NewAlarmAPI.getBaseAlarmById(baseAlarm.getId());
+			BaseAlarmContext baseAlarmContext = NewAlarmAPI.getBaseAlarmById(lastAlarmOccurrence.getAlarm().getId());
 			
 			if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
 			{
@@ -65,70 +64,16 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime+1000, finalEvent.getCreatedTime()); //avoid event deletion
 					endTime = finalEvent.getCreatedTime();
 				}
-			}	
-
-			deleteAllAlarmOccurences(baseAlarmContext,distinctAlarmOccurrenceIds,startTime,endTime);
-			NewAlarmAPI.updateBaseAlarmWithNoOfOccurences(baseAlarm);	
+			}			
+			List<Long> alarmOccurrenceIds = alarmOccurrenceList.stream().map(alarmOccurrence -> alarmOccurrence.getId()).collect(Collectors.toList());
+			deleteAllAlarmOccurences(baseAlarmContext,alarmOccurrenceIds,startTime,endTime);
+			NewAlarmAPI.updateBaseAlarmWithNoOfOccurences(baseAlarmContext);	
 			NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);		
 		}
-		
 		return new DateRange(startTime, endTime);	
 	}	
 	
-	private static List<Long> getDistinctOccurrenceIdsFromEventsInExactWindow(String messageKey, long startTime, long endTime, Type type) throws Exception {
-		
-		List<Long> distinctAlarmOccurrenceIds = new ArrayList<Long>();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		String moduleName = NewEventAPI.getEventModuleName(type);
-		FacilioModule eventModule = modBean.getModule(moduleName);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
-		
-		FacilioField selectDistinctField = fieldMap.get("alarmOccurrence");
-		selectDistinctField.setColumnName("DISTINCT("+fieldMap.get("alarmOccurrence").getCompleteColumnName()+")");
-		
-		SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
-				.select(Collections.singletonList(selectDistinctField))
-				.module(eventModule)
-				.beanClass(BaseEventContext.class)
-				.setAggregation()
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("messageKey"), messageKey, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime+","+endTime, DateOperators.BETWEEN))	
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS))
-				.orderBy("CREATED_TIME");
-		
-		List<BaseEventContext> eventList = selectEventbuilder.get();
-		for(BaseEventContext event :eventList) {
-			distinctAlarmOccurrenceIds.add(event.getAlarmOccurrence().getId());	
-		}
-		return distinctAlarmOccurrenceIds;	
-	}
-	
-	public static List<AlarmOccurrenceContext> getAlarmOccurrencesAtEdgeCases(List<Long> distinctAlarmOccurrenceIds) throws Exception {
-
-		if (distinctAlarmOccurrenceIds != null && !distinctAlarmOccurrenceIds.isEmpty())
-		{
-			List<Long> edgeCaseAlarmOccurrenceIds = new ArrayList<Long>();
-			edgeCaseAlarmOccurrenceIds.add(distinctAlarmOccurrenceIds.get(0));
-			edgeCaseAlarmOccurrenceIds.add(distinctAlarmOccurrenceIds.get(distinctAlarmOccurrenceIds.size() - 1));
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			List<FacilioField> allFields = modBean.getAllFields(module.getName());
-		
-			SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-					.select(allFields)
-					.module(module)
-					.beanClass(AlarmOccurrenceContext.class)
-					.andCondition(CriteriaAPI.getIdCondition(edgeCaseAlarmOccurrenceIds, module))
-					.orderBy("CREATED_TIME");
-			
-			List<AlarmOccurrenceContext> alarmOccurrenceList = selectbuilder.get();
-			return alarmOccurrenceList;	
-		}
-		return null;				
-	}
-	
-	public static void clearAlarmOccurrenceIdForEdgeEvents(AlarmOccurrenceContext edgeAlarmOccurrence, long startTime, long endTime) throws Exception {
+	private static void clearAlarmOccurrenceIdForEdgeEvents(AlarmOccurrenceContext edgeAlarmOccurrence, long startTime, long endTime) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
@@ -157,7 +102,7 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 		updateBuilder.updateViaMap(map);
 	}
 
-	public static BaseEventContext getFinalEventForAlarmOccurrence(AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence) throws Exception {
+	private static BaseEventContext getFinalEventForAlarmOccurrence(AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence) throws Exception {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
@@ -171,8 +116,8 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 		
 		return selectEventbuilder.fetchFirst();
 	}
-	
-	public static void deleteAllEventsInExactWindow(String messageKey,long startTime,long endTime, Type type) throws Exception {
+
+	private static void deleteAllEventsInExactWindow(Criteria deletionCriteria,long startTime,long endTime, Type type) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = NewEventAPI.getEventModuleName(type);
@@ -181,14 +126,14 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 	
 		DeleteRecordBuilder<BaseEventContext> deleteBuilder = new DeleteRecordBuilder<BaseEventContext>()
 				.module(eventModule)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("messageKey"), messageKey, NumberOperators.EQUALS))
+				.andCriteria(deletionCriteria)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime+","+endTime, DateOperators.BETWEEN))	
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("eventType"), String.valueOf(type.getIndex()), NumberOperators.EQUALS));
 		
 		deleteBuilder.delete();	
 	}
 	
-	public static void deleteAllAlarmOccurences(BaseAlarmContext baseAlarmContext, List<Long> distinctAlarmOccurrenceIds, long startTime, long endTime) throws Exception {
+	private static void deleteAllAlarmOccurences(BaseAlarmContext baseAlarmContext, List<Long> alarmOccurrenceIds, long startTime, long endTime) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
@@ -196,7 +141,7 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 		DeleteRecordBuilder<AlarmOccurrenceContext> deleteBuilder = new DeleteRecordBuilder<AlarmOccurrenceContext>()
 				.module(module)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(distinctAlarmOccurrenceIds, module))
+				.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceIds, module))
 				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS));
 	
 		Criteria criteria = new Criteria();
@@ -236,35 +181,32 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 		}
 	}
 	
-	public static DateRange deleteEntireAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime, AlarmOccurrenceContext.Type type) throws Exception 
-	{		
-		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId, type);	
-//		deleteAllEventsInExactWindow(ruleId, resourceId, startTime, endTime, type);
-		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
-		{
-			AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
-			BaseAlarmContext baseAlarm =  lastAlarmOccurrence.getAlarm();
-			BaseAlarmContext baseAlarmContext = NewAlarmAPI.getBaseAlarmById(baseAlarm.getId());
-			
-			if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
+	public static List<Long> getMatchedFinalSecondaryIds(List<Long> selectedSecondaryIds, List<Long> matchedSecondaryIds, boolean isInclude) throws Exception 
+	{
+		List<Long> finalSecondaryIds = new ArrayList<Long>();
+		if(selectedSecondaryIds == null || selectedSecondaryIds.isEmpty()){
+			finalSecondaryIds = matchedSecondaryIds;
+		}
+		else if (selectedSecondaryIds!=null && !selectedSecondaryIds.isEmpty() && isInclude){
+			for(Long resourceId: selectedSecondaryIds)
 			{
-				AlarmOccurrenceContext initialEdgeAlarmOccurrence = alarmOccurrenceList.get(0);				
-				clearAlarmOccurrenceIdForEdgeEvents(initialEdgeAlarmOccurrence, initialEdgeAlarmOccurrence.getCreatedTime(), startTime-1000); 
-				startTime = initialEdgeAlarmOccurrence.getCreatedTime();
-			}
-			if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
-			{
-				BaseEventContext finalEvent = getFinalEventForAlarmOccurrence(lastAlarmOccurrence);
-				if(finalEvent != null && finalEvent.getCreatedTime() > endTime) {
-					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime+1000, finalEvent.getCreatedTime()); //avoid event deletion
-					endTime = finalEvent.getCreatedTime();
+				if(matchedSecondaryIds.contains(resourceId)){
+					finalSecondaryIds.add(resourceId);
 				}
-			}	
-			
-//			deleteAllAlarmOccurences(baseAlarmContext, startTime, endTime);
-			NewAlarmAPI.updateBaseAlarmWithNoOfOccurences(baseAlarm);	
-			NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);		
+			}
+		}
+		else if (selectedSecondaryIds!=null && !selectedSecondaryIds.isEmpty() && !isInclude){
+			for(Long matchedResourceId: matchedSecondaryIds)
+			{
+				if(!selectedSecondaryIds.contains(matchedResourceId)){
+					finalSecondaryIds.add(matchedResourceId);
+				}
+			}
+		}
+		if(finalSecondaryIds == null || finalSecondaryIds.isEmpty()){
+			throw new IllegalArgumentException("Not a valid Inclusion/Exclusion of Secondary Params for the given historical rule.");
 		}	
-		return new DateRange(startTime, endTime);	
-	}	
+		return finalSecondaryIds;
+	}
+	
 }

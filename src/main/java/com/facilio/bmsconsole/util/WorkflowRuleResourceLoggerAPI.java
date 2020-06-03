@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
@@ -188,12 +190,13 @@ public class WorkflowRuleResourceLoggerAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));		
 	}
 	
-	public static WorkflowRuleResourceLoggerContext setWorkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange, int ruleJobType, String messageKey)
+
+	public static WorkflowRuleResourceLoggerContext setWorkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange, int ruleJobType, JSONObject loggerInfo)
 	{
 		WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = new WorkflowRuleResourceLoggerContext();
 		workflowRuleResourceLoggerContext.setParentRuleLoggerId(parentRuleLoggerId);
 		workflowRuleResourceLoggerContext.setResourceId(resourceId);
-		workflowRuleResourceLoggerContext.setMessageKey(messageKey);
+		workflowRuleResourceLoggerContext.setLoggerInfo(loggerInfo);
 		workflowRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.IN_PROGRESS.getIntVal());
 		workflowRuleResourceLoggerContext.setRuleJobType(ruleJobType);
 		workflowRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());

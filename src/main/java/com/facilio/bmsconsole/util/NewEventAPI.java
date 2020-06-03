@@ -109,29 +109,6 @@ public class NewEventAPI {
 				throw new IllegalArgumentException("Invalid event type");
 		}
 	}
-	
-	public static String getMessageKey(RuleJobType ruleJobTypeEnum, long ruleId, long resourceId) {
-		if (ruleJobTypeEnum == null) {
-			throw new IllegalArgumentException("No event type to construct message key");
-		}
-
-		switch (ruleJobTypeEnum) {
-			case READING_ALARM:
-				return ruleId+ "_" +resourceId;
-			case  PRE_ALARM:
-				return ruleId+ "_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
-			case SENSOR_ALARM:
-				return ruleId+ "_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
-			case OPERATION_ALARM:
-				return resourceId+ "_" +ruleJobTypeEnum.getIndex();
-			case RULE_ROLLUP_ALARM:
-	            return "RuleRollUp_ " +ruleId+ "_" +ruleJobTypeEnum.getIndex();
-			case ASSET_ROLLUP_ALARM:
-	            return "AssetRollUp_" +resourceId+ "_" +ruleJobTypeEnum.getIndex();
-			default:
-				throw new IllegalArgumentException("Invalid event type to construct message key");
-		}
-	}
 
 	public static BMSEventContext transformEvent(BMSEventContext event, JSONTemplate template, Map<String, Object> placeHolders) throws Exception {
 		Map<String, Object> eventProp = FieldUtil.getAsProperties(event);

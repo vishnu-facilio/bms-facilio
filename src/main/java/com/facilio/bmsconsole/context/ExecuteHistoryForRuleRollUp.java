@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.collections.MapUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.RuleRollupCommand.RollupType;
@@ -20,23 +21,27 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.time.DateRange;
 
-public class ExecuteHistoryForRuleRollUp implements ExecuteHistoricalRuleInterface{
+public class ExecuteHistoryForRuleRollUp extends ExecuteHistoricalRule {
 
 	private static final Logger LOGGER = Logger.getLogger(ExecuteHistoryForRuleRollUp.class.getName());
 
+	public List<String> getExecutionLoggerInfoProps() { //same will be applied as fieldName for occurrence and event-processing criteria
+		List<String> defaultLoggerInfoPropList = new ArrayList<String>();
+		defaultLoggerInfoPropList.add("rule");
+		return defaultLoggerInfoPropList;
+	}
+	
 	@Override
-	public List<BaseEventContext> executeRuleAndGenerateEvents(String messageKey, DateRange dateRange, HashMap<String, Boolean> jobStatesMap, long jobId) throws Exception {
+	public List<BaseEventContext> executeRuleAndGenerateEvents(JSONObject loggerInfo, DateRange dateRange, HashMap<String, Boolean> jobStatesMap, long jobId) throws Exception{
 		List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
 		
 		long processStartTime = System.currentTimeMillis();
 		long startTime = dateRange.getStartTime();
 		long endTime = dateRange.getEndTime();
 		
-        String[] keySeparated = messageKey.split("_");
-    	String ruleRollUp = keySeparated[0].toString();
-    	long ruleId = Long.parseLong(keySeparated[1].toString());
-    	Integer ruleJobType = Integer.parseInt(keySeparated[2].toString());
-		RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
+		Long ruleId = (Long) loggerInfo.get("rule");
+    	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
+    	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
 		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
 		if(readingRule == null || jobStatesMap == null || MapUtils.isEmpty(jobStatesMap) || jobId == -1 || dateRange == null || ruleJobTypeEnum != RuleJobType.RULE_ROLLUP_ALARM) {
@@ -58,22 +63,5 @@ public class ExecuteHistoryForRuleRollUp implements ExecuteHistoricalRuleInterfa
 		LOGGER.info("Time taken for RuleRollUp Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - processStartTime));
 		baseEvents = (List<BaseEventContext>) ruleRollUpChain.getContext().get(EventConstants.EventContextNames.EVENT_LIST);
 		return baseEvents;
-	}
-	
-	@Override
-	public HashMap<Long, List<Long>> getRuleAndResourceIds(long ruleId, boolean isInclude, List<Long> selectedResourceIds) throws Exception 
-	{
-		HashMap<Long, List<Long>> ruleVsResourceIds = new HashMap<Long, List<Long>>();
-		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
-		
-		if (readingRule == null) {
-			throw new IllegalArgumentException("Invalid reading rule id to run through RuleRollUp historical data.");
-		}
-		if(selectedResourceIds != null && !selectedResourceIds.isEmpty()) {
-			throw new IllegalArgumentException("Secondary param is invalid to run through RuleRollUp historical data.");
-		}
-		
-		ruleVsResourceIds.put(ruleId, Collections.singletonList(ruleId));
-		return ruleVsResourceIds;
 	}
 }

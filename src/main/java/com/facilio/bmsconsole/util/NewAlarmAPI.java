@@ -267,6 +267,34 @@ public class NewAlarmAPI {
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
 	}
+	
+	public static AlarmOccurrenceContext.Type getOccurrenceTypeFromAlarmType(Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException("Invalid alarm type to fetch occurrence type");
+		}
+		switch (type) {
+			case READING_ALARM:
+				return AlarmOccurrenceContext.Type.READING;
+			case ML_ANOMALY_ALARM:
+				return AlarmOccurrenceContext.Type.ANOMALY;
+			case VIOLATION_ALARM:
+				return AlarmOccurrenceContext.Type.VIOLATION;
+			case AGENT_ALARM:
+				return AlarmOccurrenceContext.Type.AGENT;
+			case CONTROLLER_ALARM:
+				return AlarmOccurrenceContext.Type.CONTROLLER;
+			case PRE_ALARM:
+				return AlarmOccurrenceContext.Type.PRE_OCCURRENCE;
+			case OPERATION_ALARM:
+				return AlarmOccurrenceContext.Type.OPERATION_OCCURRENCE;
+			case RULE_ROLLUP_ALARM:
+				return AlarmOccurrenceContext.Type.RULE_ROLLUP;
+			case ASSET_ROLLUP_ALARM:
+				return AlarmOccurrenceContext.Type.ASSET_ROLLUP;
+			default:
+				throw new IllegalArgumentException("Invalid alarm type to fetch occurrence type");
+		}
+	}
 
 	public static AlarmOccurrenceContext getLatestAlarmOccurance(BaseAlarmContext baseAlarm) throws Exception {
 		if (baseAlarm == null) {
@@ -797,7 +825,11 @@ public class NewAlarmAPI {
 		Map<Long, AlarmOccurrenceContext> delAlarmOccurrencesMap = new HashMap<Long, AlarmOccurrenceContext>();
 		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null, finalEdgeCaseAlarmOccurrence = null;
 		
-		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId, AlarmOccurrenceContext.Type.READING);
+		Criteria deletionCriteria = new Criteria();
+		deletionCriteria.addAndCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", "" + ruleId, NumberOperators.EQUALS));
+		deletionCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", "" + resourceId, NumberOperators.EQUALS));
+		
+		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(deletionCriteria, startTime, endTime, Type.READING_ALARM);
 
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{
@@ -928,17 +960,17 @@ public class NewAlarmAPI {
 		return event;
 	}
 	
-	public static List<AlarmOccurrenceContext> getAllAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId, AlarmOccurrenceContext.Type type) throws Exception {
+	public static List<AlarmOccurrenceContext> getAllAlarmOccurrences(Criteria deletionCriteria, long startTime, long endTime, Type type) throws Exception {
 		
+		AlarmOccurrenceContext.Type alarmOccurrenceType = NewAlarmAPI.getOccurrenceTypeFromAlarmType(type);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(type));
+		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType));
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
 	
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(allFields)
-				.beanClass(NewAlarmAPI.getOccurrenceClass(type)).moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
-				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", "" + ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", "" + resourceId, NumberOperators.EQUALS));
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType)).moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.andCriteria(deletionCriteria);
 	
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + endTime, NumberOperators.LESS_THAN_EQUAL));

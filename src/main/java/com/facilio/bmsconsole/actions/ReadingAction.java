@@ -1210,18 +1210,26 @@ public class ReadingAction extends FacilioAction {
 		return listofRuleIds;
 	}
 	
+	public JSONObject loggerInfo;
+	
+	public JSONObject getLoggerInfo() {
+		return loggerInfo;
+	}
+
+	public void setLoggerInfo(JSONObject loggerInfo) {
+		this.loggerInfo = loggerInfo;
+	}
+
 	public String runThroughRule() throws Exception {
 		
 		try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.RULE_ID, id);
-			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE,getRuleJobType());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, getHistoricalLoggerAssetIds());
-			context.put(FacilioConstants.ContextNames.IS_INCLUDE, isInclude);
-			
 			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
-			runThroughRuleChain.execute(context);
+			FacilioContext context = runThroughRuleChain.getContext();
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, getRuleJobType());
+			context.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, getLoggerInfo());
+			context.put(FacilioConstants.ContextNames.IS_INCLUDE, isInclude);	
+			runThroughRuleChain.execute();
 			
 			setResult("success", "Rule evaluation for the readings in the given period has been started");	
 		}

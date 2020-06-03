@@ -91,22 +91,23 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 		if(workflowRuleHistoricalLogsContext != null && workflowRuleHistoricalLogsContext.getStatusAsEnum() != null)
 		{
 			workflowRuleHistoricalLogsContext.setCalculationStartTime(jobStartTime);
+			Long parentSecondaryId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
 			Long startTime = workflowRuleHistoricalLogsContext.getSplitStartTime();
 			Long endTime = workflowRuleHistoricalLogsContext.getSplitEndTime();
 			Integer logState = workflowRuleHistoricalLogsContext.getLogState();
-			Long parentRuleResourceId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
 			RuleJobType ruleJobType = workflowRuleHistoricalLogsContext.getRuleJobTypeEnum();
-			Type type = Type.valueOf(ruleJobType.getValue());
+			ExecuteHistoricalRule historyExecutionType = ruleJobType.getHistoryRuleExecutionType();
 
-			WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceId);
-			String messageKey = workflowRuleResourceLoggerContext.getMessageKey();
-			Long resourceId = workflowRuleResourceLoggerContext.getResourceId();
+			WorkflowRuleResourceLoggerContext secondaryRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentSecondaryId);
+			Long secondaryId = secondaryRuleResourceLoggerContext.getResourceId();
+			JSONObject loggerInfo = secondaryRuleResourceLoggerContext.getLoggerInfo();
+			Long primaryId = (Long)loggerInfo.get(historyExecutionType.fetchPrimaryLoggerKey());
+			loggerInfo.put("ruleJobType",  ruleJobType.getIndex());
 			
 			DateRange dateRange = new DateRange(startTime, endTime);
-			WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(workflowRuleResourceLoggerContext.getParentRuleLoggerId());
-			Long ruleId = workflowRuleLoggerContext.getRuleId();
-
-			LOGGER.info("HistoricalRuleEventRunCommand started for jobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " between "+ dateRange.getStartTime() +" and "+dateRange.getEndTime()+" with the jobtriggeredtime at: "+ jobStartTime);	
+			Type type = Type.valueOf(ruleJobType.getValue());
+	
+			LOGGER.info("HistoricalRuleEventRunCommand started for jobId: "+ jobId +" Primary Rule : "+ primaryId +" for secondaryId : "+secondaryId+ " between "+ dateRange.getStartTime() +" and "+dateRange.getEndTime()+" with the jobtriggeredtime at: "+ jobStartTime + " and Type: "+type);	
 			Boolean isFirstIntervalJob = false,isLastIntervalJob = false;
 			
 			if(logState != null) {
@@ -115,17 +116,16 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 			}
 			
 			HashMap<String, Boolean> jobStatesMap = constructJobStates(isFirstIntervalJob, isLastIntervalJob, isManualFailed);
-			List<BaseEventContext> baseEvents = ruleJobType.getHistoryRuleExecutionType().executeRuleAndGenerateEvents(messageKey, dateRange, jobStatesMap, jobId);
+			List<BaseEventContext> baseEvents = historyExecutionType.executeRuleAndGenerateEvents(loggerInfo, dateRange, jobStatesMap, jobId);
 			
 			long eventInsertStartTime = System.currentTimeMillis();
 			if(baseEvents != null && !baseEvents.isEmpty()) {
 				insertEventsWithoutAlarmOccurrenceProcessed(baseEvents, type);			
-				LOGGER.info("HistoricalRuleEventRunCommand Events added in daily job: "+jobId+" Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" Events Size  -- "+baseEvents.size()+ " Events -- "+baseEvents);						
+				LOGGER.info("HistoricalRuleEventRunCommand Events added in daily job: "+jobId+" PrimaryRule : "+primaryId+" for secondaryId : "+secondaryId+" between "+startTime+" and "+endTime+" Events Size  -- "+baseEvents.size()+ " Events -- "+baseEvents);						
 			}
-			long eventInsertEndTime = System.currentTimeMillis();
 
-			LOGGER.info("HistoricalRuleEventRunCommand Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime)+ 
-					" and Event insertion time is -- " +(eventInsertEndTime - eventInsertStartTime));
+			LOGGER.info("HistoricalRuleEventRunCommand Time taken for Historical Run for jobId: "+jobId+" Primary Rule : "+primaryId+" for secondaryId : "+secondaryId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime)+ 
+					" and Event insertion time is -- " +(System.currentTimeMillis() - eventInsertStartTime));
 			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
 		}		
 	}
@@ -173,10 +173,10 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 			{
 				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalAlarmProcessingJob", 30, "history");
 			}
-		}
-		
+		}	
 		return false;
 	}
+	
 	public void onError() throws Exception {
 		constructErrorMessage();
 	}
@@ -256,21 +256,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 
 		builder.addRecords(events);
 		builder.save();			
-	}
-	
-	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
-		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
-			if (!meta.isClear()) {
-				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
-				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField());
-				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime() + (interval * 60 * 1000));
-	
-				FacilioContext addEventContext = new FacilioContext();
-				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
-				FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-				getAddEventChain.execute(addEventContext);
-			}
-		}
 	}
 	
 	private HashMap<String, Boolean> constructJobStates(Boolean isFirstIntervalJob, Boolean isLastIntervalJob, Boolean isManualFailed) throws Exception

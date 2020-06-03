@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.enums;
 
-import com.facilio.bmsconsole.context.ExecuteHistoricalRuleInterface;
+import com.facilio.bmsconsole.context.ExecuteHistoricalRule;
 import com.facilio.bmsconsole.context.ExecuteHistoryForReadingRule;
 import com.facilio.bmsconsole.context.ExecuteHistoryForRuleRollUp;
 import com.facilio.bmsconsole.context.ExecuteHistoryForSensorRule;
@@ -43,19 +43,19 @@ public enum RuleJobType implements FacilioEnum {
 	RuleJobType(){	
 	}
 	
-	ExecuteHistoricalRuleInterface historyRuleExecutionType;
+	ExecuteHistoricalRule historyRuleExecutionType;
 	Integer hierarchyLevels = null;
 	
-	RuleJobType(ExecuteHistoricalRuleInterface historyRuleExecutionType){
+	RuleJobType(ExecuteHistoricalRule historyRuleExecutionType){
 		this.historyRuleExecutionType = historyRuleExecutionType;
 	}
 	
-	RuleJobType(ExecuteHistoricalRuleInterface historyRuleExecutionType, int hierarchyLevels){
+	RuleJobType(ExecuteHistoricalRule historyRuleExecutionType, int hierarchyLevels){
 		this.historyRuleExecutionType = historyRuleExecutionType;
 		this.hierarchyLevels = hierarchyLevels;
 	}
 	
-	public ExecuteHistoricalRuleInterface getHistoryRuleExecutionType() {
+	public ExecuteHistoricalRule getHistoryRuleExecutionType() {
 		return historyRuleExecutionType;
 	}
 	

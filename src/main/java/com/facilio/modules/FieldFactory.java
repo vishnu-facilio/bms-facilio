@@ -4163,7 +4163,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("parentRuleLoggerId", "PARENT_RULE_LOGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-        fields.add(getField("messageKey", "MESSAGE_KEY", module, FieldType.STRING));
+        fields.add(getField("loggerInfo", "LOGGER_INFO", module, FieldType.STRING));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("ruleJobType", "RULE_JOB_TYPE", module, FieldType.NUMBER));
         fields.add(getField("alarmCount", "ALARM_COUNT", module, FieldType.NUMBER));

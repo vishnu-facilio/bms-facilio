@@ -67,23 +67,22 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 
 			WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleResourceLoggerContext.getParentRuleLoggerId());
-			Long ruleId = parentRuleLoggerContext.getRuleId(); 
+			Long primaryRuleId = parentRuleLoggerContext.getRuleId(); 
 			Long actualStartTime = parentRuleLoggerContext.getStartTime();
 			Long actualEndTime = parentRuleLoggerContext.getEndTime();
-			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
-			String messageKey = parentRuleResourceLoggerContext.getMessageKey();
+			JSONObject loggerInfo = parentRuleResourceLoggerContext.getLoggerInfo();
 			RuleJobType ruleJobType = parentRuleResourceLoggerContext.getRuleJobTypeEnum();
 			Type type = Type.valueOf(ruleJobType.getValue());
-			if (ruleId == null || messageKey == null || ruleJobType == null || type == null) {
+			if (primaryRuleId == null || loggerInfo == null || ruleJobType == null || type == null) {
 				return false;
 			}
-			
-			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAlarmOccurrencesEndToEnd(messageKey, actualStartTime, actualEndTime, type);
-//
-//			DateRange modifiedDateRange = new DateRange();	
+			ExecuteHistoricalRule historyExecutionType = ruleJobType.getHistoryRuleExecutionType();
+			Criteria deletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, type);
+			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(deletionCriteria, actualStartTime, actualEndTime, type);
+
 //			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
 //			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
-//			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+//			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
 //				modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime, AlarmOccurrenceContext.Type.PRE_OCCURRENCE);
 //			}
 //			else{

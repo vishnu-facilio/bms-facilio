@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ExecuteHistoricalRule;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
@@ -44,13 +45,13 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		
 		final long maximumDailyEventRuleJobsPerOrg = 10000l; 
 
-		long ruleId = (long) context.get(FacilioConstants.ContextNames.RULE_ID);
-		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		Integer ruleJobType = (Integer) context.get(FacilioConstants.ContextNames.RULE_JOB_TYPE);
+		JSONObject loggerInfo = (JSONObject) context.get(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS);
 
-		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		Boolean isInclude = (Boolean) context.get(FacilioConstants.ContextNames.IS_INCLUDE);
 		isInclude = (isInclude == null) ? true : isInclude;
+		
 		ruleJobType = (ruleJobType == null) ? RuleJobType.READING_ALARM.getIndex() : ruleJobType;
 		RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
@@ -61,25 +62,22 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Start time should be less than the Endtime");
 		}
 		
+		ExecuteHistoricalRule historyRuleExecutionType = ruleJobTypeEnum.getHistoryRuleExecutionType();
+		String primaryPropKeyName = historyRuleExecutionType.fetchPrimaryLoggerKey();
+		if(loggerInfo == null || loggerInfo.get(primaryPropKeyName) == null) {
+			throw new IllegalArgumentException("Insufficient loggerInfo to run through historical rule.");
+		}
+		
+		Long primaryId = (Long)loggerInfo.get(primaryPropKeyName);
 		if(ruleJobTypeEnum == RuleJobType.READING_ALARM) {
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(primaryId),null);
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
 			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
 				ruleJobType = RuleJobType.PRE_ALARM.getIndex();
 			}	
 		}
 		
-		HashMap<Long, List<Long>> primaryVsSecondaryIds = ruleJobTypeEnum.getHistoryRuleExecutionType().getRuleAndResourceIds(ruleId, isInclude, resourceIds);
-		if(primaryVsSecondaryIds == null || MapUtils.isEmpty(primaryVsSecondaryIds) || primaryVsSecondaryIds.size() != 1) {
-			throw new IllegalArgumentException("Undefined params for running historical rule.");
-		}
-		
-		long primaryId = -1;
-		List<Long> secondaryIds = new ArrayList<Long>();
-		for(Long ruleOrResourceId: primaryVsSecondaryIds.keySet()) {
-			primaryId = ruleOrResourceId;
-			secondaryIds = primaryVsSecondaryIds.get(ruleOrResourceId);
-		}
+		List<Long> secondaryIds = historyRuleExecutionType.getMatchedSecondaryParamIds(loggerInfo, isInclude);
 		if(secondaryIds == null || secondaryIds.isEmpty() || primaryId == -1) {
 			throw new IllegalArgumentException("Insufficient params for running historical rule.");
 		}
@@ -118,10 +116,13 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		long parentRuleLoggerId = workflowRuleLoggerContext.getId();
 		List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 		
-		for(Long finalResourceId :secondaryIds)
+		String secondaryPropKeyName = historyRuleExecutionType.fetchPrimaryLoggerKey();
+		for(Long secondaryId :secondaryIds)
 		{	
-			String messageKey = NewEventAPI.getMessageKey(ruleJobTypeEnum, primaryId, finalResourceId);
-			WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setWorkflowRuleResourceLoggerContext(parentRuleLoggerId, finalResourceId, null, ruleJobType, messageKey);
+			if(secondaryPropKeyName != null) {
+				loggerInfo.put(secondaryPropKeyName, secondaryId);
+			}
+			WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setWorkflowRuleResourceLoggerContext(parentRuleLoggerId, secondaryId, null, ruleJobType, loggerInfo);
 			WorkflowRuleResourceLoggerAPI.addWorkflowRuleResourceLogger(workflowRuleResourceLoggerContext);
 			long parentRuleResourceId = workflowRuleResourceLoggerContext.getId();
 			workflowRuleResourceParentLoggerIds.add(parentRuleResourceId);

@@ -47,25 +47,21 @@ import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class ExecuteHistoryForReadingRule implements ExecuteHistoricalRuleInterface{
+public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 
 	private static final Logger LOGGER = Logger.getLogger(ExecuteHistoryForReadingRule.class.getName());
 
 	@Override
-	public List<BaseEventContext> executeRuleAndGenerateEvents(String messageKey, DateRange dateRange, HashMap<String, Boolean> jobStatesMap, long jobId) throws Exception {
+	public List<BaseEventContext> executeRuleAndGenerateEvents(JSONObject loggerInfo, DateRange dateRange, HashMap<String, Boolean> jobStatesMap, long jobId) throws Exception{
 		
 		long processStartTime = System.currentTimeMillis();
 		long startTime = dateRange.getStartTime();
 		long endTime = dateRange.getEndTime();
 		
-        String[] keySeparated = messageKey.split("_");
-    	long ruleId = Long.parseLong(keySeparated[0].toString());
-    	long resourceId = Long.parseLong(keySeparated[1].toString());
-    	RuleJobType ruleJobTypeEnum = RuleJobType.READING_ALARM;
-    	if(keySeparated.length > 2) {
-    		Integer ruleJobType = Integer.parseInt(keySeparated[2].toString());
-    		ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType); //Prealarm case
-    	}
+		Long ruleId = (Long) loggerInfo.get("rule");
+    	Long resourceId = (Long) loggerInfo.get("resource");
+    	Integer ruleJobType = (Integer) loggerInfo.get("ruleJobType");
+    	RuleJobType ruleJobTypeEnum = RuleJobType.valueOf(ruleJobType);
 
 		ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, false, true);
 		ResourceContext currentResourceContext = ResourceAPI.getResource(resourceId);
@@ -78,7 +74,7 @@ public class ExecuteHistoryForReadingRule implements ExecuteHistoricalRuleInterf
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
 		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");
-		
+
 		Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 		List<WorkflowFieldContext> fields = null;
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(readingRule.getId()), false, true),null);
@@ -470,57 +466,27 @@ public class ExecuteHistoryForReadingRule implements ExecuteHistoricalRuleInterf
 	
 	
 	@Override
-	public HashMap<Long, List<Long>> getRuleAndResourceIds(long ruleId, boolean isInclude, List<Long> selectedResourceIds) throws Exception 
+	public List<Long> getMatchedSecondaryParamIds(JSONObject loggerInfo, Boolean isInclude) throws Exception 
 	{
-		HashMap<Long, List<Long>> ruleVsResourceIds = new HashMap<Long, List<Long>>();
+		String ruleKeyName = fetchPrimaryLoggerKey();
+		Long ruleId = (Long)loggerInfo.get(ruleKeyName);
+		List<Long> selectedResourceIds = (List<Long>) loggerInfo.get("resource");
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId);
 		if (rule == null) {
 			throw new IllegalArgumentException("Invalid reading rule id to run through historical data.");
 		}
-		
-		List<Long> finalResourceIds = new ArrayList<Long>();
-		if(selectedResourceIds == null || selectedResourceIds.isEmpty())
-		{
-			finalResourceIds = getMatchedResourcesIds(rule);
-		}
-		else if (selectedResourceIds!=null && !selectedResourceIds.isEmpty() && isInclude)
-		{
-			List<Long> matchedResources = getMatchedResourcesIds(rule);
-			for(Long resourceId: selectedResourceIds)
-			{
-				if(matchedResources.contains(resourceId)) {
-					finalResourceIds.add(resourceId);
-				}
-			}
-		}
-		else if (selectedResourceIds!=null && !selectedResourceIds.isEmpty() && !isInclude)
-		{
-			List<Long> matchedResources = getMatchedResourcesIds(rule);
-			for(Long matchedResourceId: matchedResources)
-			{
-				if(!selectedResourceIds.contains(matchedResourceId)) {
-					finalResourceIds.add(matchedResourceId);
-				}
-			}
-		}
-		if(finalResourceIds == null || finalResourceIds.isEmpty()) {
-			throw new IllegalArgumentException("Not a valid Inclusion/Exclusion of Resources for the given reading rule.");
-		}
-		
-		ruleVsResourceIds.put(ruleId, finalResourceIds);
-		return ruleVsResourceIds;
-	}
 	
-	private static List<Long> getMatchedResourcesIds(WorkflowRuleContext rule) {
-
 		List<Long> matchedResourceIds = new ArrayList<>();
 		ReadingRuleContext readingRuleContext = (ReadingRuleContext)rule;
 		if(readingRuleContext.getMatchedResources() != null) {
 			matchedResourceIds = new ArrayList<>(readingRuleContext.getMatchedResources().keySet());
 		}
-		return matchedResourceIds;
+
+		List<Long> finalResourceIds = WorkflowRuleHistoricalAlarmsAPI.getMatchedFinalSecondaryIds(selectedResourceIds, matchedResourceIds, isInclude);
+		return finalResourceIds;
 	}
 	
+
 	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
 		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
 			if (!meta.isClear()) {
