@@ -261,6 +261,7 @@ public class KPIAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getKPIListChain();
 		FacilioContext context = chain.getContext();
 		constructListContext(context);
+		context.put(ContextNames.MODULE_NAME, ContextNames.KPI);
 		if (fetchCurrentValue != null && fetchCurrentValue) {
 			context.put("fetchCurrentValue", fetchCurrentValue);
 		}

@@ -645,6 +645,9 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.AGENT.equals(specialType)){
 			return ModuleFactory.getNewAgentModule();
 		}
+		else if(ContextNames.KPI.equals(specialType)){
+			return ModuleFactory.getKpiModule();
+		}
 		return null;
 	}
 	
@@ -714,6 +717,9 @@ public class LookupSpecialTypeUtil {
 		
 		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
 			return FieldFactory.getPMTriggerFields();
+		}
+		else if(FacilioConstants.ContextNames.KPI.equals(specialType)) {
+			return FieldFactory.getKPIFields();
 		}
 		return null;
 	}

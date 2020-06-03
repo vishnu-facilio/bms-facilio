@@ -85,6 +85,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 		this.skipPermission = selectBuilder.skipPermission;
 		this.joinModules = selectBuilder.joinModules;
+		if (selectBuilder.aggrFields != null) {
+			this.aggrFields = new ArrayList<>(selectBuilder.aggrFields);
+		}
 	}
 	
 	@Override

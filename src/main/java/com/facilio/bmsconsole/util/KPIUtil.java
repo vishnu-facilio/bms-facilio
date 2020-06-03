@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,17 +24,21 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportFactoryFields;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.contexts.DBParamContext;
-import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 
 public class KPIUtil {
 	
@@ -256,39 +259,66 @@ public class KPIUtil {
 	}
 	
 	public static Object getKPIValue(KPIContext kpi) throws Exception {
+		return getKPIValue(kpi, null);
+	}
+	
+	public static Object getKPIValue(KPIContext kpi, String baselineName) throws Exception {
 		FacilioModule module = kpi.getModule();
-		Criteria criteria = kpi.getCriteria().clone();
-		
-		FacilioField metric = kpi.getMetric();
 		FacilioField dateField = kpi.getDateField();
 		
-		if (dateField != null) {
-			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
-		}
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.andCriteria(kpi.getCriteria())
+				;
 		if (kpi.getSiteId() != -1) {
-			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(kpi.getSiteId()), NumberOperators.EQUALS));
 		}
 		
-		DBParamContext dbParamContext = new DBParamContext();
-		dbParamContext.setFieldName(metric.getName());
-		dbParamContext.setCriteria(criteria);
+		String fieldName;
 		if (kpi.getAggr() != -1) {
-			dbParamContext.setAggregateString(kpi.getAggrEnum().getStringValue());
+			builder.aggregate(kpi.getAggrEnum(), kpi.getMetric());
+			fieldName = kpi.getMetric().getName();
 		}
-		else if (StringUtils.isNotEmpty(kpi.getMetricName()) && kpi.getMetricName().equals("count")) {
-			dbParamContext.setFieldName("id");
-			dbParamContext.setAggregateString(kpi.getMetricName());
+		else {
+			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+			fieldName = "id";
 		}
 		
-		List<Object> params = new ArrayList<>();
-		params.add(module);
-		params.add(dbParamContext);
-		
-		FacilioModuleFunctionImpl function = new FacilioModuleFunctionImpl();
-		Object obj = function.fetch(null,params);
-		if (obj == null) {
-			return 0;
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> baseLineBuilder = new SelectRecordsBuilder<>(builder);
+		// This condition should be last
+		if (dateField != null) {
+			if (baselineName != null) {
+				BaseLineContext baseline = BaseLineAPI.getBaseLine(baselineName);
+				DateRange actualRange = kpi.getDateOperatorEnum().getRange(kpi.getDateValue());
+				DateRange baseLineRange = baseline.calculateBaseLineRange(actualRange, baseline.getAdjustTypeEnum());
+				baseLineBuilder.andCondition(CriteriaAPI.getCondition(dateField, baseLineRange.toString(), DateOperators.BETWEEN));
+			}
+			builder.andCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
 		}
+		else if (baselineName != null) {
+			throw new IllegalArgumentException("Date range is mandatory for baseline");
+		}
+		
+		
+		Object obj = 0;
+		List<Map<String, Object>> props = builder.getAsProps();
+		
+		if (CollectionUtils.isNotEmpty(props)) {
+			obj = props.get(0).get(fieldName);
+		}
+		
+		if (baselineName != null) {
+			Object baseLineVal = 0;
+			List<Map<String, Object>> baselineProps = baseLineBuilder.getAsProps();
+			if (CollectionUtils.isNotEmpty(baselineProps)) {
+				baseLineVal = baselineProps.get(0).get(fieldName);
+			}
+			JSONObject value = new JSONObject();
+			value.put("value", obj);
+			value.put("baseLineValue", baseLineVal);
+			return value;
+		}
+		
 		return obj;
 	}
 }
