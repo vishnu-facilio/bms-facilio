@@ -25,12 +25,6 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 
 		List<FacilioField> rollUpFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Long childModuleId = (Long) context.get(FacilioConstants.ContextNames.CHILD_MODULE_ID);
-		Integer aggregateFunctionId = (Integer) context.get(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID);
-
-		if(childModuleId == null || aggregateFunctionId == null) {
-			throw new IllegalArgumentException("Insufficient params for the rollup field configuration.");
-		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule parentModule = modBean.getModule(moduleName);
@@ -38,11 +32,19 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 		for(FacilioField rollUpField:rollUpFields) 
 		{
 			if(rollUpField.getId() != - 1 && rollUpField.getModuleId() == parentModule.getModuleId()) 
-			{	Long childFieldId = (Long) context.get(FacilioConstants.ContextNames.CHILD_FIELD_ID);
+			{
+				Long childModuleId = (Long) context.get(FacilioConstants.ContextNames.CHILD_MODULE_ID);
+				Integer aggregateFunctionId = (Integer) context.get(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID);
+				if(childModuleId == null || aggregateFunctionId == null) {
+					throw new IllegalArgumentException("Insufficient params for the rollup field configuration.");
+				}
+				
 				FacilioModule childModule = modBean.getModule(childModuleId);
 				if(childModule == null) {
 					throw new IllegalArgumentException("Please provide a valid child Module in the configuration.");
 				}
+				
+				Long childFieldId = (Long) context.get(FacilioConstants.ContextNames.CHILD_FIELD_ID);
 				if(childFieldId == null) 
 				{	
 					List<FacilioField> childFields = modBean.getAllFields(childModule.getName());
@@ -73,6 +75,7 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 				Long aggregateFieldId = (Long) context.get(FacilioConstants.ContextNames.AGGREGATE_FIELD_ID);
 				aggregateFieldId = (aggregateFieldId == null) ? childFieldId : aggregateFieldId;
 				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CHILD_CRITERIA);
+				String rollUpFieldDescription = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 				
 				RollUpField rollUpFieldContext = new RollUpField();
 				rollUpFieldContext.setChildModuleId(childModuleId);
@@ -85,6 +88,10 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 					long childCriteriaId = CriteriaAPI.addCriteria(criteria);
 					rollUpFieldContext.setChildCriteriaId(childCriteriaId);
 				}
+				if(rollUpFieldDescription != null) {
+					rollUpFieldContext.setDescription(rollUpFieldDescription);
+				}
+				rollUpFieldContext.setIsSystemRollUpField(false);
 				rollUpFieldContexts.add(rollUpFieldContext);
 			}
 		}

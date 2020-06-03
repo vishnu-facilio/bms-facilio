@@ -19,6 +19,7 @@ public class RollUpField{
     
 	private long id = -1;
 	private long orgId;
+    private String description;
 	private long childFieldId;
     private long childModuleId;
     private long childCriteriaId;
@@ -26,6 +27,7 @@ public class RollUpField{
     private long aggregateFieldId = -1;
     private long parentModuleId;
     private long parentRollUpFieldId;
+    private Boolean isSystemRollUpField;
     
 	private FacilioField childField;
     private FacilioModule childModule;
@@ -35,7 +37,6 @@ public class RollUpField{
     private FacilioModule parentModule;
     private FacilioField parentRollUpField;
     
-
 	public RollUpField() {
 		super();
 	}
@@ -65,7 +66,15 @@ public class RollUpField{
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public long getChildFieldId() {
 		return childFieldId;
 	}
@@ -177,7 +186,22 @@ public class RollUpField{
 	public void setChildField(FacilioField childField) {
 		this.childField = childField;
 	}
-    
+	
+	public Boolean getIsSystemRollUpField() {
+		return isSystemRollUpField;
+	}
+	
+	public void setIsSystemRollUpField(Boolean isSystemRollUpField) {
+		this.isSystemRollUpField = isSystemRollUpField;
+	}
+	
+	public boolean isSystemRollUpField() {
+		if (isSystemRollUpField != null) {
+			return isSystemRollUpField.booleanValue();
+		}
+		return false;
+	}
+		
 	@Override
 	public String toString() {
 		

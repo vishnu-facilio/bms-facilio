@@ -130,6 +130,19 @@ public class RollUpFieldUtil {
 		return getRollUpFieldFromProps(props, isFetchSubProps);
 	}
 	
+	public static List<RollUpField> getRollUpFieldsByParentRollUpFieldId(Long parentRollUpFieldId, boolean isFetchSubProps) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getRollUpFieldFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(FieldFactory.getRollUpFieldFields())
+			.table(ModuleFactory.getRollUpFieldsModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRollUpFieldId"), ""+parentRollUpFieldId, NumberOperators.EQUALS));
+							
+		List<Map<String, Object>> props = selectBuilder.get();
+		return getRollUpFieldFromProps(props, isFetchSubProps);
+	}
+	
 	public static List<RollUpField> getRollUpFieldFromProps(List<Map<String, Object>> props, boolean isFetchSubProps) throws Exception {
 		
 		if (props != null && !props.isEmpty()) {
@@ -504,6 +517,9 @@ public class RollUpFieldUtil {
 		siteRollUpFieldContextIS.setChildCriteriaId(childCriteriaId5);
 		rollUpFields.add(siteRollUpFieldContextIS);
 		
+		for(RollUpField rollUpField:rollUpFields) {
+			rollUpField.setIsSystemRollUpField(true);
+		}
 		addRollUpField(rollUpFields);
 	}
 	
@@ -595,6 +611,9 @@ public class RollUpFieldUtil {
 		space4RollUpFieldContext.setChildCriteriaId(childCriteriaId4);
 		rollUpFields.add(space4RollUpFieldContext);
 		
+		for(RollUpField rollUpField:rollUpFields) {
+			rollUpField.setIsSystemRollUpField(true);
+		}
 		addRollUpField(rollUpFields);
 	}
 	

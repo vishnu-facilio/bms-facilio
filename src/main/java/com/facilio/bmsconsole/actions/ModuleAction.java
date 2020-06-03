@@ -801,9 +801,10 @@ public class ModuleAction extends FacilioAction {
 	public String updateRollUpField() throws Exception {
 
 		FacilioChain addRollUpFieldsChain = TransactionChainFactory.getUpdateRollUpFieldsChain();
-		FacilioContext context = addRollUpFieldsChain.getContext();
-		
-		context.put(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS, getId());
+		FacilioContext context = addRollUpFieldsChain.getContext();			
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
+		context.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, true);
+
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, getDescription());
 		context.put(FacilioConstants.ContextNames.CHILD_MODULE_ID, getChildModuleId());
 		context.put(FacilioConstants.ContextNames.CHILD_FIELD_ID, getFieldId());
@@ -824,9 +825,9 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getAllRollUpFields() throws Exception {
-		FacilioChain chain = TransactionChainFactory.getAllRollUpFieldsChain();
-		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());	
+	public String getRollUpFields() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getRollUpFieldsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);	
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.ROLL_UP_FIELDS,(List<RollUpField>) chain.getContext().get(FacilioConstants.ContextNames.ROLL_UP_FIELDS));	
 		return SUCCESS;

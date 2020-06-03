@@ -24,20 +24,25 @@ public class UpdateRollUpFieldsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
-		Long rollUpFieldId = (Long) context.get(FacilioConstants.ContextNames.ROLL_UP_FIELD_IDS);
+		FacilioField parentRollUpField = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
+		if(parentRollUpField == null) {
+			throw new IllegalArgumentException("Please provide rollupField id for configuration.");
+		}
+		
 		Long childModuleId = (Long) context.get(FacilioConstants.ContextNames.CHILD_MODULE_ID);
 		Long childFieldId = (Long) context.get(FacilioConstants.ContextNames.CHILD_FIELD_ID);
 		Long aggregateFieldId = (Long) context.get(FacilioConstants.ContextNames.AGGREGATE_FIELD_ID);
 		Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CHILD_CRITERIA);
 		Integer aggregateFunctionId = (Integer) context.get(FacilioConstants.ContextNames.AGGREGATE_FUNCTION_ID);
+		String rollUpFieldDescription = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 		
-		List<RollUpField> rollUpFields = RollUpFieldUtil.getRollUpFieldsByIds(Collections.singletonList(rollUpFieldId), true);
+		List<RollUpField> rollUpFields = RollUpFieldUtil.getRollUpFieldsByParentRollUpFieldId(parentRollUpField.getFieldId(), true);
 		if(rollUpFields == null || rollUpFields.isEmpty()) {
 			throw new IllegalArgumentException("Invalid rollup field id for configuration.");
 		}
 		
 		RollUpField rollUpField = rollUpFields.get(0);
-		if(!isAllowedRollUpAggregationType(aggregateFunctionId)) {
+		if(aggregateFunctionId != null && !isAllowedRollUpAggregationType(aggregateFunctionId)) {
 			throw new IllegalArgumentException("Please provide a valid rollup type in aggregation.");
 		}
 		
@@ -86,7 +91,10 @@ public class UpdateRollUpFieldsCommand extends FacilioCommand {
 			long childCriteriaId = CriteriaAPI.addCriteria(criteria);
 			rollUpField.setChildCriteriaId(childCriteriaId);
 		}
-		
+		if(rollUpFieldDescription != null) {
+			rollUpField.setDescription(rollUpFieldDescription);
+		}
+		rollUpField.setIsSystemRollUpField(false);
 		RollUpFieldUtil.updateRollUpField(rollUpField);	
 		context.put(FacilioConstants.ContextNames.ROLL_UP_FIELDS, rollUpFields);
 		return false;

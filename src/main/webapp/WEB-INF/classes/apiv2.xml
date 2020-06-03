@@ -1947,9 +1947,9 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="deleteRollUpField">
 		</action>
-		<action name="getAllRollUpFields"
+		<action name="getRollUpFields"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
-			method="getAllRollUpFields">
+			method="getRollUpFields">
 		</action>
 		<action name="fetchRollUpSubModules"
 			class="com.facilio.bmsconsole.actions.ModuleAction"

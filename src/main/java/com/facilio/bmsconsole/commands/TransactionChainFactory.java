@@ -1100,6 +1100,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getUpdateRollUpFieldsChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateFieldCommand());
 			c.addCommand(new UpdateRollUpFieldsCommand());
 			return c;
 		}
@@ -1110,7 +1111,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain getAllRollUpFieldsChain() {
+		public static FacilioChain getRollUpFieldsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetRollUpFieldsCommand());
 			return c;

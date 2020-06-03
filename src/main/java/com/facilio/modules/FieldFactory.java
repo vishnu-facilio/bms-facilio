@@ -937,6 +937,7 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getRollUpFieldsModule();
 
         fields.add(getIdField(module));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("childFieldId", "CHILD_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("childModuleId", "CHILD_MODULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("childCriteriaId", "CHILD_CRITERIA_ID", module, FieldType.LOOKUP));
@@ -944,6 +945,7 @@ public class FieldFactory {
         fields.add(getField("aggregateFieldId", "AGGREGATE_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("parentModuleId", "PARENT_MODULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("parentRollUpFieldId", "PARENT_ROLLUP_FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("isSystemRollUpField", "IS_SYSTEM_ROLL_UP_FIELD", module, FieldType.BOOLEAN));
         return fields;
     }
     
