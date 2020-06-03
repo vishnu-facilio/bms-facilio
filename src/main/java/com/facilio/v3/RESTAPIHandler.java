@@ -261,6 +261,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     private static V3Config getV3Config(String moduleName) {
         Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(moduleName);
+        if (v3Config == null) {
+            return null;
+        }
         return v3Config.get();
     }
 
@@ -297,6 +300,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new SaveCommand(module));
+        transactionChain.addCommand(new SaveSubFormCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
 
