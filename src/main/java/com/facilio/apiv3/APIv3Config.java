@@ -7,6 +7,10 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -19,10 +23,6 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
-import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
-import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -176,6 +176,22 @@ public class APIv3Config {
                   .beforeFetch(new LoadVisitorLookUpCommandV3())
                 .summary()
                   .beforeFetch(new LoadVisitorLookUpCommandV3())
+                .build();
+    }
+
+    @Module("vendors")
+    public static Supplier<V3Config> getVendor() {
+        return () -> new V3Config(V3VendorContext.class)
+                .create()
+                  .beforeSave(new AddOrUpdateLocationForVendorCommandV3())
+                  .afterSave(TransactionChainFactoryV3.getVendorsAfterSaveChain())
+                .update()
+                  .beforeSave(new AddOrUpdateLocationForVendorCommandV3())
+                  .afterSave(TransactionChainFactoryV3.getVendorsAfterSaveChain())
+                .list()
+                  .beforeFetch(new LoadVendorLookupCommandV3())
+                .summary()
+                  .beforeFetch(new LoadVendorLookupCommandV3())
                 .build();
     }
 

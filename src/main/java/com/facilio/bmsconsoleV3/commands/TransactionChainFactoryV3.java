@@ -7,6 +7,9 @@ import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndAc
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
@@ -118,6 +121,11 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-
+    public static FacilioChain getVendorsAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddVendorContactsCommandV3());
+        c.addCommand(new AddInsuranceVendorRollupCommandV3());
+        return c;
+    }
 
 }
