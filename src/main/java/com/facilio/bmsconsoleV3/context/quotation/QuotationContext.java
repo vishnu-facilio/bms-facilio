@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -45,6 +43,16 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private TenantContext tenant;
     private Long parentId;
     private Long revisionNumber;
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    private String notes;
 
     public QuotationContext() {
 

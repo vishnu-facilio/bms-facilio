@@ -335,7 +335,7 @@ public class FormFactory {
 					else if (Arrays.asList("discountAmount", "discountPercentage").contains(field.getName())) {
 						discountFields.add(field);
 					}
-					else if (Arrays.asList("signature").contains(field.getName())) {
+					else if (Arrays.asList("signature", "notes").contains(field.getName())) {
 						signatureFields.add(field);
 					}
 					else {
@@ -2172,7 +2172,8 @@ public class FormFactory {
 
 		fields.add(new FormField("discountAmount", FieldDisplayType.NUMBER, "Discount Amount", Required.OPTIONAL, 9, 2));
 
-		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 11, 1));
 
 		return fields;
 	}

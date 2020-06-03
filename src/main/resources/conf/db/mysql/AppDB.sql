@@ -16009,6 +16009,7 @@ CREATE TABLE IF NOT EXISTS Quotation
     APPROVAL_FLOW_ID      BIGINT,
     APPROVAL_STATE        BIGINT,
     DESCRIPTION           VARCHAR(500),
+    NOTES                 VARCHAR(500),
     BILL_DATE             BIGINT,
     EXPIRY_DATE           BIGINT,
     SIGNATURE_ID          BIGINT,
