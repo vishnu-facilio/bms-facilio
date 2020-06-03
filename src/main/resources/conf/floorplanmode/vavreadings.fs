@@ -38,8 +38,8 @@ spaceIds = params.spaceId;
         avgValue1 = avgValue1 + readingValue;
         avgValue2 = avgValue2 + readingValue2;
       }
-      val1 = avgValue1 / assetIds.size();
-      val2 = avgValue2 / assetIds.size();
+      val1 = avgValue1 / assetIds.size(); // setpoint temperature avg value
+      val2 = avgValue2 / assetIds.size(); // space temperature avg value
     }
     unitData = "";
     comp1 = val2 - val1;
@@ -48,18 +48,15 @@ spaceIds = params.spaceId;
     if (assetIds != null) {
       styles = {};
       styles.fill = "#b0b0b0";
-      if (comp1 > -0.5 && comp1 < 0.5) {
-      styles["fill"] = "#48ba61"; // green zone
+      if (val2 > -1 && val2 < 19) {
+      styles["fill"] = "#0000ff"; // blue zone
     }
-    else if (comp1 > 0.6 && comp1 < 2.9) {
-      styles["fill"] = "#ff9900"; // orange zone
+    else if (val2 > 19 && val2 < 25) {
+      styles["fill"] = "#48ba61"; // red zone
     }
-    else if (comp1 > 3) {
+    else if (val2 > 24) {
       styles["fill"] = "#ff0000"; // red zone
     }   
-    else if (comp1 < -0.6) {
-      styles["fill"] = "#0000ff"; // Blue zone
-    }  
       area.styles = styles;
     }
     area.spaceId = spaceId;
