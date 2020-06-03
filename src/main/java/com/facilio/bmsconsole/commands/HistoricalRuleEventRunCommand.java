@@ -71,14 +71,14 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class HistoricalRuleEventRunCommand extends FacilioCommand implements PostTransactionCommand{
 
-private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunCommand.class.getName());
 	
 	private WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = null;
 	private Long jobId;
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
 	private boolean isFailed = false;
-	Boolean isManualFailed = false;
+	HashMap<String, Boolean> jobStatesMap = new HashMap<String, Boolean>();
 	
 	@Override
 	public boolean executeCommand(Context jobContext) throws Exception {
@@ -115,7 +115,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 				isLastIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal() || logState == WorkflowRuleHistoricalLogsContext.LogState.FIRST_AS_WELL_AS_LAST.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
 			}
 			
-			HashMap<String, Boolean> jobStatesMap = constructJobStates(isFirstIntervalJob, isLastIntervalJob, isManualFailed);
+			jobStatesMap = constructJobStates(isFirstIntervalJob, isLastIntervalJob, false);
 			List<BaseEventContext> baseEvents = historyExecutionType.executeRuleAndGenerateEvents(loggerInfo, dateRange, jobStatesMap, jobId);
 			
 			long eventInsertStartTime = System.currentTimeMillis();
@@ -134,6 +134,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 		exceptionMessage = historicalRuleException.getMessage();
 		stack = historicalRuleException.getStackTrace();
 		isFailed = true;
+		Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
 
 		if(exceptionMessage != null && isManualFailed) {
 			workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
@@ -162,6 +163,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 		if(activeRuleResourceGroupedLoggerIds == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
+			Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
 			if(isFailed && !isManualFailed) {
 				parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.PARTIALLY_PROCESSED_STATE.getIntVal());
 			}
@@ -188,9 +190,9 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunComm
 			if (stack != null) {
 				mailExp.setStackTrace(stack);
 			}
-			
-			if(workflowRuleHistoricalLogsContext != null)	{	
-				
+
+			if(workflowRuleHistoricalLogsContext != null)	{
+				Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
 				if(isManualFailed) { //Failed by us
 					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.SKIPPED.getIntVal()));
 				}
