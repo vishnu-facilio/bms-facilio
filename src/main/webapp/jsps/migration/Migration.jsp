@@ -6,6 +6,7 @@
 <%@ page import="org.apache.log4j.LogManager" %>
 <%@ page import="org.apache.log4j.Logger" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.apache.commons.collections4.CollectionUtils" %>
 
 
 <%--
@@ -32,6 +33,7 @@
 
 
             LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
+            response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             return false;
         }
     }
@@ -39,12 +41,15 @@
 
 <%
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
-    for (Organization org : orgs) {
-        AccountUtil.setCurrentAccount(org.getOrgId());
-        FacilioChain c = FacilioChain.getTransactionChain();
-        c.addCommand(new OrgLevelMigrationCommand());
-        c.execute();
+    if (CollectionUtils.isNotEmpty(orgs)) {
+        for (Organization org : orgs) {
+            AccountUtil.setCurrentAccount(org.getOrgId());
+            FacilioChain c = FacilioChain.getTransactionChain();
+            c.addCommand(new OrgLevelMigrationCommand());
+            c.execute();
 
-        AccountUtil.cleanCurrentAccount();
+            AccountUtil.cleanCurrentAccount();
+        }
     }
+    response.getWriter().println("Migration done");
 %>
