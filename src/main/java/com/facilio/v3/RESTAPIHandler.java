@@ -336,6 +336,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         chain.addCommand(new ExecuteStateFlowCommand());
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         chain.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION)));
         chain.addCommand(new ExecuteRollUpFieldCommand());
@@ -413,6 +414,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+        transactionChain.addCommand(new VerifyApprovalCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
@@ -468,6 +470,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new UpdateCommand(module));
+
+        transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+        transactionChain.addCommand(new VerifyApprovalCommand());
+        transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
 

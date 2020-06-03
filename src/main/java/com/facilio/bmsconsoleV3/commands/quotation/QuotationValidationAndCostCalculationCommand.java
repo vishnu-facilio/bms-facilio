@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +35,8 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                 }
             }
         }
+        
+        context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 
         return false;
     }
