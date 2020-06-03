@@ -47,10 +47,6 @@ public class ExecuteHistoryForAssetRollUp extends ExecuteHistoricalRule {
 			throw new Exception("Invalid params to execute daily assetRollUp event job: "+jobId);				
 		}
 		
-		if(!(currentResourceContext instanceof AssetContext)) {
-			throw new Exception("Invalid asset id to execute daily assetRollUp event job: " +jobId+ " with resourceId: " +resourceId);				
-		}
-		
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
 		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");

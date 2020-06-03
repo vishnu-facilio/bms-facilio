@@ -70,7 +70,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}
 		readingRule.setMatchedResources(Collections.singletonMap(currentResourceContext.getId(), currentResourceContext));
 
-		LOGGER.info("Historical Reading Rule Run started for jobId: "+jobId+" with RuleType" +ruleJobTypeEnum.getValue()+ "and RuleId : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+". Triggered at  -- "+processStartTime);				
+		LOGGER.info("Historical Reading Rule Run started for jobId: "+jobId+" with RuleType " +ruleJobTypeEnum.getValue()+ " and RuleId : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+". Triggered at  -- "+processStartTime);				
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
 		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");

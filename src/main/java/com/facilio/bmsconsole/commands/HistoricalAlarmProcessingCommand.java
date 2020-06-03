@@ -71,8 +71,9 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			Long primaryRuleId = (Long)loggerInfo.get(historyExecutionType.fetchPrimaryLoggerKey());
 			
 			if(type == Type.PRE_ALARM) {
-				Criteria occurenceDeletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, type);
-				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(occurenceDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM);
+				Criteria readingOccurenceDeletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, Type.READING_ALARM);
+				Criteria readingEventsDeletionCriteria = historyExecutionType.getEventsProcessingCriteria(loggerInfo, Type.READING_ALARM);
+				DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(readingOccurenceDeletionCriteria, readingEventsDeletionCriteria, lesserStartTime, greaterEndTime, Type.READING_ALARM);
 				totalAlarmOccurrenceCount = fetchAndProcessAllEventsBasedOnAlarmDeletionRange(primaryRuleId, eventsFetchCriteria, modifiedDateRange.getStartTime(), modifiedDateRange.getEndTime(), Type.PRE_ALARM, totalAlarmOccurrenceCount);
 			}
 			else {	
@@ -179,7 +180,10 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				}
 			}
 			propagateStatusToRuleLog(parentRuleLoggerContext);
-			WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+			int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+			if(rowsUpdated == 1 && parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
+				checkforRollUpAlarms(parentRuleLoggerContext);
+			}
 		}
 		catch (Exception e) {		
 			LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB Post Execute Failed -- "+parentRuleResourceLoggerId+" Exception --  "+e);
@@ -207,7 +211,10 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
 				WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
 				propagateStatusToRuleLog(parentRuleLoggerContext);
-				WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+				int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+				if(rowsUpdated == 1 && parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
+					checkforRollUpAlarms(parentRuleLoggerContext);
+				}
 			}
 			else  {
 				LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB IS NULL IN ONERROR FOR JOB -- " + parentRuleResourceLoggerId);
@@ -263,11 +270,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				else {
 					parentRuleLoggerContext.setStatus(WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal());
 				}
-				parentRuleLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());	
-				
-				if(parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
-					checkforRollUpAlarms(parentRuleLoggerContext);
-				}
+				parentRuleLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 			}
 		}
 	}
@@ -326,7 +329,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
-		context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, ruleJobType);
+		context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, ruleJobType.getIndex());
 		
 		if(ids != null && !ids.isEmpty()) {
 			for(long id:ids)

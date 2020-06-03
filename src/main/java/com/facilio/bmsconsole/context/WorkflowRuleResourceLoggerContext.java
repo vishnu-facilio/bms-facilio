@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.enums.RuleJobType;
 
-public class WorkflowRuleResourceLoggerContext {
+public class WorkflowRuleResourceLoggerContext implements Serializable {
 	
 	private long id = -1;
 	private long orgId;
@@ -68,15 +69,18 @@ public class WorkflowRuleResourceLoggerContext {
 		}
 		this.loggerInfo.put(key,value);
 	}
-	public String getLoggerInfoJsonStr() {
+	
+	private String loggerInfoStr;
+	public String getLoggerInfoStr() {
 		if(loggerInfo != null) {
 			return loggerInfo.toJSONString();
 		}
-		return null;
+		return loggerInfoStr;
 	}
-	public void setLoggerInfoJsonStr(String jsonStr) throws ParseException {
+	public void setLoggerInfoStr(String loggerInfoStr) throws ParseException {
+		this.loggerInfoStr = loggerInfoStr;
 		JSONParser parser = new JSONParser();
-		loggerInfo = (JSONObject) parser.parse(jsonStr);
+		this.loggerInfo = (JSONObject) parser.parse(loggerInfoStr);
 	}
 	
 	public int getStatus() {

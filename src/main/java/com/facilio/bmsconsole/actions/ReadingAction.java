@@ -1220,11 +1220,17 @@ public class ReadingAction extends FacilioAction {
 		this.loggerInfo = loggerInfo;
 	}
 
-	public String runThroughRule() throws Exception {
-		
-		try {
+	public String runThroughRule() throws Exception {	
+		try {	
 			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 			FacilioContext context = runThroughRuleChain.getContext();
+			
+			if(getLoggerInfo() == null) {
+				JSONObject loggerRuleInfo = new JSONObject();
+				loggerRuleInfo.put("rule", getId());
+				loggerRuleInfo.put("resource", getHistoricalLoggerAssetIds());
+				setLoggerInfo(loggerRuleInfo);
+			}
 			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, getRuleJobType());
 			context.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, getLoggerInfo());
@@ -1257,7 +1263,9 @@ public class ReadingAction extends FacilioAction {
 		if(ruleIds != null && !ruleIds.isEmpty()) {
 			for(long ruleId:ruleIds)
 			{
-				context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+				JSONObject loggerRuleInfo = new JSONObject();
+				loggerRuleInfo.put("rule", ruleId);
+				context.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, loggerRuleInfo);
 				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(context);
 			}	

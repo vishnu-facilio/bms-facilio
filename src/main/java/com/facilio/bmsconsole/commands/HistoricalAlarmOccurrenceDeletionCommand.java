@@ -78,7 +78,9 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			}
 			ExecuteHistoricalRule historyExecutionType = ruleJobType.getHistoryRuleExecutionType();
 			Criteria deletionCriteria = historyExecutionType.getOccurrenceDeletionCriteria(loggerInfo, type);
-			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(deletionCriteria, actualStartTime, actualEndTime, type);
+			Criteria eventsFetchCriteria = historyExecutionType.getEventsProcessingCriteria(loggerInfo, type);
+
+			DateRange modifiedDateRange = WorkflowRuleHistoricalAlarmsAPI.deleteAllAlarmOccurrencesBasedonCriteria(deletionCriteria, eventsFetchCriteria, actualStartTime, actualEndTime, type);
 
 //			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
 //			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();

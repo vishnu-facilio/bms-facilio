@@ -8,9 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -37,7 +35,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class RunThroughHistoricalRuleCommand extends FacilioCommand {
-	private static final Logger LOGGER = LogManager.getLogger(RunThroughHistoricalRuleCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RunThroughHistoricalRuleCommand.class.getName());
 
 	@SuppressWarnings("null")
 	@Override
@@ -72,7 +70,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		if(ruleJobTypeEnum == RuleJobType.READING_ALARM) {
 			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(primaryId),null);
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
-			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
 				ruleJobType = RuleJobType.PRE_ALARM.getIndex();
 			}	
 		}
@@ -98,7 +96,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		
 		long noOfJobsCanbeCreatedAtPresent = maximumDailyEventRuleJobsPerOrg - activeDailyEventRuleJobsAtPresent;
 		if(noOfJobsCanbeCreatedAtPresent < 0) {
-			LOGGER.log(Level.ERROR, "Already present active historical event jobs are more than expected limit being "+(-1*noOfJobsCanbeCreatedAtPresent));
+			LOGGER.severe("Already present active historical event jobs are more than expected limit being "+(-1*noOfJobsCanbeCreatedAtPresent));
 			noOfJobsCanbeCreatedAtPresent = maximumDailyEventRuleJobsPerOrg;
 		}
 		
@@ -116,7 +114,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		long parentRuleLoggerId = workflowRuleLoggerContext.getId();
 		List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 		
-		String secondaryPropKeyName = historyRuleExecutionType.fetchPrimaryLoggerKey();
+		String secondaryPropKeyName = historyRuleExecutionType.fetchSecondaryLoggerKey();
 		for(Long secondaryId :secondaryIds)
 		{	
 			if(secondaryPropKeyName != null) {
@@ -154,7 +152,10 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand {
 		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
 			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)
 			{		
-				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");		
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");
+				if(ruleJobTypeEnum == RuleJobType.RULE_ROLLUP_ALARM || ruleJobTypeEnum == RuleJobType.ASSET_ROLLUP_ALARM) {
+					LOGGER.info("Added triggered RuleAssetRollUpJobs with jobId: " +parentRuleResourceLoggerId+ " for primary alarmRollUpId: " +primaryId+ " and secondary alarmRollUpIds: " +secondaryIds+ " with RuleJobType: " +ruleJobTypeEnum.getValue() + " at: "+System.currentTimeMillis());				
+				}
 			}
 		}
 

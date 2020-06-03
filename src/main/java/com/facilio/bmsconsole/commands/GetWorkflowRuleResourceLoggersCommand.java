@@ -47,13 +47,15 @@ public class GetWorkflowRuleResourceLoggersCommand extends FacilioCommand {
 			}
 			
 			List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
-			Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
-			for(ResourceContext resource:resources) {
-				resourcesMap.put(resource.getId(), resource);
-			}
-			
-			for(WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext :workflowRuleResourceLoggerContextList) {
-				workflowRuleResourceLoggerContext.setResourceContext(resourcesMap.get(workflowRuleResourceLoggerContext.getResourceId()));
+			if(resources != null && !resources.isEmpty()) {
+				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+				for(ResourceContext resource:resources) {
+					resourcesMap.put(resource.getId(), resource);
+				}
+				
+				for(WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext :workflowRuleResourceLoggerContextList) {
+					workflowRuleResourceLoggerContext.setResourceContext(resourcesMap.get(workflowRuleResourceLoggerContext.getResourceId()));
+				}
 			}
 		}
 		

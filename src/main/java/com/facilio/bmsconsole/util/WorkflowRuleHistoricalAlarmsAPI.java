@@ -40,11 +40,11 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class WorkflowRuleHistoricalAlarmsAPI {
 	
-	public static DateRange deleteAllAlarmOccurrencesBasedonCriteria(Criteria criteria, long startTime, long endTime, Type type) throws Exception 
+	public static DateRange deleteAllAlarmOccurrencesBasedonCriteria(Criteria deletionCriteria, Criteria eventsFetchCriteria, long startTime, long endTime, Type type) throws Exception 
 	{		
-		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(criteria, startTime, endTime, type);
+		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(deletionCriteria, startTime, endTime, type);
 		
-		deleteAllEventsInExactWindow(criteria, startTime, endTime, type);
+		deleteAllEventsInExactWindow(eventsFetchCriteria, startTime, endTime, type);
 	
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{

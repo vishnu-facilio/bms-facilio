@@ -72,15 +72,17 @@ public class WorkflowRuleLoggerAPI {
 		return workflowRuleLoggerContextList;
 	}
 	
-	public static void updateWorkflowRuleLogger(WorkflowRuleLoggerContext workflowRuleLoggerContext) throws Exception {
+	public static int updateWorkflowRuleLogger(WorkflowRuleLoggerContext workflowRuleLoggerContext) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleLoggerFields())
-				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleLoggerContext.getId(), NumberOperators.EQUALS));		
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleLoggerContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));			
 
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleLoggerContext);
-		updateBuilder.update(props);
+		int rowsUpdated = updateBuilder.update(props);
+		return rowsUpdated;
 	}
 	
 	public static void deleteWorkflowRuleLogger(long id) throws SQLException {

@@ -14,6 +14,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.beans.ModuleBean;
@@ -65,9 +66,10 @@ public class DemoAlarmPropagationCommand extends FacilioCommand{
 			for(long ruleId :ruleIdVsResourceIds.keySet())
 			{
 				List<Long> resourceIds = ruleIdVsResourceIds.get(ruleId);
-				runThroughRuleChainContext.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
-				runThroughRuleChainContext.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
-				
+				JSONObject loggerInfo = new JSONObject();
+				loggerInfo.put("rule", ruleId);
+				loggerInfo.put("resource", resourceIds);
+				runThroughRuleChainContext.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, loggerInfo);
 				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(runThroughRuleChainContext);
 				LOGGER.info("Daily Demo Historical rule evaluation has been started for the given rule " +ruleId+ " with resourceIds: "+resourceIds);
