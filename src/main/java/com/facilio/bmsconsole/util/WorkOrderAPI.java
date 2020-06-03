@@ -2904,7 +2904,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		}
 	}
    
-   public static List<WorkOrderContext> getOpenOverdueWorkOrdersByResourceId(Long assetId,int limit) throws Exception {
+   public static List<WorkOrderContext> getOpenOverdueWorkOrdersByResourceId(Long assetId) throws Exception {
 	      
 	      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	      FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
@@ -2919,7 +2919,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	      }
 	      builder.andCondition(CriteriaAPI.getCondition("DUE_DATE", "dueDate", String.valueOf(DateTimeUtil.getCurrenTime()), NumberOperators.LESS_THAN));
 	      builder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
-	      builder.limit(limit);
 	      builder.orderBy("WorkOrders.CREATED_TIME IS NULL,WorkOrders.CREATED_TIME desc");
 	      
 	      List<WorkOrderContext> workOrders = builder.get();

@@ -348,7 +348,7 @@ public class AssetAction extends FacilioAction {
 				BusinessHoursContext businessHour = BusinessHoursAPI.getBusinessHours(Collections.singletonList(asset.getOperatingHour())).get(0);
 				setResult("businessHour",businessHour);
 			}
-			List<WorkOrderContext> workorders = WorkOrderAPI.getOpenOverdueWorkOrdersByResourceId(asset.getId(),10);
+			List<WorkOrderContext> workorders = WorkOrderAPI.getOpenOverdueWorkOrdersByResourceId(asset.getId());
 			setResult("workorders", workorders);
 			List<AlarmContext> alarms = AlarmAPI.getAlarms(asset.getId());
 			setResult("alarms", alarms);
@@ -912,7 +912,7 @@ public class AssetAction extends FacilioAction {
 			List<String> overdueWorkorderAsset3dViewIds = new ArrayList<>();
 			List<String> alarmAsset3dViewIds = new ArrayList<>();
 			for(AssetContext asset:assets){
-				List<WorkOrderContext> workorders = WorkOrderAPI.getOpenOverdueWorkOrdersByResourceId(asset.getId(),10);
+				List<WorkOrderContext> workorders = WorkOrderAPI.getOpenOverdueWorkOrdersByResourceId(asset.getId());
 				if(!workorders.isEmpty()){
 					overdueWorkorderAsset3dViewIds.add(asset.getData().get("3dviewid").toString());
 				}
