@@ -337,7 +337,7 @@ public class ControllerApiV2 {
                 LOGGER.info("applying agent filter");
                 builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), agentIds, NumberOperators.EQUALS));
             }
-            if(controllerType != null && controllerType > 0) {
+            if(controllerType != null && controllerType >= 0) {
             	builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(controllerModule), String.valueOf(controllerType), NumberOperators.EQUALS));
             }
             List<Map<String, Object>> result = builder.get();

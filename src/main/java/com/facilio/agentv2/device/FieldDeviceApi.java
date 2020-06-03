@@ -150,7 +150,7 @@ public class FieldDeviceApi {
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
         }
-        if((controllerType != null) && (controllerType > 0)) {
+        if((controllerType != null) && (controllerType >= 0)) {
         	criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(controllerType), NumberOperators.EQUALS));
         }
         if ((ids != null) && (!ids.isEmpty())) {
