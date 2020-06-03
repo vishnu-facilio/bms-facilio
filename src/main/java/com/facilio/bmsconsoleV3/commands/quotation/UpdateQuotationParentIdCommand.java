@@ -23,7 +23,7 @@ public class UpdateQuotationParentIdCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<QuotationContext> list = recordMap.get(moduleName);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
 
         if(CollectionUtils.isNotEmpty(list)) {
