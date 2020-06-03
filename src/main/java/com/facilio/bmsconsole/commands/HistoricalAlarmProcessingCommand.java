@@ -139,7 +139,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				}
 			}	
 			baseEvents = batchSelect.get();
-			setHistoricalSeverityPropsForBaseEvents(baseEvents, primaryRuleId); //ruleId for PreEvents processing to ReadingEvents		
+			setHistoricalSeverityPropsForBaseEvents(baseEvents, primaryRuleId, type); //ruleId for PreEvents processing to ReadingEvents		
 		}
 		
 		//final batch of historical events to proceed with system autoclear
@@ -181,7 +181,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			}
 			propagateStatusToRuleLog(parentRuleLoggerContext);
 			int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
-			if(rowsUpdated == 1 && parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
+			if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
 				checkforRollUpAlarms(parentRuleLoggerContext);
 			}
 		}
@@ -212,9 +212,9 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
 				propagateStatusToRuleLog(parentRuleLoggerContext);
 				int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
-				if(rowsUpdated == 1 && parentRuleLoggerContext.getStatus() != WorkflowRuleLoggerContext.Status.FAILED.getIntVal()) {
-					checkforRollUpAlarms(parentRuleLoggerContext);
-				}
+ 				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
+ 					checkforRollUpAlarms(parentRuleLoggerContext);
+ 				}
 			}
 			else  {
 				LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB IS NULL IN ONERROR FOR JOB -- " + parentRuleResourceLoggerId);
@@ -275,7 +275,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		}
 	}
 	
-	private void setHistoricalSeverityPropsForBaseEvents(List<BaseEventContext> baseEvents, long ruleId) throws Exception
+	private void setHistoricalSeverityPropsForBaseEvents(List<BaseEventContext> baseEvents, long ruleId, Type type) throws Exception
 	{
 		if(baseEvents != null && !baseEvents.isEmpty())
 		{
@@ -285,15 +285,19 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			}
 			Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(baseEventSeverityIds);
 			
+			AlarmRuleContext alarmRule = null;
+			if(type == Type.READING_ALARM || type == Type.PRE_ALARM) {
+				alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+			}
+			
 			for(BaseEventContext baseEvent :baseEvents)
 			{
-//				if (baseEvent instanceof ReadingEventContext) {
+//				if (baseEvent instanceof ReadingEventContext && alarmRule != null) {
 //					ReadingEventContext readingEventContext = (ReadingEventContext) baseEvent;
 //					readingEventContext.setRule(alarmRule.getPreRequsite());
 //					readingEventContext.setSubRule(alarmRule.getAlarmTriggerRule());
 //				}
-				if (baseEvent instanceof PreEventContext) {
-					AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+				if (baseEvent instanceof PreEventContext && alarmRule != null) {
 					PreEventContext preEvent = (PreEventContext) baseEvent;
 					preEvent.setRule(alarmRule.getPreRequsite());
 					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
@@ -315,9 +319,9 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 					for(WorkflowRuleResourceLoggerContext ruleResourceLogger: ruleResourceLoggerList) {
 						resourceIds.add(ruleResourceLogger.getResourceId());
 					}
-					triggerRuleAssetRollUpJobs(resourceIds, RuleJobType.ASSET_ROLLUP_ALARM, dateRange);				
+					//triggerRuleAssetRollUpJobs(resourceIds, RuleJobType.ASSET_ROLLUP_ALARM, dateRange);				
 				}
-				triggerRuleAssetRollUpJobs(Collections.singletonList(ruleId), RuleJobType.RULE_ROLLUP_ALARM, dateRange);
+				//triggerRuleAssetRollUpJobs(Collections.singletonList(ruleId), RuleJobType.RULE_ROLLUP_ALARM, dateRange);
 			}				
 		}
 		catch (Exception error) {		

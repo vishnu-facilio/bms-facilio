@@ -969,7 +969,9 @@ public class NewAlarmAPI {
 	
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(allFields)
-				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType)).moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
+				.module(module)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(alarmOccurrenceType))
+				.moduleName(NewAlarmAPI.getOccurrenceModuleName(alarmOccurrenceType))
 				.andCriteria(deletionCriteria);
 	
 		Criteria criteria = new Criteria();
@@ -984,7 +986,6 @@ public class NewAlarmAPI {
 		selectbuilder.orderBy("CREATED_TIME");
 		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = selectbuilder.get();
-	
 		return alarmOccurrenceList;
 	}
 	
