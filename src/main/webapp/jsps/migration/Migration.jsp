@@ -7,6 +7,7 @@
 <%@ page import="org.apache.log4j.Logger" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.apache.commons.collections4.CollectionUtils" %>
+<%@ page import="org.apache.commons.lang3.exception.ExceptionUtils" %>
 
 
 <%--
@@ -40,16 +41,23 @@
 %>
 
 <%
-    List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
-    if (CollectionUtils.isNotEmpty(orgs)) {
-        for (Organization org : orgs) {
-            AccountUtil.setCurrentAccount(org.getOrgId());
-            FacilioChain c = FacilioChain.getTransactionChain();
-            c.addCommand(new OrgLevelMigrationCommand());
-            c.execute();
+    try {
+        List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
+        if (CollectionUtils.isNotEmpty(orgs)) {
+            for (Organization org : orgs) {
+                AccountUtil.setCurrentAccount(org.getOrgId());
+                FacilioChain c = FacilioChain.getTransactionChain();
+                c.addCommand(new OrgLevelMigrationCommand());
+                c.execute();
 
-            AccountUtil.cleanCurrentAccount();
+                AccountUtil.cleanCurrentAccount();
+            }
         }
+        response.getWriter().println("Migration done");
     }
-    response.getWriter().println("Migration done");
+    catch (Exception e) {
+        response.getWriter().println("Error occurred");
+        response.getWriter().println(ExceptionUtils.getStackTrace(e));
+        LogManager.getLogger(OrgLevelMigrationCommand.class.getName()).error("Error occurred while running migration.", e);
+    }
 %>
