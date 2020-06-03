@@ -399,7 +399,7 @@ public class RollUpFieldUtil {
 		spaceField.setColumnName("NO_OF_SUB_SPACES");
 		spaceField.setDisplayName("No. Of Sub Spaces");
 		spaceField.setOrgId(noOfBuildingsField.getOrgId());
-		spaceField.setDisplayType(noOfBuildingsField.getDisplayTypeInt());
+		spaceField.setDisplayType(FacilioField.FieldDisplayType.ROLL_UP_FIELD.getIntValForDB());
 		spaceField.setDataType(noOfBuildingsField.getDataType());
 		spaceField.setDefault(noOfBuildingsField.getDefault());
 		spaceField.setDisabled(noOfBuildingsField.getDisabled());
