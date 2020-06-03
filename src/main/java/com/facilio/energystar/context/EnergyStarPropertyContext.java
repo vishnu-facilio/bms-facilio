@@ -31,8 +31,8 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 	BuildingContext buildingContext;
 	String meta;
 	
-	long baselineMonth;
-	long lastMetricsRetrivedDate;
+	long baselineMonth = -1l;
+	long lastMetricsRetrivedDate = -1l;
 	
 	public long getLastMetricsRetrivedDate() {
 		return lastMetricsRetrivedDate;
