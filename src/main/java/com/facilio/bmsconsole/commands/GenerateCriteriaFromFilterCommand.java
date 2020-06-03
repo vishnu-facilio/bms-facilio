@@ -15,12 +15,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.RelatedModuleOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
@@ -78,7 +81,14 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			isOldField = true;
 		}
 		
-		FacilioField field = modBean.getField(fieldName, moduleName);
+		String relatedFieldName = (String) fieldJson.get("relatedFieldName");
+		FacilioField field;
+		if(relatedFieldName != null) {
+			field = modBean.getField(relatedFieldName, fieldName);
+		}
+		else {
+			field = modBean.getField(fieldName, moduleName);
+		}
 		if (field == null) {
 			// Temp handling...needs to check
 			if (fieldName.equals("site") && OLD_FIELDS_MODULE.contains(moduleName)) {
@@ -116,7 +126,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			operatorId = operator.getOperatorId();
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
-		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
+		if(!operator.isValueNeeded() || (value != null && !value.isEmpty())) {
 			
 			Condition condition = new Condition();
 			condition.setField(field);
@@ -139,22 +149,25 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 						obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
 					}
 					values.append(obj.trim());
-					/*if (obj.indexOf("_") != -1 && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER) && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
-						try {
-							String filterValue = obj.split("_")[0];
-							values.append(filterValue);
-						}
-						catch (Exception e) {
-							values.append(obj);
-						}
-					}
-					else {
-						values.append(obj.trim());
-					}*/
 				}
 				String valuesString = values.toString();
 				if (condition.getOperator() instanceof FieldOperator) {
 					condition.setValueField(modBean.getField(valuesString, moduleName));
+				} else if(condition.getOperator() instanceof RelatedModuleOperator) {
+					Criteria criteriaVal = new Criteria();
+					Operator relatedOperator = NumberOperators.EQUALS;
+					if (fieldJson.containsKey("relatedOperatorId")) {
+						relatedOperator = Operator.getOperator((int)(long) fieldJson.get("relatedOperatorId"));
+					}
+					FacilioField relatedField;
+					if (fieldJson.containsKey("filterFieldName")) {
+						relatedField = modBean.getField(relatedFieldName, (String)fieldJson.get("filterFieldName"));
+					}
+					else {
+						relatedField = FieldFactory.getIdField();
+					}
+					criteriaVal.addAndCondition(CriteriaAPI.getCondition(relatedField, valuesString, relatedOperator));
+					condition.setCriteriaValue(criteriaVal);
 				} else {
 					condition.setValue(valuesString);
 				}

@@ -27,3 +27,6 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.FieldOperator
   - types: [LOOKUP]
     enumClassName: com.facilio.db.criteria.operators.UserOperators
+
+   #Special operators wont belong to any field type
+  - enumClassName: com.facilio.db.criteria.operators.RelatedModuleOperator 
