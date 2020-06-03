@@ -25,16 +25,14 @@ public class AwsPolicyUtils {
     private static JSONObject getGist(JSONObject policy) throws Exception {
         if (policy.containsKey("Statement") && (policy.get("Statement") != null)) {
             JSONArray policyStatements = (JSONArray) policy.get("Statement");
-            System.out.println("policy statements " + policyStatements);
             JSONObject policyGist = new JSONObject();
             for (Object policyStatementObject : policyStatements) {
                 JSONObject policyStatement = (JSONObject) policyStatementObject;
-                System.out.println("policystatement " + policyStatement);
                 if ((policyStatement.containsKey("Action")) && (policyStatement.get("Action") != null)) {
                     String action = (String) policyStatement.get("Action");
-                    policyGist.put(action, getResourcesList(policyStatement));
+                    policyGist.put(action, getTopicsFromArns(getResourcesList(policyStatement)));
                 } else {
-                    System.out.println("action not found");
+                    LOGGER.info("action not found");
                 }
             }
             return policyGist;
@@ -185,14 +183,14 @@ public class AwsPolicyUtils {
     private static void addResourceToPolicyIfNotPresent(JSONObject policyStatement, List<String> topics) {
         try {
             List<String> resourcesPresent = getResourcesList(policyStatement);
-            List<String> resourcesToAdd = getResourcesToAdd(resourcesPresent, topics);
+            Set<String> resourcesToAdd = getResourcesToAdd(resourcesPresent, topics);
             addResourcesToPolicy(policyStatement, resourcesToAdd);
         } catch (Exception e) {
             LOGGER.info(" Exception while adding resource to policy ", e);
         }
     }
 
-    private static void addResourcesToPolicy(JSONObject policyStatement, List<String> resourcesToAdd) {
+    private static void addResourcesToPolicy(JSONObject policyStatement, Set<String> resourcesToAdd) {
         if ((policyStatement != null) && (resourcesToAdd != null)) {
             if (policyStatement.containsKey("Resource")) {
                 JSONArray resourceJSONArray;
@@ -379,10 +377,8 @@ public class AwsPolicyUtils {
             JSONArray resourceJSONArray;
             JSONParser parser = new JSONParser();
             resourceJSONArray = (JSONArray) parser.parse(String.valueOf(policyStatement.get("Resource")));
-            System.out.println("resource array " + resourceJSONArray);
             List<String> asList = getAsList(resourceJSONArray);
-            List<String> topics = getTopicsFromArns(asList);
-            return topics;
+            return asList;
         } else {
             System.out.println("no resource found");
         }
@@ -452,8 +448,8 @@ public class AwsPolicyUtils {
         return resources;
     }
 
-    private static List<String> getResourcesToAdd(List<String> receiveTopics, List<String> toCheckAndAddArray) {
-        List<String> resourcesToAdd = new ArrayList<>();
+    private static Set<String> getResourcesToAdd(List<String> receiveTopics, List<String> toCheckAndAddArray) {
+        Set<String> resourcesToAdd = new HashSet<>();
         for (String element : toCheckAndAddArray) {
             if (!receiveTopics.contains(element)) {
                 resourcesToAdd.add(element);
