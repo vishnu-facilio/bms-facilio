@@ -833,12 +833,6 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String deleteRollUpField() throws Exception {
-		deleteFields();
-		setResult("rowsDeleted", rowsDeleted);
-		return SUCCESS;
-	}
-	
 	private Integer aggregateFunctionId;
 	private Long aggregateFieldId;
 

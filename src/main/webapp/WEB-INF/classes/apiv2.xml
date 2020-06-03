@@ -1943,10 +1943,6 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="updateRollUpField">
 		</action>
-		<action name="delete"
-			class="com.facilio.bmsconsole.actions.ModuleAction"
-			method="deleteRollUpField">
-		</action>
 		<action name="getRollUpFields"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getRollUpFields">
