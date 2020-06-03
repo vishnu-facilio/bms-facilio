@@ -514,18 +514,18 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 					AssetCategoryContext assetCategory = AssetsAPI.getCategory(assetCategoryName);
 					
 					if(assetCategory == null){
-						assetCategory = AssetsAPI.getCategory(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-						if(assetCategory == null){
+//						assetCategory = AssetsAPI.getCategory(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+//						if(assetCategory == null){
 							if(assetCategoryName != null && !assetCategoryName.isEmpty()) {
 								assetCategory = new AssetCategoryContext();
-								assetCategory.setName(assetCategoryName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+								assetCategory.setName(assetCategoryName);
 								assetCategory.setType(AssetCategoryType.MISC);
 								FacilioChain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
 								FacilioContext context1 = addAssetCategoryChain.getContext();
 								context1.put(FacilioConstants.ContextNames.RECORD, assetCategory);
 								addAssetCategoryChain.execute();
 							}
-						}
+//						}
 					}
 					
 					FacilioModule module = modBean.getModule(assetCategory.getAssetModuleID());
