@@ -57,6 +57,9 @@ public class SiteValueGenerator extends ValueGenerator {
 			else if(appType == AppDomainType.CLIENT_PORTAL.getIndex()) {
 				
 			}
+			else if(appType == AppDomainType.VENDOR_PORTAL.getIndex()) {
+
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();

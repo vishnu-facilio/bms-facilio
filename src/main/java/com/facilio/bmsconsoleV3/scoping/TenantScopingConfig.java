@@ -8,7 +8,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class TenantScopingConfig extends ModuleScopingConfiguration {
     @Override
@@ -25,7 +27,21 @@ public class TenantScopingConfig extends ModuleScopingConfiguration {
             scoping.setOperatorId(36);
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
-            ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+
+            //adding tenant scope in tenant portal
+            long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+            ScopingConfigContext tenantScoping = new ScopingConfigContext();
+            tenantScoping.setFieldName("siteId");
+            tenantScoping.setScopingId(tenantPortalScopingId);
+            tenantScoping.setOperatorId(36);
+            tenantScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            tenantScoping.setModuleId(module.getModuleId());
+
+            List<ScopingConfigContext> scopingConfig = new ArrayList<>();
+            scopingConfig.add(scoping);
+            scopingConfig.add(tenantScoping);
+
+            ApplicationApi.addScopingConfigForApp(scopingConfig);
         }
         catch(Exception e){
             e.printStackTrace();

@@ -37,20 +37,9 @@ public class SiteScopingConfig extends ModuleScopingConfiguration {
             tenantScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             tenantScoping.setModuleId(module.getModuleId());
 
-            //adding vendor scope in vendor portal
-            long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
-            ScopingConfigContext vendorScoping = new ScopingConfigContext();
-            vendorScoping.setFieldName("vendor");
-            vendorScoping.setScopingId(vendorPortalScopingId);
-            vendorScoping.setOperatorId(36);
-            vendorScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
-            vendorScoping.setModuleId(module.getModuleId());
-
-
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             scopingConfig.add(scoping);
             scopingConfig.add(tenantScoping);
-            scopingConfig.add(vendorScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingConfig);
         }
