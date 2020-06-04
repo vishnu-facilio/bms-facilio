@@ -152,14 +152,14 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 		deleteBuilder.delete();			
 	}
 	
-	public static void handleDuplicateTriggerMetricReadingErrors(Boolean isManualFailed, List<ReadingContext> readings, FacilioField field, ResourceContext currentResourceContext) throws Exception 
+	public static void handleDuplicateTriggerMetricReadingErrors(HashMap<String, Boolean> jobStatesMap, List<ReadingContext> readings, FacilioField field, ResourceContext currentResourceContext) throws Exception 
 	{
 		List<Long> uniqueTtimeOfReadings = new ArrayList<Long>();
 		for(ReadingContext reading:readings) 
 		{
 			if(uniqueTtimeOfReadings != null && reading.getTtime() != - 1 && uniqueTtimeOfReadings.contains(reading.getTtime()) && field != null)
 			{
-				isManualFailed = true;
+				jobStatesMap.put("isManualFailed", true);
 				String fieldReading = "";
 				if(field.getName() != null && reading.getReading(field.getName()) != null) 
 				{

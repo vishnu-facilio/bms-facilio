@@ -73,7 +73,6 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		LOGGER.info("Historical Reading Rule Run started for jobId: "+jobId+" with RuleType " +ruleJobTypeEnum.getValue()+ " and RuleId : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+". Triggered at  -- "+processStartTime);				
 		boolean isFirstIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isFirstIntervalJob"));
 		boolean isLastIntervalJob = Boolean.TRUE.equals((Boolean) jobStatesMap.get("isLastIntervalJob"));
-		Boolean isManualFailed = (Boolean) jobStatesMap.get("isManualFailed");
 
 		Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 		List<WorkflowFieldContext> fields = null;
@@ -95,11 +94,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}				
 		
 		if (fields != null && !fields.isEmpty()) {
-			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, isManualFailed, jobStatesMap);
+			supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, jobStatesMap);
 		}	
 		Map<String, List<ReadingDataMeta>> currentRDMList = null;
 		if (fields != null) {
-			currentRDMList = getSupportingData(fields, startTime, endTime, resourceId, isManualFailed, jobStatesMap);
+			currentRDMList = getSupportingData(fields, startTime, endTime, resourceId, jobStatesMap);
 		}
 		
 		
@@ -126,7 +125,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 			
 			if(previousFetchStartReading != null)
 			{
-				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields, isManualFailed);
+				Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
 				executeWorkflows(readingRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new BaseEventContext());
 				if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 				{
@@ -142,7 +141,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 
 		if(readings != null && !readings.isEmpty())
 		{	
-			WorkflowRuleHistoricalAlarmsAPI.handleDuplicateTriggerMetricReadingErrors(isManualFailed, readings, readingRule.getReadingField(), currentResourceContext);
+			WorkflowRuleHistoricalAlarmsAPI.handleDuplicateTriggerMetricReadingErrors(jobStatesMap, readings, readingRule.getReadingField(), currentResourceContext);
 			startTime = readings.get(0).getTtime();
 			endTime = readings.get(readings.size() - 1).getTtime();
 			executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
@@ -160,7 +159,7 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					ReadingContext nextSingleReading = fetchSingleReading(readingRule, resourceId, endTime, NumberOperators.GREATER_THAN, "TTIME");
 					if(nextSingleReading != null)
 					{
-						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields, isManualFailed);
+						Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
 						
 						executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
 						if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
@@ -312,11 +311,11 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		}
 	}
 	
-	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, boolean isManualFailed, HashMap<String, Boolean> jobStatesMap) throws Exception {
-		return getSupportingData(fields, startTime, endTime, resourceId, isManualFailed, true, jobStatesMap);
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, HashMap<String, Boolean> jobStatesMap) throws Exception {
+		return getSupportingData(fields, startTime, endTime, resourceId, true, jobStatesMap);
 	}
 	
-	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, Boolean isManualFailed, boolean canConstructErrorMessage, HashMap<String, Boolean> jobStatesMap) throws Exception {
+	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId, boolean canConstructErrorMessage, HashMap<String, Boolean> jobStatesMap) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
@@ -367,9 +366,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					supportingValues.put(rdmKey, rdms);
 				}
 				else {	
-					if(canConstructErrorMessage){
-						isManualFailed = true;
-						jobStatesMap.put("isManualFailed",isManualFailed);
+					if(canConstructErrorMessage && jobStatesMap != null){
+						jobStatesMap.put("isManualFailed",true);
 						supportingValues.put(rdmKey, null);
 						ResourceContext currentResource = ResourceAPI.getResource(resourceId);
 						throw new Exception("Selected asset (" +currentResource.getName()+ ") seems to have no data for the configured field (" + field.getField().getDisplayName() + ") in this timeline.");				
@@ -441,15 +439,15 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 		return selectBuilder.fetchFirst();
 	}
 	
-	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields, Boolean isManualFailed) throws Exception
+	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields) throws Exception
 	{
 		Map<String, List<ReadingDataMeta>> extendedSupportFieldsRDM = null;
 		if (fields != null && !fields.isEmpty()) {
-			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, isManualFailed, false, null);
+			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1, false, null);
 		}	
 		Map<String, List<ReadingDataMeta>> extendedCurrentRDMList = null;
 		if (fields != null) {
-			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId, isManualFailed, false, null);
+			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId, false, null);
 		}
 		
 		Map<String, List<ReadingDataMeta>> extendedCurrentFields = extendedSupportFieldsRDM;
