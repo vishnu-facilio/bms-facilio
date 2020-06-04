@@ -478,6 +478,7 @@ public class S3FileStore extends FileStore {
 //		catch(Exception e) {
 //			throw e;
 //		}
+		log.info("size of delete rows :"+fileIds.size());
 		return deleteFileEntries(fileIds);
 	}
 	
