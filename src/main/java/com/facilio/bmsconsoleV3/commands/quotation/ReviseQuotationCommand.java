@@ -36,19 +36,18 @@ public class ReviseQuotationCommand extends FacilioCommand {
                 FacilioStatus sentStatus = TicketAPI.getStatus(module, "Sent");
 
                 List<QuotationContext> revisedQuoteList = new ArrayList<>();
-                if (sentStatus != null && revisedStatus != null) {
-                    for (QuotationContext quotation : list) {
-                        if (sentStatus.getId() == quotation.getModuleState().getId()) {
-                            quotation.setModuleState(revisedStatus);
-                            RecordAPI.updateRecord(quotation, module, fields);
-                            QuotationContext revisedContract = quotation.clone();
-                            revisedQuoteList.add(revisedContract);
-                        } else {
-                            throw new IllegalArgumentException("Only the quotations not in draft state can be revised");
-                        }
-                        recordMap.put(moduleName, revisedQuoteList);
+                for (QuotationContext quotation : list) {
+                    if (sentStatus.getId() == quotation.getModuleState().getId()) {
+                        quotation.setModuleState(revisedStatus);
+                        quotation.setIsQuotationRevised(true);
+                        RecordAPI.updateRecord(quotation, module, fields);
+                        QuotationContext revisedContract = quotation.clone();
+                        revisedQuoteList.add(revisedContract);
+                    } else {
+                        throw new IllegalArgumentException("Only the quotations not in draft state can be revised");
                     }
                 }
+                recordMap.put(moduleName, revisedQuoteList);
             }
         }
         return false;

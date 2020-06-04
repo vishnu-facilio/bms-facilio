@@ -324,6 +324,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         context.put(Constants.RAW_INPUT, createObj);
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
@@ -436,6 +437,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
         context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
         context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         transactionChain.execute();
 
@@ -489,7 +491,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(Constants.RECORD_ID, id);
         context.put(Constants.MODULE_NAME, moduleName);
         context.put(Constants.RAW_INPUT, updateObj);
-        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
+         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);

@@ -43,6 +43,9 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private TenantContext tenant;
     private Long parentId;
     private Long revisionNumber;
+    private Boolean isQuotationRevised;
+    private Boolean revisionHistoryAvailable;
+
 
     public String getNotes() {
         return notes;
@@ -83,6 +86,8 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         setParentId(quotation.getParentId());
         setSiteId(quotation.getSiteId());
         setFormId(quotation.getFormId());
+        setIsQuotationRevised(false);
+        setRevisionHistoryAvailable(true);
         setId(-1);
     }
 
@@ -340,6 +345,9 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     }
 
     public Long getRevisionNumber() {
+        if(revisionNumber == null){
+            return 0L;
+        }
         return revisionNumber;
     }
 
@@ -352,4 +360,33 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     }
 
 
+    public Boolean getIsQuotationRevised() {
+        return isQuotationRevised;
+    }
+
+    public void setIsQuotationRevised(Boolean isQuotationRevised) {
+        this.isQuotationRevised = isQuotationRevised;
+    }
+
+    public Boolean isQuotationRevised() {
+        if (isQuotationRevised != null) {
+            return isQuotationRevised.booleanValue();
+        }
+        return false;
+    }
+
+    public Boolean getRevisionHistoryAvailable() {
+        return revisionHistoryAvailable;
+    }
+
+    public void setRevisionHistoryAvailable(Boolean revisionHistoryAvailable) {
+        this.revisionHistoryAvailable = revisionHistoryAvailable;
+    }
+
+    public Boolean isRevisionHistoryAvailable() {
+        if (revisionHistoryAvailable != null) {
+            return revisionHistoryAvailable.booleanValue();
+        }
+        return false;
+    }
 }

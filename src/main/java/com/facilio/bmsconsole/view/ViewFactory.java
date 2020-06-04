@@ -6733,11 +6733,24 @@ public class ViewFactory {
 
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
 
-        FacilioView allView = new FacilioView();
+		Criteria nonRevisedCriteria = new Criteria();
+		//revisedCriteria.addAndCondition(getNonRevisedModuleStatusQuotationCriteria());
+		Condition nonRevisedCondition = new Condition();
+		nonRevisedCondition.setColumnName("IS_QUOTATION_REVISED");
+		nonRevisedCondition.setFieldName("isQuotationRevised");
+		nonRevisedCondition.setOperator(BooleanOperators.IS);
+		nonRevisedCondition.setField(FieldFactory.getField("isQuotationRevised", "IS_QUOTATION_REVISED", module, FieldType.BOOLEAN));
+		nonRevisedCondition.setValue(String.valueOf(false));
+
+		nonRevisedCriteria.addAndCondition(nonRevisedCondition);
+
+
+		FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Quotations");
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
+        allView.setCriteria(nonRevisedCriteria);
 
         return allView;
     }
@@ -6790,5 +6803,37 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	public static Condition getNonRevisedModuleStatusQuotationCriteria() {
+
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.ISN_T);
+		statusCondition.setValue("Revised");
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getQuotationModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
+	}
+
 
 }
