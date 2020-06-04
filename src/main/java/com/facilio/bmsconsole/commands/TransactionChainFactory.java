@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.AddDefaultScopingCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -5480,6 +5481,11 @@ public class TransactionChainFactory {
 	public static FacilioChain getDisAssociateQuotationTermsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DisAssociateQuotationTermsCommand());
+		return c;
+	}
+	public static FacilioChain getSendQuotationMailChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new SendQuotationMailCommand());
 		return c;
 	}
 }

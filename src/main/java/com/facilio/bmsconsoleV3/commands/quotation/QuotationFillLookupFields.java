@@ -25,6 +25,9 @@ public class QuotationFillLookupFields extends FacilioCommand {
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
         fetchLookupsList.add((LookupField) fieldsAsMap.get("shipToAddress"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("billToAddress"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("client"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("tenant"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("workorder"));
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 
         return false;

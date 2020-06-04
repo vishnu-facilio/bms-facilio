@@ -6071,6 +6071,11 @@
 				class="com.facilio.bmsconsole.actions.QuotationAction"
 				method="disAssociateTerms">
 		</action>
+		<action name="sendMail"
+				class="com.facilio.bmsconsole.actions.QuotationAction"
+				method="sendMail">
+		</action>
+
 	</package>
 
 </struts>

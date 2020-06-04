@@ -1641,6 +1641,8 @@ public class FacilioConstants {
 		public static final String OLD_TAX_ID = "oldTaxId";
 		public static final String QUOTATION_NOTES = "quotationnotes";
 		public static final String QUOTATION_ATTACHMENTS = "quotationattachments";
+		public static final String QUOTATION_MAIL_ATTACHMENTS = "quotationMailAttachments";
+		public static final String QUOTATION_PDF_URL = "quotationPdfUrl";
 		public static final String QUOTATION_ACTIVITY = "quotationactivity";
 		public static final String OLD_TOTAL_COST_MAP = "oldTotalCostMap";
 		public static final String OLD_TOTAL_COST = "oldTotalCost";
