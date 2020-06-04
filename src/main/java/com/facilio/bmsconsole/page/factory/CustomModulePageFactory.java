@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -11,15 +17,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CustomModulePageFactory extends PageFactory {
 	
-	public static Page getCustomModulePage(ModuleBaseWithCustomFields record) throws Exception {
+	public static Page getCustomModulePage(ModuleBaseWithCustomFields record, FacilioModule module) throws Exception {
 		Page page = new Page();
 		
 		
@@ -34,7 +35,7 @@ public class CustomModulePageFactory extends PageFactory {
 			return page;
 		}
 		addRelatedList(tab1Sec1, record.getModuleId());
-		addCommonSubModuleGroup(tab1Sec1);
+		addCommonSubModuleWidget(tab1Sec1, module, record);
 
 		return page;
 	}

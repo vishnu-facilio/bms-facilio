@@ -21,9 +21,10 @@ public class GetPageCommand extends FacilioCommand {
 		Object record = context.get(FacilioConstants.ContextNames.RECORD);
 		Page page = PageFactory.getPage(module, record, isApproval);
 		if (page == null) {
-			
-			if (module.getExtendModule() != null) {
-				page = PageFactory.getPage(module.getExtendModule(), record, isApproval);
+			FacilioModule extendedModule = module.getExtendModule();
+			while(extendedModule != null && page == null) {
+				page = PageFactory.getPage(extendedModule, record, isApproval);
+				extendedModule = extendedModule.getExtendModule();
 			}
 		}
 		context.put(FacilioConstants.ContextNames.PAGE, page);

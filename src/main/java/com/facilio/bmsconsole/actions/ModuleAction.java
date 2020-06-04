@@ -701,7 +701,7 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String getFieldsByAccessType() throws Exception {
+	public String fieldsByAccessType() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FIELD_ACCESS_TYPE, accessType);
 		context.put(FacilioConstants.ContextNames.MODULE_ID, moduleId);

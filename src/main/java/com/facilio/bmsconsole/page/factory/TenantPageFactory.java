@@ -10,9 +10,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -23,7 +23,7 @@ import com.facilio.modules.fields.LookupField;
 
 public class TenantPageFactory extends PageFactory{
 	
-	public static Page getTenantPage(ModuleBaseWithCustomFields record) throws Exception {
+	public static Page getTenantPage(ModuleBaseWithCustomFields record, FacilioModule module) throws Exception {
 		Page page = new Page();
 		
 		
@@ -40,7 +40,7 @@ public class TenantPageFactory extends PageFactory{
 		}
 
 		addRelatedList(tab1Sec1, record.getModuleId());
-		addCommonSubModuleGroup(tab1Sec1);
+		addCommonSubModuleWidget(tab1Sec1, module, record);
 		
 
 		return page;

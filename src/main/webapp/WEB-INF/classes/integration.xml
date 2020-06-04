@@ -123,15 +123,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
-	</action>			
-    <action name="createPdf" class="com.facilio.pdf.actions.PdfAction" method="createPdf">
-        <result name="success" type="stream">
-          <param name="contentType">application/octet-stream</param>
-          <param name="inputName">fileInputStream</param>
-          <param name="contentDisposition">attachment;filename="facilio-reports.pdf"</param>
-          <param name="bufferSize">1024</param>
-        </result>
-    </action>
+	</action>
 
 	</package>
 

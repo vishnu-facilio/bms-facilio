@@ -3,16 +3,16 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.page.Page;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -20,7 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class ClientPageFactory extends PageFactory{
-    public static Page getclientPage(ClientContext client) throws Exception {
+    public static Page getclientPage(ClientContext client, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Tab tab1 = page.new Tab("summary");
@@ -41,7 +41,7 @@ public class ClientPageFactory extends PageFactory{
         addRelatedListWidget(tab1Sec2, "workorder", client.getModuleId(), "Workorders");
 //        addSafetyPlanHazardsWidget(tab1Sec2);
 
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, client);
 
         return page;
     }

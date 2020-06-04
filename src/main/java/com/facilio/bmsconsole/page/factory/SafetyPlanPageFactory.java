@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsole.context.PrecautionContext;
@@ -13,14 +19,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SafetyPlanPageFactory extends PageFactory{
-    public static Page getSafetyPlanPage(SafetyPlanContext safetyPlan) throws Exception {
+    public static Page getSafetyPlanPage(SafetyPlanContext safetyPlan, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Tab tab1 = page.new Tab("summary");
@@ -34,12 +35,12 @@ public class SafetyPlanPageFactory extends PageFactory{
         addRelatedListWidget(tab1Sec2, "safetyPlanHazard", safetyPlan.getModuleId(), "Hazards");
         addSafetyPlanHazardsWidget(tab1Sec2);
 
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, safetyPlan);
 
         return page;
     }
 
-    public static Page getHazardPage(HazardContext hazard) throws Exception {
+    public static Page getHazardPage(HazardContext hazard, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Tab tab1 = page.new Tab("summary");
@@ -53,10 +54,10 @@ public class SafetyPlanPageFactory extends PageFactory{
         tab1.addSection(tab1Sec2);
         addHazardsPrecautionWidget(tab1Sec2);
 
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, hazard);
         return page;
     }
-    public static Page getPrecautionPage(PrecautionContext precaution) throws Exception {
+    public static Page getPrecautionPage(PrecautionContext precaution, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Tab tab1 = page.new Tab("summary");
@@ -70,7 +71,7 @@ public class SafetyPlanPageFactory extends PageFactory{
         tab1.addSection(tab2Sec1);
         addPrecautionHazardsWidget(tab2Sec1);
 //        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId(), "Associated Hazards");
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, precaution);
 
         return page;
     }

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.Map;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.OperationAlarmContext;
@@ -12,16 +14,13 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
-import java.util.Map;
-
 public class OperationalAlarmPageFactory extends PageFactory {
-    public static Page getOperationalAlarmPage(OperationAlarmContext alarms) throws Exception {
-        return getDefaultOperationalAlarmSummaryPage(alarms);
-    }
-    private static Page getDefaultOperationalAlarmSummaryPage(OperationAlarmContext alarms) throws Exception {
+    
+    public static Page getOperationalAlarmPage(OperationAlarmContext alarms, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Page page = new Page();
         // Summary Tab
@@ -33,7 +32,7 @@ public class OperationalAlarmPageFactory extends PageFactory {
         ReadingAlarmPageFactory.addAssetAlarmDetailsWidget(tab1Sec1);
 
         addAlarmReport(tab1Sec1);
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, alarms);
 
         Page.Tab tab2 = page.new Tab("insight");
         page.addTab(tab2);

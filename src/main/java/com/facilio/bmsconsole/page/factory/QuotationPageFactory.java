@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -9,15 +15,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class QuotationPageFactory extends PageFactory {
 
-    public static Page getQuotationPage(QuotationContext record) throws Exception {
+    public static Page getQuotationPage(QuotationContext record, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule quotationModule = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
 
@@ -37,7 +38,7 @@ public class QuotationPageFactory extends PageFactory {
         page.addTab(tab2);
             Page.Section tab2Sec1 = page.new Section();
             tab2.addSection(tab2Sec1);
-            addCommonSubModuleGroup(tab2Sec1);
+            addCommonSubModuleWidget(tab2Sec1, module, record);
 
 
         Page.Tab tab3 = page.new Tab("Related Records");

@@ -66,7 +66,7 @@ public class AssetPageFactory extends PageFactory {
 		addAlarmCountWidget(tab1Sec1);
 		addFailureMetricWidget(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
-		addCommonSubModuleGroup(tab1Sec1);
+		addCommonSubModuleWidget(tab1Sec1, module, asset);
 		
 		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 183) {

@@ -250,6 +250,8 @@ public class PageWidget {
 		APPROVERS("approvers"),
 		APPROVAL_FIELDS_WIDGET("approvalFields"),
 		QUOTATION_PREVIEW("quotationPreview"),
+		
+		CONNNECTED_APP("connectedApp")
  		;
 		
 		private String name;

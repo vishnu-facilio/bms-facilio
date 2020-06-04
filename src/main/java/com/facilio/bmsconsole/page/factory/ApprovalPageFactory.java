@@ -3,12 +3,13 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.bmsconsole.page.Page;
@@ -20,12 +21,11 @@ import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class ApprovalPageFactory extends PageFactory {
 	
@@ -54,7 +54,7 @@ public class ApprovalPageFactory extends PageFactory {
         		addApproversWidget(tab1Sec1);
         }
         addSecondaryDetailWidget(tab1Sec1);
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, record);
 
         return page;
 	}

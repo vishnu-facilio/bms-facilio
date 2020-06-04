@@ -2347,7 +2347,7 @@
 
 		<action name="getFieldsByAccessType"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
-			method="getFieldsByAccessType">
+			method="fieldsByAccessType">
 		</action>
 
 		<action name="delete"

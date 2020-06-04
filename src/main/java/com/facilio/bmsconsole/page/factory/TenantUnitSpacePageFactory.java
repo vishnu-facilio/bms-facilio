@@ -18,7 +18,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class TenantUnitSpacePageFactory extends PageFactory {
-    public static Page getTenantUnitSpacePage(TenantUnitSpaceContext tenantUnitSpaceContext) throws Exception {
+    public static Page getTenantUnitSpacePage(TenantUnitSpaceContext tenantUnitSpaceContext, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
@@ -36,7 +36,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         if (AccountUtil.getCurrentOrg().getOrgId() != 320l) {
 	        	addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
         }
-        addCommonSubModuleGroup(tab1Sec1);
+        addCommonSubModuleWidget(tab1Sec1, module, tenantUnitSpaceContext);
         return page;
     }
 

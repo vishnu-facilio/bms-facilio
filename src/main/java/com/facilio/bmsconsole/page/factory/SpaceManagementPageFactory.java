@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.page.factory;
 
+import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
+
+import java.util.Arrays;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -14,15 +20,10 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.json.simple.JSONObject;
-
-import java.util.Arrays;
-
-import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
 
 public class SpaceManagementPageFactory extends PageFactory {
 	
-	public static Page getSitePage(SiteContext site) throws Exception {
+	public static Page getSitePage(SiteContext site, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Tab tab1 = page.new Tab("summary");
@@ -48,12 +49,12 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec4 = page.new Section("spaceReadings");
         tab1.addSection(tab1Sec4);
 		addReadingWidget(tab1Sec4);
-		addCommonSubModuleGroup(tab1Sec4);
+		addCommonSubModuleWidget(tab1Sec4, module, site);
 
         return page;
     }
 
-	public static Page getBuildingPage(BuildingContext building) throws Exception {
+	public static Page getBuildingPage(BuildingContext building, FacilioModule module) throws Exception {
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -75,11 +76,11 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec3 = page.new Section("spaceReadings");
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		addCommonSubModuleWidget(tab1Sec3,module, building);
 		return page;
 	}
 
-	public static Page getFloorPage(FloorContext floor) throws Exception {
+	public static Page getFloorPage(FloorContext floor, FacilioModule module) throws Exception {
 		Page page = new Page();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -102,11 +103,11 @@ public class SpaceManagementPageFactory extends PageFactory {
 		Section tab1Sec3 = page.new Section("spaceReadings");
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		addCommonSubModuleWidget(tab1Sec3, module, floor);
 		return page;
 	}
 
-	public static Page getSpacePage(SpaceContext space) throws Exception {
+	public static Page getSpacePage(SpaceContext space, FacilioModule module) throws Exception {
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -128,7 +129,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		}
 		Section tab1Sec3 = page.new Section("spaceReadings");
 		addReadingWidget(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		addCommonSubModuleWidget(tab1Sec3, module, space);
 		tab1.addSection(tab1Sec3);
 
 		Tab tab2 = page.new Tab("Related Records");

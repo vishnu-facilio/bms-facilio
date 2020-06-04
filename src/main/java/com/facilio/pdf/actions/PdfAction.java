@@ -1,7 +1,5 @@
 package com.facilio.pdf.actions;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.log4j.LogManager;
@@ -47,9 +45,8 @@ public class PdfAction extends FacilioAction {
     			additionalInfo = FacilioUtil.parseJson(additionalInfoStr);
     		}
     	
-        String fileName  = PdfUtil.convertUrlToPdf(getUrl(), htmlContent, additionalInfo, fileFormat != null ? fileFormat : FileFormat.PDF);
-        downloadStream = new FileInputStream(new File(fileName));
-        setFilename(fileName);
+        String fileUrl = PdfUtil.exportUrlAsPdf(getUrl(), false, "download-"+System.currentTimeMillis(), additionalInfo, fileFormat != null ? fileFormat : FileFormat.PDF);
+        setResult("fileUrl", fileUrl);
         return SUCCESS;
     }
     

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -36,7 +37,7 @@ public class PageFactory {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.TENANT:
-				return TenantPageFactory.getTenantPage((ModuleBaseWithCustomFields) record);
+				return TenantPageFactory.getTenantPage((ModuleBaseWithCustomFields) record, module);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
@@ -49,7 +50,7 @@ public class PageFactory {
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
 			case ContextNames.OPERATION_ALARM:
-				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record);
+				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
 			case ContextNames.AGENT_ALARM:
 				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
 			case ContextNames.WORKPERMIT:
@@ -63,36 +64,52 @@ public class PageFactory {
 			case ContextNames.INSURANCE:
 				return InsurancePageFactory.getInsurancePage((InsuranceContext) record);
 			case ContextNames.SAFETY_PLAN:
-				return SafetyPlanPageFactory.getSafetyPlanPage((SafetyPlanContext) record);
+				return SafetyPlanPageFactory.getSafetyPlanPage((SafetyPlanContext) record, module);
 			case ContextNames.HAZARD:
-				return SafetyPlanPageFactory.getHazardPage((HazardContext) record);
+				return SafetyPlanPageFactory.getHazardPage((HazardContext) record, module);
 			case ContextNames.PRECAUTION:
-				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record);
+				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record, module);
 			case ContextNames.SITE:
-				return SpaceManagementPageFactory.getSitePage((SiteContext) record);
+				return SpaceManagementPageFactory.getSitePage((SiteContext) record, module);
 			case ContextNames.CLIENT:
-				return ClientPageFactory.getclientPage((ClientContext) record);
+				return ClientPageFactory.getclientPage((ClientContext) record, module);
 			case ContextNames.BUILDING:
-				return SpaceManagementPageFactory.getBuildingPage((BuildingContext) record);
+				return SpaceManagementPageFactory.getBuildingPage((BuildingContext) record, module);
 			case ContextNames.FLOOR:
-				return SpaceManagementPageFactory.getFloorPage((FloorContext) record);
+				return SpaceManagementPageFactory.getFloorPage((FloorContext) record, module);
 			case ContextNames.SPACE:
-				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record);
+				return SpaceManagementPageFactory.getSpacePage((SpaceContext) record, module);
 			case ContextNames.READING_TEMPLATE_MODULE:
 				return TemplatePageFactory.getTemplatePage((DefaultTemplate) record);
 			case ContextNames.TENANT_UNIT_SPACE:
-				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record);
+				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record, module);
 			case ContextNames.QUOTATION:
-				return QuotationPageFactory.getQuotationPage((QuotationContext) record);
+				return QuotationPageFactory.getQuotationPage((QuotationContext) record, module);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
-			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
+			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record, module);
 		}
 		return null;
 	}
-
-	protected static PageWidget addCommonSubModuleGroup(Section section) {
+	
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
+		
+		List<Long> moduleIds = module.getExtendedModuleIds();
+		
+		if (moduleIds != null) {
+			long recordId = record.getId();
+			List<ConnectedAppWidgetContext> widgets = ConnectedAppAPI.getPageWidgets(moduleIds, recordId, ConnectedAppWidgetContext.EntityType.RELATED_LIST);
+			if (widgets != null && !widgets.isEmpty()) {
+				for (ConnectedAppWidgetContext widget : widgets) {
+					PageWidget pageWidget = new PageWidget(WidgetType.CONNNECTED_APP);
+					pageWidget.addToLayoutParams(section, 24, 5);
+					pageWidget.addToWidgetParams("widgetId", widget.getId());
+					pageWidget.addToWidgetParams("name", widget.getWidgetName());
+					section.addWidget(pageWidget);
+				}
+			}
+		}
 
 		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
 		subModuleGroup.addToLayoutParams(section, 24, 8);

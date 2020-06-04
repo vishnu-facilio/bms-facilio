@@ -139,10 +139,14 @@ public class ConnectedAppAPI {
 	}
 	
 	public static List<ConnectedAppWidgetContext> getSummaryPageWidgets(List<Long> moduleIds, long recordId) throws Exception {
+		return getPageWidgets(moduleIds, recordId, ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE);
+	}
+	
+	public static List<ConnectedAppWidgetContext> getPageWidgets(List<Long> moduleIds, long recordId, ConnectedAppWidgetContext.EntityType entityType) throws Exception {
 		
 		String entityId = StringUtils.join(moduleIds, ",");
 		
-		List<ConnectedAppWidgetContext> summaryPageWidgets = getConnectedAppWidgets(ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE, entityId);
+		List<ConnectedAppWidgetContext> summaryPageWidgets = getConnectedAppWidgets(entityType, entityId);
 		if (summaryPageWidgets != null && summaryPageWidgets.size() > 0) {
 			
 			List<ConnectedAppWidgetContext> filteredSummaryPageWidgets = new ArrayList<>();

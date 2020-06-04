@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -40,7 +40,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		}
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		addCommonSubModuleWidget(tab1Sec3, module, workpermit);
 
 //		Tab tab2 = page.new Tab("related list");
 //		page.addTab(tab2);
