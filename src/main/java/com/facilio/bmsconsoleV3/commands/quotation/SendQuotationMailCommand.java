@@ -26,6 +26,8 @@ public class SendQuotationMailCommand extends FacilioCommand {
         List<File> mailAttachments = (List<File>) context.get(FacilioConstants.ContextNames.QUOTATION_MAIL_ATTACHMENTS);
         String quotationPdfUrl = (String) context.get(FacilioConstants.ContextNames.QUOTATION_PDF_URL);
         QuotationContext quotationContext = (QuotationContext) context.get(FacilioConstants.ContextNames.QUOTATION);
+
+        emailTemplate.setFrom("noreply@facilio.com");
         JSONObject template = emailTemplate.getOriginalTemplate();
         Map<String, String> filesMap = new HashMap<>();
         if (StringUtils.isNotEmpty(quotationPdfUrl)) {
@@ -39,7 +41,6 @@ public class SendQuotationMailCommand extends FacilioCommand {
                 filesMap.put(attachment.getName(), fs.getDownloadUrl(fileId));
             }
         }
-
         FacilioFactory.getEmailClient().sendEmail(template,filesMap);
 
         return false;
