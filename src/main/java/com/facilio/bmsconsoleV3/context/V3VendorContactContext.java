@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.VendorContext;
 
-public class V3VendorContactContext extends PeopleContext {
+public class V3VendorContactContext extends V3PeopleContext {
     /**
      *
      */

@@ -2,9 +2,6 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -44,7 +41,7 @@ public class V3ContactsContext extends ModuleBaseWithCustomFields {
         this.phone = phone;
     }
 
-    private ContactsContext.ContactType contactType;
+    private V3ContactsContext.ContactType contactType;
     public int getContactType() {
         if (contactType != null) {
             return contactType.getIndex();
@@ -52,12 +49,12 @@ public class V3ContactsContext extends ModuleBaseWithCustomFields {
         return -1;
     }
     public void setContactType(int contactType) {
-        this.contactType = ContactsContext.ContactType.valueOf(contactType);
+        this.contactType = V3ContactsContext.ContactType.valueOf(contactType);
     }
-    public ContactsContext.ContactType getContactTypeEnum() {
+    public V3ContactsContext.ContactType getContactTypeEnum() {
         return contactType;
     }
-    public void setContactType(ContactsContext.ContactType contactType) {
+    public void setContactType(V3ContactsContext.ContactType contactType) {
         this.contactType = contactType;
     }
 
@@ -91,12 +88,12 @@ public class V3ContactsContext extends ModuleBaseWithCustomFields {
         this.requester = requester;
     }
 
-    private TenantContext tenant;
+    private V3TenantContext tenant;
 
-    public TenantContext getTenant() {
+    public V3TenantContext getTenant() {
         return tenant;
     }
-    public void setTenant(TenantContext tenant) {
+    public void setTenant(V3TenantContext tenant) {
         this.tenant = tenant;
     }
 

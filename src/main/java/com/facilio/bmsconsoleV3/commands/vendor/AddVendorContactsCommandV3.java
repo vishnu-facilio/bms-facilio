@@ -3,18 +3,9 @@ package com.facilio.bmsconsoleV3.commands.vendor;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.util.ContactsAPI;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsoleV3.context.V3ContactsContext;
-import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
-import com.facilio.bmsconsoleV3.context.V3VendorContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorContext;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
@@ -72,7 +63,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
                     if (CollectionUtils.isNotEmpty(primarycontatsIfAny)) {
                         vendorPrimaryContact = primarycontatsIfAny.get(0);
                     }
-                    PeopleAPI.addParentPrimaryContactAsPeople(vc, vcModule, vcFields, vc.getVendor().getId(), vendorPrimaryContact);
+                    V3PeopleAPI.addParentPrimaryContactAsPeople(vc, vcModule, vcFields, vc.getVendor().getId(), vendorPrimaryContact);
                 }
             }
         }
@@ -81,10 +72,10 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
     }
 
     private V3ContactsContext addDefaultVendorPrimaryContact(V3VendorContext vendor) throws Exception {
-        ContactsAPI.unMarkPrimaryContact(-1, vendor.getId(), ContactsContext.ContactType.VENDOR);
+        V3ContactsAPI.unMarkPrimaryContact(-1, vendor.getId(), V3ContactsContext.ContactType.VENDOR);
         V3ContactsContext contact = new V3ContactsContext();
         contact.setName(vendor.getPrimaryContactName() != null ? vendor.getPrimaryContactName() : vendor.getName());
-        contact.setContactType(ContactsContext.ContactType.VENDOR);
+        contact.setContactType(V3ContactsContext.ContactType.VENDOR);
         contact.setVendor(vendor);
         contact.setEmail(vendor.getPrimaryContactEmail());
         contact.setPhone(vendor.getPrimaryContactPhone());
@@ -97,7 +88,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
         tc.setName(vendor.getPrimaryContactName());
         tc.setEmail(vendor.getPrimaryContactEmail());
         tc.setPhone(vendor.getPrimaryContactPhone());
-        tc.setPeopleType(PeopleContext.PeopleType.VENDOR_CONTACT);
+        tc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT);
         tc.setVendor(vendor);
         tc.setIsPrimaryContact(true);
 

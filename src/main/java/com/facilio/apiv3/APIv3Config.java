@@ -7,6 +7,9 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsoleV3.commands.tenant.FetchCurrentUserTenantCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
@@ -194,6 +197,23 @@ public class APIv3Config {
                   .beforeFetch(new LoadVendorLookupCommandV3())
                 .summary()
                   .beforeFetch(new LoadVendorLookupCommandV3())
+                .build();
+    }
+
+    @Module("tenant")
+    public static Supplier<V3Config> getTenant() {
+        return () -> new V3Config(V3TenantContext.class)
+                .create()
+                  .beforeSave(new ValidateTenantSpaceCommandV3())
+                  .afterSave(TransactionChainFactoryV3.getTenantAfterSaveChain())
+                .update()
+                  .beforeSave(new ValidateTenantSpaceCommandV3())
+                  .afterSave(TransactionChainFactoryV3.getTenantAfterSaveChain())
+                .list()
+                  .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnListChain())
+                .summary()
+                  .beforeFetch(new FetchCurrentUserTenantCommandV3())
+                  .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
                 .build();
     }
 
