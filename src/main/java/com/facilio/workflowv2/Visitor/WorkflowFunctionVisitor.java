@@ -602,6 +602,9 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
+        if(left.asObject() instanceof String || right.asObject() instanceof String) {
+        	return new Value(left.asString() + right.asString());
+        }
         if(left.asObject() == null || right.asObject() == null) {
     		return Value.VOID;
     	}

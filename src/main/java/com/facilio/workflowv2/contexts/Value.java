@@ -80,6 +80,9 @@ public class Value {
     }
 
     public String asString() {
+    	if(value == null) {
+    		return null;
+    	}
     	if(value instanceof DateRange) {
     		return value.toString();
     	}
