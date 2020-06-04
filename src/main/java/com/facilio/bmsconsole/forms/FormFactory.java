@@ -2159,21 +2159,27 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("billDate", FieldDisplayType.DATE, "Bill Date", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 4, 2));
+		fields.add(new FormField("customerType", FieldDisplayType.SELECTBOX, "Customer Type", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 5, 2));
+		fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL,"client", 5, 3));
+		fields.add(new FormField("workorder", FieldDisplayType.LOOKUP_SIMPLE, "Workorder", Required.OPTIONAL,"workorder", 6, 2));
 
-		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 4, 1));
 
-		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 7, 1));
 
-		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "Line Items", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 8, 1));
 
-		fields.add(new FormField("shippingCharges", FieldDisplayType.NUMBER, "Shipping Charges", Required.OPTIONAL, 7, 2));
-		fields.add(new FormField("adjustmentsCost", FieldDisplayType.NUMBER, "Adjustments Cost", Required.OPTIONAL, 7, 3));
-		fields.add(new FormField("miscellaneousCharges", FieldDisplayType.NUMBER, "Miscellaneous Charges", Required.OPTIONAL, 8, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "Line Items", Required.REQUIRED, 9, 1));
 
-		fields.add(new FormField("discountAmount", FieldDisplayType.NUMBER, "Discount Amount", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("shippingCharges", FieldDisplayType.NUMBER, "Shipping Charges", Required.OPTIONAL, 10, 2));
+		fields.add(new FormField("adjustmentsCost", FieldDisplayType.NUMBER, "Adjustments Cost", Required.OPTIONAL, 10, 3));
+		fields.add(new FormField("miscellaneousCharges", FieldDisplayType.NUMBER, "Miscellaneous Charges", Required.OPTIONAL, 11, 2));
 
-		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 10, 1));
-		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 11, 1));
+		fields.add(new FormField("discountAmount", FieldDisplayType.NUMBER, "Discount Amount", Required.OPTIONAL, 12, 2));
+
+		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 13, 1));
+		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 14, 1));
 
 		return fields;
 	}

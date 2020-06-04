@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -31,7 +32,7 @@ public class SendQuotationMailCommand extends FacilioCommand {
         JSONObject template = emailTemplate.getOriginalTemplate();
         Map<String, String> filesMap = new HashMap<>();
         if (StringUtils.isNotEmpty(quotationPdfUrl)) {
-            String originalUrl = PdfUtil.exportUrlAsPublicFilePdf(quotationPdfUrl, true, null, null, -1, null);
+            String originalUrl = PdfUtil.exportUrlAsPdf(quotationPdfUrl, true, quotationContext.getSubject(), FileInfo.FileFormat.PDF);
             filesMap.put(quotationContext.getSubject(), originalUrl);
         }
         if (CollectionUtils.isNotEmpty(mailAttachments)) {
