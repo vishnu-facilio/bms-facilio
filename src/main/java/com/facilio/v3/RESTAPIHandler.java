@@ -188,9 +188,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
-
+        V3Config.ListHandler listHandler = null;
         if (v3Config != null) {
-            V3Config.ListHandler listHandler = v3Config.getListHandler();
+            listHandler = v3Config.getListHandler();
             if (listHandler != null) {
                 beforeFetchCommand = listHandler.getBeforeFetchCommand();
                 afterFetchCommand = listHandler.getAfterFetchCommand();
@@ -202,8 +202,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
-        nonTransactionChain.addCommand(new StateFlowListCommand());
 
+        if (listHandler != null && listHandler.isShowStateFlowList()) {
+            nonTransactionChain.addCommand(new StateFlowListCommand());
+        }
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
         //validating field permissions in the record data being sent

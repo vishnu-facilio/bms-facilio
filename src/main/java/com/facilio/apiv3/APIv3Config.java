@@ -51,6 +51,7 @@ public class APIv3Config {
                     .afterFetch(new SampleAfterFetchCommand())
                 .list()
                     .afterFetch(new SampleAfterFetchCommand())
+                    .showStateFlowList()
                 .update()
                     .init(new DefaultInit())
                     .beforeSave(new SampleBeforeSaveCommand())

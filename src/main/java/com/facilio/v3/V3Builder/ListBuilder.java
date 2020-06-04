@@ -7,6 +7,8 @@ public interface ListBuilder {
 
     ListBuilder afterFetch(Command afterFetchCommand);
 
+    ListBuilder showStateFlowList();
+
     UpdateBuilder update();
 
     CreateBuilder create();

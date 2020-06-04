@@ -394,6 +394,7 @@ public class V3Config implements V3Builder {
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
+        private boolean showStateFlowList;
 
         private ListHandler(V3Builder parent) {
             this.parent = parent;
@@ -408,6 +409,12 @@ public class V3Config implements V3Builder {
         @Override
         public ListHandler afterFetch(Command afterFetchCommand) {
             this.afterFetchCommand = afterFetchCommand;
+            return this;
+        }
+
+        @Override
+        public ListBuilder showStateFlowList() {
+            this.showStateFlowList = true;
             return this;
         }
 
@@ -450,6 +457,14 @@ public class V3Config implements V3Builder {
 
         public void setAfterFetchCommand(Command afterFetchCommand) {
             this.afterFetchCommand = afterFetchCommand;
+        }
+
+        public boolean isShowStateFlowList() {
+            return showStateFlowList;
+        }
+
+        public void setShowStateFlowList(boolean showStateFlowList) {
+            this.showStateFlowList = showStateFlowList;
         }
     }
 
