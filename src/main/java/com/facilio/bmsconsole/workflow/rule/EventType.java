@@ -263,7 +263,10 @@ public enum EventType {
     }
     
     public boolean isPresent(long activity) {
-    	return (activity & this.eventType) == this.eventType;
+    	if(activity > 0) {
+    		return (activity & this.eventType) == this.eventType;
+    	}
+    	return false;
     }
    
     public abstract String getMessage(JSONObject json);
