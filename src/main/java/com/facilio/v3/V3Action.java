@@ -4,6 +4,8 @@ import org.json.simple.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+import java.util.Map;
+
 public class V3Action extends ActionSupport {
     private JSONObject data;
 	private JSONObject meta;
@@ -146,5 +148,21 @@ public class V3Action extends ActionSupport {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	private Long transitionId;
+	public Long getTransitionId() {
+		return transitionId;
+	}
+	public void setTransitionId(Long transitionId) {
+		this.transitionId = transitionId;
+	}
+
+	private Long approvalTransitionId;
+	public Long getApprovalTransitionId() {
+		return approvalTransitionId;
+	}
+	public void setApprovalTransitionId(Long approvalTransitionId) {
+		this.approvalTransitionId = approvalTransitionId;
 	}
 }

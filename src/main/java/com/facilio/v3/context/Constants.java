@@ -16,4 +16,5 @@ public class Constants {
     public static final String ROWS_UPDATED = "rowsUpdated";
     public static final String PATCH_FIELDS = "patchFields";
     public static final String QUERY_PARAMS = "queryParams";
+    public static final String STATE_FLOWS = "stateFlows";
 }

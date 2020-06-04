@@ -26,6 +26,7 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -201,6 +202,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
+        nonTransactionChain.addCommand(new StateFlowListCommand());
 
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
@@ -249,14 +251,24 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         nonTransactionChain.execute();
 
+        Map<String, Object> meta = new HashMap<>();
         if (getWithCount()) {
-            Map<String, Object> meta = new HashMap<>();
-            meta.put("totalCount", context.get(Constants.COUNT));
-            this.setMeta(FieldUtil.getAsJSON(meta));
+            Map<String, Object> pagin = new HashMap<>();
+            pagin.put("totalCount", context.get(Constants.COUNT));
+            meta.put("pagination", pagin);
         }
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        Map<String, List<WorkflowRuleContext>> stateFlows = (Map<String, List<WorkflowRuleContext>>) context.get(Constants.STATE_FLOWS);
+        if (MapUtils.isNotEmpty(stateFlows)) {
+            meta.put("stateflows", stateFlows);
+        }
+
         this.setData(FieldUtil.getAsJSON(recordMap));
+
+        if (MapUtils.isNotEmpty(meta)) {
+            this.setMeta(FieldUtil.getAsJSON(meta));
+        }
     }
 
     private static V3Config getV3Config(String moduleName) {
@@ -347,21 +359,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 
-    private Long transitionId;
-    public Long getTransitionId() {
-        return transitionId;
-    }
-    public void setTransitionId(Long transitionId) {
-        this.transitionId = transitionId;
-    }
 
-    private Long approvalTransitionId;
-    public Long getApprovalTransitionId() {
-        return approvalTransitionId;
-    }
-    public void setApprovalTransitionId(Long approvalTransitionId) {
-        this.approvalTransitionId = approvalTransitionId;
-    }
 
     private void patchHandler(String moduleName, long id, Map<String, Object> patchObj) throws Exception {
         Object record = getRecord(moduleName, id);
@@ -435,8 +433,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 //        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-        context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
-        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getTransitionId());
+        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         transactionChain.execute();
