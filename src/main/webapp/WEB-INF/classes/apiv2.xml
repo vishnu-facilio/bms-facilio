@@ -83,8 +83,7 @@
 		
 		<action name="v2portalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="v2portalAccount">
-		   <param name="auth">false</param>
-       </action>
+	   </action>
 		
 		<action name="getReadingFieldUnits"
 			class="com.facilio.bmsconsole.actions.UnitAction"
