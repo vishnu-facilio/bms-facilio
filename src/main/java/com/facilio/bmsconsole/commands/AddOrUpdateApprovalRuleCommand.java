@@ -47,7 +47,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             if (rejected == null) {
                 throw new IllegalArgumentException("No Rejected status is found");
             }
-            FacilioStatus requested = TicketAPI.getApprovalStatus("Requested1");
+            FacilioStatus requested = TicketAPI.getApprovalStatus("Requested");
             if (requested == null) {
                 throw new IllegalArgumentException("No requested status is found");
             }
