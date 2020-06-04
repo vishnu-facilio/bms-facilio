@@ -179,8 +179,15 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 					parentRuleLoggerContext.setTotalAlarmCount(Long.valueOf(String.valueOf(props.get(0).get("sum"))));
 				}
 			}
-			propagateStatusToRuleLog(parentRuleLoggerContext);
-			int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+			propagateStatusToRuleLog(parentRuleLoggerContext);			
+			int rowsUpdated = 0;
+			if(retryCount == 0) {
+				rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+			}
+			else if(retryCount == 1) {
+				rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+			}
+			
 			if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
 				checkforRollUpAlarms(parentRuleLoggerContext);
 			}
@@ -211,7 +218,14 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				long parentRuleLoggerId = parentRuleResourceLoggerContext.getParentRuleLoggerId();
 				WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleLoggerId);
 				propagateStatusToRuleLog(parentRuleLoggerContext);
-				int rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext);
+				
+				int rowsUpdated = 0;
+				if(retryCount == 0) {
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIntVal());
+				}
+				else if(retryCount == 1) {
+					rowsUpdated = WorkflowRuleLoggerAPI.updateWorkflowRuleLogger(parentRuleLoggerContext,WorkflowRuleLoggerContext.Status.RESCHEDULED.getIntVal());
+				}
  				if(rowsUpdated == 1 && (parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.RESOLVED.getIntVal() || parentRuleLoggerContext.getStatus() == WorkflowRuleLoggerContext.Status.PARTIALLY_COMPLETED.getIntVal())) {
  					checkforRollUpAlarms(parentRuleLoggerContext);
  				}
