@@ -169,9 +169,11 @@ public class AwsPolicyUtils {
                         updatePolicy(iotClient, rule.getName(), rule);
                     } catch (Exception e) {
                         LOGGER.info(" Exception while updating policy ", e);
+                        throw e;
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception while creating iot policy ", e);
+                    throw e;
                 }
             }
         } else {
