@@ -1038,8 +1038,8 @@ public class AlarmAPI {
 	}
 	
 	public static List<AlarmContext> getAlarms(Long assetId) throws Exception {
-		 
-		 FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
 			
 	 		FacilioContext context = alarmListChain.getContext();
 	 		context.put(FacilioConstants.ContextNames.CV_NAME, "active");
@@ -1048,15 +1048,34 @@ public class AlarmAPI {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject filter = (JSONObject) parser.parse(filters);
 	 		context.put(FacilioConstants.ContextNames.FILTERS, filter);
-	 		JSONObject sorting = null;
-			sorting = new JSONObject();
+	 		JSONObject sorting = new JSONObject();
 			sorting.put("orderBy", "lastOccurredTime");
 			sorting.put("orderType", "desc");
 	 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
 	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
 			alarmListChain.execute();
 			
-		return (List<AlarmContext>)context.get(ContextNames.RECORD_LIST);
+			return (List<AlarmContext>)context.get(ContextNames.RECORD_LIST);
+		}else{
+			FacilioChain chain = ReadOnlyChainFactory.getAlarmListChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.CV_NAME, "active");
+			String filters = "{\"resource\":[{\"operatorId\":36,\"value\":[\""+String.valueOf(assetId)+"\"]}]}";
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject filter = (JSONObject) parser.parse(filters);
+	 		context.put(FacilioConstants.ContextNames.FILTERS, filter);
+			JSONObject sorting = new JSONObject();
+ 			sorting.put("orderBy", "modifiedTime");
+ 			sorting.put("orderType", "desc");
+	 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+	 		context.put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, -1L);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
+	 		
+			chain.execute();
+			
+			return (List<AlarmContext>) chain.getContext().get(FacilioConstants.ContextNames.ALARM_LIST);
+		}
+		 
 	 }
 	
 }
