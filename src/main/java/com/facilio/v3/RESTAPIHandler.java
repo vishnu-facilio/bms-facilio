@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -127,6 +128,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             nonTransactionChain.addCommand(afterFetchCommand);
         }
 
+        //handling primary value for lookup fields
+        nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
 
@@ -209,6 +212,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
+        //handling primary value for lookup fields
+        nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
 

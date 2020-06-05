@@ -25,7 +25,6 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getTenantsAfterFetchOnListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadTenantLookUpsCommandV3());
-        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
 
@@ -33,7 +32,6 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadTenantLookUpsCommandV3());
         c.addCommand(new SetTenantSpaceAndContactsCommandV3());
-        c.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
         return c;
     }
 

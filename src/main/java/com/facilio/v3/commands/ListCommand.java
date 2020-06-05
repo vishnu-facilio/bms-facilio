@@ -8,8 +8,10 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
@@ -100,6 +102,13 @@ public class ListCommand extends FacilioCommand {
         if (orderBy != null && !orderBy.isEmpty()) {
             selectRecordsBuilder.orderBy(orderBy);
         }
+
+        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            selectRecordsBuilder.fetchSupplements(supplementFields);
+        }
+
+
         return selectRecordsBuilder;
     }
 }
