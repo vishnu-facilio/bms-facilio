@@ -202,7 +202,12 @@ public class AggregatedEnergyConsumptionUtil {
 
 			List<EnergyMeterContext> energyMeterMFList = selectBuilder.get();	
 			for(EnergyMeterContext energyMeterMF:energyMeterMFList) {
-				energyMeterMFMap.put(energyMeterMF.getId(), energyMeterMF.getMultiplicationFactor());
+				if(energyMeterMF.getMultiplicationFactor() != -1) {
+					energyMeterMFMap.put(energyMeterMF.getId(), energyMeterMF.getMultiplicationFactor());
+				}
+				else {
+					LOGGER.log(Level.SEVERE, "Error AggregatedEnergyConsumptionUtil has nonconnected energy meter with MF as -1, energymeter id in: "+energyMeterMF.getId());
+				}
 			}	
 		}
 		return energyMeterMFMap;
