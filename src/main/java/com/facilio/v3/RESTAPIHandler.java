@@ -133,6 +133,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(Constants.RECORD_ID, id);
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
         Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
