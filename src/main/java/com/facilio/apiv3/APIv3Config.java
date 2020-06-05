@@ -214,7 +214,6 @@ public class APIv3Config {
                 .list()
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnListChain())
                 .summary()
-                  .beforeFetch(new FetchCurrentUserTenantCommandV3())
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
                 .build();
     }
