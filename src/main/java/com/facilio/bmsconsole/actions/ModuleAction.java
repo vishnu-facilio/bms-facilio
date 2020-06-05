@@ -803,7 +803,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioChain addRollUpFieldsChain = TransactionChainFactory.getUpdateRollUpFieldsChain();
 		FacilioContext context = addRollUpFieldsChain.getContext();			
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
-		context.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, true);
+		context.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, false);
 
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, getDescription());
 		context.put(FacilioConstants.ContextNames.CHILD_MODULE_ID, getChildModuleId());
