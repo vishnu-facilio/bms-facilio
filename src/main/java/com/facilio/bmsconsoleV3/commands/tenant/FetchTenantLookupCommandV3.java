@@ -24,7 +24,7 @@ public class FetchTenantLookupCommandV3 extends FacilioCommand {
             }
         }
         if(CollectionUtils.isEmpty(lookupFields)) {
-            context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, lookupFields);
+            context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, lookupFields);
         }
 
         return false;

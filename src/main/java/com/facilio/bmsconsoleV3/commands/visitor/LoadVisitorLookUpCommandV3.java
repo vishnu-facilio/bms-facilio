@@ -31,7 +31,7 @@ public class LoadVisitorLookUpCommandV3 extends FacilioCommand {
         additionaLookups.add(spaceField);
         additionaLookups.add(locationField);
         additionaLookups.add(visitorTypefield);
-        context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }
 }

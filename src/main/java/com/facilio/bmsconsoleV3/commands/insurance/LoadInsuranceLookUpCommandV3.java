@@ -34,7 +34,7 @@ public class LoadInsuranceLookUpCommandV3 extends FacilioCommand {
         additionaLookups.add(addedByField);
         additionaLookups.add(moduleStateField);
 
-        context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }
 }

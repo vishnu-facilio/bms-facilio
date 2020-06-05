@@ -84,10 +84,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getVisitorLoggingAfterSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
-
-        c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
-        c.addCommand(new LoadVisitorLoggingLookupCommandV3());
-        c.addCommand(new GenericGetModuleDataListCommand());
         c.addCommand(new ChangeVisitorInviteStateCommandV3());
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         return c;

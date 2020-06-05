@@ -46,7 +46,7 @@ public class LoadWorkPermitLookUpsCommandV3 extends FacilioCommand {
         additionaLookups.add(requestedByField);
         additionaLookups.add(issuedToUserField);
         additionaLookups.add(baseSpaceField);
-        context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
 
         return false;
     }
