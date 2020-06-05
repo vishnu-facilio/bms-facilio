@@ -15,9 +15,17 @@ public class FormRuleContext {
 	long id = -1;
 	long orgId = -1;
 	long formId = -1;
-	long fieldId = -1;
 	long criteriaId = -1;
 	long siteId = -1;
+	List<FormRuleTriggerFieldContext> triggerFields;
+	
+	String name;
+	String description;
+	Criteria criteria;
+	FormRuleType type;
+	TriggerType triggerType;
+	RuleType ruleType;
+	
 	public long getSiteId() {
 		return siteId;
 	}
@@ -42,17 +50,18 @@ public class FormRuleContext {
 		this.description = description;
 	}
 
-	String name;
-	String description;
-	Criteria criteria;
-	FormRuleType type;
-	TriggerType triggerType;
-	RuleType ruleType;
-	
 	List<FormRuleActionContext> actions;
 	
 	public List<FormRuleActionContext> getActions() {
 		return actions;
+	}
+	
+	public List<FormRuleTriggerFieldContext> getTriggerFields() {
+		return triggerFields;
+	}
+
+	public void setTriggerFields(List<FormRuleTriggerFieldContext> triggerFields) {
+		this.triggerFields = triggerFields;
 	}
 
 	public void setActions(List<FormRuleActionContext> actions) {
@@ -123,14 +132,6 @@ public class FormRuleContext {
 
 	public void setFormId(long formId) {
 		this.formId = formId;
-	}
-
-	public long getFieldId() {
-		return fieldId;
-	}
-
-	public void setFieldId(long fieldId) {
-		this.fieldId = fieldId;
 	}
 
 	public long getCriteriaId() {

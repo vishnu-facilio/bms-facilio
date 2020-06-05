@@ -366,10 +366,22 @@ public class FieldFactory {
         fields.add(getField("ruleType", "RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.LOOKUP));
-        fields.add(getField("fieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
         fields.add(getField("type", "FORM_RULE_TYPE", module, FieldType.NUMBER));
 
+        return fields;
+    }
+    
+    
+    public static List<FacilioField> getFormRuleTriggerFieldFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getFormRuleTriggerFieldModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("executionOrder", "RULE_EXECUTION_ORDER", module, FieldType.NUMBER));
+        
         return fields;
     }
 

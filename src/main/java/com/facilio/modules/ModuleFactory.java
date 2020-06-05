@@ -178,6 +178,14 @@ public class ModuleFactory {
 		return formModule;
 	}
 	
+	public static FacilioModule getFormRuleTriggerFieldModule() {
+		FacilioModule formModule = new FacilioModule();
+		formModule.setName("formRuleTriggerField");
+		formModule.setDisplayName("Form Rule Trigger Field");
+		formModule.setTableName("Form_Rule_Trigger_Field");
+		return formModule;
+	}
+	
 	public static FacilioModule getFormRuleActionModule() {
 		FacilioModule formModule = new FacilioModule();
 		formModule.setName("formRuleAction");

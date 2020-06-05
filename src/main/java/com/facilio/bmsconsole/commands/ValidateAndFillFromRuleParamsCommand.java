@@ -30,14 +30,14 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		switch (triggerType) {
 		case FORM_ON_LOAD:
-			List<FormRuleContext> formRuleContexts = FormRuleAPI.getFormRuleContext(formId, null, triggerType);
+			List<FormRuleContext> formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType);
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 		case FORM_SUBMIT:
 			if(formData == null) {
 				throw new IllegalArgumentException("Form Data Cannot be null during Form On Submit Action Evaluation");
 			}
-			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, null, triggerType);
+			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType);
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 			

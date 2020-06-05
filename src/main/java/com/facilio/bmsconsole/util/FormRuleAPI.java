@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.forms.FormRuleActionContext;
 import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
+import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -63,6 +64,42 @@ public class FormRuleAPI {
 		insertBuilder.save();
 		
 		formRuleContext.setId((Long) props.get("id"));
+		
+		if(formRuleContext.getTriggerTypeEnum() == TriggerType.FIELD_UPDATE) {
+			if(formRuleContext.getTriggerFields() == null || formRuleContext.getTriggerFields().isEmpty()) {
+				throw new Exception("In filed update trigger type trigger fields cannot be empty");
+			}
+			addFormRuleTriggerFieldsContext(formRuleContext,formRuleContext.getTriggerFields());
+		}
+	}
+	
+	public static void addFormRuleTriggerFieldsContext(FormRuleContext formRuleContext, List<FormRuleTriggerFieldContext> triggerFields) throws Exception {
+		
+		for(FormRuleTriggerFieldContext triggerField : triggerFields) {
+			triggerField.setRuleId(formRuleContext.getId());
+			triggerField.setOrgId(AccountUtil.getCurrentOrg().getId());
+		}
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+				.fields(FieldFactory.getFormRuleTriggerFieldFields());
+		
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(triggerFields, FormRuleTriggerFieldContext.class);
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+	}
+	
+	public static void deleteFormRuleTriggerFieldsContext(long formRuleId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleTriggerFieldFields());
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), formRuleId+"", NumberOperators.EQUALS));
+		
+		deleteRecordBuilder.delete();
+		
 	}
 	
 	public static Map<Long,FormRuleContext> getFormTypeRulesMap(long formId) throws Exception {
@@ -208,10 +245,7 @@ public class FormRuleAPI {
 		return null;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContext(Long formId,Long formFieldId,TriggerType triggerType) throws Exception {
-		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId <=0)) {
-			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
-		}
+	public static List<FormRuleContext> getFormRuleContext(Long formId,TriggerType triggerType) throws Exception {
 		if(formId == null || formId <=0) {
 			throw new IllegalArgumentException("Form Cannot Be Null");
 		}
@@ -222,16 +256,49 @@ public class FormRuleAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS));
 		
-		if(formFieldId != null && formFieldId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+formFieldId, NumberOperators.EQUALS));
-		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<FormRuleContext> formRuleContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
-			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
-			formRuleContexts.add(formRuleContext);
+			for(Map<String, Object> prop : props) {
+				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				formRuleContexts.add(formRuleContext);
+			}
+		}
+		return formRuleContexts;
+	}
+	
+	public static List<FormRuleContext> getFormRuleContext(Long formId,Long formFieldId,TriggerType triggerType) throws Exception {
+		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId <=0)) {
+			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
+		}
+		if(formId == null || formId <=0) {
+			throw new IllegalArgumentException("Form Cannot Be Null");
+		}
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleTriggerFieldFields());
+		fieldMap.putAll(FieldFactory.getAsMap(FieldFactory.getFormRuleFields()));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleFields())
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.innerJoin(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+				.on(ModuleFactory.getFormRuleModule().getTableName()+".ID = "+ModuleFactory.getFormRuleTriggerFieldModule().getTableName()+".RULE_ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+formFieldId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), ""+triggerType.getIntVal(), NumberOperators.EQUALS))
+				.orderBy("RULE_EXECUTION_ORDER");
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<FormRuleContext> formRuleContexts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				formRuleContexts.add(formRuleContext);
+			}
 		}
 		return formRuleContexts;
 	}

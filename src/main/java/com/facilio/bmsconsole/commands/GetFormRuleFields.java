@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -32,9 +33,12 @@ public class GetFormRuleFields extends FacilioCommand {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(fields)
+					.select(FieldFactory.getFormRuleTriggerFieldFields())
 					.table(ModuleFactory.getFormRuleModule().getTableName())
+					.innerJoin(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+					.on(ModuleFactory.getFormRuleModule().getTableName()+".ID = "+ModuleFactory.getFormRuleTriggerFieldModule().getTableName()+".RULE_ID")
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formId+"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), TriggerType.FIELD_UPDATE.getIntVal()+"", NumberOperators.EQUALS))
 					;
 			
 			List<Map<String, Object>> props = selectBuilder.get();

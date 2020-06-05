@@ -19,6 +19,8 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 		formRule.setCriteriaId(id);
 		FormRuleAPI.updateFormRuleContext(formRule);
 		CriteriaAPI.deleteCriteria(oldCriteriaId);
+		FormRuleAPI.deleteFormRuleTriggerFieldsContext(formRule.getId());
+		FormRuleAPI.addFormRuleTriggerFieldsContext(formRule,formRule.getTriggerFields());
 		return false;
 	}
 
