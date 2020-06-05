@@ -5485,8 +5485,7 @@ public class TransactionChainFactory {
 	}
 	public static FacilioChain getSendQuotationMailChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new SendQuotationMailCommand()));
+		c.addCommand(new SendQuotationMailCommand());
 		return c;
 	}
 }
