@@ -37,7 +37,6 @@ public class FetchCurrentUserTenantCommandV3 extends FacilioCommand {
                 }
             }
         }
-        context.put(Constants.RECORD_ID, 8L);
         return false;
     }
 }
