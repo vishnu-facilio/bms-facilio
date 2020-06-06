@@ -3,30 +3,26 @@ package com.facilio.apiv3;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
-import com.facilio.bmsconsoleV3.commands.tenant.FetchCurrentUserTenantCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
-import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
-import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -89,6 +85,10 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())
                 .afterFetch(new QuotationFillDetailsCommand())
+
+                .list()
+                .beforeFetch(new QuotationFillLookupFields())
+                .showStateFlowList()
 
                 .build();
     }

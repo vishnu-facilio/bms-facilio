@@ -72,7 +72,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				c.getContext().put(FacilioConstants.ContextNames.SITE, siteId);
 				c.execute();
 			} else {
-				FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
+				FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssetImportChain();
 				bulkAssetImportChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
 				bulkAssetImportChain.getContext().put(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT, groupedContext);
 				bulkAssetImportChain.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -45,6 +46,16 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private Long revisionNumber;
     private Boolean isQuotationRevised;
     private Boolean revisionHistoryAvailable;
+
+    public WorkOrderContext getWorkorder() {
+        return workorder;
+    }
+
+    public void setWorkorder(WorkOrderContext workorder) {
+        this.workorder = workorder;
+    }
+
+    private WorkOrderContext workorder;
 
 
     public String getNotes() {

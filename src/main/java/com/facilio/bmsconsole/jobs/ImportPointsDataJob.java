@@ -68,7 +68,7 @@ public class ImportPointsDataJob extends FacilioJob{
 				else {
 					FacilioContext context = new FacilioContext();
 					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-					FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
+					FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssetImportChain();
 					bulkAssetImportChain.execute(context);
 				}
 			}

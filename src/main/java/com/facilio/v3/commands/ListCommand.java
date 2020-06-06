@@ -32,6 +32,12 @@ public class ListCommand extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
 
         SelectRecordsBuilder selectRecordsBuilder = getSelectRecordsBuilder(context);
+
+        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            selectRecordsBuilder.fetchSupplements(supplementFields);
+        }
+
         selectRecordsBuilder.select(fields);
 
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
@@ -101,11 +107,6 @@ public class ListCommand extends FacilioCommand {
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
         if (orderBy != null && !orderBy.isEmpty()) {
             selectRecordsBuilder.orderBy(orderBy);
-        }
-
-        List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-        if (CollectionUtils.isNotEmpty(supplementFields)) {
-            selectRecordsBuilder.fetchSupplements(supplementFields);
         }
 
 

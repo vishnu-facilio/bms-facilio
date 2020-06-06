@@ -878,7 +878,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain getBulkAssertImportChain() {
+		public static FacilioChain getBulkAssetImportChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new SeperateToCategoriesCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
