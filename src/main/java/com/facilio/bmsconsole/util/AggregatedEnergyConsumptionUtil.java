@@ -202,12 +202,10 @@ public class AggregatedEnergyConsumptionUtil {
 
 			List<EnergyMeterContext> energyMeterMFList = selectBuilder.get();	
 			for(EnergyMeterContext energyMeterMF:energyMeterMFList) {
-				if(energyMeterMF.getMultiplicationFactor() != -1) {
-					energyMeterMFMap.put(energyMeterMF.getId(), energyMeterMF.getMultiplicationFactor());
+				if(energyMeterMF.getMultiplicationFactor() == -1l) {
+					energyMeterMF.setMultiplicationFactor(1l);
 				}
-				else {
-					LOGGER.log(Level.SEVERE, "Error AggregatedEnergyConsumptionUtil has nonconnected energy meter with MF as -1, energymeter id in: "+energyMeterMF.getId());
-				}
+				energyMeterMFMap.put(energyMeterMF.getId(), energyMeterMF.getMultiplicationFactor());	
 			}	
 		}
 		return energyMeterMFMap;
@@ -374,12 +372,12 @@ public class AggregatedEnergyConsumptionUtil {
 			{
 				for(EnergyMeterContext energyMeter :energyMeters)
 				{
-					if(energyMeter.getMultiplicationFactor() != - 1)
-					{
-						DateRange dateRange = new DateRange(startTime, endTime);
-						meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
-						energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
+					if(energyMeter.getMultiplicationFactor() == -1l) {
+						energyMeter.setMultiplicationFactor(1l);
 					}
+					DateRange dateRange = new DateRange(startTime, endTime);
+					meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
+					energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());	
 				}
 			}
 			else 
@@ -396,8 +394,11 @@ public class AggregatedEnergyConsumptionUtil {
 						endTime = lastReading.getTtime();
 					}
 				
-					if(startTime != -1 && endTime != -1 && energyMeter.getMultiplicationFactor() != - 1) 
+					if(startTime != -1 && endTime != -1) 
 					{
+						if(energyMeter.getMultiplicationFactor() == -1l) {
+							energyMeter.setMultiplicationFactor(1l);
+						}
 						DateRange dateRange = new DateRange(startTime, endTime);
 						meterIdVsMaxDateRange.put(energyMeter.getId(), dateRange);
 						energyMeterMFMap.put(energyMeter.getId(), energyMeter.getMultiplicationFactor());
