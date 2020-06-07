@@ -26,11 +26,14 @@ public class SMSUtil extends TwilioUtil {
 		
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
-		int countrycode = getISDCode(to);
-		if(countrycode == 91)
+
+		/* //Commenting this out until it's done
+		int countryCode = getISDCode(to);
+		if(countryCode == 91)
 		{
 			//TODO send SMS using India vendor
 		}
+		*/
 		
 		Message tmessage = Message.creator(
                 new com.twilio.type.PhoneNumber(to),
