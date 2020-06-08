@@ -57,7 +57,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_TEMPLATE_MODULE.equals(specialType)
-				|| FacilioConstants.ContextNames.AGENT.equals(specialType)
+				|| ContextNames.AGENT_DATA.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)
 				;
 	}
@@ -642,7 +642,7 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.READING_TEMPLATE_MODULE.equals(specialType)) {
 			return ModuleFactory.getTemplateModule();
 		}
-		else if(ContextNames.AGENT.equals(specialType)){
+		else if(ContextNames.AGENT_DATA.equals(specialType)){
 			return ModuleFactory.getNewAgentModule();
 		}
 		else if(ContextNames.KPI.equals(specialType)){
@@ -720,6 +720,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.KPI.equals(specialType)) {
 			return FieldFactory.getKPIFields();
+		}
+		else if(ContextNames.AGENT_DATA.equals(specialType)) {
+			return FieldFactory.getNewAgentFields();
 		}
 		return null;
 	}
