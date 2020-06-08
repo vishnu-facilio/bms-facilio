@@ -28,7 +28,9 @@ public class UriFilter implements Filter {
             String reqUri = request.getRequestURI();
             if (!reqUri.startsWith(AUTH_API) && !reqUri.startsWith(IOT_API) && !reqUri.startsWith(MIGRATION_URI)) {
                 int idx = reqUri.indexOf(URL_PATTERN);
-                if (idx > 0) {
+                if (idx == 0) { //Doing this to make APIs called without app name to go through the usual security/ validation filters since we have struts2 configured to handle index.jsp globally
+                    req.getRequestDispatcher(reqUri).forward(request, response);
+                } else if (idx > 0) {
                     String appName = reqUri.substring(1, idx);
                     String newUri = reqUri.substring(idx);
                     System.out.println("Facilio filter called : " + newUri);

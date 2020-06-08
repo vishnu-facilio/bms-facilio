@@ -148,15 +148,14 @@
 
 	<!-- All API calls should go through the following filters -->
 	<!-- API Filter mapping start -->
-
 	<filter-mapping>
-		<filter-name>InputValidationFilter</filter-name>
+		<filter-name>SecurityFilter</filter-name>
 		<url-pattern>/api/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>SecurityFilter</filter-name>
+		<filter-name>InputValidationFilter</filter-name>
 		<url-pattern>/api/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>REQUEST</dispatcher>
