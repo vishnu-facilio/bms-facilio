@@ -12,6 +12,7 @@
 	<constant name="struts.multipart.maxSize" value="15000000" />
 	<constant name="struts.mapper.alwaysSelectFullNamespace" value="true" />
 
+	<include file="baseapiv1.xml" />
 	<include file="bmsconsole.xml" />
 	<include file="serviceportal.xml" />
 	<include file="integration.xml" />

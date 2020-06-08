@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="baseV1Api" strict-method-invocation="false" extends="struts-default,json-default">
+		<result-types>
+			<result-type name="tiles"
+						 class="org.apache.struts2.views.tiles.TilesResult" />
+			<result-type name="json"
+						 class="com.facilio.bmsconsole.interceptors.CacheResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+			<interceptor name="authinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="httpheader">
+				<param name="status">401</param>
+			</result>
+			<result name="unauthorized" type="httpheader">
+				<param name="status">403</param>
+			</result>
+			<result name="invalid" type="httpheader">
+				<param name="status">400</param>
+			</result>
+			<result name="usernotinapp" type="httpheader">
+				<param name="status">409</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="statusCode">500</param>
+			</result>
+			<result name="input" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="statusCode">400</param>
+			</result>
+			<result name="exception" type="chain">
+				<param name="actionName">handleException</param>
+				<param name="namespace">/v1/exception</param>
+			</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+							   result="exception" />
+		</global-exception-mappings>
+	</package>
+
+</struts>

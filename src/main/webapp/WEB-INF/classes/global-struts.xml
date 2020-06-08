@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.custom.i18n.resources" value="facilioprops" />
+	<constant name="struts.action.excludePattern" value="/websocket/.*" />
+	<constant name="struts.multipart.maxSize" value="15000000" />
+
+	<include file="baseapiv1.xml" />
+	<include file="admin.xml" />
+	<include file="internal.xml" />
+
+	<!-- Add packages here -->
+	<package name="app" namespace="/" extends="struts-default">
+		<action name="**">
+			<result>/jsps/index.jsp</result>
+		</action>
+	</package>
+
+</struts>

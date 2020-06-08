@@ -4,117 +4,54 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-	<package name="app" namespace="/" extends="struts-default">
-		<action name="*">
-        	<result>/jsps/index.jsp</result>
-    	</action>
-	</package>
-	<package name="internalMig" strict-method-invocation="false"
-			 namespace="/internalmig" extends="struts-default,json-default">
-		<interceptors>
-			<interceptor name="cacheinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
-			<interceptor name="scopeinterceptor"
-				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
-			<interceptor name="datasourceinterceptor"
-				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="authinterceptor"
-				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
-				<interceptor-ref name="datasourceinterceptor" />
-				<interceptor-ref name="scopeinterceptor" />
-				<interceptor-ref name="cacheinterceptor" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
+<!--	<package name="internalMig" strict-method-invocation="false"-->
+<!--			 namespace="/internalmig" extends="struts-default,json-default">-->
+<!--		<interceptors>-->
+<!--			<interceptor name="cacheinterceptor"-->
+<!--						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />-->
+<!--			<interceptor name="scopeinterceptor"-->
+<!--				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />-->
+<!--			<interceptor name="datasourceinterceptor"-->
+<!--				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />-->
+<!--			<interceptor name="authinterceptor"-->
+<!--				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />-->
+<!--			<interceptor-stack name="defaultInterceptor">-->
+<!--				<interceptor-ref name="defaultStack" />-->
+<!--				<interceptor-ref name="authinterceptor" />-->
+<!--				<interceptor-ref name="datasourceinterceptor" />-->
+<!--				<interceptor-ref name="scopeinterceptor" />-->
+<!--				<interceptor-ref name="cacheinterceptor" />-->
+<!--				<interceptor-ref name="json">-->
+<!--					<param name="enableSMD">true</param>-->
+<!--				</interceptor-ref>-->
+<!--			</interceptor-stack>-->
+<!--		</interceptors>-->
 
-		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login" type="httpheader">
-				<param name="status">401</param>
-			</result>
-			<result name="unauthorized" type="httpheader">
-				<param name="status">403</param>
-			</result>
-			<result name="invalid" type="httpheader">
-				<param name="status">400</param>
-			</result>
-			<result name="usernotinapp" type="httpheader">
-				<param name="status">409</param>
-			</result>
-		
-		</global-results>
+<!--		<default-interceptor-ref name="defaultInterceptor" />-->
+<!--		<global-results>-->
+<!--			<result name="login" type="httpheader">-->
+<!--				<param name="status">401</param>-->
+<!--			</result>-->
+<!--			<result name="unauthorized" type="httpheader">-->
+<!--				<param name="status">403</param>-->
+<!--			</result>-->
+<!--			<result name="invalid" type="httpheader">-->
+<!--				<param name="status">400</param>-->
+<!--			</result>-->
+<!--			<result name="usernotinapp" type="httpheader">-->
+<!--				<param name="status">409</param>-->
+<!--			</result>-->
+<!--		-->
+<!--		</global-results>-->
 
-		<action name="migration">
-			<result name="success">/jsps/pm/Migration.jsp</result>
-		</action>
-	</package>
-	<package name="homeApi" strict-method-invocation="false"
-		namespace="/api" extends="struts-default,json-default">
-		<result-types>
-			<result-type name="tiles"
-				class="org.apache.struts2.views.tiles.TilesResult" />
-			<result-type name="json"
-				class="com.facilio.bmsconsole.interceptors.CacheResult" />
-		</result-types>
-		<interceptors>
-			<interceptor name="cacheinterceptor"
-				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
-			<interceptor name="scopeinterceptor"
-				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
-			<interceptor name="datasourceinterceptor"
-				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
-			<interceptor name="authinterceptor"
-				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
-				<interceptor-ref name="datasourceinterceptor" />
-				<interceptor-ref name="scopeinterceptor" />
-				<interceptor-ref name="cacheinterceptor" />				
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
+<!--		<action name="migration">-->
+<!--			<result name="success">/jsps/pm/Migration.jsp</result>-->
+<!--		</action>-->
+<!--	</package>-->
 
-		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login" type="httpheader">
-				<param name="status">401</param>
-			</result>
-			<result name="unauthorized" type="httpheader">
-				<param name="status">403</param>
-			</result>
-			<result name="invalid" type="httpheader">
-				<param name="status">400</param>
-			</result>
-			<result name="usernotinapp" type="httpheader">
-				<param name="status">409</param>
-			</result>
-			<result name="error" type="json">
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, message, stackTrace</param>
-				<param name="statusCode">500</param>
-			</result>
-			<result name="input" type="json">
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, message, stackTrace</param>
-				<param name="statusCode">400</param>
-			</result>
-			<result name="exception" type="chain">
-				<param name="actionName">handleException</param>
-				<param name="namespace">/v1/exception</param>
-			</result>
-		</global-results>
-		<global-exception-mappings>
-			<exception-mapping exception="java.lang.Exception"
-							   result="exception" />
-		</global-exception-mappings>
+	<!-- check baseapiv1.xml for baseV1Api package details -->
+	<package name="homeApi"
+		namespace="/api" extends="baseV1Api">
 		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
 			<param name="auth">false</param>
 			<result name="success" type="json">
@@ -1127,166 +1064,6 @@
 			method="addAlarmSeverity">
 			<result name="success" type="json">
 				<param name="root">alarmSeverity</param>
-			</result>
-		</action>
-	</package>
-
-	<package name="admin" namespace="/admin" extends="homeApi">
-		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
-			method="addJob">
-		</action>
-		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
-			method="deleteJob">
-		</action>
-		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
-			method="jobs">
-			<result name="success">/jsps/adminjobs.jsp</result>
-		</action>
-       <action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result name="success">/jsps/admin/showCache.jsp</result>
-		</action>
-		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
-			<result name="success" type="redirect">
-				<param name="location">buildInfo?showcache=true</param>
-			</result>
-		</action>
-		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
-			<result name="success" type="redirect">
-			<param name="location">buildInfo</param>
-			</result>
-		</action>
-		<action name="adminpage" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result name="success">/jsps/admin/adminlayout.jsp</result>
-		</action>
-		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/buildinfo.jsp</result>
-			</action>
-			
-		<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/usermanagement.jsp</result>
-		</action>
-		
-		<action name="clearsession" class="com.facilio.bmsconsole.actions.AdminAction" method = "clearSession">
-		<result name="success" type="tiles">adminpage/usermanagement.jsp</result>
-		 </action>
-			<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/orginfo.jsp</result>
-			</action>
-			<action name="wms" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/wms.jsp</result>
-			</action>
-			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
-		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
-		 </action>
-		 <action name="statusLog" class="com.facilio.bmsconsole.actions.AdminAction" method= "statusLog" >
-			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
-			</action>
-		 
-		 	<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
-		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
-		 </action>
-		 
-			<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/anomalyconsole.jsp</result>
-			</action>
-			<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/sqlconsole.jsp</result>
-			</action>
-			
-			<action name="copypm" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/copypm.jsp</result>
-			</action>
-			<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/closewo.jsp</result>
-			</action>
-			<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result type="tiles">adminpage/userlicense.jsp</result>
-			</action>
-			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
-			<result type="tiles">adminpage/orginfo.jsp</result>
-			</action>
-			<action name="demorollup" class="com.facilio.bmsconsole.actions.AdminAction" >
-			<result type="tiles">adminpage/demorollup.jsp</result>
-			</action>
-			<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
-			<result type="tiles">adminpage/demorollup.jsp</result>
-			</action>
-			<action name="adminreadingtools" class="com.facilio.bmsconsole.actions.AdminAction" >
-			<result type="tiles">adminpage/deltacalculation.jsp</result>
-			</action>
-			<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
-			<result  type="tiles">adminpage/deltacalculation.jsp</result>
-			</action>
-
-			<action name="deleteReadings" class="com.facilio.bmsconsole.actions.AdminAction">
-				<result  type="tiles">adminpage/deleteReadinglayout.jsp</result>
-			</action>
-			<action name="deleteReadingsAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteReadings">
-				<result   type="tiles">adminpage/deleteReadinglayout.jsp</result>
-			</action>
-			<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
-				<result  type="tiles">adminpage/movereadinglayout.jsp</result>
-			</action>
-			<action name="moveReadingAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "moveReadings">
-				<result   type="tiles">adminpage/movereadinglayout.jsp</result>
-			</action>
-			<action name="fieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
-				<result  type="tiles">adminpage/fieldMigrationlayout.jsp</result>
-			</action>
-			<action name="fieldMigrationAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "fieldMigration">
-				<result   type="tiles">adminpage/fieldMigrationlayout.jsp</result>
-			</action>
-			<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/data.jsp</result>
-			</action>					
-			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
-			<result   type="tiles">adminpage/data.jsp</result>
-			</action>
-			<action name="deletemessagequeue" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
-			</action>
-			<action name="deleteMessageQueue" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteMessageQueue">
-			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
-			</action>
-			<action name="getinstance" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/awsinstances.jsp</result>
-			</action>
-			<action name="demorollupyearly" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
-			</action>
-			<action name="demoRollUpYearly" class="com.facilio.bmsconsole.actions.AdminAction" method ="demoRollUpYearly">
-			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
-			</action>	
-			<action name="agentversion" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/agentversion.jsp</result>
-			</action>	
-			
-			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="addAgentVersion">
-			<result type="tiles">adminpage/agentversion.jsp</result>
-			</action>	
-			<action name="upgradeAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="upgradeAgentVersion">
-			<result type="tiles">adminpage/agentversion.jsp</result>
-			</action>	
-			
-		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/upload.jsp</result>
-		</action>
-
-		<action name="addSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="addSecretFile">
-			<result name="error">500</result>
-			<result name ="success" type="json">
-				<param name="includeProperties">^secretFilesList.*</param>
-			</result>
-		</action>
-
-		<action name="getSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="getSecretFiles">
-			<result name ="success" type="json">
-				<param name="includeProperties">^secretFilesList.*</param>
-			</result>
-		</action>
-		<action name="deleteSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="deleteSecretFile">
-			<result name ="success" type="json">
-				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
 		</action>
 	</package>
@@ -3297,37 +3074,6 @@
 			<param name="id">{1}</param>
 			<result name="success" type="json">
 				<param name="root">rateCard</param>
-			</result>
-		</action>
-	</package>
-
-	<package name="internal" namespace="/internal" extends='struts-default,tiles-default,json-default'>
-		<interceptors>
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
-		<default-interceptor-ref name="defaultInterceptor" />
-		<action name="addFromMail"
-			class="com.facilio.bmsconsole.actions.SupportMailParseAction">
-			<result name="success" type="json">
-				<param name="includeProperties">workOrderId</param>
-			</result>
-		</action>
-		
-		<action name="testSoapRequest">
-			<result name="success">/jsps/testsoaprequest.jsp</result>
-		</action>
-		
-		<action name="migration">
-			<result name="success">/jsps/migration/Migration.jsp</result>
-		</action>
-		<action name="mlResponseParser" class="com.facilio.bmsconsole.actions.MLResponseParser" method="parseResponse">
-			<result name="success" type="json">
-				<param name="statusCode">200</param>
 			</result>
 		</action>
 	</package>

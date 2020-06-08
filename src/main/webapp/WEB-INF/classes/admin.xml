@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="admin" namespace="/admin" extends="baseV1Api">
+		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
+				method="addJob">
+		</action>
+		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
+				method="deleteJob">
+		</action>
+		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
+				method="jobs">
+			<result name="success">/jsps/adminjobs.jsp</result>
+		</action>
+		<action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result name="success">/jsps/admin/showCache.jsp</result>
+		</action>
+		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
+			<result name="success" type="redirect">
+				<param name="location">buildInfo?showcache=true</param>
+			</result>
+		</action>
+		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
+			<result name="success" type="redirect">
+				<param name="location">buildInfo</param>
+			</result>
+		</action>
+		<action name="adminpage" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result name="success">/jsps/admin/adminlayout.jsp</result>
+		</action>
+		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/buildinfo.jsp</result>
+		</action>
+
+		<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/usermanagement.jsp</result>
+		</action>
+
+		<action name="clearsession" class="com.facilio.bmsconsole.actions.AdminAction" method = "clearSession">
+			<result name="success" type="tiles">adminpage/usermanagement.jsp</result>
+		</action>
+		<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+		<action name="wms" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/wms.jsp</result>
+		</action>
+		<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
+			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+		<action name="statusLog" class="com.facilio.bmsconsole.actions.AdminAction" method= "statusLog" >
+			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+
+		<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
+			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+
+		<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/anomalyconsole.jsp</result>
+		</action>
+		<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/sqlconsole.jsp</result>
+		</action>
+
+		<action name="copypm" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/copypm.jsp</result>
+		</action>
+		<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/closewo.jsp</result>
+		</action>
+		<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/userlicense.jsp</result>
+		</action>
+		<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
+			<result type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+		<action name="demorollup" class="com.facilio.bmsconsole.actions.AdminAction" >
+			<result type="tiles">adminpage/demorollup.jsp</result>
+		</action>
+		<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
+			<result type="tiles">adminpage/demorollup.jsp</result>
+		</action>
+		<action name="adminreadingtools" class="com.facilio.bmsconsole.actions.AdminAction" >
+			<result type="tiles">adminpage/deltacalculation.jsp</result>
+		</action>
+		<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
+			<result  type="tiles">adminpage/deltacalculation.jsp</result>
+		</action>
+
+		<action name="deleteReadings" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result  type="tiles">adminpage/deleteReadinglayout.jsp</result>
+		</action>
+		<action name="deleteReadingsAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteReadings">
+			<result   type="tiles">adminpage/deleteReadinglayout.jsp</result>
+		</action>
+		<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result  type="tiles">adminpage/movereadinglayout.jsp</result>
+		</action>
+		<action name="moveReadingAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "moveReadings">
+			<result   type="tiles">adminpage/movereadinglayout.jsp</result>
+		</action>
+		<action name="fieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result  type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+		</action>
+		<action name="fieldMigrationAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "fieldMigration">
+			<result   type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+		</action>
+		<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/data.jsp</result>
+		</action>
+		<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
+			<result   type="tiles">adminpage/data.jsp</result>
+		</action>
+		<action name="deletemessagequeue" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+		</action>
+		<action name="deleteMessageQueue" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteMessageQueue">
+			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+		</action>
+		<action name="getinstance" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/awsinstances.jsp</result>
+		</action>
+		<action name="demorollupyearly" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+		</action>
+		<action name="demoRollUpYearly" class="com.facilio.bmsconsole.actions.AdminAction" method ="demoRollUpYearly">
+			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+		</action>
+		<action name="agentversion" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/agentversion.jsp</result>
+		</action>
+
+		<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="addAgentVersion">
+			<result type="tiles">adminpage/agentversion.jsp</result>
+		</action>
+		<action name="upgradeAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="upgradeAgentVersion">
+			<result type="tiles">adminpage/agentversion.jsp</result>
+		</action>
+
+		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/upload.jsp</result>
+		</action>
+
+		<action name="addSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="addSecretFile">
+			<result name="error">500</result>
+			<result name ="success" type="json">
+				<param name="includeProperties">^secretFilesList.*</param>
+			</result>
+		</action>
+
+		<action name="getSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="getSecretFiles">
+			<result name ="success" type="json">
+				<param name="includeProperties">^secretFilesList.*</param>
+			</result>
+		</action>
+		<action name="deleteSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="deleteSecretFile">
+			<result name ="success" type="json">
+				<param name="includeProperties">^secretFilesList.*</param>
+			</result>
+		</action>
+	</package>
+
+</struts>

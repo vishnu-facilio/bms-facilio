@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="internal" namespace="/internal" extends='struts-default,tiles-default,json-default'>
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="defaultInterceptor" />
+		<action name="addFromMail"
+				class="com.facilio.bmsconsole.actions.SupportMailParseAction">
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderId</param>
+			</result>
+		</action>
+
+		<action name="testSoapRequest">
+			<result name="success">/jsps/testsoaprequest.jsp</result>
+		</action>
+
+		<action name="migration">
+			<result name="success">/jsps/migration/Migration.jsp</result>
+		</action>
+		<action name="mlResponseParser" class="com.facilio.bmsconsole.actions.MLResponseParser" method="parseResponse">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+		</action>
+	</package>
+
+</struts>
