@@ -150,12 +150,12 @@ public class V3Action extends ActionSupport {
 		this.message = message;
 	}
 
-	private Long transitionId;
-	public Long getTransitionId() {
-		return transitionId;
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
 	}
-	public void setTransitionId(Long transitionId) {
-		this.transitionId = transitionId;
+	public void setStateTransitionId(Long transitionId) {
+		this.stateTransitionId = transitionId;
 	}
 
 	private Long approvalTransitionId;

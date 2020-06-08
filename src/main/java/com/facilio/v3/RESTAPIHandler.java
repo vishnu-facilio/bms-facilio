@@ -441,7 +441,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 //        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getTransitionId());
+        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
         context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
