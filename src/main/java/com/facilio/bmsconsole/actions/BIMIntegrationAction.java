@@ -724,7 +724,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						if(assetId > 0){
 							AssetContext asset = AssetsAPI.getAssetInfo(assetId);
 							
-							if(asset.getCategory()!=assetCategory){
+							if(asset.getCategory().getId() != assetCategory.getId()){
 								AssetsAPI.deleteAsset(Collections.singletonList(assetId));
 								asset.setId(-1);
 								addAsset = true;
