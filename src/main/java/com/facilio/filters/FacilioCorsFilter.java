@@ -117,9 +117,10 @@ public class FacilioCorsFilter implements Filter {
                 break;
             case NO_CORS:
                 filterChain.doFilter(request, response);
-                if (ip != null) {
-                    response.addHeader("internal", ip);
-                }
+                // Commenting it out for external VAPT check
+//                if (ip != null) {
+//                    response.addHeader("internal", ip);
+//                }
                 break;
             case INVALID:
                 handleInvalid(request, response);
