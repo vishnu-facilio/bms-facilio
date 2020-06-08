@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -192,6 +193,8 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id, false, true);
+		}else if (ContextNames.AGENT_DATA.equals(specialType)){
+			return AgentApiV2.getAgent(id);
 		}
 		return null;
 	}
