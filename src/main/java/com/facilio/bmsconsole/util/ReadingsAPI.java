@@ -1451,13 +1451,11 @@ public class ReadingsAPI {
 	
 	public static List<ReadingDataMeta> getConnectedLoggedReadings(Long assetId) throws Exception {
 		 FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
-		 FacilioContext context = new FacilioContext();
+		 FacilioContext context = latestAssetData.getContext();
 		 context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
-		 List<String> filters = new ArrayList<>();
-		 filters.add("connected");
-		 filters.add("logged");
-		 context.put(FacilioConstants.ContextNames.FILTERS, filters);
-		 latestAssetData.execute(context);
+		 context.put(FacilioConstants.ContextNames.FILTER, "nonformula");
+		 context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, true);
+		 latestAssetData.execute();
 		 List<ReadingDataMeta> rdmList =  (List<ReadingDataMeta>)context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
 		 if(rdmList == null){
 			 return new ArrayList<ReadingDataMeta>();
