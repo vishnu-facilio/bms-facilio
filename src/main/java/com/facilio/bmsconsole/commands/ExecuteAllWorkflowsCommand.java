@@ -98,6 +98,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				}
 				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 			}
+			if (AccountUtil.getCurrentOrg().getId() == 78l) {
+				LOGGER.info("ExecuteAllWorkflowsCommand Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());	
+			}
 		}
 		catch(Exception e) {
 			StringBuilder builder = new StringBuilder("Error during execution of rules of type : ")
