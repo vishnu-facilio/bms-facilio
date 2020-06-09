@@ -1,11 +1,13 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -41,6 +43,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
                         RecordAPI.updateRecord(quotation, module, fields);
+                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, null,(FacilioContext) context);
                         QuotationContext revisedContract = quotation.clone();
                         revisedQuoteList.add(revisedContract);
                     } else {

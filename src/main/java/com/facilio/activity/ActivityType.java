@@ -38,7 +38,7 @@ public interface ActivityType {
 		for (ActivityType type: QuotationActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 66
+		// Max number = 68
 
 		return activityMap;
 	}

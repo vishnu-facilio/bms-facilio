@@ -36,7 +36,23 @@ public enum QuotationActivityType implements ActivityType {
             // TODO Auto-generated method stub
             return " added the Attachment ";
         }
+    },
+    EMAIL_QUOTATION(67) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return " emailed Quotation to  " + json.get("to");
+        }
+    },
+    REVISE_QUOTATION(68) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return " revised quotation.";
+        }
     };
+
+
 
 
     QuotationActivityType(int value) {

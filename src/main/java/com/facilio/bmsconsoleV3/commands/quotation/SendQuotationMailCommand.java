@@ -1,8 +1,11 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
+import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.pdf.PdfUtil;
@@ -42,6 +45,9 @@ public class SendQuotationMailCommand extends FacilioCommand {
                 filesMap.put(attachment.getName(), fs.getDownloadUrl(fileId));
             }
         }
+        JSONObject info = new JSONObject();
+        info.put("to", emailTemplate.getTo());
+        CommonCommandUtil.addActivityToContext(quotationContext.getId(), -1, QuotationActivityType.EMAIL_QUOTATION, info, (FacilioContext) context);
         FacilioFactory.getEmailClient().sendEmail(template,filesMap);
 
         return false;
