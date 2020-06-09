@@ -113,6 +113,13 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getQuotationAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
+        return c;
+    }
+
     public static FacilioChain getQuotationBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReviseQuotationCommand());

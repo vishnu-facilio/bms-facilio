@@ -80,7 +80,7 @@ public class APIv3Config {
 
                 .update()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
-                .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
+                .afterSave(TransactionChainFactoryV3.getQuotationAfterUpdateChain())
 
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())
