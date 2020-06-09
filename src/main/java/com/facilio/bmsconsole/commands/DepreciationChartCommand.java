@@ -25,6 +25,9 @@ public class DepreciationChartCommand extends FacilioCommand {
         Long assetId = (Long) context.get(FacilioConstants.ContextNames.ASSET_ID);
         if (id != null && id > 0 && assetId != null && assetId > 0) {
             AssetDepreciationContext assetDepreciation = AssetDepreciationAPI.getAssetDepreciation(id);
+            if (assetDepreciation == null) {
+                throw new IllegalArgumentException("Invalid asset depreciation");
+            }
 
             List<AssetDepreciationRelContext> assetDepreciationRelList = assetDepreciation.getAssetDepreciationRelList();
             AssetContext assetContext = null;
@@ -43,11 +46,11 @@ public class DepreciationChartCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-            float totalPrice = (int) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule);
+            float totalPrice = (float) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule);
             if (totalPrice == -1) {
                 throw new IllegalArgumentException("Price cannot be empty");
             }
-            int salvageAmount = (int) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule);
+            float salvageAmount = (float) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule);
             long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
             if (date == -1) {
                 throw new IllegalArgumentException("Start date cannot be empty");
