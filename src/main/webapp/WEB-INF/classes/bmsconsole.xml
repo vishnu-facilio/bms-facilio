@@ -346,15 +346,6 @@
 			</result>
 		</action>
 	</package>
-	<package name="internalV1" namespace="/v1/exception"
-			 extends="homeApi">
-		<action name="handleException"
-				class="com.facilio.bmsconsole.actions.FacilioAction"
-				method="handleException">
-			<interceptor-ref name="defaultStack" />
-			<param name="sendErrorCode">true</param>
-		</action>
-	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"
 		extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction"

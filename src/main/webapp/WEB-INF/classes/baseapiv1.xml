@@ -67,5 +67,14 @@
 							   result="exception" />
 		</global-exception-mappings>
 	</package>
+	<package name="internalV1" namespace="/v1/exception"
+			 extends="homeApi">
+		<action name="handleException"
+				class="com.facilio.bmsconsole.actions.FacilioAction"
+				method="handleException">
+			<interceptor-ref name="defaultStack" />
+			<param name="sendErrorCode">true</param>
+		</action>
+	</package>
 
 </struts>
