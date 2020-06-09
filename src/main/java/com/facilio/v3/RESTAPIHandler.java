@@ -17,6 +17,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -31,6 +32,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
@@ -140,7 +142,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
         Class beanClass = getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
-        context.put(Constants.MODULE_NAME, moduleName);
+        Constants.setModuleName(context, moduleName);
 
         nonTransactionChain.execute();
 
@@ -217,8 +219,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
 
-
-
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
@@ -272,12 +272,45 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             meta.put("stateflows", stateFlows);
         }
 
-        this.setData(FieldUtil.getAsJSON(recordMap));
+        Object supplMap = context.get(Constants.SUPPLEMENT_MAP);
+        if (supplMap != null) {
+            meta.put("supplements", supplMap);
+        }
+        JSONObject recordJSON = FieldUtil.getAsJSON(recordMap);
+        this.setData(recordJSON);
+        removeSupplementRecord(context, recordJSON);
 
         if (MapUtils.isNotEmpty(meta)) {
             this.setMeta(FieldUtil.getAsJSON(meta));
         }
     }
+
+    private void removeSupplementRecord(FacilioContext context, JSONObject recordJSON) {
+        String moduleName = Constants.getModuleName(context);
+        List<LookupField> fields = Constants.getFetchSupplements(context);
+        if (fields == null) {
+            return;
+        }
+
+        ArrayList records = (ArrayList) recordJSON.get(moduleName);
+        if (records == null) {
+            return;
+        }
+
+        for (LookupField field: fields) {
+            for (Object record: records) {
+                Map entry = (Map) record;
+                Map lookUpEntry = (Map) entry.get(field.getName());
+                if (lookUpEntry != null) {
+                    JSONObject newLookUpEntry = new JSONObject();
+                    newLookUpEntry.put("id", lookUpEntry.get("id"));
+                    newLookUpEntry.put("moduleId", lookUpEntry.get("moduleId"));
+                    entry.put(field.getName(), newLookUpEntry);
+                }
+            }
+        }
+    }
+
 
     private static V3Config getV3Config(String moduleName) {
         Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(moduleName);
@@ -340,7 +373,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
 
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-        context.put(Constants.MODULE_NAME, moduleName);
+        Constants.setModuleName(context, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         context.put(Constants.RAW_INPUT, createObj);
@@ -436,7 +469,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioContext context = transactionChain.getContext();
 
         context.put(Constants.RECORD_ID, id);
-        context.put(Constants.MODULE_NAME, moduleName);
+        Constants.setModuleName(context, moduleName);
         context.put(Constants.RAW_INPUT, summaryRecord);
 //        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
@@ -495,7 +528,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioContext context = transactionChain.getContext();
 
         context.put(Constants.RECORD_ID, id);
-        context.put(Constants.MODULE_NAME, moduleName);
+        Constants.setModuleName(context, moduleName);
         context.put(Constants.RAW_INPUT, updateObj);
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
          context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);

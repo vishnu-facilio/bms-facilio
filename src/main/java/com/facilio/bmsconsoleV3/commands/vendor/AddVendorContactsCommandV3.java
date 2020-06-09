@@ -25,7 +25,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        String moduleName = (String) context.get(Constants.MODULE_NAME);
+        String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3VendorContext> vendors = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(vendors)) {

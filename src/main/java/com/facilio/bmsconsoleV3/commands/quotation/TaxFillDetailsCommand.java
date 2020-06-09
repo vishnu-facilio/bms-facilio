@@ -12,7 +12,7 @@ public class TaxFillDetailsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        String moduleName = (String) context.get(Constants.MODULE_NAME);
+        String moduleName = Constants.getModuleName(context);
         List list = CommandUtil.getModuleDataList(context, moduleName);
         QuotationAPI.fillTaxDetails(list);
         return false;

@@ -11,12 +11,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
+import org.omg.PortableInterceptor.ObjectReferenceTemplate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ListCommand extends FacilioCommand {
     private FacilioModule module;
@@ -55,6 +58,34 @@ public class ListCommand extends FacilioCommand {
         }
 
         List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();
+
+        if (supplementFields != null) {
+            Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
+            List<Map<String, Object>> asProps = FieldUtil.getAsMapList(records, beanClass);
+            List<FacilioField> supplements = supplementFields.stream().map(SupplementRecord::selectField).collect(Collectors.toList());
+            Map<Long, Map<Long, Map<String, Object>>> supplMap = new HashMap<>();
+            for (FacilioField supplField: supplements) {
+                Map<Long, Map<String, Object>> supplIdMap = new HashMap<>();
+                for (Map<String, Object> prop: asProps) {
+                    Map<String, Object> supplRecord = (Map<String, Object>) prop.get(supplField.getName());
+                    if (supplRecord == null) {
+                        continue;
+                    }
+                    long id = (Long) supplRecord.get("id");
+                    if (supplIdMap.get(id) == null) {
+                        supplIdMap.put(id, supplRecord);
+                    }
+                    prop.put(supplField.getName() ,FieldUtil.getAsBeanFromMap(supplRecord, ModuleBaseWithCustomFields.class));
+                }
+                if (MapUtils.isEmpty(supplMap.get(supplField.getModuleId()))) {
+                    supplMap.put(supplField.getModuleId(), supplIdMap);
+                }
+            }
+
+            if (MapUtils.isNotEmpty(supplMap)) {
+                context.put(Constants.SUPPLEMENT_MAP, supplMap);
+            }
+        }
 
         Map<String, List<? extends  ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
         recordMap.put(moduleName, records);
