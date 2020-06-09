@@ -68,7 +68,7 @@
 		</global-exception-mappings>
 	</package>
 	<package name="internalV1" namespace="/v1/exception"
-			 extends="homeApi">
+			 extends="baseV1Api">
 		<action name="handleException"
 				class="com.facilio.bmsconsole.actions.FacilioAction"
 				method="handleException">
