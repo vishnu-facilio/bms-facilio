@@ -234,6 +234,7 @@ public class FormRuleAPI {
 		if (props != null && !props.isEmpty()) {
 			FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(props.get(0), FormRuleContext.class);
 			formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+			formRuleContext.setTriggerFields(getFormRuleTriggerFields(formRuleContext));
 			
 			if (formRuleContext.getCriteriaId() > 0) {
 				
@@ -241,6 +242,23 @@ public class FormRuleAPI {
 				
 			}
 			return formRuleContext;
+		}
+		return null;
+	}
+	
+public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRuleContext formRuleContext) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleTriggerFieldFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleTriggerFieldFields())
+				.table(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), ""+formRuleContext.getId(), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<FormRuleTriggerFieldContext> formRuleTriggerFieldContext = FieldUtil.getAsBeanListFromMapList(props, FormRuleTriggerFieldContext.class);
+			return formRuleTriggerFieldContext;
 		}
 		return null;
 	}
