@@ -133,8 +133,8 @@ public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
         ITEM_TYPE("Item Type"),
         TOOL_TYPE("Tool Type"),
         SERVICE("Service"),
-        OTHERS("Others"),
-        LABOUR("Labour");
+        LABOUR("Labour"),
+        OTHERS("Others");
         private String name;
 
         Type(String name) {

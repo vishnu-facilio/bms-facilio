@@ -86,6 +86,9 @@ public class QuotationAPI {
         quotation.setSubTotal(lineItemsSubtotal);
         quotation.setTotalTaxAmount(totalTaxAmount);
         Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
+        if (quotation.getDiscountPercentage() != null) {
+            quotationTotalCost = quotationTotalCost - (quotationTotalCost * quotation.getDiscountPercentage() / 100);
+        }
         if (quotation.getShippingCharges() != null) {
             quotationTotalCost += quotation.getShippingCharges();
         }

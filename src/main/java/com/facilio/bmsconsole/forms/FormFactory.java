@@ -312,28 +312,17 @@ public class FormFactory {
 				List<FormField> signatureFields = new ArrayList<>();
 
 				form.setSections(sections);
-				FormSection defaultSection = new FormSection("Quotation", 1, defaultFields, false);
-				FormSection billingSection = new FormSection("BILLING Address", 2, billingAddressFields, true);
-				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
-				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
-				FormSection additionalCostSection = new FormSection("Additional Cost", 5, additionalCostFields, true);
-				FormSection discountSection = new FormSection("Discounts", 6, discountFields, true);
+				FormSection defaultSection = new FormSection("QUOTE INFOMATION", 1, defaultFields, true);
+				FormSection billingSection = new FormSection("BILLING ADDRESS", 2, billingAddressFields, false);
+				FormSection lineItemSection = new FormSection("QUOTE ITEMS", 4, lineItemFields, true);
 				FormSection signatureSection = new FormSection("Signature", 7, signatureFields, true);
 
 				form.getFields().forEach(field -> {
-					if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_LINE_ITEMS) {
 						lineItemFields.add(field);
 					}
-					else if (field.getDisplayTypeEnum() == FieldDisplayType.ADDRESS && field.getName().equals("billToAddress")) {
+					else if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_ADDRESS && field.getName().equals("billToAddress")) {
 						billingAddressFields.add(field);
-					}
-					else if (field.getDisplayTypeEnum() == FieldDisplayType.ADDRESS && field.getName().equals("shipToAddress")) {
-						shippingAddressFields.add(field);
-					} else if (Arrays.asList("shippingCharges", "adjustmentsCost", "miscellaneousCharges", "").contains(field.getName())) {
-						additionalCostFields.add(field);
-					}
-					else if (Arrays.asList("discountAmount", "discountPercentage").contains(field.getName())) {
-						discountFields.add(field);
 					}
 					else if (Arrays.asList("signature", "notes").contains(field.getName())) {
 						signatureFields.add(field);
@@ -345,10 +334,7 @@ public class FormFactory {
 
 				sections.add(defaultSection);
 				sections.add(billingSection);
-				sections.add(shippingSection);
 				sections.add(lineItemSection);
-				sections.add(additionalCostSection);
-				sections.add(discountSection);
 				sections.add(signatureSection);
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
@@ -2166,17 +2152,9 @@ public class FormFactory {
 		fields.add(new FormField("workorder", FieldDisplayType.LOOKUP_SIMPLE, "Workorder", Required.OPTIONAL,"workorder", 6, 2));
 
 
-		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("billToAddress", FieldDisplayType.QUOTE_ADDRESS, "Bill To Address", Required.OPTIONAL, 7, 1));
 
-		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 8, 1));
-
-		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "Line Items", Required.REQUIRED, 9, 1));
-
-		fields.add(new FormField("shippingCharges", FieldDisplayType.NUMBER, "Shipping Charges", Required.OPTIONAL, 10, 2));
-		fields.add(new FormField("adjustmentsCost", FieldDisplayType.NUMBER, "Adjustments Cost", Required.OPTIONAL, 10, 3));
-		fields.add(new FormField("miscellaneousCharges", FieldDisplayType.NUMBER, "Miscellaneous Charges", Required.OPTIONAL, 11, 2));
-
-		fields.add(new FormField("discountAmount", FieldDisplayType.NUMBER, "Discount Amount", Required.OPTIONAL, 12, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.QUOTE_LINE_ITEMS, "Line Items", Required.REQUIRED, 9, 1));
 
 		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 13, 1));
 		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 14, 1));
