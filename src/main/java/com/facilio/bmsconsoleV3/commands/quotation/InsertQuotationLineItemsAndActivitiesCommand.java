@@ -58,11 +58,12 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     List<QuotationAssociatedTermsContext> terms = quotation.getTermsAssociated();
                     QuotationAPI.addQuotationTerms(quotation.getId(), terms);
                 }
-                Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
-                if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("revise")) {
+                Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.get(Constants.QUERY_PARAMS);
+                if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("revise")) {
+                    Long oldRecordId = (Long) context.get(FacilioConstants.ContextNames.OLD_RECORD_ID);
                     FacilioChain activitiesChain = ReadOnlyChainFactory.getActivitiesChain();
                     activitiesChain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
-                    activitiesChain.getContext().put(FacilioConstants.ContextNames.PARENT_ID, quotation.getId());
+                    activitiesChain.getContext().put(FacilioConstants.ContextNames.PARENT_ID, oldRecordId);
                     activitiesChain.execute();
                     List<ActivityContext> activities = (List<ActivityContext>) activitiesChain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
                     for (ActivityContext activity : activities) {
@@ -74,16 +75,19 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                         activitiesList = new ArrayList<>();
                     }
                     activitiesList.addAll(activities);
-                    context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
-                }
-
-                JSONObject info = new JSONObject();
-                info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
-                if (quotationId != null && quotationId > 0) {
-                    CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
+                    context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activitiesList);
+                    JSONObject info = new JSONObject();
+                    info.put("quotationId", oldRecordId);
+                    CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info,(FacilioContext) context);
                 } else {
+                    JSONObject info = new JSONObject();
                     info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
-                    CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.ADD, info, (FacilioContext) context);
+                    if (quotationId != null && quotationId > 0) {
+                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
+                    } else {
+                        info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
+                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.ADD, info, (FacilioContext) context);
+                    }
                 }
 
             }

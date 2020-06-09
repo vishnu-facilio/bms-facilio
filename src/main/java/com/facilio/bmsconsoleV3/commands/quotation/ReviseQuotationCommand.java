@@ -17,6 +17,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,10 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
                         RecordAPI.updateRecord(quotation, module, fields);
-                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, null,(FacilioContext) context);
+                        context.put(FacilioConstants.ContextNames.OLD_RECORD_ID, quotation.getId());
+                        JSONObject info = new JSONObject();
+                        info.put("quotationId", quotation.getId());
+                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info,(FacilioContext) context);
                         QuotationContext revisedContract = quotation.clone();
                         revisedQuoteList.add(revisedContract);
                     } else {

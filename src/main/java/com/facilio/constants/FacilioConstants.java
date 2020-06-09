@@ -1640,6 +1640,7 @@ public class FacilioConstants {
 		public static final String TAX_GROUPS = "taxgroup";
 		public static final String QUOTATION_ASSOCIATED_TERMS = "quotationterms";
 		public static final String OLD_TAX_ID = "oldTaxId";
+		public static final String OLD_RECORD_ID = "oldRecordId";
 		public static final String QUOTATION_NOTES = "quotationnotes";
 		public static final String QUOTATION_ATTACHMENTS = "quotationattachments";
 		public static final String QUOTATION_MAIL_ATTACHMENTS = "quotationMailAttachments";
