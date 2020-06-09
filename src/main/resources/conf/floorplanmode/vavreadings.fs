@@ -51,7 +51,7 @@ spaceIds = params.spaceId;
       if (val2 > -1 && val2 < 19) {
       styles["fill"] = "#0000ff"; // blue zone
     }
-    else if (val2 > 19 && val2 < 25) {
+    else if (val2 > 19 && val2 < 24.1) {
       styles["fill"] = "#48ba61"; // red zone
     }
     else if (val2 > 24) {
