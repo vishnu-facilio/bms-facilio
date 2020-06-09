@@ -132,7 +132,7 @@ public class ReadingsAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
 	
-	// values fieldNamesToUpdate should be available as prop, else will be set as null
+	// values should be available for all fields in fieldNamesToUpdate, else will be set as null
 	public static int updateReadingDataMetaList (List<ReadingDataMeta> rdms, List<String> fieldNamesToUpdate) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();

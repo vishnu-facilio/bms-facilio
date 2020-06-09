@@ -99,20 +99,25 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			Long unit = (Long) point.get(AgentConstants.UNIT);
 			boolean resourceAvailable = resourceId != null && resourceId > 0;
 			boolean fieldAvailable = fieldId != null && fieldId > 0;
-			boolean unitChanged = unit != null && unit > 0;
+			boolean unitAvailable = unit != null && unit > 0;
+			boolean unitChanged = unitAvailable;
 			
-			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitChanged) {
+			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitAvailable) {
 				
 				boolean  mappingChanged = true;
 				if (fieldAvailable && resourceAvailable) {
 					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
+						Integer dbUnit = (Integer) dbPoint.get(AgentConstants.UNIT);
 						if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
 							point.put(ContextNames.PREV_FIELD_ID, dbFieldId);
 							point.put(ContextNames.PREV_PARENT_ID, dbResourceId);
-							point.put("oldUnit", dbPoint.get(AgentConstants.UNIT))	;
+							point.put("oldUnit", dbUnit)	;
 						}
 						else {
 							mappingChanged = false;
+						}
+						if (dbUnit != null && dbUnit > 0 && unitAvailable && Long.valueOf(dbUnit).equals(unit)) {
+							unitChanged = false;
 						}
 					}
 					
@@ -126,27 +131,28 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						}
 					}
 					
-					if (mappingChanged) {
-						migrationPoints.add(point);
-						
+					if (mappingChanged || unitChanged) {
 						ReadingDataMeta meta = new ReadingDataMeta();
 						meta.setResourceId(resourceId);
 						meta.setFieldId(fieldId);
-						if (unitChanged) {
+						if (unitAvailable) {
 							meta.setUnit(unit.intValue());
 						}
 						meta.setInputType(ReadingInputType.CONTROLLER_MAPPED);
 						if (writable) {
 							meta.setReadingType(ReadingType.WRITE);
 						}
-						
 						rdmList.add(meta);
-						connectedAssetIds.add(resourceId);
+						
+						if (mappingChanged) {
+							migrationPoints.add(point);
+							connectedAssetIds.add(resourceId);
+						}
 					}
 					
 				}
 				
-				if(mappingChanged) {
+				if(mappingChanged || unitChanged) {
 					addPointtoBatchUpdateProp(point, batchUpdateList, publishTime);
 				}
 			}

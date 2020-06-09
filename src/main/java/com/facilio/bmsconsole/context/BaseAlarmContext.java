@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -117,6 +117,12 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setLastCreatedTime(long lastCreatedTime) {
 		this.lastCreatedTime = lastCreatedTime;
 	}
+	public String getLastCreatedTimeString() {
+		if(lastCreatedTime != -1) {
+			return DateTimeUtil.getFormattedTime(lastCreatedTime);
+		}
+		return null;
+	}
 
 	private long lastOccurredTime = -1;
 	public long getLastOccurredTime() {
@@ -125,6 +131,12 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setLastOccurredTime(long lastOccurredTime) {
 		this.lastOccurredTime = lastOccurredTime;
 	}
+	public String getLastOccurredTimeString() {
+		if(lastOccurredTime != -1) {
+			return DateTimeUtil.getFormattedTime(lastOccurredTime);
+		}
+		return null;
+	}
 	
 	private long lastClearedTime = -1;
 	public long getLastClearedTime() {
@@ -132,6 +144,12 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	}
 	public void setLastClearedTime(long lastClearedTime) {
 		this.lastClearedTime = lastClearedTime;
+	}
+	public String getLastClearedTimeString() {
+		if(lastClearedTime != -1) {
+			return DateTimeUtil.getFormattedTime(lastClearedTime);
+		}
+		return null;
 	}
 
 	private long lastWoId = -1;
