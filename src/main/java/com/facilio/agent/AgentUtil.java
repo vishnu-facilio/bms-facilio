@@ -221,6 +221,9 @@ public class AgentUtil {
 
                 if (jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
                     Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
+                    if (AccountUtil.getCurrentOrg().getOrgId() == 152 || AccountUtil.getCurrentOrg().getOrgId() == 343) {
+                        LOGGER.info("Current Data Interval"+ currDataInterval+ " , agent.getInterval() "+ agent.getInterval());
+                    }
                     if ((agent.getInterval() != null) && agent.getInterval() != currDataInterval.longValue()) {
                         toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                         agent.setInterval(currDataInterval);
@@ -284,6 +287,9 @@ public class AgentUtil {
                 if (!toUpdate.isEmpty()) {
                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                     context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, toUpdate);
+                    if (AccountUtil.getCurrentOrg().getOrgId() == 152 || AccountUtil.getCurrentOrg().getOrgId() == 343){
+                        LOGGER.info("toUpdate Fields : "+toUpdate.toString());
+                    }
                     if (updateAgentChain.execute(context)) {
                         return 1;
                     }

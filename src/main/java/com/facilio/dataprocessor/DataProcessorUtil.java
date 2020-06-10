@@ -236,7 +236,10 @@ public class DataProcessorUtil {
                         // updateDeviceTable(record.getPartitionKey());
                         break;
                     case agent:
-                        i = agentUtil.processAgent(payLoad, agentName);
+                        if (AccountUtil.getCurrentOrg().getOrgId() == 152 || AccountUtil.getCurrentOrg().getOrgId() == 343){
+                                LOGGER.info("Payload before processing : " + payLoad);
+                            }
+                            i = agentUtil.processAgent(payLoad, agentName);
                         processLog(payLoad, agent.getId());
                         break;
                     case devicepoints:
