@@ -48,11 +48,11 @@ spaceIds = params.spaceId;
     if (assetIds != null) {
       styles = {};
       styles.fill = "#b0b0b0";
-      if (val2 > -1 && val2 < 19) {
+      if (val2 > -1 && val2 < 22.1) {
       styles["fill"] = "#0000ff"; // blue zone
     }
-    else if (val2 > 19 && val2 < 24.1) {
-      styles["fill"] = "#48ba61"; // red zone
+    else if (val2 > 22.1 && val2 < 24.1) {
+      styles["fill"] = "#48ba61"; // green zone
     }
     else if (val2 > 24) {
       styles["fill"] = "#ff0000"; // red zone
