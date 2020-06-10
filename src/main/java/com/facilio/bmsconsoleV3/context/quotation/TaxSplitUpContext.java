@@ -1,6 +1,11 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
-public class TaxSplitUpContext {
+import com.facilio.modules.ModuleBaseWithCustomFields;
+
+public class TaxSplitUpContext extends ModuleBaseWithCustomFields {
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     public Double getTaxAmount() {
