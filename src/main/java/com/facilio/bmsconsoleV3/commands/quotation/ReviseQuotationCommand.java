@@ -40,7 +40,11 @@ public class ReviseQuotationCommand extends FacilioCommand {
 
                 List<QuotationContext> revisedQuoteList = new ArrayList<>();
                 for (QuotationContext quotation : list) {
-                    if (sentStatus.getId() == quotation.getModuleState().getId()) {
+                    if(quotation.getId() <= 0){
+                        throw new IllegalArgumentException("Parent record Id is needed for revising the quote");
+                    }
+                    QuotationContext exitingQuotation = (QuotationContext) RecordAPI.getRecord(moduleName,quotation.getId());
+                    if (sentStatus.getId() == exitingQuotation.getModuleState().getId()) {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
                         RecordAPI.updateRecord(quotation, module, fields);
@@ -48,8 +52,8 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         JSONObject info = new JSONObject();
                         info.put("quotationId", quotation.getId());
                         CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info,(FacilioContext) context);
-                        QuotationContext revisedContract = quotation.clone();
-                        revisedQuoteList.add(revisedContract);
+                        QuotationContext revisedQuotation = quotation.clone();
+                        revisedQuoteList.add(revisedQuotation);
                     } else {
                         throw new IllegalArgumentException("Only the quotations not in draft state can be revised");
                     }
