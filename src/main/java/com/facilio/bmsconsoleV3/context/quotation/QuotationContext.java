@@ -47,6 +47,16 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private Boolean isQuotationRevised;
     private Boolean revisionHistoryAvailable;
 
+    public List<TaxSplitUpContext> getTaxSplitUp() {
+        return taxSplitUp;
+    }
+
+    public void setTaxSplitUp(List<TaxSplitUpContext> taxSplitUp) {
+        this.taxSplitUp = taxSplitUp;
+    }
+
+    private List<TaxSplitUpContext> taxSplitUp;
+
     public WorkOrderContext getWorkorder() {
         return workorder;
     }

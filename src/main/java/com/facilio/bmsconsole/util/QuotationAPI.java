@@ -17,6 +17,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -282,6 +283,54 @@ public class QuotationAPI {
                 }
                 RecordAPI.addRecord(false, taxGroups, taxGroupsModule, taxGroupFields);
             }
+        }
+    }
+
+    public static void setTaxSplitUp(QuotationContext quotation) throws Exception {
+        Map<Long, TaxSplitUpContext> taxSplitUp = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
+            for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
+                if (lineItem.getTax() != null) {
+                    if (lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                        Double taxAmount = getTaxAmount(lineItem, lineItem.getTax().getRate());
+                        setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
+                    } else if (lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
+                        List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
+                        for (TaxGroupContext taxGroup : taxGroups) {
+                            if (taxGroup.getChildTax() != null) {
+                                Double taxAmount = getTaxAmount(lineItem, taxGroup.getChildTax().getRate());
+                                setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (MapUtils.isNotEmpty(taxSplitUp)) {
+            List<TaxSplitUpContext> taxSplitUps = new ArrayList<>(taxSplitUp.values());
+            if (CollectionUtils.isNotEmpty(taxSplitUps)) {
+                quotation.setTaxSplitUp(taxSplitUps);
+            }
+        }
+    }
+
+    private static Double getTaxAmount(QuotationLineItemsContext lineItem, Double rate) {
+        Double taxAmount = lineItem.getCost() * rate / 100;
+        taxAmount = Math.round(taxAmount * 100.0) / 100.0;
+        return taxAmount;
+    }
+
+    private static void setTaxAmountInMap(Map<Long, TaxSplitUpContext> taxSplitUp, TaxContext tax, Double taxAmount) {
+
+        if (taxSplitUp.containsKey(tax.getId())) {
+            TaxSplitUpContext prevContext = taxSplitUp.get(tax.getId());
+            Double prevAmount = prevContext.getTaxAmount();
+            taxAmount += prevAmount;
+            prevContext.setTaxAmount(taxAmount);
+            taxSplitUp.put(tax.getId(), prevContext);
+        } else {
+            TaxSplitUpContext newContext = new TaxSplitUpContext(tax, taxAmount);
+            taxSplitUp.put(tax.getId(), newContext);
         }
     }
 }

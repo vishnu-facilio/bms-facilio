@@ -1,8 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
@@ -15,6 +15,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
         QuotationContext quotation = (QuotationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.QUOTATION, id);
         QuotationAPI.setLineItems(quotation);
         QuotationAPI.setQuotationAssociatedTerms(quotation);
+        QuotationAPI.setTaxSplitUp(quotation);
 
         return false;
     }
