@@ -23,7 +23,7 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
         Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
         boolean skipChecking = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, false);
 
-        String moduleName = (String) context.get(Constants.MODULE_NAME);
+        String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3WorkOrderContext> wos = recordMap.get(moduleName);
         V3WorkOrderContext workOrder = wos.get(0);
