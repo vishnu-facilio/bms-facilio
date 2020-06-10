@@ -5,17 +5,28 @@ import com.facilio.modules.FacilioEnum;
 
 public enum FaultType implements FacilioEnum{
 	
-	CONTROL_FAULTS,
-	EQUIPMENT_FAULTS,
-	OPERATIONAL_FAULTS,
+	CONTROL_FAULTS("Control Faults"),
+	EQUIPMENT_FAULTS("Equipment Faults"),
+	OPERATIONAL_FAULTS("Operational Faults"),
 	;
-	public int getIndex() {
-		return ordinal() + 1;
-	}
+	
+	private String name;
+
+	FaultType() {
+    }
+	
+	FaultType(String name) {
+        this.name = name;
+    }
 
 	@Override
 	public String getValue() {
-		return name();
+		return name;
+	}
+	
+    @Override
+	public int getIndex() {
+		return ordinal() + 1;
 	}
 	
 	public static FaultType valueOf(int value) {
