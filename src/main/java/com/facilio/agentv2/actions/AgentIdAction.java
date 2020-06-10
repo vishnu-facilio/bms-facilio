@@ -1,11 +1,20 @@
 package com.facilio.agentv2.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
@@ -16,17 +25,6 @@ import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
@@ -68,8 +66,8 @@ public class AgentIdAction extends AgentActionV2 {
         	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
         	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
-            setResult(AgentConstants.DATA, devices);
-            ok();
+			setResult(AgentConstants.DATA, devices);
+        	 ok();
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting devices ", e);
             setResult(AgentConstants.RESULT, ERROR);
@@ -367,7 +365,9 @@ public class AgentIdAction extends AgentActionV2 {
     public String getIotMessages() {
         try {
             List<Map<String, Object>> result = new ArrayList<>();
-            result = IotMessageApiV2.listIotMessages(agentId, constructListContext(new FacilioContext()));
+            FacilioContext context = new FacilioContext();
+        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            result = IotMessageApiV2.listIotMessages(agentId, context);
             setResult(AgentConstants.DATA, result);
             ok();
         } catch (Exception e) {
@@ -460,7 +460,9 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getMetrics() {
         try {
-            List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),constructListContext(new FacilioContext()));
+        	FacilioContext context = new FacilioContext();
+        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),context);
             ok();
             setResult(AgentConstants.DATA, metrics);
         } catch (Exception e) {
