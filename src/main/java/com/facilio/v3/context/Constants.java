@@ -23,7 +23,7 @@ public class Constants {
     public static final String STATE_FLOWS = "stateFlows";
     public static final String SUPPLEMENT_MAP = "supplementMap";
 
-    private static final String MODULE_NAME = "moduleName";
+    public static final String MODULE_NAME = "moduleName";
     public static String getModuleName(Context context) {
         return (String) context.get(MODULE_NAME);
     }
