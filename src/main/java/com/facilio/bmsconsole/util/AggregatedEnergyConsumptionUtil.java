@@ -305,27 +305,6 @@ public class AggregatedEnergyConsumptionUtil {
 		}
 	}
 	
-	public static void addMFMigField() throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule energyMeterModule = modBean.getModule("energymeter");
-				
-		//add alter table for MULTIPLICATION_FACTOR
-		FacilioField multiplicationFactor = new FacilioField();
-		multiplicationFactor.setName("multiplicationFactor");
-		multiplicationFactor.setColumnName("MULTIPLICATION_FACTOR");
-		multiplicationFactor.setDisplayName("Multiplication Factor");
-		multiplicationFactor.setOrgId(AccountUtil.getCurrentOrg().getId());
-		multiplicationFactor.setDisplayType(FacilioField.FieldDisplayType.NUMBER.getIntValForDB());
-		multiplicationFactor.setDataType(FieldType.NUMBER.getTypeAsInt());
-		multiplicationFactor.setDataType(FieldType.NUMBER);
-		multiplicationFactor.setDefault(true);
-		multiplicationFactor.setDisabled(false);
-		multiplicationFactor.setRequired(false);
-		multiplicationFactor.setModule(energyMeterModule);
-		modBean.addField(multiplicationFactor);
-	}
-	
 	public static void addAggregatedEnergyConsumptionMigFields() throws Exception {
 		
 		if(AssetsAPI.getCategory("Energy Meter") != null && AssetsAPI.getCategory("Energy Meter").getId() != -1) {
@@ -563,35 +542,4 @@ public class AggregatedEnergyConsumptionUtil {
 		}
 		return selectBuilder.get();
 	}
-	
-	public static void addFaultTypeField() throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule readingAlarmModule = modBean.getModule("newreadingalarm");
-		FacilioModule readingAlarmOccurrenceModule = modBean.getModule("readingalarmoccurrence");
-		FacilioModule readingEventModule = modBean.getModule("readingevent");
-				
-		SystemEnumField faultType = new SystemEnumField();
-		faultType.setName("faultType");
-		faultType.setColumnName("FAULT_TYPE");
-		faultType.setDisplayName("Fault Type");
-		faultType.setOrgId(AccountUtil.getCurrentOrg().getId());
-		faultType.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX.getIntValForDB());
-		faultType.setDataType(FieldType.SYSTEM_ENUM.getTypeAsInt());
-		faultType.setDataType(FieldType.SYSTEM_ENUM);
-		faultType.setDefault(true);
-		faultType.setDisabled(false);
-		faultType.setRequired(false);
-		faultType.setEnumName("FaultType");
-		
-		faultType.setModule(readingAlarmModule);
-		modBean.addField(faultType);
-		
-		faultType.setModule(readingAlarmOccurrenceModule);
-		modBean.addField(faultType);
-		
-		faultType.setModule(readingEventModule);
-		modBean.addField(faultType);	
-	}
-
 }
