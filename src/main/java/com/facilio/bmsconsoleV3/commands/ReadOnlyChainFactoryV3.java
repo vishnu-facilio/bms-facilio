@@ -1,13 +1,12 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import com.facilio.bmsconsole.commands.GetInventoryDetailsCommand;
-import com.facilio.bmsconsole.commands.LookupPrimaryFieldHandlingCommand;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactoryV3 {
@@ -32,6 +31,20 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadTenantLookUpsCommandV3());
         c.addCommand(new SetTenantSpaceAndContactsCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getWorkorderAfterFetchOnSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadWorkorderLookupsAfterFetchcommandV3());
+        c.addCommand(new LoadWorkorderRelatedModulesCommandV3());
+        c.addCommand(new GetworkorderHazardsCommandV3());
+        //c.addCommand(new GetAvailableStateCommand());
+        //c.addCommand(new GetTaskInputDataCommand());
+        //c.addCommand(new FetchApprovalRulesCommand());
+        c.addCommand(new FetchSourceTypeDetailsForWorkorderCommandV3());
+        c.addCommand(new FetchStateflowAndSlaCommandV3());
+
         return c;
     }
 

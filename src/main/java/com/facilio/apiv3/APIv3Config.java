@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
@@ -216,6 +218,23 @@ public class APIv3Config {
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnListChain())
                 .summary()
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
+                .build();
+    }
+
+    @Module("workorder")
+    public static Supplier<V3Config> getWorkorder() {
+        return () -> new V3Config(V3WorkOrderContext.class)
+                .create()
+                  .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeSaveChain())
+                  .afterSave(TransactionChainFactoryV3.getWorkorderAfterSaveChain())
+                .update()
+                  .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeUpdateChain())
+                  .afterSave(TransactionChainFactoryV3.getWorkorderAfterUpdateChain(true))
+                .list()
+                  .afterFetch(new LoadWorkorderLookupsAfterFetchcommandV3())
+                  .showStateFlowList()
+                .summary()
+                  .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .build();
     }
 

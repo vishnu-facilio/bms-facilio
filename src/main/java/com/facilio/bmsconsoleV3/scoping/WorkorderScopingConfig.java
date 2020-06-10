@@ -8,7 +8,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class WorkorderScopingConfig extends ModuleScopingConfiguration {
     @Override
@@ -25,6 +27,7 @@ public class WorkorderScopingConfig extends ModuleScopingConfiguration {
             scoping.setOperatorId(36);
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
+
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         }
         catch(Exception e){

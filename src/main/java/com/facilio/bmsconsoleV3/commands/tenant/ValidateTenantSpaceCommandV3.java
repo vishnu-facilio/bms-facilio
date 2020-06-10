@@ -34,6 +34,7 @@ public class ValidateTenantSpaceCommandV3 extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(tenants)) {
             for(V3TenantContext tenant : tenants) {
+                context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
                 if(CollectionUtils.isNotEmpty(tenant.getSpaces())) {
                     List<EventType> eventTypes = CommonCommandUtil.getEventTypes(context);
                     if (eventTypes != null && eventTypes.contains(EventType.EDIT)) {
