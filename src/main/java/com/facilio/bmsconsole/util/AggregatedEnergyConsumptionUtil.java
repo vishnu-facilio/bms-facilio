@@ -49,6 +49,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
@@ -561,6 +562,36 @@ public class AggregatedEnergyConsumptionUtil {
 			selectBuilder.andCriteria(subCriteria);		
 		}
 		return selectBuilder.get();
+	}
+	
+	public static void addFaultTypeField() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule readingAlarmModule = modBean.getModule("newreadingalarm");
+		FacilioModule readingAlarmOccurrenceModule = modBean.getModule("readingalarmoccurrence");
+		FacilioModule readingEventModule = modBean.getModule("readingevent");
+				
+		SystemEnumField faultType = new SystemEnumField();
+		faultType.setName("faultType");
+		faultType.setColumnName("FAULT_TYPE");
+		faultType.setDisplayName("Fault Type");
+		faultType.setOrgId(AccountUtil.getCurrentOrg().getId());
+		faultType.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX.getIntValForDB());
+		faultType.setDataType(FieldType.SYSTEM_ENUM.getTypeAsInt());
+		faultType.setDataType(FieldType.SYSTEM_ENUM);
+		faultType.setDefault(true);
+		faultType.setDisabled(false);
+		faultType.setRequired(false);
+		faultType.setEnumName("FaultType");
+		
+		faultType.setModule(readingAlarmModule);
+		modBean.addField(faultType);
+		
+		faultType.setModule(readingAlarmOccurrenceModule);
+		modBean.addField(faultType);
+		
+		faultType.setModule(readingEventModule);
+		modBean.addField(faultType);	
 	}
 
 }

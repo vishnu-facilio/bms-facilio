@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.util.*;
 import com.google.gson.JsonObject;
 import org.apache.commons.chain.Context;
@@ -248,7 +249,22 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public void setThresholdType(ThresholdType thresholdType) {
 		this.thresholdType = thresholdType;
 	}
-	
+	private FaultType faultType;	
+	public int getFaultType() {
+		if (faultType != null) {
+			return faultType.getIndex();
+		}
+		return -1;
+	}
+	public FaultType getFaultTypeEnum() {
+		return faultType;
+	}
+	public void setFaultType(FaultType faultType) {
+		this.faultType = faultType;
+	}
+	public void setFaultType(int faultType) {
+		this.faultType = FaultType.valueOf(faultType);
+	}
 	private Boolean clearAlarm;
 	public Boolean getClearAlarm() {
 		return clearAlarm;
@@ -991,6 +1007,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			ReadingEventContext readingEvent = (ReadingEventContext)event;
 			readingEvent.setReadingFieldId(this.getReadingFieldId());
 			
+			if(this.getFaultTypeEnum() != null) {
+				readingEvent.setFaultType(this.getFaultTypeEnum());
+			}
+			
 			ReadingRuleContext rule = new ReadingRuleContext();
 			rule.setId(this.getRuleGroupId());
 			readingEvent.setRule(rule);
@@ -1108,6 +1128,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		event.setAutoClear(true);
 		event.setSiteId(resource.getSiteId());
 		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		if(this.getFaultTypeEnum() != null) {
+			event.setFaultType(this.getFaultTypeEnum());
+		}
 		return event;
 	}
 

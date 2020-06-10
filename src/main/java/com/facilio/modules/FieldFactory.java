@@ -1831,6 +1831,7 @@ public class FieldFactory {
         fields.add(getField("upperBound", "UPPER_BOUND", module, FieldType.DECIMAL));
         fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
         fields.add(getField("alarmCategoryId", "ALARM_CATEGORY_ID", module, FieldType.LOOKUP));
+        fields.add(getField("faultType", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM));
         return fields;
     }
 

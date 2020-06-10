@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
 public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
@@ -40,6 +41,23 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         this.readingFieldId = readingFieldId;
     }
 
+    private FaultType faultType;	
+	public int getFaultType() {
+		if (faultType != null) {
+			return faultType.getIndex();
+		}
+		return -1;
+	}
+	public FaultType getFaultTypeEnum() {
+		return faultType;
+	}
+	public void setFaultType(FaultType faultType) {
+		this.faultType = faultType;
+	}
+	public void setFaultType(int faultType) {
+		this.faultType = FaultType.valueOf(faultType);
+	}
+	
     @Override
     public Type getTypeEnum() {
         return Type.READING;

@@ -1,5 +1,6 @@
 <%@page import="com.facilio.accounts.dto.Organization"%>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
+<%@ page import="com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
 <%@ page import="org.apache.commons.chain.Context" %>
@@ -32,8 +33,14 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
 
-
-            LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
+            LOGGER.info("Started FaultType For -- "+AccountUtil.getCurrentOrg().getId());
+        	try{
+                AggregatedEnergyConsumptionUtil.addFaultTypeField();
+        	}
+        	catch(Exception e){
+                LOGGER.info("Error Occurred in adding FaultType For -- "+AccountUtil.getCurrentOrg().getId());	
+        	}
+            LOGGER.info("Completed FaultType For -- "+AccountUtil.getCurrentOrg().getId());
             response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             return false;
         }

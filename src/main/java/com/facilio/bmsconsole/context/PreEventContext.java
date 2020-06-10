@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.commands.SaveAlarmAndEventsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -377,6 +379,8 @@ public class PreEventContext extends BaseEventContext {
             }
 //            readingEvent.setAdditiona(preEvent.getAdditionalInfoJsonStr());
             readingEvent.setSubRule(preEvent.getSubRule());
+            getFaultTypeFromReadingRule(readingEvent,preEvent);
+            
             return  readingEvent;
 
     }
@@ -393,6 +397,27 @@ public class PreEventContext extends BaseEventContext {
         event.setAutoClear(true);
         event.setSiteId(preEventContext.getSiteId());
         event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+        getFaultTypeFromReadingRule(event,preEventContext);
+        
         return event;
+    }
+    
+    private void getFaultTypeFromReadingRule(ReadingEventContext readingEvent, PreEventContext preEvent) throws Exception {
+    	 if(preEvent.getSubRule() != null) {
+        	 if(preEvent.getSubRule().getFaultTypeEnum() == null) {
+        		 if(preEvent.getSubRule().getId() != -1) {
+            		 WorkflowRuleContext preEventRule = WorkflowRuleAPI.getWorkflowRule(preEvent.getSubRule().getId(),false,true);
+            		 if(preEventRule != null && preEventRule instanceof ReadingRuleContext) {
+            			ReadingRuleContext preEventReadingRule = (ReadingRuleContext) preEventRule;
+            			if(preEventReadingRule != null && preEventReadingRule.getFaultTypeEnum() != null) {
+                         	readingEvent.setFaultType(preEventReadingRule.getFaultTypeEnum());
+            			}
+            		 }
+        		 }
+        	 }
+        	 else {
+             	readingEvent.setFaultType(preEvent.getSubRule().getFaultTypeEnum()); 
+        	 }
+        }
     }
 }

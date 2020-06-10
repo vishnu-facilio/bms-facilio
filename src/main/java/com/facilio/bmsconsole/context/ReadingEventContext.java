@@ -4,6 +4,7 @@ import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,7 +35,10 @@ public class ReadingEventContext extends BaseEventContext {
 			}
 		}
 		readingAlarm.setReadingAlarmCategory(readingAlarmCategory);
-
+		
+		if(this.getFaultTypeEnum() != null) {
+			readingAlarm.setFaultType(this.getFaultTypeEnum());
+		}
 		readingAlarm.setRule(rule);
 		readingAlarm.setSubRule(subRule);
 		if (readingFieldId != -1) {
@@ -57,6 +61,9 @@ public class ReadingEventContext extends BaseEventContext {
 		}
 		readingOccurrence.setReadingAlarmCategory(readingAlarmCategory);
 
+		if(this.getFaultTypeEnum() != null) {
+			readingOccurrence.setFaultType(this.getFaultTypeEnum());
+		}
 		readingOccurrence.setRule(rule);
 		readingOccurrence.setSubRule(subRule);
 		if (readingFieldId != -1) {
@@ -95,6 +102,23 @@ public class ReadingEventContext extends BaseEventContext {
 	}
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
+	}
+	
+	private FaultType faultType;	
+	public int getFaultType() {
+		if (faultType != null) {
+			return faultType.getIndex();
+		}
+		return -1;
+	}
+	public FaultType getFaultTypeEnum() {
+		return faultType;
+	}
+	public void setFaultType(FaultType faultType) {
+		this.faultType = faultType;
+	}
+	public void setFaultType(int faultType) {
+		this.faultType = FaultType.valueOf(faultType);
 	}
 
 	@Override
