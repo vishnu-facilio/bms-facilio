@@ -81,3 +81,6 @@ enums:
 
   - name: CustomerType
     enumClassName: com.facilio.bmsconsoleV3.context.quotation.QuotationContext$CustomerType
+
+  - name : FaultType
+    enumClassName: com.facilio.bmsconsole.enums.FaultType
