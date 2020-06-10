@@ -251,6 +251,14 @@ public class AssetPageFactory extends PageFactory {
 		
 		addHistoryWidget(tab9Sec1);
 		
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.BIM) && asset.getData().get("thirdpartyid") != null && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+			Tab tab10 = page.new Tab("youBim View");
+			page.addTab(tab10);
+			Section tab10Sec1 = page.new Section();
+			tab10.addSection(tab10Sec1);
+			addYouBimViewWidget(tab10Sec1);
+		}
+		
 		return page;
 	}
 	
@@ -329,6 +337,12 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget readingsWidget = new PageWidget(WidgetType.LIST, "readings");
 		readingsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(readingsWidget);
+	}
+	
+	private static void addYouBimViewWidget(Section section) {
+		PageWidget youBimViewWidget = new PageWidget(WidgetType.LIST, "youBimView");
+		youBimViewWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(youBimViewWidget);
 	}
 	
 	private static void addAssetMovementsWidget(Section section) {

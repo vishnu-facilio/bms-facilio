@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -249,36 +251,53 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 	return "";
 }
 	public String getYouBimViewDetails() throws Exception {
-		thirdParty = ThirdParty.YOUBIM;
-		
-		HashMap<String,String> thirdPartyDetailsMap = BimAPI.getThirdPartyDetailsMap(thirdParty);
-		setUserName(thirdPartyDetailsMap.get("userName"));
-		setPassword(thirdPartyDetailsMap.get("password"));
-		String token = getAccessToken(thirdParty,thirdPartyDetailsMap);
-		String assetDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("assetdataURL")+bimAssetId+"&limit=50",token);
-		
-//		String typeDataJsonString= getResponse(thirdParty,thirdPartyDetailsMap.get("typedataURL")+bimTypeId+"?ContainTypeattributes=all",token);
-		String workordersString= getResponse(thirdParty,thirdPartyDetailsMap.get("workordersURL")+bimAssetId,token);
-		String documentsString= getResponse(thirdParty,thirdPartyDetailsMap.get("documentsURL")+bimAssetId,token);
+		List<CustomModuleData> assetDatas = getCustomModuleData("assetData", String.valueOf(bimAssetId));
+		List<CustomModuleData> typeDatas = getCustomModuleData("typeData", String.valueOf(bimAssetId));
+		List<CustomModuleData> workorderDatas = getCustomModuleData("workorderData", String.valueOf(bimAssetId));
+		List<CustomModuleData> documentDatas = getCustomModuleData("documentData", String.valueOf(bimAssetId));
 		
 		JSONParser parser = new JSONParser();
-		JSONObject resultObj = (JSONObject) parser.parse(assetDataJsonString);
-		
-		
-		String assetData  = ((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString();
-		
-		JSONArray arr = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
-		List<JSONObject> fields = new ArrayList<JSONObject>();
-		for(int i=0;i<arr.length();i++){
-
-			JSONObject result = (JSONObject) parser.parse(arr.get(i).toString());
-			JSONObject result1 =  new JSONObject();
-			result1.put("name", result.get("name").toString());
-			result1.put("value", result.get("value").toString());
-			fields.add(result1);
+        
+		Map<String,String> assetDataMap = new HashMap<String,String>();
+		for(CustomModuleData data:assetDatas){
+			JSONObject json = (JSONObject) parser.parse(data.getDatum("value").toString());
+			Set<Map.Entry<String,String>> set= json.entrySet();
+			for(Map.Entry<String,String>  en: set){
+				assetDataMap.put(en.getKey(),en.getValue());
+			}
 		}
+		setResult("assetData", assetDataMap);
+		System.out.println("assetDataArr :: "+assetDataMap);
 		
-		setResult("fields",fields);
+		Map<String,String> typeDataMap = new HashMap<String,String>();
+		for(CustomModuleData data:typeDatas){
+			JSONObject json = (JSONObject) parser.parse(data.getDatum("value").toString());
+			for(Map.Entry<String,String>  en: (Set<Map.Entry<String,String>>)json.entrySet()){
+				typeDataMap.put(en.getKey(),en.getValue());
+			}
+		}
+		setResult("typeData", typeDataMap);
+		
+		List<JSONObject> woDataList = new LinkedList<>();
+		for(CustomModuleData data:workorderDatas){
+			JSONArray json = new JSONArray(data.getDatum("value").toString());
+			for(int i=0;i<json.length();i++){
+				JSONObject json1 = (JSONObject) parser.parse(json.get(i).toString());
+				woDataList.add(json1);
+			}
+		}
+		setResult("workorderData", woDataList);
+		
+		List<JSONObject> documentDataList = new LinkedList<>();
+		for(CustomModuleData data:documentDatas){
+			JSONArray json = new JSONArray(data.getDatum("value").toString());
+			for(int i=0;i<json.length();i++){
+				JSONObject json1 = (JSONObject) parser.parse(json.get(i).toString());
+				documentDataList.add(json1);
+			}
+		}
+		setResult("documentData", documentDataList);
+		
 		return SUCCESS;
 	}
 	public String bimJsonImport() throws Exception {
@@ -555,22 +574,20 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 						
 						resultObj = (JSONObject) parser.parse(assetDataJsonString);
 						JSONArray arr3  = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
-						Map<String,String> assetDatas = new HashMap<String,String>();
+						Map<String,String> assetDatas = new LinkedHashMap<String,String>();
 						int assetDatalength = arr3.length();
 						int l=1;
 						for(int o=0;o<assetDatalength;o+=25){
-							JSONArray arr4 = new JSONArray();
+							JSONObject arr4 = new JSONObject();
 							for(int m=o;m<o+25;m++){
 								if(m<assetDatalength){
 									JSONObject result3 = (JSONObject) parser.parse(arr3.get(m).toString());
-									JSONObject json = new JSONObject();
-									json.put(result3.get("name").toString(), result3.get("value").toString());
+									arr4.put(result3.get("name").toString(), result3.get("value").toString());
 									if(result3.get("name").toString().equals("Serial number")){
 										serialNumber = result3.get("value").toString();
 									}else if(result3.get("name").toString().equals("Tag Number")){
 										tag = result3.get("value").toString();
 									}
-									arr4.put(json);
 								}
 							}
 							assetDatas.put("assetData_"+l, arr4.toString());
@@ -579,71 +596,52 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 
 						resultObj = (JSONObject) parser.parse(typeDataJsonString);
 						JSONObject result4 = (JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString());
-						JSONArray arr5 = new JSONArray();
+						JSONObject arr5 = new JSONObject();
 
-						JSONObject json = new JSONObject();
-						json.put("Type", result4.get("name").toString());
-						arr5.put(json);
-						json = new JSONObject();
-						json.put("Description", result4.get("description").toString());
-						arr5.put(json);
-						json = new JSONObject();
-						json.put("AssetType", result4.get("assettype").toString());
-						arr5.put(json);
+						arr5.put("Type", result4.get("name").toString());
+						arr5.put("Description", result4.get("description").toString());
+						arr5.put("AssetType", result4.get("assettype").toString());
 						
-						json = new JSONObject();
 						if(result4.get("manufacturer_id") != null){
 							JSONObject manufacturerJson = (JSONObject)parser.parse(result4.get("manufacturer").toString());
 							manufacturer =  manufacturerJson.get("email").toString();
 						}
-						json.put("Manufacturer", manufacturer);
-						arr5.put(json);
+						arr5.put("Manufacturer", manufacturer);
 						
-						json = new JSONObject();
 						model = result4.get("modelnumber").toString();
-						json.put("ModelNumber", model);
-						arr5.put(json);
+						arr5.put("ModelNumber", model);
 						
-						json = new JSONObject();
+						String warrantyDurationUnit = "";
 						if(result4.get("warrantydurationunit_id")!=null){
-							json.put("WarrantyDurationUnit", result4.get("warrantydurationunit_id").toString());
-						}else{
-							json.put("WarrantyDurationUnit", "");
+							warrantyDurationUnit = result4.get("warrantydurationunit_id").toString();
 						}
+						arr5.put("WarrantyDurationUnit", warrantyDurationUnit);
 						
-						arr5.put(json);
-						json = new JSONObject();
-						
+						String warrantyGuarantorParts = "";
 						if(result4.get("warrantyguarantorparts_id") != null){
 							JSONObject guarantorparts = (JSONObject)parser.parse(result4.get("guarantorparts").toString());
-							json.put("WarrantyGuarantorParts", guarantorparts.get("email").toString());
-						}else{
-							json.put("WarrantyGuarantorParts", "");
+							warrantyGuarantorParts =guarantorparts.get("email").toString();
 						}
-						arr5.put(json);
+						arr5.put("WarrantyGuarantorParts", warrantyGuarantorParts);
 						
-						json = new JSONObject();
-						json.put("WarrantyDurationParts", result4.get("warrantydurationparts").toString());
-						arr5.put(json);
-						json = new JSONObject();
+						arr5.put("WarrantyDurationParts", result4.get("warrantydurationparts").toString());
 						
+						String WarrantyGuarantorLabor = "";
 						if(result4.get("warrantyguarantorlabor_id") != null){
 							JSONObject guarantorlabor = (JSONObject)parser.parse(result4.get("guarantorlabor").toString());
-							json.put("WarrantyGuarantorLabor", guarantorlabor.get("email").toString());
-						}else{
-							json.put("WarrantyGuarantorLabor", "");
+							WarrantyGuarantorLabor = guarantorlabor.get("email").toString();
 						}
-						arr5.put(json);
-						json = new JSONObject();
-						json.put("WarrantyDurationLabor", result4.get("warrantydurationlabor").toString());
-						arr5.put(json);
+						arr5.put("WarrantyGuarantorLabor", WarrantyGuarantorLabor);
+						
+						arr5.put("WarrantyDurationLabor", result4.get("warrantydurationlabor").toString());
+						
 						
 						String typeData = arr5.toString();
 						
 						resultObj = (JSONObject) parser.parse(workordersString);
 						JSONArray workorderDataJson  = new JSONArray(((JSONObject) parser.parse(((JSONObject) parser.parse(resultObj.get("response").toString())).get("data").toString())).get("records").toString());
 						
-						Map<String,String> woDatas = new HashMap<String,String>();
+						Map<String,String> woDatas = new LinkedHashMap<String,String>();
 						int woLength = workorderDataJson.length();
 						int p = 1;
 						for(int o=0;o<woLength;o+=5){
@@ -772,6 +770,21 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 				}
 			}
 		}
+	}
+	
+	public List<CustomModuleData> getCustomModuleData(String bimValueType,String thirdPartyId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule bimViewModule = modBean.getModule("custom_bimview");
+		List<FacilioField> bimViewFields = modBean.getAllFields("custom_bimview");
+		Map<String,FacilioField> bimViewFieldsMap = FieldFactory.getAsMap(bimViewFields);
+		
+		SelectRecordsBuilder<CustomModuleData> builder = new SelectRecordsBuilder<CustomModuleData>()
+				.select(bimViewFields).module(bimViewModule)
+				.beanClass(CustomModuleData.class)
+				.andCondition(CriteriaAPI.getCondition(bimViewFieldsMap.get("thirdpartyid"), thirdPartyId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(bimViewFieldsMap.get("valuetype"), bimValueType, StringOperators.CONTAINS))
+				.orderBy("ID");
+		return builder.get();
 	}
 	
 	public void addOrupdateModuleData(CustomModuleData bimView,String thirdPartyId) throws Exception {
