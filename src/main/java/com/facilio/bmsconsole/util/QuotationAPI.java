@@ -329,7 +329,9 @@ public class QuotationAPI {
             prevContext.setTaxAmount(taxAmount);
             taxSplitUp.put(tax.getId(), prevContext);
         } else {
-            TaxSplitUpContext newContext = new TaxSplitUpContext(tax, taxAmount);
+            TaxSplitUpContext newContext = new TaxSplitUpContext();
+            newContext.setTaxAmount(taxAmount);
+            newContext.setTax(tax);
             taxSplitUp.put(tax.getId(), newContext);
         }
     }

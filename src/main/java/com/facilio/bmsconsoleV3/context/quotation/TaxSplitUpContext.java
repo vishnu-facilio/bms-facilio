@@ -3,11 +3,6 @@ package com.facilio.bmsconsoleV3.context.quotation;
 public class TaxSplitUpContext {
     private static final long serialVersionUID = 1L;
 
-    public TaxSplitUpContext(TaxContext tax, Double taxAmount) {
-        this.tax = tax;
-        this.taxAmount = taxAmount;
-    }
-
     public Double getTaxAmount() {
         return taxAmount;
     }
