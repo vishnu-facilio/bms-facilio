@@ -95,6 +95,12 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private long createdTime = -1;
+	public String getLastOccurredTimeString(){
+		if(lastOccurredTime != -1) {
+			return DateTimeUtil.getZonedDateTime(lastOccurredTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
+		}
+		return null;
+	}
 	public String getCreatedTimeString() {
 		if(createdTime != -1) {
 			return DateTimeUtil.getZonedDateTime(createdTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
