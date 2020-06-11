@@ -81,7 +81,11 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		if (reading.getReadings() != null && !reading.getReadings().isEmpty()) {
 			for (FormulaFieldContext formula : formulas) {
-				if (formula.getMatchedResourcesIds().contains(reading.getParentId()) && containsDependentField(formula, reading, fieldMap)) {
+				boolean isCurrentResourceAssociatedFormula = formula.getMatchedResourcesIds().contains(reading.getParentId());
+				if(AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
+					isCurrentResourceAssociatedFormula = true;
+				}
+				if (isCurrentResourceAssociatedFormula && containsDependentField(formula, reading, fieldMap)) {
 					String completedKey = null;
 					if (reading.isNewReading()) {
 						completedKey = formula.getId()+"|"+reading.getParentId();
@@ -112,6 +116,9 @@ public class CalculatePostFormulaCommand extends FacilioCommand {
 						
 						FacilioTimer.scheduleInstantJob("PostFormulaCalculationJob", context);
 						LOGGER.debug("Adding instant job for Post formula calculation for  : "+completedKey);
+						if(AccountUtil.getCurrentOrg().getOrgId() == 343l && (formula.getId() == 1271l || formula.getId() == 1272l || formula.getId() == 1273l)) {
+							LOGGER.info("Adding instant job for Post formula calculation for  : "+completedKey);
+						}
 						
 						completedFormulas.add(completedKey);
 					}
