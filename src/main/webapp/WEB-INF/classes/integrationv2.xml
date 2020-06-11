@@ -37,7 +37,7 @@
 		
 	</package>
 	
-	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="attachmentPreviewApi">
+	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="v2Api">
 		<action name="create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf"></action>
 	</package>
 
