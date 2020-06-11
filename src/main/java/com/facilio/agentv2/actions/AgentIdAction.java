@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -85,8 +86,8 @@ public class AgentIdAction extends AgentActionV2 {
             context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
             List<Map<String, Object>> devices = FieldDeviceApi.getDevices( context);
             long count = 0;
-            if (!devices.isEmpty()) {
-                count = devices.size();
+            if (CollectionUtils.isNotEmpty(devices)) {
+                count =(long) devices.get(0).get(AgentConstants.ID);
             }
             
             setResult(AgentConstants.DATA, count);

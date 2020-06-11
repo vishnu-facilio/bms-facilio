@@ -21,6 +21,7 @@ import com.facilio.modules.BmsAggregateOperators.StringAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -167,13 +168,18 @@ public class FieldDeviceApi {
         Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
         String searchKey = (String) context.get(AgentConstants.SEARCH_KEY);
         List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
+        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(fieldDeviceModule.getTableName())
                 .select(FieldFactory.getFieldDeviceFields());
         Criteria criteria = new Criteria();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+        builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
+        
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
         }
@@ -186,29 +192,25 @@ public class FieldDeviceApi {
         if(StringUtils.isNotEmpty(searchKey)) {
         	builder.andCustomWhere("NAME = ? OR NAME LIKE ?",searchKey,searchKey + "%");
         }
-        builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
-        if (containsCheck(FacilioConstants.ContextNames.PAGINATION,context)) {
-            JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-            boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
-            if (pagination != null && !fetchCount) {
-                int page = (int) pagination.get("page");
-                int perPage = (int) pagination.get("perPage");
+            
+		if (pagination != null && !pagination.isEmpty()) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
 
-                int offset = ((page - 1) * perPage);
-                if (offset < 0) {
-                    offset = 0;
-                }
-                builder.offset(offset);
-                builder.limit(perPage);
-            } else if (fetchCount) {
-                builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(fieldDeviceModule));
-                builder.select(new ArrayList<>());
-            }
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			builder.offset(offset);
+			builder.limit(perPage);
+		} else {
+			LOGGER.info("no pagination");
+			builder.limit(50);
+		}
+        if (fetchCount) {
+            builder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(fieldDeviceModule));
         }
-        else {
-            LOGGER.info("no pagination");
-            builder.limit(50);
-        }
+
         List<Map<String, Object>> rows = builder.andCriteria(criteria).get();
         if(FacilioProperties.isDevelopment()){
             LOGGER.info(" query "+builder.toString());
