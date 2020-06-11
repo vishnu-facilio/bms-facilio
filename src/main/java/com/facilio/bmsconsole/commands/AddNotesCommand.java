@@ -134,32 +134,4 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 		return false;
 	}
 	
-	private void sendEmail(String moduleName, String ticketModule, NoteContext note) throws Exception {
-		if (note.getNotifyRequester()) {
-			TicketContext ticket = TicketAPI.getParentTicket(note.getParentId(), ticketModule);
-			
-			User requester = null;
-			if (ticket instanceof WorkOrderContext) {
-				requester = ((WorkOrderContext) ticket).getRequester();
-			}
-			else if (ticket instanceof WorkOrderRequestContext) {
-				requester = ((WorkOrderRequestContext) ticket).getRequester();
-			}
-			if (requester == null) {
-				return ;
-			}
-			
-			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-			requester = userBean.getUser(requester.getId(), false);
-			
-			if (requester != null && requester.getEmail() != null) { //This has to be changed to support any notification
-				JSONObject mailJson = new JSONObject();
-				mailJson.put("sender", "support@facilio.com");
-				mailJson.put("to", requester.getEmail());
-				mailJson.put("subject", AccountUtil.getCurrentUser().getName() + " commented on your request");
-				mailJson.put("message", note.getBody());
-				FacilioFactory.getEmailClient().sendEmail(mailJson);
-			}
-		}
-	}
 }

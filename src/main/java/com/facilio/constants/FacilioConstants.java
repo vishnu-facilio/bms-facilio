@@ -596,6 +596,7 @@ public class FacilioConstants {
 		public static final String NOTE_LIST = "notes";
 		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
+		public static final String NOTIFY_REQUESTER = "notifyRequester";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";

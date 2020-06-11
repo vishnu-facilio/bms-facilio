@@ -25,12 +25,13 @@ public class ConstructTicketNotesCommand extends FacilioCommand {
 			}
 			
 			if (recordIds != null && !recordIds.isEmpty()) {
+				boolean notifyRequester = (boolean) context.getOrDefault(FacilioConstants.ContextNames.NOTIFY_REQUESTER, false);
 				List<NoteContext> notes = new ArrayList<>();
 				for (Long recordId : recordIds) {
 					NoteContext note = new NoteContext();
 					note.setBody(comment);
 					note.setParentId(recordId);
-					
+					note.setNotifyRequester(notifyRequester);
 					notes.add(note);
 				}
 				

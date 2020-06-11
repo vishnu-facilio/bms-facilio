@@ -56,19 +56,23 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 				}
 				else if (inputType.equals("formula")) {
 					readingInputTypes.add(ReadingInputType.FORMULA_FIELD);
-				}
-				else if (inputType.equals("nonformula") || inputType.equals("available")) {
-					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD)
-							.collect(Collectors.toList());
-					if (inputType.equals("available")) {
-						unused = true;
-						excludeEmptyFields = false;
-					}
+					excludeEmptyFields = true;
 				}
 				else if (inputType.equals("logged")) {
-					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.CONTROLLER_MAPPED && type != ReadingInputType.FORMULA_FIELD)
+					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.CONTROLLER_MAPPED 
+							&& type != ReadingInputType.FORMULA_FIELD && type != ReadingInputType.HIDDEN_FORMULA_FIELD)
 							.collect(Collectors.toList());
 					excludeEmptyFields = true;
+				}
+				else if (inputType.equals("available")) {
+					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.HIDDEN_FORMULA_FIELD)
+							.collect(Collectors.toList());
+					unused = true;
+					excludeEmptyFields = false;
+				}
+				else if (inputType.equals("nonformula")) {
+					readingInputTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD && type != ReadingInputType.HIDDEN_FORMULA_FIELD)
+							.collect(Collectors.toList());
 				}
 				else if (inputType.equals("writable")) {
 					readingType = ReadingType.WRITE;
