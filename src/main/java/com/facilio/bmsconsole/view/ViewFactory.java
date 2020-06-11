@@ -6731,7 +6731,7 @@ public class ViewFactory {
 
         FacilioModule module = ModuleFactory.getQuotationModule();
 
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("parentId", "PARENT_ID", FieldType.NUMBER), false));
 
 		Criteria nonRevisedCriteria = new Criteria();
 		//revisedCriteria.addAndCondition(getNonRevisedModuleStatusQuotationCriteria());
