@@ -419,7 +419,7 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addCardType(CardType.DEPRECIATION_COST_TREND);
-		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
+		addChartParams(cardWidget, "createdTime", "totalCost", criteria);
 		section.addWidget(cardWidget);
 	}
 	
