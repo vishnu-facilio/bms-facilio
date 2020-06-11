@@ -3436,11 +3436,6 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="portalDashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getPortalDashboardFolder">
-			<result name="success" type="json">
-				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
-			</result>
-		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
