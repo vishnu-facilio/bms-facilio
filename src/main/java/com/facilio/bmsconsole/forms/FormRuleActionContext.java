@@ -10,6 +10,14 @@ public class FormRuleActionContext {
 	long orgId = -1;
 	long formRuleId = -1;
 	FormActionType actionType;
+	FormRuleContext ruleContext;
+	public FormRuleContext getRuleContext() {
+		return ruleContext;
+	}
+
+	public void setRuleContext(FormRuleContext ruleContext) {
+		this.ruleContext = ruleContext;
+	}
 	List<FormRuleActionFieldsContext> formRuleActionFieldsContext;
 	
 	public List<FormRuleActionFieldsContext> getFormRuleActionFieldsContext() {

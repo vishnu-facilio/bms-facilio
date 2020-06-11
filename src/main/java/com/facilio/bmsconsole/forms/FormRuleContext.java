@@ -15,6 +15,7 @@ public class FormRuleContext {
 	long id = -1;
 	long orgId = -1;
 	long formId = -1;
+	FacilioForm formContext;
 	long criteriaId = -1;
 	long siteId = -1;
 	List<FormRuleTriggerFieldContext> triggerFields;
@@ -103,6 +104,7 @@ public class FormRuleContext {
 		}
 		if(actions != null) {
 			for(FormRuleActionContext formRuleAction :actions) {
+				formRuleAction.setRuleContext(this);
 				formRuleAction.executeAction(context);
 			}
 		}
@@ -140,6 +142,14 @@ public class FormRuleContext {
 
 	public void setCriteriaId(long criteriaId) {
 		this.criteriaId = criteriaId;
+	}
+	
+	public FacilioForm getFormContext() {
+		return formContext;
+	}
+
+	public void setFormContext(FacilioForm formContext) {
+		this.formContext = formContext;
 	}
 
 	public int getTriggerType() {

@@ -9,11 +9,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldUtil;
 
 public enum FormActionType {
 
@@ -79,9 +82,13 @@ public enum FormActionType {
 		public void performAction(FacilioContext facilioContext) throws Exception {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			
-			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 			
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			
+			Map<String,Object> placeHolders = new HashMap<>();
+			
+			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formData, placeHolders);
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
@@ -90,7 +97,7 @@ public enum FormActionType {
 				
 				Object value = metaJson.get("setValue");
 				if(value instanceof String && FormRuleAPI.containsPlaceHolders((String)value)) {
-					value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, (String)value);
+					value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, (String)value);
 				}
 				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
 				resultJson.add(json);
@@ -105,7 +112,11 @@ public enum FormActionType {
 			
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			
+			Map<String,Object> placeHolders = new HashMap<>();
+			
+			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formData, placeHolders);
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
@@ -122,7 +133,7 @@ public enum FormActionType {
 					Condition condition = criteria.getConditions().get(key);
 					
 					if(condition.getValue() instanceof String && FormRuleAPI.containsPlaceHolders(condition.getValue())) {
-						String value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, condition.getValue());
+						String value = FormRuleAPI.replacePlaceHoldersAndGetResult(placeHolders, condition.getValue());
 						condition.setValue(value);
 					}
 				}
