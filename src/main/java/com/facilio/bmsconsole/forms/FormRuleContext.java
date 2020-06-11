@@ -25,12 +25,13 @@ public class FormRuleContext {
 	Criteria criteria;
 	FormRuleType type;
 	TriggerType triggerType;
+	Form_On_Load_Rule_Type formOnLoadRuleType;
 	RuleType ruleType;
 	
 	public long getSiteId() {
 		return siteId;
 	}
-
+	
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
@@ -152,6 +153,17 @@ public class FormRuleContext {
 		this.formContext = formContext;
 	}
 
+	public int getFormOnLoadRuleType() {
+		if(formOnLoadRuleType != null) {
+			return formOnLoadRuleType.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setFormOnLoadRuleType(int formOnLoadRuleType) {
+		this.formOnLoadRuleType = Form_On_Load_Rule_Type.getAllTriggerType().get(formOnLoadRuleType);
+	}
+	
 	public int getTriggerType() {
 		if(triggerType != null) {
 			return triggerType.getIntVal();
@@ -225,6 +237,52 @@ public class FormRuleContext {
 		}
 
 		public static Map<Integer, TriggerType> getAllTriggerType() {
+			return triggerTypeMap;
+		}
+	}
+	
+	public enum Form_On_Load_Rule_Type {
+		
+		DIRECT(1,"Direct"),
+		WITH_FIELD(2,"With Field"),
+		;
+
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public void setIntVal(int intVal) {
+			this.intVal = intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		private Form_On_Load_Rule_Type(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Form_On_Load_Rule_Type> triggerTypeMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Form_On_Load_Rule_Type> initTypeMap() {
+			Map<Integer, Form_On_Load_Rule_Type> typeMap = new HashMap<>();
+
+			for (Form_On_Load_Rule_Type type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Form_On_Load_Rule_Type> getAllTriggerType() {
 			return triggerTypeMap;
 		}
 	}

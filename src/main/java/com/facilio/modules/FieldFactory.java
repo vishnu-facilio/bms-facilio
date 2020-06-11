@@ -368,6 +368,7 @@ public class FieldFactory {
         fields.add(getField("formId", "FORM_ID", module, FieldType.LOOKUP));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
         fields.add(getField("type", "FORM_RULE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("formOnLoadRuleType", "FORM_ON_LOAD_RULE_TYPE", module, FieldType.NUMBER));
 
         return fields;
     }
