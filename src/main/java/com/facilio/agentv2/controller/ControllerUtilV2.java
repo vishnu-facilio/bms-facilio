@@ -3,6 +3,7 @@ package com.facilio.agentv2.controller;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -78,7 +79,11 @@ public class ControllerUtilV2 {
                     controller.setControllerType(device.getControllerType());
                     long controllerId = ControllerApiV2.addController(controller);
                     if (controllerId > 0) {
-                        controller.setId(controllerId);
+                    int updatedCount = FieldDeviceApi.updateDeviceConfigured(device.getId());
+                    if(updatedCount > 0){
+                    	LOGGER.info(device.getId() + " is successfully set as Configured");
+                    }
+                    controller.setId(controllerId);
                         deviceIdControllerMap.put(device.getId(), controller);
                         //deviceId.add(device.getId());
                     }

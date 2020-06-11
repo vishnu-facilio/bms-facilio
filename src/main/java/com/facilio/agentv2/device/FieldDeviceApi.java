@@ -174,6 +174,7 @@ public class FieldDeviceApi {
         Criteria criteria = new Criteria();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
         }
@@ -346,5 +347,14 @@ public class FieldDeviceApi {
         FieldDeviceApi.addFieldDevice(device);
         controllerContext.setDeviceId(device.getId());
     }
-    
+
+	public static int updateDeviceConfigured(long deviceId) throws SQLException {
+
+		Map<String, Object> updateValue = new HashMap<>();
+		FacilioModule module = ModuleFactory.getFieldDeviceModule();
+		updateValue.put(AgentConstants.CONFIGURE, true);
+		GenericUpdateRecordBuilder updateVal = new GenericUpdateRecordBuilder().table(module.getTableName())
+				.fields(FieldFactory.getFieldDeviceFields()).andCondition(CriteriaAPI.getIdCondition(deviceId, module));
+		return updateVal.update(updateValue);
+	}
 }

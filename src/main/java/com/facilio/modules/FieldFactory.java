@@ -6066,6 +6066,7 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.CONTROLLER_PROPS_AS_PROPSSTR, "CONTROLLER_PROPS", module, FieldType.STRING));
         fields.add(getCreatedTime(module));
         fields.add(getNewDeletedTimeField(module));
+        fields.add(getField(AgentConstants.CONFIGURE, "CONFIGURE", module,FieldType.BOOLEAN));
         return fields;
     }
 

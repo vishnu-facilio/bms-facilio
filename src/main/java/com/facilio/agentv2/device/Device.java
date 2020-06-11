@@ -23,6 +23,8 @@ public class Device
     @JsonInclude
     private String identifier;
 
+    private boolean configure;
+    
     public int getControllerType() {
         return controllerType;
     }
@@ -89,6 +91,14 @@ public class Device
 
     public long getCreatedTime() { return createdTime; }
     public void setCreatedTime(long createdTime) { this.createdTime = createdTime; }
+
+	public boolean isConfigure() {
+		return configure;
+	}
+
+	public void setConfigure(boolean configure) {
+		this.configure = configure;
+	}
 
 
 
