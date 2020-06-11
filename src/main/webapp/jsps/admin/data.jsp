@@ -97,7 +97,6 @@ function changeThePage(){
 				    Organization domain = orgBean.getOrg(orgId);
 				    JSONArray jsonArray = new JSONArray();
 				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
-				    Iterator<JSONObject> iterator = jsonArray.iterator();
 				  for(int i=(jsonArray.size()-1);i>=0;i--) {
 						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
 						 	String arrival = jsonObj.get("arrivalTime").toString();
@@ -136,10 +135,9 @@ function changeThePage(){
 
 		</tr>
 		<%
-		Iterator<JSONObject> itr = jsonArray.iterator();
 		int i=0;
-		while(itr.hasNext()) {
-			 JSONObject jsonObj = itr.next();
+		for(int j=(jsonArray.size()-1);j>=0;j--) {
+			 JSONObject jsonObj = (JSONObject)jsonArray.get(j);
 			 String arrival=  jsonObj.get("arrivalTime").toString() ;
 			 long time =Long.parseLong(arrival);
 			 String date = DateTimeUtil.getFormattedTime(time);
