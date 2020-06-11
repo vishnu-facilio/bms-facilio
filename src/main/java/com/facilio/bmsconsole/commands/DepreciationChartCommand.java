@@ -46,13 +46,13 @@ public class DepreciationChartCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-            float totalPrice = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule)).floatValue();
-            if (totalPrice == -1) {
+            Float totalPrice = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule)).floatValue();
+            if (totalPrice == null || totalPrice == -1) {
                 throw new IllegalArgumentException("Price cannot be empty");
             }
-            float salvageAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule)).floatValue();
-            long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
-            if (date == -1) {
+            Float salvageAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule)).floatValue();
+            Long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
+            if (date == null || date == -1) {
                 throw new IllegalArgumentException("Start date cannot be empty");
             }
 
@@ -63,12 +63,13 @@ public class DepreciationChartCommand extends FacilioCommand {
             instance.setTimeInMillis(date);
             int dayOfMonth = instance.get(Calendar.DATE);
 
-            float unitPrice = totalPrice;
-
             // remove the salvage amount from total depreciate amount
-            if (salvageAmount > 0) {
+            if (salvageAmount != null && salvageAmount > 0) {
                 totalPrice -= salvageAmount;
             }
+
+            float unitPrice = totalPrice;
+            float lastDepreciation = 0;
 
             while (unitPrice >= 0) {
 
@@ -79,16 +80,19 @@ public class DepreciationChartCommand extends FacilioCommand {
                 date = instance.getTimeInMillis();
 
                 map.put("price", unitPrice);
-                map.put("date", DateTimeUtil.getFormattedTime(date, "dd-MMM-yyyy"));
+                map.put("date", date);
+                map.put("depreciationAmount", lastDepreciation);
+                mapList.add(map);
 
                 if (unitPrice <= 0) {
                     break;
                 }
 
                 date = assetDepreciation.nextDate(date);
-                unitPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
-                unitPrice = Math.round(unitPrice);
-                mapList.add(map);
+                float currentPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
+                currentPrice = Math.round(currentPrice);
+                lastDepreciation = unitPrice - currentPrice;
+                unitPrice = currentPrice;
             }
 
             context.put("depreciationList", mapList);
