@@ -395,7 +395,7 @@ public class OrgBeanImpl implements OrgBean {
 			.innerJoin("Application")
 			.on("Application.ID = ORG_User_Apps.APPLICATION_ID")
 			;
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Application", "linkName", mainAppLinkNames, StringOperators.ISN_T));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", mainAppLinkNames, StringOperators.ISN_T));
 					
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

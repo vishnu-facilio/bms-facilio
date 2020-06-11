@@ -163,9 +163,13 @@ public class UserAction extends FacilioAction {
 			return SUCCESS;
 		}
 		return ERROR;
-		
-		
-		
+
+	}
+
+	public String allPortalUserList() throws Exception {
+		setSetup(SetupLayout.getUsersListLayout());
+		setUsers(AccountUtil.getOrgBean().getRequesterTypeUsers(AccountUtil.getCurrentOrg().getOrgId(), false));
+		return SUCCESS;
 	}
 	
 

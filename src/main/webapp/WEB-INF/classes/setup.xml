@@ -145,6 +145,13 @@
 			<result name="success" type="json">
 				<param name="includeProperties">users.*</param></result>
 		</action>
+		<action name="allPortalUsers" class="com.facilio.bmsconsole.actions.UserAction" method="allPortalUserList">
+			<param name="moduleName">setup</param>
+			<param name="cache">org</param>
+			<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param></result>
+		</action>
 	<action name="deleteportaluser" class="com.facilio.bmsconsole.actions.UserAction" method="deletePortalUser">
 		<param name="moduleName">setup</param>
 		<param name="permission">USER_MANAGEMENT,REQUESTERS</param>
