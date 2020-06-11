@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -66,4 +67,8 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 		return false;
 	}
 
+	@Override
+	public SensorRuleType getSensorRuleTypeFromValidator() {
+		return SensorRuleType.PERMISSIBLE_LIMIT_VIOLATION;
+	}
 }

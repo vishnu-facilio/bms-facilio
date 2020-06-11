@@ -20,7 +20,6 @@ import com.facilio.util.FacilioUtil;
 
 public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidationInterface {
 
-	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -41,7 +40,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -72,7 +71,7 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 				if(averageBoundPercentage == null) {
 					averageBoundPercentage = 100;
 				}
-				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);
+				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());
 				if(readings != null && !readings.isEmpty()) 
 				{ 	
 					Double averageValue = getAverage(readings);
@@ -111,4 +110,8 @@ public class ValidateMeanVariationInSensorRule implements SensorRuleTypeValidati
 		return null;
 	}
 
+	@Override
+	public SensorRuleType getSensorRuleTypeFromValidator() {
+		return SensorRuleType.MEAN_VARIATION;
+	}
 }

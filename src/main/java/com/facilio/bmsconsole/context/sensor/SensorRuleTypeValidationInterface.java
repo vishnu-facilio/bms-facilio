@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public interface SensorRuleTypeValidationInterface {
 	
 	public JSONObject getDefaultSeverityAndSubject();
 	
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception;
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception;
 	
+	public SensorRuleType getSensorRuleTypeFromValidator();
 }

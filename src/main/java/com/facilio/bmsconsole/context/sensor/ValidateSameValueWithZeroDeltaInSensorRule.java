@@ -19,7 +19,6 @@ import com.facilio.util.FacilioUtil;
 
 public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTypeValidationInterface{
 
-	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -39,7 +38,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -66,7 +65,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 				if(noOfHoursToBeFetched == null) {
 					noOfHoursToBeFetched = 12;
 				}
-				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched, isHistorical, historicalReadings, completeHistoricalReadingsMap);
+				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());
 				if(readings != null && !readings.isEmpty()) 
 				{ 
 					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
@@ -85,4 +84,8 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 		return false;	
 	}
 
+	@Override
+	public SensorRuleType getSensorRuleTypeFromValidator() {
+		return SensorRuleType.SAME_VALUE_WITH_ZERO_DELTA;
+	}
 }

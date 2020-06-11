@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context.sensor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import com.facilio.util.FacilioUtil;
 
 public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValidationInterface{
 
-	LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 	@Override
 	public List<String> getSensorRuleProps() {
 		List<String> validatorProps = new ArrayList<String>();
@@ -41,7 +41,7 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig,  boolean isHistorical, List<ReadingContext> historicalReadings) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig,  boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
@@ -60,7 +60,7 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 				ReadingContext readingToBeEvaluated = new ReadingContext(); 
 				
 				if(isHistorical) {
-					String key = ReadingsAPI.getRDMKey(asset.getId(), numberField);
+					String key = ReadingsAPI.getRDMKey(asset.getId(), numberField) +"_"+ getSensorRuleTypeFromValidator().getIndex();
 					List<ReadingContext> completeHistoricalReadings = completeHistoricalReadingsMap.get(key);
 							
 					if(historicalReadings != null && !historicalReadings.isEmpty() && completeHistoricalReadings == null) {
@@ -76,6 +76,7 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 					
 					if(completeHistoricalReadings != null && !completeHistoricalReadings.isEmpty()) 
 					{
+						completeHistoricalReadings.sort(new timeSorter());
 						for(ReadingContext historyReading :completeHistoricalReadings) 
 						{
 							if(reading.getId() == historyReading.getId() && reading.getTtime() == historyReading.getTtime()) 
@@ -105,8 +106,16 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 		return false;	
 	}
 
+	@Override
+	public SensorRuleType getSensorRuleTypeFromValidator() {
+		return SensorRuleType.DECREMENTAL_VALUE;
+	}
+}
 
-
-	
-
+class timeSorter implements Comparator<ReadingContext> 
+{
+	@Override
+	public int compare(ReadingContext o1, ReadingContext o2) {
+		return (int) (o2.getTtime() - o1.getTtime());
+	}
 }

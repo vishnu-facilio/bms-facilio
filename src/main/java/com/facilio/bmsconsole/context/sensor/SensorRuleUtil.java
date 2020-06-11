@@ -145,10 +145,13 @@ public class SensorRuleUtil {
 
 			for(SensorRuleContext sensorRule:sensorRules) 
 			{	
+				List<SensorEventContext> sensorEvents= new ArrayList<SensorEventContext>();
+				LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = null;
+				
 				if(isHistorical) {
 					constructHistoryReadingsMap(readings, sensorRule, historicalReadingsMap);
+					completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
 				}
-				List<SensorEventContext> sensorEvents= new ArrayList<SensorEventContext>();
 				
 				for(ReadingContext reading:readings) 
 				{
@@ -158,8 +161,8 @@ public class SensorRuleUtil {
 					if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
 					{
 						SensorRuleTypeValidationInterface validatorType = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType();
-						boolean result = validatorType.evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings);
-						JSONObject defaultSeverityProps = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType().getDefaultSeverityAndSubject();
+						boolean result = validatorType.evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
+						JSONObject defaultSeverityProps = validatorType.getDefaultSeverityAndSubject();
 						checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
 						
 						if(result) {
@@ -312,11 +315,11 @@ public class SensorRuleUtil {
 		return readingContexts;	
 	}
 	
-	public static List<Double> getLiveOrHistoryReadingsToBeEvaluated(NumberField numberField, long resourceId, long readingEndTime, int noOfHoursToBeFetched, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String,List<ReadingContext>> completeHistoricalReadingsMap) throws Exception{
+	public static List<Double> getLiveOrHistoryReadingsToBeEvaluated(NumberField numberField, long resourceId, long readingEndTime, int noOfHoursToBeFetched, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String,List<ReadingContext>> completeHistoricalReadingsMap, SensorRuleType sensorRuleValidatorType) throws Exception{
 		
 		List<ReadingContext> readingsToBeEvaluated = new ArrayList<ReadingContext>(); 
 		if(isHistorical) {
-			String key = ReadingsAPI.getRDMKey(resourceId, numberField);
+			String key = ReadingsAPI.getRDMKey(resourceId, numberField) +"_"+ sensorRuleValidatorType.getIndex();
 			List<ReadingContext> completeHistoricalReadings = completeHistoricalReadingsMap.get(key);
 					
 			if(historicalReadings != null && !historicalReadings.isEmpty() && completeHistoricalReadings == null) {
@@ -334,7 +337,7 @@ public class SensorRuleUtil {
 			{
 				long pastIntervalStartTime = DateTimeUtil.addHours(readingEndTime, -1*noOfHoursToBeFetched);
 				for(ReadingContext historyReading :completeHistoricalReadings) {
-					if(historyReading.getTtime() > pastIntervalStartTime && historyReading.getTtime() < readingEndTime) {
+					if(historyReading.getTtime() >= pastIntervalStartTime && historyReading.getTtime() <= readingEndTime) {
 						readingsToBeEvaluated.add(historyReading);
 					}	
 				}
