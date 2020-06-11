@@ -94,6 +94,17 @@ public class AssetDepreciationAPI {
         builder.save();
     }
 
+    public static void removeAsset(long depreciationId, List<Long> assetIds) throws Exception {
+        if (CollectionUtils.isEmpty(assetIds)) {
+            return;
+        }
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getAssetDepreciationRelModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("DEPRECIATION_ID", "depreciationId", String.valueOf(depreciationId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", StringUtils.join(assetIds, ","), NumberOperators.EQUALS));
+        builder.delete();
+    }
+
     public static Map<Long, List<AssetDepreciationRelContext>> getRelMap(List<Long> depreciationIds) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAssetDepreciationRelModule().getTableName())
@@ -209,6 +220,26 @@ public class AssetDepreciationAPI {
                 builder.update(map);
             }
         }
+    }
+
+    public static void deleteAssetDepreciationCalculation(AssetDepreciationContext assetDepreciation, AssetContext assetContext) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_DEPRECIATION_CALCULATION);
+
+        DeleteRecordBuilder<AssetDepreciationCalculationContext> builder = new DeleteRecordBuilder<AssetDepreciationCalculationContext>()
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition("DEPRECIATION_ID", "depreciationId", String.valueOf(assetDepreciation.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetContext.getId()), NumberOperators.EQUALS));
+        builder.delete();
+
+        assetContext.setCurrentPrice(-99);
+        FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        FacilioField currentPrice = modBean.getField("currentPrice", assetModule.getName());
+        UpdateRecordBuilder<AssetContext> assetBuilder = new UpdateRecordBuilder<AssetContext>()
+                .module(assetModule)
+                .fields(Collections.singletonList(currentPrice))
+                .andCondition(CriteriaAPI.getIdCondition(assetContext.getId(), assetModule));
+        assetBuilder.update(assetContext);
     }
 
     public static List<AssetDepreciationCalculationContext> calculateAssetDepreciation(AssetDepreciationContext assetDepreciation, AssetContext assetContext,

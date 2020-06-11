@@ -73,4 +73,14 @@ public class AssetDepreciationAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    public String getForAsset() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getDepreciationForAsset();
+        Context context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.ASSET_DEPRECIATION, context.get(FacilioConstants.ContextNames.ASSET_DEPRECIATION));
+        return SUCCESS;
+    }
 }

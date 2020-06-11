@@ -2455,6 +2455,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getDepreciationForAsset() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetDepreciationForAssetCommand());
+		return chain;
+	}
+
 	public static FacilioChain getApplicationUsersChain () {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUsersCommand());
