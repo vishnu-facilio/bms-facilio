@@ -5985,10 +5985,6 @@
 			method="bimJsonImport"
 		/>
 		
-		<action name="youBimViewDetails" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
-			method="getYouBimViewDetails"
-		/>
-		
 		<action name="loadStatusSeverity" class="com.facilio.bmsconsole.actions.BIMIntegrationAction"
 			method="getStatusAndSeverityList"
 		/>

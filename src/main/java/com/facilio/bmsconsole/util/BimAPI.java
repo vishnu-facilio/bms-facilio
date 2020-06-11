@@ -679,8 +679,6 @@ public class BimAPI {
 			thirdPartyDetailsMap.put("assetURL", "https://api.youbim.com//assets?FilterType_id=");
 			thirdPartyDetailsMap.put("assetdataURL", "https://api.youbim.com/assetattributes?FilterAsset_id=");
 			thirdPartyDetailsMap.put("typedataURL", "https://api.youbim.com//types/");
-			thirdPartyDetailsMap.put("workordersURL", "https://api.youbim.com//workorders?order=id%20desc&ContainStatuses=name&ContainUsers=first_name,last_name&ContainPriorities=name&FilterAsset_id=");
-			thirdPartyDetailsMap.put("documentsURL", "https://api.youbim.com//documentlibraries/assets/");
 		}
 		return thirdPartyDetailsMap;
 	}
