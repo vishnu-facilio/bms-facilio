@@ -1354,10 +1354,9 @@ public class ReadingAction extends FacilioAction {
     		setResult("success", "NewSystemFieldsMigration Done.");
         }
         catch(Exception e){
-			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
         	LOGGER.error("NewSystemFieldsMigration Error Mig -- " +e+ "orgid -- "+AccountUtil.getCurrentOrg().getId());
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
     		setResult("success", "Failed NewSystemFieldsMigration.");
-
         }
 		return SUCCESS;	
 	}
