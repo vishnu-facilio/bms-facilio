@@ -174,7 +174,6 @@ public class FieldDeviceApi {
         Criteria criteria = new Criteria();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
         }
@@ -187,6 +186,7 @@ public class FieldDeviceApi {
         if(StringUtils.isNotEmpty(searchKey)) {
         	builder.andCustomWhere("NAME = ? OR NAME LIKE ?",searchKey,searchKey + "%");
         }
+        builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
         if (containsCheck(FacilioConstants.ContextNames.PAGINATION,context)) {
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
             boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
