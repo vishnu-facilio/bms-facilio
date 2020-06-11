@@ -12,13 +12,12 @@ import com.facilio.modules.FacilioEnum;
 
 public enum SensorRuleType implements FacilioEnum{
 	
-	CONTINUOUSLY_RECEIVING_SAME_VALUE(new ValidateContinuouslyReceivingSameValueInSensorRule(), false),
-	CONTINUOUSLY_RECEIVING_ZERO(new ValidateContinuouslyReceivingZeroInSensorRule(), false),
-	PERMISSIBLE_LIMIT_VIOLATION(new ValidatePermissibleLimitViolationInSensorRule(), false, true),
-	NEGATIVE_VALUE(new ValidateNegativeValueInSensorRule(), true, true),
-	DECREMENTAL_VALUE(new ValidateDecrementalValueInSensorRule(), true),
-	SAME_VALUE_WITH_ZERO_DELTA(new ValidateSameValueWithZeroDeltaInSensorRule(),true),
-	MEAN_VARIATION(new ValidateMeanVariationInSensorRule(),true),
+	CONTINUOUSLY_RECEIVING_SAME_VALUE(new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
+	PERMISSIBLE_LIMIT_VIOLATION(new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
+	NEGATIVE_VALUE(new ValidateNegativeValueInSensorRule(), true, true, true),
+	DECREMENTAL_VALUE(new ValidateDecrementalValueInSensorRule(), true, true),
+	SAME_VALUE_WITH_ZERO_DELTA(new ValidateSameValueWithZeroDeltaInSensorRule(), true, true),
+	MEAN_VARIATION(new ValidateMeanVariationInSensorRule(), true, true),
 	;
 	
 	public int getIndex() {
@@ -39,6 +38,7 @@ public enum SensorRuleType implements FacilioEnum{
 	private SensorRuleTypeValidationInterface sensorRuleValidationType;
 	private boolean isCounterFieldType = false;
 	private boolean dependsOnCurrentValue = false;
+	private boolean isMeterRollUp = false;
 
 	private SensorRuleType(){
 	}
@@ -47,13 +47,14 @@ public enum SensorRuleType implements FacilioEnum{
 		this.sensorRuleValidationType = sensorRuleValidationTypeClass;
 	}
 	
-	private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isCounterFieldType) {
+	private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType) {
 		this.sensorRuleValidationType = sensorRuleValidationType;
 		this.isCounterFieldType = isCounterFieldType;
 	}
 	
-	private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isCounterFieldType, boolean dependsOnCurrentValue) {
+	private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType, boolean dependsOnCurrentValue) {
 		this.sensorRuleValidationType = sensorRuleValidationType;
+		this.isMeterRollUp = isMeterRollUp;
 		this.isCounterFieldType = isCounterFieldType;
 		this.dependsOnCurrentValue = dependsOnCurrentValue;
 	}
@@ -64,6 +65,10 @@ public enum SensorRuleType implements FacilioEnum{
 	
 	public boolean isCurrentValueDependent() {
 		return dependsOnCurrentValue;
+	}
+	
+	public boolean isMeterRollUp() {
+		return isMeterRollUp;
 	}
 	
     public SensorRuleTypeValidationInterface getSensorRuleValidationType() {

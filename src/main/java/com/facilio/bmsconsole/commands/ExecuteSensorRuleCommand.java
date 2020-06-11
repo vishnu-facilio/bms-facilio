@@ -29,7 +29,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.LookupField;
 
-public class ExecuteSensorRuleCommand extends FacilioCommand {
+public class ExecuteSensorRuleCommand extends FacilioCommand implements PostTransactionCommand{
 
 	private static final Logger LOGGER = Logger.getLogger(ExecuteSensorRuleCommand.class.getName());
 
@@ -59,6 +59,10 @@ public class ExecuteSensorRuleCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	
-	
+
+	@Override
+	public boolean postExecute() throws Exception {
+		return false;
+	}
+		
 }

@@ -16,7 +16,7 @@ public class SensorEventContext extends BaseEventContext {
 	
 	public String constructMessageKey() {
 		if (getResource() != null && getSensorRule() != null) {
-			return getSensorRule().getId() + "_" + getResource().getId()+"_"+getEventType();
+			return "Sensor_" + getSensorRule().getId() + "_" + getResource().getId();
 		}
 		return null;
 	}
