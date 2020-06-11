@@ -1010,6 +1010,7 @@ public class ReadingsAPI {
 	
 	public static void updateReadingDataMeta(Long assetCategoryId, List<Long> readingModuleIds) throws Exception {
 
+		LOGGER.error("RDM assetCategoryId -- "+assetCategoryId);
 		List<ResourceContext> resourcesList = new ArrayList<ResourceContext>();
 		if(assetCategoryId == null || assetCategoryId == -1) {
 			resourcesList= ResourceAPI.getAllResources();
@@ -1019,6 +1020,7 @@ public class ReadingsAPI {
 			for(AssetContext asset:assets) {
 				resourcesList.add((ResourceContext)asset);
 			}
+			LOGGER.error("RDM assets -- "+assets);
 		}
 		updateReadingDataMeta(resourcesList, readingModuleIds);
 	}
