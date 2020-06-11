@@ -90,29 +90,24 @@ function changeThePage(){
 							%>
 				</select>
 				<%
-	if(request.getParameter("orgId")!=null){
-    String orgDomain =request.getParameter("orgId");
-    long orgId = Long.parseLong(orgDomain);
-    OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
-    Organization domain = orgBean.getOrg(orgId);
-    JSONArray jsonArray = new JSONArray();
-    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
-    Iterator<JSONObject> iterator = jsonArray.iterator();
-   while(iterator.hasNext()) {
-		 JSONObject jsonObj = iterator.next();
-		 
-		
-		 String arrival=  jsonObj.get("arrivalTime").toString() ;
-		 long time =Long.parseLong(arrival);
-		 long t1 = time;
-		
-		 if( !iterator.hasNext()){
-			 receiveddate= DateTimeUtil.getFormattedTime(time);
-			 receivedTime = time;
-		 }
-		 
-    }
- %>
+					if(request.getParameter("orgId")!=null){
+				    String orgDomain =request.getParameter("orgId");
+				    long orgId = Long.parseLong(orgDomain);
+				    OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
+				    Organization domain = orgBean.getOrg(orgId);
+				    JSONArray jsonArray = new JSONArray();
+				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
+				    Iterator<JSONObject> iterator = jsonArray.iterator();
+				  for(int i=(jsonArray.size()-1);i>=0;i--) {
+						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
+						 	String arrival = jsonObj.get("arrivalTime").toString();
+							long time = Long.parseLong(arrival);
+							long t1 = time;
+							receiveddate = DateTimeUtil.getFormattedTime(time);
+							receivedTime = time;
+							break;
+						}
+				%>
 				</div>
 				<div class="">
 				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %><br><%=receivedTime !=0 ? DateTimeUtil.relativeDuration(receivedTime):" " %></span>
