@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepreciationCalculationContext;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.AssetDepreciationRelContext;
@@ -8,20 +9,19 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AssetDepreciationAPI {
@@ -164,5 +164,122 @@ public class AssetDepreciationAPI {
             builder.addRecords(newList);
             builder.save();
         }
+    }
+
+    public static void saveDepreciationCalculationList(List<AssetDepreciationCalculationContext> newList,
+                                                       AssetDepreciationContext assetDepreciationContext) throws Exception {
+        // save list and update asset current price
+        if (CollectionUtils.isNotEmpty(newList)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+            FacilioField field = modBean.getField(assetDepreciationContext.getCurrentPriceFieldId(), assetModule.getName());
+
+            AssetDepreciationAPI.insertDepreciationCalculations(newList);
+
+            Map<AssetContext, List<AssetDepreciationCalculationContext>> assetVsCalculationList = new HashMap<>();
+            for (AssetDepreciationCalculationContext calculationContext : newList) {
+                List<AssetDepreciationCalculationContext> list = assetVsCalculationList.get(calculationContext.getAsset());
+                if (list == null) {
+                    list = new ArrayList<>();
+                    assetVsCalculationList.put(calculationContext.getAsset(), list);
+                }
+                list.add(calculationContext);
+            }
+
+            for (AssetContext asset : assetVsCalculationList.keySet()) {
+                List<AssetDepreciationCalculationContext> calculationContexts = assetVsCalculationList.get(asset);
+
+                // take only latest context
+                AssetDepreciationCalculationContext context = calculationContexts.get(calculationContexts.size() - 1);
+
+                asset.setCurrentPrice(((Float) context.getCurrentPrice()).intValue());
+                UpdateRecordBuilder<AssetContext> updateRecordBuilder = new UpdateRecordBuilder<AssetContext>()
+                        .module(assetModule)
+                        .fields(Collections.singletonList(field))
+                        .andCondition(CriteriaAPI.getIdCondition(asset.getId(), assetModule));
+                updateRecordBuilder.update(asset);
+
+                GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                        .table(ModuleFactory.getAssetDepreciationRelModule().getTableName())
+                        .fields(Collections.singletonList(FieldFactory.getField("lastCalculatedId", "LAST_CALCULATED_ID", ModuleFactory.getAssetDepreciationRelModule(), FieldType.NUMBER)))
+                        .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(asset.getId()), NumberOperators.EQUALS))
+                        .andCondition(CriteriaAPI.getCondition("DEPRECIATION_ID", "depreciationId", String.valueOf(context.getDepreciationId()), NumberOperators.EQUALS));
+                Map<String, Object> map = new HashMap<>();
+                map.put("lastCalculatedId", context.getId());
+                builder.update(map);
+            }
+        }
+    }
+
+    public static List<AssetDepreciationCalculationContext> calculateAssetDepreciation(AssetDepreciationContext assetDepreciation, AssetContext assetContext,
+                                                                                       AssetDepreciationCalculationContext lastCalculation) throws Exception {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+
+            float totalPrice = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule)).floatValue();
+            if (totalPrice == -1) {
+                throw new IllegalArgumentException("Price cannot be empty");
+            }
+            float salvageAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule)).floatValue();
+            long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
+            float currentAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getCurrentPriceFieldId(), assetModule)).floatValue();
+            if (currentAmount == -1) {
+                currentAmount = totalPrice;
+            }
+
+            if (lastCalculation != null) {
+                date = lastCalculation.getCalculatedDate();
+            }
+
+            if (date == -1) {
+                throw new IllegalArgumentException("Start date cannot be empty");
+            }
+
+            List<AssetDepreciationCalculationContext> list = new ArrayList<>();
+            while (true) {
+
+                long nextDate = assetDepreciation.nextDate(date);
+                if (nextDate > DateTimeUtil.getDayStartTime()) {
+                    // Still time hasn't arrived to calculate
+                    break;
+                }
+
+
+                float totalDepreciationAmount = totalPrice;
+                if (salvageAmount > 0) {
+                    totalDepreciationAmount -= salvageAmount;
+                }
+
+                float newPrice = ((Number) assetDepreciation.getDepreciationTypeEnum().nextDepreciatedUnitPrice(totalDepreciationAmount, assetDepreciation.getFrequency(), currentAmount)).floatValue();
+
+                AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
+                newlyCalculated.setAsset(assetContext);
+                newlyCalculated.setCalculatedDate(nextDate);
+                newlyCalculated.setCurrentPrice(newPrice);
+                newlyCalculated.setDepreciatedAmount(currentAmount - newPrice);
+                newlyCalculated.setDepreciationId(assetDepreciation.getId());
+                list.add(newlyCalculated);
+
+                date = nextDate;
+                currentAmount = newPrice;
+            }
+            return list;
+        } catch (IllegalArgumentException ex) {
+            // ignore for those asset that has invalid data
+        }
+        return null;
+    }
+
+    public static AssetDepreciationContext getDepreciationOfAsset(Long assetId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getAssetDepreciationRelModule().getTableName())
+                .select(FieldFactory.getAssetDepreciationRelFields())
+                .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetId), NumberOperators.EQUALS));
+        AssetDepreciationRelContext relContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), AssetDepreciationRelContext.class);
+        if (relContext != null) {
+            return getAssetDepreciation(relContext.getDepreciationId());
+        }
+        return null;
     }
 }

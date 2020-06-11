@@ -46,11 +46,11 @@ public class DepreciationChartCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-            float totalPrice = (float) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule);
+            float totalPrice = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getTotalPriceFieldId(), assetModule)).floatValue();
             if (totalPrice == -1) {
                 throw new IllegalArgumentException("Price cannot be empty");
             }
-            float salvageAmount = (float) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule);
+            float salvageAmount = ((Number) FieldUtil.getValue(assetContext, assetDepreciation.getSalvagePriceFieldId(), assetModule)).floatValue();
             long date = (long) FieldUtil.getValue(assetContext, assetDepreciation.getStartDateFieldId(), assetModule);
             if (date == -1) {
                 throw new IllegalArgumentException("Start date cannot be empty");

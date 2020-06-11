@@ -63,4 +63,14 @@ public class AssetDepreciationAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    public String removeAssetInDepreciation() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getRemoveAssetToDepreciationChain();
+        Context context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+        chain.execute();
+
+        return SUCCESS;
+    }
 }

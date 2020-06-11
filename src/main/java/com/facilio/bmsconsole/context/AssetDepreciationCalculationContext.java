@@ -30,19 +30,19 @@ public class AssetDepreciationCalculationContext extends ModuleBaseWithCustomFie
         this.calculatedDate = calculatedDate;
     }
 
-    private int currentPrice = -1;
-    public int getCurrentPrice() {
+    private float currentPrice = -1;
+    public float getCurrentPrice() {
         return currentPrice;
     }
-    public void setCurrentPrice(int currentPrice) {
+    public void setCurrentPrice(float currentPrice) {
         this.currentPrice = currentPrice;
     }
 
-    private long depreciatedAmount = -1;
-    public long getDepreciatedAmount() {
+    private float depreciatedAmount = -1;
+    public float getDepreciatedAmount() {
         return depreciatedAmount;
     }
-    public void setDepreciatedAmount(long depreciatedAmount) {
+    public void setDepreciatedAmount(float depreciatedAmount) {
         this.depreciatedAmount = depreciatedAmount;
     }
 }

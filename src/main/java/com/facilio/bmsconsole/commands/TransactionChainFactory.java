@@ -5467,6 +5467,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getRemoveAssetToDepreciationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new RemoveAssetFromDepreciationCommand());
+		return chain;
+	}
+
 	public static FacilioChain getRuleRollupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new RuleRollupCommand());
