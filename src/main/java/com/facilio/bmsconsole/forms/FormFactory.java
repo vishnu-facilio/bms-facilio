@@ -312,10 +312,10 @@ public class FormFactory {
 				List<FormField> signatureFields = new ArrayList<>();
 
 				form.setSections(sections);
-				FormSection defaultSection = new FormSection("QUOTE INFOMATION", 1, defaultFields, true);
+				FormSection defaultSection = new FormSection("QUOTE INFORMATION", 1, defaultFields, true);
 				FormSection billingSection = new FormSection("BILLING ADDRESS", 2, billingAddressFields, false);
 				FormSection lineItemSection = new FormSection("QUOTE ITEMS", 4, lineItemFields, true);
-				FormSection signatureSection = new FormSection("Signature", 7, signatureFields, true);
+				FormSection notesSection = new FormSection("NOTES", 7, signatureFields, true);
 
 				form.getFields().forEach(field -> {
 					if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_LINE_ITEMS) {
@@ -324,7 +324,7 @@ public class FormFactory {
 					else if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_ADDRESS && field.getName().equals("billToAddress")) {
 						billingAddressFields.add(field);
 					}
-					else if (Arrays.asList("signature", "notes").contains(field.getName())) {
+					else if (Arrays.asList("notes").contains(field.getName())) {
 						signatureFields.add(field);
 					}
 					else {
@@ -335,7 +335,7 @@ public class FormFactory {
 				sections.add(defaultSection);
 				sections.add(billingSection);
 				sections.add(lineItemSection);
-				sections.add(signatureSection);
+				sections.add(notesSection);
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
@@ -343,7 +343,7 @@ public class FormFactory {
 			}
 		}
 		return form;
-	}
+	}	
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
@@ -2146,10 +2146,8 @@ public class FormFactory {
 		fields.add(new FormField("billDate", FieldDisplayType.DATE, "Bill Date", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 4, 2));
-		fields.add(new FormField("customerType", FieldDisplayType.SELECTBOX, "Customer Type", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 5, 2));
-		fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL,"client", 5, 3));
-		fields.add(new FormField("workorder", FieldDisplayType.LOOKUP_SIMPLE, "Workorder", Required.OPTIONAL,"workorder", 6, 2));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 4, 3));
+		fields.add(new FormField("workorder", FieldDisplayType.LOOKUP_SIMPLE, "Workorder", Required.OPTIONAL,"workorder", 5, 1));
 
 
 		fields.add(new FormField("billToAddress", FieldDisplayType.QUOTE_ADDRESS, "Bill To Address", Required.OPTIONAL, 7, 1));
@@ -2157,7 +2155,6 @@ public class FormFactory {
 		fields.add(new FormField("lineItems", FieldDisplayType.QUOTE_LINE_ITEMS, "Line Items", Required.REQUIRED, 9, 1));
 
 		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 13, 1));
-		fields.add(new FormField("signature", FieldDisplayType.FILE, "Signature", Required.OPTIONAL, 14, 1));
 
 		return fields;
 	}

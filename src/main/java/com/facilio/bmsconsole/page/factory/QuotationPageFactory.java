@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -15,6 +9,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuotationPageFactory extends PageFactory {
 
@@ -38,8 +37,14 @@ public class QuotationPageFactory extends PageFactory {
         page.addTab(tab2);
             Page.Section tab2Sec1 = page.new Section();
             tab2.addSection(tab2Sec1);
-            addCommonSubModuleWidget(tab2Sec1, module, record);
+            PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+            notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
+            tab2Sec1.addWidget(notesWidget);
 
+            PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+            attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
+            attachmentWidget.setTitle("Attachments");
+            tab2Sec1.addWidget(attachmentWidget);
 
         Page.Tab tab3 = page.new Tab("Related Records");
         page.addTab(tab3);

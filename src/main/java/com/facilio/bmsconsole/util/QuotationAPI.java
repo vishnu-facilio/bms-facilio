@@ -198,19 +198,21 @@ public class QuotationAPI {
 
     public static void addLocation(QuotationContext quotation, LocationContext location) throws Exception {
 
-        if (location != null && location.getId() > 0) {
-            FacilioChain chain = FacilioChainFactory.updateLocationChain();
-            chain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-            chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
-            chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
-            chain.execute();
-        } else {
-            location.setName(quotation.getSubject() + "_location");
-            FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-            addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-            addLocation.execute();
-            long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
-            location.setId(locationId);
+        if (location != null) {
+            if (location.getId() > 0) {
+                FacilioChain chain = FacilioChainFactory.updateLocationChain();
+                chain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+                chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+                chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+                chain.execute();
+            } else {
+                location.setName(quotation.getSubject() + "_location");
+                FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+                addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+                addLocation.execute();
+                long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+                location.setId(locationId);
+            }
         }
     }
 

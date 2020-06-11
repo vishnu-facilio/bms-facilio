@@ -9,7 +9,7 @@ public enum QuotationActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Created quotation  for " + json.get(FacilioConstants.ContextNames.TOTAL_COST);
+            return " Created quotation  for " + Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0;
         }
     },
     UPDATE(64) {
@@ -17,7 +17,7 @@ public enum QuotationActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
             if (json.containsKey(FacilioConstants.ContextNames.TOTAL_COST)) {
-                return " Updated Quotation. Amount changed to " + json.get(FacilioConstants.ContextNames.TOTAL_COST);
+                return " Updated Quotation. Amount changed to " +  Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0;
             } else {
                 return " Updated Quotation.";
             }
