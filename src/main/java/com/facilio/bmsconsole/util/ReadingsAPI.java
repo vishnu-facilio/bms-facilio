@@ -31,6 +31,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -1007,12 +1008,25 @@ public class ReadingsAPI {
 		return fieldsToReturn;
 	}
 	
-	public static void updateReadingDataMeta() throws Exception {
+	public static void updateReadingDataMeta(Long assetCategoryId, List<Long> readingModuleIds) throws Exception {
 
-		List<ResourceContext> resourcesList= ResourceAPI.getAllResources();
-		updateReadingDataMeta(resourcesList);
+		List<ResourceContext> resourcesList = new ArrayList<ResourceContext>();
+		if(assetCategoryId == null || assetCategoryId == -1) {
+			resourcesList= ResourceAPI.getAllResources();
+		}
+		else {
+			List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId);
+			for(AssetContext asset:assets) {
+				resourcesList.add((ResourceContext)asset);
+			}
+		}
+		updateReadingDataMeta(resourcesList, readingModuleIds);
 	}
+	
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
+		updateReadingDataMeta(resourcesList, null);
+	}
+	public static void updateReadingDataMeta(List<ResourceContext> resourcesList, List<Long> readingModuleIds) throws Exception {
 		
 		if (resourcesList == null || resourcesList.isEmpty()) {
 			return;
@@ -1032,8 +1046,7 @@ public class ReadingsAPI {
 			int resourceType = resource.getResourceType();
 			long resourceId = resource.getId();
 			FacilioContext context = new FacilioContext();
-			
-			
+					
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
 				FacilioChain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
@@ -1046,10 +1059,23 @@ public class ReadingsAPI {
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
-			if(moduleList==null || moduleList.isEmpty()) {
+			
+			List<FacilioModule>	finalModuleList= new ArrayList<FacilioModule>();
+			if(readingModuleIds!= null && !readingModuleIds.isEmpty()) {
+				for(FacilioModule module: moduleList) {
+					if(readingModuleIds.contains(module.getModuleId())) { //filtering user-given modules from allsubmodules
+						finalModuleList.add(module);
+					}
+				}	
+			}
+			else {
+				finalModuleList = moduleList;
+			}
+			
+			if(finalModuleList==null || finalModuleList.isEmpty()) {
 				continue;
 			}
-			for(FacilioModule module:moduleList) {
+			for(FacilioModule module:finalModuleList) {
 				
 				List<FacilioField> fieldList= module.getFields();
 				for(FacilioField field:fieldList) {

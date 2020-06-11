@@ -278,7 +278,7 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String updateReadingDataMeta() throws Exception{
-		ReadingsAPI.updateReadingDataMeta();
+		ReadingsAPI.updateReadingDataMeta(getAssetCategoryId(),getReadingModuleIds());
 		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
 	}
@@ -287,6 +287,23 @@ public class ReadingAction extends FacilioAction {
 		ReadingsAPI.updateReadingDataMeta(readingDataMeta);
 		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
+	}
+	
+	private Long assetCategoryId;
+	public Long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(Long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+
+	private List<Long> readingModuleIds;
+	public List<Long> getReadingModuleIds() {
+		return readingModuleIds;
+	}
+
+	public void setReadingModuleIds(List<Long> readingModuleIds) {
+		this.readingModuleIds = readingModuleIds;
 	}
 	
 	private ReadingDataMeta readingDataMeta;
