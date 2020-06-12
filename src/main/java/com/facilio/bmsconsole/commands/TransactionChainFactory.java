@@ -930,7 +930,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateBusinessHoursCommand());
 			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
 			c.addCommand(new AddSingleDayBusinessHourCommand());
-			c.addCommand(new AddHistoricalOperationalAlarmCommand());
+			// c.addCommand(new AddHistoricalOperationalAlarmCommand());
 			return c;
 		}
 		public static FacilioChain updateBusinessHourInResourceChain () {
