@@ -17,7 +17,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -218,6 +217,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
 
+        // this should be last command always
+        nonTransactionChain.addCommand(new SupplementsCommand());
+
         FacilioContext context = nonTransactionChain.getContext();
 
         context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
@@ -260,56 +262,28 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         Map<String, Object> meta = new HashMap<>();
         if (getWithCount()) {
-            Map<String, Object> pagin = new HashMap<>();
-            pagin.put("totalCount", context.get(Constants.COUNT));
-            meta.put("pagination", pagin);
+            Map<String, Object> paging = new HashMap<>();
+            paging.put("totalCount", context.get(Constants.COUNT));
+            meta.put("pagination", paging);
         }
 
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         Map<String, List<WorkflowRuleContext>> stateFlows = (Map<String, List<WorkflowRuleContext>>) context.get(Constants.STATE_FLOWS);
         if (MapUtils.isNotEmpty(stateFlows)) {
             meta.put("stateflows", stateFlows);
         }
 
-        Object supplMap = context.get(Constants.SUPPLEMENT_MAP);
+        Object supplMap = Constants.getSupplementMap(context);
         if (supplMap != null) {
             meta.put("supplements", supplMap);
         }
-        JSONObject recordJSON = FieldUtil.getAsJSON(recordMap);
+
+        JSONObject recordJSON = Constants.getJsonRecordMap(context);
         this.setData(recordJSON);
-        removeSupplementRecord(context, recordJSON);
 
         if (MapUtils.isNotEmpty(meta)) {
             this.setMeta(FieldUtil.getAsJSON(meta));
         }
     }
-
-    private void removeSupplementRecord(FacilioContext context, JSONObject recordJSON) {
-        String moduleName = Constants.getModuleName(context);
-        List<LookupField> fields = Constants.getFetchSupplements(context);
-        if (fields == null) {
-            return;
-        }
-
-        ArrayList records = (ArrayList) recordJSON.get(moduleName);
-        if (records == null) {
-            return;
-        }
-
-        for (LookupField field: fields) {
-            for (Object record: records) {
-                Map entry = (Map) record;
-                Map lookUpEntry = (Map) entry.get(field.getName());
-                if (lookUpEntry != null) {
-                    JSONObject newLookUpEntry = new JSONObject();
-                    newLookUpEntry.put("id", lookUpEntry.get("id"));
-                    newLookUpEntry.put("moduleId", lookUpEntry.get("moduleId"));
-                    entry.put(field.getName(), newLookUpEntry);
-                }
-            }
-        }
-    }
-
 
     private static V3Config getV3Config(String moduleName) {
         Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(moduleName);

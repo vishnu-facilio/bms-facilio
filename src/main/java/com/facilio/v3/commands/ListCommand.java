@@ -59,34 +59,6 @@ public class ListCommand extends FacilioCommand {
 
         List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();
 
-        if (supplementFields != null) {
-            Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
-            List<Map<String, Object>> asProps = FieldUtil.getAsMapList(records, beanClass);
-            List<FacilioField> supplements = supplementFields.stream().map(SupplementRecord::selectField).collect(Collectors.toList());
-            Map<Long, Map<Long, Map<String, Object>>> supplMap = new HashMap<>();
-            for (FacilioField supplField: supplements) {
-                Map<Long, Map<String, Object>> supplIdMap = new HashMap<>();
-                for (Map<String, Object> prop: asProps) {
-                    Map<String, Object> supplRecord = (Map<String, Object>) prop.get(supplField.getName());
-                    if (supplRecord == null) {
-                        continue;
-                    }
-                    long id = (Long) supplRecord.get("id");
-                    if (supplIdMap.get(id) == null) {
-                        supplIdMap.put(id, supplRecord);
-                    }
-                    prop.put(supplField.getName() ,FieldUtil.getAsBeanFromMap(supplRecord, ModuleBaseWithCustomFields.class));
-                }
-                if (MapUtils.isEmpty(supplMap.get(supplField.getModuleId()))) {
-                    supplMap.put(supplField.getModuleId(), supplIdMap);
-                }
-            }
-
-            if (MapUtils.isNotEmpty(supplMap)) {
-                context.put(Constants.SUPPLEMENT_MAP, supplMap);
-            }
-        }
-
         Map<String, List<? extends  ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
         recordMap.put(moduleName, records);
 
@@ -139,7 +111,6 @@ public class ListCommand extends FacilioCommand {
         if (orderBy != null && !orderBy.isEmpty()) {
             selectRecordsBuilder.orderBy(orderBy);
         }
-
 
         return selectRecordsBuilder;
     }

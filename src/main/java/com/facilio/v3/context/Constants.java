@@ -22,7 +22,6 @@ public class Constants {
     public static final String PATCH_FIELDS = "patchFields";
     public static final String QUERY_PARAMS = "queryParams";
     public static final String STATE_FLOWS = "stateFlows";
-    public static final String SUPPLEMENT_MAP = "supplementMap";
 
     private static final String MODULE_NAME = "moduleName";
     public static String getModuleName(Context context) {
@@ -58,6 +57,24 @@ public class Constants {
 
     public static void setBodyParams(Context context, Map<String, Object> jsonObject) {
         context.put(BODY_PARAMS, jsonObject);
+    }
+
+    private static final String SUPPLEMENT_MAP = "supplementMap";
+    public static void setSupplementMap(Context context, Map<String, Map<String, Object>> supplementMap) {
+        context.put(SUPPLEMENT_MAP, supplementMap);
+    }
+
+    public static Map<String, Map<String, Object>> getSupplementMap(Context context) {
+        return (Map<String, Map<String, Object>>) context.get(SUPPLEMENT_MAP);
+    }
+
+    private static final String JSON_RECORD_MAP = "jsonRecordMap";
+    public static void setJsonRecordMap(Context context, JSONObject jsonObject) {
+        context.put(JSON_RECORD_MAP, jsonObject);
+    }
+
+    public static JSONObject getJsonRecordMap(Context context) {
+        return (JSONObject) context.get(JSON_RECORD_MAP);
     }
 
 }
