@@ -100,7 +100,7 @@ public class LiveSession {
 	}
 	
 	public String toString() {
-		return "LiveSession :: id: " + id + " sessionType: " + liveSessionType + " sessionSource: " + liveSessionSource + " sessionId: " + session.getId() + " createdTime: " + createdTime + " lastMsgTime: " + lastMsgTime;
+		return "LiveSession :: id: " + id + "orgId: "+((currentAccount != null && currentAccount .getOrg() != null) ? currentAccount.getOrg().getId() : -1)+"  sessionType: " + liveSessionType + " sessionSource: " + liveSessionSource + " sessionId: " + session.getId() + " createdTime: " + createdTime + " lastMsgTime: " + lastMsgTime;
 	}
 	
 	public static enum LiveSessionType {

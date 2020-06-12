@@ -135,6 +135,7 @@ public class FacilioServerEndpoint
 			}
 			
 			Account currentAccount = null;
+			System.out.println("idToken present: "+ (idToken != null ? true : false));
 			if (idToken != null) {
 				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(idToken, false, "web");
 				if (iamAccount == null) {
@@ -178,6 +179,9 @@ public class FacilioServerEndpoint
     	long id = Long.parseLong(session.getPathParameters().get("id"));
     	message.setTo(id);
     	message.setSessionType(ls.getLiveSessionType());
+    	if (ls.getCurrentAccount() != null && ls.getCurrentAccount().getOrg() != null) {
+    		message.setOrgId(ls.getCurrentAccount().getOrg().getId());
+    	}
     	if (ls.getLiveSessionType() == LiveSessionType.REMOTE_SCREEN) {
     		try {
 				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(id));
