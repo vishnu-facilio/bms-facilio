@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javax.websocket.Session;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.wms.message.Message;
 
 public class LiveSession {
@@ -12,6 +13,7 @@ public class LiveSession {
 	private static final Logger logger = Logger.getLogger(LiveSession.class.getName());
 	
 	private long id;
+	private Account currentAccount;
 	private Session session;
 	private LiveSessionType liveSessionType;
 	private LiveSessionSource liveSessionSource;
@@ -29,6 +31,15 @@ public class LiveSession {
 	
 	public LiveSession setId(long id) {
 		this.id = id;
+		return this;
+	}
+	
+	public Account getCurrentAccount() {
+		return currentAccount;
+	}
+	
+	public LiveSession setCurrentAccount(Account currentAccount) {
+		this.currentAccount = currentAccount;
 		return this;
 	}
 	

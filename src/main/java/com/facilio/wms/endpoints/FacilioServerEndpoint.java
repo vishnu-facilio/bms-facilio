@@ -20,8 +20,9 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
-
+import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
@@ -133,11 +134,13 @@ public class FacilioServerEndpoint
 				}
 			}
 			
+			Account currentAccount = null;
 			if (idToken != null) {
 				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(idToken, false, "web");
 				if (iamAccount == null) {
 					throw new Exception("Invalid auth!");
 				}
+				currentAccount = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
 			}
 			else if (deviceToken != null) {
 				DecodedJWT verifiedJwt = IAMUserBeanImpl.validateJWT(deviceToken, "auth0");
@@ -146,7 +149,7 @@ public class FacilioServerEndpoint
 				}
 			}
 			
-			LiveSession liveSession = new LiveSession().setId(id).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType).setLiveSessionSource(sessionSource);
+			LiveSession liveSession = new LiveSession().setId(id).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType).setLiveSessionSource(sessionSource);
 			return liveSession;
 		}
 		else {
@@ -194,10 +197,10 @@ public class FacilioServerEndpoint
 //			}
 //    	}
     	if ("subscribe".equalsIgnoreCase(message.getAction())) {
-    		PubSubManager.getInstance().subscribe(message);
+    		PubSubManager.getInstance().subscribe(ls, message);
     	}
     	else if ("unsubscribe".equalsIgnoreCase(message.getAction())) {
-    		PubSubManager.getInstance().unsubscribe(message);
+    		PubSubManager.getInstance().unsubscribe(ls, message);
     	}
     }
 

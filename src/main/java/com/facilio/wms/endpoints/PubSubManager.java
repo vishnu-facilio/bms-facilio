@@ -38,10 +38,10 @@ public class PubSubManager {
 		return INSTANCE;
 	}
 	
-	public void subscribe(Message message) {
+	public void subscribe(LiveSession ls, Message message) {
 		
 		try {
-			long orgId = message.getOrgId() > 0 ? message.getOrgId() : AccountUtil.getUserBean().getUserInternal(message.getTo(), false).getOrgId();
+			long orgId = message.getOrgId() > 0 ? message.getOrgId() : ls.getCurrentAccount().getOrg().getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
@@ -146,10 +146,10 @@ public class PubSubManager {
 		return null;
 	}
 	
-	public void unsubscribe(Message message) {
+	public void unsubscribe(LiveSession ls, Message message) {
 		
 		try {
-			long orgId = message.getOrgId() > 0 ?  message.getOrgId() : AccountUtil.getUserBean().getUserInternal(message.getTo(), false).getOrgId();
+			long orgId = message.getOrgId() > 0 ? message.getOrgId() : ls.getCurrentAccount().getOrg().getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
