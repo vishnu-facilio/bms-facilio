@@ -460,24 +460,20 @@ public class S3FileStore extends FileStore {
 	@Override
 	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
 
-//		List<String> filePathList = getFilePathList(fileIds);
-//		List<List<String>> partitionList = ListUtils.partition(filePathList, 1000);
-//		try {
-//			partitionList.forEach((List<String> chunckObjects) -> {
-//				DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
-//						.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
-//
-//				DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
+		List<String> filePathList = getFilePathList(fileIds);
+		List<List<String>> partitionList = ListUtils.partition(filePathList, 1000);
+		try {
+			partitionList.forEach((List<String> chunckObjects) -> {
+				DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
+						.withKeys(chunckObjects.toArray(new String[chunckObjects.size()])).withQuiet(false);
+
+				DeleteObjectsResult delObjRes = AwsUtil.getAmazonS3Client().deleteObjects(dor);
 //				 log.info("s3 object deleted size : "+delObjRes.getDeletedObjects().size());
-//			});
-//		}catch(MultiObjectDeleteException e) {
-//			List<DeleteError> error = e.getErrors();
-//			error.forEach(del -> log.info("Object Key is : "+del.getKey() + " ErrorMessage is  : "+ del.getMessage()+"  error code : "+del.getCode()));
-//			throw e;
-//		}
-//		catch(Exception e) {
-//			throw e;
-//		}
+			});
+		}catch(MultiObjectDeleteException e) {
+			List<DeleteError> error = e.getErrors();
+			error.forEach(del -> log.info("Object Key is : "+del.getKey() + " ErrorMessage is  : "+ del.getMessage()+"  error code : "+del.getCode()));
+		}
 		log.info("size of delete rows :"+fileIds.size());
 		return deleteFileEntries(fileIds);
 	}
