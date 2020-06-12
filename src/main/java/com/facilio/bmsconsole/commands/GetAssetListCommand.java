@@ -81,6 +81,11 @@ public class GetAssetListCommand extends FacilioCommand {
 			builder.andCondition(CriteriaAPI.getIdCondition(idsToSelect, module));
 		}
 		
+		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
+		if(clientFilterCriteria != null) {
+			builder.andCriteria(clientFilterCriteria);
+		}
+		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);

@@ -203,6 +203,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());  
 		c.addCommand(new AddVendorScopeForPortalCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderListCommand());
@@ -847,6 +848,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetFormRuleListCommand());
 		return c;
 	}
+	
+
 
 	public static FacilioChain getPurchaseRequestListChain() {
 		FacilioChain chain = getDefaultChain();

@@ -913,6 +913,7 @@ public class FacilioChainFactory {
 //		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand()); 
 		c.addCommand(new GetAssetListCommand());
 		return c;
 	}
@@ -2093,6 +2094,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
 		c.addCommand(new GetTenantListCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;

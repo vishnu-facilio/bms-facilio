@@ -216,11 +216,24 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	Criteria clientFilterCriteria;
+	
+	
+	public Criteria getClientFilterCriteria() {
+		return clientFilterCriteria;
+	}
+
+	public void setClientFilterCriteria(Criteria clientFilterCriteria) {
+		this.clientFilterCriteria = clientFilterCriteria;
+	}
+
 	public String assetList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
+ 		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientFilterCriteria);
+ 		
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();

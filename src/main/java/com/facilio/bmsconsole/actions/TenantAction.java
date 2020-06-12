@@ -30,6 +30,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.pdf.PdfUtil;
 
 public class TenantAction extends FacilioAction {
@@ -723,53 +724,70 @@ private Map<String, Double> readingData;
    
          }
    
-   public String v2fetchAllTenants() throws Exception {
+	    Criteria criteria;
 	   
-	   		
-	   	  FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
-	      FacilioContext context = fetchTenants.getContext();
+	    public Criteria getCriteria() {
+		return criteria;
+	    }
 	   
-	      context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-	      context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-	      
-	      context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tenants.ID asc");
-	      if(getFilters() != null)
-	      {  
-	         JSONParser parser = new JSONParser();
-	         JSONObject json = (JSONObject) parser.parse(getFilters());
-	         context.put(FacilioConstants.ContextNames.FILTERS, json);
-	         context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
-	      }
-	      if (getSearch() != null) {
-	         JSONObject searchObj = new JSONObject();
-	         searchObj.put("fields", "tenant.name");
-	         searchObj.put("query", getSearch());
-	         context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
-	      }
-	      if (getCount()) {  // only count
-	         context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-	      }
-	      context.put(ContextNames.SPACE_ID, spaceId);
-	         JSONObject pagination = new JSONObject();
-	         pagination.put("page", getPage());
-	         pagination.put("perPage", getPerPage());
-	         if (getPerPage() < 0) {
-	            pagination.put("perPage", 5000);
-	         }
-	         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-	         fetchTenants.execute();
-	          if (getCount()) {
-	            setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
-	            setResult("count", getTenantCount());
-	         }
-	         else {
-	          tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-	          setResult("tenants", tenants);
-	         }
+		public void setCriteria(Criteria criteria) {
+			this.criteria = criteria;
+		}
+	
+	 
+		public String v2fetchAllTenants() throws Exception {
+	   	   		
+		   	  FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
+		      FacilioContext context = fetchTenants.getContext();
+		      
+		      context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
+		      context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		      context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");      
+		      context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tenants.ID asc");
+		      
+		      if(getFilters() != null)
+		      {  
+		         JSONParser parser = new JSONParser();
+		         JSONObject json = (JSONObject) parser.parse(getFilters());
+		         context.put(FacilioConstants.ContextNames.FILTERS, json);
+		         context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		      }
+		      
+		      if (getSearch() != null) {
+		         JSONObject searchObj = new JSONObject();
+		         searchObj.put("fields", "tenant.name");
+		         searchObj.put("query", getSearch());
+		         context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		      }
+		      
+		      if (getCount()) {  // only count
+		         context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		      }
+		      
+	      	  context.put(ContextNames.SPACE_ID, spaceId);
+	          JSONObject pagination = new JSONObject();
+	          pagination.put("page", getPage());
+	          pagination.put("perPage", getPerPage());
+	         
+	          if (getPerPage() < 0) {
+	             pagination.put("perPage", 5000);
+	          }
+	         
+	          context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+	          fetchTenants.execute();
+	         
+	           if (getCount()) {
+	             setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+	             setResult("count", getTenantCount());
+	          }
+	          else {
+	             tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
+	             setResult("tenants", tenants);
+	          }
 	          
-	          return SUCCESS;
+	         return SUCCESS;
 	   
-	         }
+	 }
   
   
    public String getTenantsForSpace() throws Exception {

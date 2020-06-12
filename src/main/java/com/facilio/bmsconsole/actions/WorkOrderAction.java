@@ -85,6 +85,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -2004,6 +2005,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
+		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
 		
 		// Currently setting tenant portal based on view name. Will be removed once scoping is handled
 		boolean isTenantPortal = getViewName() != null && getViewName().equals("tenantWorkorder");
@@ -2378,6 +2380,16 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String getCriteriaIds() {
 		return this.criteriaIds;
+	}
+	
+	Criteria criteria;
+
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
 	}
 
 	public String getActivitiesList() throws Exception {

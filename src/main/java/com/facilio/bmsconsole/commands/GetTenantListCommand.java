@@ -75,6 +75,11 @@ public class GetTenantListCommand extends FacilioCommand{
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+		Criteria clientFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
+		if(clientFilterCriteria != null) {
+			builder.andCriteria(clientFilterCriteria);
+		}
+		
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		} 
