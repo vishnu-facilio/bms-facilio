@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,24 +8,21 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ViewSharingContext;
-import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 
 public class AddCVCommand extends FacilioCommand {
 
@@ -88,34 +86,29 @@ public class AddCVCommand extends FacilioCommand {
 			else {
 				long viewId1 = ViewAPI.updateView(viewId,view);	
 			}
-			List<ViewSharingContext> viewSharingList = (List<ViewSharingContext>) context.get(FacilioConstants.ContextNames.VIEW_SHARING_LIST);
-			
-			FacilioModule module = ModuleFactory.getViewSharingModule();
-			List<FacilioField> fields =  FieldFactory.getViewSharingFields();
-			if (viewSharingList != null && !viewSharingList.isEmpty()) {
-				List<Long> orgUsersId = viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
-				if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
-					ViewSharingContext newViewSharingContext = new ViewSharingContext();
-					newViewSharingContext.setOrgUserId(AccountUtil.getCurrentUser().getId());
-					newViewSharingContext.setSharingType(SharingType.USER.getIntVal());;
-					viewSharingList.add(newViewSharingContext);	
-				}
-				ViewAPI.applyViewSharing(viewId, viewSharingList);
-				view.setSharingType(ViewAPI.getViewSharingDetail(viewId));
-				
-			}
-			else if (viewSharingList == null || viewSharingList.isEmpty()) {
-				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-						.table(module.getTableName())
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCondition(CriteriaAPI.getCondition("VIEWID", "viewId", String.valueOf(viewId), NumberOperators.EQUALS));
-				
-				int count = builder.delete();
-			}						
-			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			view.setId(viewId);
+			
+			addViewSharing(view);
+			
+			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
+			
 		}
 		return false;
 	}
 
+	private void addViewSharing(FacilioView view) throws Exception {
+		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
+		SharingAPI.deleteSharing(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
+		if (viewSharing != null && !viewSharing.isEmpty()) {
+			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
+					.map(val -> val.getUserId()).collect(Collectors.toList());
+			if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
+				SingleSharingContext newViewSharing = new SingleSharingContext(); 
+				newViewSharing.setUserId(AccountUtil.getCurrentUser().getId());
+				newViewSharing.setType(SharingType.USER);
+				viewSharing.add(newViewSharing);	
+			}
+			SharingAPI.addSharing(viewSharing, view.getId(), ModuleFactory.getViewSharingModule());
+		}
+	}
 }

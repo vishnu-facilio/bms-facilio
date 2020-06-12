@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +10,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.db.criteria.Criteria;
 
 public class FacilioView {
@@ -27,7 +27,7 @@ public class FacilioView {
 		this.name = view.name;
 		this.displayName = view.displayName;
 		this.type = view.type;
-		this.sharingType = view.sharingType;
+		this.viewSharing = view.viewSharing;
 		this.moduleId = view.moduleId;
 		this.moduleName = view.moduleName;
 		this.criteriaId = view.criteriaId;
@@ -61,15 +61,13 @@ public class FacilioView {
 	public void setId(long id) {
 		this.id = id;
 	}
-	private List<ViewSharingContext> sharingType = new ArrayList<>();
-
 	
-	public List<ViewSharingContext> getSharingType() {
-		return sharingType;
+	private SharingContext<SingleSharingContext> viewSharing;
+	public SharingContext<SingleSharingContext> getViewSharing() {
+		return viewSharing;
 	}
-
-	public void setSharingType(List<ViewSharingContext> sharingType) {
-		this.sharingType = sharingType;
+	public void setViewSharing(SharingContext<SingleSharingContext> sharingType) {
+		this.viewSharing = sharingType;
 	}
 
 	private Boolean includeParentCriteria;

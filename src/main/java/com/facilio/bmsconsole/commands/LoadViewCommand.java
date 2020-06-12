@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -123,7 +125,7 @@ public class LoadViewCommand extends FacilioCommand {
 				}
 				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
-				view.setSharingType(ViewAPI.getViewSharingDetail(view.getId()));
+				view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
 			}
 		}
 		else {

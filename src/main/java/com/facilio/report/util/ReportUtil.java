@@ -267,18 +267,7 @@ public class ReportUtil {
 			}
 			
 		}
-		SharingContext<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
-		Map<Long, SharingContext<SingleSharingContext>> map = new HashMap<>();
-		for (int j = 0; j < sharing.size(); j++) {
-			if (map.containsKey(sharing.get(j).getParentId())){
-				map.get(sharing.get(j).getParentId()).add(sharing.get(j));
-			}
-			else {
-				SharingContext<SingleSharingContext> temp = new SharingContext<SingleSharingContext>();
-				temp.add(sharing.get(j));
-				map.put(sharing.get(j).getParentId(), temp);
-			}
-		}
+		Map<Long, SharingContext<SingleSharingContext>> map = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
 		for (int i = 0; i < reportFolders.size(); i++) {
 			
 			if (map.containsKey(reportFolders.get(i).getId())) {
@@ -848,18 +837,7 @@ public class ReportUtil {
 			}
 			
 		}
-		SharingContext<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
-		Map<Long, SharingContext<SingleSharingContext>> map = new HashMap<>();
-		for (int j = 0; j < sharing.size(); j++) {
-			if (map.containsKey(sharing.get(j).getParentId())){
-				map.get(sharing.get(j).getParentId()).add(sharing.get(j));
-			}
-			else {
-				SharingContext<SingleSharingContext> temp = new SharingContext<SingleSharingContext>();
-				temp.add(sharing.get(j));
-				map.put(sharing.get(j).getParentId(), temp);
-			}
-		}
+		Map<Long, SharingContext<SingleSharingContext>> map = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
 		for (int i = 0; i < reportFolders.size(); i++) {
 			
 			if (map.containsKey(reportFolders.get(i).getId())) {

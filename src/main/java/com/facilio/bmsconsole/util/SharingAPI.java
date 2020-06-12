@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,30 @@ public class SharingAPI {
 			}
 		}
 		return sharingList;	
+		
+	}
+	
+	public static <E extends SingleSharingContext> Map<Long, SharingContext<E>> getSharingMap(FacilioModule module, Class<E> classObj) throws Exception {
+		List<FacilioField> fields = FieldFactory.getSharingFields(module);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				;
+		List<Map<String, Object>> props = select.get();
+		Map<Long, SharingContext<E>> map = new HashMap<>();
+		if(props != null && !props.isEmpty()) {
+			List<E> sharingList = FieldUtil.getAsBeanListFromMapList(props, classObj);
+			for (E sharing: sharingList) {
+				long parentId = sharing.getParentId();
+				SharingContext<E> recordSharing = map.get(parentId);
+				if (recordSharing == null) {
+					recordSharing = new SharingContext<E>();
+					map.put(parentId, recordSharing);
+				}
+				recordSharing.add(sharing);
+			}
+		}
+		return map;	
 		
 	}
 

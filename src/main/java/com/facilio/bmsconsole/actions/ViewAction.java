@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -206,14 +205,6 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private List<ViewSharingContext> viewSharing;
-	public List<ViewSharingContext> getViewSharing() {
-		return viewSharing;
-	}
-	public void setViewSharing(List<ViewSharingContext> viewSharing) {
-		this.viewSharing = viewSharing;
-	}
-	
 	public String addView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -221,7 +212,6 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
-		context.put(FacilioConstants.ContextNames.VIEW_SHARING_LIST, viewSharing);
 		if (view.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
@@ -241,7 +231,6 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
-		context.put(FacilioConstants.ContextNames.VIEW_SHARING_LIST, viewSharing);
 		if (view.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}

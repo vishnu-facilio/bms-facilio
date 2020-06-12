@@ -942,6 +942,15 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.BMS_ALARM);
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
+		
+		ArrayList<String> agentAlarms = new ArrayList<String>();
+		agentAlarms.add("agentAll");
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "agentAlarmViews");
+		groupDetails.put("displayName", "Agent Alarms");
+		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
+		groupDetails.put("views", agentAlarms);
+		groupVsViews.add(groupDetails);
 
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customalarms");

@@ -6360,20 +6360,6 @@ public class FieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getViewSharingFields() {
-        FacilioModule module = ModuleFactory.getViewSharingModule();
-        List<FacilioField> fields = new ArrayList<>();
-
-        fields.add(getIdField(module));
-        //fields.add(getOrgIdField(module));
-        fields.add(getField("viewId", "VIEWID", module, FieldType.NUMBER));
-        fields.add(getField("orgUserId", "ORG_USERID", module, FieldType.NUMBER));
-        fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
-        fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
-        fields.add(getField("sharingType", "SHARING_TYPE", module, FieldType.NUMBER));
-
-        return fields;
-    }
 
     public static FacilioField getField(String name, String colName, FieldType type) {
         return getField(name, colName, null, type);
