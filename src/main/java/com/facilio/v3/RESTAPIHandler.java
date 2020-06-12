@@ -32,7 +32,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
@@ -326,7 +325,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
     }
 
-    private void createHandler(String moduleName, Map<String, Object> createObj) throws Exception {
+    private void createHandler(String moduleName, Map<String, Object> createObj, Map<String, Object> bodyParams) throws Exception {
         FacilioModule module = getModule(moduleName);
 
         V3Config v3Config = getV3Config(moduleName);
@@ -376,7 +375,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setModuleName(context, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
-        context.put(Constants.RAW_INPUT, createObj);
+        Constants.setRawInput(context, createObj);
+        Constants.setBodyParams(context, bodyParams);
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
 
         Class beanClass = getBeanClass(v3Config, module);
@@ -402,7 +402,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
 
 
-    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj) throws Exception {
+    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
         Object record = getRecord(moduleName, id);
 
         FacilioModule module = getModule(moduleName);
@@ -470,7 +470,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(Constants.RECORD_ID, id);
         Constants.setModuleName(context, moduleName);
-        context.put(Constants.RAW_INPUT, summaryRecord);
+        Constants.setRawInput(context, summaryRecord);
+        Constants.setBodyParams(context, bodyParams);
 //        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
@@ -489,7 +490,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         summary();
     }
 
-    private void updateHandler(String moduleName, long id, Map<String, Object> updateObj) throws Exception {
+    private void updateHandler(String moduleName, long id, Map<String, Object> updateObj, Map<String, Object> bodyParams) throws Exception {
         FacilioModule module = getModule(moduleName);
         V3Config v3Config = getV3Config(moduleName);
         Command initCommand = new DefaultInit();
@@ -529,7 +530,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         context.put(Constants.RECORD_ID, id);
         Constants.setModuleName(context, moduleName);
-        context.put(Constants.RAW_INPUT, updateObj);
+        Constants.setRawInput(context, updateObj);
+        Constants.setBodyParams(context, bodyParams);
         context.put(Constants.QUERY_PARAMS, getQueryParameters());
          context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
@@ -592,7 +594,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             //removing permission restricted fields
             removeRestrictedFields(this.getData(), this.getModuleName(), true);
 
-            createHandler(this.getModuleName(), this.getData());
+            createHandler(this.getModuleName(), this.getData(), this.getParams());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
@@ -612,7 +614,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
     public String update() throws Exception {
         try {
-            updateHandler(this.getModuleName(), this.getId(), this.getData());
+            updateHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
@@ -633,7 +635,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         try {
             //removing permission restricted fields
             removeRestrictedFields(this.getData(), this.getModuleName(), true);
-            patchHandler(this.getModuleName(), this.getId(), this.getData());
+            patchHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());

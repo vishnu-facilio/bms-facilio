@@ -9,6 +9,7 @@ import java.util.Map;
 public class V3Action extends ActionSupport {
     private JSONObject data;
 	private JSONObject meta;
+	private JSONObject params;
 	private int code = 0;
 	private String message;
 
@@ -164,5 +165,13 @@ public class V3Action extends ActionSupport {
 	}
 	public void setApprovalTransitionId(Long approvalTransitionId) {
 		this.approvalTransitionId = approvalTransitionId;
+	}
+
+	public JSONObject getParams() {
+		return params;
+	}
+
+	public void setParams(JSONObject params) {
+		this.params = params;
 	}
 }

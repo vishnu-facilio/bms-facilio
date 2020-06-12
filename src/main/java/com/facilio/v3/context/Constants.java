@@ -2,13 +2,14 @@ package com.facilio.v3.context;
 
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 public class Constants {
     public static final String FILTERS = "filters";
     public static final String RECORD_MAP = "recordMap";
-    public static final String RAW_INPUT = "rawInput";
     public static final String EXCLUDE_PARENT_CRITERIA = "excludeParentCriteria";
     public static final String FILTER_CRITERIA = "filterCriteria";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
@@ -39,6 +40,24 @@ public class Constants {
 
     public static void setFetchSupplements(Context context, List<LookupField> supplements) {
         context.put(FETCH_SUPPLEMENTS, supplements);
+    }
+
+    private static final String RAW_INPUT = "rawInput";
+    public static Map<String, Object> getRawInput(Context context) {
+        return (Map<String, Object>) context.get(RAW_INPUT);
+    }
+
+    public static void setRawInput(Context context, Map<String, Object> jsonObject) {
+        context.put(RAW_INPUT, jsonObject);
+    }
+
+    private static final String BODY_PARAMS = "bodyParams";
+    public static Map<String, Object> getBodyParams(Context context) {
+        return (JSONObject) context.get(BODY_PARAMS);
+    }
+
+    public static void setBodyParams(Context context, Map<String, Object> jsonObject) {
+        context.put(BODY_PARAMS, jsonObject);
     }
 
 }

@@ -12,17 +12,14 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
-
-import java.io.IOException;
 import java.util.*;
 
 public class DefaultInit extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        JSONObject data = (JSONObject) context.get(Constants.RAW_INPUT);
+        Map<String, Object> data = Constants.getRawInput(context);
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         Long id = (Long) context.get(Constants.RECORD_ID);
 
@@ -66,7 +63,7 @@ public class DefaultInit extends FacilioCommand {
         return (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(recordMap, beanClass);
     }
 
-    private void setFormData(JSONObject data, String moduleName, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+    private void setFormData(Map<String, Object> data, String moduleName, ModuleBaseWithCustomFields moduleRecord) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         Set subModuleNames = new HashSet<>(getSubModuleRels(module.getModuleId()));
