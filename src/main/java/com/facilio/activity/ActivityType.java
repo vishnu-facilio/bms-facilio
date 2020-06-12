@@ -1,9 +1,6 @@
 package com.facilio.activity;
 
-import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.activity.ItemActivityType;
-import com.facilio.bmsconsole.activity.QuotationActivityType;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.activity.*;
 import com.facilio.collections.UniqueMap;
 import org.json.simple.JSONObject;
 
@@ -38,7 +35,10 @@ public interface ActivityType {
 		for (ActivityType type: QuotationActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 68
+		for (ActivityType type: CommonActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Max number = 69
 
 		return activityMap;
 	}

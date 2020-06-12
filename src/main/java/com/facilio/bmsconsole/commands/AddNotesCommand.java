@@ -1,21 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
-import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.util.NotesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -23,7 +17,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -86,7 +79,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
-				info.put("Comment", note.getBody());
+				info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
 				info.put("notifyRequester", note.getNotifyRequester());
 				isNotifyRequester = note.getNotifyRequester();
 				
@@ -103,7 +96,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	     			long occurrenceId = (long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
 					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
 				} else if(moduleName.equals(FacilioConstants.ContextNames.QUOTATION_NOTES)) {
-					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, QuotationActivityType.ADD_NOTES, info, (FacilioContext) context);
+					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
 				}
 				
 				noteBuilder.addRecord(note);

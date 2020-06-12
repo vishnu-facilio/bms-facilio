@@ -1,10 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.activity.ItemActivityType;
-import com.facilio.bmsconsole.activity.QuotationActivityType;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.activity.*;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -123,7 +120,7 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
      		}
 			else if(moduleName.equals(FacilioConstants.ContextNames.QUOTATION_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, QuotationActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 
 		}

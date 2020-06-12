@@ -1647,11 +1647,12 @@ public class FacilioConstants {
 		public static final String QUOTATION_MAIL_ATTACHMENTS = "quotationMailAttachments";
 		public static final String QUOTATION_PDF_URL = "quotationPdfUrl";
 		public static final String QUOTATION_ACTIVITY = "quotationactivity";
-		public static final String OLD_TOTAL_COST_MAP = "oldTotalCostMap";
-		public static final String OLD_TOTAL_COST = "oldTotalCost";
 
 		public static final String FETCH_MY_APPS = "fetchMyApps";
 		public static final String APP_DOMAIN = "applicationDomain";
+
+		public static final String NOTES_COMMENT = "Comment";
+		public static final String MODULE_STATE = "moduleState";
 
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

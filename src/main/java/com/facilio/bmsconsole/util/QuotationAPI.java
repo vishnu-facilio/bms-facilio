@@ -20,6 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -336,5 +337,11 @@ public class QuotationAPI {
             newContext.setTax(tax);
             taxSplitUp.put(tax.getId(), newContext);
         }
+    }
+
+
+    public static String formatDecimal(Double val) {
+        DecimalFormat df =new DecimalFormat(".##");
+        return df.format(val);
     }
 }

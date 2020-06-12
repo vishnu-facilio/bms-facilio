@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.activity;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.bmsconsole.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
+
 
 public enum QuotationActivityType implements ActivityType {
     ADD(63) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Created quotation  for " + Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0;
+            return " Created quotation  for " + QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
         }
     },
     UPDATE(64) {
@@ -17,24 +19,10 @@ public enum QuotationActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
             if (json.containsKey(FacilioConstants.ContextNames.TOTAL_COST)) {
-                return " Updated Quotation. Amount changed to " +  Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0;
+                return " Updated Quotation. Amount changed to " +  QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
             } else {
                 return " Updated Quotation.";
             }
-        }
-    },
-    ADD_NOTES(65) {
-        @Override
-        public String constructMessage(JSONObject json) {
-            // TODO Auto-generated method stub
-            return " added a Comment ";
-        }
-    },
-    ADD_ATTACHMENT(66) {
-        @Override
-        public String constructMessage(JSONObject json) {
-            // TODO Auto-generated method stub
-            return " added the Attachment ";
         }
     },
     EMAIL_QUOTATION(67) {
