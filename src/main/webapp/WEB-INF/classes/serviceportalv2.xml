@@ -419,6 +419,7 @@
 		extends="newServicePortalApiV2">
 		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationDetails">
+			<param name="auth">true</param>
 		</action>
 	</package>
 	

@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 
@@ -36,46 +38,42 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
     @Override 
     public String intercept(ActionInvocation arg0) throws Exception { 
         try { 
-            intercept0(); 
-        } catch (Exception e) { 
+            intercept0();
+            return arg0.invoke();
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "error in portal auth interceptor", e); 
             return Action.LOGIN; 
         } 
-        try { 
-            return arg0.invoke(); 
-        } catch (Exception e) { 
-            logger.log(Level.SEVERE, "error thrown from action class", e); 
-            throw e; 
-        } 
-    } 
+    }
  
-    private void intercept0() { 
+    private void intercept0() throws Exception{
         HttpServletRequest request = ServletActionContext.getRequest(); 
         IAMAccount currentAccount = null; 
-        try { 
-        	String domainName = request.getServerName();
-        	String portalDomain = null;
-			if(customdomains != null) { 
-                String orgdomain = (String)customdomains.get(domainName); 
-                if(orgdomain != null) { 
-                    domainName = orgdomain+"."+ portalDomain; 
-                } 
-                log.info("Found a valid domain for custom domain for "+ domainName); 
-            } 
-            if(domainName != null) { 
-                String[] domainArray = domainName.split("\\."); 
-                if (domainArray.length > 2) { 
-                    portalDomain = domainArray[0]; 
-		        }
+        String domainName = request.getServerName();
+        String portalDomain = null;
+        if(customdomains != null) {
+            String orgdomain = (String)customdomains.get(domainName);
+            if(orgdomain != null) {
+                domainName = orgdomain+"."+ portalDomain;
             }
-            currentAccount = AuthenticationUtil.validateToken(request,true);
-            request.setAttribute("iamAccount", currentAccount);
-            request.setAttribute("isPortal", true);
-            request.setAttribute("portalDomain", portalDomain);
-         } 
-        catch (Exception e){ 
-            log.info("Exception occurred ", e); 
-        } 
+            log.info("Found a valid domain for custom domain for "+ domainName);
+        }
+        if(domainName != null) {
+            String[] domainArray = domainName.split("\\.");
+            if (domainArray.length > 2) {
+                portalDomain = domainArray[0];
+            }
+        }
+        String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+        IAMAccount iamAccount = AuthenticationUtil.validateToken(request, true);
+        request.setAttribute("iamAccount", iamAccount);
+
+        if(authRequired != null && "true".equalsIgnoreCase(authRequired) && iamAccount == null) {
+            throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED, "Unauthorized");
+        }
+        request.setAttribute("isPortal", true);
+        request.setAttribute("portalDomain", portalDomain);
+
     } 
  
     private static String portalDomain = null; 
