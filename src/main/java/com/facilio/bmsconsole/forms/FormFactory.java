@@ -305,17 +305,14 @@ public class FormFactory {
 				List<FormSection> sections = new ArrayList<>();
 				List<FormField> defaultFields = new ArrayList<>();
 				List<FormField> billingAddressFields = new ArrayList<>();
-				List<FormField> shippingAddressFields = new ArrayList<>();
 				List<FormField> lineItemFields = new ArrayList<>();
-				List<FormField> additionalCostFields = new ArrayList<>();
-				List<FormField> discountFields = new ArrayList<>();
 				List<FormField> signatureFields = new ArrayList<>();
 
 				form.setSections(sections);
 				FormSection defaultSection = new FormSection("QUOTE INFORMATION", 1, defaultFields, true);
 				FormSection billingSection = new FormSection("BILLING ADDRESS", 2, billingAddressFields, false);
-				FormSection lineItemSection = new FormSection("QUOTE ITEMS", 4, lineItemFields, true);
-				FormSection notesSection = new FormSection("NOTES", 7, signatureFields, true);
+				FormSection lineItemSection = new FormSection("QUOTE ITEMS", 3, lineItemFields, true);
+				FormSection notesSection = new FormSection("NOTES", 4, signatureFields, false);
 
 				form.getFields().forEach(field -> {
 					if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_LINE_ITEMS) {
