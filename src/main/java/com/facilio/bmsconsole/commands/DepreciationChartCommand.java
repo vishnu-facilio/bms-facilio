@@ -29,16 +29,16 @@ public class DepreciationChartCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid asset depreciation");
             }
 
-            List<AssetDepreciationRelContext> assetDepreciationRelList = assetDepreciation.getAssetDepreciationRelList();
-            AssetContext assetContext = null;
-            if (CollectionUtils.isNotEmpty(assetDepreciationRelList)) {
-                for (AssetDepreciationRelContext relContext : assetDepreciationRelList) {
-                    if (relContext.getAssetId() == assetId) {
-                        assetContext = AssetsAPI.getAssetInfo(assetId);
-                        break;
-                    }
-                }
-            }
+//            List<AssetDepreciationRelContext> assetDepreciationRelList = assetDepreciation.getAssetDepreciationRelList();
+            AssetContext assetContext = AssetsAPI.getAssetInfo(assetId);
+//            if (CollectionUtils.isNotEmpty(assetDepreciationRelList)) {
+//                for (AssetDepreciationRelContext relContext : assetDepreciationRelList) {
+//                    if (relContext.getAssetId() == assetId) {
+//                        assetContext = AssetsAPI.getAssetInfo(assetId);
+//                        break;
+//                    }
+//                }
+//            }
             if (assetContext == null) {
                 throw new IllegalArgumentException("Asset not found");
             }
