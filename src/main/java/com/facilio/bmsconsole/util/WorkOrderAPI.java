@@ -2939,5 +2939,51 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	      List<FacilioStatus> workorderTicketStatusList = builder.get();
 	      return workorderTicketStatusList;
 	   }
+   
+   public static List<Map<String, Object>> getTopNBuildings(int limit, long startTime, long endTime, long siteId) throws Exception {
+
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	   FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	   FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+	   FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+	   
+	   Map<String, FacilioField> fieldMap = FieldFactory.getAsMap( modBean.getAllFields(module.getName()));
+	   FacilioField resourceField = fieldMap.get("resource");
+	   
+	   Map<String,FacilioField> baseSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(baseSpaceModule.getName()));
+	   FacilioField buildingField = baseSpaceFieldMap.get("building");
+	   
+	   List<FacilioField> fields = new ArrayList<>();
+	   fields.add(buildingField);
+	   
+	   FacilioField countField = FieldFactory.getField("total", "count(*)", FieldType.NUMBER);
+	   fields.add(countField);
+	   FacilioField openCountField = FieldFactory.getField("open", "count(IF( STATUS_TYPE = "+FacilioStatus.StatusType.OPEN.getIntVal()+", 1, NULL))", FieldType.NUMBER);
+	   fields.add(openCountField);
+
+	   SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+			   .module(module)
+			   .beanClass(WorkOrderContext.class)
+			   .select(fields)
+			   .innerJoin(ModuleFactory.getTicketStatusModule().getTableName())
+	           .on(fieldMap.get("moduleState").getCompleteColumnName()+" = TicketStatus.ID")
+			   .innerJoin(resourceModule.getTableName())
+			   .on(resourceModule.getTableName()+".ID = "+ resourceField.getCompleteColumnName())
+			   .innerJoin(baseSpaceModule.getTableName())
+			   .on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+	           .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime+","+endTime, DateOperators.BETWEEN))
+	           .groupBy(buildingField.getCompleteColumnName())
+	           .orderBy(countField.getName()+" DESC")
+	           .limit(limit)
+	           .fetchSupplement((LookupField) buildingField)
+			   ;
+	   
+	   if (siteId > 0) {
+		   builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), NumberOperators.EQUALS));
+	   }
+	   
+	   return builder.getAsProps();
+	   
+   }
   
  }
