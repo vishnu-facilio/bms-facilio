@@ -1,14 +1,21 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -79,4 +86,28 @@ public class SensorEventContext extends BaseEventContext {
 			setSensorRule(sensorRuleContext);
 		}
 	}
+	
+	public SensorRollUpEventContext constructRollUpEvent(ReadingContext reading, JSONObject defaultSeverityProps, boolean isHistorical, boolean isMeterRollUpEvent) throws Exception {
+		
+		SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
+		String severity = (String) defaultSeverityProps.get("severity");
+		if (StringUtils.isNotEmpty(severity)) {
+			sensorRollUpEvent.setSeverityString(severity);
+		}
+		sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
+		if(!isMeterRollUpEvent) {
+			sensorRollUpEvent.setReadingFieldId(this.getReadingFieldId());
+			sensorRollUpEvent.setEventMessage("Sensor turns fault");
+		}
+		else {
+			sensorRollUpEvent.setEventMessage("Asset has faulty sensors");
+		}
+
+		sensorRollUpEvent.setSensorRule(this.getSensorRule());
+		
+		SensorRuleUtil.addDefaultEventProps(reading, null, sensorRollUpEvent);
+		
+		return sensorRollUpEvent;
+	}
+
 }

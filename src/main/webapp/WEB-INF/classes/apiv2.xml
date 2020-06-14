@@ -1903,6 +1903,10 @@
 			method="runHistoricalRule">
 			<param name="permission">ENERGY_ANALYTICS</param>
 		</action>
+		<action name="runThroughSensorRule"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runThroughSensorRule">
+		</action>
 		<action name="addRollUpFieldMig"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addRollUpFieldMig">

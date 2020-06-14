@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ExecuteSensorRuleCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -93,11 +95,22 @@ public class SensorRuleUtil {
 	public static List<SensorRuleContext> getSensorRuleByModuleId(FacilioModule childModule, boolean isFetchSubProps) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(FieldFactory.getSensorRuleFields())
 			.table(ModuleFactory.getSensorRuleModule().getTableName())
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), childModule.getExtendedModuleIds(), NumberOperators.EQUALS));
+							
+		List<Map<String, Object>> props = selectBuilder.get();
+		return getSensorRuleFromProps(props, isFetchSubProps);
+	}
+	
+	public static List<SensorRuleContext> getSensorRuleByCategoryId(long assetCategoryId, boolean isFetchSubProps) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRuleFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(FieldFactory.getSensorRuleFields())
+			.table(ModuleFactory.getSensorRuleModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), ""+assetCategoryId, NumberOperators.EQUALS));
 							
 		List<Map<String, Object>> props = selectBuilder.get();
 		return getSensorRuleFromProps(props, isFetchSubProps);
@@ -136,60 +149,176 @@ public class SensorRuleUtil {
 		return null;		
 	}
 	
-	public static void executeSensorRules(List<SensorRuleContext> sensorRules, List<ReadingContext> readings, boolean isHistorical) throws Exception {
+	public static List<BaseEventContext> executeSensorRules(List<SensorRuleContext> sensorRules, List<ReadingContext> readings, boolean isHistorical, List<SensorRollUpEventContext> sensorMeterRollUpEvents) throws Exception {
 		if(sensorRules != null && !sensorRules.isEmpty()) 
 		{		
 			List<Long> sensorRuleIds = sensorRules.stream().map(sensorRule -> sensorRule.getId()).collect(Collectors.toList());
-			HashMap<Long, JSONObject> sensorRuleValidatorPropsMap = SensorRuleUtil.getSensorRuleValidatorPropsByParentRuleIds(sensorRuleIds);		
+			HashMap<Long, JSONObject> sensorRuleValidatorPropsMap = SensorRuleUtil.getSensorRuleValidatorPropsByParentRuleIds(sensorRuleIds);	
+			
+			LinkedHashMap<Long, List<ReadingContext>> assetReadingsMap = groupReadingsByResourceId(readings);
+			LinkedHashMap<Long, List<SensorRuleContext>> fieldSensorRulesMap = groupSensorRulesByFieldId(sensorRules);
+			LinkedHashMap<String, SensorRollUpEventContext> fieldSensorRollUpEventMeta = new LinkedHashMap<String, SensorRollUpEventContext>();
+			LinkedHashMap<Long, SensorRollUpEventContext> assetSensorRollUpEventMeta = new LinkedHashMap<Long, SensorRollUpEventContext>();
+					
 			LinkedHashMap<String, List<ReadingContext>> historicalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
-
-			for(SensorRuleContext sensorRule:sensorRules) 
-			{	
-				List<SensorEventContext> sensorEvents= new ArrayList<SensorEventContext>();
-				LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = null;
+			LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap = null;
+			if(isHistorical) {
+				constructHistoryReadingsMap(readings, sensorRules, historicalReadingsMap);
+				completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
+			}
+			else {
+				SensorRollUpUtil.fetchSensorRollUpAlarmMeta(assetReadingsMap.keySet(), fieldSensorRollUpEventMeta, assetSensorRollUpEventMeta);
+			}
+			
+			List<SensorEventContext> sensorEvents = new ArrayList<SensorEventContext>();
+			List<SensorRollUpEventContext> sensorFieldRollUpEvents = new ArrayList<SensorRollUpEventContext>();
+			
+//			for(Long assetId: assetReadingsMap.keySet()) {	
+//				List<ReadingContext> assetReadings = assetReadingsMap.get(assetId);
 				
-				if(isHistorical) {
-					constructHistoryReadingsMap(readings, sensorRule, historicalReadingsMap);
-					completeHistoricalReadingsMap = new LinkedHashMap<String, List<ReadingContext>>();
-				}
-				
-				for(ReadingContext reading:readings) 
+			for(ReadingContext reading: readings) 
+			{
+				boolean isFirstAssetSensorRule = true;
+				for(Long readingFieldId: fieldSensorRulesMap.keySet()) 
 				{
-					List<ReadingContext> historicalReadings = new ArrayList<ReadingContext>();
-					historicalReadings = (isHistorical && !sensorRule.getSensorRuleTypeEnum().isCurrentValueDependent()) ? historicalReadingsMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), sensorRule.getReadingField())) : null;
-
-					if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
+					boolean isFirstFieldSensorRule = true;
+					List<SensorRuleContext> fieldSensorRules = fieldSensorRulesMap.get(readingFieldId);
+					
+					for(SensorRuleContext sensorRule: fieldSensorRules) 
 					{
-						SensorRuleTypeValidationInterface validatorType = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType();
-						boolean result = validatorType.evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
-						JSONObject defaultSeverityProps = validatorType.getDefaultSeverityAndSubject();
-						checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
-						
-						if(result) {
-							SensorEventContext sensorEvent = sensorRule.constructEvent(reading,sensorRuleValidatorPropsMap.get(sensorRule.getId()), defaultSeverityProps, isHistorical);
-							sensorEvents.add(sensorEvent);
-						}
-						else {
-							SensorEventContext sensorEvent = sensorRule.constructClearEvent(reading,sensorRuleValidatorPropsMap.get(sensorRule.getId()), defaultSeverityProps, isHistorical);
-							if(sensorEvent != null) {
+						List<ReadingContext> historicalReadings = new ArrayList<ReadingContext>();
+						historicalReadings = (isHistorical && !sensorRule.getSensorRuleTypeEnum().isCurrentValueDependent()) ? historicalReadingsMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), sensorRule.getReadingField())) : null;
+
+						if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
+						{
+							SensorRuleTypeValidationInterface validatorType = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType();
+							boolean result = validatorType.evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
+							JSONObject defaultSeverityProps = validatorType.getDefaultSeverityAndSubject();
+							checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
+							
+							if(result) 
+							{
+								SensorEventContext sensorEvent = sensorRule.constructEvent(reading, defaultSeverityProps, isHistorical);
 								sensorEvents.add(sensorEvent);
+								
+								if(isFirstFieldSensorRule && !validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
+									SensorRollUpEventContext sensorFieldRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, false);
+									sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
+									fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(), sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
+									isFirstFieldSensorRule = false;
+								}
+								
+								if(isFirstAssetSensorRule && validatorType.getSensorRuleTypeFromValidator().isMeterRollUp()) {
+									SensorRollUpEventContext sensorAssetRollUpEvent = sensorEvent.constructRollUpEvent(reading, defaultSeverityProps, isHistorical, true);
+									sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
+									assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
+									isFirstAssetSensorRule = false;
+								}
 							}
+							else 
+							{
+								SensorEventContext sensorEvent = sensorRule.constructClearEvent(reading, defaultSeverityProps, isHistorical);
+								if(sensorEvent != null) {
+									sensorEvents.add(sensorEvent);
+								}
+							}
+						}	
+					}
+					
+					boolean canClearFieldEvent = true;
+					for(SensorRuleContext fieldSensorRule: fieldSensorRules) {							
+						if(!fieldSensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //field sensor rule
+							Map<Long, SensorRuleAlarmMeta> metaMap = fieldSensorRule.getAlarmMetaMap();
+							SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
+							if (alarmMeta != null && !alarmMeta.isClear()) { //If active, do not clear
+								canClearFieldEvent = false;
+							}									
 						}
 					}
+					if(canClearFieldEvent) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						String key = ReadingsAPI.getRDMKey(reading.getParentId(), modBean.getField(readingFieldId));
+						SensorRollUpEventContext fieldSensorRollUpMetaEvent = fieldSensorRollUpEventMeta.get(key);
+						if(fieldSensorRollUpMetaEvent != null && !fieldSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+							SensorRollUpEventContext sensorFieldRollUpEvent = fieldSensorRollUpMetaEvent.constructRollUpClearEvent(reading, isHistorical, false);
+							sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
+							fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(),sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
+						}		
+					}		
 				}
 				
+				boolean canClearAssetRollUpEvent = true;
+				for(SensorRuleContext sensorRule: sensorRules) {							
+					if(sensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //Meter sensor rule
+						Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
+						SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
+						if (alarmMeta != null && !alarmMeta.isClear()) { //If active, do not clear
+							canClearAssetRollUpEvent = false;
+						}									
+					}
+				}
+				if(canClearAssetRollUpEvent) {
+					SensorRollUpEventContext assetSensorRollUpMetaEvent = assetSensorRollUpEventMeta.get(reading.getParentId());
+					if(assetSensorRollUpMetaEvent != null && !assetSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+						SensorRollUpEventContext sensorAssetRollUpEvent = assetSensorRollUpMetaEvent.constructRollUpClearEvent(reading, isHistorical, true);
+						sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
+						assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
+					}		
+				}		
+			}
+				
+			List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
+			baseEvents.addAll(sensorEvents);
+			baseEvents.addAll(sensorFieldRollUpEvents);
+			
+			if(isHistorical) {
+				baseEvents.addAll(sensorMeterRollUpEvents);
+				return baseEvents;
+			}
+			else {
 				FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(true);
-				addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, sensorEvents);
+				addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 				addEventChain.execute();
 			}
-		}			
+		}
+		return null;			
 	}
 	
 	private static void checkDefaultSeverityProps(JSONObject defaultSeverityProps, JSONObject ruleProps) {
-		if(ruleProps.get("severity") != null && ruleProps.get("subject") != null) {
+		if(ruleProps.get("severity") != null) {
 			defaultSeverityProps.put("severity", ruleProps.get("severity"));
+		}
+		if(ruleProps.get("subject") != null) {
 			defaultSeverityProps.put("subject", ruleProps.get("subject"));
 		}
+	}
+	
+	private static LinkedHashMap<Long, List<ReadingContext>> groupReadingsByResourceId(List<ReadingContext> readings) {
+		LinkedHashMap<Long, List<ReadingContext>> assetReadingsMap = new LinkedHashMap<Long, List<ReadingContext>>();
+		for(ReadingContext reading: readings)
+		{	
+			List<ReadingContext> assetReadings = assetReadingsMap.get(reading.getParentId());
+			if(assetReadings == null) {
+				assetReadings = new ArrayList<ReadingContext>();
+				assetReadingsMap.put(reading.getParentId(), assetReadings);
+			}
+			assetReadings.add(reading);
+		}
+		return assetReadingsMap;	
+	}
+	
+	private static LinkedHashMap<Long, List<SensorRuleContext>> groupSensorRulesByFieldId(List<SensorRuleContext> sensorRules) {
+		LinkedHashMap<Long, List<SensorRuleContext>> fieldSensorRulesMap = new LinkedHashMap<Long, List<SensorRuleContext>>();
+		for(SensorRuleContext sensorRule: sensorRules) 
+		{
+			List<SensorRuleContext> fieldSensorRules = fieldSensorRulesMap.get(sensorRule.getReadingFieldId());
+			if(fieldSensorRules == null) {
+				fieldSensorRules = new ArrayList<SensorRuleContext>();
+				fieldSensorRulesMap.put(sensorRule.getReadingFieldId(), fieldSensorRules);
+			}
+			fieldSensorRules.add(sensorRule);	
+		}
+		return fieldSensorRulesMap;	
 	}
 	
 	private static void fetchAlarmMeta(SensorRuleContext sensorRule) throws Exception {
@@ -229,6 +358,24 @@ public class SensorRuleUtil {
 		return meta;
 	}
 	
+	public static void addDefaultEventProps(ReadingContext reading, JSONObject defaultSeverityProps, BaseEventContext sensorEvent) {
+		
+		sensorEvent.setResource((ResourceContext) reading.getParent());
+		sensorEvent.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
+		sensorEvent.setCreatedTime(reading.getTtime());
+		
+		if(defaultSeverityProps != null) {
+			if (defaultSeverityProps.get("subject") != null && StringUtils.isNotEmpty((String)defaultSeverityProps.get("subject")) && 
+					(sensorEvent.getEventMessage() == null || sensorEvent.getEventMessage().isEmpty())) {
+				sensorEvent.setEventMessage((String)defaultSeverityProps.get("subject"));
+			}
+			if (defaultSeverityProps.get("comment") != null && StringUtils.isNotEmpty((String)defaultSeverityProps.get("comment")) && 
+					(sensorEvent.getComment() == null || sensorEvent.getComment().isEmpty())) {
+				sensorEvent.setComment((String)defaultSeverityProps.get("comment"));
+			}		
+		}
+	}
+	
 	public static HashMap<Long, JSONObject> getSensorRuleValidatorPropsByParentRuleIds(List<Long> parentRuleIdList) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSensorRulePropsFields());
@@ -248,7 +395,14 @@ public class SensorRuleUtil {
 				{
 					long parentSensorRuleId = (long) prop.get("parentSensorRuleId");
 					JSONObject ruleValidatorProps = (JSONObject) prop.get("ruleValidatorProps");
-					sensorRulePropsMap.put(parentSensorRuleId, ruleValidatorProps);
+					
+					JSONObject ruleValidatorPropsJson = sensorRulePropsMap.get(parentSensorRuleId);
+					if(ruleValidatorPropsJson == null) {
+						sensorRulePropsMap.put(parentSensorRuleId, ruleValidatorProps);
+					}
+					else {
+						ruleValidatorPropsJson.putAll(ruleValidatorProps);
+					}	
 				}
 			}
 		
@@ -350,18 +504,18 @@ public class SensorRuleUtil {
 		return readings;	
 	}
 	
-	public static List<ReadingContext> fetchReadingsForSensorRuleField(SensorRuleContext sensorRule, List<Long> resourceIds, long startTime, long endTime) throws Exception {
+	public static List<ReadingContext> fetchReadingsForSensorRuleField(FacilioField sensorRuleField, List<Long> resourceIds, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields = modBean.getAllFields(sensorRule.getReadingField().getModule().getName());
+		List<FacilioField> fields = modBean.getAllFields(sensorRuleField.getModule().getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 			.select(fields)
-			.module(sensorRule.getReadingField().getModule())
+			.module(sensorRuleField.getModule())
 			.beanClass(ReadingContext.class)
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), resourceIds, PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+endTime, DateOperators.BETWEEN))
-			.andCondition(CriteriaAPI.getCondition(sensorRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
+			.andCondition(CriteriaAPI.getCondition(sensorRuleField, CommonOperators.IS_NOT_EMPTY))
 			.orderBy("TTIME")
 			;
 		
@@ -382,16 +536,20 @@ public class SensorRuleUtil {
 		return readings;
 	}
 	
-	private static void constructHistoryReadingsMap(List<ReadingContext> readings, SensorRuleContext sensorRule, LinkedHashMap<String, List<ReadingContext>> historicalReadingsMap) {
-		for(ReadingContext reading: readings) 
+	private static void constructHistoryReadingsMap(List<ReadingContext> readings, List<SensorRuleContext> sensorRules, LinkedHashMap<String, List<ReadingContext>> historicalReadingsMap) {
+		Set<FacilioField> sensorRuleReadingFields = sensorRules.stream().map(sensorRule -> sensorRule.getReadingField()).collect(Collectors.toSet());
+		for(FacilioField sensorRuleReadingField: sensorRuleReadingFields) 
 		{
-			String key = ReadingsAPI.getRDMKey(reading.getParentId(), sensorRule.getReadingField());
-			List<ReadingContext> parentFieldReadingsList = historicalReadingsMap.get(key);
-			if(parentFieldReadingsList == null) {
-				parentFieldReadingsList = new ArrayList<ReadingContext>();
-				historicalReadingsMap.put(key, parentFieldReadingsList);
+			for(ReadingContext reading: readings) 
+			{
+				String key = ReadingsAPI.getRDMKey(reading.getParentId(), sensorRuleReadingField);
+				List<ReadingContext> parentFieldReadingsList = historicalReadingsMap.get(key);
+				if(parentFieldReadingsList == null) {
+					parentFieldReadingsList = new ArrayList<ReadingContext>();
+					historicalReadingsMap.put(key, parentFieldReadingsList);
+				}
+				parentFieldReadingsList.add(reading);
 			}
-			parentFieldReadingsList.add(reading);
 		}
 	}
 }

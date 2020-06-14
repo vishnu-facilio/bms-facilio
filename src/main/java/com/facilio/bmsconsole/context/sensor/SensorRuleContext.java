@@ -17,6 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
@@ -150,10 +151,10 @@ public class SensorRuleContext {
 	
 	private static final SensorRuleType[] SENSOR_RULE_TYPES = SensorRuleType.values();
 	
-	public SensorEventContext constructEvent(ReadingContext reading, JSONObject ruleValidatorProps, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
+	public SensorEventContext constructEvent(ReadingContext reading, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
 		
 		SensorEventContext sensorEvent = new SensorEventContext();
-		String severity = (String) defaultSeverityProps.remove("severity");
+		String severity = (String) defaultSeverityProps.get("severity");
 		if (StringUtils.isNotEmpty(severity)) {
 			sensorEvent.setSeverityString(severity);
 		}
@@ -164,37 +165,14 @@ public class SensorRuleContext {
 		sensorEvent.setReadingFieldId(this.getReadingFieldId());
 		sensorEvent.setSensorRule(sensorRule);
 		
-		sensorEvent.setResource((ResourceContext) reading.getParent());
-		sensorEvent.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
-		sensorEvent.setCreatedTime(reading.getTtime());
+		SensorRuleUtil.addDefaultEventProps(reading, defaultSeverityProps, sensorEvent);
 		
-		String subject = (String) defaultSeverityProps.remove("subject");
-		String comment = (String) defaultSeverityProps.remove("comment");
-		if (StringUtils.isNotEmpty(subject)) {
-			sensorEvent.setEventMessage(subject);
-		}
-		if (StringUtils.isNotEmpty(comment)) {
-			sensorEvent.setComment(comment);;
-		}
-		
-		processNewAlarmMeta(this, (ResourceContext) reading.getParent(), reading.getTtime(), sensorEvent, isHistorical);
+		processNewSensorAlarmMeta(this, (ResourceContext) reading.getParent(), reading.getTtime(), sensorEvent, isHistorical);
 
 		return sensorEvent;
 	}
-	
-	private static void processNewAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, long ttime, SensorEventContext sensorEvent, boolean isHistorical) throws Exception 
-	{
-		Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
-		SensorRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
-		if (alarmMeta == null) {
-			metaMap.put(resource.getId(), SensorRuleUtil.constructNewAlarmMeta(-1, sensorRule, resource, false, sensorEvent.getEventMessage())); 	 //Assuming readings will come in ascending order of time and this is needed only for historical
-		} 
-		else if (alarmMeta != null && alarmMeta.isClear()) {
-			alarmMeta.setClear(false); //Made active
-		}
-	}
 
-	public SensorEventContext constructClearEvent(ReadingContext reading, JSONObject ruleValidatorProps, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
+	public SensorEventContext constructClearEvent(ReadingContext reading, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
 		
 		Map<Long, SensorRuleAlarmMeta> metaMap = this.getAlarmMetaMap();
 		ResourceContext resource = (ResourceContext) reading.getParent();
@@ -215,16 +193,21 @@ public class SensorRuleContext {
 			sensorEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 			sensorEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
 			
-			sensorEvent.setResource(resource);
-			sensorEvent.setSiteId(resource.getSiteId());
-			sensorEvent.setCreatedTime(reading.getTtime());
-			
-			String subject = (String) defaultSeverityProps.remove("subject");
-			if (StringUtils.isNotEmpty(subject)) {
-				sensorEvent.setEventMessage(subject);
-			}
+			SensorRuleUtil.addDefaultEventProps(reading, defaultSeverityProps, sensorEvent);
+			return sensorEvent;
 		}
 		return null;
 	}
 	
+	private static void processNewSensorAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, long ttime, SensorEventContext sensorEvent, boolean isHistorical) throws Exception 
+	{
+		Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
+		SensorRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+		if (alarmMeta == null) {
+			metaMap.put(resource.getId(), SensorRuleUtil.constructNewAlarmMeta(-1, sensorRule, resource, false, sensorEvent.getEventMessage())); 	 //Assuming readings will come in ascending order of time and this is needed only for historical
+		} 
+		else if (alarmMeta != null && alarmMeta.isClear()) {
+			alarmMeta.setClear(false); //Made active
+		}
+	}	
 }

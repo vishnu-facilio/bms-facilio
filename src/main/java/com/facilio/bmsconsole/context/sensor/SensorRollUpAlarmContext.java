@@ -21,7 +21,7 @@ public class SensorRollUpAlarmContext extends BaseAlarmContext{
 		this.sensorRule = sensorRule;
 	}
 	
-	private long readingFieldId;
+	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;
 	}

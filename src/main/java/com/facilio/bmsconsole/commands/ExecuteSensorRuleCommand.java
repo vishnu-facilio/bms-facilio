@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.context.sensor.SensorEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpUtil;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.instant.jobs.ParallelWorkflowRuleExecutionJob;
@@ -32,6 +36,7 @@ import com.facilio.modules.fields.LookupField;
 public class ExecuteSensorRuleCommand extends FacilioCommand implements PostTransactionCommand{
 
 	private static final Logger LOGGER = Logger.getLogger(ExecuteSensorRuleCommand.class.getName());
+	List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -49,7 +54,7 @@ public class ExecuteSensorRuleCommand extends FacilioCommand implements PostTran
 						continue;
 					}
 					List<SensorRuleContext> sensorRules = SensorRuleUtil.fetchSensorRulesByModule(moduleName, true);
-					SensorRuleUtil.executeSensorRules(sensorRules,readings, false);	
+					SensorRuleUtil.executeSensorRules(sensorRules,readings, false, sensorMeterRollUpEvents);	
 				}	
 			}			
 		}
@@ -62,6 +67,22 @@ public class ExecuteSensorRuleCommand extends FacilioCommand implements PostTran
 
 	@Override
 	public boolean postExecute() throws Exception {
+		
+		if(sensorMeterRollUpEvents != null && !sensorMeterRollUpEvents.isEmpty())
+		{
+			List<SensorRollUpEventContext> finalSensorAssetRollUpEvents = new ArrayList<SensorRollUpEventContext>();
+			List<String> addedEventsMeterAndTime = SensorRollUpUtil.getSensorRollUpAlarmsByAssetAndTime(sensorMeterRollUpEvents);
+			
+			for(SensorRollUpEventContext sensorMeterRollUpEvent: sensorMeterRollUpEvents) {
+				String key = sensorMeterRollUpEvent.getResource().getId()+"_"+sensorMeterRollUpEvent.getCreatedTime();
+				if(!addedEventsMeterAndTime.contains(key)) {
+					finalSensorAssetRollUpEvents.add(sensorMeterRollUpEvent);
+				}
+			}
+			FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(true);
+			addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST,finalSensorAssetRollUpEvents);
+			addEventChain.execute();		
+		}
 		return false;
 	}
 		

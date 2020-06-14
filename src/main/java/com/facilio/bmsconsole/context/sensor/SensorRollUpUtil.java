@@ -1,14 +1,116 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateRange;
 
 public class SensorRollUpUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(SensorRollUpUtil.class.getName());	
+	
+	public static void fetchSensorRollUpAlarmMeta(Set<Long> assetIds,  LinkedHashMap<String, SensorRollUpEventContext> fieldSensorRollUpEventMeta, LinkedHashMap<Long, SensorRollUpEventContext> assetSensorRollUpEventMeta) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		List<SensorRollUpAlarmContext> sensorRollUpAlarms = new SelectRecordsBuilder<SensorRollUpAlarmContext>()
+												.select(fields)
+												.beanClass(SensorRollUpAlarmContext.class)
+												.moduleName(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM)
+												.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), assetIds, NumberOperators.EQUALS))
+												.fetchSupplement((LookupField) fieldMap.get("severity"))
+												.get();
+		if (CollectionUtils.isNotEmpty(sensorRollUpAlarms)) {
+			for (SensorRollUpAlarmContext sensorRollUpAlarm : sensorRollUpAlarms) 
+			{
+				SensorRollUpEventContext eventMeta = constructNewRollUpEventMeta(sensorRollUpAlarm);
+				if(eventMeta.getReadingFieldId() == -1 || eventMeta.getReadingField() == null) {
+					assetSensorRollUpEventMeta.put(sensorRollUpAlarm.getResource().getId(), eventMeta);
+				}
+				else {
+					if(fieldSensorRollUpEventMeta.containsKey(ReadingsAPI.getRDMKey(eventMeta.getResource().getId(), eventMeta.getReadingField()))){
+						LOGGER.log(Level.SEVERE, " Duplicate rollupfield sensor alarm_keys for alarm: "+sensorRollUpAlarm);
+					}
+					fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(eventMeta.getResource().getId(), eventMeta.getReadingField()), eventMeta);
+				}
+			}
+		}
+	}
+	
+	public static List<String> getSensorRollUpAlarmsByAssetAndTime(List<SensorRollUpEventContext> sensorMeterRollUpEvents) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ROLLUP_EVENT);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		Criteria criteria = new Criteria();
+		for(SensorRollUpEventContext sensorMeterRollUpEvent: sensorMeterRollUpEvents) {			
+			Criteria subCriteria = new Criteria();
+			subCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), ""+sensorMeterRollUpEvent.getResource().getId(), NumberOperators.EQUALS));
+			subCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"),""+sensorMeterRollUpEvent.getCreatedTime(), NumberOperators.EQUALS));
+			criteria.orCriteria(subCriteria);
+		}
+
+		List<SensorRollUpEventContext> alreadyPresentSensorMeterRollUpEvents = new SelectRecordsBuilder<SensorRollUpEventContext>()
+												.select(fields)
+												.beanClass(SensorRollUpEventContext.class)
+												.moduleName(FacilioConstants.ContextNames.SENSOR_ROLLUP_EVENT)
+												.andCriteria(criteria)
+												.get();
+		
+		List<String> assetIdsVsEventTime = new ArrayList<String>();
+		if (alreadyPresentSensorMeterRollUpEvents != null && !alreadyPresentSensorMeterRollUpEvents.isEmpty()) {
+			for (SensorRollUpEventContext sensorMeterRollUpEvent : alreadyPresentSensorMeterRollUpEvents) {
+				assetIdsVsEventTime.add(sensorMeterRollUpEvent.getResource().getId()+"_"+sensorMeterRollUpEvent.getCreatedTime());
+			}
+		}
+		return assetIdsVsEventTime;
+	}
+	
+	
+	public static SensorRollUpEventContext constructNewRollUpEventMeta (SensorRollUpAlarmContext sensorRollUpAlarm) {
+		SensorRollUpEventContext eventMeta = new SensorRollUpEventContext();
+		eventMeta.setOrgId(AccountUtil.getCurrentOrg().getId());
+		eventMeta.setResource(sensorRollUpAlarm.getResource());
+		eventMeta.setSeverityString(sensorRollUpAlarm.getSeverity().getSeverity());
+		eventMeta.setSeverity(sensorRollUpAlarm.getSeverity());
+
+		if(sensorRollUpAlarm.getReadingFieldId() != -1) {
+			eventMeta.setReadingFieldId(sensorRollUpAlarm.getReadingFieldId());
+			eventMeta.setReadingField(sensorRollUpAlarm.getReadingField());
+		}
+		
+		if(!StringUtils.isEmpty(sensorRollUpAlarm.getSubject())) {
+			eventMeta.setMessage(sensorRollUpAlarm.getSubject());
+		}
+		return eventMeta;
+	}
 	
 	public static void runSensorMig() throws Exception {
 		

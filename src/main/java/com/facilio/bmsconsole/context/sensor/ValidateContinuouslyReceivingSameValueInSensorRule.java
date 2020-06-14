@@ -67,7 +67,7 @@ public class ValidateContinuouslyReceivingSameValueInSensorRule implements Senso
 				{ 	
 					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
 					readingSet.addAll(readings);
-					if(readingSet != null && readingSet.size() == 1)
+					if(readingSet != null && readingSet.size() == 1 && readings.size() > 1)
 					{
 						for(Double readingSetValue :readingSet) {
 							if(readingSetValue != null && readingSetValue.equals((double)currentReadingValue)) {

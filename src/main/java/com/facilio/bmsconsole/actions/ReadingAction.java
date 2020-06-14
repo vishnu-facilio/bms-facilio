@@ -1294,6 +1294,25 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;	
 	}
 	
+	public String runThroughSensorRule() throws Exception {	
+		try {	
+			FacilioChain runThroughRuleChain = TransactionChainFactory.executeSensorRuleChain();
+			FacilioContext context = runThroughRuleChain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, getId());
+			context.put(FacilioConstants.ContextNames.ASSET_ID, getHistoricalLoggerAssetIds());
+			runThroughRuleChain.execute();
+			
+			setResult("success", "Sensor Rule evaluation for the readings in the given period has been started");	
+		}
+		catch(Exception userException) {
+			setResult("Failed", userException.getMessage());	
+		}	
+		
+		return SUCCESS;
+	}
+	
 	public String addRollUpFieldMig() throws Exception
 	{
 		RollUpFieldUtil.addRollUpForBaseSpaceFields();

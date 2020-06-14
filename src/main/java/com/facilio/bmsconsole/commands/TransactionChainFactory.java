@@ -158,6 +158,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain executeSensorRuleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExecuteSensorRuleHistoryCommand());
+			return c;
+		}
+			
 		public static FacilioChain historicalScheduledRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddHistoricalScheduledRuleJobCommand());
