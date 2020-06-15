@@ -5482,11 +5482,13 @@ public class TransactionChainFactory {
 	public static FacilioChain getAssociateQuotationTermsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AssociateQuotationTermsCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
 		return c;
 	}
 	public static FacilioChain getDisAssociateQuotationTermsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DisAssociateQuotationTermsCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
 		return c;
 	}
 	public static FacilioChain getSendQuotationMailChain() {

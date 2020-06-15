@@ -38,6 +38,20 @@ public enum QuotationActivityType implements ActivityType {
             // TODO Auto-generated method stub
             return " revised quotation.";
         }
+    },
+    ASSOCIATE_TERMS(70) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return " Associated Term " + json.get(FacilioConstants.ContextNames.TERMS_NAME);
+        }
+    },
+    DISASSOCIATE_TERMS(71) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return " Disassociated Term " + json.get(FacilioConstants.ContextNames.TERMS_NAME);
+        }
     };
 
 

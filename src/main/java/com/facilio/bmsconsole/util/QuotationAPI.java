@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -369,5 +370,21 @@ public class QuotationAPI {
                 }
             }
         }
+    }
+    public static List<TermsAndConditionContext> getTermsAndConditionsForIdList(List<Long> idsList) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+        SelectRecordsBuilder<TermsAndConditionContext> builder = new SelectRecordsBuilder<TermsAndConditionContext>()
+                .module(module)
+                .beanClass(TermsAndConditionContext.class)
+                .select(fields);
+        if (CollectionUtils.isNotEmpty(idsList)) {
+            builder.andCondition(CriteriaAPI.getIdCondition(idsList, module));
+        }
+        List<TermsAndConditionContext> records = builder.get();
+
+        return records;
     }
 }
