@@ -129,24 +129,17 @@ public class FormRuleAPI {
 			
 			for(Map<String, Object> prop :props) {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
-				FormRuleActionContext formRuleActionContext = FieldUtil.getAsBeanFromMap(prop, FormRuleActionContext.class);
-				
-				FormRuleActionFieldsContext formRuleActionFieldContext = FieldUtil.getAsBeanFromMap(prop, FormRuleActionFieldsContext.class);
+				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				FormRuleActionFieldsContext formRuleActionFieldContext = formRuleContext.getActions().get(0).getFormRuleActionFieldsContext().get(0);
+				if (formRuleActionFieldContext.getCriteriaId() > 0) {
+					formRuleActionFieldContext.setCriteria(CriteriaAPI.getCriteria(formRuleActionFieldContext.getCriteriaId()));
+				}
 				
 				if(formRuleContext.getCriteriaId() > 0) {
 					formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
 				}
-				
-				if(formRuleActionFieldContext.getCriteriaId() > 0 ) {
-					formRuleActionFieldContext.setCriteria(CriteriaAPI.getCriteria(formRuleActionFieldContext.getCriteriaId()));
-				}
-				
-				
-				formRuleActionContext.setFormRuleActionFieldsContext(Collections.singletonList(formRuleActionFieldContext));
-				
-				formRuleContext.setActions(Collections.singletonList(formRuleActionContext));
-				
 				returnMap.put(formRuleActionFieldContext.getFormFieldId(), formRuleContext);
+
 			}
 		}
 		return returnMap;

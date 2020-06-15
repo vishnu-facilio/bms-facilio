@@ -101,7 +101,6 @@ public class FormRuleAction extends FacilioAction {
 	}
 	
 	public String deleteRule() throws Exception {
-		
 		FacilioChain c = TransactionChainFactory.getDeleteFormRuleChain();
 		
 		Context context = c.getContext();
@@ -129,6 +128,22 @@ public class FormRuleAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String getFormRulesMap() throws Exception {
+		
+		FacilioChain c = ReadOnlyChainFactory.getFormRulesMapList();
+		
+		Context context = c.getContext();
+		
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		c.execute();
+						
+		setResult("formRuleResultJSON", context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
+				
+		return SUCCESS;
+	}
+	
 	
 	public String getRuleList() throws Exception {
 		
