@@ -1788,6 +1788,9 @@
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRule">
 		</action>
+		<action name="getRulesMap"
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getFormRulesMap">
+		</action>
 		<action name="getRuleList"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRuleList">
 		</action>
