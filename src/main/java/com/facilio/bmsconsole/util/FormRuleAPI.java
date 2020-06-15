@@ -307,6 +307,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setFormContext(FormsAPI.getFormFromDB(formRuleContext.getFormId()));
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				formRuleContexts.add(formRuleContext);
 			}
@@ -339,6 +340,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 			List<FormRuleContext> formRuleContexts = new ArrayList<>();
 			for(Map<String, Object> prop :props) {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setFormContext(FormsAPI.getFormFromDB(formRuleContext.getFormId()));
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				formRuleContexts.add(formRuleContext);
 			}
