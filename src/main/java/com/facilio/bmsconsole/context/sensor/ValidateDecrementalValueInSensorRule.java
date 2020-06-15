@@ -37,71 +37,69 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 		defaultProps.put("subject", "Latest reading is less than the previous reading");
 		defaultProps.put("comment", "Counter Field readings seems to be non-incremental.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
-		return null;
+		return defaultProps;
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig,  boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig,  boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
 
-		if(readingField instanceof NumberField && reading != null && reading.getParent() instanceof AssetContext)
+		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
-			AssetContext asset = (AssetContext)reading.getParent();
-			NumberField numberField = (NumberField) readingField;
-			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
-			{		
-				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-				currentReadingValue = (Double) currentReadingValue;
-				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
-					return false;
-				}
-				ReadingContext readingToBeEvaluated = new ReadingContext(); 
-				
-				if(isHistorical) {
-					String key = ReadingsAPI.getRDMKey(asset.getId(), numberField) +"_"+ getSensorRuleTypeFromValidator().getIndex();
-					List<ReadingContext> completeHistoricalReadings = completeHistoricalReadingsMap.get(key);
-							
-					if(historicalReadings != null && !historicalReadings.isEmpty() && completeHistoricalReadings == null) {
-						completeHistoricalReadings = new ArrayList<ReadingContext>();
-						completeHistoricalReadingsMap.put(key, completeHistoricalReadings);
+			NumberField numberField = (NumberField) readingField;		
+			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			currentReadingValue = (Double) currentReadingValue;
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
+				return false;
+			}
+			ReadingContext readingToBeEvaluated = new ReadingContext(); 
+			
+			if(isHistorical) {
+				String key = ReadingsAPI.getRDMKey(reading.getParentId(), numberField) +"_"+ getSensorRuleTypeFromValidator().getIndex();
+				List<ReadingContext> completeHistoricalReadings = completeHistoricalReadingsMap.get(key);
 						
-						ReadingContext previousReadingContext = SensorRuleUtil.fetchSingleReadingContext(numberField, asset.getId(), reading.getTtime());
-						if(previousReadingContext != null && previousReadingContext.getTtime() < reading.getTtime()) {
-							completeHistoricalReadings.add(previousReadingContext);
-						}
-						completeHistoricalReadings.addAll(historicalReadings);
-					}
+				if(historicalReadings != null && !historicalReadings.isEmpty() && completeHistoricalReadings == null) {
+					completeHistoricalReadings = new ArrayList<ReadingContext>();
+					completeHistoricalReadingsMap.put(key, completeHistoricalReadings);
 					
-					if(completeHistoricalReadings != null && !completeHistoricalReadings.isEmpty()) 
+					ReadingContext previousReadingContext = SensorRuleUtil.fetchSingleReadingContext(numberField, reading.getParentId(), reading.getTtime());
+					if(previousReadingContext != null && previousReadingContext.getTtime() < reading.getTtime()) {
+						completeHistoricalReadings.add(previousReadingContext);
+					}
+					completeHistoricalReadings.addAll(historicalReadings);
+				}
+				
+				if(completeHistoricalReadings != null && !completeHistoricalReadings.isEmpty()) 
+				{
+					completeHistoricalReadings.sort(new timeSorter());
+					for(ReadingContext historyReading :completeHistoricalReadings) 
 					{
-						completeHistoricalReadings.sort(new timeSorter());
-						for(ReadingContext historyReading :completeHistoricalReadings) 
+						if(reading.getId() == historyReading.getId() && reading.getTtime() == historyReading.getTtime()) 
 						{
-							if(reading.getId() == historyReading.getId() && reading.getTtime() == historyReading.getTtime()) 
-							{
-								int currentIndex = completeHistoricalReadings.indexOf(historyReading);
-								ReadingContext previousIndexReading = completeHistoricalReadings.get(currentIndex-1); //Shouldn't be zero at any case
+							int currentIndex = completeHistoricalReadings.indexOf(historyReading);
+							if(currentIndex > 0) {
+								ReadingContext previousIndexReading = completeHistoricalReadings.get(currentIndex-1); //Shouldn't be zero in real
 								if(previousIndexReading.getTtime() < reading.getTtime()) {
 									readingToBeEvaluated = previousIndexReading;
-								}
+								}		
 							}
 						}
-					}	
-				}
-				else {
-					readingToBeEvaluated = SensorRuleUtil.fetchSingleReadingContext(numberField, asset.getId(), reading.getTtime());
-				}	
-				
-				List<Double> readings = SensorRuleUtil.getReadings(Collections.singletonList(readingToBeEvaluated),numberField);
-				if(readings != null && !readings.isEmpty() && readings.get(0) != null) { 
-					double previousReadingValue = readings.get(0);
-					if((double)currentReadingValue < previousReadingValue) { 
-						return true;
 					}
-				}				
+				}	
 			}
+			else {
+				readingToBeEvaluated = SensorRuleUtil.fetchSingleReadingContext(numberField, reading.getParentId(), reading.getTtime());
+			}	
+			
+			List<Double> readings = SensorRuleUtil.getReadings(Collections.singletonList(readingToBeEvaluated),numberField);
+			if(readings != null && !readings.isEmpty() && readings.get(0) != null) { 
+				double previousReadingValue = readings.get(0);
+				if((double)currentReadingValue < previousReadingValue) { 
+					return true;
+				}
+			}				
 		}		
 		return false;	
 	}
@@ -116,6 +114,6 @@ class timeSorter implements Comparator<ReadingContext>
 {
 	@Override
 	public int compare(ReadingContext o1, ReadingContext o2) {
-		return (int) (o2.getTtime() - o1.getTtime());
+		return (int) (o1.getTtime() - o2.getTtime());
 	}
 }

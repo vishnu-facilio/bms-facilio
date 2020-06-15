@@ -34,52 +34,51 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 		defaultProps.put("subject", "Current reading seems to have a zero consumption");
 		defaultProps.put("comment", "Counter Field readings seems to have equal readings.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
-		return null;
+		return defaultProps;
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
 
-		if(readingField instanceof NumberField && reading != null && reading.getParent() instanceof AssetContext)
+		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
-			AssetContext asset = (AssetContext)reading.getParent();
-			NumberField numberField = (NumberField) readingField;
-			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
-			{		
-				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
-					return false;
-				}
-				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField deltaField = modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName());
-				Double currentDeltaValue = (Double)reading.getReading(deltaField.getName());
-				if(currentDeltaValue == null || !currentDeltaValue.equals(0.0)) {
-					return false;
-				}
-				
-				Integer noOfHoursToBeFetched = (Integer)fieldConfig.get("timeInterval");
-				if(noOfHoursToBeFetched == null) {
-					noOfHoursToBeFetched = 12;
-				}
-				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());
-				if(readings != null && !readings.isEmpty()) 
-				{ 
-					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
-					readingSet.addAll(readings);
-					if(readingSet != null && readingSet.size() == 1)
-					{
-						for(Double readingSetValue :readingSet) {
-							if(readingSetValue != null && readingSetValue.equals(currentDeltaValue)) {
-								return true;
-							}	
-						}
-					}	
-				}									
+			NumberField numberField = (NumberField) readingField;	
+			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
+				return false;
 			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField deltaField = modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName());
+			if(deltaField == null) {
+				return false;
+			}
+			Double currentDeltaValue = (Double)reading.getReading(deltaField.getName());
+			if(currentDeltaValue == null || !currentDeltaValue.equals(0.0)) {
+				return false;
+			}
+			
+			Long noOfHoursToBeFetched = (Long)fieldConfig.get("timeInterval");
+			if(noOfHoursToBeFetched == null) {
+				noOfHoursToBeFetched = 6l;
+			}
+			List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated((NumberField)deltaField, reading.getParentId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());
+			if(readings != null && !readings.isEmpty()) 
+			{ 
+				LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
+				readingSet.addAll(readings);
+				if(readingSet != null && readingSet.size() == 1)
+				{
+					for(Double readingSetValue :readingSet) {
+						if(readingSetValue != null && readingSetValue.equals(currentDeltaValue)) {
+							return true;
+						}	
+					}
+				}	
+			}										
 		}
 		return false;	
 	}

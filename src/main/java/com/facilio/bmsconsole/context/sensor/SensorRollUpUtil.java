@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -92,7 +93,29 @@ public class SensorRollUpUtil {
 		}
 		return assetIdsVsEventTime;
 	}
-	
+
+	public static SensorRollUpEventContext constructRollUpClearEvent(SensorRollUpEventContext previousSensorRollUpEventMeta, ReadingContext reading, boolean isHistorical, boolean isMeterRollUpEvent) throws Exception {
+		
+		if (previousSensorRollUpEventMeta != null && !previousSensorRollUpEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) 
+		{			
+			SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
+			
+			sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
+			if(!isMeterRollUpEvent) {
+				sensorRollUpEvent.setReadingFieldId(previousSensorRollUpEventMeta.getReadingFieldId());
+			}		
+			sensorRollUpEvent.setSensorRule(previousSensorRollUpEventMeta.getSensorRule());
+			
+			sensorRollUpEvent.setAutoClear(true);
+			sensorRollUpEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+			sensorRollUpEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
+			sensorRollUpEvent.setEventMessage(previousSensorRollUpEventMeta.getEventMessage());
+			
+			SensorRuleUtil.addDefaultEventProps(reading, null, sensorRollUpEvent);		
+			return sensorRollUpEvent;
+		}
+		return null;
+	}
 	
 	public static SensorRollUpEventContext constructNewRollUpEventMeta (SensorRollUpAlarmContext sensorRollUpAlarm) {
 		SensorRollUpEventContext eventMeta = new SensorRollUpEventContext();

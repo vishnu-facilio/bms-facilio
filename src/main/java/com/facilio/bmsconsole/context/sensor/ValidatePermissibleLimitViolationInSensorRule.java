@@ -32,36 +32,32 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 		defaultProps.put("subject", "Current reading is not within its permissible limits.");
 		defaultProps.put("comment", "Current Reading doesn't lie between the limits of the reading field.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
-		return null;
+		return defaultProps;
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
 
-		if(readingField instanceof NumberField && reading != null && reading.getParent() instanceof AssetContext)
+		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
-			AssetContext asset = (AssetContext)reading.getParent();
-			NumberField numberField = (NumberField) readingField;
-			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
-			{		
-				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-				currentReadingValue = (Double) currentReadingValue;
-				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
-					return false;
-				}
-				
-				Double lowerLimit = (Double)fieldConfig.get("lowerLimit");
-				Double upperLimit = (Double)fieldConfig.get("upperLimit");
-				if(lowerLimit == null || upperLimit == null) {
-					return false;
-				}
-				if((double)currentReadingValue < lowerLimit || (double)currentReadingValue > upperLimit) { 
-					return true;
-				}	
+			NumberField numberField = (NumberField) readingField;	
+			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			currentReadingValue = (Double) currentReadingValue;
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || fieldConfig == null){
+				return false;
 			}
+			
+			Double lowerLimit = (Double)fieldConfig.get("lowerLimit");
+			Double upperLimit = (Double)fieldConfig.get("upperLimit");
+			if(lowerLimit == null || upperLimit == null) {
+				return false;
+			}
+			if((double)currentReadingValue < lowerLimit || (double)currentReadingValue > upperLimit) { 
+				return true;
+			}			
 		}
 		
 		return false;

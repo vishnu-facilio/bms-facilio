@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
@@ -46,12 +48,13 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioCommand {
 			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId(assetCategoryId, true);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
-
-			if(sensorRules != null && sensorRules.isEmpty()) {	
+			if(sensorRules != null && !sensorRules.isEmpty()) {	
 				Set<FacilioField> sensorRuleFields = sensorRules.stream().map(sensorRule -> sensorRule.getReadingField()).collect(Collectors.toSet());
-				for(FacilioField sensorRuleField:sensorRuleFields) 
+				LinkedHashMap<FacilioModule, List<FacilioField>> sensorRuleModuleVsFieldsMap = SensorRuleUtil.groupSensorRuleFieldsByModule(sensorRuleFields);
+				for(FacilioModule module: sensorRuleModuleVsFieldsMap.keySet()) 
 				{
-					List<ReadingContext> fieldReadings = SensorRuleUtil.fetchReadingsForSensorRuleField(sensorRuleField, assetIds, dateRange.getStartTime(), dateRange.getEndTime());
+					List<FacilioField> sensorRuleModuleFields = sensorRuleModuleVsFieldsMap.get(module);
+					List<ReadingContext> fieldReadings = SensorRuleUtil.fetchReadingsForSensorRuleField(module, sensorRuleModuleFields, assetIds, dateRange.getStartTime(), dateRange.getEndTime());
 					if(fieldReadings != null && !fieldReadings.isEmpty()) {
 						readings.addAll(fieldReadings);
 					}	

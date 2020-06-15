@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -195,7 +196,7 @@ public class SensorRuleUtil {
 						if(reading.getReading(sensorRule.getReadingField().getName()) != null) 
 						{
 							SensorRuleTypeValidationInterface validatorType = sensorRule.getSensorRuleTypeEnum().getSensorRuleValidationType();
-							boolean result = validatorType.evaluateSensorRule(sensorRule, reading.getReadings(), sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
+							boolean result = validatorType.evaluateSensorRule(sensorRule, reading, sensorRuleValidatorPropsMap.get(sensorRule.getId()), isHistorical, historicalReadings, completeHistoricalReadingsMap);
 							JSONObject defaultSeverityProps = validatorType.getDefaultSeverityAndSubject();
 							checkDefaultSeverityProps(defaultSeverityProps, sensorRuleValidatorPropsMap.get(sensorRule.getId()));
 							
@@ -228,42 +229,48 @@ public class SensorRuleUtil {
 						}	
 					}
 					
-					boolean canClearFieldEvent = true;
+					int canClearFieldEventList = 0, fieldSensorRuleList = 0;
 					for(SensorRuleContext fieldSensorRule: fieldSensorRules) {							
 						if(!fieldSensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //field sensor rule
 							Map<Long, SensorRuleAlarmMeta> metaMap = fieldSensorRule.getAlarmMetaMap();
-							SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
-							if (alarmMeta != null && !alarmMeta.isClear()) { //If active, do not clear
-								canClearFieldEvent = false;
+							if(metaMap != null) { 									//to avoid validations not started for evaluation
+								fieldSensorRuleList++;
+								SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
+								if (alarmMeta != null && alarmMeta.isClear()) { //Check if all are clear
+									canClearFieldEventList++;
+								}	
 							}									
 						}
 					}
-					if(canClearFieldEvent) {
+					if(canClearFieldEventList > 0 && fieldSensorRuleList > 0 && canClearFieldEventList == fieldSensorRuleList) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						String key = ReadingsAPI.getRDMKey(reading.getParentId(), modBean.getField(readingFieldId));
 						SensorRollUpEventContext fieldSensorRollUpMetaEvent = fieldSensorRollUpEventMeta.get(key);
 						if(fieldSensorRollUpMetaEvent != null && !fieldSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-							SensorRollUpEventContext sensorFieldRollUpEvent = fieldSensorRollUpMetaEvent.constructRollUpClearEvent(reading, isHistorical, false);
+							SensorRollUpEventContext sensorFieldRollUpEvent = SensorRollUpUtil.constructRollUpClearEvent(fieldSensorRollUpMetaEvent, reading, isHistorical, false);
 							sensorFieldRollUpEvents.add(sensorFieldRollUpEvent);
 							fieldSensorRollUpEventMeta.put(ReadingsAPI.getRDMKey(reading.getParentId(),sensorFieldRollUpEvent.getReadingField()), sensorFieldRollUpEvent);
 						}		
 					}		
 				}
 				
-				boolean canClearAssetRollUpEvent = true;
+				int canClearAssetRollUpEventList = 0, meterSensorRuleList = 0;
 				for(SensorRuleContext sensorRule: sensorRules) {							
 					if(sensorRule.getSensorRuleTypeEnum().isMeterRollUp()){ //Meter sensor rule
 						Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
-						SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
-						if (alarmMeta != null && !alarmMeta.isClear()) { //If active, do not clear
-							canClearAssetRollUpEvent = false;
-						}									
+						if(metaMap != null) {
+							meterSensorRuleList++;
+							SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
+							if (alarmMeta != null && alarmMeta.isClear()) { ///Check if all are clear
+								canClearAssetRollUpEventList++;					
+							}
+						}
 					}
 				}
-				if(canClearAssetRollUpEvent) {
+				if(canClearAssetRollUpEventList > 0 && meterSensorRuleList > 0 && canClearAssetRollUpEventList == meterSensorRuleList) {
 					SensorRollUpEventContext assetSensorRollUpMetaEvent = assetSensorRollUpEventMeta.get(reading.getParentId());
 					if(assetSensorRollUpMetaEvent != null && !assetSensorRollUpMetaEvent.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-						SensorRollUpEventContext sensorAssetRollUpEvent = assetSensorRollUpMetaEvent.constructRollUpClearEvent(reading, isHistorical, true);
+						SensorRollUpEventContext sensorAssetRollUpEvent = SensorRollUpUtil.constructRollUpClearEvent(assetSensorRollUpMetaEvent, reading, isHistorical, true);
 						sensorMeterRollUpEvents.add(sensorAssetRollUpEvent);
 						assetSensorRollUpEventMeta.put(reading.getParentId(), sensorAssetRollUpEvent);
 					}		
@@ -274,25 +281,34 @@ public class SensorRuleUtil {
 			baseEvents.addAll(sensorEvents);
 			baseEvents.addAll(sensorFieldRollUpEvents);
 			
-			if(isHistorical) {
-				baseEvents.addAll(sensorMeterRollUpEvents);
-				return baseEvents;
-			}
-			else {
-				FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(true);
-				addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
-				addEventChain.execute();
-			}
+			if(baseEvents != null && !baseEvents.isEmpty()) {
+				if(isHistorical) {
+					baseEvents.addAll(sensorMeterRollUpEvents);				
+					FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(isHistorical); //to be removed when handled in framework
+					addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents); 
+					addEventChain.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, isHistorical);
+					addEventChain.execute();
+					return baseEvents;
+				}
+				else {
+					FacilioChain addEventChain = TransactionChainFactory.getV2AddEventChain(isHistorical);
+					addEventChain.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
+					addEventChain.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, isHistorical);
+					addEventChain.execute();
+				}
+			}		
 		}
 		return null;			
 	}
 	
 	private static void checkDefaultSeverityProps(JSONObject defaultSeverityProps, JSONObject ruleProps) {
-		if(ruleProps.get("severity") != null) {
-			defaultSeverityProps.put("severity", ruleProps.get("severity"));
-		}
-		if(ruleProps.get("subject") != null) {
-			defaultSeverityProps.put("subject", ruleProps.get("subject"));
+		if(ruleProps != null) {
+			if(ruleProps.get("severity") != null) {
+				defaultSeverityProps.put("severity", ruleProps.get("severity"));
+			}
+			if(ruleProps.get("subject") != null) {
+				defaultSeverityProps.put("subject", ruleProps.get("subject"));
+			}	
 		}
 	}
 	
@@ -310,7 +326,7 @@ public class SensorRuleUtil {
 		return assetReadingsMap;	
 	}
 	
-	private static LinkedHashMap<Long, List<SensorRuleContext>> groupSensorRulesByFieldId(List<SensorRuleContext> sensorRules) {
+	public static LinkedHashMap<Long, List<SensorRuleContext>> groupSensorRulesByFieldId(List<SensorRuleContext> sensorRules) {
 		LinkedHashMap<Long, List<SensorRuleContext>> fieldSensorRulesMap = new LinkedHashMap<Long, List<SensorRuleContext>>();
 		for(SensorRuleContext sensorRule: sensorRules) 
 		{
@@ -322,6 +338,20 @@ public class SensorRuleUtil {
 			fieldSensorRules.add(sensorRule);	
 		}
 		return fieldSensorRulesMap;	
+	}
+	
+	public static LinkedHashMap<FacilioModule, List<FacilioField>> groupSensorRuleFieldsByModule(Set<FacilioField> sensorRuleFields) {
+		LinkedHashMap<FacilioModule, List<FacilioField>> sensorRuleModuleVsFieldMap = new LinkedHashMap<FacilioModule, List<FacilioField>>();
+		for(FacilioField sensorRuleField: sensorRuleFields) 
+		{
+			List<FacilioField> sensorRuleModuleFields = sensorRuleModuleVsFieldMap.get(sensorRuleField.getModuleId());
+			if(sensorRuleModuleFields == null) {
+				sensorRuleModuleFields = new ArrayList<FacilioField>();
+				sensorRuleModuleVsFieldMap.put(sensorRuleField.getModule(), sensorRuleModuleFields);
+			}
+			sensorRuleModuleFields.add(sensorRuleField);	
+		}
+		return sensorRuleModuleVsFieldMap;	
 	}
 	
 	private static void fetchAlarmMeta(SensorRuleContext sensorRule) throws Exception {
@@ -337,7 +367,7 @@ public class SensorRuleUtil {
 												.fetchSupplement((LookupField) fieldMap.get("severity"))
 												.get();
 		if (CollectionUtils.isNotEmpty(sensorAlarms)) {
-			Map<Long, SensorRuleAlarmMeta> metaMap = new HashMap<>();
+			HashMap<Long, SensorRuleAlarmMeta> metaMap = new HashMap<Long, SensorRuleAlarmMeta>();
 			for (SensorAlarmContext sensorAlarm : sensorAlarms) {
 				SensorRuleAlarmMeta alarmMeta = constructNewAlarmMeta(sensorAlarm.getId(), sensorRule, sensorAlarm.getResource(), sensorAlarm.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY), sensorAlarm.getSubject());
 				metaMap.put(alarmMeta.getResourceId(), alarmMeta);
@@ -361,10 +391,17 @@ public class SensorRuleUtil {
 		return meta;
 	}
 	
-	public static void addDefaultEventProps(ReadingContext reading, JSONObject defaultSeverityProps, BaseEventContext sensorEvent) {
+	public static void addDefaultEventProps(ReadingContext reading, JSONObject defaultSeverityProps, BaseEventContext sensorEvent) throws Exception {
 		
-		sensorEvent.setResource((ResourceContext) reading.getParent());
-		sensorEvent.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
+		if((ResourceContext) reading.getParent() == null) {
+			ResourceContext resource = (ResourceContext) AssetsAPI.getAssetInfo(reading.getParentId());
+			sensorEvent.setResource(resource);
+			sensorEvent.setSiteId(resource.getSiteId());
+		}
+		else {
+			sensorEvent.setResource((ResourceContext) reading.getParent());
+			sensorEvent.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
+		}
 		sensorEvent.setCreatedTime(reading.getTtime());
 		
 		if(defaultSeverityProps != null) {
@@ -391,14 +428,16 @@ public class SensorRuleUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		HashMap<Long,JSONObject> sensorRulePropsMap = new HashMap<Long,JSONObject>();
 
+		JSONParser parser = new JSONParser();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props ) 
 			{
 				if(prop.get("parentSensorRuleId") != null && prop.get("ruleValidatorProps") != null) 
 				{
 					long parentSensorRuleId = (long) prop.get("parentSensorRuleId");
-					JSONObject ruleValidatorProps = (JSONObject) prop.get("ruleValidatorProps");
+					String ruleValidatorPropsStr = (String) prop.get("ruleValidatorProps");
 					
+					JSONObject ruleValidatorProps = (JSONObject) parser.parse(ruleValidatorPropsStr);
 					JSONObject ruleValidatorPropsJson = sensorRulePropsMap.get(parentSensorRuleId);
 					if(ruleValidatorPropsJson == null) {
 						sensorRulePropsMap.put(parentSensorRuleId, ruleValidatorProps);
@@ -507,20 +546,23 @@ public class SensorRuleUtil {
 		return readings;	
 	}
 	
-	public static List<ReadingContext> fetchReadingsForSensorRuleField(FacilioField sensorRuleField, List<Long> resourceIds, long startTime, long endTime) throws Exception {
+	public static List<ReadingContext> fetchReadingsForSensorRuleField(FacilioModule module, List<FacilioField> sensorRuleFields, List<Long> resourceIds, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields = modBean.getAllFields(sensorRuleField.getModule().getName());
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 			.select(fields)
-			.module(sensorRuleField.getModule())
+			.module(module)
 			.beanClass(ReadingContext.class)
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), resourceIds, PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+endTime, DateOperators.BETWEEN))
-			.andCondition(CriteriaAPI.getCondition(sensorRuleField, CommonOperators.IS_NOT_EMPTY))
 			.orderBy("TTIME")
 			;
+		
+		for(FacilioField sensorRuleField: sensorRuleFields) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(sensorRuleField, CommonOperators.IS_NOT_EMPTY));
+		}
 		
 		return selectBuilder.get();
 	}

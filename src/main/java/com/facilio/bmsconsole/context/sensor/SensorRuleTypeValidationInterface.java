@@ -15,7 +15,7 @@ public interface SensorRuleTypeValidationInterface {
 	
 	public JSONObject getDefaultSeverityAndSubject();
 	
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception;
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception;
 	
 	public SensorRuleType getSensorRuleTypeFromValidator();
 }

@@ -30,30 +30,27 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 		defaultProps.put("subject", "Current reading seems to be a non-positive reading");
 		defaultProps.put("comment", "Counter Field readings seems to have negative readings.");
 		defaultProps.put("severity", FacilioConstants.Alarm.CRITICAL_SEVERITY);
-		return null;
+		return defaultProps;
 	}
 
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Map<String,Object> record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
 		
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getReadingField();
 
-		if(readingField instanceof NumberField && reading != null && reading.getParent() instanceof AssetContext)
+		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
-			AssetContext asset = (AssetContext)reading.getParent();
 			NumberField numberField = (NumberField) readingField;
-			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
-			{		
-				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-				currentReadingValue = (Double) currentReadingValue;
-				if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
-					return false;
-				}
-				if((double)currentReadingValue < 0.0){ 
-					return true;
-				}	
+			Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			currentReadingValue = (Double) currentReadingValue;
+			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !numberField.isCounterField()){
+				return false;
 			}
+			if((double)currentReadingValue < 0.0){ 
+				return true;
+			}	
+			
 		}
 		return false;
 	}

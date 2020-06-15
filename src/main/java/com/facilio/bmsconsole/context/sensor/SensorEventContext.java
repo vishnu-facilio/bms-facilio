@@ -23,7 +23,7 @@ public class SensorEventContext extends BaseEventContext {
 	
 	public String constructMessageKey() {
 		if (getResource() != null && getSensorRule() != null) {
-			return "Sensor_" + getSensorRule().getId() + "_" + getResource().getId();
+			return "Sensor_" + getReadingFieldId() +"_"+ getResource().getId() +"_"+ getSensorRule().getId();
 		}
 		return null;
 	}

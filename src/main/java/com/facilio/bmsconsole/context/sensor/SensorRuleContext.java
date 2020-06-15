@@ -119,11 +119,11 @@ public class SensorRuleContext {
 	public void setAssetCategory(AssetCategoryContext assetCategory) {
 		this.assetCategory = assetCategory;
 	}
-	private Map<Long, SensorRuleAlarmMeta> alarmMetaMap;
-	public Map<Long, SensorRuleAlarmMeta> getAlarmMetaMap() {
+	private HashMap<Long, SensorRuleAlarmMeta> alarmMetaMap;
+	public HashMap<Long, SensorRuleAlarmMeta> getAlarmMetaMap() {
 		return alarmMetaMap;
 	}
-	public void setAlarmMetaMap(Map<Long, SensorRuleAlarmMeta> alarmMetaMap) {
+	public void setAlarmMetaMap(HashMap<Long, SensorRuleAlarmMeta> alarmMetaMap) {
 		this.alarmMetaMap = alarmMetaMap;
 	}
 	
@@ -167,7 +167,7 @@ public class SensorRuleContext {
 		
 		SensorRuleUtil.addDefaultEventProps(reading, defaultSeverityProps, sensorEvent);
 		
-		processNewSensorAlarmMeta(this, (ResourceContext) reading.getParent(), reading.getTtime(), sensorEvent, isHistorical);
+		processNewSensorAlarmMeta(this, sensorEvent.getResource(), reading.getTtime(), sensorEvent, isHistorical);
 
 		return sensorEvent;
 	}
@@ -175,9 +175,8 @@ public class SensorRuleContext {
 	public SensorEventContext constructClearEvent(ReadingContext reading, JSONObject defaultSeverityProps, boolean isHistorical) throws Exception {
 		
 		Map<Long, SensorRuleAlarmMeta> metaMap = this.getAlarmMetaMap();
-		ResourceContext resource = (ResourceContext) reading.getParent();
+		SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
 		
-		SensorRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resource.getId()) : null;
 		if (alarmMeta != null && !alarmMeta.isClear()) 
 		{
 			alarmMeta.setClear(true); //Made cleared
@@ -201,8 +200,16 @@ public class SensorRuleContext {
 	
 	private static void processNewSensorAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, long ttime, SensorEventContext sensorEvent, boolean isHistorical) throws Exception 
 	{
-		Map<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
-		SensorRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+		HashMap<Long, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
+		SensorRuleAlarmMeta alarmMeta = null;
+		if(metaMap != null) {
+			alarmMeta = metaMap.get(resource.getId());
+		}
+		else {
+			metaMap = new HashMap<Long, SensorRuleAlarmMeta>();
+			sensorRule.setAlarmMetaMap(metaMap);
+		}
+		
 		if (alarmMeta == null) {
 			metaMap.put(resource.getId(), SensorRuleUtil.constructNewAlarmMeta(-1, sensorRule, resource, false, sensorEvent.getEventMessage())); 	 //Assuming readings will come in ascending order of time and this is needed only for historical
 		} 

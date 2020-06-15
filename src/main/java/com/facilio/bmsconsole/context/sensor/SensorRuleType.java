@@ -49,6 +49,7 @@ public enum SensorRuleType implements FacilioEnum{
 	
 	private SensorRuleType(SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType) {
 		this.sensorRuleValidationType = sensorRuleValidationType;
+		this.isMeterRollUp = isMeterRollUp;
 		this.isCounterFieldType = isCounterFieldType;
 	}
 	
