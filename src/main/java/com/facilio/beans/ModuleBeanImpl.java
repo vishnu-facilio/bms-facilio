@@ -382,7 +382,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		if(fieldProps != null && !fieldProps.isEmpty()) {
 			Map<String, Object> prop = fieldProps.get(0);
-			long parentId = (Long) prop.get("PARENT_MODULE_ID");
+			long parentId = (Long) prop.get("parentModuleId");
 			parentModule = getMod(parentId);
 		}
 		return parentModule;

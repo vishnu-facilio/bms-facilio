@@ -88,8 +88,11 @@ public class SensorRuleUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule readingModule = modBean.getModule(moduleName);
 		FacilioModule categoryModule = modBean.getParentModule(readingModule.getModuleId());
-		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,isFetchSubProps);
-		return sensorRules;
+		if(categoryModule != null) {
+			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByModuleId(categoryModule,isFetchSubProps);
+			return sensorRules;	
+		}
+		return null;
 	}
 	
 	public static List<SensorRuleContext> getSensorRuleByModuleId(FacilioModule childModule, boolean isFetchSubProps) throws Exception {

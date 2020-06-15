@@ -322,7 +322,7 @@ public class ModuleFactory {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("sensorRule");
 		fieldModule.setDisplayName("Sensor Rule");
-		fieldModule.setTableName("Sensor_Rule");
+		fieldModule.setTableName("SensorRule");
 		return fieldModule;
 	}
 	
@@ -330,7 +330,7 @@ public class ModuleFactory {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("sensorRuleProps");
 		fieldModule.setDisplayName("Sensor Rule Props");
-		fieldModule.setTableName("Sensor_Rule_Props");
+		fieldModule.setTableName("SensorRuleProps");
 		return fieldModule;
 	}
 
