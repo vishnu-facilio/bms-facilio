@@ -7,7 +7,9 @@ import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -89,7 +91,12 @@ public class QuotationAPI {
         quotation.setTotalTaxAmount(totalTaxAmount);
         Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
         if (quotation.getDiscountPercentage() != null) {
-            quotationTotalCost = quotationTotalCost - (quotationTotalCost * quotation.getDiscountPercentage() / 100);
+            Double discountAmount = (quotationTotalCost * quotation.getDiscountPercentage() / 100);
+            quotation.setDiscountAmount(discountAmount);
+            quotationTotalCost = quotationTotalCost - discountAmount;
+        }
+        else if (quotation.getDiscountAmount() != null) {
+            quotationTotalCost -= quotation.getDiscountAmount();
         }
         if (quotation.getShippingCharges() != null) {
             quotationTotalCost += quotation.getShippingCharges();
@@ -99,9 +106,6 @@ public class QuotationAPI {
         }
         if (quotation.getAdjustmentsCost() != null) {
             quotationTotalCost += quotation.getAdjustmentsCost();
-        }
-        if (quotation.getDiscountAmount() != null) {
-            quotationTotalCost -= quotation.getDiscountAmount();
         }
         quotation.setTotalCost(quotationTotalCost);
     }
@@ -342,5 +346,28 @@ public class QuotationAPI {
     public static String formatDecimal(Double val) {
         DecimalFormat df =new DecimalFormat(".00");
         return df.format(val);
+    }
+
+    public static void validateForWorkorder(QuotationContext quotation) throws Exception {
+        // Considering one Quotation for a Workorder.
+        if (quotation.getWorkorder() != null && quotation.getWorkorder().getId() > 0) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTATION);
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+            SelectRecordsBuilder<QuotationContext> builder = new SelectRecordsBuilder<QuotationContext>()
+                    .module(module)
+                    .beanClass(QuotationContext.class)
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("workorder"), String.valueOf(quotation.getWorkorder().getId()), PickListOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("isQuotationRevised"), String.valueOf(false) ,BooleanOperators.IS));
+            List<QuotationContext> records = builder.get();
+            if (CollectionUtils.isNotEmpty(records)) {
+                QuotationContext firstRecord = records.get(0);
+                if (quotation.getId() < 0 || (/* To allow update */ firstRecord.getId() != quotation.getId())) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quotation Already exist for this Workorder Quotation Id " + firstRecord.getId());
+                }
+            }
+        }
     }
 }

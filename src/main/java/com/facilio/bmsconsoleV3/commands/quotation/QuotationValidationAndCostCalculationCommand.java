@@ -37,6 +37,7 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     // TEMP remove this once customer type is configured in form
                     quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
                 }
+                QuotationAPI.validateForWorkorder(quotation);
             }
         }
         
