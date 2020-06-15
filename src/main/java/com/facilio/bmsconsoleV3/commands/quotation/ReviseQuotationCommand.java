@@ -26,8 +26,8 @@ import java.util.Map;
 public class ReviseQuotationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
-        if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("revise")) {
+        Map<String, Object> bodyParams = Constants.getBodyParams(context);
+        if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("revise")) {
             String moduleName = Constants.getModuleName(context);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
             List<QuotationContext> list = recordMap.get(moduleName);

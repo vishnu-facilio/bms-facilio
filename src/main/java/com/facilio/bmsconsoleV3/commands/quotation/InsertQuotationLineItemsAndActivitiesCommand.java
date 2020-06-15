@@ -56,12 +56,12 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
                 }
 
-                if (CollectionUtils.isNotEmpty(quotation.getTermsAssociated())) {
-                    List<QuotationAssociatedTermsContext> terms = quotation.getTermsAssociated();
-                    QuotationAPI.addQuotationTerms(quotation.getId(), terms);
-                }
-                Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.get(Constants.QUERY_PARAMS);
-                if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("revise")) {
+                Map<String, Object> bodyParams = Constants.getBodyParams(context);
+                if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("revise")) {
+                    if (CollectionUtils.isNotEmpty(quotation.getTermsAssociated())) {
+                        List<QuotationAssociatedTermsContext> terms = quotation.getTermsAssociated();
+                        QuotationAPI.addQuotationTerms(quotation.getId(), terms);
+                    }
                     Long oldRecordId = (Long) context.get(FacilioConstants.ContextNames.OLD_RECORD_ID);
                     FacilioChain activitiesChain = ReadOnlyChainFactory.getActivitiesChain();
                     activitiesChain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
@@ -84,25 +84,24 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                 } else if (quotationId != null && quotationId > 0) {
                     Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
                     if (MapUtils.isNotEmpty(changeSet)) {
-                            List<UpdateChangeSet> updatedSet = changeSet.get(quotation.getId());
-                            if (CollectionUtils.isNotEmpty(updatedSet)) {
-                                Boolean addedActivity = false;
-                                for (UpdateChangeSet changes : updatedSet) {
-                                    FacilioField field = modBean.getField(changes.getFieldId());
-                                    if (field != null && field.getName().equals(FacilioConstants.ContextNames.MODULE_STATE)) {
-                                        addedActivity = true;
-                                    }
-                                    else if (field != null && field.getName().equals(FacilioConstants.ContextNames.TOTAL_COST)) {
-                                        JSONObject info = new JSONObject();
-                                        info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
-                                        CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
-                                        addedActivity = true;
-                                    }
-                                }
-                                if (!addedActivity) {
+                        List<UpdateChangeSet> updatedSet = changeSet.get(quotation.getId());
+                        if (CollectionUtils.isNotEmpty(updatedSet)) {
+                            Boolean addedActivity = false;
+                            for (UpdateChangeSet changes : updatedSet) {
+                                FacilioField field = modBean.getField(changes.getFieldId());
+                                if (field != null && field.getName().equals(FacilioConstants.ContextNames.MODULE_STATE)) {
+                                    addedActivity = true;
+                                } else if (field != null && field.getName().equals(FacilioConstants.ContextNames.TOTAL_COST)) {
                                     JSONObject info = new JSONObject();
+                                    info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
                                     CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
+                                    addedActivity = true;
                                 }
+                            }
+                            if (!addedActivity) {
+                                JSONObject info = new JSONObject();
+                                CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
+                            }
                         }
                     }
                 } else {
