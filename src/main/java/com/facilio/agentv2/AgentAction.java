@@ -1,5 +1,22 @@
 package com.facilio.agentv2;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -23,16 +40,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.util.*;
 
 
 public class AgentAction extends AgentActionV2 {
@@ -443,8 +450,15 @@ public class AgentAction extends AgentActionV2 {
                 setResult(AgentConstants.DATA, alertsPoints);
                 if ( ! alertsPoints.isEmpty())	{
                     JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size()-1);
-                    if(lastRecord != null && lastRecord.containsKey("arrivalTime")){
-                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,lastRecord.get("arrivalTime"));
+                    String msg = lastRecord.get("message").toString();
+				    JSONParser parser = new JSONParser();
+					JSONObject json = (JSONObject) parser.parse(msg);
+					String arrival = (String) json.get("timestamp");
+					if(arrival == null){
+						arrival = lastRecord.get("arrivalTime").toString();
+					}
+                    if(lastRecord != null){
+                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,arrival);
                     }
                 }
                 ok();

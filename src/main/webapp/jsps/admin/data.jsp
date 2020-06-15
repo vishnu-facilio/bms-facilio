@@ -20,6 +20,7 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator" %>
 <%@page import="com.facilio.service.FacilioService" %>
+<%@page import="org.json.simple.parser.JSONParser" %>
 <%
 long receivedTime =0l;
 String receiveddate = "";
@@ -99,7 +100,13 @@ function changeThePage(){
 				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
 				  for(int i=(jsonArray.size()-1);i>=0;i--) {
 						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
-						 	String arrival = jsonObj.get("arrivalTime").toString();
+						    String msg = jsonObj.get("message").toString();
+						    JSONParser parser = new JSONParser();
+							JSONObject json = (JSONObject) parser.parse(msg);
+							String arrival = (String) json.get("timestamp");
+							if(arrival == null){
+								arrival = jsonObj.get("arrivalTime").toString();
+							}
 							long time = Long.parseLong(arrival);
 							long t1 = time;
 							receiveddate = DateTimeUtil.getFormattedTime(time);
@@ -138,7 +145,13 @@ function changeThePage(){
 		int i=0;
 		for(int j=(jsonArray.size()-1);j>=0;j--) {
 			 JSONObject jsonObj = (JSONObject)jsonArray.get(j);
-			 String arrival=  jsonObj.get("arrivalTime").toString() ;
+			 String msg = jsonObj.get("message").toString();
+			    JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(msg);
+				String arrival = (String) json.get("timestamp");
+				if(arrival == null){
+					arrival = jsonObj.get("arrivalTime").toString();
+				}
 			 long time =Long.parseLong(arrival);
 			 String date = DateTimeUtil.getFormattedTime(time);
 			
