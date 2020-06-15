@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.forms;
 
-import com.facilio.modules.FacilioEnum;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.modules.FacilioEnum;
+import com.facilio.util.FacilioUtil;
 
 public class FormSection {
 	private static final long serialVersionUID = 1L;
@@ -104,6 +108,26 @@ public class FormSection {
 	}
 	public void setSubForm(FacilioForm subForm) {
 		this.subForm = subForm;
+	}
+	
+	private JSONObject subFormValue;
+	public JSONObject getSubFormValue() {
+		return subFormValue;
+	}
+	public void setData(JSONObject subFormValue) {
+		this.subFormValue = subFormValue;
+	}
+	
+	public String getSubFormValueStr() {
+		if (subFormValue != null) {
+			return subFormValue.toJSONString();
+		}
+		return null;
+	}
+	public void setSubFormValueStr(String subFormValueStr) throws ParseException {
+		if (subFormValueStr != null) {
+			this.subFormValue = FacilioUtil.parseJson(subFormValueStr);
+		}
 	}
 
 	private SectionType sectionType;

@@ -828,6 +828,7 @@ public class FieldFactory {
         fields.add(getField("showLabel", "SHOW_LABEL", module, FieldType.BOOLEAN));
 
         fields.add(getField("subFormId", "SUB_FORM_ID", module, FieldType.NUMBER));
+        fields.add(getField("subFormValue", "SUB_FORM_DEFAULT_VALUE", module, FieldType.STRING));
         fields.add(getField("sectionType", "SECTION_TYPE", module, FieldType.NUMBER));
 
         return fields;
