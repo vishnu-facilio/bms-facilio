@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
@@ -87,15 +88,30 @@ public class UpdateRollUpFieldsCommand extends FacilioCommand {
 		if(aggregateFunctionId != null) {
 			rollUpField.setAggregateFunctionId(aggregateFunctionId);
 		}
-		if(criteria != null) {
-			long childCriteriaId = CriteriaAPI.addCriteria(criteria);
-			rollUpField.setChildCriteriaId(childCriteriaId);
-		}
+		
 		if(rollUpFieldDescription != null) {
 			rollUpField.setDescription(rollUpFieldDescription);
 		}
 		rollUpField.setIsSystemRollUpField(false);
-		RollUpFieldUtil.updateRollUpField(rollUpField);	
+		
+		Long oldCriteriaId = null;
+		if(criteria != null) {
+			oldCriteriaId = rollUpField.getChildCriteriaId();
+			if(criteria.getCriteriaId() == -99) {
+				rollUpField.setChildCriteriaId(-99);
+			}
+			else {
+				long childCriteriaId = CriteriaAPI.addCriteria(criteria);
+				rollUpField.setChildCriteriaId(childCriteriaId);
+			}	
+		}		
+
+//		if(oldCriteriaId != null) {
+//			NewTransactionService.newTransaction(() -> RollUpFieldUtil.updateRollUpField(rollUpField));
+//			CriteriaAPI.deleteCriteria(oldCriteriaId);
+//		}
+		
+		RollUpFieldUtil.updateRollUpField(rollUpField);
 		context.put(FacilioConstants.ContextNames.ROLL_UP_FIELDS, rollUpFields);
 		return false;
 	}

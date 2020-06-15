@@ -22,7 +22,7 @@ public class RollUpField{
     private String description;
 	private long childFieldId;
     private long childModuleId;
-    private long childCriteriaId;
+    private long childCriteriaId = -1;
     private int aggregateFunctionId;
     private long aggregateFieldId = -1;
     private long parentModuleId;
