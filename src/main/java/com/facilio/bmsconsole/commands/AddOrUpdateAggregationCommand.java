@@ -23,7 +23,7 @@ import java.util.List;
 
 public class AddOrUpdateAggregationCommand extends FacilioCommand {
 
-    private static final long HOUR_IN_MILLIS = 60 * 1000;
+    private static final long HALF_HOUR_IN_SECONDS = 30 * 60;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -36,8 +36,8 @@ public class AddOrUpdateAggregationCommand extends FacilioCommand {
             if (aggregationMeta.getInterval() == null) {
                 throw new IllegalArgumentException("Invalid interval");
             }
-            if (aggregationMeta.getInterval() < HOUR_IN_MILLIS) {
-                throw new IllegalArgumentException("Interval's minimum time is 1 hour");
+            if (aggregationMeta.getInterval() < HALF_HOUR_IN_SECONDS) {
+                throw new IllegalArgumentException("Interval's minimum time is 30 minutes");
             }
 
             List<AggregationColumnMetaContext> columnList = aggregationMeta.getColumnList();

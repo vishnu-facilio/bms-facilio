@@ -329,18 +329,18 @@ public class BmsAggregateOperators {
 
     public enum DateAggregateOperator implements AggregateOperator {
 
-        YEAR(8,"Yearly","year.expr",true), //Yearly aggregation
-        MONTHANDYEAR(10,"monthAndYear","monthandyear.expr", "MMMM yyyy",false), //Monthly aggregation
-        WEEKANDYEAR(11,"weekAndYear","weekandyear.expr",false), //Weekly aggregation
-        FULLDATE(12,"daily","fulldate.expr", "EEEE, MMMM dd, yyyy",true), //Daily Aggregation
-        DATEANDTIME(13,"dateAndTime","dateandtime.expr",false), //Hourly aggregation
-        MONTH(15,"Monthly","month.expr",true), //Monthly aggregation
-        WEEK(16,"Week","week.expr",false), //Weekly aggregation
-        WEEKDAY(17,"Weekly","weekday.expr",true), //Daily aggregation
-        DAYSOFMONTH(18,"Daily","daysofmonth.expr", "EEEE, MMMM dd, yyyy",false), //Daily
-        HOURSOFDAY(19,"hoursOfDay","hoursofday.expr", "EEE, MMM dd, yyyy hh a",false), //Hourly
-        HOURSOFDAYONLY(20,"Hourly","hoursofdayonly.expr", "EEE, MMM dd, yyyy hh a",true), //Hourly
-        QUARTERLY(25,"Quarterly","quaterly.expr", "MMMM yyyy",false), //Quarterly
+        YEAR(8,"Yearly","year.expr",true, 20), //Yearly aggregation
+        MONTHANDYEAR(10,"monthAndYear","monthandyear.expr", "MMMM yyyy",false, 15), //Monthly aggregation
+        WEEKANDYEAR(11,"weekAndYear","weekandyear.expr",false, 12), //Weekly aggregation
+        FULLDATE(12,"daily","fulldate.expr", "EEEE, MMMM dd, yyyy",true, 5), //Daily Aggregation
+        DATEANDTIME(13,"dateAndTime","dateandtime.expr",false, 2), //Hourly aggregation
+        MONTH(15,"Monthly","month.expr",true, 14), //Monthly aggregation
+        WEEK(16,"Week","week.expr",false, 12), //Weekly aggregation
+        WEEKDAY(17,"Weekly","weekday.expr",true, 10), //Daily aggregation
+        DAYSOFMONTH(18,"Daily","daysofmonth.expr", "EEEE, MMMM dd, yyyy",false, 5), //Daily
+        HOURSOFDAY(19,"hoursOfDay","hoursofday.expr", "EEE, MMM dd, yyyy hh a",false, 2), //Hourly
+        HOURSOFDAYONLY(20,"Hourly","hoursofdayonly.expr", "EEE, MMM dd, yyyy hh a",true, 1), //Hourly
+        QUARTERLY(25,"Quarterly","quaterly.expr", "MMMM yyyy",false, 17), //Quarterly
         ;
 
         private int value;
@@ -348,6 +348,10 @@ public class BmsAggregateOperators {
         private String expr;
         private String format;
         private boolean isPublic;
+        private int order;
+        public int getOrder() {
+            return order;
+        }
         public boolean isPublic() {
             return isPublic;
         }
@@ -360,15 +364,16 @@ public class BmsAggregateOperators {
         public String getFormat() {
             return format;
         }
-        DateAggregateOperator(Integer value,String stringValue,String expr,boolean isPublic) {
-            this(value, stringValue, expr, null, isPublic);
+        DateAggregateOperator(Integer value,String stringValue,String expr,boolean isPublic, int order) {
+            this(value, stringValue, expr, null, isPublic, order);
         }
-        DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic) {
+        DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic, int order) {
             this.value = value;
             this.stringValue = stringValue;
             this.expr = DBConf.getInstance().getQuery(expr);
             this.format = format;
             this.isPublic = isPublic;
+            this.order = order;
         }
         public FacilioField getSelectField(FacilioField field) throws Exception {
             String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());

@@ -24,6 +24,14 @@ public class AggregationColumnMetaContext implements Serializable {
         this.aggregationMetaId = aggregationMetaId;
     }
 
+    public AggregationMetaContext aggregationMeta;
+    public AggregationMetaContext getAggregationMeta() {
+        return aggregationMeta;
+    }
+    public void setAggregationMeta(AggregationMetaContext aggregationMeta) {
+        this.aggregationMeta = aggregationMeta;
+    }
+
     private FacilioModule module;
     public FacilioModule getModule() {
         return module;

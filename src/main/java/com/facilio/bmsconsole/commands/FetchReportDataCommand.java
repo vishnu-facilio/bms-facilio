@@ -1,33 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
-import java.util.StringJoiner;
-import java.util.logging.Logger;
-
-import com.facilio.report.context.*;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.AggregationAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -38,18 +18,14 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
@@ -57,6 +33,14 @@ import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 ;
 
@@ -149,7 +133,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null);
 			reportData.add(sortedData);
 		}
-		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
+		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum());
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (int i = 0; i < groupedDataPoints.size(); i++) {
 				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
@@ -498,8 +482,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			props = newSelectBuilder.getAsProps();
 		}
 
-//		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
-
+		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 
 		 if(!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
 			 LOGGER.info("DATE FROM QUERY : "+props);
@@ -599,8 +582,82 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 	}
 
-	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField) throws Exception {
+	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator) throws Exception {
 		if (dataPoints != null && !dataPoints.isEmpty()) {
+			if ((FacilioProperties.isDevelopment() || (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 173l))) {
+				if ((reportType != null && reportType == ReportType.READING_REPORT)
+						&& aggregateOperator instanceof DateAggregateOperator) {
+					// replace live reading data with aggregated data
+					Set<Long> fieldIds = dataPoints.stream().filter(point -> point.getxAxis().getField().getName().equalsIgnoreCase("ttime"))
+							.map(point -> point.getyAxis().getField().getFieldId()).collect(Collectors.toSet());
+					List<AggregationColumnMetaContext> aggregateFields = AggregationAPI.getAggregateFields(fieldIds);
+					if (CollectionUtils.isNotEmpty(aggregateFields)) {
+						Map<Long, List<AggregationColumnMetaContext>> columnMap = new HashMap<>();
+						for (AggregationColumnMetaContext aggregateField : aggregateFields) {
+							List<AggregationColumnMetaContext> list = columnMap.get(aggregateField.getFieldId());
+							if (list == null) {
+								list = new ArrayList<>();
+								columnMap.put(aggregateField.getFieldId(), list);
+							}
+							list.add(aggregateField);
+						}
+						for (ReportDataPointContext dataPoint : dataPoints) {
+							ReportFieldContext xAxis = dataPoint.getxAxis();
+							if (xAxis.getField().getName().equalsIgnoreCase("ttime")) {
+								ReportYAxisContext yAxis = dataPoint.getyAxis();
+								if (columnMap.containsKey(yAxis.getFieldId())) {
+									AggregationColumnMetaContext columnMetaContext = null;
+
+									List<AggregationColumnMetaContext> aggregationColumnMetaContexts = columnMap.get(yAxis.getFieldId());
+									int minVersion = Integer.MAX_VALUE;
+									for (AggregationColumnMetaContext aggregationColumnMetaContext : aggregationColumnMetaContexts) {
+										if (aggregationColumnMetaContext.getAggregateOperatorEnum() != yAxis.getAggrEnum()) {
+											continue;
+										}
+
+										int allowed = aggregationColumnMetaContext.getAggregationMeta().getFrequencyTypeEnum().isAllowed((DateAggregateOperator) aggregateOperator);
+										if (allowed >= 0) {
+											if (allowed < minVersion) {
+												minVersion = allowed;
+												columnMetaContext = aggregationColumnMetaContext;
+												if (allowed == 0) { // we cannot get less than this
+													break;
+												}
+											}
+										}
+									}
+
+									if (columnMetaContext == null) {
+										continue;
+									}
+
+									FacilioModule storageModule = columnMetaContext.getAggregationMeta().getStorageModule();
+									yAxis.setField(storageModule, columnMetaContext.getStorageField());
+
+									FacilioField aggregatedTimeField = modBean.getField("aggregatedTime", storageModule.getName());
+									FacilioField parentIdField = modBean.getField("parentId", storageModule.getName());
+									xAxis.setField(storageModule, aggregatedTimeField);
+
+									ReportFieldContext aggregatedDateField = new ReportFieldContext();
+									aggregatedDateField.setField(storageModule, aggregatedTimeField);
+									dataPoint.setDateField(aggregatedDateField);
+
+									Criteria allCriteria = dataPoint.getAllCriteria();
+									if (allCriteria != null && !allCriteria.isEmpty()) {
+										Map<String, Condition> conditions = allCriteria.getConditions();
+										for (Condition cond : conditions.values()) {
+											if ("parentId".equals(cond.getFieldName())) {
+												cond.setField(parentIdField);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			List<List<ReportDataPointContext>> groupedList = new ArrayList<>();
 			for (ReportDataPointContext dataPoint : dataPoints) {
 				if(dataPoint.getTypeEnum() == null) {

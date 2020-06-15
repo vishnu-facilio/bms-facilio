@@ -120,10 +120,41 @@ public class AggregationMetaContext implements Serializable {
             public long getNextSyncTime(Long lastSync) {
                 return lastSync + (60 * 60 * 1000);
             }
-        };
+        },
+        DAILY("Daily", BmsAggregateOperators.DateAggregateOperator.FULLDATE.getValue()) {
+            @Override
+            public long getAggregatedTime(Long ttime) {
+                ZonedDateTime zonedDateTime = DateTimeUtil.getDayStartTimeOf(DateTimeUtil.getDateTime(ttime));
+                zonedDateTime = zonedDateTime.withMinute(0)
+                        .withSecond(0);
+                return DateTimeUtil.getMillis(zonedDateTime, true);
+            }
+
+            @Override
+            public long getNextSyncTime(Long lastSync) {
+                return lastSync + (24 * 60 * 60 * 1000);
+            }
+        },
+        WEEKLY("Weekly", BmsAggregateOperators.DateAggregateOperator.WEEKANDYEAR.getValue()) {
+            @Override
+            public long getAggregatedTime(Long ttime) {
+                ZonedDateTime zonedDateTime = DateTimeUtil.getWeekStartTimeOf(DateTimeUtil.getDateTime(ttime));
+                zonedDateTime = zonedDateTime.withMinute(0)
+                        .withSecond(0);
+                return DateTimeUtil.getMillis(zonedDateTime, true);
+            }
+
+            @Override
+            public long getNextSyncTime(Long lastSync) {
+                return lastSync + (7 * 24 * 60 * 60 * 1000);
+            }
+        }
+
+        ;
 
         private String name;
         private Integer aggregateOperatorInt;
+
         FrequencyType (String name, Integer aggregateOperator) {
             this.name = name;
             this.aggregateOperatorInt = aggregateOperator;
@@ -153,5 +184,14 @@ public class AggregationMetaContext implements Serializable {
         public abstract long getAggregatedTime(Long ttime);
 
         public abstract long getNextSyncTime(Long lastSync);
+
+        public int isAllowed(BmsAggregateOperators.DateAggregateOperator aggregateOperator) {
+            if (aggregateOperator.getOrder() >=
+                    getAggregateOperator().getOrder()) {
+                return aggregateOperator.getOrder() -
+                        getAggregateOperator().getOrder();
+            }
+            return -1;
+        }
     }
 }
