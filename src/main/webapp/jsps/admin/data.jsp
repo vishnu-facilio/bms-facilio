@@ -99,11 +99,7 @@ function changeThePage(){
 				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
 				  for(int i=(jsonArray.size()-1);i>=0;i--) {
 						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
-						    JSONObject jsonO  = (JSONObject)jsonObj.get("message");
-							 String arrival=  jsonO.get("timestamp").toString() ;
-							 if(arrival == null){
-								 arrival = jsonObj.get("arrivalTime").toString();
-							 }
+						 	String arrival = jsonObj.get("arrivalTime").toString();
 							long time = Long.parseLong(arrival);
 							long t1 = time;
 							receiveddate = DateTimeUtil.getFormattedTime(time);
@@ -142,11 +138,7 @@ function changeThePage(){
 		int i=0;
 		for(int j=(jsonArray.size()-1);j>=0;j--) {
 			 JSONObject jsonObj = (JSONObject)jsonArray.get(j);
-			 JSONObject jsonO  = (JSONObject)jsonObj.get("message");
-			 String arrival=  jsonO.get("timestamp").toString() ;
-			 if(arrival == null){
-				 arrival = jsonObj.get("arrivalTime").toString();
-			 }
+			 String arrival=  jsonObj.get("arrivalTime").toString() ;
 			 long time =Long.parseLong(arrival);
 			 String date = DateTimeUtil.getFormattedTime(time);
 			
