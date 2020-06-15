@@ -388,7 +388,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addDepreciationScheduleWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addToLayoutParams(section, 24, 7);
 		cardWidget.addCardType(CardType.DEPRECIATION_SCHEDULE);
 		section.addWidget(cardWidget);
 	}
