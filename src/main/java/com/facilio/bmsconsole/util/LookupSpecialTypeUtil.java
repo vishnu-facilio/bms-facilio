@@ -21,11 +21,14 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -683,6 +686,12 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			List<FacilioField> fields = FieldFactory.getReadingRuleFields();
 			fields.addAll(FieldFactory.getWorkflowRuleFields());
+			for(FacilioField field: fields) {
+				if(field.getDataTypeEnum() == FieldType.SYSTEM_ENUM && field instanceof SystemEnumField) {
+					SystemEnumField enumField = (SystemEnumField) field;
+					enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
+				}				
+			}
 			return fields;
 		}
 //		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
