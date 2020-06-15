@@ -1893,6 +1893,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}
 	
@@ -1903,6 +1904,7 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new GenericAddSubModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}
 
@@ -1923,6 +1925,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
+		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
 	}
 	
