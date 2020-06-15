@@ -58,7 +58,7 @@ public class QuotationPageFactory extends PageFactory {
         Page.Section tab4Sec1 = page.new Section();
         tab4.addSection(tab4Sec1);
         PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
-        activityWidget.addToLayoutParams(tab4Sec1, 24, 10);
+        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
         tab4Sec1.addWidget(activityWidget);
 

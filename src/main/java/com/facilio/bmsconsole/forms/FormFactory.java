@@ -2141,7 +2141,7 @@ public class FormFactory {
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("billDate", FieldDisplayType.DATE, "Bill Date", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.REQUIRED, 3, 3));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 4, 2));
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 4, 3));
 		fields.add(new FormField("workorder", FieldDisplayType.LOOKUP_SIMPLE, "Workorder", Required.OPTIONAL,"workorder", 5, 1));
@@ -2151,7 +2151,7 @@ public class FormFactory {
 
 		fields.add(new FormField("lineItems", FieldDisplayType.QUOTE_LINE_ITEMS, "Line Items", Required.REQUIRED, 9, 1));
 
-		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Notes", Required.OPTIONAL, 13, 1));
+		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Customer Notes", Required.OPTIONAL, 13, 1));
 
 		return fields;
 	}

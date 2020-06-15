@@ -339,9 +339,8 @@ public class QuotationAPI {
         }
     }
 
-
     public static String formatDecimal(Double val) {
-        DecimalFormat df =new DecimalFormat(".##");
+        DecimalFormat df =new DecimalFormat(".00");
         return df.format(val);
     }
 }

@@ -11,7 +11,7 @@ public enum QuotationActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Created quotation  for " + QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
+            return " Created quotation for " + QuotationAPI.formatDecimal(Math.round((Double)json.get(FacilioConstants.ContextNames.TOTAL_COST)*100.0)/100.0);
         }
     },
     UPDATE(64) {
