@@ -443,8 +443,14 @@ public class AgentAction extends AgentActionV2 {
                 setResult(AgentConstants.DATA, alertsPoints);
                 if ( ! alertsPoints.isEmpty())	{
                     JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size()-1);
+                    
+                    JSONObject jsonObj = (JSONObject)lastRecord.get("message");
+					 String recentTimeStamp=  jsonObj.get("timestamp").toString() ;
+					 if(recentTimeStamp == null){
+						 recentTimeStamp = lastRecord.get("arrivalTime").toString();
+					 }
                     if(lastRecord != null && lastRecord.containsKey("arrivalTime")){
-                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,lastRecord.get("arrivalTime"));
+                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,recentTimeStamp);
                     }
                 }
                 ok();
