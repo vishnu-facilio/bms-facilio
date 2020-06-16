@@ -1,11 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ClientContactContext;
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.*;
@@ -44,7 +39,7 @@ public class V3PeopleAPI {
         return records;
     }
 
-    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchPrimarycontact) throws Exception {
+    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -55,7 +50,7 @@ public class V3PeopleAPI {
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(tenantId), NumberOperators.EQUALS));
         ;
-        if(fetchPrimarycontact) {
+        if(fetchOnlyPrimaryContact) {
             builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
         }
         List<V3TenantContactContext> records = builder.get();

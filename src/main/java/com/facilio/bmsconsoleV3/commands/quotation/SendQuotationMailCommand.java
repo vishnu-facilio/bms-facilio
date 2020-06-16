@@ -32,6 +32,9 @@ public class SendQuotationMailCommand extends FacilioCommand {
         QuotationContext quotationContext = (QuotationContext) context.get(FacilioConstants.ContextNames.QUOTATION);
 
         emailTemplate.setFrom("noreply@facilio.com");
+
+        emailTemplate.setHtml(true); // TODO remove this temp setting here as client value is not getting set
+
         JSONObject template = emailTemplate.getOriginalTemplate();
         Map<String, String> filesMap = new HashMap<>();
         if (StringUtils.isNotEmpty(quotationPdfUrl)) {

@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.context.quotation;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -41,7 +41,7 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
     private List<QuotationLineItemsContext> lineItems;
     private List<QuotationAssociatedTermsContext> termsAssociated;
     private CustomerType customerType;
-    private TenantContext tenant;
+    private V3TenantContext tenant;
     private Long parentId;
     private Long revisionNumber;
     private Boolean isQuotationRevised;
@@ -113,11 +113,11 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         setId(-1);
     }
 
-    public TenantContext getTenant() {
+    public V3TenantContext getTenant() {
         return tenant;
     }
 
-    public void setTenant(TenantContext tenant) {
+    public void setTenant(V3TenantContext tenant) {
         this.tenant = tenant;
     }
 

@@ -122,4 +122,8 @@ public class Constants {
         context.put(RECORD_MAP, recordMap);
     }
 
+    public static Map getQueryParams(Context context) {
+        return (Map) context.get(QUERY_PARAMS);
+    }
+
 }
