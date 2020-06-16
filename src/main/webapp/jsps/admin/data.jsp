@@ -103,14 +103,12 @@ function changeThePage(){
 						    String msg = jsonObj.get("message").toString();
 						    JSONParser parser = new JSONParser();
 							JSONObject json = (JSONObject) parser.parse(msg);
-							String arrival = (String) json.get("timestamp");
-							if(arrival == null){
-								arrival = jsonObj.get("arrivalTime").toString();
+							long arrival = (long) json.get("timestamp");
+							if(arrival ==0){
+								arrival =(long) jsonObj.get("arrivalTime");
 							}
-							long time = Long.parseLong(arrival);
-							long t1 = time;
-							receiveddate = DateTimeUtil.getFormattedTime(time);
-							receivedTime = time;
+							receiveddate = DateTimeUtil.getFormattedTime(arrival);
+							receivedTime = arrival;
 							break;
 						}
 				%>

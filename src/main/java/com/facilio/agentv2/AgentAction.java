@@ -453,9 +453,9 @@ public class AgentAction extends AgentActionV2 {
                     String msg = lastRecord.get("message").toString();
 				    JSONParser parser = new JSONParser();
 					JSONObject json = (JSONObject) parser.parse(msg);
-					String arrival = (String) json.get("timestamp");
-					if(arrival == null){
-						arrival = lastRecord.get("arrivalTime").toString();
+					long arrival = (long) json.get("timestamp");
+					if(arrival == 0){
+						arrival = (long) lastRecord.get("arrivalTime");
 					}
                     if(lastRecord != null){
                         setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,arrival);
