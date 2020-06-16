@@ -4,10 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
@@ -111,6 +108,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getQuotationAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateQuotationParentIdCommand());
+        c.addCommand(new AddQuotationRelatedRecordsDuringReviseCommandV3());
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
         return c;

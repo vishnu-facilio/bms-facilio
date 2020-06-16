@@ -108,6 +108,7 @@ public class QuotationContext extends ModuleBaseWithCustomFields {
         setSiteId(quotation.getSiteId());
         setFormId(quotation.getFormId());
         setIsQuotationRevised(false);
+        setNotes(quotation.getNotes());
         setRevisionHistoryAvailable(true);
         setId(-1);
     }
