@@ -169,9 +169,9 @@ public class AssetPageFactory extends PageFactory {
 			}
 
 			if (AccountUtil.getCurrentOrg().getOrgId() == 173) {
-				fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+				fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
 				Criteria depreciationCostCriteria = new Criteria();
-				depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+				depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
 				addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
 			}
 		}
@@ -395,7 +395,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
-		cardWidget.addToLayoutParams(section, 24, 12);
+		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addCardType(CardType.MAINTENANCE_COST_TREND);
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
@@ -403,9 +403,9 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addDepreciationCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
-		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addCardType(CardType.DEPRECIATION_COST_TREND);
-		addChartParams(cardWidget, "createdTime", "totalCost", criteria);
+		addChartParams(cardWidget, "calculatedDate", "currentPrice", criteria);
 		section.addWidget(cardWidget);
 	}
 	
