@@ -114,7 +114,7 @@ public class FormSection {
 	public JSONObject getSubFormValue() {
 		return subFormValue;
 	}
-	public void setData(JSONObject subFormValue) {
+	public void setSubFormValue(JSONObject subFormValue) {
 		this.subFormValue = subFormValue;
 	}
 	
