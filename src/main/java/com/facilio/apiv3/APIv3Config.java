@@ -3,7 +3,6 @@ package com.facilio.apiv3;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -12,6 +11,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
@@ -217,6 +217,7 @@ public class APIv3Config {
                 .list()
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnListChain())
                 .summary()
+                    .beforeFetch(new FillTenantsLookupCommand())
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
                 .build();
     }

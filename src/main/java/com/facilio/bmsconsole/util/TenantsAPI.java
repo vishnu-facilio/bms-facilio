@@ -1,42 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.OccupantsContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.tenant.RateCardContext;
-import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantSpaceContext;
-import com.facilio.bmsconsole.tenant.TenantUserContext;
-import com.facilio.bmsconsole.tenant.UtilityAsset;
+import com.facilio.bmsconsole.tenant.*;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -45,21 +21,9 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.services.factory.FacilioFactory;
@@ -67,6 +31,15 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class TenantsAPI {
@@ -1218,5 +1191,24 @@ public class TenantsAPI {
 				.module(module)
 				.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), tenantIds, NumberOperators.EQUALS));
         deleteBuilder.delete();
+	}
+
+	public static void addAddress(String name, LocationContext location) throws Exception {
+		if (location != null) {
+			if (location.getId() > 0) {
+				FacilioChain chain = FacilioChainFactory.updateLocationChain();
+				chain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+				chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+				chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+				chain.execute();
+			} else {
+				location.setName(name + "_location");
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+				addLocation.execute();
+				long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
+		}
 	}
 }

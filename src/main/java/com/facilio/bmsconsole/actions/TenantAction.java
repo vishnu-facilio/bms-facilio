@@ -1,25 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
@@ -32,6 +17,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.pdf.PdfUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.File;
+import java.util.*;
 
 public class TenantAction extends FacilioAction {
    
@@ -471,6 +463,8 @@ private Map<String, Double> readingData;
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
 	         tenant.parseFormData();
+	         TenantsAPI.addAddress(tenant.getName(), tenant.getAddress());
+
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 	         context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
@@ -534,6 +528,7 @@ private Map<String, Double> readingData;
 	         }
 	         if (tenant != null) {
 	        	 tenant.parseFormData();
+	        	 TenantsAPI.addAddress(tenant.getName(), tenant.getAddress());
 	         }
 	        if (tenantsId != null && tenantsId.size() > 0) {
 	 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);

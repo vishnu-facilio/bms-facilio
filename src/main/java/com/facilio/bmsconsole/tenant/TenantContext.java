@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.tenant;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.OccupantsContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class TenantContext extends ModuleBaseWithCustomFields{
 	/**
@@ -332,6 +327,16 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public void setPeopleTenantContacts(List<TenantContactContext> peopleTenantContacts) {
 		this.peopleTenantContacts = peopleTenantContacts;
 	}
+
+	public LocationContext getAddress() {
+		return address;
+	}
+
+	public void setAddress(LocationContext address) {
+		this.address = address;
+	}
+
+	private LocationContext address;
 	
 	
 }

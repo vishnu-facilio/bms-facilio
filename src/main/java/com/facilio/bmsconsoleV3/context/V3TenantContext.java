@@ -309,4 +309,14 @@ public class V3TenantContext extends ModuleBaseWithCustomFields {
         this.peopleTenantContacts = peopleTenantContacts;
     }
 
+    public LocationContext getAddress() {
+        return address;
+    }
+
+    public void setAddress(LocationContext address) {
+        this.address = address;
+    }
+
+    private LocationContext address;
+
 }

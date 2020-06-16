@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
@@ -47,6 +48,7 @@ public class ValidateTenantSpaceCommandV3 extends FacilioCommand {
                     }
                     checkSpaceOccupancy(tenant.getSpaces());
                 }
+                TenantsAPI.addAddress(tenant.getName(), tenant.getAddress());
             }
         }
 

@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -206,13 +207,24 @@ public class QuotationAPI {
 
         if (location != null) {
             if (location.getId() > 0) {
+                if (quotation.getTenant() != null && quotation.getTenant().getId() > 0) {
+                    TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
+                    location.setName(tenant.getName());
+                }  else if (quotation.getTenant() == null) {
+                    location.setName(quotation.getSubject() + "_location");
+                }
                 FacilioChain chain = FacilioChainFactory.updateLocationChain();
                 chain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
                 chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
                 chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
                 chain.execute();
             } else {
-                location.setName(quotation.getSubject() + "_location");
+                if (quotation.getTenant() != null && quotation.getTenant().getId() > 0) {
+                    TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
+                    location.setName(tenant.getName());
+                }  else if (quotation.getTenant() == null) {
+                    location.setName(quotation.getSubject() + "_location");
+                }
                 FacilioChain addLocation = FacilioChainFactory.addLocationChain();
                 addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
                 addLocation.execute();
