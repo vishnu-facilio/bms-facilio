@@ -6,6 +6,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.sensor.SensorEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -62,6 +64,10 @@ public class NewEventAPI {
 				return RuleRollUpEvent.class;
 			case ASSET_ROLLUP_ALARM:
 				return AssetRollUpEvent.class;
+			case SENSOR_ALARM:
+				return SensorEventContext.class;
+			case SENSOR_ROLLUP_ALARM:
+				return SensorRollUpEventContext.class;
 
 			default:
 				throw new IllegalArgumentException("Invalid event type");
@@ -104,6 +110,10 @@ public class NewEventAPI {
 				return "rulerollupevent";
 			case ASSET_ROLLUP_ALARM:
 				return FacilioConstants.ContextNames.ASSET_ROLLUP_EVENT;
+			case SENSOR_ALARM:
+				return FacilioConstants.ContextNames.SENSOR_EVENT;
+			case SENSOR_ROLLUP_ALARM:
+				return FacilioConstants.ContextNames.SENSOR_ROLLUP_EVENT;
 
 			default:
 				throw new IllegalArgumentException("Invalid event type");

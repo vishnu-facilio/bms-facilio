@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.sensor.SensorEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -369,7 +371,12 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			case ASSET_ROLLUP_ALARM:
 				baseEvent = new AssetRollUpEvent();
 				break;
-
+			case SENSOR_ALARM:
+				baseEvent = new SensorEventContext();
+				break;
+			case SENSOR_ROLLUP_ALARM:
+				baseEvent = new SensorRollUpEventContext();
+				break;
 
 			default:
 				throw new IllegalArgumentException("Invalid type");

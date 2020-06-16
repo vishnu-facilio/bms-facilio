@@ -22,6 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -128,8 +132,10 @@ public class NewAlarmAPI {
 				return OperationAlarmOccurenceContext.class;
 			case RULE_ROLLUP:
 				return RuleRollUpOccurrence.class;
-			case ASSET_ROLLUP:
-				return AssetRollUpOccurrence.class;
+			case SENSOR:
+				return SensorAlarmOccurrenceContext.class;
+			case SENSOR_ROLLUP:
+				return SensorRollUpAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -160,6 +166,10 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.RULE_ROLLUP_OCCURRENCE;
 			case ASSET_ROLLUP:
 				return FacilioConstants.ContextNames.ASSET_ROLLUP_OCCURRENCE;
+			case SENSOR:
+				return FacilioConstants.ContextNames.SENSOR_ALARM_OCCURRENCE;
+			case SENSOR_ROLLUP:
+				return FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -195,7 +205,11 @@ public class NewAlarmAPI {
 				return RuleRollUpAlarm.class;
 			case ASSET_ROLLUP_ALARM:
 				return AssetRollUpAlarm.class;
-
+			case SENSOR_ALARM:
+				return SensorAlarmContext.class;
+			case SENSOR_ROLLUP_ALARM:
+				return SensorRollUpAlarmContext.class;
+				
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -226,7 +240,12 @@ public class NewAlarmAPI {
 					lookupFields.add((LookupField) ruleField);
 				}
 				break;
-
+			case SENSOR_ALARM:
+				lookupFields = new ArrayList<>();
+				FacilioField sensorRule = modBean.getField("sensorRule", FacilioConstants.ContextNames.SENSOR_ALARM);
+				if (sensorRule instanceof LookupField) {
+					lookupFields.add((LookupField) sensorRule);
+				}
 				
 		}
 		return lookupFields;
@@ -262,7 +281,10 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.RULE_ROLLUP_ALARM;
 			case ASSET_ROLLUP_ALARM:
 				return FacilioConstants.ContextNames.ASSET_ROLLUP_ALARM;
-
+			case SENSOR_ALARM:
+				return FacilioConstants.ContextNames.SENSOR_ALARM;
+			case SENSOR_ROLLUP_ALARM:
+				return FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -291,6 +313,10 @@ public class NewAlarmAPI {
 				return AlarmOccurrenceContext.Type.RULE_ROLLUP;
 			case ASSET_ROLLUP_ALARM:
 				return AlarmOccurrenceContext.Type.ASSET_ROLLUP;
+			case SENSOR_ALARM:
+				return AlarmOccurrenceContext.Type.SENSOR;
+			case SENSOR_ROLLUP_ALARM:
+				return AlarmOccurrenceContext.Type.SENSOR_ROLLUP;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type to fetch occurrence type");
 		}

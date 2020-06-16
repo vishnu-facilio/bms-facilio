@@ -8,6 +8,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
+import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -46,6 +48,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)
+				|| FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
@@ -199,6 +202,9 @@ public class LookupSpecialTypeUtil {
 		}else if (ContextNames.AGENT_DATA.equals(specialType)){
 			return AgentApiV2.getAgent(id);
 		}
+		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			return SensorRuleUtil.getSensorRuleByIds(Collections.singletonList(id));
+		}
 		return null;
 	}
 	
@@ -311,6 +317,12 @@ public class LookupSpecialTypeUtil {
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
 			}
 		}
+		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
+			if (CollectionUtils.isNotEmpty(sensorRules)) {
+				return sensorRules.stream().collect(Collectors.toMap(SensorRuleContext::getId, Function.identity()));
+			}
+		}
 		return null;
 	}
 	
@@ -344,6 +356,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
+		}
+		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			return SensorRuleUtil.getSensorRuleByIds((List<Long>) ids);
 		}
 		return null;
 	}
@@ -409,6 +424,11 @@ public class LookupSpecialTypeUtil {
 			slaWorkflowCommitmentRuleContext.setId(id);
 			return slaWorkflowCommitmentRuleContext;
 		}
+		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			SensorRuleContext sensorRuleContext = new SensorRuleContext();
+			sensorRuleContext.setId(id);
+			return sensorRuleContext;
+		}
 		return null;
 	}
 
@@ -445,6 +465,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return ((ReadingRuleContext) obj).getId();
+		}
+		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			return ((SensorRuleContext) obj).getId();
 		}
 		return -1;
 	}
@@ -502,6 +525,12 @@ public class LookupSpecialTypeUtil {
                 return  rule.toString();
             }
         }
+        else if(FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+			List<SensorRuleContext> sensorRule = SensorRuleUtil.getSensorRuleByIds(Collections.singletonList(id));
+			if (sensorRule != null && sensorRule.get(0) != null) {
+				return sensorRule.toString();
+			}
+		}
 		return null;
 	}
 	
@@ -579,6 +608,15 @@ public class LookupSpecialTypeUtil {
                 }
             }
         }
+        else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+            for(Object obj:listObjects) {
+
+            	SensorRuleContext sensorRuleContext = (SensorRuleContext) obj;
+                if (sensorRuleContext != null) {
+                    idVsKey.put(sensorRuleContext.getId(), sensorRuleContext.toString());
+                }
+            }
+        }
 		return idVsKey;
 	}
 	
@@ -653,6 +691,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(ContextNames.KPI.equals(specialType)){
 			return ModuleFactory.getKpiModule();
+		}
+		else if(ContextNames.SENSOR_RULE_MODULE.equals(specialType)){
+			return ModuleFactory.getSensorRuleModule();
 		}
 		return null;
 	}
@@ -736,6 +777,9 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.AGENT_DATA.equals(specialType)) {
 			return FieldFactory.getNewAgentFields();
 		}
+		else  if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
+		    return  FieldFactory.getSensorRuleFields();
+        }
 		return null;
 	}
 	

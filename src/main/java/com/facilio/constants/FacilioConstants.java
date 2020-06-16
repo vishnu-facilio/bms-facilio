@@ -17,6 +17,12 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.sensor.SensorEventContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -386,7 +392,13 @@ public class FacilioConstants {
 		public  static final String RULE_ROLLUP_EVENT="rulerollupevent";
 		public static final String ASSET_ROLLUP_ALARM ="assetrollupalarm";
 		public static final String ASSET_ROLLUP_OCCURRENCE="assetrollupoccurrence";
-		public  static final String ASSET_ROLLUP_EVENT="assetrollupevent";
+		public static final String ASSET_ROLLUP_EVENT="assetrollupevent";
+		public static final String SENSOR_ALARM ="sensoralarm";
+		public static final String SENSOR_ALARM_OCCURRENCE="sensoralarmoccurrence";
+		public static final String SENSOR_EVENT="sensorevent";
+		public static final String SENSOR_ROLLUP_ALARM ="sensorrollupalarm";
+		public static final String SENSOR_ROLLUP_ALARM_OCCURRENCE ="sensorrollupalarmoccurrence";
+		public static final String SENSOR_ROLLUP_EVENT ="sensorrollupevent";
 
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
@@ -935,6 +947,7 @@ public class FacilioConstants {
 		public static final String READING_RULE_ID ="readingRuleId";
 		public static final String IS_READING_RULE_EXECUTE_FROM_JOB ="isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
+		public static final String SENSOR_RULE_MODULE = "sensorRule";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";
@@ -1829,6 +1842,12 @@ public class FacilioConstants {
 			classMap.put(ASSET_ROLLUP_EVENT, AssetRollUpEvent.class);
 			classMap.put(ASSET_ROLLUP_OCCURRENCE, AssetRollUpOccurrence.class);
 			classMap.put(ASSET_ROLLUP_ALARM, AssetRollUpAlarm.class);
+			classMap.put(SENSOR_ALARM, SensorAlarmContext.class);
+			classMap.put(SENSOR_ALARM_OCCURRENCE, SensorAlarmOccurrenceContext.class);
+			classMap.put(SENSOR_EVENT, SensorEventContext.class);
+			classMap.put(SENSOR_ROLLUP_ALARM, SensorRollUpAlarmContext.class);
+			classMap.put(SENSOR_ROLLUP_ALARM_OCCURRENCE, SensorRollUpAlarmOccurrenceContext.class);
+			classMap.put(SENSOR_ROLLUP_EVENT, SensorRollUpEventContext.class);
 
 			classMap.put(VISITOR, VisitorContext.class);
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
