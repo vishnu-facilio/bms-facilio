@@ -4,6 +4,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.db.criteria.CriteriaAPI;
 
@@ -19,8 +20,12 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 		formRule.setCriteriaId(id);
 		FormRuleAPI.updateFormRuleContext(formRule);
 		CriteriaAPI.deleteCriteria(oldCriteriaId);
-		FormRuleAPI.deleteFormRuleTriggerFieldsContext(formRule.getId());
-		FormRuleAPI.addFormRuleTriggerFieldsContext(formRule,formRule.getTriggerFields());
+		
+		if(formRule.getTriggerTypeEnum() == TriggerType.FIELD_UPDATE) {
+			
+			FormRuleAPI.deleteFormRuleTriggerFieldsContext(formRule.getId());
+			FormRuleAPI.addFormRuleTriggerFieldsContext(formRule,formRule.getTriggerFields());
+		}
 		return false;
 	}
 
