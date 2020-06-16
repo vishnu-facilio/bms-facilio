@@ -1,9 +1,12 @@
 package com.facilio.v3.context;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +78,48 @@ public class Constants {
 
     public static JSONObject getJsonRecordMap(Context context) {
         return (JSONObject) context.get(JSON_RECORD_MAP);
+    }
+
+    public static void setAttachmentFileList(Context context, List<File> files) {
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, files);
+    }
+
+    public static List<File> getAttachmentFileList(Context context) {
+        return (List<File>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST);
+    }
+
+    public static void setAttachmentFileNames(Context context, List<String> fileNames) {
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, fileNames);
+    }
+
+    public static List<String> getAttachmentFileNames(Context context) {
+        return (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME);
+    }
+
+    public static void setAttachmentContentTypes(Context context, List<String> contentTypes) {
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, contentTypes);
+    }
+
+    public static List<String> getAttachmentContentTypes(Context context) {
+        return (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE);
+    }
+
+    private static final String ATTACHMENT_ID_MAP = "attachmentIdMap";
+    public static Map<String, Long> getAttachmentNameVsId(Context context) {
+        return (Map<String, Long>) context.get(ATTACHMENT_ID_MAP);
+    }
+
+    public static void setAttachmentNameVsId(Context context, Map<String, Long> attachmentVsId) {
+        context.put(ATTACHMENT_ID_MAP, attachmentVsId);
+    }
+
+
+    public static Map<String, List<ModuleBaseWithCustomFields>> getRecordMap(Context context) {
+        return (Map<String, List<ModuleBaseWithCustomFields>>) context.get(RECORD_MAP);
+    }
+
+    public static void setRecordMap(Context context, Map<String, List<ModuleBaseWithCustomFields>> recordMap) {
+        context.put(RECORD_MAP, recordMap);
     }
 
 }

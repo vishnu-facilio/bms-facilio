@@ -3810,6 +3810,7 @@ public class FieldFactory {
         fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("isOrphan", "IS_ORPHAN", module, FieldType.BOOLEAN));
 
         return fields;
     }

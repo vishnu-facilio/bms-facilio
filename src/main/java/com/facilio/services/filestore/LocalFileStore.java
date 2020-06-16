@@ -75,57 +75,65 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		return f.exists();
 	}
 
+	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
+		long fileId = addDummyFileEntry(fileName, isOrphan);
+		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileSize = file.length();
+
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			File createFile = new File(filePath);
+			createFile.createNewFile();
+
+			is = new FileInputStream(file);
+			os = new FileOutputStream(createFile);
+			byte[] buffer = new byte[4096];
+			int length;
+			while ((length = is.read(buffer)) > 0) {
+				os.write(buffer, 0, length);
+			}
+			os.flush();
+
+			updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+
+			addComppressedFile(fileId, fileName, file, contentType);
+
+		} catch (IOException ioe) {
+			deleteFileEntry(fileId);
+			throw ioe;
+		} finally {
+			is.close();
+			os.close();
+		}
+		return fileId;
+	}
 
 
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
-		if (contentType == null) {
-			throw new IllegalArgumentException("Content type is mandtory");
-		}
-		long fileId = addDummyFileEntry(fileName);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
-		long fileSize = file.length();
-		
-		InputStream is = null;
-	    OutputStream os = null;
-	    try {
-	    	File createFile = new File(filePath);
-			createFile.createNewFile();
-			
-	        is = new FileInputStream(file);
-	        os = new FileOutputStream(createFile);
-	        byte[] buffer = new byte[4096];
-	        int length;
-	        while ((length = is.read(buffer)) > 0) {
-	            os.write(buffer, 0, length);
-	        }
-	        os.flush();
-	        
-	        updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
-	        
-	        addComppressedFile(fileId, fileName, file, contentType);
-	        
-	    } catch (IOException ioe) {
-	    	deleteFileEntry(fileId);
-	    	throw ioe;
-	    } finally {
-	        is.close();
-	        os.close();
-	    }
-		return fileId;
+		return this.addFile(fileName, file, contentType, false);
 	}
 	
 	@Override
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
 		return addFile(fileName, file, contentType);
 	}
-	
+
+	@Override
+	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(fileName, file, contentType, true);
+	}
+
 	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName);
+		long fileId = addDummyFileEntry(fileName, false);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();
 		

@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -233,6 +234,7 @@ public class BmsDBConf extends DBConf {
             return;
         }
         FileStore fs = FacilioFactory.getFileStore();
+        List<Long> orphanFileIds = new ArrayList<>();
         for(Map<String, Object> value : values) {
             for(FacilioField field : fileFields) {
                 if (value.get(field.getName()) != null) {
@@ -263,8 +265,13 @@ public class BmsDBConf extends DBConf {
                 }
                 else if (value.get(field.getName()+"Id") != null) {
                 		value.put(field.getName(), value.get(field.getName()+"Id"));
+                		orphanFileIds.add((Long) value.get(field.getName()+"Id"));
                 }
             }
+        }
+
+        if (CollectionUtils.isNotEmpty(orphanFileIds)) {
+            fs.unOrphan(orphanFileIds);
         }
 
 		/*for(Map<String, Object> value : values) {

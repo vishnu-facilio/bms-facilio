@@ -105,6 +105,11 @@
                 method="patch">
         </action>
 
+        <action name="files"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="files">
+        </action>
+
 
     </package>
 

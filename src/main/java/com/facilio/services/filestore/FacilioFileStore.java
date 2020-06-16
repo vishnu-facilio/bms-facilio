@@ -49,8 +49,11 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
+		return this.addFile(fileName, file, contentType, false);
+	}
 
-		long fileId = addDummyFileEntry(fileName);
+	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+		long fileId = addDummyFileEntry(fileName, isOrphan);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
 			addComppressedFile(fileId, fileName, file, contentType);
@@ -62,7 +65,11 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		long fileId = this.addFile(fileName, file, contentType);
+		return addFile(fileName, file, contentType, resize, false);
+	}
+
+	private long addFile(String fileName, File file, String contentType, int[] resize, boolean isOrphan) throws Exception {
+		long fileId = this.addFile(fileName, file, contentType, isOrphan);
 		for (int resizeVal : resize) {
 			try {
 				if (contentType.contains("image/")) {
@@ -79,8 +86,8 @@ public class FacilioFileStore extends FileStore {
 					baos.close();
 
 					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
-					
-					Integer statusCode = postFile(fileId, fileName, contentType, imageInByte); 
+
+					Integer statusCode = postFile(fileId, fileName, contentType, imageInByte);
 					if (statusCode == 200) {
 						addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 					}
@@ -95,8 +102,13 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
+	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(fileName, file, contentType, resize, true);
+	}
+
+	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
-		long fileId = addDummyFileEntry(fileName);
+		long fileId = addDummyFileEntry(fileName, false);
 		try {
 			return addFile(fileId, fileName, content.getBytes(), contentType);
 		} catch (Exception e){

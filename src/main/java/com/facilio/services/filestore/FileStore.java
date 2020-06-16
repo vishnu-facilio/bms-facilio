@@ -62,19 +62,20 @@ public abstract class FileStore {
 		return this.userId;
 	}
 	
-	protected long addDummyFileEntry(String fileName) throws Exception {
+	protected long addDummyFileEntry(String fileName, boolean isOrphan) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO FacilioFile (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO FacilioFile (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME, IS_ORPHAN) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, fileName);
 			pstmt.setLong(3, getUserId());
 			pstmt.setLong(4, System.currentTimeMillis());
+			pstmt.setBoolean(5, isOrphan);
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add file");
@@ -326,6 +327,8 @@ public abstract class FileStore {
 	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
 	
 	public abstract long addFile(String fileName, File file, String contentType, int[] resize) throws Exception;
+
+	public abstract long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception;
 
 	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
 	
@@ -599,6 +602,27 @@ public abstract class FileStore {
 	
 	public String getDownloadUrl(long fileId, boolean isPortalUser) throws Exception {
 		return getUrl(fileId, true, isPortalUser, -1, -1);
+	}
+
+	public int unOrphan(List<Long> fileIds) throws SQLException {
+		List<FacilioField> fields = FieldFactory.getFileFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		fields = new ArrayList<>(3);
+		fields.add(fieldMap.get("isOrphan"));
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.fields(fields)
+				.table(ModuleFactory.getFilesModule().getTableName())
+				;
+		Map<String, Object> props = new HashMap<>();
+		props.put("isOrphan", false);
+		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+		for (long fileId : fileIds) {
+			GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
+			batchUpdate.setUpdateValue(props);
+			batchUpdate.setWhereValue(Collections.singletonMap("fileId", fileId));
+			batchUpdateList.add(batchUpdate);
+		}
+		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
 	
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {

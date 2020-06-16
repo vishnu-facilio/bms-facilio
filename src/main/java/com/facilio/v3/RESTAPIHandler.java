@@ -523,6 +523,21 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         summary();
     }
 
+    private void addFiles() throws Exception {
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+        transactionChain.addCommand(new AttachmentCommand());
+        FacilioContext context = transactionChain.getContext();
+
+        Constants.setAttachmentFileNames(context, this.getFileNames());
+        Constants.setAttachmentContentTypes(context, this.getContentTypes());
+        Constants.setAttachmentFileList(context, this.getFiles());
+
+        transactionChain.execute();
+
+        Map<String, Long> attachmentNameVsId = Constants.getAttachmentNameVsId(context);
+        this.setData("attachments", FieldUtil.getAsJSON(attachmentNameVsId));
+    }
+
 
     public String summary() throws Exception {
         try {
@@ -616,6 +631,19 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+            this.setMessage("Internal Server Error");
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
+        return SUCCESS;
+    }
+
+    public String files() throws Exception {
+        try {
+            addFiles();
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");

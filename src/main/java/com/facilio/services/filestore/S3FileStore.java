@@ -78,30 +78,7 @@ public class S3FileStore extends FileStore {
 	
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
-		if (contentType == null) {
-			throw new IllegalArgumentException("Content type is mandtory");
-		}
-		long fileId = addDummyFileEntry(fileName);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
-		long fileSize = file.length();
-		
-	    try {
-	    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
-	    	if (rs != null) {
-	    		updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
-	    		
-	    		addComppressedFile(fileId, fileName, file, contentType);
-	    		
-	    		return fileId;
-	    	}
-	    	else {
-	    		deleteFileEntry(fileId);
-	    		return -1;
-	    	}
-	    } catch (Exception e) {
-	    	deleteFileEntry(fileId);
-	    	throw e;
-	    }
+		return this.addFile(fileName, file, contentType, false);
 	}
 	
 	public static String getURL( String bucket, String filePath, File file) throws Exception {
@@ -110,10 +87,40 @@ public class S3FileStore extends FileStore {
 		return s3Client.getResourceUrl(bucket, filePath);
 	}
 
-	@Override
-	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		long fileId = this.addFile(fileName, file, contentType);
-		
+	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandtory");
+		}
+		long fileId = addDummyFileEntry(fileName, false);
+		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileSize = file.length();
+
+		try {
+			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
+			if (rs != null) {
+				updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+
+				addComppressedFile(fileId, fileName, file, contentType);
+
+				return fileId;
+			}
+			else {
+				deleteFileEntry(fileId);
+				return -1;
+			}
+		} catch (Exception e) {
+			deleteFileEntry(fileId);
+			throw e;
+		}
+	}
+
+	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(fileName, file, contentType, resize, true);
+	}
+
+	private long addFile(String fileName, File file, String contentType, int[] resize, boolean isOrphaned) throws Exception {
+		long fileId = this.addFile(fileName, file, contentType, isOrphaned);
+
 		for (int resizeVal : resize) {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();FileInputStream fis = new FileInputStream(file);) {
 				if (contentType.contains("image/")) {
@@ -131,11 +138,16 @@ public class S3FileStore extends FileStore {
 						}
 					}
 				}
-		    } catch (Exception e) {
-		    	log.error("Exception occurred ", e);
-		    }
+			} catch (Exception e) {
+				log.error("Exception occurred ", e);
+			}
 		}
 		return fileId;
+	}
+
+	@Override
+	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(fileName, file, contentType, resize, false);
 	}
 	
 	@Override
@@ -143,7 +155,7 @@ public class S3FileStore extends FileStore {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName);
+		long fileId = addDummyFileEntry(fileName, false);
 		String filePath = getRootPath() + File.separator + fileId + "-" + fileName;
 		long fileSize = content.length();
 		

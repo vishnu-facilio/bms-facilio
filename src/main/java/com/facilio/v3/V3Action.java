@@ -4,7 +4,8 @@ import org.json.simple.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-import java.util.Map;
+import java.io.File;
+import java.util.List;
 
 public class V3Action extends ActionSupport {
     private JSONObject data;
@@ -173,5 +174,32 @@ public class V3Action extends ActionSupport {
 
 	public void setParams(JSONObject params) {
 		this.params = params;
+	}
+
+	private List<File> files;
+	public List<File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<File> files) {
+		this.files = files;
+	}
+
+	private List<String> fileNames;
+	public List<String> getFileNames() {
+		return fileNames;
+	}
+
+	public void setFileNames(List<String> fileNames) {
+		this.fileNames = fileNames;
+	}
+
+	private List<String> contentTypes;
+	public List<String> getContentTypes() {
+		return contentTypes;
+	}
+
+	public void setContentTypes(List<String> contentTypes) {
+		this.contentTypes = contentTypes;
 	}
 }
