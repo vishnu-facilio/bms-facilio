@@ -1433,4 +1433,9 @@
 	<!-- Tenant apis end -->
 	<!-- end -->
 	
+	<package name="pdfServiceApi" namespace="/api/service/v2/integ/pdf" extends="newServicePortalApiV2">
+		<action name="create" class="com.facilio.pdf.actions.PdfAction" method="createPdf">
+		</action>
+	</package>
+	
 </struts>

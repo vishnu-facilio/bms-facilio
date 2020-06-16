@@ -1,17 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GetModulesListCommand extends FacilioCommand {
 
@@ -20,44 +21,47 @@ public class GetModulesListCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioModule> sysytemModules = new ArrayList<>();
-        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
-        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
-        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
-        }
-       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS));
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS));
-        }
-       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
-       }
-       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
-       }
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
-            sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
-        }
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTATION));
-        }
+		List<FacilioModule> sytemModules = new ArrayList<>();
+		sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
+		sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS));
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTATION));
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
+			sytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+		}
 
-            sysytemModules.add(modBean.getModule(ContextNames.TENANT_UNIT_SPACE));
-        
-        List<FacilioModule> customModules = new ArrayList<>();
+		sytemModules.add(modBean.getModule(ContextNames.TENANT_UNIT_SPACE));
 
-        customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
-        
-        Map<String, List<FacilioModule>> modules = new HashMap<String, List<FacilioModule>>();
-        modules.put("systemModules", sysytemModules);
-        modules.put("customModules", customModules);
+		List<FacilioModule> customModules = new ArrayList<>();
 
-        context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+		customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
+
+		Map<String, List<FacilioModule>> modules = new HashMap<String, List<FacilioModule>>();
+		modules.put("systemModules", sytemModules);
+		modules.put("customModules", customModules);
+
+		context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         
 		return false;
 	}
