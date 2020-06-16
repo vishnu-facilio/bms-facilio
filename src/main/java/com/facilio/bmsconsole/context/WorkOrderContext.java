@@ -15,7 +15,7 @@ import java.util.List;
 
 public class WorkOrderContext extends TicketContext {
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(WorkOrderContext.class.getName());
@@ -26,12 +26,12 @@ public class WorkOrderContext extends TicketContext {
 	public void setRequester(User requester) {
 		this.requester = requester;
 	}
-	
+
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;
 	}
-	
+
 	public String toString(){
 		return this.getId()+"";
 	}
@@ -59,7 +59,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return null;
 	}
-	
+
 	private long modifiedTime = -1;
 	public long getModifiedTime() {
 		return modifiedTime;
@@ -81,7 +81,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return false;
 	}
-	
+
 	private PreventiveMaintenance pm;
 	public PreventiveMaintenance getPm() {
 		return pm;
@@ -89,7 +89,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setPm(PreventiveMaintenance pm) {
 		this.pm = pm;
 	}
-	
+
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {
@@ -105,7 +105,7 @@ public class WorkOrderContext extends TicketContext {
 			return null;
 		}
 	}
-	
+
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
 			if (approvalState == ApprovalState.REQUESTED) {
@@ -120,8 +120,8 @@ public class WorkOrderContext extends TicketContext {
 			return null;
 		}
 	}
-	
-	
+
+
 	private ApprovalState approvalState;
 	public ApprovalState getApprovalStateEnum() {
 		return approvalState;
@@ -147,7 +147,7 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private WorkflowRuleContext slaRule;
-	
+
 	public WorkflowRuleContext getSlaRule() {
 		return slaRule;
 	}
@@ -162,7 +162,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setApprovalRuleId(long approvalRuleId) {
 		this.approvalRuleId = approvalRuleId;
 	}
-	
+
 	private ApprovalRuleContext approvalRule;
 	public ApprovalRuleContext getApprovalRule() {
 		return approvalRule;
@@ -170,7 +170,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setApprovalRule(ApprovalRuleContext approvalRule) {
 		this.approvalRule = approvalRule;
 	}
-	
+
 	private List<ApproverContext> waitingApprovals;
 	public List<ApproverContext> getWaitingApprovals() {
 		return waitingApprovals;
@@ -178,7 +178,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setWaitingApprovals(List<ApproverContext> waitingApprovals) {
 		this.waitingApprovals = waitingApprovals;
 	}
-	
+
 	private User requestedBy;
 	public User getRequestedBy() {
 		return requestedBy;
@@ -200,7 +200,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return false;
 	}
-	
+
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {
 		return alarm;
@@ -224,7 +224,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return false;
 	}
-	
+
 	private Boolean photoMandatory;
 
 	public Boolean getPhotoMandatory() {
@@ -263,7 +263,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setSignatureId(long signatureId) {
 		this.signatureId = signatureId;
 	}
-	
+
 	private String signatureUrl;
 	public String getSignatureUrl() {
 		return signatureUrl;
@@ -279,7 +279,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setSignature(File signature) {
 		this.signature = signature;
 	}
-	
+
 	private String signatureFileName;
 	public String getSignatureFileName() {
 		return signatureFileName;
@@ -287,7 +287,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setSignatureFileName(String signatureFileName) {
 		this.signatureFileName = signatureFileName;
 	}
-	
+
 	private  String signatureContentType;
 	public String getSignatureContentType() {
 		return signatureContentType;
@@ -339,11 +339,11 @@ public class WorkOrderContext extends TicketContext {
 		URGENT,
 		EMERGENCY
 		;
-		
+
 		public int getValue() {
 			return ordinal() + 1;
 		}
-		
+
 		public static WOUrgency valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
@@ -404,7 +404,7 @@ public class WorkOrderContext extends TicketContext {
 			return null;
 		}
 	}
-	
+
 	private PreRequisiteStatus preRequestStatus;
 
 	public PreRequisiteStatus getPreRequestStatusEnum() {
@@ -424,7 +424,7 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return null;
 	}
-	
+
 	public void setPreRequestStatus(PreRequisiteStatus preRequestStatus) {
 		this.preRequestStatus = preRequestStatus;
 	}
@@ -521,9 +521,9 @@ public class WorkOrderContext extends TicketContext {
 	public void setSyncTime(long syncTime) {
 		this.syncTime = syncTime;
 	}
-	
+
 	private Boolean qrEnabled;
-	
+
 
 	public Boolean getQrEnabled() {
 		return qrEnabled;
@@ -543,16 +543,16 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private Boolean workPermitNeeded;
-	
+
 	public Boolean getWorkPermitNeeded() {
 		return workPermitNeeded;
 	}
 	public void setWorkPermitNeeded(Boolean workPermitNeeded) {
 		this.workPermitNeeded = workPermitNeeded;
 	}
-	
+
 	private Boolean workPermitIssued;
-	
+
 	public Boolean getWorkPermitIssued() {
 		return workPermitIssued;
 	}
@@ -561,7 +561,7 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private long woCreationOffset = -1L;
-	
+
 	private SafetyPlanContext safetyPlan;
 	public SafetyPlanContext getSafetyPlan() {
 		return safetyPlan;
@@ -569,7 +569,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setSafetyPlan(SafetyPlanContext safetyPlan) {
 		this.safetyPlan = safetyPlan;
 	}
-	
+
 	private List<Long> hazardIds;
 	public List<Long> getHazardIds() {
 		return hazardIds;
@@ -577,7 +577,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setHazardIds(List<Long> hazardIds) {
 		this.hazardIds = hazardIds;
 	}
-	
+
 	private ClientContext client;
 	public ClientContext getClient() {
 		return client;
@@ -585,7 +585,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setClient(ClientContext client) {
 		this.client = client;
 	}
-	
+
 	private String deviationTaskUniqueId;
 	public String getDeviationTaskUniqueId() {
 		return deviationTaskUniqueId;
@@ -610,4 +610,21 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private Boolean isQuotationNeeded;
+
+	public Boolean getIsQuotationApproved() {
+		return isQuotationApproved;
+	}
+
+	public void setIsQuotationApproved(Boolean quotationApproved) {
+		isQuotationApproved = quotationApproved;
+	}
+
+	public Boolean isQuotationApproved() {
+		if(isQuotationApproved != null) {
+			return isQuotationApproved.booleanValue();
+		}
+		return false;
+	}
+
+	private Boolean isQuotationApproved;
 }

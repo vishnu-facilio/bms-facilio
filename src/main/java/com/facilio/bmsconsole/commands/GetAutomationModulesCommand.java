@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetAutomationModulesCommand extends FacilioCommand {
     @Override
@@ -37,6 +36,14 @@ public class GetAutomationModulesCommand extends FacilioCommand {
     	   modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
     	    
        }
+
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SERVICE_REQUEST)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+        }
+
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTATION));
+        }
 
        
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
