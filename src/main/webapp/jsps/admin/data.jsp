@@ -146,12 +146,11 @@ function changeThePage(){
 			 String msg = jsonObj.get("message").toString();
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				String arrival = (String) json.get("timestamp");
-				if(arrival == null){
-					arrival = jsonObj.get("arrivalTime").toString();
+				long arrival = (long) json.get("timestamp");
+				if(arrival == 0){
+					arrival = (long)jsonObj.get("arrivalTime");
 				}
-			 long time =Long.parseLong(arrival);
-			 String date = DateTimeUtil.getFormattedTime(time);
+			 String date = DateTimeUtil.getFormattedTime(arrival);
 			
 			 System.out.println("Formated time is "+date);
 	         i+=1;
@@ -160,7 +159,7 @@ function changeThePage(){
 
 		<tr>
 			<td align="center"><%=i%></td>
-			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(time) %></td>
+			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(arrival) %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
 			<td align="left">
