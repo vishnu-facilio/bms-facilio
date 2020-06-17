@@ -112,7 +112,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		
 		FacilioContext context = addNote.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-		context.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
 
 		addNote.execute();

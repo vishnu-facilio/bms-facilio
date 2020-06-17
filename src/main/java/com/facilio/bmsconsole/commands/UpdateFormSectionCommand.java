@@ -33,8 +33,11 @@ public class UpdateFormSectionCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
 				;
 		
-		Map<String, Object> props = FieldUtil.getAsProperties(section);
-		builder.update(props);
+		Map<String, Object> prop = FieldUtil.getAsProperties(section);
+		if (section.getSubFormValue() == null) {
+			prop.put("subFormValueStr", "");
+		}
+		builder.update(prop);
 		
 		return false;
 	}

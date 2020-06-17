@@ -81,7 +81,7 @@ public class ExecutePMCommand extends FacilioCommand {
 		
 		FacilioContext noteContext = new FacilioContext();
 		noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-		noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+		noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 		noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
 		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();

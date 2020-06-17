@@ -1,16 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
-import java.util.Map;
 
 public class NoteAction extends FacilioAction {
 
@@ -79,7 +80,11 @@ public class NoteAction extends FacilioAction {
 	private String addNote(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
+		String parentModuleName = this.parentModuleName;
+		if (parentModuleName == null) {
+			parentModuleName = ticketModuleName;
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
 		if (moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_NOTES)) {
 		   context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
@@ -119,6 +124,14 @@ public class NoteAction extends FacilioAction {
 	}
 	public void setTicketModuleName(String ticketModuleName) {
 		this.ticketModuleName = ticketModuleName;
+	}
+	
+	private String parentModuleName;
+	public String getParentModuleName() {
+		return parentModuleName;
+	}
+	public void setParentModuleName(String parentModuleName) {
+		this.parentModuleName = parentModuleName;
 	}
 
 	private NoteContext note;

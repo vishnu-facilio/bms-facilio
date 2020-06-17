@@ -37,7 +37,7 @@ public class ConstructTicketNotesCommand extends FacilioCommand {
 				
 				String ticketModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-				context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
+				context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, ticketModuleName);
 				context.put(FacilioConstants.ContextNames.NOTE_LIST, notes);
 			}
 		}

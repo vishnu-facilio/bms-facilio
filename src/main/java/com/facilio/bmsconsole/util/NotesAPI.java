@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -124,6 +122,9 @@ public class NotesAPI {
 		if (StringUtils.isNoneEmpty(parentModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField noOfNotesField = modBean.getField("noOfNotes", parentModule);
+			if (noOfNotesField == null) {
+				return;
+			}
 			FacilioModule pModule = modBean.getModule(parentModule);
 			FacilioModule module = modBean.getModule(moduleString);
 			

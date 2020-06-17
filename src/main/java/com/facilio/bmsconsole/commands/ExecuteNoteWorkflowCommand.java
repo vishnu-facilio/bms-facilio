@@ -32,7 +32,7 @@ public class ExecuteNoteWorkflowCommand extends FacilioCommand {
 		if(notes != null && !notes.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
-				String ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
+				String ticketModule = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
 				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				
 				for (NoteContext note : notes) {

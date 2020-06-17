@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
@@ -17,14 +26,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
@@ -49,10 +50,9 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 		
 		if(notes != null && !notes.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String ticketModule = null;
+			this.parentModuleName =  (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
 			if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
-				ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				if (ticketModule == null || ticketModule.isEmpty()) {
+				if (parentModuleName == null || parentModuleName.isEmpty()) {
 					throw new IllegalArgumentException("Module name for ticket notes should be specified");
 				}
 			}
@@ -111,7 +111,6 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 			}
 			idsToUpdateCount = parentIds;
-			this.parentModuleName = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
 			this.moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
 //			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.TICKET_MODULE, context.get(FacilioConstants.ContextNames.TICKET_MODULE));

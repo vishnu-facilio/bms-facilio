@@ -70,7 +70,6 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WhatsappUtil;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.cb.context.ChatBotIntent;
@@ -728,7 +727,7 @@ public enum ActionType {
 							FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 							FacilioContext noteContext = addNote.getContext();
 							noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-							noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+							noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 							noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
 							noteContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
@@ -759,7 +758,7 @@ public enum ActionType {
 
 						FacilioContext noteContext = new FacilioContext();
 						noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-						noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+						noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 						noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
 						FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
@@ -1279,7 +1278,7 @@ public enum ActionType {
 					FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 					FacilioContext noteContext = addNote.getContext();
 					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-					noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+					noteContext.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 					noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 					addNote.execute();
 				}
