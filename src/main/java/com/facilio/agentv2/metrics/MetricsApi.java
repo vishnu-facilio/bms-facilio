@@ -40,7 +40,6 @@ public class MetricsApi {
         return false;
     }
 
-
     public static List<Map<String, Object>> getMetrics(long agentId,FacilioContext context) throws Exception {
         List<FacilioField> fields = FieldFactory.getAgentMetricV2Fields();
         FacilioModule metricsV2Module = ModuleFactory.getAgentMetricsV2Module();
@@ -61,7 +60,7 @@ public class MetricsApi {
                 .table(metricsV2Module.getTableName())
                 .select(fieldMap.values())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agentId), NumberOperators.EQUALS))
-                .orderBy(AgentConstants.CREATED_TIME + " DESC");
+                .orderBy("CREATED_TIME DESC");
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
         if (pagination != null) {
@@ -82,7 +81,6 @@ public class MetricsApi {
         if (fetchCount) {
         	selectRecordBuilder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(metricsV2Module));
         }
-        
         List<Map<String, Object>> data = selectRecordBuilder.get();
         return data;
     }
