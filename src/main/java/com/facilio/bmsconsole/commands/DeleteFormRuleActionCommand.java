@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
@@ -15,7 +17,9 @@ public class DeleteFormRuleActionCommand extends FacilioCommand {
 		
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
 		
-		for(FormRuleActionContext action :formRule.getActions()) {
+		List<FormRuleActionContext> oldactions = FormRuleAPI.getFormRuleActionContext(formRule.getId());
+		
+		for(FormRuleActionContext action :oldactions) {
 			
 			for(FormRuleActionFieldsContext actionField : action.getFormRuleActionFieldsContext()) {
 				
