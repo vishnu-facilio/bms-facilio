@@ -125,6 +125,9 @@
 
         <action name="metrics" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
         </action>
+        
+        <action name="metricsCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetricsCount">
+        </action>
 
         <action name="overview" class="com.facilio.agentv2.AgentAction" method="getOverview">
         </action>

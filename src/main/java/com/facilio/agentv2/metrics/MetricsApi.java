@@ -63,6 +63,7 @@ public class MetricsApi {
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsV2Module), String.valueOf(agentId), NumberOperators.EQUALS))
                 .orderBy(AgentConstants.CREATED_TIME + " DESC");
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
         if (pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
@@ -77,6 +78,11 @@ public class MetricsApi {
         }else {
             selectRecordBuilder.limit(50);
         }
+        
+        if (fetchCount) {
+        	selectRecordBuilder.select(new ArrayList<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(metricsV2Module));
+        }
+        
         List<Map<String, Object>> data = selectRecordBuilder.get();
         return data;
     }

@@ -305,7 +305,7 @@ public class IotMessageApiV2 {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(iotMessageModule.getTableName())
                 .select(FieldFactory.getIotMessageFields());
-        if( ! getIotDataIds.isEmpty()){
+        if( ! getIotDataIds.isEmpty()) {
             FacilioField parentIdField = FieldFactory.getAsMap(FieldFactory.getIotMessageFields()).get(AgentConstants.PARENT_ID);
             builder.andCondition(CriteriaAPI.getCondition(parentIdField,getIotDataIds,NumberOperators.EQUALS));
             JSONObject pagination = (JSONObject) paginationContext.get(FacilioConstants.ContextNames.PAGINATION);
@@ -320,7 +320,9 @@ public class IotMessageApiV2 {
 
                 builder.offset(offset);
                 builder.limit(perPage);
-            }
+            }else {
+    			builder.limit(50);
+    		}
             builder.orderBy(AgentConstants.SENT_TIME + " DESC");
             return builder.get();
         }else {

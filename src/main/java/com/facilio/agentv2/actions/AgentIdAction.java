@@ -62,6 +62,7 @@ public class AgentIdAction extends AgentActionV2 {
 
 	public String devices() {
         try {
+        	System.out.println("@@@@---devices");
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.AGENT_ID, getAgentId());
         	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
@@ -77,10 +78,11 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
-
+	
     public String devicesCount() {
         try {
-            FacilioContext context = new FacilioContext();
+        	System.out.println("@@@---devicesCount");
+        	FacilioContext context = new FacilioContext();
             context.put(AgentConstants.AGENT_ID, getAgentId());
             context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
             context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
@@ -104,7 +106,8 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String pingAgent() throws Exception {
         try {
-            LOGGER.info(" ping agent " + getAgentId());
+        	System.out.println("@@@---pingAgent");
+        	LOGGER.info(" ping agent " + getAgentId());
             AgentMessenger.pingAgent(getAgentId());
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
@@ -120,7 +123,8 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getAgentUsingId() {
         try {
-            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+        	System.out.println("@@@---getAgentUsingId");
+        	FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             if (agent != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResult(AgentConstants.DATA, agent.toJSON());
@@ -143,6 +147,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getControllerCount() {
         try {
+        	System.out.println("@@@---getControllerCount");
             setResult(AgentConstants.RESULT, SUCCESS);
             setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(Arrays.asList(getAgentId()),getControllerType()));
             ok();
@@ -472,6 +477,23 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getMetricsCount() {
+        try {
+        	FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+        	List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),context);
+            long count = 0;
+            if (CollectionUtils.isNotEmpty(metrics)) {
+                count =(long) metrics.get(0).get(AgentConstants.ID);
+            }
+            setResult(AgentConstants.DATA, count);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting metrics ", e);
+        }
+        return SUCCESS;
+    }
+    
     public String getPendingControllerImports(){
         try{
             List<Map<String, Object>> maps = ModbusImportUtils.getpendingControllerImports(getAgentId());
