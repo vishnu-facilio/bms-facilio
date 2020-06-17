@@ -46,7 +46,9 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 		double max = 0;
 		for(EnergyStarPropertyContext prop :properties) {
 			
-			prop.setDatum("building", SpaceAPI.getBuildingSpace(prop.getBuildingId()));
+			if(prop.getBuildingId() > 0) {
+				prop.setDatum("building", SpaceAPI.getBuildingSpace(prop.getBuildingId()));
+			}
 			
 			LOGGER.log(Level.SEVERE, "propertMetric -- "+propertMetric);
 			if(propertMetric != null) {

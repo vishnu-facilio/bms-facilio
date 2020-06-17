@@ -5404,6 +5404,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new UpdateEnergyStarPropertyCommand());
 		c.addCommand(new UpdateEnergyStarPropertyUseCommand());
+		c.addCommand(new UpdateEnergyStarMeterCommand());
 		return c;
 	}
 	

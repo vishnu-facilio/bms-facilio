@@ -31,6 +31,17 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 	BuildingContext buildingContext;
 	String meta;
 	
+	boolean isConfigured;
+	
+	public boolean isConfigured() {
+		return isConfigured;
+	}
+
+	public void setConfigured(boolean isConfigured) {
+		this.isConfigured = isConfigured;
+	}
+
+
 	long baselineMonth = -1l;
 	long lastMetricsRetrivedDate = -1l;
 	
@@ -40,17 +51,6 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 
 	public void setLastMetricsRetrivedDate(long lastMetricsRetrivedDate) {
 		this.lastMetricsRetrivedDate = lastMetricsRetrivedDate;
-	}
-
-
-	List<EnergyStarMeterContext> meters;
-	
-	public List<EnergyStarMeterContext> getMeters() {
-		return meters;
-	}
-
-	public void setMeters(List<EnergyStarMeterContext> meters) {
-		this.meters = meters;
 	}
 
 	public long getBaselineMonth() {
