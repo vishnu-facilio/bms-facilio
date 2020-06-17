@@ -443,34 +443,29 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getAlertsPoints(){
-        try{
-            if( AccountUtil.getCurrentOrg()!= null ) {
-                JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
-                setResult(AgentConstants.DATA, alertsPoints);
-                if ( ! alertsPoints.isEmpty())	{
-                    JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size()-1);
-                    String msg = lastRecord.get("message").toString();
-				    JSONParser parser = new JSONParser();
-					JSONObject json = (JSONObject) parser.parse(msg);
-					long arrival = (long) json.get("timestamp");
-					if(arrival == 0){
-						arrival = (long) lastRecord.get("arrivalTime");
-					}
-                    if(lastRecord != null){
-                        setResult(AgentConstants.LAST_DATA_RECEIVED_TIME,arrival);
-                    }
-                }
-                ok();
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting alert points ", e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
+	public String getAlertsPoints() {
+		try {
+			if (AccountUtil.getCurrentOrg() != null) {
+				JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
+				JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size() - 1);
+				String msg = lastRecord.get("message").toString();
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(msg);
+				long arrival = (long) json.get("timestamp");
+				if (arrival == 0) {
+					arrival = (long) lastRecord.get("arrivalTime");
+				}
+				setResult(AgentConstants.DATA, alertsPoints);
+				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, arrival);
+				ok();
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred while getting alert points ", e);
+			setResult(AgentConstants.EXCEPTION, e.getMessage());
+			internalError();
+		}
+		return SUCCESS;
+	}
 
     public String downloadCertificate(){
         try{
