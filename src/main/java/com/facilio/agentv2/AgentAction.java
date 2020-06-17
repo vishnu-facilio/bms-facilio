@@ -448,14 +448,18 @@ public class AgentAction extends AgentActionV2 {
 			if (AccountUtil.getCurrentOrg() != null) {
 				JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
 				JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size() - 1);
+				setResult(AgentConstants.DATA, alertsPoints);
 				String msg = lastRecord.get("message").toString();
 				JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				long arrival = (long) json.get("timestamp");
-				if (arrival == 0) {
-					arrival = (long) lastRecord.get("arrivalTime");
+				Long arrival =null;
+				if(json.containsKey("timestamp")) {
+					 arrival = (Long) json.get("timestamp");
 				}
-				setResult(AgentConstants.DATA, alertsPoints);
+				if (arrival == null) {
+					arrival = (Long) lastRecord.get("arrivalTime");
+				}
+				
 				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, arrival);
 				ok();
 			}
