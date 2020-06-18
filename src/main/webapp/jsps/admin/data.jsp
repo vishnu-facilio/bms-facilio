@@ -141,8 +141,8 @@ function changeThePage(){
 			 String msg = jsonObj.get("message").toString();
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				long arrival;
-				long lastReceivedTime;
+				long arrival=0;
+				long lastReceivedTime=0;
 				if(jsonObj.containsKey("arrivalTime")){
 					lastReceivedTime= (long)jsonObj.get("arrivalTime");
 				}
