@@ -100,7 +100,7 @@ function changeThePage(){
 				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
 				  for(int i=(jsonArray.size()-1);i>=0;i--) {
 						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
-							long arrival = (Long) jsonObj.get("arrivalTime");
+							Long arrival = (Long) jsonObj.get("arrivalTime");
 							receiveddate = DateTimeUtil.getFormattedTime(arrival);
 							receivedTime = arrival;
 							break;
@@ -141,8 +141,8 @@ function changeThePage(){
 			 String msg = jsonObj.get("message").toString();
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				long arrival=0;
-				long lastReceivedTime=0;
+				Long arrival=0l;
+				Long lastReceivedTime=0l;
 				if(jsonObj.containsKey("arrivalTime")){
 					lastReceivedTime= (long)jsonObj.get("arrivalTime");
 				}
@@ -157,7 +157,7 @@ function changeThePage(){
 
 		<tr>
 			<td align="center"><%=i%></td>
-			<td align="center"><%=arrival !=0 ? date:"-" %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
+			<td align="center"><%=lastReceivedTime !=0 ? date:"-" %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
 			<td align="center"><%=arrival !=0 ? date1:"-" %> <br> <%=arrival !=0 ? DateTimeUtil.relativeDuration(arrival):" " %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
