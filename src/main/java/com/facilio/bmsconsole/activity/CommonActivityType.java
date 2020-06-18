@@ -32,6 +32,12 @@ public enum CommonActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             return "Approval activity";
         }
+    },
+    APPROVAL_ENTRY(73) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "Approval entry";
+        }
     }
     ;
 

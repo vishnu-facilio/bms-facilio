@@ -1,14 +1,21 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CommonActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +33,8 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
         }
 
         moduleRecord.setApprovalFlowId(getId());
-        moduleRecord.setApprovalStatus(TicketAPI.getStatus(getDefaultStateId()));
+        FacilioStatus status = TicketAPI.getStatus(getDefaultStateId());
+        moduleRecord.setApprovalStatus(status);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -41,5 +49,16 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         updateBuilder.update(moduleRecord);
         super.executeTrueActions(record, context, placeHolders);
+
+        // add activities
+        ActivityType activityType = CommonActivityType.APPROVAL_ENTRY;
+        JSONObject info = new JSONObject();
+        info.put("status", status.getDisplayName());
+        info.put("name", getName());
+        info.put("enteredIntoApprovalProcess", true);
+        if (AccountUtil.getCurrentUser() != null) {
+            info.put("user", AccountUtil.getCurrentUser().getId());
+        }
+        CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
     }
 }
