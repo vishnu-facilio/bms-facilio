@@ -29,8 +29,17 @@ public class DeleteFileRecordsJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		try {
 			long jobStart = System.currentTimeMillis();
-			long deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -5);
-			deleteFiles(deletedTime);
+			long deletedTime;
+			long orgId = jc.getOrgId();
+			if(orgId > -1) {
+				deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -30);
+			}else {
+				deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -5);
+			}
+			if(deletedTime <= 0) {
+				throw new IllegalArgumentException("Deleted Time must not empty..."+deletedTime);
+			}
+			deleteFiles(deletedTime,orgId);
 			LOGGER.info("FacilioFile deletion Job -- time taken to complete is  :"+(System.currentTimeMillis()-jobStart));
 		} catch (Exception e) {
 			LOGGER.error("Exception occurred in DeleteFileRecordsJob  :  ", e);
@@ -38,7 +47,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 		}
 	}
 
-	private void deleteFiles(long deletedTime) throws Exception {
+	private void deleteFiles(long deletedTime,long orgId) throws Exception {
 		List<FacilioField> fields = FieldFactory.getFileFields();
 		FacilioField deleteColumn = FieldFactory.getAsMap(fields).get("deletedTime"); 
 		FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get("orgId");
@@ -48,7 +57,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(idField)
 					.table(ModuleFactory.getFilesModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(orgIdColumn, "-1", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(orgIdColumn, String.valueOf(orgId), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(deleteColumn, String.valueOf(deletedTime),DateOperators.IS_BEFORE))
 					.orderBy("ORGID,DELETED_TIME").limit(10000);
 			while (true) {
