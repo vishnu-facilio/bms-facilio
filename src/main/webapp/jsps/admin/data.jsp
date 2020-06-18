@@ -100,16 +100,7 @@ function changeThePage(){
 				    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
 				  for(int i=(jsonArray.size()-1);i>=0;i--) {
 						    JSONObject jsonObj = (JSONObject)jsonArray.get(i);
-						    String msg = jsonObj.get("message").toString();
-						    JSONParser parser = new JSONParser();
-							JSONObject json = (JSONObject) parser.parse(msg);
-							Long arrival =null;
-							if(json.containsKey("timestamp")) {
-								 arrival = (Long) json.get("timestamp");
-							}
-							if (arrival == null) {
-								arrival = (Long) jsonObj.get("arrivalTime");
-							}
+							long arrival = (Long) jsonObj.get("arrivalTime");
 							receiveddate = DateTimeUtil.getFormattedTime(arrival);
 							receivedTime = arrival;
 							break;
@@ -137,7 +128,8 @@ function changeThePage(){
 	<table class="table admin-data-border table-bordered  a">
 		<tr>
 			<th>S.No</th>
-			<th>Time</th>
+			<th>Received Time</th>
+			<th>Data Time</th>
 			<th>Agent</th>
 			<th>Data</th>
 
@@ -149,20 +141,21 @@ function changeThePage(){
 			 String msg = jsonObj.get("message").toString();
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				long arrival = (long) json.get("timestamp");
-				if(arrival == 0){
-					arrival = (long)jsonObj.get("arrivalTime");
+				long arrival =0;
+				long lastReceivedTime = (long)jsonObj.get("arrivalTime");
+				if(json.containsKey("timestamp")){
+					arrival = (long)jsonObj.get("timestamp");
 				}
-			 String date = DateTimeUtil.getFormattedTime(arrival);
-			
-			 System.out.println("Formated time is "+date);
+			 String date = DateTimeUtil.getFormattedTime(lastReceivedTime);
+			 String date1 = DateTimeUtil.getFormattedTime(arrival);
 	         i+=1;
 	       
 		%>
 
 		<tr>
 			<td align="center"><%=i%></td>
-			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(arrival) %></td>
+			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
+			<td align="center"><%=date1 %> <br> <%=arrival !=0 ? DateTimeUtil.relativeDuration(arrival):" " %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
 			<td align="left">
