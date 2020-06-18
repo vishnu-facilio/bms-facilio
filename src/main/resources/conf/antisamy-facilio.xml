@@ -1382,15 +1382,61 @@ http://www.w3.org/TR/html401/struct/global.html
                 <literal value="inherit"/>
             </literal-list>
             <regexp-list>
-                <regexp name="colorName"/>
-                <regexp name="colorCode"/>
-                <regexp name="rgbCode"/>
-                <regexp name="systemColor"/>
+                <regexp name="length"/>
+                <regexp name="percentage"/>
             </regexp-list>
             <shorthand-list>
                 <shorthand name="border-width"/>
                 <shorthand name="border-style"/>
             </shorthand-list>
+        </property>
+        <property name="border-top-left-radius" description="">
+            <category-list>
+                <category value="visual"/>
+            </category-list>
+            <literal-list>
+                <literal value="inherit"/>
+            </literal-list>
+            <regexp-list>
+                <regexp name="length"/>
+                <regexp name="percentage"/>
+            </regexp-list>
+        </property>
+        <property name="border-top-right-radius" description="">
+            <category-list>
+                <category value="visual"/>
+            </category-list>
+            <literal-list>
+                <literal value="inherit"/>
+            </literal-list>
+            <regexp-list>
+                <regexp name="length"/>
+                <regexp name="percentage"/>
+            </regexp-list>
+        </property>
+        <property name="border-bottom-right-radius" description="">
+            <category-list>
+                <category value="visual"/>
+            </category-list>
+            <literal-list>
+                <literal value="inherit"/>
+            </literal-list>
+            <regexp-list>
+                <regexp name="length"/>
+                <regexp name="percentage"/>
+            </regexp-list>
+        </property>
+        <property name="border-bottom-left-radius" description="">
+            <category-list>
+                <category value="visual"/>
+            </category-list>
+            <literal-list>
+                <literal value="inherit"/>
+            </literal-list>
+            <regexp-list>
+                <regexp name="length"/>
+                <regexp name="percentage"/>
+            </regexp-list>
         </property>
         <property name="border-top" description="">
             <category-list>
@@ -1748,6 +1794,23 @@ http://www.w3.org/TR/html401/struct/global.html
         <tag name="blockquote" action="validate"/>
         <tag name="tt" action="validate"/>
         <tag name="strong" action="validate"/>
+        <tag name="img" action="validate">
+            <attribute name="src" action="validate">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+            <attribute name="width" action="">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+            <attribute name="height" action="">
+                <regexp-list>
+                    <regexp value=".*"/>
+                </regexp-list>
+            </attribute>
+        </tag>
         <tag name="span" action="validate">
             <attribute name="class">
                 <regexp-list>
