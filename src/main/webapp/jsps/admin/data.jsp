@@ -141,24 +141,31 @@ function changeThePage(){
 			 String msg = jsonObj.get("message").toString();
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				Long arrival=0l;
-				Long lastReceivedTime=0l;
+				Long arrival=null;
+				Long lastReceivedTime=null;
 				if(jsonObj.containsKey("arrivalTime")){
 					lastReceivedTime= (long)jsonObj.get("arrivalTime");
 				}
 				if(json.containsKey("timestamp")){
 					arrival = (long)jsonObj.get("timestamp");
 				}
-			 String date = DateTimeUtil.getFormattedTime(lastReceivedTime);
-			 String date1 = DateTimeUtil.getFormattedTime(arrival);
+			 String date=null;
+			 String date1 = null;
+			 if(lastReceivedTime != null){
+				 date = DateTimeUtil.getFormattedTime(lastReceivedTime);
+			 }
+			 if(arrival != null){
+				 date1 = DateTimeUtil.getFormattedTime(arrival);
+			 }
+			  
 	         i+=1;
 	       
 		%>
 
 		<tr>
 			<td align="center"><%=i%></td>
-			<td align="center"><%=lastReceivedTime !=0 ? date:"-" %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
-			<td align="center"><%=arrival !=0 ? date1:"-" %> <br> <%=arrival !=0 ? DateTimeUtil.relativeDuration(arrival):" " %></td>
+			<td align="center"><%=date !=null ? date:"-" %> <br> <%=lastReceivedTime !=null ?DateTimeUtil.relativeDuration(lastReceivedTime):" " %></td>
+			<td align="center"><%=date1 !=null ? date1:"-" %> <br> <%=arrival !=null ? DateTimeUtil.relativeDuration(arrival):" " %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
 			<td align="left">
