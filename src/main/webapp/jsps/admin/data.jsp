@@ -22,7 +22,7 @@
 <%@page import="com.facilio.service.FacilioService" %>
 <%@page import="org.json.simple.parser.JSONParser" %>
 <%
-long receivedTime =0l;
+Long receivedTime =0l;
 String receiveddate = "";
 List<Organization> org = null;
 OrgBean bean =  AccountUtil.getOrgBean();
@@ -147,7 +147,7 @@ function changeThePage(){
 					lastReceivedTime= (long)jsonObj.get("arrivalTime");
 				}
 				if(json.containsKey("timestamp")){
-					arrival = (long)jsonObj.get("timestamp");
+					arrival = (long)json.get("timestamp");
 				}
 			 String date=null;
 			 String date1 = null;
