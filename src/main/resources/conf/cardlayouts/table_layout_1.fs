@@ -149,7 +149,7 @@ Map cardLayout(Map params) {
                     cell["unit"] = fieldMapInfo.get("unit");
                     cell["dataType"] = fieldMapInfo.get("dataTypeEnum");
                 }
-                cell["parentId"] = asset.id
+                cell["parentId"] = asset.id;
                 row.add(cell);
             }
             if (excludeEmptyReadings != null) {
