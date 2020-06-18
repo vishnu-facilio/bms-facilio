@@ -26,7 +26,14 @@ public enum CommonActivityType implements ActivityType {
             // TODO Auto-generated method stub
             return " updated ";
         }
-    };
+    },
+    APPROVAL(72) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "Approval activity";
+        }
+    }
+    ;
 
 
     CommonActivityType(int value) {

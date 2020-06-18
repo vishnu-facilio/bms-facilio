@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CommonActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
@@ -13,6 +17,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -71,5 +76,15 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         updateBuilder.update(moduleRecord);
+
+        // add activities
+        ActivityType activityType = CommonActivityType.APPROVAL;;
+        JSONObject info = new JSONObject();
+        info.put("status", facilioStatus.getDisplayName());
+        info.put("name", getName());
+        info.put("fromStateId", getFromStateId());
+        info.put("toStateId", getToStateId());
+        info.put("user", AccountUtil.getCurrentUser().getId());
+        CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
     }
 }
