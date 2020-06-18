@@ -450,22 +450,14 @@ public class AgentAction extends AgentActionV2 {
 				 JSONArray arr = new JSONArray();
 			        for(int i=0;i<alertsPoints.size();i++){
 				    	JSONObject addObj = (JSONObject) alertsPoints.get(i);
-					    addObj.put("id", i);
+					    addObj.put("id", i+1);
 					    arr.add(addObj);
 				    }
 				JSONObject lastRecord = (JSONObject) arr.get(arr.size() - 1);
 				setResult(AgentConstants.DATA, arr);
-				String msg = lastRecord.get("message").toString();
-				JSONParser parser = new JSONParser();
-				JSONObject json = (JSONObject) parser.parse(msg);
-				long arrival =0l;
-				if(json.containsKey("timestamp")) {
-					 arrival = (long) json.get("timestamp");
-				}
 				long receivedTime = (long) lastRecord.get("arrivalTime");
 				
 				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, receivedTime);
-				setResult(AgentConstants.DATA_TIME, arrival);
 				ok();
 			}
 		} catch (Exception e) {
