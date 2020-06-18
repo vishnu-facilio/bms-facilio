@@ -478,16 +478,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			return typeMap;
 		}
 	}
-	
-	private long siteId = -1;
-	
-	public long getSiteId() {
-		return this.siteId;
-	}
-	
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
+
 	
 	private ServiceRequestContext serviceRequest;
 	public ServiceRequestContext getServiceRequest() {

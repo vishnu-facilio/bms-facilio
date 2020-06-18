@@ -352,15 +352,6 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 	}
 	
-	private long siteId = -1;
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
-	
-	public long getSiteId() {
-		return this.siteId;
-	}
-	
 	private User createdBy;
 	public User getCreatedBy() {
 		return createdBy;
@@ -470,15 +461,7 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.deviationOperatorId = operator.getOperatorId();
 		this.deviationOperator = operator;
 	}
-	
-	private long offlineModifiedTime = -1;
-	public long getOfflineModifiedTime() {
-		return offlineModifiedTime;
-	}
-	public void setOfflineModifiedTime(long offlineModifiedTime) {
-		this.offlineModifiedTime = offlineModifiedTime;
-	}
-	
+
 	private long syncTime = -1;
 	public long getSyncTime() {
 		return syncTime;

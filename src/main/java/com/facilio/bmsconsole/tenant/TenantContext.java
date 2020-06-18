@@ -135,16 +135,7 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public void setTenantLogoContentType(String tenantLogoContentType) {
 		this.tenantLogoContentType = tenantLogoContentType;
 	}
-	
-   private long siteId = -1;
-	
-	public long getSiteId() {
-		return this.siteId;
-	}
-	
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
+
 	
 	private Status status;
 	public Status getStatusEnum() {

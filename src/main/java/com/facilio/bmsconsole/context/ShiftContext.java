@@ -27,14 +27,7 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 	public String getName() {
 		return this.name;
 	}
-	
-	private long siteId;
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
-	public long getSiteId() {
-		return this.siteId;
-	}
+
 	
 	private long startTime = -1;
 	@JSON(serialize = false)

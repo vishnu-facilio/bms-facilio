@@ -191,13 +191,6 @@ public class AssetContext extends ResourceContext {
 		this.warrantyExpiryDate = warrantyExpiryDate;
 	}
 	
-	public long getLocalId() {
-		return super.getLocalId();
-	}
-	public void setLocalId(long localId) {
-		super.setLocalId(localId);
-	}
-	
 	private Boolean hideToCustomer;
 	public Boolean getHideToCustomer() {
 		return hideToCustomer;

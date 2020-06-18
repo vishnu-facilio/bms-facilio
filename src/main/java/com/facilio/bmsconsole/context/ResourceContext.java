@@ -136,15 +136,6 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.controllerId = controllerId;
 	}
 
-	private long siteId = -1;
-
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
-
-	public long getSiteId() {
-		return this.siteId;
-	}
 
 	private String qrVal;
 

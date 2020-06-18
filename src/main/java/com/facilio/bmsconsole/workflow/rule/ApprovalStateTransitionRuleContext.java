@@ -63,7 +63,7 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
         if (facilioStatus.getType() == FacilioStatus.StatusType.EXIT) {
             // remove the approval
             fields.add(modBean.getField("approvalFlowId", module.getName()));
-            moduleRecord.setApprovalFlowId(-99);
+            moduleRecord.setApprovalFlowId(-99L);
             facilioStatus.setId(-99);
             moduleRecord.setApprovalStatus(facilioStatus);
         }
