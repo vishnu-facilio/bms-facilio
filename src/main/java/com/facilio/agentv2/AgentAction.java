@@ -447,20 +447,25 @@ public class AgentAction extends AgentActionV2 {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				JSONArray alertsPoints = AdminAction.getAlertsPointsData(AccountUtil.getCurrentOrg().getDomain());
-				JSONObject lastRecord = (JSONObject) alertsPoints.get(alertsPoints.size() - 1);
-				setResult(AgentConstants.DATA, alertsPoints);
+				 JSONArray arr = new JSONArray();
+			        for(int i=0;i<alertsPoints.size();i++){
+				    	JSONObject addObj = (JSONObject) alertsPoints.get(i);
+					    addObj.put("id", i);
+					    arr.add(addObj);
+				    }
+				JSONObject lastRecord = (JSONObject) arr.get(arr.size() - 1);
+				setResult(AgentConstants.DATA, arr);
 				String msg = lastRecord.get("message").toString();
 				JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
-				Long arrival =null;
+				long arrival =0l;
 				if(json.containsKey("timestamp")) {
-					 arrival = (Long) json.get("timestamp");
+					 arrival = (long) json.get("timestamp");
 				}
-				if (arrival == null) {
-					arrival = (Long) lastRecord.get("arrivalTime");
-				}
+				long receivedTime = (long) lastRecord.get("arrivalTime");
 				
-				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, arrival);
+				setResult(AgentConstants.LAST_DATA_RECEIVED_TIME, receivedTime);
+				setResult(AgentConstants.DATA_TIME, arrival);
 				ok();
 			}
 		} catch (Exception e) {
