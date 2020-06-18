@@ -2506,4 +2506,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new EnergyStarFetchDataPropertyMetricCommand());
 		return chain;
 	}
+
+	public static FacilioChain getApprovalModuleActivityListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ApprovalModuleActivityListCommand());
+		return chain;
+	}
 }

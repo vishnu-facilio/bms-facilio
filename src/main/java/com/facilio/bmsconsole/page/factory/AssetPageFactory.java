@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -165,14 +166,18 @@ public class AssetPageFactory extends PageFactory {
 			addMaintenanceCostTrendWidget(tab7Sec1, criteria);
 
 			if (AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 155) {
-				addDepreciationScheduleWidget(tab7Sec1);
+				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+					addDepreciationScheduleWidget(tab7Sec1);
+				}
 			}
 
 			if (AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 155) {
-				fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
-				Criteria depreciationCostCriteria = new Criteria();
-				depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-				addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
+				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+					fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
+					Criteria depreciationCostCriteria = new Criteria();
+					depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
+				}
 			}
 		}
 		

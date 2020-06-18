@@ -143,4 +143,15 @@ public class ApprovalAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	public String getApprovalModuleActivityList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApprovalModuleActivityListChain();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.ACTIVITY_LIST, context.get(FacilioConstants.ContextNames.ACTIVITY_LIST));
+
+		return SUCCESS;
+	}
 }
