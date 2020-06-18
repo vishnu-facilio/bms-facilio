@@ -32,7 +32,7 @@ import com.facilio.time.DateRange;
 
 public class EnergyStarFetchHistoricalData extends FacilioJob {
 	
-	private static final Logger LOGGER = LogManager.getLogger(AssetActionJob.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(EnergyStarFetchHistoricalData.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		try {
@@ -49,16 +49,9 @@ public class EnergyStarFetchHistoricalData extends FacilioJob {
 			
 			FacilioContext context = chain.getContext();
 			
-			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
-			List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
-			
-			List<Long> fetchTimeList = new ArrayList<Long>();
-			for(DateRange interval :intervals) {
-				fetchTimeList.add(interval.getStartTime());
-			}
-			
 			context.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, property);
-			context.put(EnergyStarUtil.ENERGY_STAR_FETCH_TIME_LIST, fetchTimeList);
+			context.put(FacilioConstants.ContextNames.START_TIME,startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME,endTime);
 			
 			chain.execute();
 		}

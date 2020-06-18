@@ -26,7 +26,7 @@ import com.facilio.time.DateTimeUtil;
 
 public class EnergyStarPushData extends FacilioJob {
 
-	private static final Logger LOGGER = LogManager.getLogger(AssetActionJob.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(EnergyStarPushData.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		try {

@@ -146,5 +146,6 @@
 	<job name='EnergyStarPushHistoricalData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarPushHistoricalData' transactionTimeout='900000'/>
 	<job name='EnergyStarFetchData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarFetchDataJob' transactionTimeout='900000'/>
 	<job name='EnergyStarFetchHistoricalData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarFetchHistoricalData' transactionTimeout='900000'/>
+	<job name='EnergyStarSyncData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarSyncData' transactionTimeout='900000'/>
 
 </scheduler>

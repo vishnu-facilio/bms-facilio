@@ -28,7 +28,14 @@ public class EnergyStarAction extends FacilioAction {
 	boolean createAccount;
 	List<EnergyStarMeterDataContext> meterData;
 	String fieldName;
+	DateRange dateRange;
 	
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
+	}
 	public String getFieldName() {
 		return fieldName;
 	}
@@ -145,6 +152,19 @@ public class EnergyStarAction extends FacilioAction {
 		
 		chain.execute();
 		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String sync() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addEnergyStarSyncJobChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		
+		chain.execute();
 		
 		return SUCCESS;
 	}

@@ -32,7 +32,7 @@ public class AddEnergyStarPropertyData extends FacilioCommand {
 			FacilioContext newContext = addCurrentOccupancy.getContext();
 			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, EnergyStarUtil.ENERGY_STAR_PROPERTY_DATA_MODULE_NAME);
 			newContext.put(FacilioConstants.ContextNames.READINGS, meterData);
-			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.WEB_ACTION);
+			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.INTEGRATION);
 			newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 			addCurrentOccupancy.execute();
 		}

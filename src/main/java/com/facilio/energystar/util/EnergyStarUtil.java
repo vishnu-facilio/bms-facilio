@@ -80,6 +80,8 @@ public class EnergyStarUtil {
 	public static final String ENERGY_STAR_PROPERTY_MODULE_NAME = "energyStarProperty";
 	public static final String ENERGY_STAR_PROPERTY_METRICS_MODULE_NAME = "energyStarPropertyMetrics";
 	
+	public static final String FIRST_DATA_RECIEVIED_TIME = "firstDataRecievedTime";
+	
 	public static final Map<Integer,Map<Integer,Double>> NATIONAL_MEDIAN = new HashMap<>();
 	
 	static {

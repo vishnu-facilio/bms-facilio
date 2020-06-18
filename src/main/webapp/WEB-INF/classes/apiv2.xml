@@ -6065,6 +6065,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchProperty" />
 		<action name="fetchPropertyMetricsData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
+		<action name="sync"
+			class="com.facilio.energystar.action.EnergyStarAction" method="sync" />
 		<action name="getMetricsList"
 			class="com.facilio.energystar.action.EnergyStarAction" method="getMetricsList">
 			<result name="success" type="json">

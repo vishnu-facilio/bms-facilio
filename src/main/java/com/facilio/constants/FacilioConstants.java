@@ -728,6 +728,7 @@ public class FacilioConstants {
 		public static final String INTERVAL = "interval";
 		public static final String VM_LIST = "vmList";
 		public static final String HISTORICAL_RULE_LOGGER_PROPS = "historicalLoggerInfoProps";
+		public static final String HISTORICAL_RULE_LOGGER = "historicalLogger";
 		public static final String HISTORICAL_VM_JOB_ID = "historicalVMJobId";
 		public static final String HISTORICAL_VM_JOB = "historicalVMJob";
 		public static final String HISTORICAL_RULE_JOB_ID = "historicalRuleJobId";

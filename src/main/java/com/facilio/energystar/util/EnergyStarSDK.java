@@ -380,6 +380,55 @@ public class EnergyStarSDK {
 		return readingContext;
 	}
 	
+	public static List<EnergyStarMeterDataContext> fetchMeterConsumptionData(String energyStarMeterId) throws Exception {
+		
+		int page=1;
+		
+		List<EnergyStarMeterDataContext> meterDatas = new ArrayList<>();
+		while(true) {
+			String response = sendAPI("/meter/"+energyStarMeterId+"/consumptionData?page="+page++, HttpMethod.GET, null);
+			
+			List<XMLBuilder> meterConsumptionList = XMLBuilder.parse(response).getElementList("meterConsumption");
+			
+			if(meterConsumptionList == null || meterConsumptionList.isEmpty()) {
+				break;
+			}
+			
+			for(XMLBuilder meterConsumption :meterConsumptionList) {
+				
+				String usage = meterConsumption.getElement("usage").getText();
+				
+				XMLBuilder costElement = meterConsumption.getElement("cost");
+				
+				String cost = null;
+				if(costElement != null) {
+					cost = costElement.getText();
+				}
+				
+				String id = meterConsumption.getElement("id").getText();
+				String startDateString = meterConsumption.getElement("startDate").getText();
+				String endDateString = meterConsumption.getElement("endDate").getText();
+				
+				EnergyStarMeterDataContext meterData = new EnergyStarMeterDataContext();
+				
+				meterData.setEnergyStarId(id);
+				meterData.setDatum("usage", usage);
+				meterData.setDatum("cost", cost);
+				
+				long startTime = DateTimeUtil.getTime(startDateString +" 00:00", "yyyy-MM-dd HH:mm");
+				meterData.setDatum("fromDate",startTime);
+				meterData.setDatum("toDate", DateTimeUtil.getTime(endDateString +" 00:00", "yyyy-MM-dd HH:mm"));
+				
+				meterData.setTtime(startTime);
+				
+				meterDatas.add(meterData);
+				
+			}
+		}
+		
+		return meterDatas;
+	}
+	
 	private static String getMetrics() {
 		
 		String metrics = "";

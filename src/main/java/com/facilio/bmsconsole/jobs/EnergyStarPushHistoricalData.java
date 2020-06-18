@@ -29,7 +29,7 @@ import com.facilio.time.DateRange;
 
 public class EnergyStarPushHistoricalData extends FacilioJob {
 	
-	private static final Logger LOGGER = LogManager.getLogger(AssetActionJob.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(EnergyStarPushHistoricalData.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		try {
