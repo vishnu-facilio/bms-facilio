@@ -142,7 +142,10 @@ function changeThePage(){
 			    JSONParser parser = new JSONParser();
 				JSONObject json = (JSONObject) parser.parse(msg);
 				long arrival;
-				long lastReceivedTime = (long)jsonObj.get("arrivalTime");
+				long lastReceivedTime;
+				if(jsonObj.containsKey("arrivalTime")){
+					lastReceivedTime= (long)jsonObj.get("arrivalTime");
+				}
 				if(json.containsKey("timestamp")){
 					arrival = (long)jsonObj.get("timestamp");
 				}
@@ -154,7 +157,7 @@ function changeThePage(){
 
 		<tr>
 			<td align="center"><%=i%></td>
-			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
+			<td align="center"><%=arrival !=0 ? date:"-" %> <br> <%=DateTimeUtil.relativeDuration(lastReceivedTime) %></td>
 			<td align="center"><%=arrival !=0 ? date1:"-" %> <br> <%=arrival !=0 ? DateTimeUtil.relativeDuration(arrival):" " %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
