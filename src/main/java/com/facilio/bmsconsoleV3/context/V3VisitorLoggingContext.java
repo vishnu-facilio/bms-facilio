@@ -7,11 +7,11 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
 import java.io.File;
 
-public class V3VisitorLoggingContext extends ModuleBaseWithCustomFields {
+public class V3VisitorLoggingContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
 
