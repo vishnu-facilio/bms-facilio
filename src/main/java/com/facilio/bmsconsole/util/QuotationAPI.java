@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,7 +66,7 @@ public class QuotationAPI {
         Double lineItemsSubtotal = 0.0;
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             List<QuotationLineItemsContext> lineItems = quotation.getLineItems();
-            List<Long> uniqueTaxIds = lineItems.stream().filter(lineItem -> lineItem.getTax() != null).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
+            List<Long> uniqueTaxIds = lineItems.stream().filter(lineItem -> lookupValueIsNotEmpty(lineItem.getTax())).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
             List<TaxContext> taxList = getTaxesForIdList(uniqueTaxIds);
             Map<Long, Double> taxIdVsRateMap = new HashMap<>();
             if (CollectionUtils.isNotEmpty(taxList)) {
@@ -79,7 +80,7 @@ public class QuotationAPI {
                     Double taxRate = 0d;
                     Double taxAmount = 0d;
                     lineItem.setCost(lineItemCost);
-                    if (lineItem.getTax() != null) {
+                    if (lookupValueIsNotEmpty(lineItem.getTax())) {
                         taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
                         taxAmount = taxRate * lineItem.getCost() / 100;
                     }
@@ -207,10 +208,10 @@ public class QuotationAPI {
 
         if (location != null) {
             if (location.getId() > 0) {
-                if (quotation.getTenant() != null && quotation.getTenant().getId() > 0) {
+                if (lookupValueIsNotEmpty(quotation.getTenant())) {
                     TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
                     location.setName(tenant.getName());
-                }  else if (quotation.getTenant() == null) {
+                }  else {
                     location.setName(quotation.getSubject() + "_location");
                 }
                 FacilioChain chain = FacilioChainFactory.updateLocationChain();
@@ -219,10 +220,10 @@ public class QuotationAPI {
                 chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
                 chain.execute();
             } else {
-                if (quotation.getTenant() != null && quotation.getTenant().getId() > 0) {
+                if (lookupValueIsNotEmpty(quotation.getTenant())) {
                     TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
                     location.setName(tenant.getName());
-                }  else if (quotation.getTenant() == null) {
+                }  else {
                     location.setName(quotation.getSubject() + "_location");
                 }
                 FacilioChain addLocation = FacilioChainFactory.addLocationChain();
@@ -310,14 +311,14 @@ public class QuotationAPI {
         Map<Long, TaxSplitUpContext> taxSplitUp = new HashMap<>();
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
-                if (lineItem.getTax() != null) {
+                if (lookupValueIsNotEmpty(lineItem.getTax())) {
                     if (lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
                         Double taxAmount = getTaxAmount(lineItem, lineItem.getTax().getRate());
                         setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
                     } else if (lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
                         List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
                         for (TaxGroupContext taxGroup : taxGroups) {
-                            if (taxGroup.getChildTax() != null) {
+                            if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
                                 Double taxAmount = getTaxAmount(lineItem, taxGroup.getChildTax().getRate());
                                 setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
                             }
@@ -363,7 +364,7 @@ public class QuotationAPI {
 
     public static void validateForWorkorder(QuotationContext quotation) throws Exception {
         // Considering one Quotation for a Workorder.
-        if (quotation.getWorkorder() != null && quotation.getWorkorder().getId() > 0) {
+        if (lookupValueIsNotEmpty(quotation.getWorkorder())) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTATION);
@@ -398,5 +399,9 @@ public class QuotationAPI {
         List<TermsAndConditionContext> records = builder.get();
 
         return records;
+    }
+
+    public static boolean lookupValueIsNotEmpty(V3Context context) {
+        return context != null && context.getId() > 0;
     }
 }

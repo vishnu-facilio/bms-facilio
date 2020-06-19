@@ -33,7 +33,7 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     LocationContext shipToAddressLocation = quotation.getShipToAddress();
                     QuotationAPI.addLocation(quotation, shipToAddressLocation);
                 }
-                if (quotation.getTenant() != null && quotation.getTenant().getId() > 0 && quotation.getCustomerType() <= 0) {
+                if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant()) && quotation.getCustomerType() <= 0) {
                     // TEMP remove this once customer type is configured in form
                     quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
                 }

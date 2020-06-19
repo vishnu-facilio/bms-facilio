@@ -3,7 +3,6 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -11,13 +10,11 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SaveCommand extends FacilioCommand {
     private FacilioModule module;
@@ -68,7 +65,7 @@ public class SaveCommand extends FacilioCommand {
 
         Map<Long, List<UpdateChangeSet>> changeSet = insertRecordBuilder.getChangeSet();
 
-        context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSet);
+        context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSet);
 
         return false;
     }

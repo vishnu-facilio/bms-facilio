@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
@@ -40,7 +39,7 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         EventType activityType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 
-        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
 
         if(CollectionUtils.isNotEmpty(wos)) {
             V3WorkOrderContext workOrder = wos.get(0);

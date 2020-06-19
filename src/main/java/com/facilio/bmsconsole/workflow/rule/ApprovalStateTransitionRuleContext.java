@@ -78,9 +78,9 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
         updateBuilder.update(moduleRecord);
 
         // add activities
-        ActivityType activityType = CommonActivityType.APPROVAL;;
+        ActivityType activityType = CommonActivityType.APPROVAL;
         JSONObject info = new JSONObject();
-        info.put("status", facilioStatus.getDisplayName());
+        info.put("status", facilioStatus.getStatus());
         info.put("name", getName());
         info.put("fromStateId", getFromStateId());
         info.put("toStateId", getToStateId());

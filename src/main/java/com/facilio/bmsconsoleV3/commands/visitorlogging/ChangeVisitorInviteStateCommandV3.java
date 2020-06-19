@@ -24,7 +24,7 @@ import java.util.Map;
 public class ChangeVisitorInviteStateCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Map<Long, List<UpdateChangeSet>> moduleChangeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET);
+        Map<Long, List<UpdateChangeSet>> moduleChangeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3VisitorLoggingContext> records = recordMap.get(moduleName);

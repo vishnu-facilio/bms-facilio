@@ -2,8 +2,8 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -57,15 +57,15 @@ public class QuotationContext extends V3Context {
 
     private List<TaxSplitUpContext> taxSplitUp;
 
-    public WorkOrderContext getWorkorder() {
+    public V3WorkOrderContext getWorkorder() {
         return workorder;
     }
 
-    public void setWorkorder(WorkOrderContext workorder) {
+    public void setWorkorder(V3WorkOrderContext workorder) {
         this.workorder = workorder;
     }
 
-    private WorkOrderContext workorder;
+    private V3WorkOrderContext workorder;
 
 
     public String getNotes() {

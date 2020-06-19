@@ -28,7 +28,7 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
         // Skip if the existing approval flow is same as this
-        if (moduleRecord.getApprovalFlowId() == getId()) {
+        if (moduleRecord.getApprovalFlowId() != null && moduleRecord.getApprovalFlowId() == getId()) {
             return;
         }
 

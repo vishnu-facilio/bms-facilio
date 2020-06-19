@@ -26,7 +26,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
         QuotationAPI.setTaxSplitUp(quotation);
 
         Map<String, Object> queryParams = Constants.getQueryParams(context);
-        if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchTenantContacts") && quotation.getTenant() != null) {
+        if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchTenantContacts") && QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                 List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), false);
                 if (CollectionUtils.isNotEmpty(tenantContacts)) {

@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.context.V3WorkorderTemplate;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -46,9 +45,9 @@ public class FillContextAfterWorkorderAddCommandV3 extends FacilioCommand {
             }
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrder.getId()));
-            Map<Long, List<UpdateChangeSet>> changeSets = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+            Map<Long, List<UpdateChangeSet>> changeSets = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
             if (MapUtils.isNotEmpty(changeSets)) {
-                context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+                context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSets);
                 addActivity(context, changeSets, workOrder, modBean, moduleName);
             }
             context.put(FacilioConstants.ContextNames.RECORD, workOrder);

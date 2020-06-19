@@ -30,6 +30,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand {
     @Override
@@ -82,21 +83,22 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     info.put("quotationId", oldRecordId);
                     CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info, (FacilioContext) context);
                 } else if (quotationId != null && quotationId > 0) {
-                    Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+                    Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
                     if (MapUtils.isNotEmpty(changeSet)) {
-                        List<UpdateChangeSet> updatedSet = changeSet.get(quotation.getId());
+                        List<UpdateChangeSet> updatedSet = changeSet.get(quotationId);
                         if (CollectionUtils.isNotEmpty(updatedSet)) {
                             Boolean addedActivity = false;
-                            for (UpdateChangeSet changes : updatedSet) {
-                                FacilioField field = modBean.getField(changes.getFieldId());
-                                if (field != null && field.getName().equals(FacilioConstants.ContextNames.MODULE_STATE)) {
-                                    addedActivity = true;
-                                } else if (field != null && field.getName().equals(FacilioConstants.ContextNames.TOTAL_COST)) {
-                                    JSONObject info = new JSONObject();
-                                    info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
-                                    CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
-                                    addedActivity = true;
-                                }
+                            FacilioField moduleStateField = modBean.getField(FacilioConstants.ContextNames.MODULE_STATE, moduleName);
+                            FacilioField approvalStateField = modBean.getField(FacilioConstants.ContextNames.APPROVAL_STATUS, moduleName);
+                            FacilioField totalCostField = modBean.getField(FacilioConstants.ContextNames.TOTAL_COST, moduleName);
+                            List<Long> updatedFieldIdsList = updatedSet.stream().map(change -> change.getFieldId()).collect(Collectors.toList());
+                            if ((updatedFieldIdsList.contains(moduleStateField.getFieldId()) || updatedFieldIdsList.contains(approvalStateField.getFieldId()))) {
+                                addedActivity = true;
+                            } else if (updatedFieldIdsList.contains(totalCostField.getFieldId())) {
+                                JSONObject info = new JSONObject();
+                                info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
+                                CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
+                                addedActivity = true;
                             }
                             if (!addedActivity) {
                                 JSONObject info = new JSONObject();

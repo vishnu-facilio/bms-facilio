@@ -1,5 +1,6 @@
 package com.facilio.apiv3;
 
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoC
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -80,10 +82,12 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY))
 
                 .update()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterUpdateChain())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY))
 
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())

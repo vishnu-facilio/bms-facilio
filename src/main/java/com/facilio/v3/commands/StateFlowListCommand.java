@@ -1,25 +1,23 @@
 package com.facilio.v3.commands;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StateFlowListCommand extends FacilioCommand {
 
@@ -42,8 +40,10 @@ public class StateFlowListCommand extends FacilioCommand {
                         continue;
                     }
 
-                    long stateFlowId = record.getApprovalFlowId();
-                    if (stateFlowId < 0) {
+                    long stateFlowId = -1;
+                    if (record.getApprovalFlowId() != null) {
+                        stateFlowId = record.getApprovalFlowId();
+                    } else if (record.getStateFlowId() != null) {
                         stateFlowId = record.getStateFlowId();
                     }
 

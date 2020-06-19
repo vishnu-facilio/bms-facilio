@@ -63,7 +63,7 @@ public class UpdateCommand extends FacilioCommand {
         }
 
         context.put(Constants.ROWS_UPDATED, totalCount);
-        context.put(FacilioConstants.ContextNames.CHANGE_SET, allChangesets);
+        context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, allChangesets);
 
         return false;
     }
