@@ -48,7 +48,7 @@ public class TaxValidationCommand extends FacilioCommand {
                     if (tax.getId() > 0) {
                         QuotationAPI.setTaxAsInactive(tax);
                         context.put(FacilioConstants.ContextNames.OLD_TAX_ID, tax.getId());
-                        tax.setId(-1);
+                        tax.setId(-1L);
                     }
                 }
             }

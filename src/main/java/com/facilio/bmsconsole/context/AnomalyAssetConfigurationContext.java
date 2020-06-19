@@ -4,7 +4,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 public class AnomalyAssetConfigurationContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 	private long meterId;
-	private long orgId;
 	
 	private String dimension1Buckets;
 	private String dimension1Value;
@@ -24,12 +23,7 @@ public class AnomalyAssetConfigurationContext extends ModuleBaseWithCustomFields
 	public void setMeterId(long meterId) {
 		this.meterId = meterId;
 	}
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+
 	public String getDimension1Buckets() {
 		return dimension1Buckets;
 	}

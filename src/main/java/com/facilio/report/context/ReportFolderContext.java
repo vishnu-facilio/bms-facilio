@@ -12,13 +12,7 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private long id = -1;
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
+
 	
 	private List<Long> ids;
 	public List<Long> getIds() {
@@ -38,23 +32,6 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 		this.reportSharing = reportSharing;
 	}
 
-
-	private long orgId = -1;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-	
-	private long moduleId = -1;
-	
-	public long getModuleId() {
-		return moduleId;
-	}
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
 
 	private long parentFolderId = -1;
 	public Long getParentFolderId() {

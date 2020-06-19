@@ -8,8 +8,6 @@ import com.facilio.services.factory.FacilioFactory;
 public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private long id;
-	private long orgId;
 	private String name;
 	private String linkName;
 	private String description;
@@ -70,22 +68,6 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 
 	public void setShowInLauncher(Boolean showInLauncher) {
 		this.showInLauncher = showInLauncher;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public long getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
 	}
 
 	public String getName() {

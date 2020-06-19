@@ -355,7 +355,7 @@ public class LeedAction extends ActionSupport {
 	public String addLeedConfiguration() throws Exception
 	{
 		LeedConfigurationContext context = new LeedConfigurationContext();
-		context.setId(1);
+		context.setId(1L);
 		context.setLeedId(20000);
 		context.setBuildingStatus("Registered");
 		context.setLeedScore(55);

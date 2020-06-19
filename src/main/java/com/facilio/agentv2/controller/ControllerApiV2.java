@@ -87,7 +87,7 @@ public class ControllerApiV2 {
                 if (controller.getCreatedTime() < 100) {
                     controller.setCreatedTime(System.currentTimeMillis());
                 }
-                controller.setId(-1);
+                controller.setId(-1L);
                 controller.setActive(true);
                 controller.setLastModifiedTime(System.currentTimeMillis());
                 if ((agent.getSiteId() > 0)) {

@@ -38,7 +38,7 @@ public class DuplicateDashboardForBuildingCommand extends FacilioCommand {
 				addDashboardChain.execute(context);
 
 				for(DashboardWidgetContext widget : db.getDashboardWidgets()) {
-					widget.setId(-1);
+					widget.setId(-1L);
 				}
 				context.put(FacilioConstants.ContextNames.DASHBOARD, db);
 			}

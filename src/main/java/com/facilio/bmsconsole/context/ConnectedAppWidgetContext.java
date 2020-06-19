@@ -6,7 +6,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private long id;
 	Criteria criteria;
 	private long criteriaId;
 	private long connectedAppId;
@@ -32,14 +31,6 @@ public class ConnectedAppWidgetContext extends ModuleBaseWithCustomFields {
 
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public long getCriteriaId() {

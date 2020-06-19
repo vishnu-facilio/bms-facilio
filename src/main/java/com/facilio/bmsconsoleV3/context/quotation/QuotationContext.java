@@ -110,7 +110,7 @@ public class QuotationContext extends V3Context {
         setIsQuotationRevised(false);
         setNotes(quotation.getNotes());
         setRevisionHistoryAvailable(true);
-        setId(-1);
+        setId(-1L);
     }
 
     public V3TenantContext getTenant() {

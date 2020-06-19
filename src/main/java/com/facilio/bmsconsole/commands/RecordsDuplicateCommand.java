@@ -72,7 +72,7 @@ public class RecordsDuplicateCommand extends FacilioCommand {
 		if (quantity != null) {
 			for (int i = 0; i < Integer.parseInt(quantity); i++) {
 				ModuleBaseWithCustomFields item = (ModuleBaseWithCustomFields) FieldUtil.cloneBean(record, beanClassName);
-				((ModuleBaseWithCustomFields) item).setId(-1);
+				((ModuleBaseWithCustomFields) item).setId(-1L);
 				((ModuleBaseWithCustomFields) item).setLocalId(-1L);
 				String value = (prefix != null ? prefix + " " : "") + name + " " + (startingNumber) + (sufix != null ? " " +sufix : "");
 				PropertyUtils.setProperty(item, primaryField.getName(), value);

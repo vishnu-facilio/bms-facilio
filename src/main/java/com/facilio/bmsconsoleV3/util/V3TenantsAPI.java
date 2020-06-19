@@ -257,7 +257,7 @@ public class V3TenantsAPI {
         List<Long> filteredSpaces = spaceIds.stream().filter(i -> i > 0).collect(Collectors.toList());
         Map<Long, V3TenantContext> empty = new HashMap<>();
         V3TenantContext emptyTenant = new V3TenantContext();
-        emptyTenant.setId(-99);
+        emptyTenant.setId(-99L);
         empty.put(-1L, emptyTenant);
 
         if (filteredSpaces.isEmpty()) {

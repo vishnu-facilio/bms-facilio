@@ -7,17 +7,6 @@ public class FloorPlanContext extends ModuleBaseWithCustomFields{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private long id;
-
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	private long floorPlanId;
 
@@ -27,16 +16,6 @@ public class FloorPlanContext extends ModuleBaseWithCustomFields{
 
 	public void setFloorPlanId(long floorPlanId) {
 		this.floorPlanId = floorPlanId;
-	}
-	
-	private long orgId = -1;
-
-	public long getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
 	}
 
 	private long floorId = -1;

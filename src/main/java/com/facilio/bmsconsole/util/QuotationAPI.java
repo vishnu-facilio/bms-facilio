@@ -272,7 +272,7 @@ public class QuotationAPI {
                 setTaxAsInactive(taxGroupsParentTax);
                 Long oldTaxGroupId = taxGroupsParentTax.getId();
                 List<TaxGroupContext> taxGroupsForParentTax = getTaxesForGroups(Collections.singletonList(oldTaxGroupId));
-                taxGroupsParentTax.setId(-1);
+                taxGroupsParentTax.setId(-1L);
 
                 Double rate = 0d;
                 for (TaxGroupContext tg : taxGroupsForParentTax) {
@@ -402,6 +402,6 @@ public class QuotationAPI {
     }
 
     public static boolean lookupValueIsNotEmpty(V3Context context) {
-        return context != null && context.getId() > 0;
+        return context != null && context.getId() != null;
     }
 }

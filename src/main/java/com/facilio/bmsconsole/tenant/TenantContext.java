@@ -13,14 +13,6 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private long orgId = -1;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
 	
 	private long inTime;
 	public long getInTime() {
