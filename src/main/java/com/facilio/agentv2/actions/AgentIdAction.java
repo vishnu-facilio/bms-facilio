@@ -91,7 +91,7 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(AgentConstants.TYPE, isType);
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			if (configured == Boolean.TRUE) {
+			if (configured != null && configured == Boolean.TRUE) {
 				data = ControllerApiV2.getControllerDataForAgent(context);
 			} else {
 				data = FieldDeviceApi.getDevices(context);

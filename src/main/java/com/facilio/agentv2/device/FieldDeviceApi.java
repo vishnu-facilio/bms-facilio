@@ -170,7 +170,7 @@ public class FieldDeviceApi {
 		List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		boolean istype = (boolean) context.getOrDefault(AgentConstants.TYPE,false);
+		Boolean isType = (Boolean) context.get(AgentConstants.TYPE);
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(fieldDeviceModule.getTableName());
 		Criteria criteria = new Criteria();
@@ -189,7 +189,7 @@ public class FieldDeviceApi {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),
 					String.valueOf(controllerType), NumberOperators.EQUALS));
 		} 
-		if(istype){
+		if(isType != null && isType == true){
 			FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.CONTROLLER_TYPE);
 			FacilioField idColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ID);
 			FacilioField agentIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID);
