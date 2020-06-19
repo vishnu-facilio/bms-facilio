@@ -284,6 +284,17 @@ public class EnergyStarAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String fetchMissingData() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getESfetchMissingData();
+		
+		chain.execute();
+		
+		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTIES_CONTEXT, chain.getContext().get(EnergyStarUtil.ENERGY_STAR_PROPERTIES_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
 	public String fetchPropertyMetricsData() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getESfetchPropertyMetricData();

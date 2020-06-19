@@ -34,4 +34,12 @@ public class EnergyStarMeterDataContext extends ReadingContext {
 	public String getFormatedEndTime() {
 		return DateTimeUtil.getFormattedTime((long)this.getDatum("toDate"), "yyyy-MM-dd");
 	}
+	
+	public long getfromDate() {
+		return (long)this.getDatum("fromDate");
+	}
+	
+	public long getToDate() {
+		return (long)this.getDatum("toDate");
+	}
 }

@@ -40,7 +40,6 @@ public class EnergyStarSyncData extends FacilioJob {
 			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
 			LOGGER.error("Energy Star Sync data Failed", e);
 			CommonCommandUtil.emailException(AssetActionJob.class.getName(), "Energy Star Sync data Failed -- "+AccountUtil.getCurrentOrg().getId(), e);
 			

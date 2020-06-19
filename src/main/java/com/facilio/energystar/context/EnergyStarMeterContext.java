@@ -1,9 +1,12 @@
 package com.facilio.energystar.context;
 
+import java.util.List;
+
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateRange;
 
 public class EnergyStarMeterContext extends ModuleBaseWithCustomFields {
 
@@ -73,5 +76,43 @@ public class EnergyStarMeterContext extends ModuleBaseWithCustomFields {
 	}
 	public void setEnergyStarMeterId(String energyStarMeterId) {
 		this.energyStarMeterId = energyStarMeterId;
+	}
+	
+	List<DateRange> energyStarDataAvailableRanges;
+	List<DateRange> energyStarDataMissingRanges;
+	DateRange dataAvailableInFacilio;
+	List<DateRange> energyStarDataMissingRangesThatCanBeFilled;
+	
+	
+	public List<DateRange> getEnergyStarDataAvailableRanges() {
+		return energyStarDataAvailableRanges;
+	}
+
+	public void setEnergyStarDataAvailableRanges(List<DateRange> energyStarDataAvailableRanges) {
+		this.energyStarDataAvailableRanges = energyStarDataAvailableRanges;
+	}
+
+	public List<DateRange> getEnergyStarDataMissingRanges() {
+		return energyStarDataMissingRanges;
+	}
+
+	public void setEnergyStarDataMissingRanges(List<DateRange> energyStarDataMissingRanges) {
+		this.energyStarDataMissingRanges = energyStarDataMissingRanges;
+	}
+
+	public DateRange getDataAvailableInFacilio() {
+		return dataAvailableInFacilio;
+	}
+
+	public void setDataAvailableInFacilio(DateRange dataAvailableInFacilio) {
+		this.dataAvailableInFacilio = dataAvailableInFacilio;
+	}
+
+	public List<DateRange> getEnergyStarDataMissingRangesThatCanBeFilled() {
+		return energyStarDataMissingRangesThatCanBeFilled;
+	}
+
+	public void setEnergyStarDataMissingRangesThatCanBeFilled(List<DateRange> energyStarDataMissingRangesThatCanBeFilled) {
+		this.energyStarDataMissingRangesThatCanBeFilled = energyStarDataMissingRangesThatCanBeFilled;
 	}
 }

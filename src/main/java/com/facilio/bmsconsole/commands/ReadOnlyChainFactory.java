@@ -2501,6 +2501,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new EnergyStarFetchDataPropertyEnergyCommand());
 		return chain;
 	}
+	public static FacilioChain getESfetchMissingData() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(getESfetchSetupData());
+		chain.addCommand(new ESfetchMeterMissingData());
+		return chain;
+	}
 	public static FacilioChain getESfetchPropertyMetricData() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new EnergyStarFetchDataPropertyMetricCommand());
