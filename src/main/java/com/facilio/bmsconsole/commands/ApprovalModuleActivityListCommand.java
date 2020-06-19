@@ -38,7 +38,9 @@ public class ApprovalModuleActivityListCommand extends FacilioCommand {
                     .module(activityModule)
                     .select(fields)
                     .beanClass(ActivityContext.class)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), String.valueOf(CommonActivityType.APPROVAL.getValue()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("type"),
+                            CommonActivityType.APPROVAL.getValue() + "," + CommonActivityType.APPROVAL_ENTRY.getValue(),
+                            NumberOperators.EQUALS))
                     .orderBy(fieldMap.get("ttime").getCompleteColumnName() + " DESC ");
             List<ActivityContext> activityContexts = builder.get();
 
