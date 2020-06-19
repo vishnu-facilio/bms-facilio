@@ -60,22 +60,24 @@ public class AgentIdAction extends AgentActionV2 {
 		this.controllerType = controllerType;
 	}
 
-	private boolean configured;
+	private Boolean configured;
 
-	public boolean isConfigured() {
+	
+	public Boolean getConfigured() {
 		return configured;
 	}
 
-	public void setConfigured(boolean configured) {
+	public void setConfigured(Boolean configured) {
 		this.configured = configured;
 	}
 
-	private boolean isType;
-	public boolean isType() {
+	private Boolean isType;
+	
+	public Boolean getIsType() {
 		return isType;
 	}
 
-	public void setType(boolean isType) {
+	public void setIsType(Boolean isType) {
 		this.isType = isType;
 	}
 
@@ -87,9 +89,9 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.AGENT_ID, getAgentId());
 			context.put(AgentConstants.SEARCH_KEY, getName());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(AgentConstants.TYPE, isType());
+			context.put(AgentConstants.TYPE, isType);
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			if (isConfigured()) {
+			if (configured == Boolean.TRUE) {
 				data = ControllerApiV2.getControllerDataForAgent(context);
 			} else {
 				data = FieldDeviceApi.getDevices(context);

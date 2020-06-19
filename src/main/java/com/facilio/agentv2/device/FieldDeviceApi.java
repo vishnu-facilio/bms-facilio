@@ -191,12 +191,10 @@ public class FieldDeviceApi {
 		} 
 		if(istype){
 			FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.CONTROLLER_TYPE);
-			FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ORGID);
 			FacilioField idColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ID);
 			FacilioField agentIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID);
 			List<FacilioField> fieldList = new ArrayList<>();
 			fieldList.add(idColumn);
-			fieldList.add(orgIdColumn);
 			fieldList.add(type);
 			fieldList.add(agentIdColumn);
 			builder.select(fieldList);
