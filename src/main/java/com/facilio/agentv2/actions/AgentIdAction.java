@@ -70,6 +70,15 @@ public class AgentIdAction extends AgentActionV2 {
 		this.configured = configured;
 	}
 
+	private boolean isType;
+	public boolean isType() {
+		return isType;
+	}
+
+	public void setType(boolean isType) {
+		this.isType = isType;
+	}
+
 	public String getdeviceOrControllersData() {
 
 		try {
@@ -78,6 +87,7 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.AGENT_ID, getAgentId());
 			context.put(AgentConstants.SEARCH_KEY, getName());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+			context.put(AgentConstants.TYPE, isType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 			if (isConfigured()) {
 				data = ControllerApiV2.getControllerDataForAgent(context);

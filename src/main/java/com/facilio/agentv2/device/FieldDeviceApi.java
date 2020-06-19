@@ -170,15 +170,15 @@ public class FieldDeviceApi {
 		List<Long> ids = (List<Long>) context.get(AgentConstants.RECORD_IDS);
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		boolean istype = (boolean) context.getOrDefault(AgentConstants.TYPE,false);
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(fieldDeviceModule.getTableName());
 		Criteria criteria = new Criteria();
 		List<FacilioField> fields = FieldFactory.getFieldDeviceFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-		criteria.addAndCondition(
-				CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
-
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+		builder.select(fields);
 		if ((agentId != null) && (agentId > 0)) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID),
 					String.valueOf(agentId), NumberOperators.EQUALS));
@@ -188,7 +188,8 @@ public class FieldDeviceApi {
 					NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),
 					String.valueOf(controllerType), NumberOperators.EQUALS));
-		} else {
+		} 
+		if(istype){
 			FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.CONTROLLER_TYPE);
 			FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ORGID);
 			FacilioField idColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ID);
