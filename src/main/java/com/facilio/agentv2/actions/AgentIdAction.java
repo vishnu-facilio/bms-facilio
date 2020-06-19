@@ -59,7 +59,44 @@ public class AgentIdAction extends AgentActionV2 {
 	public void setControllerType(Integer controllerType) {
 		this.controllerType = controllerType;
 	}
+	
+	private boolean configured;
 
+	
+	public boolean isConfigured() {
+		return configured;
+	}
+
+	public void setConfigured(boolean configured) {
+		this.configured = configured;
+	}
+
+	public String getdeviceOrControllersData() {
+
+		try {
+			List<Map<String, Object>> data = new ArrayList<>();
+			FacilioContext context = new FacilioContext();
+			context.put(AgentConstants.AGENT_ID, getAgentId());
+			context.put(AgentConstants.SEARCH_KEY, getName());
+			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+			if (isConfigured()) {
+				data = ControllerApiV2.getControllerDataForAgent(context);
+			} else {
+				data = FieldDeviceApi.getDevices(context);
+			}
+			setResult(AgentConstants.DATA, data);
+			ok();
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred while getting Controllers ", e);
+			setResult(AgentConstants.RESULT, ERROR);
+			setResult(AgentConstants.EXCEPTION, e.getMessage());
+			internalError();
+		}
+
+		return SUCCESS;
+	}
+	
 	public String devices() {
         try {
         	System.out.println("@@@@---devices");
@@ -78,6 +115,7 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+	
 	
     public String devicesCount() {
         try {
@@ -199,9 +237,10 @@ public class AgentIdAction extends AgentActionV2 {
         try {
 			FacilioContext context = new FacilioContext();
 			context.put(AgentConstants.SEARCH_KEY, getName());
+			context.put(AgentConstants.AGENT_ID, getAgentId());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(getAgentId(),context);
+			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(context);
             setResult(AgentConstants.DATA, controllers);
             ok();
         } catch (Exception e) {

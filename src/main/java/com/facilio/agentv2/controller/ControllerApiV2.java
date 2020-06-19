@@ -489,8 +489,9 @@ public class ControllerApiV2 {
         return getControllerCountData(Arrays.asList(agentId));
     }
 
-    public static List<Map<String, Object>> getControllerDataForAgent(Long agentId, FacilioContext contextProps) throws Exception {
-        return getControllerData(agentId, null, contextProps);
+    public static List<Map<String, Object>> getControllerDataForAgent(FacilioContext contextProps) throws Exception {
+    	long agentId = (long) contextProps.get(AgentConstants.AGENT_ID);
+    	return getControllerData(agentId, null, contextProps);
     }
 
     public static List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {

@@ -172,19 +172,32 @@ public class FieldDeviceApi {
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(fieldDeviceModule.getTableName())
-                .select(FieldFactory.getFieldDeviceFields());
+                .table(fieldDeviceModule.getTableName());
+                
         Criteria criteria = new Criteria();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+        List<FacilioField> fields = FieldFactory.getFieldDeviceFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
-        builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
         
         if ((agentId != null) && (agentId > 0)) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
         }
         if((controllerType != null) && (controllerType >= 0)) {
+        	builder.select(FieldFactory.getFieldDeviceFields());
         	criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(controllerType), NumberOperators.EQUALS));
+        	builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0), NumberOperators.EQUALS));
+        }else {
+        	FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.TYPE); 
+    		FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ORGID);
+    		FacilioField idColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ID);
+    		FacilioField agentIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID);
+    		List<FacilioField> fieldList = new ArrayList<>();
+    		fieldList.add(idColumn);
+    		fieldList.add(orgIdColumn);
+    		fieldList.add(type);
+    		fieldList.add(agentIdColumn);
+    		builder.select(fieldList);
         }
         if ((ids != null) && (!ids.isEmpty())) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), StringUtils.join(ids, ","), NumberOperators.EQUALS));

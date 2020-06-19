@@ -339,6 +339,9 @@
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
         </action>
 
+		<action name="getlist" class="com.facilio.agentv2.actions.AgentIdAction" method="getdeviceOrControllersData"> <!--DONEDONE-->
+        </action>
+        
         <action name="add" class="com.facilio.agentv2.actions.AddFieldDeviceAction" method="addDevice">
         </action>
 
