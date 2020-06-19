@@ -51,6 +51,24 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
     }
 
     @Override
+    public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+        super.executeTrueActions(record, context, placeHolders);
+
+
+        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+        // add activities
+        FacilioStatus facilioStatus = TicketAPI.getStatus(getToStateId());
+        ActivityType activityType = CommonActivityType.APPROVAL;
+        JSONObject info = new JSONObject();
+        info.put("status", facilioStatus.getStatus());
+        info.put("name", getName());
+        info.put("fromStateId", getFromStateId());
+        info.put("toStateId", getToStateId());
+        info.put("user", AccountUtil.getCurrentUser().getId());
+        CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
+    }
+
+    @Override
     protected void executeTrue(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
@@ -76,15 +94,5 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         updateBuilder.update(moduleRecord);
-
-        // add activities
-        ActivityType activityType = CommonActivityType.APPROVAL;
-        JSONObject info = new JSONObject();
-        info.put("status", facilioStatus.getStatus());
-        info.put("name", getName());
-        info.put("fromStateId", getFromStateId());
-        info.put("toStateId", getToStateId());
-        info.put("user", AccountUtil.getCurrentUser().getId());
-        CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
     }
 }
