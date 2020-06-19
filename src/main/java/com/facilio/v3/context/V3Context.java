@@ -192,4 +192,39 @@ public class V3Context extends ModuleBaseWithCustomFields {
         }
         return super.getLocalId();
     }
+
+    @Override
+    public Long getSysCreatedTime() {
+        if (super.getSysCreatedTime() == -1) {
+            return null;
+        }
+        return super.getSysCreatedTime();
+    }
+
+    @Override
+    public void setSysCreatedTime(Long sysCreatedTime) {
+        if (sysCreatedTime == null) {
+            super.setSysCreatedTime(-1L);
+        } else {
+            super.setSysCreatedTime(sysCreatedTime);
+        }
+    }
+
+    @Override
+    public Long getSysModifiedTime() {
+        if (super.getSysModifiedTime() == -1) {
+            return null;
+        }
+        return super.getSysModifiedTime();
+    }
+
+    @Override
+    public void setSysModifiedTime(Long sysModifiedTime) {
+        if (sysModifiedTime == null) {
+            super.setSysModifiedTime(-1L);
+        } else {
+            super.setSysModifiedTime(sysModifiedTime);
+        }
+    }
+
 }
