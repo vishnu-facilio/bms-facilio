@@ -41,7 +41,7 @@ public class APIv3Config {
     // we are returning a lambda so as to generate new V3Config object each
     // and every time a request happens
     public static Supplier<V3Config> customTest() {
-        return () -> new V3Config(CustomModuleData.class)
+        return () -> new V3Config(CustomModuleDataV3.class)
                 .create()
                     .init(new DefaultInit())
                     .beforeSave(new SampleBeforeSaveCommand())

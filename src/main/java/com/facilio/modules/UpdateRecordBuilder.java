@@ -47,6 +47,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private boolean isIdsFetched = false;
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 	private Collection<FacilioModule> joinModules;
+	private boolean ignoreSplNullHandling;
 
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -204,6 +205,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public UpdateRecordBuilder<E> ignoreSplNullHandling() {
+		this.ignoreSplNullHandling = true;
 		builder.ignoreSplNullHandling();
 		return this;
 	}
@@ -458,10 +460,16 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if(lookupProps != null && !lookupProps.isEmpty()) {
 					if(lookupProps.get("id") != null) {
 						moduleProps.put(field.getName(), lookupProps.get("id"));
+					} else if (ignoreSplNullHandling) {
+						moduleProps.put(field.getName(), null);
 					}
 				}
 				else {
-					moduleProps.remove(field.getName());
+					if (ignoreSplNullHandling) {
+						moduleProps.put(field.getName(), null);
+					} else {
+						moduleProps.remove(field.getName());
+					}
 				}
 			}
 		}
