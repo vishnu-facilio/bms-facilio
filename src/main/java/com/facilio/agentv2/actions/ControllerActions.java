@@ -166,31 +166,4 @@ public class ControllerActions extends AgentActionV2 {
         }
         return SUCCESS;
     }
-
-    private String name;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-    public String getControllers() {
-        try {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(getAgentId(),context);
-            setResult(AgentConstants.DATA, controllers);
-            ok();
-        } catch (Exception e) {
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-            LOGGER.info("exception while fetching controller data fro agent " + agentId + " ", e);
-        }
-        return SUCCESS;
-    }
 }
