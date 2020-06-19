@@ -189,7 +189,7 @@ public class FieldDeviceApi {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),
 					String.valueOf(controllerType), NumberOperators.EQUALS));
 		} else {
-			FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.TYPE);
+			FacilioField type = FieldFactory.getAsMap(fields).get(AgentConstants.CONTROLLER_TYPE);
 			FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ORGID);
 			FacilioField idColumn = FieldFactory.getAsMap(fields).get(AgentConstants.ID);
 			FacilioField agentIdColumn = FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID);
