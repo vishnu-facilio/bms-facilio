@@ -71,24 +71,24 @@ public class AgentIdAction extends AgentActionV2 {
 		this.configured = configured;
 	}
 
-	private Boolean isType;
+	private Boolean type;
 	
-	public Boolean getIsType() {
-		return isType;
+	public Boolean getType() {
+		return type;
 	}
 
-	public void setIsType(Boolean isType) {
-		this.isType = isType;
+	public void setType(Boolean type) {
+		this.type = type;
 	}
 
-	private Boolean isFetchCount;
+	private Boolean count;
 	
-	public Boolean getIsFetchCount() {
-		return isFetchCount;
+	public Boolean getCount() {
+		return count;
 	}
 
-	public void setIsFetchCount(Boolean isFetchCount) {
-		this.isFetchCount = isFetchCount;
+	public void setCount(Boolean count) {
+		this.count = count;
 	}
 
 	public String getdeviceOrControllersData() {
@@ -99,10 +99,10 @@ public class AgentIdAction extends AgentActionV2 {
 			context.put(AgentConstants.AGENT_ID, getAgentId());
 			context.put(AgentConstants.SEARCH_KEY, getName());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(AgentConstants.TYPE, isType);
+			context.put(AgentConstants.TYPE, type);
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 
-			if ((isFetchCount != null && isFetchCount == Boolean.TRUE)) {
+			if ((count != null && count == Boolean.TRUE)) {
 				long count = -1;
 				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
 					if ((configured != null && configured == Boolean.TRUE)) {
