@@ -1,8 +1,33 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HazardContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.OperationAlarmContext;
+import com.facilio.bmsconsole.context.PrecautionContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -12,18 +37,19 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class PageFactory {
 
@@ -185,6 +211,30 @@ public class PageFactory {
 		PageWidget pageWidget = new PageWidget(WidgetType.DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(pageWidget);
+	}
+	
+	protected static void addRelatedListWidgets(Section section, long moduleId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> subModules =
+				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
+
+		if (CollectionUtils.isNotEmpty(subModules)) {
+			for (FacilioModule subModule : subModules) {
+				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(fields)) {
+					for (FacilioField field : fields) {
+						PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+						JSONObject relatedList = new JSONObject();
+						relatedList.put("module", subModule);
+						relatedList.put("field", field);
+						relatedListWidget.setRelatedList(relatedList);
+						relatedListWidget.addToLayoutParams(section, 24, 8);
+						section.addWidget(relatedListWidget);
+					}
+				}
+			}
+		}
 	}
 	
 	protected static void addRelatedCountWidget(Section section, int yPos, List<String> modules) {

@@ -112,6 +112,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		TenantContext tenant = null;
 		for (WorkOrderContext oldWo : oldWos) {
 			if (workOrder.getSiteId() != -1 && oldWo.getSiteId() != workOrder.getSiteId()) {
+				log.error("Old Site - " + oldWo.getSiteId() +", New Site - " + workOrder.getSiteId());
 				throw new IllegalArgumentException("Site cannot be changed for work order");
 			}
 			if (workOrder.getTenant() != null && (oldWo.getTenant() == null || workOrder.getTenant().getId() !=  oldWo.getTenant().getId())) {

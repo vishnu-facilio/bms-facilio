@@ -710,6 +710,9 @@ public class FormsAPI {
 				fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
 				fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
 				break;
+			case ContextNames.ASSET:
+				fields.add(new FormField("salvageAmount", FieldDisplayType.NUMBER, "Salvage Amount", Required.OPTIONAL, 1, 1));
+				break;
 			// Add fields here if it has to be shown in unused list and not there in the default form
 		}
 		}

@@ -4430,6 +4430,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));

@@ -40,6 +40,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		}
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
+		addRelatedListWidgets(tab1Sec3, module.getModuleId());
 		addCommonSubModuleWidget(tab1Sec3, module, workpermit);
 
 //		Tab tab2 = page.new Tab("related list");
