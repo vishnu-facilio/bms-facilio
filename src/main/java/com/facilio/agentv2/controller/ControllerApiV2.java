@@ -322,8 +322,10 @@ public class ControllerApiV2 {
         return 0;
     }
     
-    public static long getControllersCount(List<Long> agentIds,Integer controllerType) {
-    	return getCount(agentIds, controllerType);
+    public static long getControllersCount(FacilioContext context) {
+    	long agentIds = (long) context.get(AgentConstants.AGENT_ID);
+    	Integer controllerType = (Integer) context.get(AgentConstants.CONTROLLER_TYPE);
+    	return getCount(Collections.singletonList(agentIds), controllerType);
     }
 
     private static long getCount(List<Long> agentIds,Integer controllerType) {
