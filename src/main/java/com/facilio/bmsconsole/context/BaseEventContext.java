@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.sensor.SensorEventContext;
@@ -377,7 +378,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			case SENSOR_ROLLUP_ALARM:
 				baseEvent = new SensorRollUpEventContext();
 				break;
-
+			case AGENT_ALARM:
+				baseEvent = new AgentEventContext();
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
