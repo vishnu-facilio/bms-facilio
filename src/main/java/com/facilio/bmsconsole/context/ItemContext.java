@@ -121,6 +121,18 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 		this.purchasedItems = inventoryCost;
 	}
 
+	@Override
+	public long getLocalId() {
+		// TODO Auto-generated method stub
+		return super.getLocalId();
+	}
+
+	@Override
+	public void setLocalId(long localId) {
+		// TODO Auto-generated method stub
+		super.setLocalId(localId);
+	}
+
 	private long lastPurchasedDate = -1;
 
 	public long getLastPurchasedDate() {

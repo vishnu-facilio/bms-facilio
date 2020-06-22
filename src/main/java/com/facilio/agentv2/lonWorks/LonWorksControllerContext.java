@@ -23,6 +23,7 @@ public class LonWorksControllerContext extends Controller {
 
 
     private long id;
+    private long siteId;
     private long moduleId;
     private long agentId;
     @JsonInclude
@@ -42,6 +43,16 @@ public class LonWorksControllerContext extends Controller {
     @Override
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public long getSiteId() {
+        return siteId;
+    }
+
+    @Override
+    public void setSiteId(long siteId) {
+        this.siteId = siteId;
     }
 
     @Override

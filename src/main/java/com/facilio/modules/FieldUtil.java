@@ -22,8 +22,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
-import com.facilio.v3.context.V3Context;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -76,10 +74,6 @@ public class FieldUtil {
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-	private static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper()
-			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
 	static {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {
 			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
@@ -91,9 +85,6 @@ public class FieldUtil {
 
 
 	public static ObjectMapper getMapper(Class<?> beanClass) {
-		if (V3Context.class.isAssignableFrom(beanClass)) {
-			return DEFAULT_MAPPER;
-		}
 		MutableConfigOverride config = NON_DEFAULT_MAPPER.configOverride(beanClass);
 		if (config.getInclude() == null) {
 			config.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));

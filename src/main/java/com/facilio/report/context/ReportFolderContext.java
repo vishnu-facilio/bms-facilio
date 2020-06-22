@@ -47,6 +47,14 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 		this.orgId = orgId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
 	private long moduleId = -1;
 	
 	public long getModuleId() {

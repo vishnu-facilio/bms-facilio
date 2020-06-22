@@ -3,6 +3,7 @@ package com.facilio.agentv2.metrics;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AgentMetrics extends ModuleBaseWithCustomFields {
+    private long siteId;
     private long agentId;
     private long createdTime;
     private long lastUpdatedTime;
@@ -13,6 +14,14 @@ public class AgentMetrics extends ModuleBaseWithCustomFields {
     public long getLastUpdatedTime() { return lastUpdatedTime; }
 
     public void setLastUpdatedTime(long lastUpdatedTime) { this.lastUpdatedTime = lastUpdatedTime; }
+
+    public long getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(long siteId) {
+        this.siteId = siteId;
+    }
 
     public long getAgentId() {
         return agentId;

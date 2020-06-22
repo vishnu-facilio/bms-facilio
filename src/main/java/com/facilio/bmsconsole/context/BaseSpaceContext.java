@@ -99,9 +99,20 @@ public class BaseSpaceContext extends ResourceContext {
 	public void setLastAssignedOccupancyTime(long lastAssignedOccupancyTime) {
 		this.lastAssignedOccupancyTime = lastAssignedOccupancyTime;
 	}
+	
+	public long getLocalId() {
+		return super.getLocalId();
+	}
+	public void setLocalId(long localId) {
+		super.setLocalId(localId);
+	}
 
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
 	public void setSiteId(long siteId) {
-		super.setSiteId(siteId);
+		this.siteId = siteId;
 		if (siteId > -1) {
 			if (site == null) {
 				site = new SiteContext();
@@ -119,7 +130,7 @@ public class BaseSpaceContext extends ResourceContext {
 	}
 	public void setSite(SiteContext site) {
 		this.site = site;
-		super.setSiteId(site != null ? site.getId() : -1);
+		this.siteId = site != null ? site.getId() : -1;
 	}
 
 	private long buildingId = -1;

@@ -417,6 +417,16 @@ public class PreventiveMaintenance extends ResourceContext {
 		}
 	}
 	
+	private long siteId = -1;
+	
+	public long getSiteId() {
+		return this.siteId;
+	}
+	
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+	
 	Long baseSpaceId;
 	
 	public Long getBaseSpaceId() {

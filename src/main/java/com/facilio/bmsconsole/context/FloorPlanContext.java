@@ -38,7 +38,8 @@ public class FloorPlanContext extends ModuleBaseWithCustomFields{
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-
+	
+	private long siteId = -1;
 	private long floorId = -1;
 	private String name;
 	private long fileId = -1;
@@ -76,6 +77,15 @@ public class FloorPlanContext extends ModuleBaseWithCustomFields{
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+
+	public long getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 
 	public String getName() {

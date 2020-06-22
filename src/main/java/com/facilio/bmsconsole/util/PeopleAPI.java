@@ -90,7 +90,7 @@ public class PeopleAPI {
 			
 			//special handling for signup because employee gets added even before the default module script gets executed.hence the last localid seems to be null
 			if(isSignup) {
-				people.setLocalId(1L);
+				people.setLocalId(1);
 			}
 			RecordAPI.addRecord(!isSignup, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
 			pplId = people.getId();
