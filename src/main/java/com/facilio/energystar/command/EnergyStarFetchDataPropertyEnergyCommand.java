@@ -16,6 +16,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
+import com.facilio.energystar.context.EnergyStarProperyUseContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -51,6 +52,9 @@ public class EnergyStarFetchDataPropertyEnergyCommand extends FacilioCommand {
 			
 			property.setDatum("building", SpaceAPI.getBuildingSpace(property.getBuildingId()));
 			
+			
+			fillPropertyUse(property);
+			
 			List<EnergyStarMeterContext> meters = FieldUtil.getAsBeanListFromMapList(props, EnergyStarMeterContext.class);
 			
 			for(EnergyStarMeterContext meter :meters) {
@@ -78,6 +82,17 @@ public class EnergyStarFetchDataPropertyEnergyCommand extends FacilioCommand {
 		
 		return false;
 		
+	}
+
+	private void fillPropertyUse(EnergyStarPropertyContext property) throws Exception {
+		
+		List<Map<String, Object>> props = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarPropertyUseModule(), FieldFactory.getEnergyStarPropertyUseFields(), null, CriteriaAPI.getCondition("PROPERTY_ID", "propertyId", property.getId()+"", NumberOperators.EQUALS));
+	
+		if(props != null && !props.isEmpty()) {
+			List<EnergyStarProperyUseContext> propertyUse = FieldUtil.getAsBeanListFromMapList(props, EnergyStarProperyUseContext.class);
+			
+			property.setPropertyUseContexts(propertyUse);
+		}
 	}
 
 }

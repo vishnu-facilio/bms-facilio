@@ -6063,8 +6063,6 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMainSummaryData" />
 		<action name="fetchSetupData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchSetupData" />
-		<action name="fetchProperty"
-			class="com.facilio.energystar.action.EnergyStarAction" method="fetchProperty" />
 		<action name="fetchPropertyMetricsData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
 		<action name="sync"
@@ -6075,6 +6073,14 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="bulkPushHistoricalData" />
 		<action name="fetchMissingData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMissingData" />
+		<action name="fetchProperty"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchProperty" >
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
 		<action name="getMetricsList"
 			class="com.facilio.energystar.action.EnergyStarAction" method="getMetricsList">
 			<result name="success" type="json">
