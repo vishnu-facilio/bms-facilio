@@ -10,7 +10,7 @@ export META_INF_DIR="$BMS_DIR/META-INF"
 echo `date` " : Deployment group is : $DEPLOYMENT_GROUP_NAME" >> /home/facilio/deployment.log
 echo "======" >> /home/facilio/deployment.log
 
-unzip $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
+unzip -o $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
