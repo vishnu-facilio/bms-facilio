@@ -35,7 +35,7 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		setScheduleDay(getScheduleDay());
 		setScheduleMonth(getScheduleMonth());
 		setScheduleTime(getScheduleTime());
-		setId(-1L);
+		setId(-1);
 	}
 
 	private String name;

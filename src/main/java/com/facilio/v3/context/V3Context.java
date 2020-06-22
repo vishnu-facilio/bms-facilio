@@ -5,58 +5,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 public class V3Context extends ModuleBaseWithCustomFields {
 
     @Override
-    public void setId(Long id) {
-        if (id == null) {
-            super.setId(-1L);
-        } else {
-            super.setId(id);
-        }
-    }
-
-    @Override
-    public Long getId() {
-        if (super.getId() == -1L) {
-            return null;
-        }
-        return super.getId();
-    }
-
-    @Override
-    public void setModuleId(Long moduleId) {
-        if (moduleId == null) {
-            super.setModuleId(-1L);
-        } else {
-            super.setModuleId(moduleId);
-        }
-    }
-
-    @Override
-    public Long getModuleId() {
-        if (super.getModuleId() == -1L) {
-            return null;
-        }
-        return super.getModuleId();
-    }
-
-    @Override
-    public void setOrgId(Long orgId) {
-        if (orgId == null) {
-            super.setOrgId(-1L);
-        } else {
-            super.setOrgId(orgId);
-        }
-
-    }
-
-    @Override
-    public Long getOrgId() {
-        if (super.getOrgId() == -1L)  {
-            return null;
-        }
-        return super.getOrgId();
-    }
-
-    @Override
     public void setFormId(Long formId) {
         if (formId == null) {
             super.setFormId(-1L);

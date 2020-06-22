@@ -47,7 +47,7 @@ public class DisassociateTenantUnitSpaceRelationCommand extends FacilioCommand{
 		
 		Map<String, Object> value = new HashMap<>();
 		TenantContext tenant = new TenantContext();
-		tenant.setId(-99L);
+		tenant.setId(-99);
 		value.put("tenant", FieldUtil.getAsProperties(tenant));
 		value.put("isOccupied", false);
 		

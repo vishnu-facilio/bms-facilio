@@ -1037,7 +1037,7 @@ public class TenantsAPI {
 		List<Long> filteredSpaces = spaceIds.stream().filter(i -> i > 0).collect(Collectors.toList());
 		Map<Long, TenantContext> empty = new HashMap<>();
 		TenantContext emptyTenant = new TenantContext();
-		emptyTenant.setId(-99L);
+		emptyTenant.setId(-99);
 		empty.put(-1L, emptyTenant);
 
 		if (filteredSpaces.isEmpty()) {

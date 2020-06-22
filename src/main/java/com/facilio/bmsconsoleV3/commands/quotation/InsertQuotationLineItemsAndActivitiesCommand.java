@@ -71,7 +71,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     activitiesChain.execute();
                     List<ActivityContext> activities = (List<ActivityContext>) activitiesChain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
                     for (ActivityContext activity : activities) {
-                        activity.setId(-1L);
+                        activity.setId(-1);
                         activity.setParentId(quotation.getId());
                     }
                     List<ActivityContext> activitiesList = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);

@@ -7,6 +7,13 @@ public class FloorPlanObjectContext extends ModuleBaseWithCustomFields{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public long getId() {
+	return Id;
+}
+public void setId(long id) {
+	Id = id;
+}
+	private long Id;
 
 private long floorBoundaryId;
 	

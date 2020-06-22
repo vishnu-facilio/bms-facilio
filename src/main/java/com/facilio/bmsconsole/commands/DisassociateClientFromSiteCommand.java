@@ -30,7 +30,7 @@ public class DisassociateClientFromSiteCommand extends FacilioCommand {
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField clientField = modBean.getField("client", module.getName());
 			ClientContext client = new ClientContext();
-			client.setId(-99L);
+			client.setId(-99);
 			updateMap.put("client", FieldUtil.getAsProperties(client));
 			List<FacilioField> fields = new ArrayList<FacilioField>();
 			fields.add(clientField);

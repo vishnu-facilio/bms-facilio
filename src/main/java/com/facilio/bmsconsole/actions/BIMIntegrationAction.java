@@ -513,7 +513,7 @@ public String getAccessToken(ThirdParty thirdParty,HashMap<String,String> thirdP
 							
 							if(asset.getCategory().getId() != assetCategory.getId()){
 								AssetsAPI.deleteAsset(Collections.singletonList(assetId));
-								asset.setId(-1L);
+								asset.setId(-1);
 								addAsset = true;
 							}else{
 								asset.setDatum("thirdpartyid", thirdPartyId);

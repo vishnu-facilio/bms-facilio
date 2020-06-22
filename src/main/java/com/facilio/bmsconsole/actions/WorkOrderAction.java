@@ -387,13 +387,13 @@ public class WorkOrderAction extends FacilioAction {
 		
 		for (Long assetId : assetLists) {
 			
-			pm.setId(-1L);
+			pm.setId(-1);
 			
 			WorkOrderContext wo = pm.getWoTemplate().getWorkorder();
 			ResourceContext resourceContext = wo.getResource();
 			long oldAssetId = resourceContext.getId();
 			
-			wo.setId(-1L);
+			wo.setId(-1);
 			
 			resourceContext.setId(assetId);
 			pm.getWoTemplate().setResourceId(assetId);
@@ -420,7 +420,7 @@ public class WorkOrderAction extends FacilioAction {
 							taskContext.setReadingFieldId(-1);
 						}
 						
-						taskContext.setId(-1L);
+						taskContext.setId(-1);
 					    taskContext.setSectionId(-1);
 					    
 					    taskContext.setReadingRules(null);	// Temporary

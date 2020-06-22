@@ -63,7 +63,7 @@ public class UpdateWorkOrderRequestCommand extends FacilioCommand {
 				workOrderRequest.setAssignmentGroup(new Group());
 				workOrderRequest.getAssignmentGroup().setId(-1);
 				workOrderRequest.setResource(new ResourceContext());
-				workOrderRequest.getResource().setId(-1L);
+				workOrderRequest.getResource().setId(-1);
 			}
 
 			String ids = StringUtils.join(recordIds, ",");

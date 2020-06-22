@@ -218,9 +218,9 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		workOrder.setAssignmentGroup(new Group());
 		workOrder.getAssignmentGroup().setId(-1);
 		workOrder.setResource(new ResourceContext());
-		workOrder.getResource().setId(-1L);
+		workOrder.getResource().setId(-1);
 		workOrder.setTenant(new TenantContext());
-		workOrder.getTenant().setId(-99L);
+		workOrder.getTenant().setId(-99);
 	}
 	
 	public static <T extends TicketContext> void transferToAnotherTenant(WorkOrderContext workOrder, List<T> oldTickets) throws Exception {
@@ -241,7 +241,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		workOrder.setAssignmentGroup(new Group());
 		workOrder.getAssignmentGroup().setId(-1);
 		workOrder.setResource(new ResourceContext());
-		workOrder.getResource().setId(-1L);
+		workOrder.getResource().setId(-1);
 		workOrder.setSiteId(tenant.getSiteId());
 	}
 	

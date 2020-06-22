@@ -105,7 +105,7 @@ public class V3WorkOrderContext extends V3TicketContext {
 
     public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
-        if (super.getId() != null) {
+        if (super.getId() != -1) {
             if (approvalState == ApprovalState.REQUESTED) {
                 // /app/wo/approvals/requested/summary/
                 return FacilioProperties.getConfig("clientapp.url") + "/app/wo/approvals/summary/" + getId();
@@ -118,7 +118,7 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     public String getMobileUrl() {
-        if (super.getId() != null) {
+        if (super.getId() != -1) {
             if (approvalState == ApprovalState.REQUESTED) {
                 // /app/wo/approvals/requested/summary/
                 return FacilioProperties.getConfig("clientapp.url") + "/mobile/approvals/summary/" + getId();

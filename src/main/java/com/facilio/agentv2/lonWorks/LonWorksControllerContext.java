@@ -22,7 +22,8 @@ public class LonWorksControllerContext extends Controller {
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.BACNET_IP_CONTROLLER_MODULE_NAME;
 
 
-
+    private long id;
+    private long moduleId;
     private long agentId;
     @JsonInclude
     private String subnetNode;
@@ -33,7 +34,25 @@ public class LonWorksControllerContext extends Controller {
         setControllerType(FacilioControllerType.LON_WORKS.asInt());
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
 
+    @Override
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @Override
+    public long getModuleId() {
+        return moduleId;
+    }
+
+    @Override
+    public void setModuleId(long moduleId) {
+        this.moduleId = moduleId;
+    }
 
     @Override
     public long getAgentId() {

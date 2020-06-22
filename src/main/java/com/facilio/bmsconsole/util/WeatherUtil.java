@@ -386,7 +386,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 					reading.setId(ttimeReading.getId());
 				}
 				else {
-					reading.setId(-1L);
+					reading.setId(-1);
 				}
 			}
 		}

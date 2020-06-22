@@ -91,10 +91,10 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 				.fields(eventFields);
 		
 		BaseAlarmContext baseAlarmNull = new BaseAlarmContext();
-		baseAlarmNull.setId(-99L);
+		baseAlarmNull.setId(-99);
 		
 		AlarmOccurrenceContext alarmOccurrenceContextNull = new AlarmOccurrenceContext();
-		alarmOccurrenceContextNull.setId(-99L);
+		alarmOccurrenceContextNull.setId(-99);
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("baseAlarm", FieldUtil.getAsProperties(baseAlarmNull));
