@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -60,6 +61,7 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 				List<DateRange> dataMissingRanges = new ArrayList<>();
 				
 				DateRange currentDateRange = null;
+				long toalDataMissingTime = 0;
 				for(EnergyStarMeterDataContext data : dataList) {
 					
 					if(currentDateRange != null) {
@@ -75,6 +77,8 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 							dataMissingRange.setStartTime(lastEndtime);
 							dataMissingRange.setEndTime(data.getfromDate()-1);
 							
+							toalDataMissingTime += dataMissingRange.getEndTime() - dataMissingRange.getStartTime();
+							
 							dataMissingRanges.add(dataMissingRange);
 						}
 					}
@@ -86,6 +90,8 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 					
 					dataAvailableRanges.add(currentDateRange);
 				}
+				
+				fillMissingDateRangeString(meter, toalDataMissingTime);
 				
 				meter.setEnergyStarDataAvailableRanges(dataAvailableRanges);
 				meter.setEnergyStarDataMissingRanges(dataMissingRanges);
@@ -124,6 +130,44 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 			
 		}
 		return false;
+	}
+	
+	private void fillMissingDateRangeString(EnergyStarMeterContext meter,long toalDataMissingTime) {
+		if(toalDataMissingTime > 0) {
+			Double month = Math.ceil(toalDataMissingTime/2628000000l);
+			month = month == 0 ? 1 : month; 
+			if(month > 11) {
+				Double year = month/12;
+				month =  month%12;
+				
+				String res = "";
+				
+				if(year.intValue() == 1) {
+					res += year.intValue() +" Year";
+				}
+				else {
+					res += year.intValue() +" Years";
+				}
+				
+				if(month > 0 ) {
+					if(month.intValue() == 1) {
+						res += " "+month.intValue() +" Month";
+					}
+					else {
+						res += " "+month.intValue() +" Months";
+					}
+				}
+				meter.setMissingRangeString(res);
+			}
+			else {
+				if(month.intValue() == 1) {
+					meter.setMissingRangeString(month.intValue() +" Month");
+				}
+				else {
+					meter.setMissingRangeString(month.intValue() +" Months");
+				}
+			}
+		}
 	}
 
 	private DateRange getEnergyMeterStartAndEndTime(long meterId) throws Exception {

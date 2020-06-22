@@ -78,6 +78,14 @@ public class EnergyStarMeterContext extends ModuleBaseWithCustomFields {
 		this.energyStarMeterId = energyStarMeterId;
 	}
 	
+	String missingRangeString;
+	public String getMissingRangeString() {
+		return missingRangeString;
+	}
+
+	public void setMissingRangeString(String missingRangeString) {
+		this.missingRangeString = missingRangeString;
+	}
 	List<DateRange> energyStarDataAvailableRanges;
 	List<DateRange> energyStarDataMissingRanges;
 	DateRange dataAvailableInFacilio;
