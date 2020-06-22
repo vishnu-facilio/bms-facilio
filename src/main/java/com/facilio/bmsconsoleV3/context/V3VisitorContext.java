@@ -5,10 +5,11 @@ import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
 import java.io.File;
 
-public class V3VisitorContext extends ModuleBaseWithCustomFields {
+public class V3VisitorContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private VisitorTypeContext visitorType;

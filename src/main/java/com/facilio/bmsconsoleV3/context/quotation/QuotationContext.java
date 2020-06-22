@@ -6,11 +6,12 @@ import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
 import java.io.File;
 import java.util.List;
 
-public class QuotationContext extends ModuleBaseWithCustomFields {
+public class QuotationContext extends V3Context {
 
     /**
      *

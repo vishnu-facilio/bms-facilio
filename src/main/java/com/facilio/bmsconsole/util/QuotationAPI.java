@@ -15,10 +15,10 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -401,7 +401,7 @@ public class QuotationAPI {
         return records;
     }
 
-    public static boolean lookupValueIsNotEmpty(V3Context context) {
+    public static boolean lookupValueIsNotEmpty(ModuleBaseWithCustomFields context) {
         return context != null && context.getId() > 0;
     }
 }

@@ -39,7 +39,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				return false;
 			}
 			for (ModuleBaseWithCustomFields wo : wos) {
-				if (wo.getApprovalFlowId() != null && wo.getApprovalFlowId() > 0) {
+				if (wo.getApprovalFlowId() > -1 && wo.getApprovalFlowId() > 0) {
 					throw new IllegalArgumentException("Cannot change state as it is in approval");
 				}
 

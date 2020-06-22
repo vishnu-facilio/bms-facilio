@@ -41,9 +41,9 @@ public class StateFlowListCommand extends FacilioCommand {
                     }
 
                     long stateFlowId = -1;
-                    if (record.getApprovalFlowId() != null) {
+                    if (record.getApprovalFlowId() > -1) {
                         stateFlowId = record.getApprovalFlowId();
-                    } else if (record.getStateFlowId() != null) {
+                    } else if (record.getStateFlowId() > -1) {
                         stateFlowId = record.getStateFlowId();
                     }
 
