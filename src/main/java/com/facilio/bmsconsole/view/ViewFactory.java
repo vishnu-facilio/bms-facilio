@@ -3603,7 +3603,6 @@ public class ViewFactory {
 			myVendorView.setDisplayName("My Vendors");
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
-			myVendorView.setHidden(true);
 			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 			return myVendorView;
@@ -3645,7 +3644,6 @@ public class ViewFactory {
 			myVendorView.setDisplayName("My Non-Insured Vendors");
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
-			myVendorView.setHidden(true);
 
 			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3674,7 +3672,6 @@ public class ViewFactory {
 			myVendorView.setDisplayName("My Requested Vendors");
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
-			myVendorView.setHidden(true);
 			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 			return myVendorView;
@@ -3700,7 +3697,6 @@ public class ViewFactory {
 		myVendorView.setDisplayName("My Registered Vendors");
 		myVendorView.setCriteria(criteria);
 		myVendorView.setSortFields(sortFields);
-		myVendorView.setHidden(true);
 		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 
@@ -3730,7 +3726,6 @@ public class ViewFactory {
 		myVendorView.setDisplayName("My Approved Vendors");
 		myVendorView.setCriteria(criteria);
 		myVendorView.setSortFields(sortFields);
-		myVendorView.setHidden(true);
 
 		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3787,7 +3782,6 @@ public class ViewFactory {
 		myVendorView.setDisplayName("My All Vendors");
 		myVendorView.setCriteria(criteria);
 		myVendorView.setSortFields(sortFields);
-		myVendorView.setHidden(true);
 
 		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3812,7 +3806,6 @@ public class ViewFactory {
 			myVisitorInvitesView.setDisplayName("My Active Invites");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
-			myVisitorInvitesView.setHidden(true);
 
 			myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3841,7 +3834,6 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("My Current Invites");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
-		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3869,7 +3861,6 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("Vendor Current Invites");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
-		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
 
@@ -3897,7 +3888,6 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("My Active Invites");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
-		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3921,7 +3911,6 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("My Active Invites");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
-		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3944,7 +3933,6 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("Vendor Expired Invites");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
-		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
 
@@ -3971,7 +3959,6 @@ public class ViewFactory {
 			myVisitorInvitesView.setDisplayName("My Visitor Invites");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
-			myVisitorInvitesView.setHidden(true);
 
 			myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -3998,7 +3985,6 @@ public class ViewFactory {
 			myWorkPermitsView.setDisplayName("My Work Permits");
 			myWorkPermitsView.setCriteria(criteria);
 			myWorkPermitsView.setSortFields(sortFields);
-			myWorkPermitsView.setHidden(true);
 			myWorkPermitsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 
@@ -6068,7 +6054,6 @@ public class ViewFactory {
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(visitorLogging);
-		allView.setHidden(true);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
@@ -6084,7 +6069,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorVisits");
 		allView.setDisplayName("All Vendor Visits");
-		allView.setHidden(true);
 		allView.setCriteria(criteria);
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
@@ -6109,7 +6093,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Invites");
-		allView.setHidden(true);
 		allView.setCriteria(criteria);
 		
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
@@ -6146,7 +6129,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorActiveVisitors");
 		allView.setDisplayName("All Visits");
-		allView.setHidden(true);
 		allView.setCriteria(criteria);
 		allView.setSortFields(sortFields);
 
@@ -6191,7 +6173,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Insurance");
-		allView.setHidden(true);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
 
@@ -6221,7 +6202,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorActive");
 		allView.setDisplayName("Active");
-		allView.setHidden(true);
 		allView.setCriteria(criteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
@@ -6236,7 +6216,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpired");
 		allView.setDisplayName("Expired");
-		allView.setHidden(true);
 		allView.setCriteria(criteria);
 		allView.setSortFields(Arrays.asList(new SortField(validTill, false)));
 
@@ -6312,7 +6291,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("myActive");
 		allView.setDisplayName("Active Work Permit");
-		allView.setHidden(true);
 		allView.setCriteria(activeCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
@@ -6327,7 +6305,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("myExpired");
 		allView.setDisplayName("Expired Work Permit");
-		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -6342,7 +6319,6 @@ public class ViewFactory {
 		requestedView.setName("myRequested");
 		requestedView.setDisplayName("Requested Work Permits");
 		requestedView.setCriteria(requestedWorkPermitCriteria);
-		requestedView.setHidden(true);
 
 		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
@@ -6369,7 +6345,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpiredWorkpermits");
 		allView.setDisplayName("Expired Work Permit");
-		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
@@ -6384,7 +6359,6 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Work Permit");
-		allView.setHidden(true);
 		allView.setCriteria(activeCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
@@ -6621,7 +6595,6 @@ public class ViewFactory {
 		view.setName("myPendingVisits");
 		view.setDisplayName("My Pending Visits");
 		view.setCriteria(criteria);
-		view.setHidden(true);
 
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
