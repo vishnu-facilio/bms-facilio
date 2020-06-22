@@ -24,9 +24,12 @@ import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedLis
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 public class NewEventsToAlarmsConversionCommand extends FacilioCommand implements PostTransactionCommand {
+
+	private static final Logger LOGGER = Logger.getLogger(NewEventsToAlarmsConversionCommand.class.getName());
 
 	public interface PostTransactionEventListener {
 		List<BaseEventContext> getPostTransactionEvents() throws Exception;
@@ -159,6 +162,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
 					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+						LOGGER.debug(alarmOccurrence.getId() + " : " + pointedList.getLastRecord().getId());
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
 						alarm = NewAlarmAPI.getAlarm(alarm.getId());
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
