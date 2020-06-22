@@ -1,5 +1,6 @@
 package com.facilio.unitconversion;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,14 +60,14 @@ public class UnitsUtil {
 		if(!from.isSiUnit()) {
 			String toSiUnitFormula = from.getToSiUnit();
 			toSiUnitFormula = toSiUnitFormula.replaceAll(FORMULA_THIS_PLACE_HOLDER_STRING, value.toString());
-			Expression expression = new Expression(toSiUnitFormula);
+			Expression expression = new Expression(toSiUnitFormula).setPrecision(8);
 			value = expression.eval();
 		}
 		
 		if(!to.isSiUnit()) {
 			String fromSiUnitFormula = to.getFromSiUnit();
 			fromSiUnitFormula = fromSiUnitFormula.replaceAll(FORMULA_SI_PLACE_HOLDER_STRING, value.toString());
-			Expression expression = new Expression(fromSiUnitFormula);
+			Expression expression = new Expression(fromSiUnitFormula).setPrecision(8);
 			value = expression.eval();
 		}
 		return Double.valueOf(value.toString());
