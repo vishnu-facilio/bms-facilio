@@ -162,8 +162,6 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			if(objects[1] instanceof Criteria) {
 				Criteria criteria = (Criteria)objects[1];
 				
-				criteria.addAndCondition(parentIdCondition);
-				
 				dbParamContext = new DBParamContext();
 
 				dbParamContext.setCriteria(criteria);
@@ -171,9 +169,9 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			else if(objects[1] instanceof DBParamContext) {
 				
 				dbParamContext =(DBParamContext) objects[1];
-				
-				dbParamContext.getCriteria().addAndCondition(parentIdCondition);
 			}
+			
+			dbParamContext.getCriteria().addAndCondition(parentIdCondition);
 			
 			dbParamContext.setFieldName(field.getName());
 			
