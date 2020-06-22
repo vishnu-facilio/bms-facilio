@@ -22,6 +22,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -144,6 +145,9 @@ public class FilterUtil {
 				.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(selectField, range.toString(), DateOperators.BETWEEN))
 				.andCondition(CriteriaAPI.getCondition(conditionField, String.valueOf(value), operator));
+		if(conditionField instanceof BooleanField && operatorId == 15) {
+			builder.andCondition(CriteriaAPI.getCondition(conditionField, CommonOperators.IS_NOT_EMPTY));
+		}
 		return builder;
 		
 	}
@@ -192,7 +196,10 @@ public class FilterUtil {
 				dateField.setField(module, timeField);
 				dataPoint.setDateField(dateField);
 				
-				String name = conditionField.getDisplayName() +" "+operator.getOperator()+" "+ value;
+				String name = conditionField.getDisplayName() +" "+operator.getOperator();
+				if(!operator.getOperator().equalsIgnoreCase("is not empty") && !operator.getOperator().equalsIgnoreCase("is empty")) {
+					name = name +" "+ value;
+				}
 				dataPoint.setName(name);
 				
 				Map<String, String> aliases = new HashMap<>();

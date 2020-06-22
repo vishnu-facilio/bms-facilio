@@ -31,11 +31,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -410,7 +413,7 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addCardType(CardType.DEPRECIATION_COST_TREND);
-		addChartParams(cardWidget, "calculatedDate", "currentPrice", criteria);
+		addChartParams(cardWidget, "line", DateAggregateOperator.MONTHANDYEAR, "calculatedDate", NumberAggregateOperator.SUM, "currentPrice", null , DateOperators.CURRENT_YEAR, null, criteria);
 		section.addWidget(cardWidget);
 	}
 	

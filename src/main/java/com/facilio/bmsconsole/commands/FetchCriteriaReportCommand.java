@@ -177,8 +177,17 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		
 		List<FacilioField> selectFields =  new ArrayList<>();
+		String conditionString = null;
+		if (operator.getOperator().equals("is empty")) {
+			conditionString = conditionField.getCompleteColumnName() +" IS NULL";
+		}
+		else if (operator.getOperator().equals("is not empty")) {
+			conditionString = conditionField.getCompleteColumnName() +" IS NOT NULL";
+		} else {
+			conditionString = conditionField.getCompleteColumnName()+" "+operator.getOperator()+" "+value;
+		}
 		
-		ReportFacilioField yField = FilterUtil.getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "CASE WHEN "+conditionField.getCompleteColumnName()+" "+operator.getOperator()+" "+value+" THEN '1' ELSE '0' END", FieldType.ENUM);
+		ReportFacilioField yField = FilterUtil.getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "CASE WHEN "+ conditionString +" THEN '1' ELSE '0' END", FieldType.ENUM);
 		selectFields.add(timeField);
 		selectFields.add(yField);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
