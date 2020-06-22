@@ -1,7 +1,5 @@
 package com.facilio.energystar.command;
 
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
@@ -17,8 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-
-import net.bytebuddy.implementation.bytecode.Throw;
+import org.apache.commons.chain.Context;
 
 public class AddEnergyStarSyncJobCommand extends FacilioCommand {
 
