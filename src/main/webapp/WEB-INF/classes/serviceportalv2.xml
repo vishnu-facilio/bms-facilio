@@ -707,7 +707,7 @@
 			<param name="workOrderId">{1}</param>
 		</action>
 	</package>
-	<package name="approvalTransition" extends="newServicePortalApiV2" namespace="/api/service/v2/approval">
+	<package name="serviceApprovalTransition" extends="newServicePortalApiV2" namespace="/api/service/v2/approval">
 		<action name="availableTransitions"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" />
 		<action name="changeTransition"
