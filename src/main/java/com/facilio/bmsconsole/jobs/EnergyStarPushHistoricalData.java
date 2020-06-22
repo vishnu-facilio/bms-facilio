@@ -10,9 +10,11 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,16 +33,18 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 	
 	private static final Logger LOGGER = LogManager.getLogger(EnergyStarPushHistoricalData.class.getName());
 	@Override
-	public void execute(JobContext jc) {
+	public void execute(JobContext jc) throws Exception {
+		
+		HistoricalLoggerContext logger = null;
 		try {
 			
-			JSONObject props= BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
+			logger = HistoricalLoggerUtil.getHistoricalLoggerById(jc.getJobId());
 			
-			List<Map<String, Object>> meterProps = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(),null,CriteriaAPI.getIdCondition(jc.getJobId(), ModuleFactory.getEnergyStarMeterModule()));
+			List<Map<String, Object>> meterProps = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarMeterModule(), FieldFactory.getEnergyStarMeterFields(),null,CriteriaAPI.getIdCondition(logger.getParentId(), ModuleFactory.getEnergyStarMeterModule()));
 			EnergyStarMeterContext meter = FieldUtil.getAsBeanFromMap(meterProps.get(0), EnergyStarMeterContext.class);
 			
-			long startTime = (long) props.get(FacilioConstants.ContextNames.START_TIME);
-			long endTime = (long) props.get(FacilioConstants.ContextNames.END_TIME);
+			long startTime = logger.getStartTime();
+			long endTime = logger.getEndTime();
 			
 			FacilioChain chain = TransactionChainFactory.getESPushMeterDataChain();
 			
@@ -53,10 +57,18 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			context.put(FacilioConstants.ContextNames.INTERVAL, intervals);
 			
 			chain.execute();
+			
+			logger.setStatus(HistoricalLoggerContext.Status.RESOLVED.getIntVal());
+			
+			HistoricalLoggerUtil.updateHistoricalLogger(logger);
 		}
 		catch(Exception e) {
 			LOGGER.error("Energy Star Push data Failed", e);
 			CommonCommandUtil.emailException(AssetActionJob.class.getName(), "Energy Star Push data Failed -- "+AccountUtil.getCurrentOrg().getId(), e);
+			
+			logger.setStatus(HistoricalLoggerContext.Status.FAILED.getIntVal());
+			
+			HistoricalLoggerUtil.updateHistoricalLogger(logger);
 		}
 	}
 

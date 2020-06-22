@@ -65,6 +65,8 @@ public class EnergyStarUtil {
 	
 	public static final String ENERGY_STAR_METER_ID = "energyStarMeterID";
 	
+	public static final String ENERGY_STAR_PUSH_METER_DATA = "energyStarPushMeterData";
+	
 	public static final String ENERGY_STAR_PROPERTY_ID = "energyStarPropertyID";
 	
 	public static final String ENERGY_STAR_METER_DATA_MODULE_NAME = "energyStarMeterData";

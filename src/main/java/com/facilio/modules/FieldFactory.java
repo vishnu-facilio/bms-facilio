@@ -8263,6 +8263,8 @@ public class FieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("shareKey", "SHARE_KEY", module, FieldType.STRING));
         fields.add(getField("shareStatus", "SHARE_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("syncStatus", "SYNC_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("lastSyncedTime", "LAST_SYNC_TIME", module, FieldType.NUMBER));
 
         return fields;
     }

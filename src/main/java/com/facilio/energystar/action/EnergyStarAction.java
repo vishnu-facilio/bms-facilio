@@ -2,6 +2,8 @@ package com.facilio.energystar.action;
 
 import java.util.List;
 
+import org.json.simple.JSONArray;
+
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -30,6 +32,14 @@ public class EnergyStarAction extends FacilioAction {
 	String fieldName;
 	DateRange dateRange;
 	
+	JSONArray pushMeterData;
+	
+	public JSONArray getPushMeterData() {
+		return pushMeterData;
+	}
+	public void setPushMeterData(JSONArray pushMeterData) {
+		this.pushMeterData = pushMeterData;
+	}
 	public DateRange getDateRange() {
 		return dateRange;
 	}
@@ -226,6 +236,19 @@ public class EnergyStarAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String bulkPushHistoricalData() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addBulkPushESHistoricalDataJobChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(EnergyStarUtil.ENERGY_STAR_PUSH_METER_DATA, pushMeterData);
+		
+		chain.execute();
+		
+		return SUCCESS;
+	}
+	
 	public String fetchHistoricalData() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.addFetchESHistoricalDataJobChain();
@@ -280,6 +303,19 @@ public class EnergyStarAction extends FacilioAction {
 		chain.execute();
 		
 		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String fetchCustomer() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.fetchEnergyStarCustomerChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		chain.execute();
+		
+		setResult(EnergyStarUtil.ENERGY_STAR_CUSTOMER_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_CUSTOMER_CONTEXT));
 		
 		return SUCCESS;
 	}

@@ -121,6 +121,7 @@ public class HistoricalLoggerContext {
 			ENPI(2),
 			FORMULA_FIELD(3),
 			ENERGY_STAR_SYNC(4),
+			ENERGY_STAR_PUSH_HISTORICAL_DATA(5),
 			;
 	
 			int intVal;

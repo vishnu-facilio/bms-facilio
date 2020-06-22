@@ -3,8 +3,11 @@ package com.facilio.energystar.command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.util.EnergyStarUtil;
 
@@ -17,13 +20,18 @@ public class EnergyStarHistoricalPushDataAddJobCommand extends FacilioCommand {
 		long startTime = (long)context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long)context.get(FacilioConstants.ContextNames.END_TIME);
 		
-		JSONObject obj = new JSONObject();
+		HistoricalLoggerContext syncLogger = new HistoricalLoggerContext();
 		
-		obj.put(FacilioConstants.ContextNames.START_TIME, startTime);
-		obj.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		syncLogger.setOrgId(AccountUtil.getCurrentOrg().getId());
+		syncLogger.setStartTime(startTime);
+		syncLogger.setEndTime(endTime);
+		syncLogger.setType(HistoricalLoggerContext.Type.ENERGY_STAR_PUSH_HISTORICAL_DATA.getIntVal());
+		syncLogger.setStatus(HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		syncLogger.setParentId(meterId);
 		
-		BmsJobUtil.deleteJobWithProps(meterId, "EnergyStarPushHistoricalData");
-		BmsJobUtil.scheduleOneTimeJobWithProps(meterId, "EnergyStarPushHistoricalData", 30, "history", obj);
+		HistoricalLoggerUtil.addHistoricalLogger(syncLogger);
+		
+		BmsJobUtil.scheduleOneTimeJobWithProps(syncLogger.getId(), "EnergyStarPushHistoricalData", 5, "history", null);
 		
 		return false;
 	}

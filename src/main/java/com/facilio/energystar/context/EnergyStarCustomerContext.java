@@ -35,6 +35,29 @@ public class EnergyStarCustomerContext {
 	public void setShareStatus(int shareStatus) {
 		this.shareStatus = Share_Status.getAllAppTypes().get(shareStatus);
 	}
+	
+	long lastSyncedTime = -1;
+	
+	public long getLastSyncedTime() {
+		return lastSyncedTime;
+	}
+
+	public void setLastSyncedTime(long lastSyncedTime) {
+		this.lastSyncedTime = lastSyncedTime;
+	}
+
+	Sync_Status syncStatus;
+	
+	public int getSyncStatus() {
+		if(syncStatus != null) {
+			return syncStatus.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setSyncStatus(int syncStatus) {
+		this.syncStatus = Sync_Status.getAllAppTypes().get(syncStatus);
+	}
 
 	public String getShareKey() {
 		return shareKey;
@@ -214,6 +237,44 @@ public class EnergyStarCustomerContext {
 		}
 
 		public static Map<Integer, Share_Status> getAllAppTypes() {
+			return optionMap;
+		}
+	}
+	
+	public enum Sync_Status {
+		READY_TO_SYNC(1, "Ready to sync"),
+		SYNC_IN_PROGRESS(2, "Sync in progress"),
+		;
+
+		int intVal;
+		String name;
+		
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Sync_Status(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Sync_Status> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Sync_Status> initTypeMap() {
+			Map<Integer, Sync_Status> typeMap = new HashMap<>();
+
+			for (Sync_Status type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Sync_Status> getAllAppTypes() {
 			return optionMap;
 		}
 	}

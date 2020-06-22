@@ -11,6 +11,13 @@ import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.energystar.context.EnergyStarCustomerContext;
+import com.facilio.energystar.context.EnergyStarCustomerContext.Sync_Status;
+import com.facilio.energystar.util.EnergyStarUtil;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -37,6 +44,16 @@ public class EnergyStarSyncData extends FacilioJob {
 			logger.setStatus(HistoricalLoggerContext.Status.RESOLVED.getIntVal());
 			
 			HistoricalLoggerUtil.updateHistoricalLogger(logger);
+			
+			EnergyStarCustomerContext customer = EnergyStarUtil.getEnergyStarCustomer();
+			
+			customer.setSyncStatus(Sync_Status.READY_TO_SYNC.getIntVal());
+			
+			Criteria UpdateCriteria = new Criteria();
+			
+			UpdateCriteria.addAndCondition(CriteriaAPI.getIdCondition(customer.getId(), ModuleFactory.getEnergyStarCustomerModule()));
+			
+			EnergyStarUtil.updateEnergyStarRelModule(ModuleFactory.getEnergyStarCustomerModule(), FieldFactory.getEnergyStarCustomerFields(), customer,UpdateCriteria);
 			
 		}
 		catch(Exception e) {

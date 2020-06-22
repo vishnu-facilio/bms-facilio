@@ -6069,6 +6069,10 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchPropertyMetricsData" />
 		<action name="sync"
 			class="com.facilio.energystar.action.EnergyStarAction" method="sync" />
+		<action name="fetchCustomer"
+			class="com.facilio.energystar.action.EnergyStarAction" method="fetchCustomer" />
+		<action name="bulkPushHistoricalData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="bulkPushHistoricalData" />
 		<action name="fetchMissingData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMissingData" />
 		<action name="getMetricsList"

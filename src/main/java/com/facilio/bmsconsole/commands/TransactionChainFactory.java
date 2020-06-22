@@ -5386,6 +5386,7 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain addEnergyStarSyncJobChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new AddEnergyStarSyncJobCommand());
 		return c;
 	}
@@ -5439,6 +5440,12 @@ public class TransactionChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain addBulkPushESHistoricalDataJobChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new EnergyStarHistoricalBulkPushDataAddJobCommand());
+		return c;
+	}
+	
 	public static FacilioChain addFetchESHistoricalDataJobChain() {
 		FacilioChain c = getDefaultChain();
 //		c.addCommand(new ValidateForESPushHisoricalForConnectedCommand());
@@ -5481,6 +5488,12 @@ public class TransactionChainFactory {
 		c.addCommand(new GetEnergyStarCustomerCommand());
 		c.addCommand(new ConfirmESPropertyShareCommand());
 		c.addCommand(new ConfirmESMeterShareCommand());
+		return c;
+	}
+	
+	public static FacilioChain fetchEnergyStarCustomerChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
 		return c;
 	}
 
