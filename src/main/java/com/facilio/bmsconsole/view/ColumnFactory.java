@@ -279,10 +279,11 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("serialNumber", "ID"));
 		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("requester", "Requester"));
-		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("requester", "Requester"));
 		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("urgency", "Urgency"));
 		columns.add(new ViewField("createdTime", "Created Time"));
 		return columns;
 	}
