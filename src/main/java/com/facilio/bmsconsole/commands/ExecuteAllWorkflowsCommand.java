@@ -14,6 +14,8 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -79,11 +81,14 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			}
 			Boolean isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
-			if(AccountUtil.getCurrentOrg().getId() == 155l || AccountUtil.getCurrentOrg().getId() == 231l || AccountUtil.getCurrentOrg().getId() == 238l
-					|| AccountUtil.getCurrentOrg().getId() == 134l || AccountUtil.getCurrentOrg().getId() == 114l
- 					|| AccountUtil.getCurrentOrg().getId() == 169l || AccountUtil.getCurrentOrg().getId() == 232l) {
-				if(FacilioProperties.isProduction()) {
-					isParallelRuleExecution = true;
+			
+			if(FacilioProperties.isProduction()) {
+				Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
+				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
+					if (isParallelRuleExecutionProp != null && !isParallelRuleExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelRuleExecutionProp)) {
+						isParallelRuleExecution = Boolean.parseBoolean(isParallelRuleExecutionProp) || isParallelRuleExecution;
+					}
 				}
 			}
 			
