@@ -4,8 +4,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class V3ContactsContext extends ModuleBaseWithCustomFields {
+public class V3ContactsContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
 

@@ -3,8 +3,9 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class V3WorkorderHazardContext extends ModuleBaseWithCustomFields {
+public class V3WorkorderHazardContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private V3WorkOrderContext workorder;

@@ -15,7 +15,7 @@ public class V3InsuranceContext extends V3Context {
     private String companyName;
     private Long validFrom;
     private Long validTill;
-    private VendorContext vendor;
+    private V3VendorContext vendor;
     public String getCompanyName() {
         return companyName;
     }
@@ -34,10 +34,10 @@ public class V3InsuranceContext extends V3Context {
     public void setValidTill(Long validTill) {
         this.validTill = validTill;
     }
-    public VendorContext getVendor() {
+    public V3VendorContext getVendor() {
         return vendor;
     }
-    public void setVendor(VendorContext vendor) {
+    public void setVendor(V3VendorContext vendor) {
         this.vendor = vendor;
     }
 

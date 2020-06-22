@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxGroupContext;
 import com.facilio.bmsconsole.util.QuotationAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -50,7 +51,7 @@ public class InsertTaxGroupsCommand extends FacilioCommand {
                             taxGroups.add(taxGroup);
                         }
                     }
-                    RecordAPI.addRecord(false, taxGroups, taxGroupsModule, fields);
+                    V3RecordAPI.addRecord(false, taxGroups, taxGroupsModule, fields);
                 } else {
                     Long oldTaxId = (Long) context.get(FacilioConstants.ContextNames.OLD_TAX_ID);
                     if (oldTaxId != null && oldTaxId > 0) {

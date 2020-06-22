@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -52,17 +53,17 @@ public class AddTenantUserCommandV3 extends FacilioCommand {
 
                 if (eventType == EventType.CREATE) {
                     V3ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
-                    RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+                    V3RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
                 } else {
                     if (StringUtils.isNotEmpty(tenant.getPrimaryContactPhone()) && !spaceUpdate) {
                         V3ContactsContext existingcontactForPhone = V3ContactsAPI.getContactforPhone(tenant.getPrimaryContactPhone(), tenant.getId(), false);
                         if (existingcontactForPhone == null) {
                             existingcontactForPhone = addDefaultTenantPrimaryContact(tenant);
-                            RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+                            V3RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
                         } else {
                             existingcontactForPhone.setName(tenant.getPrimaryContactName());
                             existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
-                            RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+                            V3RecordAPI.updateRecord(existingcontactForPhone, module, fields);
                         }
                     }
                 }

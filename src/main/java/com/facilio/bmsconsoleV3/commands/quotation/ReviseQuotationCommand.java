@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -43,11 +44,11 @@ public class ReviseQuotationCommand extends FacilioCommand {
                     if(quotation.getId() <= 0){
                         throw new IllegalArgumentException("Parent record Id is needed for revising the quote");
                     }
-                    QuotationContext exitingQuotation = (QuotationContext) RecordAPI.getRecord(moduleName,quotation.getId());
+                    QuotationContext exitingQuotation = (QuotationContext) V3RecordAPI.getRecord(moduleName,quotation.getId(), QuotationContext.class);
                     if (sentStatus.getId() == exitingQuotation.getModuleState().getId()) {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
-                        RecordAPI.updateRecord(quotation, module, fields);
+                        V3RecordAPI.updateRecord(quotation, module, fields);
                         context.put(FacilioConstants.ContextNames.OLD_RECORD_ID, quotation.getId());
                         JSONObject info = new JSONObject();
                         info.put("quotationId", quotation.getId());

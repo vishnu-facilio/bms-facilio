@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -41,17 +42,17 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
 
                 if (eventType == EventType.CREATE) {
                     V3ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
-                    RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+                    V3RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
                 } else {
                     if (StringUtils.isNotEmpty(vendor.getPrimaryContactPhone())) {
                         V3ContactsContext existingcontactForPhone = V3ContactsAPI.getContactforPhone(vendor.getPrimaryContactPhone(), vendor.getId(), true);
                         if (existingcontactForPhone == null) {
                             existingcontactForPhone = addDefaultVendorPrimaryContact(vendor);
-                            RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+                            V3RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
                         } else {
                             existingcontactForPhone.setName(vendor.getPrimaryContactName());
                             existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
-                            RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+                            V3RecordAPI.updateRecord(existingcontactForPhone, module, fields);
                         }
                     }
                 }

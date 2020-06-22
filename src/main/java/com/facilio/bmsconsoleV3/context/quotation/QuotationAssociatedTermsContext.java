@@ -2,8 +2,9 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class QuotationAssociatedTermsContext extends ModuleBaseWithCustomFields {
+public class QuotationAssociatedTermsContext extends V3Context {
 
     /**
      *

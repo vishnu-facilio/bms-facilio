@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.util.InsuranceAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -26,7 +28,7 @@ public class AssociateVendorToInsuranceCommandV3 extends FacilioCommand {
                 if(ins.getAddedBy() != null && ins.getAddedBy().getId() > 0 && ins.getVendor() == null) {
                     long pplId = PeopleAPI.getPeopleIdForUser(ins.getAddedBy().getOuid());
                     if(pplId > 0) {
-                        VendorContactContext people = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
+                        V3VendorContactContext people = (V3VendorContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId, V3VendorContactContext.class);
                         if(people != null) {
                             ins.setVendor(people.getVendor());
                         }

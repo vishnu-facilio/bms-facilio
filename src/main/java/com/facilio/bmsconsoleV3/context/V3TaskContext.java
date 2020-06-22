@@ -10,6 +10,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
+import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class V3TaskContext extends ModuleBaseWithCustomFields {
+public class V3TaskContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private static Logger log = LogManager.getLogger(V3TaskContext.class.getName());

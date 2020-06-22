@@ -648,11 +648,11 @@ public class V3VisitorLoggingContext extends V3Context {
         this.passCode = passCode;
     }
 
-    private TenantContext tenant;
-    public TenantContext getTenant() {
+    private V3TenantContext tenant;
+    public V3TenantContext getTenant() {
         return tenant;
     }
-    public void setTenant(TenantContext tenant) {
+    public void setTenant(V3TenantContext tenant) {
         this.tenant = tenant;
     }
 

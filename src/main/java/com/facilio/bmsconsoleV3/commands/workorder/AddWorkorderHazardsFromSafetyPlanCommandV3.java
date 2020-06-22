@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.HazardsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderHazardContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -47,7 +48,7 @@ public class AddWorkorderHazardsFromSafetyPlanCommandV3 extends FacilioCommand {
                     FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_HAZARD);
                     List<FacilioField> fields = modBean.getAllFields(module.getName());
 
-                    RecordAPI.addRecord(false, woHazards, module, fields);
+                    V3RecordAPI.addRecord(false, woHazards, module, fields);
                 }
             }
         }

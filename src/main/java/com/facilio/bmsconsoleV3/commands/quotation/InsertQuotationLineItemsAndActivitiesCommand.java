@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -54,7 +55,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
                         lineItem.setQuotation(quotationContext);
                     }
-                    RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
+                    V3RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
                 }
 
                 Map<String, Object> bodyParams = Constants.getBodyParams(context);

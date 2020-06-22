@@ -7,7 +7,10 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsoleV3.context.V3ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -44,12 +47,12 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                     vL.setRequestedBy(AccountUtil.getCurrentUser());
                 }
                 //need to change this to tenant contact context once host is changed to people lookup
-                ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+                V3ContactsContext contact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
                 if(contact != null && contact.getTenant() != null) {
                     vL.setTenant(contact.getTenant());
                 }
                 if(vL.getTenant() == null && vL.getHost() != null) {
-                    ContactsContext host = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId());
+                    V3ContactsContext host = (V3ContactsContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId(), V3ContactsContext.class);
                     if (host != null) {
                         vL.setTenant(host.getTenant());
                     }
@@ -99,7 +102,7 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                 }
                 if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
                     if(!V3VisitorManagementAPI.checkForDuplicateVisitor(vL.getVisitor())) {
-                        RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
+                        V3RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
                     }
                     else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "A Visitor Already exists with this phone number");
@@ -111,7 +114,7 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                         vLVisitor.setPhone(vL.getVisitor().getPhone());
                     }
                     if(!VisitorManagementAPI.checkForDuplicateVisitor(vLVisitor)) {
-                        RecordAPI.updateRecord(vL.getVisitor(), module, fields);
+                        V3RecordAPI.updateRecord(vL.getVisitor(), module, fields);
                     }
                     else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "A Visitor Already exists with this phone number");

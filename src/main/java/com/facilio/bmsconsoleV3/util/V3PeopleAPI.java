@@ -69,7 +69,7 @@ public class V3PeopleAPI {
                 }
                 else if(primaryContactForParent.getEmail().equals(tc.getEmail())) {
                     tc.setId(primaryContactForParent.getId());
-                    RecordAPI.updateRecord(tc, module, fields);
+                    V3RecordAPI.updateRecord(tc, module, fields);
                     return;
                 }
                 else {
@@ -79,7 +79,7 @@ public class V3PeopleAPI {
             }
             else {
                 tc.setId(primaryContactForParent.getId());
-                RecordAPI.updateRecord(tc, module, fields);
+                V3RecordAPI.updateRecord(tc, module, fields);
                 return;
             }
         }
@@ -88,7 +88,7 @@ public class V3PeopleAPI {
                 addPeopleRecord(tc, module, fields, parentId);
                 return;
             }
-            RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+            V3RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
         }
 
     }
@@ -96,7 +96,7 @@ public class V3PeopleAPI {
     public static void updatePeopleRecord(V3PeopleContext ppl, FacilioModule module, List<FacilioField> fields) throws Exception {
         V3PeopleContext peopleExisting = getPeople(ppl.getEmail());
         if(peopleExisting == null) {
-            RecordAPI.updateRecord(ppl, module, fields);
+            V3RecordAPI.updateRecord(ppl, module, fields);
             return;
         }
         throw new IllegalArgumentException("People with the same email id already exists");
@@ -106,7 +106,7 @@ public class V3PeopleAPI {
     public static void addPeopleRecord(V3PeopleContext ppl, FacilioModule module, List<FacilioField> fields, long parentId) throws Exception {
         V3PeopleContext peopleExisting = getPeople(ppl.getEmail());
         if(peopleExisting == null) {
-            RecordAPI.addRecord(true, Collections.singletonList(ppl), module, fields);
+            V3RecordAPI.addRecord(true, Collections.singletonList(ppl), module, fields);
             unMarkPrimaryContact(ppl, parentId);
 
             return;
@@ -190,9 +190,9 @@ public class V3PeopleAPI {
         if(pplId <= 0) {
             throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
         }
-        V3TenantContactContext tc = (V3TenantContactContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId);
+        V3TenantContactContext tc = (V3TenantContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId, V3TenantContactContext.class);
         if (tc != null && tc.getTenant() != null && tc.getTenant().getId() > 0) {
-            return (V3TenantContext)RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, tc.getTenant().getId());
+            return (V3TenantContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, tc.getTenant().getId(), V3TenantContext.class);
         }
         return null;
     }

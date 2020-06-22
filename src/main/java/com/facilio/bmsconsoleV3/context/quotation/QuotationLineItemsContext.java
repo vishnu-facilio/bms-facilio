@@ -6,8 +6,9 @@ import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class QuotationLineItemsContext extends ModuleBaseWithCustomFields {
+public class QuotationLineItemsContext extends V3Context {
 
     /**
      *

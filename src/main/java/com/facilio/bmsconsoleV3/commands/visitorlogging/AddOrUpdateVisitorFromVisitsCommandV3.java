@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -44,14 +45,14 @@ public class AddOrUpdateVisitorFromVisitsCommandV3 extends FacilioCommand {
                         visitor.setPhone(vL.getVisitorPhone());
                         visitor.setName(vL.getVisitorName());
                         visitor.setIsReturningVisitor(false);
-                        RecordAPI.addRecord(true, Collections.singletonList(visitor) , module, fields);
+                        V3RecordAPI.addRecord(true, Collections.singletonList(visitor) , module, fields);
                     }
                     else {
                         visitor.setEmail(vL.getVisitorEmail());
                         visitor.setPhone(vL.getVisitorPhone());
                         visitor.setName(vL.getVisitorName());
                         visitor.setIsReturningVisitor(true);
-                        RecordAPI.updateRecord(visitor, module, fields);
+                        V3RecordAPI.updateRecord(visitor, module, fields);
                     }
                     vL.setVisitor(visitor);
                 }

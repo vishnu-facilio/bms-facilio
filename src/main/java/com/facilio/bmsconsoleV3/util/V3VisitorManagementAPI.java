@@ -1901,8 +1901,8 @@ public class V3VisitorManagementAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        RecordAPI.addRecord(true, children, module, fields);
-        RecordAPI.updateRecord(parentLog, module, fields);
+        V3RecordAPI.addRecord(true, children, module, fields);
+        V3RecordAPI.updateRecord(parentLog, module, fields);
         updateTrigger(trigger);
     }
 

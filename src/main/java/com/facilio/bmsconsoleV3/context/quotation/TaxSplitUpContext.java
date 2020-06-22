@@ -1,8 +1,9 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class TaxSplitUpContext extends ModuleBaseWithCustomFields {
+public class TaxSplitUpContext extends V3Context {
     /**
      *
      */

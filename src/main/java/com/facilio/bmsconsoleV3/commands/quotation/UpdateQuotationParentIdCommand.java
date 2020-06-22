@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -33,7 +34,7 @@ public class UpdateQuotationParentIdCommand extends FacilioCommand {
             for(QuotationContext quotation : list) {
                 if (quotation.getParentId() == null) {
                     quotation.setParentId(quotation.getLocalId());
-                    RecordAPI.updateRecord(quotation, module, Collections.singletonList(fieldsMap.get("parentId")));
+                    V3RecordAPI.updateRecord(quotation, module, Collections.singletonList(fieldsMap.get("parentId")));
                 }
             }
         }
