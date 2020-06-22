@@ -3,12 +3,11 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
-
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.io.File;
 
-public class V3InsuranceContext extends V3Context {
+public class V3InsuranceContext extends ModuleBaseWithCustomFields {
 
     private static final long serialVersionUID = 1L;
 

@@ -7,7 +7,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.v3.context.V3Context;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V3TicketContext extends V3Context {
+public class V3TicketContext extends ModuleBaseWithCustomFields {
 
     private static final long serialVersionUID = 1L;
 

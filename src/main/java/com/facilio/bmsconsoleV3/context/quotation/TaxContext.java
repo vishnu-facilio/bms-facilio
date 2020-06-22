@@ -1,11 +1,11 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.List;
 
-public class TaxContext extends V3Context {
+public class TaxContext extends ModuleBaseWithCustomFields {
 
     /**
      *

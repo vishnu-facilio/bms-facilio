@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.FacilioEnum;
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class AssetDepreciationContext extends V3Context {
+public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
 
     private String name;
     public String getName() {

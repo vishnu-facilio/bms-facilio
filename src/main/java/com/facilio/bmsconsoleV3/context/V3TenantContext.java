@@ -5,13 +5,12 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.v3.context.V3Context;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class V3TenantContext extends V3Context {
+public class V3TenantContext extends ModuleBaseWithCustomFields {
     private static final long serialVersionUID = 1L;
 
     private Long inTime;
