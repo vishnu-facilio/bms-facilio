@@ -1,22 +1,24 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SharingAPI {
 	public static void addSharing (SharingContext<? extends SingleSharingContext> sharing, long parentId, FacilioModule module) throws Exception {
@@ -65,7 +67,7 @@ public class SharingAPI {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", StringUtils.join(ids, ","), NumberOperators.EQUALS))
 														;
 		
 		return deleteBuilder.delete();
@@ -112,4 +114,25 @@ public class SharingAPI {
 		
 	}
 
+	public static SharingContext<SingleSharingContext> getDefaultAppTypeSharing(FacilioView defaultView){
+		SharingContext<SingleSharingContext> appSharing = new SharingContext<>();
+		if(CollectionUtils.isNotEmpty(defaultView.getViewSharing())) {
+			for(SingleSharingContext defaultSharing : defaultView.getViewSharing()){
+				if(defaultSharing.getTypeEnum() == SingleSharingContext.SharingType.APP){
+					appSharing.add(defaultSharing);
+				}
+			}
+		}
+		return appSharing;
+
+	}
+	public static SingleSharingContext getCurrentAppTypeSharingForCustomViews() {
+		if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getAppDomain() != null) {
+			SingleSharingContext appSharing = new SingleSharingContext();
+			appSharing.setType(SingleSharingContext.SharingType.APP);
+			appSharing.setAppType(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType());
+			return appSharing;
+		}
+		return null;
+	}
 }

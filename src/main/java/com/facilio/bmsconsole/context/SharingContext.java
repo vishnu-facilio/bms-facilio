@@ -92,6 +92,10 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					}
 				}
 				break;
+			case APP:
+				if (permission.getAppType() > 0 && permission.getAppType() == AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()) {
+					return true;
+				}
 		}
 		return false;
 	}
@@ -119,6 +123,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		List<Long> ouIds = new ArrayList<>();
 		List<Long> roleIds = new ArrayList<>();
 		List<Long> groupIds = new ArrayList<>();
+		List<Integer> appTypes = new ArrayList<>();
 		for (SingleSharingContext sharingContext : list) {
 			Map<String, Object> map = new HashMap<>();
 			permissionList.add(map);
@@ -152,6 +157,11 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 						ouIds.add(ouid);
 					}
 					break;
+
+				case APP:
+					map.put("permissionId", sharingContext.getAppType());
+					appTypes.add(sharingContext.getAppType());
+					break;
 			}
 		}
 
@@ -175,6 +185,9 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					break;
 				case ROLE:
 					map.put("value", roleMap.get(permissionId));
+					break;
+				case APP:
+					map.put("value", AppDomain.AppDomainType.valueOf(permissionId.intValue()));
 					break;
 			}
 		}

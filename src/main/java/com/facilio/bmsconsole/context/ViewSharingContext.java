@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ViewSharingContext extends ModuleBaseWithCustomFields {
@@ -103,5 +104,13 @@ public class ViewSharingContext extends ModuleBaseWithCustomFields {
 		public Map<Integer, SharingType> getAllTypes() {
 			return typeMap;
 		}
+	}
+
+	private AppDomain.AppDomainType appType;
+	public AppDomain.AppDomainType getAppType() {
+		return appType;
+	}
+	public void setAppType(AppDomain.AppDomainType appType) {
+		this.appType = appType;
 	}
 }

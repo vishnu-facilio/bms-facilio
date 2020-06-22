@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.view;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -23,6 +24,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
@@ -167,6 +169,10 @@ public class ViewFactory {
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
 		views.put("tenantWorkorder", getTenantWorkorders("tenantWorkorder").setOrder(order++));
+		views.put("tenantOpen", getTenantOpenWorkOrders().setOrder(order++));
+		views.put("tenantClosed", getTenantClosedWorkOrders().setOrder(order++));
+		views.put("tenantAll", getTenantAllWorkOrders().setOrder(order++));
+
 		views.put("pendingapproval", getRequestedStateApproval("pendingapproval", true).setOrder(order++));
 		views.put("myapproval", getMyRequestWorkorders("myapproval").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
@@ -285,13 +291,13 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
 
-		views.put("myVendors", getMyVendors().setOrder(order++));
-		views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
+		//views.put("myVendors", getMyVendors().setOrder(order++));
+		//views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
 		//portal vendor views
 		views.put("myRequestedVendors", getMyRequestedVendors().setOrder(order++));
-		views.put("myRegisteredVendors", getMyInsuredVendors().setOrder(order++));
-		views.put("myApprovedVendors", getMyApprovedVendors().setOrder(order++));
-		views.put("myInactiveVendors", getMyInactiveVendors().setOrder(order++));
+	//	views.put("myRegisteredVendors", getMyInsuredVendors().setOrder(order++));
+	//	views.put("myApprovedVendors", getMyApprovedVendors().setOrder(order++));
+	//	views.put("myInactiveVendors", getMyInactiveVendors().setOrder(order++));
 		views.put("myAll", getMyAllVendors().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
@@ -575,23 +581,24 @@ public class ViewFactory {
 		views.put("pending", getPendingVisitsView().setOrder(order++));
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
+		views.put("tenant-all", getTenantPortalAllVisitorLogsView().setOrder(order++));
+
 
 		// views for vendor portal
 		views.put("vendorActiveVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++)); // 1
-		views.put("vendorVisits", getAllVendorVisitsView().setOrder(order++)); // 2
-		views.put("vendorCurrentVisits", getVendorCurrentVisitsView().setOrder(order++)); // 3
+	//	views.put("vendorVisits", getAllVendorVisitsView().setOrder(order++)); // 2
+		//views.put("vendorCurrentVisits", getVendorCurrentVisitsView().setOrder(order++)); // 3
 		views.put("vendorExpired", getVendorExpiredVisitorInvites().setOrder(order++)); // 4
 
 
 		// views for tenant portal
 		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++)); // 1
-		views.put("myCurrent", getMyCurrentVisitorInvites().setOrder(order++)); // 2 to be handled
+		//views.put("myCurrent", getMyCurrentVisitorInvites().setOrder(order++)); // 2 to be handled
 		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
 
-		// not used
-		views.put("vendorVisitors", getVendorAllInvitesView().setOrder(order++));
+		//views.put("vendorVisitors", getVendorAllInvitesView().setOrder(order++));
 		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++));
-		views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
+		//views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
 		views.put("myPendingVisits", getMyPendingVisitsView().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -607,7 +614,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInsuranceView().setOrder(order++));
-		views.put("vendor", getVendorInsuranceView().setOrder(order++));
+		//views.put("vendor", getVendorInsuranceView().setOrder(order++));
 		views.put("vendorActive", getVendorActiveInsuranceView().setOrder(order++));
 		views.put("vendorExpired", getVendorExpiredInsuranceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INSURANCE, views);
@@ -1003,6 +1010,7 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Sites");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1024,6 +1032,7 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1044,8 +1053,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Tenant Contacts");
 		allView.setModuleName(tenantContactModule.getName());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
-		
-		
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -1062,6 +1071,10 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		allView.setHidden(true);
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 		return allView;
 	}
@@ -1077,7 +1090,7 @@ public class ViewFactory {
 		allView.setDisplayName("All Vendor Contacts");
 		allView.setModuleName(vendorContactModule.getName());
 		allView.setSortFields(sortFields);
-
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1095,6 +1108,7 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1110,7 +1124,7 @@ public class ViewFactory {
 		allView.setDisplayName("All Client Contacts");
 		allView.setModuleName(clientContactModule.getName());
 		allView.setSortFields(sortFields);
-
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1129,6 +1143,7 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -1160,8 +1175,7 @@ public class ViewFactory {
 		allView.setDisplayName("People");
 		allView.setModuleName(peopleModule.getName());
 		allView.setSortFields(sortFields);
-
-
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		return allView;
 	}
 
@@ -1192,6 +1206,7 @@ public class ViewFactory {
 		eventsView.setName("Created Time");
 		eventsView.setDisplayName("Event Time");
 		eventsView.setCriteria(criteria);
+		eventsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return eventsView;
 	}
@@ -1216,6 +1231,7 @@ public class ViewFactory {
 		eventsView.setName(dateOperator.getOperator());
 		eventsView.setDisplayName(dateOperator.getOperator());
 		eventsView.setCriteria(criteria);
+		eventsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return eventsView;
 	}
@@ -1362,6 +1378,7 @@ public class ViewFactory {
 		localId.setModule(ModuleFactory.getAssetsModule());
 
 		assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		assetView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return assetView;
 	}
@@ -1379,6 +1396,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -1399,6 +1418,8 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
 		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -1418,6 +1439,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Assets");
 		allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -1432,6 +1455,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Tenants");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -1466,6 +1491,8 @@ public class ViewFactory {
 		activeTenantsView.setDisplayName("Residing Tenants");
 		activeTenantsView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		activeTenantsView.setCriteria(criteria);
+		activeTenantsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		
 		return activeTenantsView;
 	}
@@ -1497,6 +1524,7 @@ public class ViewFactory {
 		localId.setModule(ModuleFactory.getAssetsModule());
 
 		assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		assetView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return assetView;
 	}
@@ -1680,6 +1708,7 @@ public class ViewFactory {
 		unassignedWOView.setDisplayName("Unassigned");
 		unassignedWOView.setCriteria(unassignedWOCriteria);
 		unassignedWOView.setSortFields(sortFields);
+		unassignedWOView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return unassignedWOView;
 	}
@@ -1730,6 +1759,8 @@ public class ViewFactory {
 		myRequestsView.setDisplayName("My Work Requests");
 		myRequestsView.setCriteria(criteria);
 		myRequestsView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		myRequestsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return myRequestsView;
 	}
 
@@ -1765,6 +1796,7 @@ public class ViewFactory {
 		allRequestsView.setDisplayName("Work Requests");
 		allRequestsView.setCriteria(criteria);
 		allRequestsView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allRequestsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allRequestsView;
 	}
@@ -1784,6 +1816,8 @@ public class ViewFactory {
 		allRequestsView.setDisplayName("Rejected Work Requests");
 		allRequestsView.setCriteria(criteria);
 		allRequestsView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allRequestsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allRequestsView;
 	}
 
@@ -1863,6 +1897,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		preOpenTicketsView.setSortFields(sortFields);
+		preOpenTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return preOpenTicketsView;
 	}
@@ -1892,6 +1928,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		preOpenTicketsView.setSortFields(sortFields);
+		preOpenTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return preOpenTicketsView;
 	}
@@ -1915,31 +1953,21 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return openTicketsView;
 	}
 
-	private static FacilioView getRejectedApproval() {
+	private static FacilioView getTenantOpenWorkOrders() {
+		// All Open Tickets
 
-		Criteria criteria = getApprovalStateCriteria(ApprovalState.REJECTED);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getOpenStatusCondition());
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
-
-		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("rejected");
-		rejectedApproval.setDisplayName("Rejected");
-		rejectedApproval.setCriteria(criteria);
-		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		return rejectedApproval;
-	}
-
-	private static FacilioView getApprovedApproval() {
-
-		Criteria criteria = getApprovalStateCriteria(ApprovalState.APPROVED);
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("tenantOpen");
+		openTicketsView.setDisplayName("Open");
+		openTicketsView.setCriteria(criteria);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1947,17 +1975,21 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
-		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("approved");
-		rejectedApproval.setDisplayName("Approved");
-		rejectedApproval.setCriteria(criteria);
-		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		return rejectedApproval;
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		return openTicketsView;
 	}
 
-	private static FacilioView getRequestedApproval() {
+	private static FacilioView getTenantClosedWorkOrders() {
 
-		Criteria criteria = getApprovalStateCriteria(ApprovalState.REQUESTED);
+
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("tenantClosed");
+		openTicketsView.setDisplayName("Closed");
+		openTicketsView.setCriteria(getClosedTicketsCriteria());
+
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1965,14 +1997,34 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
-		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("requested");
-		rejectedApproval.setDisplayName("Pending Approval");
-		rejectedApproval.setCriteria(criteria);
-		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		return rejectedApproval;
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		return openTicketsView;
 	}
-	
+
+	private static FacilioView getTenantAllWorkOrders() {
+
+
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("tenantAll");
+		openTicketsView.setDisplayName("All");
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		return openTicketsView;
+	}
+
+
 	public static FacilioView getRequestedStateApproval(String viewName, boolean isHidden) {
 		
 		FacilioModule module = ModuleFactory.getTicketsModule();
@@ -2015,45 +2067,9 @@ public class ViewFactory {
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setHidden(isHidden);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		rejectedApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return rejectedApproval;
-	}
-
-	private static FacilioView getAllApproval() {
-
-		Criteria criteria = getAllApprovalStateCriteria();
-
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
-
-		FacilioView rejectedApproval = new FacilioView();
-		rejectedApproval.setName("all");
-		rejectedApproval.setDisplayName("All Approval");
-		rejectedApproval.setCriteria(criteria);
-		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		return rejectedApproval;
-	}
-
-	public static Criteria getApprovalStateCriteria(ApprovalState status) {
-
-		FacilioField field = new FacilioField();
-		field.setName("approvalState");
-		field.setColumnName("APPROVAL_STATE");
-		field.setDataType(FieldType.NUMBER);
-		FacilioModule approvalStateModule = ModuleFactory.getWorkOrdersModule();
-		field.setModule(approvalStateModule);
-
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(String.valueOf(status.getValue()));
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(condition);
-
-		return criteria;
 	}
 
 	public static Criteria getAllApprovalStateCriteria() {
@@ -2094,6 +2110,10 @@ public class ViewFactory {
 		openTicketsView.setDisplayName("Closed Workorders");
 		openTicketsView.setCriteria(getClosedTicketsCriteria());
 		openTicketsView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		openTicketsView.setViewSharing(getSharingContext(appDomains));
 
 		return openTicketsView;
 	}
@@ -2136,6 +2156,7 @@ public class ViewFactory {
 		resolvedTicketsView.setDisplayName("Resolved");
 		resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved"));
 		resolvedTicketsView.setSortFields(sortFields);
+		resolvedTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return resolvedTicketsView;
 	}
@@ -2193,6 +2214,7 @@ public class ViewFactory {
 		openTicketsView.setDisplayName("My Work Orders");
 		openTicketsView.setCriteria(criteria);
 		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return openTicketsView;
 	}
@@ -2216,6 +2238,7 @@ public class ViewFactory {
 		overdueView.setDisplayName("Due Today");
 		overdueView.setCriteria(criteria);
 		overdueView.setSortFields(sortFields);
+		overdueView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return overdueView;
 	}
@@ -2258,6 +2281,7 @@ public class ViewFactory {
 		openTicketsView.setDisplayName("My Team Work Orders");
 		openTicketsView.setCriteria(criteria);
 		openTicketsView.setSortFields(sortFields);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return openTicketsView;
 	}
@@ -2294,6 +2318,7 @@ public class ViewFactory {
 		overdueView.setDisplayName("Planned");
 		overdueView.setCriteria(criteria);
 		overdueView.setSortFields(sortFields);
+		overdueView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return overdueView;
 	}
@@ -2331,6 +2356,7 @@ public class ViewFactory {
 		overdueView.setDisplayName("Un Planned");
 		overdueView.setCriteria(criteria);
 		overdueView.setSortFields(sortFields);
+		overdueView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return overdueView;
 	}
@@ -2352,6 +2378,7 @@ public class ViewFactory {
 
 		SortField sortField = new SortField(createdTime, false);
 		overdueView.setSortFields(Arrays.asList(sortField));
+		overdueView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return overdueView;
 	}
@@ -2387,6 +2414,7 @@ public class ViewFactory {
 		view.setDisplayName("My Due Today");
 		view.setCriteria(criteria);
 		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -2411,6 +2439,7 @@ public class ViewFactory {
 		view.setDisplayName("My Overdue");
 		view.setCriteria(criteria);
 		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -2451,6 +2480,8 @@ public class ViewFactory {
 		openTicketsView.setName("mytasks");
 		openTicketsView.setDisplayName("My Tasks");
 		openTicketsView.setCriteria(criteria);
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return openTicketsView;
 	}
 
@@ -2607,6 +2638,8 @@ public class ViewFactory {
 		fireSafetyWOView.setDisplayName("Fire Alarm Workorders");
 		fireSafetyWOView.setCriteria(criteria);
 		fireSafetyWOView.setSortFields(sortFields);
+		fireSafetyWOView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return fireSafetyWOView;
 	}
@@ -2630,6 +2663,8 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
 		view.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -2691,6 +2726,7 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
 		view.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -2717,19 +2753,6 @@ public class ViewFactory {
 		criteria.addAndCondition(sourceCondition);
 
 		return criteria;
-	}
-
-	private static FacilioView getMyAlarms() {
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyUserCondition());
-
-		FacilioView myAlarms = new FacilioView();
-		myAlarms.setName("myalarms");
-		myAlarms.setDisplayName("My Alarms");
-		myAlarms.setCriteria(criteria);
-
-		return myAlarms;
 	}
 
 	private static FacilioView getTypeAlarms(String name, String displayName, AlarmType type) {
@@ -2768,7 +2791,7 @@ public class ViewFactory {
 		typeAlarms.setDisplayName(displayName);
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
-
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		return typeAlarms;
 	}
 
@@ -2786,6 +2809,8 @@ public class ViewFactory {
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return typeAlarms;
 	}
@@ -2823,30 +2848,6 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	private static FacilioView getUnassignedAlarms() {
-
-		LookupField userField = new LookupField();
-		userField.setName("assignedTo");
-		userField.setColumnName("ASSIGNED_TO_ID");
-		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(ModuleFactory.getTicketsModule());
-		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
-
-		Condition userFieldCondition = new Condition();
-		userFieldCondition.setField(userField);
-		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
-
-		Criteria unassignedWOCriteria = new Criteria();
-		unassignedWOCriteria.addAndCondition(userFieldCondition);
-
-		FacilioView unassignedWOView = new FacilioView();
-		unassignedWOView.setName("unassigned");
-		unassignedWOView.setDisplayName("Unassigned Alarms");
-		unassignedWOView.setCriteria(unassignedWOCriteria);
-
-		return unassignedWOView;
-	}
-
 	private static FacilioView getAllAlarms() {
 
 		FacilioField modifiedTime = new FacilioField();
@@ -2859,6 +2860,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Alarms");
 		allView.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -2880,6 +2883,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Workorders");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -2900,6 +2905,7 @@ public class ViewFactory {
 		allView.setDisplayName("All Workorders");
 		allView.setSortFields(sortFields);
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
 
 		return allView;
 	}
@@ -2917,6 +2923,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Work Requests");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return allView;
 	}
 
@@ -2925,6 +2934,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -2952,6 +2964,8 @@ public class ViewFactory {
 		view.setName(name);
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -2967,6 +2981,8 @@ public class ViewFactory {
 		view.setName(name);
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -2987,6 +3003,8 @@ public class ViewFactory {
 		FacilioView reportView = new FacilioView();
 		reportView.setName("report");
 		reportView.setHidden(true);
+
+		reportView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return reportView;
 	}
@@ -3012,6 +3030,8 @@ public class ViewFactory {
 		myAllWorkordersView.setSortFields(sortFields);
 		myAllWorkordersView.setHidden(true);
 
+		myAllWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return myAllWorkordersView;
 	}
 	
@@ -3032,6 +3052,9 @@ public class ViewFactory {
 		allView.setDisplayName("Tenant Workorders");
 		allView.setSortFields(sortFields);
 		allView.setHidden(true);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return allView;
 	}
@@ -3098,16 +3121,19 @@ public class ViewFactory {
 		subviewDetail.put("name", "my");
 		subviewDetail.put("displayName", "My Open");
 		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "overdue");
 		subviewDetail.put("displayName", "Overdue");
 		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "unassigned");
 		subviewDetail.put("displayName", "Unassigned");
 		subviewDetail.put("criteria", getCriteriaForView("unassigned", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 		subViews.add(getAllSubViewDetail(workorderModule));
 
@@ -3121,11 +3147,13 @@ public class ViewFactory {
 		subviewDetail.put("name", "overdue");
 		subviewDetail.put("displayName", "Overdue");
 		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "duetoday");
 		subviewDetail.put("displayName", "Due Today");
 		subviewDetail.put("criteria", getCriteriaForView("duetoday", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 
 		subViewsMap.put("workorder-myopen", subViews);
@@ -3138,11 +3166,14 @@ public class ViewFactory {
 		subviewDetail.put("name", "overdue");
 		subviewDetail.put("displayName", "Overdue");
 		subviewDetail.put("criteria", getCriteriaForView("overdue", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "duetoday");
 		subviewDetail.put("displayName", "Due Today");
 		subviewDetail.put("criteria", getCriteriaForView("duetoday", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		subViews.add(subviewDetail);
 
 		subViewsMap.put("workorder-open", subViews);
@@ -3154,11 +3185,15 @@ public class ViewFactory {
 		subviewDetail.put("name", "my");
 		subviewDetail.put("displayName", "My Resolved");
 		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "myteam");
 		subviewDetail.put("displayName", "My Team Resolved");
 		subviewDetail.put("criteria", getCriteriaForView("myteam", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		subViews.add(subviewDetail);
 		subViews.add(getAllSubViewDetail(workorderModule));
 
@@ -3171,11 +3206,15 @@ public class ViewFactory {
 		subviewDetail.put("name", "my");
 		subviewDetail.put("displayName", "My Closed");
 		subviewDetail.put("criteria", getCriteriaForView("my", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		subViews.add(subviewDetail);
 		subviewDetail = new HashMap<>();
 		subviewDetail.put("name", "myteam");
 		subviewDetail.put("displayName", "My Team Closed");
 		subviewDetail.put("criteria", getCriteriaForView("myteam", workorderModule));
+		subviewDetail.put("viewSharing", getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		subViews.add(subviewDetail);
 		subViews.add(getAllSubViewDetail(workorderModule));
 
@@ -3216,6 +3255,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Parts");
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -3323,6 +3365,8 @@ public class ViewFactory {
 		staleParts.setDisplayName("Stale");
 		staleParts.setCriteria(criteria);
 		staleParts.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		staleParts.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return staleParts;
 	}
 
@@ -3341,6 +3385,9 @@ public class ViewFactory {
 		staleParts.setDisplayName("Under Stocked");
 		staleParts.setCriteria(criteria);
 		staleParts.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		staleParts.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return staleParts;
 	}
 	
@@ -3386,6 +3433,9 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 		
 		allView.setCriteria(criteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -3405,6 +3455,7 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Stores");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -3425,6 +3476,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Item Types");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -3448,6 +3501,8 @@ public class ViewFactory {
 		allView.setDisplayName(viewDisplayName);
 		allView.setSortFields(sortFields);
 		allView.setCriteria(criteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -3502,6 +3557,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Tool Types");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -3522,6 +3579,7 @@ public class ViewFactory {
 		allView.setDisplayName("All Vendors");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 		return allView;
 	}
 		
@@ -3546,6 +3604,8 @@ public class ViewFactory {
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
 			myVendorView.setHidden(true);
+			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 			return myVendorView;
 		}
 		
@@ -3587,6 +3647,9 @@ public class ViewFactory {
 			myVendorView.setSortFields(sortFields);
 			myVendorView.setHidden(true);
 
+			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+
 			return myVendorView;
 		}
 
@@ -3612,6 +3675,7 @@ public class ViewFactory {
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
 			myVendorView.setHidden(true);
+			myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 			return myVendorView;
 		}
@@ -3637,6 +3701,8 @@ public class ViewFactory {
 		myVendorView.setCriteria(criteria);
 		myVendorView.setSortFields(sortFields);
 		myVendorView.setHidden(true);
+		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return myVendorView;
 	}
@@ -3666,6 +3732,9 @@ public class ViewFactory {
 		myVendorView.setSortFields(sortFields);
 		myVendorView.setHidden(true);
 
+		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+
 		return myVendorView;
 	}
 
@@ -3692,6 +3761,9 @@ public class ViewFactory {
 		myVendorView.setSortFields(sortFields);
 		myVendorView.setHidden(true);
 
+		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return myVendorView;
 	}
 	
@@ -3717,6 +3789,9 @@ public class ViewFactory {
 		myVendorView.setSortFields(sortFields);
 		myVendorView.setHidden(true);
 
+		myVendorView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+
 		return myVendorView;
 	}
 
@@ -3739,7 +3814,10 @@ public class ViewFactory {
 			myVisitorInvitesView.setSortFields(sortFields);
 			myVisitorInvitesView.setHidden(true);
 
-			return myVisitorInvitesView;
+			myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+
+		return myVisitorInvitesView;
 		}
 
 	private static FacilioView getMyCurrentVisitorInvites() {
@@ -3764,6 +3842,9 @@ public class ViewFactory {
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
 		myVisitorInvitesView.setHidden(true);
+
+		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return myVisitorInvitesView;
 	}
@@ -3790,6 +3871,9 @@ public class ViewFactory {
 		myVisitorInvitesView.setSortFields(sortFields);
 		myVisitorInvitesView.setHidden(true);
 
+		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
+
 		return myVisitorInvitesView;
 	}
 	
@@ -3815,6 +3899,8 @@ public class ViewFactory {
 		myVisitorInvitesView.setSortFields(sortFields);
 		myVisitorInvitesView.setHidden(true);
 
+		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 		return myVisitorInvitesView;
 	}
 
@@ -3837,6 +3923,9 @@ public class ViewFactory {
 		myVisitorInvitesView.setSortFields(sortFields);
 		myVisitorInvitesView.setHidden(true);
 
+		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+
 		return myVisitorInvitesView;
 	}
 	private static FacilioView getVendorExpiredVisitorInvites() {
@@ -3856,6 +3945,9 @@ public class ViewFactory {
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
 		myVisitorInvitesView.setHidden(true);
+
+		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 
 		return myVisitorInvitesView;
 	}
@@ -3881,6 +3973,8 @@ public class ViewFactory {
 			myVisitorInvitesView.setSortFields(sortFields);
 			myVisitorInvitesView.setHidden(true);
 
+			myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 			return myVisitorInvitesView;
 		}
 		
@@ -3899,14 +3993,16 @@ public class ViewFactory {
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
-			FacilioView myVisitorInvitesView = new FacilioView();
-			myVisitorInvitesView.setName("myWorkpermits");
-			myVisitorInvitesView.setDisplayName("My Work Permits");
-			myVisitorInvitesView.setCriteria(criteria);
-			myVisitorInvitesView.setSortFields(sortFields);
-			myVisitorInvitesView.setHidden(true);
+			FacilioView myWorkPermitsView = new FacilioView();
+			myWorkPermitsView.setName("myWorkpermits");
+			myWorkPermitsView.setDisplayName("My Work Permits");
+			myWorkPermitsView.setCriteria(criteria);
+			myWorkPermitsView.setSortFields(sortFields);
+			myWorkPermitsView.setHidden(true);
+			myWorkPermitsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
-			return myVisitorInvitesView;
+
+			return myWorkPermitsView;
 		}
 	
 	private static FacilioView getAllInventry() {
@@ -3925,6 +4021,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Items");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -3945,6 +4043,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Tools");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -3987,6 +4087,9 @@ public class ViewFactory {
 		
 		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
 		moduleView.setSortFields(getSortFields(parentModuleName));
+
+		moduleView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return moduleView;
 	}
 	
@@ -4025,6 +4128,9 @@ public class ViewFactory {
 		requestedItemApproval.setDisplayName("Pending Item Approvals");
 		requestedItemApproval.setCriteria(criteria);
 		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		requestedItemApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return requestedItemApproval;
 	}
 	
@@ -4043,6 +4149,9 @@ public class ViewFactory {
 		rejectedApproval.setDisplayName("All Item Approvals");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		rejectedApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return rejectedApproval;
 	}
 	
@@ -4062,6 +4171,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Purchased Items");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return allView;
 	}
 	
@@ -4080,6 +4192,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Gate Pass");
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		
 		return allView;
 	}
@@ -4141,6 +4255,8 @@ public class ViewFactory {
 		requestedItemApproval.setDisplayName("Pending Tool Approvals");
 		requestedItemApproval.setCriteria(criteria);
 		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		requestedItemApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return requestedItemApproval;
 	}
 	
@@ -4159,6 +4275,8 @@ public class ViewFactory {
 		rejectedApproval.setDisplayName("All Tool Approvals");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		rejectedApproval.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return rejectedApproval;
 	}
 	
@@ -4194,6 +4312,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4215,6 +4336,9 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return statusView;
 	}
@@ -4256,6 +4380,9 @@ public class ViewFactory {
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
 
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return statusView;
 	}
 	
@@ -4291,6 +4418,9 @@ public class ViewFactory {
 		overDueRequest.setDisplayName("Overdue");
 		overDueRequest.setCriteria(criteria);
 		overDueRequest.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		overDueRequest.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return overDueRequest;
 		
 	}
@@ -4337,6 +4467,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4358,6 +4491,9 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return statusView;
 	}
@@ -4398,6 +4534,8 @@ public class ViewFactory {
 		statusView.setDisplayName("Open");
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return statusView;
 	}
@@ -4441,6 +4579,9 @@ public class ViewFactory {
 		overDueOrder.setDisplayName("Overdue");
 		overDueOrder.setCriteria(criteria);
 		overDueOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		overDueOrder.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return overDueOrder;
 		
 	}
@@ -4458,6 +4599,8 @@ public class ViewFactory {
 		ongoingPurchaseOrder.setDisplayName("Ongoing");
 		ongoingPurchaseOrder.setCriteria(criteria);
 		ongoingPurchaseOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		ongoingPurchaseOrder.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return ongoingPurchaseOrder;
 		
 	}
@@ -4540,6 +4683,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -4563,6 +4709,7 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return statusView;
 	}
@@ -4582,6 +4729,7 @@ public class ViewFactory {
 
 		Criteria receivableStatusCriteria = new Criteria();
 		receivableStatusCriteria.addAndCondition(statusCond);
+
 		return receivableStatusCriteria;
 	}
 	
@@ -4616,6 +4764,8 @@ public class ViewFactory {
 		allView.setDisplayName("Expiring This Month");
 		allView.setCriteria(getExpiringContractListCriteria(module, type));
 		allView.setSortFields(Arrays.asList(new SortField(endDateField, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -4632,6 +4782,8 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setCriteria(getAllContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(parentIdField, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4647,6 +4799,13 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(sysCreatedtimeField, false)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+
+		allView.setViewSharing(getSharingContext(appDomains));
+
 		return allView;
 	}
 
@@ -4662,6 +4821,8 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -4677,6 +4838,9 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4692,6 +4856,8 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4707,6 +4873,9 @@ public class ViewFactory {
 		allView.setDisplayName("All");
 		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -4721,6 +4890,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Serial Numbers");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4735,6 +4906,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -4757,6 +4930,9 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return statusView;
 	}
@@ -4791,6 +4967,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getInventoryRequestForStatus(String viewName, String viewDisplayName, int status) {
@@ -4818,6 +4996,8 @@ public class ViewFactory {
 		fields.add(new ViewField("requestedTime", "Requested Time"));
 		fields.add(new ViewField("status", "Valid Till"));
 		fields.add(new ViewField("totalCost", "Total Cost"));
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		
 
 		return statusView;
@@ -4861,6 +5041,9 @@ public class ViewFactory {
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
 
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return statusView;
 	}
 
@@ -4900,6 +5083,9 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return statusView;
 	}
@@ -4951,6 +5137,9 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return statusView;
 	}
@@ -5009,6 +5198,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Attendance");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5023,6 +5214,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Attendance Transactions");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5037,6 +5230,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Shift(s)");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5051,6 +5246,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Break");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5064,6 +5262,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Shift Rotation");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getAllServiceView() {
@@ -5077,6 +5277,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Service");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5091,6 +5294,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Break Transactions");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5111,6 +5316,9 @@ public class ViewFactory {
 		allView.setModuleName("newreadingalarm");
 		allView.setCriteria(criteria);
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getOccurrenceViews() {
@@ -5125,6 +5333,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Alarms");
 		allView.setModuleName("newreadingalarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5140,6 +5351,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Alarms");
 		allView.setModuleName(FacilioConstants.ContextNames.OPERATION_ALARM);
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5156,6 +5370,9 @@ public class ViewFactory {
 		allView.setModuleName("agentAlarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setDefault(true);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getControllerAlarmOccurrenceViews() {
@@ -5171,6 +5388,9 @@ public class ViewFactory {
 		allView.setModuleName("controllerAlarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setDefault(true);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5211,6 +5431,8 @@ public class ViewFactory {
 		view.setCriteria(criteria);
 		view.setModuleName("newreadingalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -5233,6 +5455,8 @@ public class ViewFactory {
 		view.setCriteria(criteria);
 		view.setModuleName("newreadingalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -5256,6 +5480,9 @@ public class ViewFactory {
 		view.setCriteria(criteria);
 		view.setModuleName(FacilioConstants.ContextNames.OPERATION_ALARM);
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -5294,6 +5521,9 @@ public class ViewFactory {
 		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return view;
 	}
 	
@@ -5317,6 +5547,9 @@ public class ViewFactory {
 		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return view;
 	}
 	private static FacilioView getBmsAlarm(String name, String displayName, boolean equals) {
@@ -5334,6 +5567,9 @@ public class ViewFactory {
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		view.setDefault(true);
 
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return view;
 	}
 	private static FacilioView getBmsAlarmOccurrence(String name, String displayName, boolean equals) {
@@ -5349,24 +5585,11 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
-	public static Condition getBmsAlarmSeverityCondition(String severity, boolean equals) {
-		LookupField severityField = new LookupField();
-		severityField.setName("severity");
-		severityField.setColumnName("SEVERITY");
-		severityField.setDataType(FieldType.LOOKUP);
-		severityField.setModule(ModuleFactory.getBmsAlarmModule());
-		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
 
-		Condition alarmCondition = new Condition();
-		alarmCondition.setField(severityField);
-		alarmCondition.setOperator(LookupOperator.LOOKUP);
-		alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
-
-		return alarmCondition;
-	}
 	public static Condition getReadingAlarmSeverityCondition(String severity, boolean equals) {
 		LookupField severityField = new LookupField();
 		severityField.setName("severity");
@@ -5400,6 +5623,9 @@ public class ViewFactory {
 		typeAlarms.setModuleName("newreadingalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return typeAlarms;
 	}
 	private static FacilioView getAlarmOccurrenceUnacknowledged() {
@@ -5417,6 +5643,8 @@ public class ViewFactory {
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setModuleName("newreadingalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return typeAlarms;
 	}
@@ -5437,6 +5665,9 @@ public class ViewFactory {
 		typeAlarms.setModuleName("bmsalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return typeAlarms;
 	}
 	
@@ -5455,6 +5686,9 @@ public class ViewFactory {
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setModuleName("bmsalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		typeAlarms.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return typeAlarms;
 	}
@@ -5533,6 +5767,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All T&C(s)");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5629,7 +5866,10 @@ public class ViewFactory {
 		allView.setDisplayName("All " + moduleObj.getDisplayName());
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setDefault(true);
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return allView;
 	}
 	private static FacilioView getMLAnomalyViews() {
@@ -5643,6 +5883,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getAllReservationView() {
@@ -5650,6 +5892,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Reservations");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5671,6 +5915,8 @@ public class ViewFactory {
 		view.setCriteria(criteria);
 
 		view.setSortFields(Arrays.asList(new SortField(getReservationScheduledTimeField(), false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -5685,6 +5931,8 @@ public class ViewFactory {
 		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TOMORROW));
 
 		view.getCriteria().andCriteria(criteria);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -5693,6 +5941,9 @@ public class ViewFactory {
 		view.setName("thisweek");
 		view.setDisplayName("This Week");
 		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.CURRENT_WEEK));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -5701,6 +5952,8 @@ public class ViewFactory {
 		view.setName("nextweek");
 		view.setDisplayName("Next Week");
 		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.NEXT_WEEK));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -5711,6 +5964,9 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.ON_GOING.getIndex()), EnumOperators.IS));
 		view.setCriteria(criteria);
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -5721,6 +5977,9 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.FINISHED.getIndex()), EnumOperators.IS));
 		view.setCriteria(criteria);
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 	private static FacilioView getAnomalyAlarmSeverity(String name, String displayName, String severity, boolean equals) {
@@ -5742,6 +6001,9 @@ public class ViewFactory {
 		view.setCriteria(criteria);
 		view.setModuleName("mlAnomalyAlarm");
 		view.setSortFields(Arrays.asList(new SortField(lastOccurredTime, false)));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -5767,6 +6029,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visitors");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -5785,31 +6050,30 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
-	
-	private static FacilioView getAllVisitsView() {
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1", CommonOperators.IS_NOT_EMPTY));
-		criteria.addAndCondition(getPastVisitorLogStatusCriteria("Upcoming"));
+
+	private static FacilioView getTenantPortalAllVisitorLogsView() {
+
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visits");
-		allView.setHidden(true);
-		allView.setCriteria(criteria);
-		
+
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("checkInTime");
+		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("CHECKIN_TIME");
+		createdTime.setColumnName("SYS_CREATED_TIME");
 		createdTime.setModule(visitorLogging);
+		allView.setHidden(true);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
-		
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return allView;
 	}
@@ -5831,6 +6095,9 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 
 
 		return allView;
@@ -5854,7 +6121,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		allView.setSortFields(sortFields);
-		
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 
 		return allView;
 	}
@@ -5881,6 +6149,9 @@ public class ViewFactory {
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 		return allView;
 	}
 
@@ -5894,7 +6165,9 @@ public class ViewFactory {
 		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLogModule,FieldType.DATE_TIME);
 		
 		allView.setSortFields(Arrays.asList(new SortField(expCheckInTime, true)));
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -5903,6 +6176,13 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Insurance");
+
+		List<AppDomain.AppDomainType> appdomains = new ArrayList<>();
+		appdomains.add(AppDomain.AppDomainType.FACILIO);
+		appdomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+
+		allView.setViewSharing(getSharingContext(appdomains));
+
 		return allView;
 	}
 	
@@ -5912,6 +6192,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Insurance");
 		allView.setHidden(true);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 		return allView;
 	}
 	
@@ -5940,6 +6223,9 @@ public class ViewFactory {
 		allView.setDisplayName("Active");
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 		return allView;
 	}
 	private static FacilioView getVendorExpiredInsuranceView() {
@@ -5954,6 +6240,8 @@ public class ViewFactory {
 		allView.setCriteria(criteria);
 		allView.setSortFields(Arrays.asList(new SortField(validTill, false)));
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
 		return allView;
 	}
 	
@@ -5963,6 +6251,13 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Work Permit");
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.VENDOR_PORTAL);
+
+		allView.setViewSharing(getSharingContext(appDomains));
+
 		return allView;
 	}
 	
@@ -6019,6 +6314,9 @@ public class ViewFactory {
 		allView.setDisplayName("Active Work Permit");
 		allView.setHidden(true);
 		allView.setCriteria(activeCriteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 		return allView;
 	}
 	
@@ -6031,6 +6329,8 @@ public class ViewFactory {
 		allView.setDisplayName("Expired Work Permit");
 		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 		return allView;
 	}
 	
@@ -6043,6 +6343,9 @@ public class ViewFactory {
 		requestedView.setDisplayName("Requested Work Permits");
 		requestedView.setCriteria(requestedWorkPermitCriteria);
 		requestedView.setHidden(true);
+
+		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 		return requestedView;
 	}
 	
@@ -6054,6 +6357,9 @@ public class ViewFactory {
 		requestedView.setName("requested");
 		requestedView.setDisplayName("Requested Work Permits");
 		requestedView.setCriteria(requestedWorkPermitCriteria);
+
+		requestedView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return requestedView;
 	}
 	
@@ -6065,6 +6371,10 @@ public class ViewFactory {
 		allView.setDisplayName("Expired Work Permit");
 		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
+
+
 		return allView;
 	}
 	
@@ -6076,6 +6386,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Work Permit");
 		allView.setHidden(true);
 		allView.setCriteria(activeCriteria);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.VENDOR_PORTAL)));
 		return allView;
 	}
 
@@ -6089,6 +6401,8 @@ public class ViewFactory {
 		assetKpisView.setName(name);
 		assetKpisView.setDisplayName("Asset KPIs");
 		assetKpisView.setCriteria(criteria);
+
+		assetKpisView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return assetKpisView;
 	}
@@ -6105,6 +6419,8 @@ public class ViewFactory {
 		assetKpisView.setDisplayName("Space KPIs");
 		assetKpisView.setCriteria(criteria);
 
+		assetKpisView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return assetKpisView;
 	}
 	
@@ -6117,6 +6433,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Watchlist");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6129,6 +6448,8 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(blockedCondition);
 		view.setCriteria(criteria);
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -6143,6 +6464,9 @@ public class ViewFactory {
 		criteria.addAndCondition(vipCondition);
 		view.setCriteria(criteria);
 
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return view;
 	}
 
@@ -6151,6 +6475,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Contact");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -6164,7 +6491,9 @@ public class ViewFactory {
 		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
 		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "1", PickListOperators.IS));
 		allView.setCriteria(criteria);
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	
@@ -6177,7 +6506,9 @@ public class ViewFactory {
 		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
 		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "2", PickListOperators.IS));
 		allView.setCriteria(criteria);
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6191,7 +6522,9 @@ public class ViewFactory {
 		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
 		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "3", PickListOperators.IS));
 		allView.setCriteria(criteria);
-		
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6206,6 +6539,8 @@ public class ViewFactory {
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, DateOperators.TODAY));
 		view.setCriteria(criteria);
 		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -6224,7 +6559,9 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(expCheckInTime, false));
 
 		view.setSortFields(sortFields);
-		
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return view;
 	}
 
@@ -6242,6 +6579,8 @@ public class ViewFactory {
 
 		view.setCriteria(criteria);
 		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -6268,7 +6607,7 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		view.setSortFields(sortFields);
-		
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 
 		return view;
@@ -6293,6 +6632,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 		
 
 		return view;
@@ -6320,8 +6661,8 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		view.setSortFields(sortFields);
-		
 
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -6345,6 +6686,8 @@ public class ViewFactory {
 		
 
 		view.setCriteria(criteria);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return view;
 	}
@@ -6449,6 +6792,8 @@ public class ViewFactory {
 		openTicketsView.setSortFields(sortFields);
 		openTicketsView.setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
 
+		openTicketsView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return openTicketsView;
 	}
 	
@@ -6457,6 +6802,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Occupants");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6465,6 +6813,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Tasks");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6481,6 +6831,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Service Requests");
 		allView.setSortFields(sortFields);
 		allView.setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6590,6 +6943,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Safety Plans");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6600,6 +6955,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("Hazards");
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6608,6 +6965,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Precautions");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -6618,6 +6977,8 @@ public class ViewFactory {
 		allView.setName("associatedhazards");
 		allView.setDisplayName("Associated Hazards");
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6626,6 +6987,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("associatedprecautions");
 		allView.setDisplayName("Associated Precautions");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6636,6 +6999,9 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("Safety Plan Hazards");
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
 		return allView;
 	}
 
@@ -6645,6 +7011,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("Asset Hazards");
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6653,6 +7021,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Workorder Hazards");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -6662,6 +7031,8 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Hazuard Precaution");
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6672,6 +7043,9 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("Clients");
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6683,6 +7057,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Buildings");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getAllSpaces() {
@@ -6693,6 +7069,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Spaces");
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 	private static FacilioView getAllFloors() {
@@ -6702,6 +7080,8 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Floors");
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
@@ -6718,6 +7098,8 @@ public class ViewFactory {
 		allView.setModuleName(tenantUnitSpaceModule.getName());
 		allView.setSortFields(sortFields);
 
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 		return allView;
 	}
 
@@ -6733,7 +7115,9 @@ public class ViewFactory {
         allView.setModuleName(tenantSpaceModule.getName());
         allView.setSortFields(sortFields);
 
-        return allView;
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
     }
 
     private static FacilioView getAllQuotations() {
@@ -6761,7 +7145,9 @@ public class ViewFactory {
         allView.setSortFields(sortFields);
         allView.setCriteria(nonRevisedCriteria);
 
-        return allView;
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
     }
 
 	private static FacilioView getAllTaxes() {
@@ -6775,6 +7161,8 @@ public class ViewFactory {
 		allView.setDisplayName("All Taxes");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6794,7 +7182,7 @@ public class ViewFactory {
 		Criteria activeCriteria = new Criteria();
 		activeCriteria.addAndCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive",String.valueOf(true), BooleanOperators.IS));
 		view.setCriteria(activeCriteria);
-
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return view;
 	}
@@ -6809,6 +7197,9 @@ public class ViewFactory {
 		allView.setDisplayName("All Quotation Terms");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
 
 		return allView;
 	}
@@ -6844,5 +7235,17 @@ public class ViewFactory {
 		return condition;
 	}
 
+	private static SharingContext<SingleSharingContext> getSharingContext(List<AppDomain.AppDomainType> appDomains) {
+		SharingContext<SingleSharingContext> viewSharing = new SharingContext<SingleSharingContext>();
+		if(CollectionUtils.isNotEmpty(appDomains)){
+			for(AppDomain.AppDomainType appdomain : appDomains){
+				SingleSharingContext appSharing = new SingleSharingContext();
+				appSharing.setType(SingleSharingContext.SharingType.APP);
+				appSharing.setAppType(appdomain);
+				viewSharing.add(appSharing);
+			}
+		}
+		return viewSharing;
+	}
 
 }

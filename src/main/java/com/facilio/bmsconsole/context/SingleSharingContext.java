@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.List;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.GroupMember;
 
 public class SingleSharingContext implements Serializable {
@@ -105,7 +106,8 @@ public class SingleSharingContext implements Serializable {
 		USER,
 		ROLE,
 		GROUP,
-		FIELD
+		FIELD,
+		APP
 		;
 		
 		public int getValue() {
@@ -143,9 +145,24 @@ public class SingleSharingContext implements Serializable {
 				case FIELD:
 					builder.append(fieldId);
 					break;
+				case APP:
+					builder.append(appType);
+					break;
 			}
 		}
 		
 		return builder.toString();
 	}
+
+	private int appType;
+	public int getAppType() {
+		return appType;
+	}
+	public void setAppType(AppDomain.AppDomainType appType) {
+		this.appType = appType.getIndex();
+	}
+	public void setAppType(int appType) {
+		this.appType = appType;
+	}
+
 }

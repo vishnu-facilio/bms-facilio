@@ -23,6 +23,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddCVCommand extends FacilioCommand {
 
@@ -99,6 +100,31 @@ public class AddCVCommand extends FacilioCommand {
 	private void addViewSharing(FacilioView view) throws Exception {
 		SharingContext<SingleSharingContext> viewSharing = view.getViewSharing();
 		SharingAPI.deleteSharing(Collections.singletonList(view.getId()), ModuleFactory.getViewSharingModule());
+
+		//temp handling for apptype sharing for custom views..can be removed after supporting apptype sharing in ui
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long modId = -1;
+		if(view.getId() > 0) {
+			FacilioView existingView = ViewAPI.getView(view.getId());
+			modId = existingView.getModuleId();
+		}
+		if(viewSharing == null) {
+			viewSharing = new SharingContext<>();
+		}
+		FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
+		if(defaultView == null) {
+			SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
+			if (defaultAppSharing != null) {
+				viewSharing.add(defaultAppSharing);
+			}
+		}
+		else {
+			SharingContext<SingleSharingContext> appSharing = SharingAPI.getDefaultAppTypeSharing(defaultView);
+			if(CollectionUtils.isNotEmpty(appSharing)) {
+				viewSharing.addAll(appSharing);
+			}
+		}
+
 		if (viewSharing != null && !viewSharing.isEmpty()) {
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());

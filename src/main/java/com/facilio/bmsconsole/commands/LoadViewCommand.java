@@ -125,7 +125,9 @@ public class LoadViewCommand extends FacilioCommand {
 				}
 				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
-				view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
+				if(view.getViewSharing() == null) {
+					view.setViewSharing(SharingAPI.getSharing(view.getId(), ModuleFactory.getViewSharingModule(), SingleSharingContext.class));
+				}
 			}
 		}
 		else {

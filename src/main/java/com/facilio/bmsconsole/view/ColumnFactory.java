@@ -38,6 +38,9 @@ public class ColumnFactory {
 		columnMap.put("workorder-default", getWorkorderDefaultViewColumns());
 		columnMap.put("workorder-pendingapproval", getWorkorderApprovalColumns());
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
+		columnMap.put("workorder-tenantOpen", getTenantWorkorderColumns());
+		columnMap.put("workorder-tenantClosed", getTenantWorkorderColumns());
+		columnMap.put("workorder-tenantAll", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
