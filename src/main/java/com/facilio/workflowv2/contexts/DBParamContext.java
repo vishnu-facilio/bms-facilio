@@ -21,6 +21,14 @@ public class DBParamContext {
 	String sortOrder;
 	Criteria criteria;
 	Criteria fieldCriteria;
+	boolean skipUnitConversion;
+
+	public boolean isSkipUnitConversion() {
+		return skipUnitConversion;
+	}
+	public void setSkipUnitConversion(boolean skipUnitConversion) {
+		this.skipUnitConversion = skipUnitConversion;
+	}
 
 	int limit;
 	boolean ignoreMarkedReadings;

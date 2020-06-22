@@ -282,6 +282,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					.andCriteria(dbParamContext.getCriteria())
 					;
 			
+			if(dbParamContext.isSkipUnitConversion()) {
+				selectBuilder.skipUnitConversion();
+			}
+			
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}

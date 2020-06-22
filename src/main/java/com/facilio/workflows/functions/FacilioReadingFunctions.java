@@ -147,26 +147,46 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
-			Criteria criteria = (Criteria)objects[1];
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
+			DBParamContext dbParamContext = null;
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
 			
 			FacilioModule module = field.getModule();
 			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 			
-			for (String key : criteria.getConditions().keySet()) {
-				Condition condition = criteria.getConditions().get(key);
+			Condition parentIdCondition = CriteriaAPI.getCondition(fieldMap.get("parentId"), workflowReadingContext.getParentId()+"", NumberOperators.EQUALS);
+			
+			if(objects[1] instanceof Criteria) {
+				Criteria criteria = (Criteria)objects[1];
+				
+				criteria.addAndCondition(parentIdCondition);
+				
+				dbParamContext = new DBParamContext();
+
+				dbParamContext.setCriteria(criteria);
+			}
+			else if(objects[1] instanceof DBParamContext) {
+				
+				dbParamContext =(DBParamContext) objects[1];
+				
+				dbParamContext.getCriteria().addAndCondition(parentIdCondition);
+			}
+			
+			dbParamContext.setFieldName(field.getName());
+			
+			for (String key : dbParamContext.getCriteria().getConditions().keySet()) {
+				Condition condition = dbParamContext.getCriteria().getConditions().get(key);
 				FacilioField field1 = modBean.getField(condition.getFieldName(), module.getName());
 				condition.setField(field1);
 			}
 			
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), workflowReadingContext.getParentId()+"", NumberOperators.EQUALS));
-			
-			DBParamContext dbParamContext = new DBParamContext();
-			dbParamContext.setFieldName(field.getName());
-			dbParamContext.setCriteria(criteria);
+			if(objects.length >2) {
+				boolean skipUnitConversion = (boolean) objects[2];
+				dbParamContext.setSkipUnitConversion(skipUnitConversion);
+			}
 			
 			List<Object> params = new ArrayList<>();
 			params.add(field.getModule());
