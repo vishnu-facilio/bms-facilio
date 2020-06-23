@@ -546,9 +546,16 @@ public class ConnectedAppAction extends FacilioAction {
 
 			String samlRequest = req.getParameter("SAMLRequest");
 
+			Boolean isSandbox = this.isSandboxMode();
+			
+			String baseUrl = connectedApp.getProductionBaseUrl();
+			if (isSandbox != null && isSandbox == true) {
+				baseUrl = connectedApp.getSandBoxBaseUrl();
+			}
+			
 			String requestId = null;
-			String acsURL = null;
-			String spEntityId = null;
+			String acsURL = baseUrl + connectedAppSAML.getSpAcsUrl();
+			String spEntityId = connectedAppSAML.getSpEntityId();
 			String relayState = null;
 
 			if (samlRequest != null) {
@@ -560,14 +567,18 @@ public class ConnectedAppAction extends FacilioAction {
 				document.getDocumentElement().normalize();
 
 				Element authnRequestElement = (Element) document.getFirstChild();
-				acsURL = authnRequestElement.getAttribute("AssertionConsumerServiceURL");
+				String reqAcsURL = authnRequestElement.getAttribute("AssertionConsumerServiceURL");
+				if (!acsURL.equalsIgnoreCase(reqAcsURL)) {
+					throw new Exception("Invalid ACS URL.");
+				}
+				String reqSpEntityId = document.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "Issuer").item(0).getTextContent();
+				if (!spEntityId.equalsIgnoreCase(reqSpEntityId)) {
+					throw new Exception("Invalid SP Entity ID.");
+				}
 				requestId = authnRequestElement.getAttribute("ID");
-				spEntityId = document.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:assertion", "Issuer").item(0).getTextContent();
 			}
 			else {
 				// IdP initiated login
-				acsURL = connectedAppSAML.getSpAcsUrl();
-				spEntityId = connectedAppSAML.getSpEntityId();
 				requestId = "FAC_" + UUID.randomUUID().toString().replace("-", "");
 			}
 
