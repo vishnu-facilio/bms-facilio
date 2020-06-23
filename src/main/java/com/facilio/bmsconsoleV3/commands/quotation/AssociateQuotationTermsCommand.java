@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
-import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

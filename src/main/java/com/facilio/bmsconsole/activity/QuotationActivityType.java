@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.activity;
 
 import com.facilio.activity.ActivityType;
-import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 

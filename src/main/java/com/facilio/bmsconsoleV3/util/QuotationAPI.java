@@ -1,10 +1,11 @@
-package com.facilio.bmsconsole.util;
+package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -245,7 +246,7 @@ public class QuotationAPI {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
             List<FacilioField> fields = modBean.getAllFields(module.getName());
-            RecordAPI.addRecord(false, termsAssociated, module, fields);
+            V3RecordAPI.addRecord(false, termsAssociated, module, fields);
         }
     }
 
@@ -257,7 +258,8 @@ public class QuotationAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
-        RecordAPI.updateRecord(updateTaxContext, module, fields);
+        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        V3RecordAPI.updateRecord(updateTaxContext, module, fields);
     }
 
     public static void updateTaxGroupsOnChildUpdate(TaxContext tax, Long oldTaxId) throws Exception {
@@ -285,7 +287,7 @@ public class QuotationAPI {
                 }
                 taxGroupsParentTax.setRate(rate);
 
-                RecordAPI.addRecord(false, Collections.singletonList(taxGroupsParentTax), taxModule, taxFields);
+                V3RecordAPI.addRecord(false, Collections.singletonList(taxGroupsParentTax), taxModule, taxFields);
 
                 List<TaxGroupContext> taxGroups = new ArrayList<>();
                 FacilioModule taxGroupsModule = modBean.getModule(FacilioConstants.ContextNames.TAX_GROUPS);
@@ -302,7 +304,7 @@ public class QuotationAPI {
                         taxGroups.add(taxGroup);
                     }
                 }
-                RecordAPI.addRecord(false, taxGroups, taxGroupsModule, taxGroupFields);
+                V3RecordAPI.addRecord(false, taxGroups, taxGroupsModule, taxGroupFields);
             }
         }
     }
@@ -379,7 +381,7 @@ public class QuotationAPI {
             if (CollectionUtils.isNotEmpty(records)) {
                 QuotationContext firstRecord = records.get(0);
                 if (quotation.getId() < 0 || (/* To allow update */ firstRecord.getId() != quotation.getId())) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quotation Already exist for this Workorder Quotation Id " + firstRecord.getId());
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quotation Already exist for this Workorder Quotation Id " + firstRecord.getParentId());
                 }
             }
         }

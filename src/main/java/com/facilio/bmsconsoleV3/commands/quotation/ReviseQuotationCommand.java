@@ -4,7 +4,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -45,7 +44,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         throw new IllegalArgumentException("Parent record Id is needed for revising the quote");
                     }
                     QuotationContext exitingQuotation = (QuotationContext) V3RecordAPI.getRecord(moduleName,quotation.getId(), QuotationContext.class);
-                    if (sentStatus.getId() == exitingQuotation.getModuleState().getId()) {
+                    if (exitingQuotation.getModuleState() != null && exitingQuotation.getModuleState().getId() == sentStatus.getId()) {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
                         V3RecordAPI.updateRecord(quotation, module, fields);
@@ -56,7 +55,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         QuotationContext revisedQuotation = quotation.clone();
                         revisedQuoteList.add(revisedQuotation);
                     } else {
-                        throw new IllegalArgumentException("Only the quotations not in draft state can be revised");
+                        throw new IllegalArgumentException("Only Quotation in sent status can be revised");
                     }
                 }
                 recordMap.put(moduleName, revisedQuoteList);

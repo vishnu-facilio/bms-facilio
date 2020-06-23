@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.util.QuotationAPI;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
