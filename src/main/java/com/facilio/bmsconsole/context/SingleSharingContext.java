@@ -28,6 +28,13 @@ public class SingleSharingContext implements Serializable {
 		this.fieldId = fieldId;
 	}
 
+	private long companyId = -1;
+	public long getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(long companyId) {
+		this.companyId = companyId;
+	}
 
 	private long orgId = -1;
 	public long getOrgId() {
@@ -107,7 +114,8 @@ public class SingleSharingContext implements Serializable {
 		ROLE,
 		GROUP,
 		FIELD,
-		APP
+		APP,
+		TENANT,
 		;
 		
 		public int getValue() {
@@ -147,6 +155,9 @@ public class SingleSharingContext implements Serializable {
 					break;
 				case APP:
 					builder.append(appType);
+					break;
+				case TENANT:
+					builder.append(companyId);
 					break;
 			}
 		}

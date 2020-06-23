@@ -1,18 +1,19 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.bean.GroupBean;
+import com.facilio.accounts.dto.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.facilio.accounts.bean.GroupBean;
-import com.facilio.accounts.dto.*;
-import com.facilio.accounts.impl.UserBeanImpl;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.fields.FacilioField;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
 
@@ -92,6 +93,16 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					}
 				}
 				break;
+			case TENANT:
+				if (permission.getCompanyId() > 0) {
+					TenantContext tenant = PeopleAPI.getTenantForUser(user.getOuid());
+					if (tenant != null) {
+						if (tenant.getId() == permission.getCompanyId()) {
+							return true;
+						}
+					}
+				}
+				break;
 			case APP:
 				if (permission.getAppType() > 0 && permission.getAppType() == AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()) {
 					return true;
@@ -123,6 +134,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		List<Long> ouIds = new ArrayList<>();
 		List<Long> roleIds = new ArrayList<>();
 		List<Long> groupIds = new ArrayList<>();
+		List<Long> tenantIds = new ArrayList<>();
 		List<Integer> appTypes = new ArrayList<>();
 		for (SingleSharingContext sharingContext : list) {
 			Map<String, Object> map = new HashMap<>();
@@ -158,6 +170,11 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					}
 					break;
 
+				case TENANT:
+					map.put("tenantId", sharingContext.getCompanyId());
+					tenantIds.add(sharingContext.getCompanyId());
+					break;
+
 				case APP:
 					map.put("permissionId", sharingContext.getAppType());
 					appTypes.add(sharingContext.getAppType());
@@ -171,6 +188,8 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		Map<Long, Group> groupMap = groups.stream().collect(Collectors.toMap(Group::getId, Function.identity()));
 		List<Role> roles = roleIds.size() == 0 ? new ArrayList<>() : AccountUtil.getRoleBean().getRoles(roleIds);
 		Map<Long, Role> roleMap = roles.stream().collect(Collectors.toMap(Role::getId, Function.identity()));
+		List<TenantContext> tenantList = tenantIds.size() == 0 ? new ArrayList<>() : TenantsAPI.getTenants(tenantIds);
+		Map<Long, TenantContext> tenantMap = tenantList.stream().collect(Collectors.toMap(TenantContext::getId, Function.identity()));
 
 		for (Map<String, Object> map : permissionList) {
 			SingleSharingContext.SharingType sharingType = (SingleSharingContext.SharingType) map.get("type");
@@ -185,6 +204,9 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					break;
 				case ROLE:
 					map.put("value", roleMap.get(permissionId));
+					break;
+				case TENANT:
+					map.put("value", tenantMap.get(permissionId));
 					break;
 				case APP:
 					map.put("value", AppDomain.AppDomainType.valueOf(permissionId.intValue()));

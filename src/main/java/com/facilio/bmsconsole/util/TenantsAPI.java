@@ -183,9 +183,24 @@ public class TenantsAPI {
 		
 		}
 		return longArray;
-		
-}
-	
+
+	}
+
+	public static List<TenantContext> getTenants(List<Long> ids) throws Exception {
+		if (CollectionUtils.isEmpty(ids)) {
+			return new ArrayList<>();
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> tenantFields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+				.module(module)
+				.beanClass(TenantContext.class)
+				.select(tenantFields)
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		return builder.get();
+	}
 	
 	public static TenantContext getTenant(long id) throws Exception {
 		

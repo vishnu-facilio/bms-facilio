@@ -2106,6 +2106,7 @@ public class FieldFactory {
         fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
         fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
         fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+        fields.add(getField("companyId", "COMPANY_ID", module, FieldType.NUMBER));
         if(module.getName().equals("viewSharing")) {
             fields.add(getField("appType", "APP_TYPE", module, FieldType.NUMBER));
         }
