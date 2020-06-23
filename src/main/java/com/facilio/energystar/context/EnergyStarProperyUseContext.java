@@ -54,12 +54,12 @@ public class EnergyStarProperyUseContext {
 	
 	public enum Propert_Use {
 		
-		totalGrossFloorArea(1, "Total gross floor area","totalGrossFloorArea",FieldType.STRING,Building_Type.OFFICE),
-		numberOfComputers(2, "No. of computers","numberOfComputers",FieldType.STRING,Building_Type.OFFICE),
-		percentOfficeCooled(3, "Percent office cooled","percentOfficeCooled",FieldType.STRING,Building_Type.OFFICE),
-		percentOfficeHeated(4, "Percent office heated","percentOfficeHeated",FieldType.STRING,Building_Type.OFFICE),
-		weeklyOperatingHours(5, "Weekly operating hours","weeklyOperatingHours",FieldType.STRING,Building_Type.OFFICE),
-		numberOfWorkers(6, "Number of workers","numberOfWorkers",FieldType.STRING,Building_Type.OFFICE),
+		totalGrossFloorArea(1, "Total gross floor area","totalGrossFloorArea",FieldType.STRING,Building_Type.OFFICE,"ft\u00B2"),
+		numberOfComputers(2, "No. of computers","numberOfComputers",FieldType.STRING,Building_Type.OFFICE,null),
+		percentOfficeCooled(3, "Percent office cooled","percentOfficeCooled",FieldType.STRING,Building_Type.OFFICE,"%"),
+		percentOfficeHeated(4, "Percent office heated","percentOfficeHeated",FieldType.STRING,Building_Type.OFFICE,"%"),
+		weeklyOperatingHours(5, "Weekly operating hours","weeklyOperatingHours",FieldType.STRING,Building_Type.OFFICE,null),
+		numberOfWorkers(6, "Number of workers","numberOfWorkers",FieldType.STRING,Building_Type.OFFICE,null),
 		;
 
 		int intVal;
@@ -67,6 +67,7 @@ public class EnergyStarProperyUseContext {
 		String fieldName;
 		FieldType type;
 		Building_Type buildingType;
+		String unit;
 
 		public String getDisplayName() {
 			return displayName;
@@ -80,6 +81,10 @@ public class EnergyStarProperyUseContext {
 			return type;
 		}
 		
+		public String getUnit() {
+			return unit;
+		}
+		
 		public Building_Type getBuildingType() {
 			return buildingType;
 		}
@@ -88,12 +93,13 @@ public class EnergyStarProperyUseContext {
 			return intVal;
 		}
 
-		private Propert_Use(int intVal, String displayName,String fieldName,FieldType fieldType, Building_Type building_Type) {
+		private Propert_Use(int intVal, String displayName,String fieldName,FieldType fieldType, Building_Type building_Type,String unit) {
 			this.intVal = intVal;
 			this.displayName = displayName;
 			this.fieldName = fieldName;
 			this.type = fieldType;
 			this.buildingType = building_Type;
+			this.unit = unit;
 		}
 
 		private static final Map<Integer, Propert_Use> optionMap = Collections.unmodifiableMap(initTypeMap());

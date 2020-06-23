@@ -12,11 +12,12 @@ import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 
-public class UpdateEnergyStarMeterCommand implements Command {
+public class UpdateEnergyStarMeterCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		EnergyStarPropertyContext propContext = (EnergyStarPropertyContext) context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT);
 		
