@@ -3806,7 +3806,7 @@ public class ViewFactory {
 
 			FacilioView myVisitorInvitesView = new FacilioView();
 			myVisitorInvitesView.setName("myActive");
-			myVisitorInvitesView.setDisplayName("My Active Invites");
+			myVisitorInvitesView.setDisplayName("Active");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
 
@@ -3916,6 +3916,7 @@ public class ViewFactory {
 		myVisitorInvitesView.setDisplayName("Expired");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
+		myVisitorInvitesView.setHidden(true);
 
 		myVisitorInvitesView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
