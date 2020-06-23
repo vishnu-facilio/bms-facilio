@@ -111,6 +111,7 @@ public class QuotationContext extends V3Context {
         setIsQuotationRevised(false);
         setNotes(quotation.getNotes());
         setRevisionHistoryAvailable(true);
+        setWorkorder(quotation.getWorkorder());
         setId(-1);
     }
 
