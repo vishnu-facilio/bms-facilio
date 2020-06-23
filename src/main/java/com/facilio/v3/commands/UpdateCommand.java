@@ -6,11 +6,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 
 import java.util.HashMap;
@@ -27,8 +27,8 @@ public class UpdateCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        Map<String, List<V3Context>> recordMap = (Map<String, List<V3Context>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         //copied from GenericUpdateModuleDataCommand
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -42,19 +42,19 @@ public class UpdateCommand extends FacilioCommand {
         Map<Long, List<UpdateChangeSet>> allChangesets = new HashMap<>();
         int totalCount = 0;
 
-        for (ModuleBaseWithCustomFields record: recordMap.get(module.getName())) {
+        for (V3Context record: recordMap.get(module.getName())) {
             if(record == null || record.getId() < 0) {
                 continue;
             }
 
             long recordId = record.getId();
 
-            UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+            UpdateRecordBuilder<V3Context> updateBuilder = new UpdateRecordBuilder<V3Context>()
                     .module(module)
                     .fields(fields)
                     .andCondition(CriteriaAPI.getIdCondition(recordId, module));
 
-            updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+            updateBuilder.withChangeSet(V3Context.class);
 
             updateBuilder.ignoreSplNullHandling();
             totalCount += updateBuilder.update(record);
