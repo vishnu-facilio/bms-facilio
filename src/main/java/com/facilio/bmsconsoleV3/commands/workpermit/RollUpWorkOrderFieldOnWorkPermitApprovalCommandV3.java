@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands.workpermit;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;

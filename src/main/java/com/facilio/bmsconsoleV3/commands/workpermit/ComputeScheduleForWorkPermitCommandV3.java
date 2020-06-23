@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;

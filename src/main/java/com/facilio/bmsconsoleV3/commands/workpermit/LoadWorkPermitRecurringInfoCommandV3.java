@@ -2,9 +2,8 @@ package com.facilio.bmsconsoleV3.commands.workpermit;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
-import com.facilio.bmsconsoleV3.context.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;

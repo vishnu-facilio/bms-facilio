@@ -38,6 +38,24 @@ public enum CommonActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             return "Approval entry";
         }
+    },
+    ADD_RECORD(74) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "added Record";
+        }
+    },
+    UPDATE_RECORD(75) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "updated Record";
+        }
+    },
+    EMAIL_RECORD(76) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "emailed.";
+        }
     }
     ;
 

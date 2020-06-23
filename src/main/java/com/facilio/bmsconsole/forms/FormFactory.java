@@ -384,7 +384,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
-				.put(FacilioConstants.ContextNames.WORKPERMIT, getFormMap(workPermitForm))
+				.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, getFormMap(workPermitForm))
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
@@ -1848,7 +1848,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("WORK PERMIT");
 		form.setName("default_workpermit_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getWorkPermitFormFields());
 		form.setFormType(FormType.WEB);
@@ -1859,7 +1859,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("WORK PERMIT");
 		form.setName("default_workpermit_portal");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPortalWorkPermitFormFields());
 		form.setFormType(FormType.PORTAL);

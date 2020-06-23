@@ -79,7 +79,7 @@ public class PageFactory {
 				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
 			case ContextNames.AGENT_ALARM:
 				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
-			case ContextNames.WORKPERMIT:
+			case ContextNames.WorkPermit.WORKPERMIT:
 				return WorkpermitPageFactory.getWorkPermitPage((WorkPermitContext) record);
 			case ContextNames.VENDORS:
 				return VendorPageFactory.getVendorPage((VendorContext) record);

@@ -17,7 +17,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
 
 public class WorkPermitAction extends FacilioAction {
 
@@ -236,7 +235,7 @@ private static final long serialVersionUID = 1L;
 		chain.execute();
 		
 		WorkPermitContext workPermitContext = (WorkPermitContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.WORKPERMIT, workPermitContext);
+		setResult(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, workPermitContext);
 		
 		return SUCCESS;
 	}

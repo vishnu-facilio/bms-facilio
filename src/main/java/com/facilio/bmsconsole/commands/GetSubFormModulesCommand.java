@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +49,7 @@ public class GetSubFormModulesCommand extends FacilioCommand {
           return Arrays.asList(modBean.getModule("vendorsNotes"), modBean.getModule(FacilioConstants.ContextNames.INSURANCE));
           
         case FacilioConstants.ContextNames.WORK_ORDER:
-            return Arrays.asList(modBean.getModule("ticketnotes"), modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+            return Arrays.asList(modBean.getModule("ticketnotes"), modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
             
         case FacilioConstants.ContextNames.SAFETY_PLAN:
             return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD));

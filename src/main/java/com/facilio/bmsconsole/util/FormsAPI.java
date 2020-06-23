@@ -706,7 +706,7 @@ public class FormsAPI {
 					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
 				}
 				break;
-			case ContextNames.WORKPERMIT:
+			case ContextNames.WorkPermit.WORKPERMIT:
 				fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
 				fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
 				break;

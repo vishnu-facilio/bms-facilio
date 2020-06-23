@@ -9,7 +9,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
@@ -17,7 +16,7 @@ public class WorkPermitScopingConfig extends ModuleScopingConfiguration {
     public void addScopingConfiguration() {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule workPermitModule = modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT);
+            FacilioModule workPermitModule = modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT);
 
             //adding vendor scope in vendor portal
             long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);

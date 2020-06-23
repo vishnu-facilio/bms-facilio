@@ -110,7 +110,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.VISITOR_LOGGING, getVisitorLogModule());
 		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
         moduleMap.put(ContextNames.CONTACT, getContactModule());
-		moduleMap.put(FacilioConstants.ContextNames.WORKPERMIT, getWorkPermitModule());
+		moduleMap.put(ContextNames.WorkPermit.WORKPERMIT, getWorkPermitModule());
 		moduleMap.put(ContextNames.OCCUPANT, getOccupantModule());
 		moduleMap.put(ContextNames.SERVICE_REQUEST, getServiceRequestModule());
 		moduleMap.put(ContextNames.VENDOR_DOCUMENTS, getVendorDocumentsModule());
@@ -3235,7 +3235,7 @@ public class ModuleFactory {
 	public static FacilioModule getWorkPermitModule()
 	{
 		FacilioModule module=new FacilioModule();
-		module.setName(ContextNames.WORKPERMIT);
+		module.setName(ContextNames.WorkPermit.WORKPERMIT);
 		module.setDisplayName("Work Permit");
 		module.setTableName("WorkPermit");
 		return module;

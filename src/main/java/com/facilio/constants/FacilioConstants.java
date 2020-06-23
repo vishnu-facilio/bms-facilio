@@ -28,6 +28,10 @@ import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -1547,7 +1551,6 @@ public class FacilioConstants {
 		public static final String WATCHLIST = "watchlist";
 		
 		public static final String WORKPERMIT_RECORDS = "workPermitRecords";
-		public static final String WORKPERMIT = "workpermit";
 		public static final String PORTAL_USER_TYPE = "portalUserType";
 		public static final String IS_VENDOR_PORTAL = "isVendorPortal";
 		public static final String IS_TENANT_PORTAL = "isTenantPortal";
@@ -1669,6 +1672,16 @@ public class FacilioConstants {
 		public static final String MODULE_STATE = "moduleState";
 		public static final String TERMS_NAME = "termsName";
 
+		public static class WorkPermit {
+			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
+			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
+			public static final String WORK_PERMIT_CHECKLIST = "workpermitchecklist";
+			public static final String WORK_PERMIT_TYPE = "workpermittype";
+			public static final String WORK_PERMIT_ACTIVITY = "workpermitactivity";
+			public static final String WORK_PERMIT_NOTES = "workpermitnotes";
+			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
+			public static final String WORKPERMIT = "workpermit";
+		}
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1865,7 +1878,6 @@ public class FacilioConstants {
 			classMap.put(CONTACT, ContactsContext.class);
 			classMap.put(INSURANCE, InsuranceContext.class);
 			classMap.put(WATCHLIST, WatchListContext.class);
-			classMap.put(WORKPERMIT, WorkPermitContext.class);
 			classMap.put(PRINTERS,PrinterContext.class);
 
 			classMap.put(OCCUPANT, OccupantsContext.class);
@@ -1911,6 +1923,13 @@ public class FacilioConstants {
 			classMap.put(TAX_GROUPS, TaxGroupContext.class);
 			classMap.put(QUOTATION_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
 			classMap.put(QUOTATION_ACTIVITY, ActivityContext.class);
+
+			classMap.put(WorkPermit.WORKPERMIT, WorkPermitContext.class);
+			classMap.put(WorkPermit.WORK_PERMIT_CHECKLIST, WorkPermitChecklistContext.class);
+			classMap.put(WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, WorkPermitTypeChecklistContext.class);
+			classMap.put(WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, WorkPermitTypeChecklistCategoryContext.class);
+			classMap.put(WorkPermit.WORK_PERMIT_TYPE, WorkPermitTypeContext.class);
+			classMap.put(WorkPermit.WORK_PERMIT_ACTIVITY, ActivityContext.class);
 
 			return classMap;
 		}

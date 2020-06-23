@@ -26,6 +26,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoC
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;

@@ -637,7 +637,7 @@ public class ViewFactory {
 		views.put("myRequested", getMyRequestedWorkPermitView().setOrder(order++));
 		views.put("requested", getRequestedWorkPermitView().setOrder(order++));
 		
-		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
+		viewsMap.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();

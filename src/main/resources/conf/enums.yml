@@ -84,3 +84,9 @@ enums:
 
   - name : FaultType
     enumClassName: com.facilio.bmsconsole.enums.FaultType
+
+  - name: ValidationType
+    enumClassName: com.facilio.bmsconsoleV3.context.workpermit.ValidationType
+
+  - name: ChecklistRequired
+    enumClassName: com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext$Required

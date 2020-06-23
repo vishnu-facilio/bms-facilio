@@ -38,7 +38,7 @@ public interface ActivityType {
 		for (ActivityType type: CommonActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 73
+		// Max number = 76
 
 		return activityMap;
 	}
