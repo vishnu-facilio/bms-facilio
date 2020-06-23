@@ -4,8 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -210,7 +209,7 @@ public class QuotationAPI {
         if (location != null) {
             if (location.getId() > 0) {
                 if (lookupValueIsNotEmpty(quotation.getTenant())) {
-                    TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
+                    V3TenantContext tenant = V3TenantsAPI.getTenant(quotation.getTenant().getId());
                     location.setName(tenant.getName());
                 }  else {
                     location.setName(quotation.getSubject() + "_location");
@@ -222,7 +221,7 @@ public class QuotationAPI {
                 chain.execute();
             } else {
                 if (lookupValueIsNotEmpty(quotation.getTenant())) {
-                    TenantContext tenant = TenantsAPI.getTenant(quotation.getTenant().getId());
+                    V3TenantContext tenant = V3TenantsAPI.getTenant(quotation.getTenant().getId());
                     location.setName(tenant.getName());
                 }  else {
                     location.setName(quotation.getSubject() + "_location");
@@ -258,7 +257,6 @@ public class QuotationAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
-        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
         V3RecordAPI.updateRecord(updateTaxContext, module, fields);
     }
 
