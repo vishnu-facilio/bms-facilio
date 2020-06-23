@@ -191,6 +191,12 @@ public class ViewFactory {
 		views.put("active", getAssetsByState("Active").setOrder(order++));
 		views.put("retired", getAssetsByState("Retired").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ASSET, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllEnergyMetersView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ENERGY_METER, views);
+
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -1439,6 +1445,16 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Assets");
+		allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	
+	private static FacilioView getAllEnergyMetersView() {
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Energy Meters");
 		allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 

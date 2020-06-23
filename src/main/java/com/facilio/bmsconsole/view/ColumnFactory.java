@@ -45,6 +45,7 @@ public class ColumnFactory {
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
+		columnMap.put("energymeter-default", getDefaultAssetsColumns());
 		columnMap.put("tenant-default", getDefaultTenantsColumns());
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
