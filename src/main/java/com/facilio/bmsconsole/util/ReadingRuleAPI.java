@@ -20,11 +20,15 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -45,6 +49,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.workflows.context.ExpressionContext;
@@ -923,4 +928,34 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 
 			return resourcesWithCount;
 		}
+	
+	public static FacilioContext addAdditionalPropsForRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, Context context, RuleType... ruleTypes) {
+		
+		FacilioContext instantParallelWorkflowRuleJobContext = new FacilioContext();
+		HashMap<String, Object> workflowRuleExecutionMap = new HashMap<String, Object>();	
+		//workflowRuleExecutionMap.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, workflowRulesForInstantJobs);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RECORD, record);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.CHANGE_SET, currentChangeSet);
+		//workflowRuleExecutionMap.put(FacilioConstants.ContextNames.PLACE_HOLDER, recordPlaceHolders);
+		//workflowRuleExecutionMap.put(FacilioConstants.ContextNames.PROPAGATE_ERROR, propagateError);
+		//workflowRuleExecutionMap.put(FacilioConstants.ContextNames.WORKFLOW_RULE_CACHE_MAP, workflowRuleCacheMap);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RULE_TYPES, ruleTypes);
+		
+		FacilioContext recordContextFilteredForRuleExecution = new FacilioContext();
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META));
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB, (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB));
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META));	
+		recordContextFilteredForRuleExecution.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT));	
+		recordContextFilteredForRuleExecution.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META));	
+		recordContextFilteredForRuleExecution.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));	
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE));	
+		recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
+
+		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, recordContextFilteredForRuleExecution);
+		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);
+		return instantParallelWorkflowRuleJobContext;		
+	}
 }

@@ -918,6 +918,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_PARALLEL_RULE_EXECUTION_MAP = "workflowParallelRuleExecutionMap";
 		public static final String RECORD_CONTEXT_FOR_RULE_EXECUTION = "recordContextForRuleExecution";
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
+		public static final String STOP_PARALLEL_RULE_EXECUTION= "stopParallelRuleExecution";
 		public static final String PARENT_RULE_FIELD = "parentRuleField";
 		public static final String ON_SUCCESS_FIELD = "onSuccessField";
 		public static final String WORKFLOW_RULE_CACHE_MAP = "workflowRuleCacheMap";

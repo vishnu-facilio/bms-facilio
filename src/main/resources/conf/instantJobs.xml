@@ -3,6 +3,7 @@
     <!--  job name='test' classname= 'com.facilio.bmsconsole.jobs.TestJob' transactionTimeout='1800'/ -->
     <job name='PostFormulaCalculationJob' classname= 'com.facilio.bmsconsole.instant.jobs.PostFormulaCalculationJob' transactionTimeout='300'/>
     <job name='ParallelWorkflowRuleExecutionJob' classname= 'com.facilio.bmsconsole.instant.jobs.ParallelWorkflowRuleExecutionJob' transactionTimeout='300'/>
+    <job name='ParallelRecordBasedWorkflowRuleExecutionJob' classname= 'com.facilio.bmsconsole.instant.jobs.ParallelRecordBasedWorkflowRuleExecutionJob' transactionTimeout='900'/>
     <job name='ExecuteBulkRollUpFieldJob' classname= 'com.facilio.bmsconsole.instant.jobs.ExecuteBulkRollUpFieldJob' transactionTimeout='900'/>
     <job name='ForkedChain' classname= 'com.facilio.bmsconsole.instant.jobs.ForkedChainJob' transactionTimeout='300'/>
     <job name='ControllerActivityWatcher' classname= 'com.facilio.bmsconsole.instant.jobs.ControllerActivityWatcherJob' transactionTimeout='900'/>

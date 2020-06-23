@@ -985,6 +985,45 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
+	public static LinkedHashMap<RuleType, List<WorkflowRuleContext>> groupWorkflowRulesByRuletype(List<WorkflowRuleContext> workflowRules) throws Exception {
+
+		LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = new LinkedHashMap<RuleType, List<WorkflowRuleContext>>();
+		for(WorkflowRuleContext workflowRule: workflowRules) {
+			List<WorkflowRuleContext> ruleTypeSpecificWorkflowRules = ruleTypeVsWorkflowRules.get(workflowRule.getRuleTypeEnum());
+			if(ruleTypeSpecificWorkflowRules == null || ruleTypeSpecificWorkflowRules.isEmpty()) {
+				ruleTypeSpecificWorkflowRules = new LinkedList<WorkflowRuleContext>();
+				ruleTypeVsWorkflowRules.put(workflowRule.getRuleTypeEnum(), ruleTypeSpecificWorkflowRules);
+			}
+			ruleTypeSpecificWorkflowRules.add(workflowRule);
+		}
+		return ruleTypeVsWorkflowRules;
+	}
+	
+	public static void groupWorkflowRulesByInstantJobs(LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules, List<WorkflowRuleContext> workflowRulesExcludingInstantJobRuleTypes, List<WorkflowRuleContext> workflowRulesForInstantJobs) throws Exception {
+		
+		for(RuleType ruleType:ruleTypeVsWorkflowRules.keySet()) {
+			List<WorkflowRuleContext> typeSpecificWorkflowRules = ruleTypeVsWorkflowRules.get(ruleType);
+			if(typeSpecificWorkflowRules != null && !typeSpecificWorkflowRules.isEmpty()) {
+				List<RuleType> instantJobRuleTypes = Arrays.asList(getAllowedInstantJobWorkflowRuleTypes());
+				if(instantJobRuleTypes != null && !instantJobRuleTypes.isEmpty() && instantJobRuleTypes.contains(ruleType)) {
+					workflowRulesForInstantJobs.addAll(typeSpecificWorkflowRules);
+				}
+				else {
+					workflowRulesExcludingInstantJobRuleTypes.addAll(typeSpecificWorkflowRules);
+				}
+			}						
+		}
+	}
+	
+	public static RuleType[] getAllowedInstantJobWorkflowRuleTypes(){
+		ArrayList<RuleType> ruleTypeList = new ArrayList<RuleType>();
+		ruleTypeList.add(RuleType.ALARM_TRIGGER_RULE);
+		ruleTypeList.add(RuleType.READING_RULE);
+		
+		RuleType[] ruleTypes = new RuleType[ruleTypeList.size()];
+		return ruleTypeList.toArray(ruleTypes);
+	}	
+	
 	public static WorkflowRuleContext getWorkflowRuleByRuletype(long parentRuleId,RuleType ruletype) throws Exception {
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
