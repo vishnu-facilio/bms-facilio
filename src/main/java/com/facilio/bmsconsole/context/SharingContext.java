@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 import java.util.function.Function;
@@ -94,11 +95,26 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 				}
 				break;
 			case TENANT:
-				if (permission.getCompanyId() > 0) {
-					TenantContext tenant = PeopleAPI.getTenantForUser(user.getOuid());
-					if (tenant != null) {
-						if (tenant.getId() == permission.getCompanyId()) {
-							return true;
+				if (permission.getFieldId() > 0) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = modBean.getField(permission.getFieldId());
+					if (field instanceof LookupField && ((LookupField) field).getLookupModule().getName().equals("tenant")) {
+						TenantContext tenantContext = null;
+						Object obj = FieldUtil.getAsProperties(object).get(field.getName());
+						if (obj instanceof TenantContext) {
+							tenantContext = (TenantContext) obj;
+						}
+						else if (obj instanceof Map) {
+							tenantContext = FieldUtil.getAsBeanFromMap((Map<String, Object>) obj, TenantContext.class);
+						}
+
+						if (tenantContext != null) {
+							TenantContext tenantForUser = PeopleAPI.getTenantForUser(user.getOuid());
+							if (tenantForUser != null) {
+								if (tenantForUser.getId() == tenantContext.getId()) {
+									return true;
+								}
+							}
 						}
 					}
 				}
@@ -158,22 +174,38 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					roleIds.add(sharingContext.getRoleId());
 					break;
 
-				case FIELD:
+				case FIELD: {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field = modBean.getField(sharingContext.getFieldId());
 					// todo check here
-					Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
+					Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
 					if (userObj != null) {
 						Long ouid = (Long) userObj.get("id");
 						map.put("permisionId", ouid);
 						ouIds.add(ouid);
 					}
 					break;
+				}
 
-				case TENANT:
-					map.put("tenantId", sharingContext.getCompanyId());
-					tenantIds.add(sharingContext.getCompanyId());
+				case TENANT: {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = modBean.getField(sharingContext.getFieldId());
+					if (field instanceof LookupField && ((LookupField) field).getLookupModule().getName().equals("tenant")) {
+						TenantContext tenantContext = null;
+						Object obj = FieldUtil.getAsProperties(object).get(field.getName());
+						if (obj instanceof TenantContext) {
+							tenantContext = (TenantContext) obj;
+						} else if (obj instanceof Map) {
+							tenantContext = FieldUtil.getAsBeanFromMap((Map<String, Object>) obj, TenantContext.class);
+						}
+
+						if (tenantContext != null) {
+							map.put("tenantId", tenantContext.getId());
+							tenantIds.add(tenantContext.getId());
+						}
+					}
 					break;
+				}
 
 				case APP:
 					map.put("permissionId", sharingContext.getAppType());

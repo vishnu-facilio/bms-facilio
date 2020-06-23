@@ -151,13 +151,11 @@ public class SingleSharingContext implements Serializable {
 					builder.append(groupId);
 					break;
 				case FIELD:
+				case TENANT:
 					builder.append(fieldId);
 					break;
 				case APP:
 					builder.append(appType);
-					break;
-				case TENANT:
-					builder.append(companyId);
 					break;
 			}
 		}

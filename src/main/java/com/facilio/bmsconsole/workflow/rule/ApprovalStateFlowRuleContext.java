@@ -56,6 +56,7 @@ public class ApprovalStateFlowRuleContext extends AbstractStateFlowRuleContext {
         info.put("status", status.getDisplayName());
         info.put("name", getName());
         info.put("enteredIntoApprovalProcess", true);
+        info.put("ruleId", getId());
         if (AccountUtil.getCurrentUser() != null) {
             info.put("user", AccountUtil.getCurrentUser().getId());
         }

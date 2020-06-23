@@ -151,6 +151,8 @@ public class ApprovalAction extends FacilioAction {
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.ACTIVITY_LIST, context.get(FacilioConstants.ContextNames.ACTIVITY_LIST));
+		setResult(FacilioConstants.ContextNames.PICKLIST, context.get(FacilioConstants.ContextNames.PICKLIST));
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
 
 		return SUCCESS;
 	}
