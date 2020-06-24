@@ -259,15 +259,25 @@ public class AssetDepreciationAPI {
                 currentAmount = totalPrice;
             }
 
+            List<AssetDepreciationCalculationContext> list = new ArrayList<>();
             if (lastCalculation != null) {
                 date = lastCalculation.getCalculatedDate();
             }
+            else {
+                if (date == -1) {
+                    throw new IllegalArgumentException("Start date cannot be empty");
+                }
 
-            if (date == -1) {
-                throw new IllegalArgumentException("Start date cannot be empty");
+                // add initial depreciation
+                AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
+                newlyCalculated.setAsset(assetContext);
+                newlyCalculated.setCalculatedDate(DateTimeUtil.getMonthStartTimeOf(date));
+                newlyCalculated.setCurrentPrice(currentAmount);
+                newlyCalculated.setDepreciatedAmount(0);
+                newlyCalculated.setDepreciationId(assetDepreciation.getId());
+                list.add(newlyCalculated);
             }
 
-            List<AssetDepreciationCalculationContext> list = new ArrayList<>();
             while (true) {
 
                 long nextDate = assetDepreciation.nextDate(date);
@@ -286,7 +296,7 @@ public class AssetDepreciationAPI {
 
                 AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
                 newlyCalculated.setAsset(assetContext);
-                newlyCalculated.setCalculatedDate(nextDate);
+                newlyCalculated.setCalculatedDate(DateTimeUtil.getMonthStartTimeOf(nextDate));
                 newlyCalculated.setCurrentPrice(newPrice);
                 newlyCalculated.setDepreciatedAmount(currentAmount - newPrice);
                 newlyCalculated.setDepreciationId(assetDepreciation.getId());
