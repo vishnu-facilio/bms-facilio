@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,12 @@ public class ApprovalPageFactory extends PageFactory {
         		addApproversWidget(tab1Sec1);
         }
         addSecondaryDetailWidget(tab1Sec1);
-        addCommonSubModuleWidget(tab1Sec1, module, record);
+        
+        HashMap<String, String> titles = new HashMap<>();
+        titles.put("notes", "Comment");
+        titles.put("documents", "Attachment");
+
+        addCommonSubModuleWidget(tab1Sec1, module, record, titles);
 
         return page;
 	}

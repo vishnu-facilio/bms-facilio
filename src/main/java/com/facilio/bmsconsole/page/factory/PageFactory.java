@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
+import java.util.HashMap;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -119,7 +120,7 @@ public class PageFactory {
 		return null;
 	}
 	
-	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap) throws Exception {
 		
 		List<Long> moduleIds = module.getExtendedModuleIds();
 		
@@ -144,15 +145,31 @@ public class PageFactory {
 		
 		PageWidget notesWidget = new PageWidget();
 		notesWidget.setWidgetType(WidgetType.COMMENT);
-		subModuleGroup.addToWidget(notesWidget);
 		
 		PageWidget attachmentWidget = new PageWidget();
 		attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
+		
+		if (titleMap != null) {
+			String notesTitle = (String) titleMap.get("notes");
+			String documentsTitle = (String) titleMap.get("documents");
+			if(notesTitle != null) {
+				notesWidget.setTitle(notesTitle);
+			}
+			if(documentsTitle != null) {
+				attachmentWidget.setTitle(documentsTitle);
+			}
+		}
+		
+		subModuleGroup.addToWidget(notesWidget);
 		subModuleGroup.addToWidget(attachmentWidget);
 
 		return subModuleGroup;
 	}
 	
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
+		return addCommonSubModuleWidget(section, module, record, null);
+	}
+
 	protected static void addAssetReadingChart(Section section, long reportId, String title) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "assetReadingWidget");
 		cardWidget.addToLayoutParams(section, 24, 14);
