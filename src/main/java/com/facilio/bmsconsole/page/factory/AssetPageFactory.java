@@ -2,6 +2,7 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.page.Page;
@@ -176,10 +178,27 @@ public class AssetPageFactory extends PageFactory {
 
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
 				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+					AssetDepreciationContext assetDepreciation = AssetDepreciationAPI.getDepreciationOfAsset(asset.getId());
 					fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
 					Criteria depreciationCostCriteria = new Criteria();
 					depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
+					switch(assetDepreciation.getFrequencyTypeEnum()) {
+					case MONTHLY:
+						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
+						break;
+					case QUARTERLY:
+						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"3",DateAggregateOperator.QUARTERLY);
+						break;
+					case HALF_YEARLY:
+						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"6",DateAggregateOperator.QUARTERLY);
+						break;
+					case YEARLY:
+						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"12",DateAggregateOperator.YEAR);
+						break;
+					default:
+						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
+						break;
+				}
 				}
 			}
 		}
@@ -409,11 +428,14 @@ public class AssetPageFactory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addDepreciationCostTrendWidget(Section section, Criteria criteria) {
+	private static void addDepreciationCostTrendWidget(Section section, Criteria criteria, DateOperators dateoperator,String dateOperatorValue, DateAggregateOperator xAggr) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addCardType(CardType.DEPRECIATION_COST_TREND);
-		addChartParams(cardWidget, "line", DateAggregateOperator.MONTHANDYEAR, "calculatedDate", NumberAggregateOperator.SUM, "currentPrice", null , DateOperators.CURRENT_YEAR, null, criteria);
+		List<String> yFields = new ArrayList<>();
+		yFields.add("currentPrice");
+		yFields.add("depreciatedAmount");
+		addChartParams(cardWidget, "line", xAggr, "calculatedDate", NumberAggregateOperator.SUM, yFields, null , dateoperator, dateOperatorValue, criteria);
 		section.addWidget(cardWidget);
 	}
 	
