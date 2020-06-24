@@ -11,10 +11,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -44,11 +44,10 @@ import com.facilio.bmsconsole.util.ImageScaleUtil;
 import com.facilio.fs.FileInfo;
 
 public class S3FileStore extends FileStore {
-	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(S3FileStore.class.getName());
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static final String PRIVATE_KEY_FILE_PATH = System.getProperty("user.home")+"/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
 	private static final long EXPIRATION = 48 * 60* 60 * 1000;
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd/");
 
 
 	S3FileStore(long orgId, long userId) {
@@ -59,14 +58,20 @@ public class S3FileStore extends FileStore {
 	private static final String FILES_DIR = "files";
 
 	@Override
-	protected String getRootPath() {
-		String rootPath;
-		if(getOrgId() > 0) {
-			rootPath = getOrgId() + File.separator + FILES_DIR;
-		} else {
-			rootPath = getOrgId() + File.separator + DATE_FORMAT.format(new Date()) + FILES_DIR;
+	protected String getRootPath(String namespace) {
+		NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace in getting root path");
+		StringBuilder rootPath = new StringBuilder();
+		rootPath.append(getOrgId())
+				.append(File.separator);
+		if(namespaceConfig.isDailyDirectoryNeeded() || getOrgId() <= 0 /* The 2nd condition is Temp fix for backward compatibility. Will remove when I have separate namespace for instant jobs*/) {
+			rootPath.append(DATE_FORMAT.format(new Date()))
+					.append(File.separator);
 		}
-		return rootPath;
+		rootPath.append(FILES_DIR)
+				.append(File.separator)
+				.append(namespace);
+		return rootPath.toString();
 	}
 
 	private String getBucketName() {
@@ -77,8 +82,8 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public long addFile(String fileName, File file, String contentType) throws Exception {
-		return this.addFile(fileName, file, contentType, false);
+	public long addFile(String namespace, String fileName, File file, String contentType) throws Exception {
+		return this.addFile(namespace, fileName, file, contentType, false);
 	}
 	
 	public static String getURL( String bucket, String filePath, File file) throws Exception {
@@ -87,39 +92,40 @@ public class S3FileStore extends FileStore {
 		return s3Client.getResourceUrl(bucket, filePath);
 	}
 
-	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+	private long addFile(String namespace, String fileName, File file, String contentType, boolean isOrphan) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName, false);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileId = addDummyFileEntry(namespace, fileName, false);
+		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = file.length();
 
 		try {
 			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
 			if (rs != null) {
-				updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 
-				addComppressedFile(fileId, fileName, file, contentType);
+				addComppressedFile(namespace, fileId, fileName, file, contentType);
 
 				return fileId;
 			}
 			else {
-				deleteFileEntry(fileId);
+				deleteFileEntry(namespace, fileId);
 				return -1;
 			}
 		} catch (Exception e) {
-			deleteFileEntry(fileId);
+			deleteFileEntry(namespace, fileId);
 			throw e;
 		}
 	}
 
-	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType, resize, true);
+	@Override
+	public long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType, resize, true);
 	}
 
-	private long addFile(String fileName, File file, String contentType, int[] resize, boolean isOrphaned) throws Exception {
-		long fileId = this.addFile(fileName, file, contentType, isOrphaned);
+	private long addFile(String namespace, String fileName, File file, String contentType, int[] resize, boolean isOrphaned) throws Exception {
+		long fileId = this.addFile(namespace, fileName, file, contentType, isOrphaned);
 
 		for (int resizeVal : resize) {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();FileInputStream fis = new FileInputStream(file);) {
@@ -131,46 +137,46 @@ public class S3FileStore extends FileStore {
 					baos.flush();
 					byte[] imageInByte = baos.toByteArray();
 					try (ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);) {
-						String resizedFilePath = getRootPath() + File.separator + fileId + "-resized-" + resizeVal + "x" + resizeVal;
+						String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-resized-" + resizeVal + "x" + resizeVal;
 						PutObjectResult rs = writeStreamToS3(imageInByte, resizedFilePath);
 						if (rs != null) {
-							addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
+							addResizedFileEntry(namespace, fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 						}
 					}
 				}
 			} catch (Exception e) {
-				log.error("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 			}
 		}
 		return fileId;
 	}
 
 	@Override
-	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType, resize, false);
+	public long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType, resize, false);
 	}
 	
 	@Override
-	public long addFile(String fileName, String content, String contentType) throws Exception {
+	public long addFile(String namespace, String fileName, String content, String contentType) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName, false);
-		String filePath = getRootPath() + File.separator + fileId + "-" + fileName;
+		long fileId = addDummyFileEntry(namespace, fileName, false);
+		String filePath = getRootPath(namespace) + File.separator + fileId + "-" + fileName;
 		long fileSize = content.length();
 		
 	    try {
 	    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, content);
 	    	if (rs != null) {
-	    		updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	    		updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 	    		return fileId;
 	    	}
 	    	else {
-	    		deleteFileEntry(fileId);
+	    		deleteFileEntry(namespace, fileId);
 	    		return -1;
 	    	}
 	    } catch (Exception e) {
-	    	deleteFileEntry(fileId);
+	    	deleteFileEntry(namespace, fileId);
 	    	throw e;
 	    }
 	}
@@ -181,117 +187,65 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public InputStream readFile(long fileId) throws Exception {
-		return readFile(fileId, false);
+	public InputStream readFile(String namespace, long fileId) throws Exception {
+		return readFile(namespace, fileId, false);
 	}
 	
 	@Override
-	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
+	public InputStream readFile(String namespace, long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
 	
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
-				if (fileInfo == null) {
+		if (fileInfo == null) {
 			return null;
 		}
-		log.debug("filePath: " + getBucketName() + "" + fileInfo.getFilePath());
-		log.debug("fileUrl: " + AwsUtil.getAmazonS3Client().getUrl(getBucketName(), fileInfo.getFilePath()));
+		LOGGER.debug("filePath: " + getBucketName() + "" + fileInfo.getFilePath());
+		LOGGER.debug("fileUrl: " + AwsUtil.getAmazonS3Client().getUrl(getBucketName(), fileInfo.getFilePath()));
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
 		return so.getObjectContent();
 	}
 
 	@Override
-	public boolean deleteFile(long fileId) throws Exception {
+	public boolean deleteFile(String namespace, long fileId) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo == null) {
 			return false;
 		}
 		
-		return  deleteFiles(Collections.singletonList(fileId));
+		return  deleteFiles(namespace, Collections.singletonList(fileId));
 	}
 
 	@Override
-	public boolean deleteFiles(List<Long> fileId) throws Exception {
-		return markAsDeleted(fileId) > 0;
+	public boolean deleteFiles(String namespace, List<Long> fileId) throws Exception {
+		return markAsDeleted(namespace, fileId) > 0;
 	}
 
 	@Override
-	public boolean renameFile(long fileId, String newName) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
+	public boolean renameFile(String namespace, long fileId, String newName) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo == null) {
 			return false;
 		}
 
 		String oldFilePath = fileInfo.getFilePath();
-		String newFilePath = getRootPath() + File.separator + fileId + "-" + newName;
+		String newFilePath = getRootPath(namespace) + File.separator + fileId + "-" + newName;
 		
 		AwsUtil.getAmazonS3Client().copyObject(getBucketName(), oldFilePath, getBucketName(), newFilePath);
 		// update db entry
-		updateFileEntry(fileId, newName, newFilePath, fileInfo.getFileSize(), fileInfo.getContentType());
+		updateFileEntry(namespace, fileId, newName, newFilePath, fileInfo.getFileSize(), fileInfo.getContentType());
 		
 		// deleting old file from s3
 		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), oldFilePath);
 		return true;
 	}
-	
-//	@Override
-//	public String getPrivateUrl(long fileId) throws Exception {
-//		return AwsUtil.getConfig("app.url")+"/files/preview/" + fileId;
-//	}
-//	
-//	@Override
-//	public String getPrivateUrl(long fileId, int width) throws Exception {
-//		return AwsUtil.getConfig("app.url")+"/files/preview/" + fileId +"?width=" + width;
-		
-//		FileInfo fileInfo = getResizedFileInfo(fileId, width, width);
-//		long currentTime=System.currentTimeMillis();
-//		long bufferTime=180000;
-//		boolean insertEntry=false;
-//		
-//		if (fileInfo == null) {
-//			 fileInfo = getFileInfo(fileId);
-//			 if (fileInfo == null) {//invalid fileid scenario
-//				 return null;
-//			 }
-//			 insertEntry=true;
-//		}
-//		else {
-//			ResizedFileInfo rfi= (ResizedFileInfo)fileInfo;
-//			String url= rfi.getUrl();
-//			long expiryTime= rfi.getExpiryTime();
-//			
-//			long thresholdTime=currentTime+bufferTime; //adding 3 minutes buffer time to avoid timing issues
-//			if(thresholdTime<expiryTime && url!=null) {
-//				return url;
-//			}
-//			//if here means... need to fetch url & update entry..
-//		}
-//		
-//		String url= fetchUrl(fileInfo, getExpiration(), false);
-//		if(url==null) {
-//			return url;
-//		}
-//
-//		ResizedFileInfo rfi=(ResizedFileInfo)fileInfo;
-//		rfi.setUrl(url);
-//		rfi.setExpiryTime(currentTime+getExpiration());
-//		rfi.setWidth(width);
-//		rfi.setHeight(width);
-//		
-//		if(insertEntry) {
-//			addResizedFileEntry(rfi);
-//		}
-//		else {
-//			updateResizedFileEntry(rfi);
-//		}
-//		return url;
-//	}
+
 	@Override
-	public String getOrgiFileUrl(long fileId) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
+	public String getOrgiFileUrl(String namespace, long fileId) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo != null) {
 			return fetchUrl(fileInfo, getExpiration(), false);
 		}
@@ -299,9 +253,9 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public String getOrgiDownloadUrl(long fileId) throws Exception {
+	public String getOrgiDownloadUrl(String namespace, long fileId) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo != null) {
 			return fetchDownloadUrl(fileInfo, getExpiration());
 		}
@@ -359,7 +313,7 @@ public class S3FileStore extends FileStore {
 				String keyPairId = FacilioProperties.getConfig("key.pair.id");
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, FacilioProperties.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
-				log.info("Exception while creating signed Url", e);
+				LOGGER.info("Exception while creating signed Url", e);
 			}
 		}
 		return null;
@@ -396,7 +350,7 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public long addSecretFile(String fileName,File file, String contentType) throws Exception {
-		log.info("add secret file called : "+fileName + ":" + file.getPath() + " : "+ contentType);
+		LOGGER.info("add secret file called : "+fileName + ":" + file.getPath() + " : "+ contentType);
 		long fileId = addDummySecretFileEntry(fileName);
 		String filePath = SECRET_ROOT_PATH + File.separator + fileName;
 		long fileSize = file.length();
@@ -434,17 +388,17 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public InputStream getSecretFile(String filename) {
-		log.info("get secret file called");
+		LOGGER.info("get secret file called");
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(),SECRET_ROOT_PATH +File.separator + filename);
 		return so.getObjectContent();
 	}
 
 	@Override
-	public void addComppressedFile(long fileId,  String fileName, File file, String contentType) throws Exception {
+	public void addComppressedFile(String namespace, long fileId,  String fileName, File file, String contentType) throws Exception {
 		if (contentType.contains("image/")) {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-				String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed";
-				byte[] imageInByte = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
+				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
 				if (imageInByte != null) {
 					writeStreamToS3(imageInByte, resizedFilePath);
 				}
@@ -461,18 +415,18 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public boolean deleteFilePermenantly(long fileId) throws Exception {
+	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());
 		
-		return deleteFileEntry(fileId);
+		return deleteFileEntry(namespace, fileId);
 	}
 	
 	@Override
-	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+	public boolean deleteFilesPermanently(String namespace, List<Long> fileIds) throws Exception {
 
-		List<String> filePathList = getFilePathList(fileIds);
+		List<String> filePathList = getFilePathList(namespace, fileIds);
 		List<List<String>> partitionList = ListUtils.partition(filePathList, 1000);
 		try {
 			partitionList.forEach((List<String> chunckObjects) -> {
@@ -484,10 +438,10 @@ public class S3FileStore extends FileStore {
 			});
 		}catch(MultiObjectDeleteException e) {
 			List<DeleteError> error = e.getErrors();
-			error.forEach(del -> log.info("Object Key is : "+del.getKey() + " ErrorMessage is  : "+ del.getMessage()+"  error code : "+del.getCode()));
+			error.forEach(del -> LOGGER.info("Object Key is : "+del.getKey() + " ErrorMessage is  : "+ del.getMessage()+"  error code : "+del.getCode()));
 		}
-		log.info("size of delete rows :"+fileIds.size());
-		return deleteFileEntries(fileIds);
+		LOGGER.info("size of delete rows :"+fileIds.size());
+		return deleteFileEntries(namespace, fileIds);
 	}
 	
 }

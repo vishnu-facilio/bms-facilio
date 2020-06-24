@@ -35,13 +35,14 @@ public class V3FilePreviewCommad extends FacilioCommand {
 			if (decodedjwtClaims != null && !decodedjwtClaims.isEmpty()) {
 				long expiresAt = Long.valueOf(decodedjwtClaims.get("expiresAt"));
 				if(expiresAt == -1 || expiresAt > System.currentTimeMillis()) {
+					String namespace = decodedjwtClaims.get("namespace");
 					fileID = Long.valueOf(decodedjwtClaims.get("fileId"));
 					String modifiedHeader = request.getHeader("If-Modified-Since"); 
 					if (modifiedHeader == null) {
 						if (fileID > 0) {
 							FileStore fs = FacilioFactory.getFileStore();
 							FileInfo fileInfo;
-							fileInfo = fs.getFileInfo(fileID);
+							fileInfo = fs.getFileInfo(namespace, fileID);
 //							if (width > 0 || height > 0) {
 //								if (height < 0) {
 //									fileInfo = fs.getResizedFileInfo(fileID, width, width);

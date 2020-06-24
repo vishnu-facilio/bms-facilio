@@ -3765,8 +3765,8 @@ public class FieldFactory {
     }
 
 
-    public static List<FacilioField> getFileFields() {
-        FacilioModule module = ModuleFactory.getFilesModule();
+    public static List<FacilioField> getFileFields(String tableName) {
+        FacilioModule module = ModuleFactory.getFilesModule(tableName);
         List<FacilioField> fields = new ArrayList<>();
         
         fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));

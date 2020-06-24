@@ -61,7 +61,6 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
 		moduleMap.put("businesshours", getBusinessHoursModule());
-		moduleMap.put("files", getFilesModule());
 		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
 		moduleMap.put("form", getFormModule());
 		moduleMap.put("formFields", getFormFieldsModule());
@@ -1242,11 +1241,11 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getFilesModule() {
+	public static FacilioModule getFilesModule(String tableName) {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("files");
 		filesModule.setDisplayName("Files");
-		filesModule.setTableName("FacilioFile");
+		filesModule.setTableName(tableName);
 
 		return filesModule;
 	}

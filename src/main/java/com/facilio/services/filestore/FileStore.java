@@ -1,24 +1,21 @@
 package com.facilio.services.filestore;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -43,40 +40,106 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public abstract class FileStore {
-	
-	
+
+	public static class NamespaceConfig {
+		private static final int DEFAULT_DATA_RETENTION_PERIOD = 5; //In days
+		private NamespaceConfig (String name, String tableName, String resizedTableName, Integer dataRetention, String dailyDirectoryNeeded) {
+			Objects.requireNonNull(name, "Name cannot be null in namespace");
+			Objects.requireNonNull(tableName, "File Table Name cannot be null in namespace");
+			Objects.requireNonNull(resizedTableName, " Resized File Table Name cannot be null in namespace");
+			this.name = name;
+			this.tableName = tableName;
+			this.resizedTableName = resizedTableName;
+			this.dataRetention = dataRetention == null || dataRetention <= 0 ? DEFAULT_DATA_RETENTION_PERIOD : dataRetention;
+			this.dailyDirectoryNeeded = Boolean.valueOf(dailyDirectoryNeeded);
+		}
+
+		public String getName() {
+			return name;
+		}
+		private String name;
+
+		public String getTableName() {
+			return tableName;
+		}
+		private String tableName;
+
+		public String getResizedTableName() {
+			return resizedTableName;
+		}
+		private String resizedTableName;
+
+		public int getDataRetention() {
+			return dataRetention;
+		}
+		private int dataRetention;
+
+		public boolean isDailyDirectoryNeeded() {
+			return dailyDirectoryNeeded;
+		}
+		private boolean dailyDirectoryNeeded = false;
+	}
+	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
+	private static final Map<String, NamespaceConfig> NAMESPACES = Collections.unmodifiableMap(initNamespaces());
+	protected static final String DEFAULT_NAMESPACE = "default";
+
+	private static Map<String, NamespaceConfig> initNamespaces() {
+		try {
+			Map<String, Object> namespaceConf = FacilioUtil.loadYaml(NAMESPACE_CONF_PATH);
+			List<Map<String, Object>> namespaceConfList = (List<Map<String, Object>>) namespaceConf.get("namespaces");
+			Map<String, NamespaceConfig> namespaces = new HashMap<>();
+			for (Map<String, Object> conf : namespaceConfList) {
+				NamespaceConfig namespace = new NamespaceConfig( (String) conf.get("name"), (String) conf.get("tableName"), (String) conf.get("resizedTableName"), (Integer) conf.get("dataRetention"), (String) conf.get("dailyDirectoryNeeded"));
+				namespaces.put(namespace.getName(), namespace);
+			}
+			return namespaces;
+		} catch (Exception e) {
+			String msg = "Error occurred while parsing namespace conf : "+NAMESPACE_CONF_PATH;
+			LOGGER.error(msg, e);
+			throw new RuntimeException(msg, e);
+		}
+	}
+
+	protected static NamespaceConfig getNamespace (String namespace) {
+		return NAMESPACES.get(namespace);
+	}
+
 	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
-	
+
 	private long orgId;
 	private long userId;
 	public FileStore(long orgId, long userId) {
 		this.orgId = orgId;
 		this.userId = userId;
 	}
-	
+
 	public long getOrgId() {
 		return this.orgId;
 	}
-	
+
 	public long getUserId() {
 		return this.userId;
 	}
-	
-	protected long addDummyFileEntry(String fileName, boolean isOrphan) throws Exception {
+
+	protected long addDummyFileEntry(String namespace, String fileName, boolean isOrphan) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO FacilioFile (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME, IS_ORPHAN) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-			
+			String sql = MessageFormat.format("INSERT INTO {0} (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME, IS_ORPHAN) VALUES (?, ?, ?, ?, ?)", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, fileName);
 			pstmt.setLong(3, getUserId());
 			pstmt.setLong(4, System.currentTimeMillis());
 			pstmt.setBoolean(5, isOrphan);
-			
+
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add file");
 			}
@@ -94,9 +157,10 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
-	
-	protected boolean updateFileEntry(long fileId, String compressedFilePath, long fileSize) throws Exception {
-		
+
+	protected boolean updateFileEntry(String namespace, long fileId, String compressedFilePath, long fileSize) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -106,7 +170,7 @@ public abstract class FileStore {
 			pstmt.setLong(2, fileSize);
 			pstmt.setLong(3, fileId);
 			pstmt.setLong(4, getOrgId());
-			
+
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update file");
 			}
@@ -119,22 +183,24 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	protected boolean updateFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
-		
+
+	protected boolean updateFileEntry(String namespace, long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE FacilioFile SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?");
-			
+			String sql = MessageFormat.format("UPDATE {FacilioFile} SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql);
+
 			pstmt.setString(1, fileName);
 			pstmt.setString(2, filePath);
 			pstmt.setLong(3, fileSize);
 			pstmt.setString(4, contentType);
 			pstmt.setLong(5, fileId);
 			pstmt.setLong(6, getOrgId());
-			
+
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update file");
 			}
@@ -147,8 +213,8 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	
+
+
 	protected boolean updateResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -157,7 +223,7 @@ public abstract class FileStore {
 			conn = FacilioConnectionPool.INSTANCE.getDirectConnection(); //Getting connection from pool since this has to be done outside transaction
 			olderCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
-			
+
 			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
 			pstmt.setString(1, fileInfo.getUrl());
 			pstmt.setLong(2, fileInfo.getExpiryTime());
@@ -168,7 +234,7 @@ public abstract class FileStore {
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update file");
 			}
-			
+
 			conn.commit();
 			return true;
 		}
@@ -185,19 +251,22 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	protected boolean deleteFileEntry(long fileId) throws Exception {
+
+	protected boolean deleteFileEntry(String namespace, long fileId) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while deleting file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("DELETE FROM FacilioFile WHERE FILE_ID=? AND ORGID=?");
-			
+			String sql = MessageFormat.format("DELETE FROM {0} WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql);
+
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
-			
+
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to delete file");
 			}
@@ -210,21 +279,24 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
-	
-	protected boolean deleteFileEntries(List<Long> fileId) throws Exception {
+
+	protected boolean deleteFileEntries(String namespace, List<Long> fileId) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while deleting file entries");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("DELETE FROM FacilioFile WHERE FILE_ID=? AND ORGID=?");
-			
+			String sql = MessageFormat.format("DELETE FROM {0} WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql);
+
 			for (long id : fileId) {
 				pstmt.setLong(1, id);
 				pstmt.setLong(2, getOrgId());
 				pstmt.addBatch();
 			}
-			
+
 			pstmt.executeBatch();
 			return true;
 		}
@@ -235,13 +307,13 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	
-	public String encodeFileToBase64Binary(long fileId) throws Exception {
-		
-		
-		FileInfo fileInfo = getFileInfo(fileId);
-		
+
+
+	public String encodeFileToBase64Binary(String namespace, long fileId) throws Exception {
+
+
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
+
 		InputStream inputStream = null;
 		try {
 			inputStream = readFile(fileInfo);
@@ -259,14 +331,16 @@ public abstract class FileStore {
 		}
 		return null;
 	}
-	
-	protected boolean addResizedFileEntry(long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {
+
+	protected boolean addResizedFileEntry(String namespace, long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding resized file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
-			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
+			String sql = MessageFormat.format("INSERT INTO {0} set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?", namespaceConfig.getResizedTableName());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
@@ -278,7 +352,7 @@ public abstract class FileStore {
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add resized file");
 			}
-			
+
 			return true;
 		}
 		catch(SQLException | RuntimeException e) {
@@ -288,16 +362,19 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	
-	protected boolean addResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
+
+
+	protected boolean addResizedFileEntry(String namespace, ResizedFileInfo fileInfo) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding resized file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?, URL=?, EXPIRY_TIME=?");
-			
+			String sql = MessageFormat.format("INSERT INTO {0} set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?, URL=?, EXPIRY_TIME=?", namespaceConfig.getResizedTableName());
+			pstmt = conn.prepareStatement(sql);
+
 			pstmt.setLong(1, fileInfo.getFileId());
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, fileInfo.getWidth());
@@ -308,7 +385,7 @@ public abstract class FileStore {
 			pstmt.setLong(8, System.currentTimeMillis());
 			pstmt.setString(9, fileInfo.getUrl());
 			pstmt.setLong(10, fileInfo.getExpiryTime());
-			
+
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add resized file");
 			}
@@ -321,35 +398,37 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
-	
-	protected abstract String getRootPath();
-	
-	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
-	
-	public abstract long addFile(String fileName, File file, String contentType, int[] resize) throws Exception;
 
-	public abstract long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception;
+	protected abstract String getRootPath(String namespace);
 
-	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
-	
-	public abstract void addComppressedFile(long fileId, String fileName, File file, String contentType) throws Exception;
-	
-	public FileInfo getFileInfo(long fileId) throws Exception {
-		return getFileInfo(fileId, false);
+	public abstract long addFile(String namespace, String fileName, File file, String contentType) throws Exception;
+
+	public abstract long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
+
+	public abstract long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
+
+	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
+
+	public abstract void addComppressedFile(String namespace, long fileId, String fileName, File file, String contentType) throws Exception;
+
+	public FileInfo getFileInfo(String namespace, long fileId) throws Exception {
+		return getFileInfo(namespace, fileId, false);
 	}
-	
-	public FileInfo getFileInfo(long fileId, boolean fetchOriginal) throws Exception {
-		
+
+	public FileInfo getFileInfo(String namespace, long fileId, boolean fetchOriginal) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching file info");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM FacilioFile WHERE FILE_ID=? AND ORGID=? ORDER BY FILE_NAME");
+			String sql = MessageFormat.format("SELECT * FROM {0} WHERE FILE_ID=? AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
-			
+
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				FileInfo fileInfo = getFileInfoFromRS(rs, fetchOriginal);
@@ -364,21 +443,24 @@ public abstract class FileStore {
 		}
 		return null;
 	}
-	
-	
-	public FileInfo getResizedFileInfo(long fileId, int width, int height) throws Exception {
+
+
+	public FileInfo getResizedFileInfo(String namespace, long fileId, int width, int height) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching resized file info");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT FacilioFile.FILE_ID, FacilioFile.ORGID, FacilioFile.FILE_NAME, FacilioFile.UPLOADED_BY, FacilioFile.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE,ResizedFile.EXPIRY_TIME, ResizedFile.URL FROM ResizedFile join FacilioFile on ResizedFile.FILE_ID = FacilioFile.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
+			String sql = MessageFormat.format("SELECT {0}.FILE_ID, {0}.ORGID, {0}.FILE_NAME, {0}.UPLOADED_BY, {0}.UPLOADED_TIME, {1}.FILE_PATH, {1}.FILE_SIZE, {1}.CONTENT_TYPE, {1}.EXPIRY_TIME, {1}.URL FROM {1} join {0} on {1}.FILE_ID = {0}.FILE_ID WHERE {1}.FILE_ID=? AND {1}.ORGID=? AND {1}.WIDTH=? AND {1}.HEIGHT=?", namespaceConfig.getTableName(), namespaceConfig.getResizedTableName());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
 			pstmt.setInt(4, height);
-			
+
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				FileInfo fileInfo = getFileInfoFromRS(rs);
@@ -395,11 +477,13 @@ public abstract class FileStore {
 		}
 		return null;
 	}
-	
-	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId, Connection conn) throws Exception {
-		
+
+	public Map<Long, FileInfo> getFileInfoAsMap(String namespace, List<Long> fileId, Connection conn) throws Exception {
+
 		// TODO return compressed file by default
-		
+
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching file info as map");
 		Map<Long, FileInfo> fileMap = new HashMap<Long, FileInfo>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -409,19 +493,11 @@ public abstract class FileStore {
 				isExternalConnection = false;
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 			}
-			
-			String sql = "SELECT * FROM FacilioFile WHERE FILE_ID IN (";
-			for (int i=0; i< fileId.size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				sql += fileId.get(i);
-			}
-			sql += ") AND ORGID=? ORDER BY FILE_NAME";
-			
+
+			String sql = MessageFormat.format("SELECT * FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId), ",");
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
-			
+
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				FileInfo fileInfo = getFileInfoFromRS(rs, true);
@@ -442,29 +518,23 @@ public abstract class FileStore {
 
 		return fileMap;
 	}
-	
-	protected List<String> getFilePathList(List<Long> fileId) throws Exception {
+
+	protected List<String> getFilePathList(String namespace, List<Long> fileId) throws Exception {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching file path lisr");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			
-			String sql = "SELECT FILE_PATH FROM FacilioFile WHERE FILE_ID IN (";
-			for (int i=0; i< fileId.size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				sql += fileId.get(i);
-			}
-			sql += ") AND ORGID=? ORDER BY FILE_NAME";
-			
+
+			String sql = MessageFormat.format("SELECT FILE_PATH FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId), ",");
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
-			
+
 			List<String> filePathList = new ArrayList<String>();
-			
+
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				String filePath = rs.getString("FILE_PATH");
@@ -479,13 +549,13 @@ public abstract class FileStore {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
-	
+
 	private FileInfo getFileInfoFromRS(ResultSet rs) throws Exception {
 		return getFileInfoFromRS(rs, false);
 	}
-	
+
 	private FileInfo getFileInfoFromRS(ResultSet rs, boolean fetchOriginal) throws Exception {
-		
+
 		ResizedFileInfo fileInfo = new ResizedFileInfo();
 		fileInfo.setOrgId(rs.getLong("ORGID"));
 		fileInfo.setFileId(rs.getLong("FILE_ID"));
@@ -518,10 +588,12 @@ public abstract class FileStore {
 		catch(SQLException e) {
 //			System.err.println("No such column :"+e.getMessage());
 		}
-		
+
 		return fileInfo;
 	}
-	
+
+	//
+	// Namespaces are handled in V3 file url
 	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
 //		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
@@ -536,11 +608,11 @@ public abstract class FileStore {
 			url.append(FacilioProperties.getServerName());
 		}
 		url.append("/api/v2/");
-		
+
 		if (isPortal) {
 			url.append("service/");
 		}
-		
+
 		url.append("files/");
 		if (isDownload) {
 			url.append("download/");
@@ -549,10 +621,10 @@ public abstract class FileStore {
 			url.append("preview/");
 		}
 		url.append(fileId);
-		
+
 		if (width != -1) {
 			url.append("?width=").append(width);
-			
+
 			if (height != -1) {
 				url.append("&height=").append(height);
 			}
@@ -562,7 +634,7 @@ public abstract class FileStore {
 
 	public String getPrivateUrl(long fileId) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
-		
+
 		if (currentUser != null) {
 			return getPrivateUrl(fileId, currentUser.isPortalUser());
 		}
@@ -570,14 +642,14 @@ public abstract class FileStore {
 			return getPrivateUrl(fileId, false);
 		}
 	}
-	
+
 	public String getPrivateUrl(long fileId, boolean isPortalUser) throws Exception {
 		return getUrl(fileId, false, isPortalUser, -1, -1);
 	}
-	
+
 	public String getPrivateUrl(long fileId, int width) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
-		
+
 		if (currentUser != null) {
 			return getPrivateUrl(fileId, width, currentUser.isPortalUser());
 		}
@@ -585,11 +657,11 @@ public abstract class FileStore {
 			return getPrivateUrl(fileId, width, false);
 		}
 	}
-	
+
 	public String getPrivateUrl(long fileId, int width,boolean isPortalUser) throws Exception {
 		return getUrl(fileId, false, isPortalUser, width, -1);
 	}
-	
+
 	public String getDownloadUrl(long fileId) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
 		if (currentUser != null) {
@@ -599,22 +671,22 @@ public abstract class FileStore {
 			return getDownloadUrl(fileId, false);
 		}
 	}
-	
+
 	public String getDownloadUrl(long fileId, boolean isPortalUser) throws Exception {
 		return getUrl(fileId, true, isPortalUser, -1, -1);
 	}
 
-	public int unOrphan(List<Long> fileIds) throws SQLException {
-		List<FacilioField> fields = FieldFactory.getFileFields();
+	public int unOrphan(String namespace, List<Long> fileIds) throws SQLException {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while making files unorphan");
+		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		fields = new ArrayList<>(3);
-		fields.add(fieldMap.get("isOrphan"));
+		fields = Collections.singletonList(fieldMap.get("isOrphan"));
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(fields)
-				.table(ModuleFactory.getFilesModule().getTableName())
+				.table(namespaceConfig.getTableName())
 				;
-		Map<String, Object> props = new HashMap<>();
-		props.put("isOrphan", false);
+		Map<String, Object> props = Collections.singletonMap("isOrphan", false);
 		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
 		for (long fileId : fileIds) {
 			GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
@@ -624,9 +696,11 @@ public abstract class FileStore {
 		}
 		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
-	
-	public int markAsDeleted(List<Long> fileIds) throws SQLException {
-		List<FacilioField> fields = FieldFactory.getFileFields();
+
+	public int markAsDeleted(String namespace, List<Long> fileIds) throws SQLException {
+		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while marking files as deleted");
+		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		fields = new ArrayList<>(3);
 		fields.add(fieldMap.get("isDeleted"));
@@ -634,7 +708,7 @@ public abstract class FileStore {
 		fields.add(fieldMap.get("deletedBy"));
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(fields)
-				.table(ModuleFactory.getFilesModule().getTableName())
+				.table(namespaceConfig.getTableName())
 				;
 
 		Map<String, Object> props = new HashMap<>();
@@ -650,31 +724,35 @@ public abstract class FileStore {
 		}
 		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
-	public String orginalFileUrl (long fileId) throws Exception {
-		return getOrgiDownloadUrl(fileId);
+
+	public String orginalFileUrl (String namespace, long fileId) throws Exception {
+		return getOrgiDownloadUrl(namespace, fileId);
 	}
-	
-	public String newPreviewFileUrl (String moduleName, long fileId) throws Exception {
-		return newPreviewFileUrl(moduleName, fileId, System.currentTimeMillis() + 300000);
+
+	public String newPreviewFileUrl (String moduleName, String namespace, long fileId) throws Exception {
+		return newPreviewFileUrl(moduleName, namespace, fileId, System.currentTimeMillis() + 300000);
 	}
-	
-	public String newPreviewFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
-		String url = getUrl(moduleName, fileId, expiryTime, false);
+
+	public String newPreviewFileUrl (String moduleName, String namespace, long fileId, long expiryTime) throws Exception {
+		String url = getUrl(moduleName, namespace, fileId, expiryTime, false);
 		return url;
 	}
-	
-	public String newDownloadFileUrl (String moduleName, long fileId) throws Exception {
-		return newDownloadFileUrl(moduleName, fileId,  System.currentTimeMillis() + 300000);
+
+	public String newDownloadFileUrl (String moduleName, String namespace, long fileId) throws Exception {
+		return newDownloadFileUrl(moduleName, namespace, fileId,  System.currentTimeMillis() + 300000);
 	}
-	
-	public String newDownloadFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
-		String url = getUrl(moduleName, fileId, expiryTime, true);
+
+	public String newDownloadFileUrl (String moduleName, String namespace, long fileId, long expiryTime) throws Exception {
+		String url = getUrl(moduleName, namespace, fileId, expiryTime, true);
 		return url;
 	}
-	
-	private String getUrl (String moduleName, long fileId, long expiryTime, boolean isDownload) {
+
+	private String getUrl (String moduleName, String namespace, long fileId, long expiryTime, boolean isDownload) {
+		Objects.requireNonNull(moduleName, "Module Name cannot be null for url generation");
+		Objects.requireNonNull(namespace, "Namespace cannot be null for url generation");
 		Map<String, String> claims = new HashMap<>();
 		claims.put("moduleName", moduleName);
+		claims.put("namespace", namespace);
 		claims.put("fileId", String.valueOf(fileId));
 		claims.put("expiresAt", String.valueOf(expiryTime));
 		String token =  FileJWTUtil.generateFileJWT(claims);
@@ -696,25 +774,25 @@ public abstract class FileStore {
 		url.append("?q=");
 		return url.toString()+token;
 	}
-	public abstract InputStream readFile(long fileId) throws Exception;
-	
-	public abstract InputStream readFile(long fileId, boolean fetchOriginal) throws Exception;
-	
+	public abstract InputStream readFile(String namespace, long fileId) throws Exception;
+
+	public abstract InputStream readFile(String namespace, long fileId, boolean fetchOriginal) throws Exception;
+
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
-		
-	public abstract boolean deleteFile(long fileId) throws Exception;	// Mark As Deleted
-	
-	public abstract boolean deleteFiles(List<Long> fileId) throws Exception; 	// Mark As Deleted
-	
-	public abstract boolean deleteFilePermenantly(long fileId) throws Exception;
 
-	public abstract boolean deleteFilesPermanently(List<Long> fileIds) throws Exception;
-	
-	public abstract boolean renameFile(long fileId, String newName) throws Exception;
+	public abstract boolean deleteFile(String namespace, long fileId) throws Exception;	// Mark As Deleted
 
-	public abstract String getOrgiFileUrl(long fileId) throws Exception;
-	
-	public abstract String getOrgiDownloadUrl(long fileId) throws Exception;
+	public abstract boolean deleteFiles(String namespace, List<Long> fileId) throws Exception; 	// Mark As Deleted
+
+	public abstract boolean deleteFilePermenantly(String namespace, long fileId) throws Exception;
+
+	public abstract boolean deleteFilesPermanently(String namespace, List<Long> fileIds) throws Exception;
+
+	public abstract boolean renameFile(String namespace, long fileId, String newName) throws Exception;
+
+	public abstract String getOrgiFileUrl(String namespace, long fileId) throws Exception;
+
+	public abstract String getOrgiDownloadUrl(String namespace, long fileId) throws Exception;
 
 	public abstract boolean isFileExists(String newVersion);
 
@@ -734,10 +812,10 @@ public abstract class FileStore {
 		//TODO
 
 		List <FacilioField> fields = new ArrayList<>();
-				fields.add(FieldFactory.getField("fileName","FILE_NAME", FieldType.STRING));
-				fields.add(FieldFactory.getField("filePath","FILE_PATH", FieldType.STRING));
-				fields.add(FieldFactory.getField("fileSize","FILE_SIZE", FieldType.NUMBER));
-				fields.add(FieldFactory.getField("contentType","CONTENT_TYPE", FieldType.STRING));
+		fields.add(FieldFactory.getField("fileName","FILE_NAME", FieldType.STRING));
+		fields.add(FieldFactory.getField("filePath","FILE_PATH", FieldType.STRING));
+		fields.add(FieldFactory.getField("fileSize","FILE_SIZE", FieldType.NUMBER));
+		fields.add(FieldFactory.getField("contentType","CONTENT_TYPE", FieldType.STRING));
 		Map<String, Object> fieldsToUpdate = new HashMap<>();
 		fieldsToUpdate.put("fileName", fileName);
 		fieldsToUpdate.put("filePath", filePath);
@@ -763,7 +841,7 @@ public abstract class FileStore {
 				.select(FieldFactory.getSecretFileFields()).limit(100);
 		List<Map<String, Object>> res = genericSelectRecordBuilder.get();
 		for (Map<String,Object> row:
-			 res) {
+				res) {
 			FileInfo fileInfo = new FileInfo();
 			fileInfo.setContentType(row.get("contentType").toString());
 			fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
@@ -794,24 +872,24 @@ public abstract class FileStore {
 
 
 	public abstract boolean isSecretFileExists(String fileName);
-	
-	public byte[] writeCompressedFile(long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
+
+	public byte[] writeCompressedFile(String namespace, long fileId, File file, String contentType, ByteArrayOutputStream baos, String compressedFilePath) throws Exception {
 		if (contentType.contains("image/")) {
 			try(FileInputStream fis = new FileInputStream(file);) {
-				
+
 				BufferedImage imBuff = ImageIO.read(fis);
 				ImageScaleUtil.compressImage(imBuff, baos, contentType);
-				
+
 				byte[] imageInByte = baos.toByteArray();
 				if (imageInByte.length >= file.length()) {	// Small files may be compressed to more size bcz of metadata
 					return null;
 				}
-				
-				updateFileEntry(fileId, compressedFilePath, imageInByte.length);
-				
+
+				updateFileEntry(namespace, fileId, compressedFilePath, imageInByte.length);
+
 				baos.flush();
 				imBuff.flush();
-				
+
 				/*ResizedFileInfo info = new ResizedFileInfo();
 				info.setFileId(fileId);
 				info.setQuality(COMPRESS_QUALITY);
@@ -819,9 +897,9 @@ public abstract class FileStore {
 				info.setFileSize(imageInByte.length);
 				info.setContentType("image/png");
 				info.setGeneratedTime(System.currentTimeMillis());
-				
+
 				addResizedFileEntry(Collections.singletonList(info));*/
-				
+
 				return imageInByte;
 			}
 			catch (Exception e) {
@@ -830,12 +908,12 @@ public abstract class FileStore {
 		}
 		return null;
 	}
-	
+
 	protected int addResizedFileEntry(List<ResizedFileInfo> rfileInfos) throws Exception {
 		new GenericInsertRecordBuilder().table(ModuleFactory.getResizedFilesModule().getTableName())
-		.fields(FieldFactory.getResizedFileFields())
-		.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
+				.fields(FieldFactory.getResizedFileFields())
+				.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
 		return rfileInfos.size();
 	}
-	
+
 }

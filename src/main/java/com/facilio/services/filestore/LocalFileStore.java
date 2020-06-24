@@ -10,8 +10,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,10 +30,17 @@ public class LocalFileStore extends FileStore {
 		super(orgId, userId);
 	}
 	
-	private String rootPath;
-	
+	private static final Map<String, String> ROOT_PATHS = new ConcurrentHashMap<>();
 	@Override
-	protected String getRootPath() {
+	protected String getRootPath(String namespace) {
+		NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace in getting root path");
+		String key = namespaceConfig.getName(), dateVal = null, rootPath = null;
+		if (namespaceConfig.isDailyDirectoryNeeded()) {
+			dateVal = DATE_FORMAT.format(new Date());
+			key += "-" + dateVal;
+		}
+		rootPath = ROOT_PATHS.get(key);
 		if (rootPath == null) {
 			String localFileStorePath = FacilioProperties.getLocalFileStorePath();
 			if (StringUtils.isEmpty(localFileStorePath)) {
@@ -41,46 +48,46 @@ public class LocalFileStore extends FileStore {
 				URL fcDataFolder = classLoader.getResource("");
 				localFileStorePath = fcDataFolder.getFile();
 			}
-			rootPath = localFileStorePath + File.separator + "facilio-data" + File.separator + getOrgId() + File.separator + "files";
-
+			StringBuilder path = new StringBuilder()
+									.append(localFileStorePath)
+									.append(File.separator)
+									.append("facilio-data")
+									.append(File.separator)
+									.append(getOrgId())
+									.append(File.separator);
+			if (namespaceConfig.isDailyDirectoryNeeded()) {
+				path.append(dateVal).append(File.separator);
+			}
+			path.append("files")
+				.append(File.separator)
+				.append(namespace);
+			rootPath = path.toString();
 			File rootDir = new File(rootPath);
 			if (!(rootDir.exists() && rootDir.isDirectory())) {
 				rootDir.mkdirs();
 			}
+			ROOT_PATHS.put(key, rootPath);
 		}
 		return rootPath;
 	}
-
-	/*
-
-	select t.VIRTUAL_METER_ID as vm_id, @pv:=t.CHILD_METER_ID as c_id from (select * from Virtual_Energy_Meter_Rel order by VIRTUAL_METER_ID desc) t join (select @pv:=890168)tmp where t.VIRTUAL_METER_ID=@pv;
-
-select * from Resources where ORGID=88 and RESOURCE_TYPE=2
- select * from Assets where PARENT_ASSET_ID IS NOT NULL and ORGID=88
-select * from Energy_Meter where orgid=88
-select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
-
-
-	*
-	 */
 	
 	@Override
-	public String getOrgiDownloadUrl(long fileId) throws Exception {
+	public String getOrgiDownloadUrl(String namespace, long fileId) throws Exception {
 		return null;
 	}
 
 	@Override
 	public boolean isFileExists(String newVersion) {
-		File f = new File(getRootPath()+File.separator+"js"+File.separator+"app.js");
+		File f = new File(getRootPath(DEFAULT_NAMESPACE)+File.separator+"js"+File.separator+"app.js");
 		return f.exists();
 	}
 
-	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+	private long addFile(String namespace, String fileName, File file, String contentType, boolean isOrphan) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName, isOrphan);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileId = addDummyFileEntry(namespace, fileName, isOrphan);
+		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = file.length();
 
 		InputStream is = null;
@@ -98,12 +105,12 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 			}
 			os.flush();
 
-			updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+			updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 
-			addComppressedFile(fileId, fileName, file, contentType);
+			addComppressedFile(namespace, fileId, fileName, file, contentType);
 
 		} catch (IOException ioe) {
-			deleteFileEntry(fileId);
+			deleteFileEntry(namespace, fileId);
 			throw ioe;
 		} finally {
 			is.close();
@@ -114,27 +121,27 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 
 
 	@Override
-	public long addFile(String fileName, File file, String contentType) throws Exception {
-		return this.addFile(fileName, file, contentType, false);
+	public long addFile(String namespace, String fileName, File file, String contentType) throws Exception {
+		return this.addFile(namespace, fileName, file, contentType, false);
 	}
 	
 	@Override
-	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType);
+	public long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType);
 	}
 
 	@Override
-	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType, true);
+	public long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType, true);
 	}
 
 	@Override
-	public long addFile(String fileName, String content, String contentType) throws Exception {
+	public long addFile(String namespace, String fileName, String content, String contentType) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(fileName, false);
-		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileId = addDummyFileEntry(namespace, fileName, false);
+		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();
 		
 		InputStream is = null;
@@ -152,10 +159,10 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	        }
 	        os.flush();
 	        
-	        updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	        updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 	        
 	    } catch (IOException ioe) {
-	    	deleteFileEntry(fileId);
+	    	deleteFileEntry(namespace, fileId);
 	    	throw ioe;
 	    } finally {
 	        is.close();
@@ -164,18 +171,18 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		return fileId;
 	}
 	@Override
-	public String getOrgiFileUrl(long fileId) {
+	public String getOrgiFileUrl(String namespace, long fileId) {
 		return null;
 	}
 
 	@Override
-	public InputStream readFile(long fileId) throws Exception {
-		return readFile(fileId, false);
+	public InputStream readFile(String namespace, long fileId) throws Exception {
+		return readFile(namespace, fileId, false);
 	}
 	
 	@Override
-	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
+	public InputStream readFile(String namespace, long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
 	
@@ -188,31 +195,31 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	}
 
 	@Override
-	public boolean deleteFile(long fileId) throws Exception {
+	public boolean deleteFile(String namespace, long fileId) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo == null) {
 			return false;
 		}
 		
-		return deleteFiles(Collections.singletonList(fileId));
+		return deleteFiles(namespace, Collections.singletonList(fileId));
 		
 	}
 
 	@Override
-	public boolean deleteFiles(List<Long> fileId) throws Exception {
-		return markAsDeleted(fileId) > 0;
+	public boolean deleteFiles(String namespace, List<Long> fileId) throws Exception {
+		return markAsDeleted(namespace, fileId) > 0;
 	}
 
 	@Override
-	public boolean renameFile(long fileId, String newName) throws Exception {
+	public boolean renameFile(String namespace, long fileId, String newName) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		if (fileInfo == null) {
 			return false;
 		}
 
-		String newFilePath = getRootPath() + File.separator + fileId + "-" + newName;
+		String newFilePath = getRootPath(namespace) + File.separator + fileId + "-" + newName;
 		
 		File currentFile = new File(fileInfo.getFilePath());
 		File newFile = new File(newFilePath);
@@ -220,7 +227,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		boolean status = currentFile.renameTo(newFile);
 		if (status) {
 			// update db entry
-			updateFileEntry(fileId, newName, newFilePath, fileInfo.getFileSize(), fileInfo.getContentType());
+			updateFileEntry(namespace, fileId, newName, newFilePath, fileInfo.getFileSize(), fileInfo.getContentType());
 			return true;
 		}
 		else {
@@ -289,10 +296,10 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	}
 
 	@Override
-	public void addComppressedFile(long fileId, String fileName, File file,String contentType) throws Exception {
+	public void addComppressedFile(String namespace, long fileId, String fileName, File file,String contentType) throws Exception {
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-			String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed" +".jpg";
-			byte[] imageInBytes = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+			String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed" +".jpg";
+			byte[] imageInBytes = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
 			if (imageInBytes != null) {
 				File createFile = new File(resizedFilePath);
 				createFile.createNewFile();
@@ -304,13 +311,13 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	}
 	
 	@Override
-	public boolean deleteFilePermenantly(long fileId) throws Exception {
-		return deleteFilesPermanently(Collections.singletonList(fileId));
+	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
+		return deleteFilesPermanently(namespace, Collections.singletonList(fileId));
 	}
 	
 	@Override
-	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
-		List<String> filePathList = getFilePathList(fileIds);
+	public boolean deleteFilesPermanently(String namespace, List<Long> fileIds) throws Exception {
+		List<String> filePathList = getFilePathList(namespace, fileIds);
 		boolean status = true;
 		for(String path: filePathList) {
 			status = new File(path).delete();
@@ -319,7 +326,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 			}
 		}
 		if (status) {
-			deleteFileEntries(fileIds);
+			deleteFileEntries(namespace, fileIds);
 		}
 		return status;
 	}

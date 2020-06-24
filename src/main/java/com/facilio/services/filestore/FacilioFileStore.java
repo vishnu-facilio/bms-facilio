@@ -15,10 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 
@@ -36,40 +34,56 @@ public class FacilioFileStore extends FileStore {
 		super(orgId, userId);
 	}
 
-	private String rootPath;
-
-	
+	private static final Map<String, String> ROOT_PATHS = new ConcurrentHashMap<>();
 	@Override
-	protected String getRootPath() {
-		if(rootPath == null ) {
-			 this.rootPath = getOrgId() + File.separator + "files";
+	protected String getRootPath(String namespace) {
+		NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace in getting root path");
+		String key = namespaceConfig.getName(), dateVal = null, rootPath = null;
+		if (namespaceConfig.isDailyDirectoryNeeded()) {
+			dateVal = DATE_FORMAT.format(new Date());
+			key += "-" + dateVal;
+		}
+		rootPath = ROOT_PATHS.get(key);
+		if (rootPath == null) {
+			StringBuilder path = new StringBuilder()
+									.append(getOrgId())
+									.append(File.separator);
+			if (namespaceConfig.isDailyDirectoryNeeded()) {
+				path.append(dateVal).append(File.separator);
+			}
+			path.append("files")
+				.append(File.separator)
+				.append(namespace);
+			 rootPath = path.toString();
+			 ROOT_PATHS.put(key, rootPath);
 		}
 		return rootPath;
 	}
 
 	@Override
-	public long addFile(String fileName, File file, String contentType) throws Exception {
-		return this.addFile(fileName, file, contentType, false);
+	public long addFile(String namespace, String fileName, File file, String contentType) throws Exception {
+		return this.addFile(namespace, fileName, file, contentType, false);
 	}
 
-	private long addFile(String fileName, File file, String contentType, boolean isOrphan) throws Exception {
-		long fileId = addDummyFileEntry(fileName, isOrphan);
+	private long addFile(String namespace, String fileName, File file, String contentType, boolean isOrphan) throws Exception {
+		long fileId = addDummyFileEntry(namespace, fileName, isOrphan);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
-			addComppressedFile(fileId, fileName, file, contentType);
-			return addFile(fileId, fileName, contentInBytes, contentType);
+			addComppressedFile(namespace, fileId, fileName, file, contentType);
+			return addFile(namespace, fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
 			return -1;
 		}
 	}
 
 	@Override
-	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType, resize, false);
+	public long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType, resize, false);
 	}
 
-	private long addFile(String fileName, File file, String contentType, int[] resize, boolean isOrphan) throws Exception {
-		long fileId = this.addFile(fileName, file, contentType, isOrphan);
+	private long addFile(String namespace, String fileName, File file, String contentType, int[] resize, boolean isOrphan) throws Exception {
+		long fileId = this.addFile(namespace, fileName, file, contentType, isOrphan);
 		for (int resizeVal : resize) {
 			try {
 				if (contentType.contains("image/")) {
@@ -85,11 +99,11 @@ public class FacilioFileStore extends FileStore {
 					byte[] imageInByte = baos.toByteArray();
 					baos.close();
 
-					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
+					String resizedFilePath = getRootPath(namespace) + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
 
 					Integer statusCode = postFile(fileId, fileName, contentType, imageInByte);
 					if (statusCode == 200) {
-						addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
+						addResizedFileEntry(namespace, fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 					}
 
 
@@ -102,15 +116,15 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return addFile(fileName, file, contentType, resize, true);
+	public long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(namespace, fileName, file, contentType, resize, true);
 	}
 
 	@Override
-	public long addFile(String fileName, String content, String contentType) throws Exception {
-		long fileId = addDummyFileEntry(fileName, false);
+	public long addFile(String namespace, String fileName, String content, String contentType) throws Exception {
+		long fileId = addDummyFileEntry(namespace, fileName, false);
 		try {
-			return addFile(fileId, fileName, content.getBytes(), contentType);
+			return addFile(namespace, fileId, fileName, content.getBytes(), contentType);
 		} catch (Exception e){
 			return -1;
 		}
@@ -146,7 +160,7 @@ public class FacilioFileStore extends FileStore {
 		}
 	}
 
-	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
+	private long addFile(String namespace, long fileId, String fileName, byte[] content, String contentType) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
@@ -154,35 +168,30 @@ public class FacilioFileStore extends FileStore {
 		Integer statusCode = postFile(fileId, fileName, contentType, content);
 		if (statusCode == 200) {
 			String filePath;
-
-				filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
-				updateFileEntry(fileId, fileName, filePath, content.length, contentType);
-				return fileId;
-
-			
+			filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
+			updateFileEntry(namespace, fileId, fileName, filePath, content.length, contentType);
+			return fileId;
 		} else {
-
-				deleteFileEntry(fileId);
-
+			deleteFileEntry(namespace, fileId);
 			return -1;
 		}
 	}
 
 	@Override
-	public InputStream readFile(long fileId) throws Exception {
-		return readFile(fileId, false);
+	public InputStream readFile(String namespace, long fileId) throws Exception {
+		return readFile(namespace, fileId, false);
 	}
 	
 	@Override
-	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId, fetchOriginal);
+	public InputStream readFile(String namespace, long fileId, boolean fetchOriginal) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
 	
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		// TODO Auto-generated method stub
-		String url = FacilioProperties.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
+		String url = FacilioProperties.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8") +"&fileId=" + fileInfo.getFileId() + "&contentType=" + fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
@@ -201,25 +210,23 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public boolean deleteFile(long fileId) throws Exception {
-		ArrayList<Long> fileIds = new ArrayList<>();
-		fileIds.add(fileId);
-		return deleteFiles(fileIds);
+	public boolean deleteFile(String namespace, long fileId) throws Exception {
+		return deleteFiles(namespace, Collections.singletonList(fileId));
 	}
 
 	@Override
-	public boolean deleteFiles(List<Long> fileId) throws Exception {
-		return markAsDeleted(fileId) > 0;
+	public boolean deleteFiles(String namespace, List<Long> fileId) throws Exception {
+		return markAsDeleted(namespace, fileId) > 0;
 	}
 
 	@Override
-	public boolean renameFile(long fileId, String newName) throws Exception {
+	public boolean renameFile(String namespace, long fileId, String newName) throws Exception {
 		return false;
 	}
 	
-	private String getFileUrl(long fileId, String mode) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
-		return FacilioProperties.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
+	private String getFileUrl(String namespace, long fileId, String mode) throws Exception {
+		FileInfo fileInfo = getFileInfo(namespace, fileId);
+		return FacilioProperties.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&namespace=" + namespace + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
 	}
 
 	public static class HttpUtil {
@@ -321,15 +328,15 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public String getOrgiFileUrl(long fileId) throws Exception {
+	public String getOrgiFileUrl(String namespace, long fileId) throws Exception {
 		// TODO Auto-generated method stub
-		return getFileUrl(fileId, "perview");
+		return getFileUrl(namespace, fileId, "perview");
 	}
 
 	@Override
-	public String getOrgiDownloadUrl(long fileId) throws Exception {
+	public String getOrgiDownloadUrl(String namespace, long fileId) throws Exception {
 		// TODO Auto-generated method stub
-		return getFileUrl(fileId, "download");
+		return getFileUrl(namespace, fileId, "download");
 	}
 
 	@Override
@@ -390,11 +397,11 @@ public class FacilioFileStore extends FileStore {
 	}
 	
 	@Override
-	public void addComppressedFile(long fileId, String fileName, File file, String contentType) throws Exception {
+	public void addComppressedFile(String namespace, long fileId, String fileName, File file, String contentType) throws Exception {
 		if (contentType.contains("image/")) {
 			try(ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-				String resizedFilePath = getRootPath() + File.separator + fileId + "-compressed";
-				byte[] imageInByte = writeCompressedFile(fileId, file, contentType, baos, resizedFilePath);
+				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
+				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
 				if (imageInByte != null) {
 					postFile(fileId, fileName, contentType, imageInByte);
 				}
@@ -407,14 +414,10 @@ public class FacilioFileStore extends FileStore {
 
 		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
 		httpConn.addFormField("orgId", getOrgId() + "");
-
-
 		httpConn.addFormField("fileId", fileId + "");
 		httpConn.addFormField("fileName", fileName);
 		httpConn.addFormField("contentType", contentType);
-
 		httpConn.addFilePart("fileContent", fileName, imageInByte);
-
 		Map<String, Object> response = httpConn.finish();
 
 		Integer statusCode = (Integer) response.get("status");
@@ -423,7 +426,7 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public boolean deleteFilePermenantly(long fileId) throws Exception {
+	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
 		
 		// TODO call api to delete file
 //		return deleteFileEntry(fileId);
@@ -431,7 +434,7 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+	public boolean deleteFilesPermanently(String namespace, List<Long> fileIds) throws Exception {
 		
 		// TODO call api to delete file
 //		return deleteFileEntries(fileIds);

@@ -1,0 +1,6 @@
+namespaces :
+  - name : default
+    tableName : FacilioFile
+    resizedTableName : ResizedFile
+    dataRetention : 3 #in days #Optional. Default : 5 days
+    dailyDirectoryNeeded: false #Optional. Default : false. If true we'll create day wise root directories
