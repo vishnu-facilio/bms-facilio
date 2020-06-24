@@ -7,6 +7,7 @@ import com.facilio.db.util.DBConf;
 import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +37,14 @@ public class FacilioInstantJobScheduler {
         startExecutors();
     }
 
-    private static void startExecutors() {
-        ClassLoader classLoader = DBConf.class.getClassLoader();
-        Yaml yaml = new Yaml();
-        InputStream inputStream = classLoader.getResourceAsStream(INSTANT_JOB_EXECUTOR_FILE);
-        Map<String, Object> executorsConf = yaml.load(inputStream);
+    private static void startExecutors() throws IOException {
+        Map<String, Object> executorsConf = null;
+        try {
+            executorsConf = FacilioUtil.loadYaml(INSTANT_JOB_EXECUTOR_FILE);
+        } catch (IOException e) {
+            LOGGER.error("Error occurred while parsing "+INSTANT_JOB_EXECUTOR_FILE, e);
+            throw e;
+        }
 
         boolean isInstantJobServer = Boolean.parseBoolean(FacilioProperties.getConfig("instantJobServer"));
         List<Map<String, Object>> executorList = (List<Map<String, Object>>) executorsConf.get("executors");
