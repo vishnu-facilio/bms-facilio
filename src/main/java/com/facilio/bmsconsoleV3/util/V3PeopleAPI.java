@@ -1,6 +1,13 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.*;
@@ -197,4 +204,133 @@ public class V3PeopleAPI {
         return null;
     }
 
+    public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
+        V3PeopleContext peopleExisiting = getPeople(people.getEmail());
+        if(peopleExisiting != null && people.getId() != peopleExisiting.getId()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void rollUpModulePrimarycontactFields(long id, String moduleName, String name, String email, String phone) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+
+        FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
+        FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
+        FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
+
+        updatedfields.add(primaryEmailField);
+        updatedfields.add(primaryPhoneField);
+        updatedfields.add(primaryNameField);
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(fields)
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
+
+        Map<String, Object> value = new HashMap<>();
+        value.put("primaryContactEmail", email);
+        value.put("primaryContactPhone", phone);
+        value.put("primaryContactName", name);
+        updateBuilder.update(value);
+
+    }
+
+
+    public static void updateTenantContactAppPortalAccess(V3TenantContactContext person, String appLinkName) throws Exception {
+
+        V3TenantContactContext existingPeople = (V3TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, person.getId());
+        if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isTenantPortalAccess())){
+            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+        }
+        if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+            long appId = -1;
+            appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+            AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
+            if(appDomain != null) {
+                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
+                    if(user != null) {
+                        user.setAppDomain(appDomain);
+                        user.setApplicationId(appId);
+                        ApplicationApi.addUserInApp(user, false);
+                    }
+                    else {
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier());
+                    }
+                }
+                else {
+                    if(user != null) {
+                        ApplicationApi.deleteUserFromApp(user, appId);
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Invalid App Domain");
+            }
+        }
+    }
+
+    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier) throws Exception {
+        if(StringUtils.isEmpty(linkName)) {
+            throw new IllegalArgumentException("Invalid link name");
+        }
+        long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+
+        User user = new User();
+        user.setEmail(existingPeople.getEmail());
+        user.setPhone(existingPeople.getPhone());
+        user.setName(existingPeople.getName());
+        user.setUserVerified(false);
+        user.setInviteAcceptStatus(false);
+        user.setInvitedTime(System.currentTimeMillis());
+        user.setPeopleId(existingPeople.getId());
+        user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
+
+        user.setApplicationId(appId);
+        user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
+
+
+        AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, identifier, false, false);
+        return user;
+    }
+
+
+    public static void updatePeoplePortalAccess(V3PeopleContext person, String linkName) throws Exception {
+
+        V3PeopleContext existingPeople = (V3PeopleContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId(), V3PeopleContext.class);
+        if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
+            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+        }
+        if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+            AppDomain appDomain = null;
+            long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+            appDomain = ApplicationApi.getAppDomainForApplication(appId);
+            if(appDomain != null) {
+                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
+                    if(user != null) {
+                        user.setAppDomain(appDomain);
+                        user.setApplicationId(appId);
+                        ApplicationApi.addUserInApp(user, false);
+                    }
+                    else {
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier());
+                    }
+                }
+                else {
+                    if(user != null) {
+                        ApplicationApi.deleteUserFromApp(user, appId);
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Invalid App Domain");
+            }
+        }
+    }
 }

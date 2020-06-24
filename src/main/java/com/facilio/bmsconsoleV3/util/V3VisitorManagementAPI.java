@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
@@ -28,13 +29,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.InviteVisitorRelContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.Preference;
-import com.facilio.bmsconsole.context.VisitorInviteContext;
-import com.facilio.bmsconsole.context.VisitorSettingsContext;
-import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField;
@@ -469,32 +463,6 @@ public class V3VisitorManagementAPI {
 
 
 
-    public static void updateVisitorInviteStateToArrived(long visitorId, long visitorInviteId, String status) throws Exception {
-
-        if(visitorId > 0 && visitorInviteId > 0) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
-            List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
-
-            FacilioStatus requiredStatus = TicketAPI.getStatus(module, status);
-
-            UpdateRecordBuilder<InviteVisitorRelContext> updateBuilder = new UpdateRecordBuilder<InviteVisitorRelContext>()
-                    .module(module)
-                    .fields(fields)
-                    .andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(visitorInviteId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("VISITOR_ID", "visitorId", String.valueOf(visitorId), NumberOperators.EQUALS))
-                    ;
-            Map<String, Object> updateMap = new HashMap<>();
-            FacilioField statusField = modBean.getField("moduleState", module.getName());
-            updateMap.put("moduleState", FieldUtil.getAsProperties(requiredStatus));
-            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-            updatedfields.add(statusField);
-
-            updateBuilder.updateViaMap(updateMap);
-        }
-
-    }
-
     public static void updateVisitorLogCheckInCheckoutTime(V3VisitorLoggingContext vLog, boolean isCheckIn, long time) throws Exception {
 
         if(vLog.getId() > 0) {
@@ -558,13 +526,12 @@ public class V3VisitorManagementAPI {
                 updatedfields.add(visitorPhoneField);
             }
 
-
             UpdateRecordBuilder<V3VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<V3VisitorLoggingContext>()
                     .module(module)
                     .fields(updatedfields)
                     .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
                     ;
-
+            updateBuilder.ignoreSplNullHandling();
             updateBuilder.updateViaMap(updateMap);
         }
 
@@ -587,7 +554,7 @@ public class V3VisitorManagementAPI {
                     .fields(updatedfields)
                     .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
                     ;
-
+            updateBuilder.ignoreSplNullHandling();
             updateBuilder.updateViaMap(updateMap);
         }
 
@@ -712,6 +679,20 @@ public class V3VisitorManagementAPI {
 
     }
 
+    public static void updatevisitor(long visitorId, List<FacilioField> fields, Map<String, Object> updateMap) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+
+        UpdateRecordBuilder<V3VisitorContext> updateBuilder = new UpdateRecordBuilder<V3VisitorContext>()
+                .module(module)
+                .fields(fields)
+                .andCondition(CriteriaAPI.getIdCondition(visitorId, module))
+                ;
+        updateBuilder.ignoreSplNullHandling();
+        updateBuilder.updateViaMap(updateMap);
+
+    }
+
     public static void updateVisitorLogNDA(long logId, File file) throws Exception {
 
         if(logId > 0) {
@@ -742,62 +723,10 @@ public class V3VisitorManagementAPI {
                     .fields(updatedfields)
                     .andCondition(CriteriaAPI.getIdCondition(logId, module))
                     ;
-
+            updateBuilder.ignoreSplNullHandling();
             updateBuilder.updateViaMap(updateMap);
 
         }
-
-    }
-
-    public static void updatevisitor(long visitorId, List<FacilioField> fields, Map<String, Object> updateMap) throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
-
-        UpdateRecordBuilder<V3VisitorContext> updateBuilder = new UpdateRecordBuilder<V3VisitorContext>()
-                .module(module)
-                .fields(fields)
-                .andCondition(CriteriaAPI.getIdCondition(visitorId, module))
-                ;
-        updateBuilder.updateViaMap(updateMap);
-
-    }
-
-
-    public static WatchListContext getBlockedWatchListRecordForPhoneNumber(String phoneNumber, String email) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WATCHLIST);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.WATCHLIST);
-        SelectRecordsBuilder<WatchListContext> builder = new SelectRecordsBuilder<WatchListContext>()
-                .module(module)
-                .beanClass(WatchListContext.class)
-                .select(fields)
-                ;
-        Criteria criteria = new Criteria();
-        if(StringUtils.isNotEmpty(phoneNumber)) {
-            criteria.addAndCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
-        }
-        if(StringUtils.isNotEmpty(email)) {
-            criteria.addOrCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
-        }
-
-        builder.andCriteria(criteria);
-        //builder.andCondition(CriteriaAPI.getCondition("IS_BLOCKED", "isBlocked", "true", BooleanOperators.IS));
-
-        WatchListContext record = builder.fetchFirst();
-        return record;
-
-
-    }
-
-    public static void deleteVisitorInviteRel(long id) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
-        DeleteRecordBuilder<InviteVisitorRelContext> deleteTermsBuilder = new DeleteRecordBuilder<InviteVisitorRelContext>()
-                .module(module)
-                .andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(id), NumberOperators.EQUALS));
-        deleteTermsBuilder.delete();
-
 
     }
 

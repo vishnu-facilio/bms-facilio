@@ -104,14 +104,14 @@ public class V3RecordAPI {
         if (beanClassName == null) {
             beanClassName = V3Context.class;
         }
-        SelectRecordsBuilder<? extends V3Context> builder = new SelectRecordsBuilder<V3Context>()
+        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(module)
                 .beanClass(beanClass)
                 .select(fields)
                 .andCondition(CriteriaAPI.getIdCondition(Long.valueOf(recId), module))
                 ;
 
-        List<? extends V3Context> records = builder.get();
+        List<? extends ModuleBaseWithCustomFields> records = builder.get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records.get(0);
         }
@@ -119,6 +119,7 @@ public class V3RecordAPI {
             return null;
         }
     }
+
 
 
 }

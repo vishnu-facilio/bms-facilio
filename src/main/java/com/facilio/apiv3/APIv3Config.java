@@ -2,9 +2,7 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.apiv3.sample.*;
-import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
-import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
@@ -14,6 +12,8 @@ import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
@@ -241,6 +241,22 @@ public class APIv3Config {
                   .showStateFlowList()
                 .summary()
                   .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
+                .build();
+    }
+
+    @Module("tenantcontact")
+    public static Supplier<V3Config> getTenantContact() {
+        return () -> new V3Config(V3TenantContactContext.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getTenantContactBeforeSaveChain())
+                    .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
+                .update()
+                    .beforeSave(new CheckforPeopleDuplicationCommandV3())
+		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterUpdateChain())
+                .list()
+                    .beforeFetch(new LoadTenantcontactLookupsCommandV3())
+                .summary()
+                    .beforeFetch(new LoadTenantcontactLookupsCommandV3())
                 .build();
     }
 
