@@ -17,27 +17,29 @@ public class RestrictUneditablePropsInFieldCommand extends FacilioCommand {
 		FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField oldField = modBean.getField(field.getFieldId());
-		oldField.setDisplayName(field.getDisplayName());
 		
+		FacilioField clonedOldField = oldField.clone();
+		
+		clonedOldField.setDisplayName(field.getDisplayName());
 		
 		// set Fieldwise editable properties.
-		if(oldField instanceof NumberField) {
+		if(clonedOldField instanceof NumberField) {
 			NumberField numberField =(NumberField) field;
-			((NumberField) oldField).setUnit(numberField.getUnit());
-			((NumberField) oldField).setUnitId(numberField.getUnitId());
-			((NumberField) oldField).setMetric(numberField.getMetric());
+			((NumberField) clonedOldField).setUnit(numberField.getUnit());
+			((NumberField) clonedOldField).setUnitId(numberField.getUnitId());
+			((NumberField) clonedOldField).setMetric(numberField.getMetric());
 		}
-		else if(oldField instanceof BooleanField) {
+		else if(clonedOldField instanceof BooleanField) {
 			BooleanField booleanField =(BooleanField) field;
-			((BooleanField) oldField).setFalseVal(booleanField.getFalseVal());
-			((BooleanField) oldField).setTrueVal(booleanField.getTrueVal());
+			((BooleanField) clonedOldField).setFalseVal(booleanField.getFalseVal());
+			((BooleanField) clonedOldField).setTrueVal(booleanField.getTrueVal());
 		}
-		else if(oldField instanceof EnumField) {
+		else if(clonedOldField instanceof EnumField) {
 			EnumField enumField =(EnumField) field;
-			((EnumField) oldField).setValues(enumField.getValues());
+			((EnumField) clonedOldField).setValues(enumField.getValues());
 		}
 		
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD, oldField);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD, clonedOldField);
 		return false;
 	}
 
