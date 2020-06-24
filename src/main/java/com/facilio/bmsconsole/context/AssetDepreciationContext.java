@@ -4,7 +4,8 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class AssetDepreciationContext extends V3Context {
@@ -114,26 +115,24 @@ public class AssetDepreciationContext extends V3Context {
     }
 
     public long nextDate(long date) {
-        date = DateTimeUtil.getMonthStartTimeOf(date);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(date);
+        ZonedDateTime zdt = DateTimeUtil.getMonthStartTimeOf(DateTimeUtil.getDateTime(date));
 
         switch (frequencyType) {
             case MONTHLY:
-                calendar.add(Calendar.MONTH, 1);
-                return calendar.getTimeInMillis();
+                zdt = zdt.plus(1, ChronoUnit.MONTHS);
+                return zdt.toInstant().toEpochMilli();
 
             case QUARTERLY:
-                calendar.add(Calendar.MONTH, 3);
-                return calendar.getTimeInMillis();
+                zdt = zdt.plus(3, ChronoUnit.MONTHS);
+                return zdt.toInstant().toEpochMilli();
 
             case HALF_YEARLY:
-                calendar.add(Calendar.MONTH, 6);
-                return calendar.getTimeInMillis();
+                zdt = zdt.plus(6, ChronoUnit.MONTHS);
+                return zdt.toInstant().toEpochMilli();
 
             case YEARLY:
-                calendar.add(Calendar.YEAR, 1);
-                return calendar.getTimeInMillis();
+                zdt = zdt.plus(1, ChronoUnit.YEARS);
+                return zdt.toInstant().toEpochMilli();
 
             default:
                 throw new IllegalArgumentException("Invalid frequency type");

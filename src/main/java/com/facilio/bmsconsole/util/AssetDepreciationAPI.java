@@ -278,32 +278,32 @@ public class AssetDepreciationAPI {
                 list.add(newlyCalculated);
             }
 
-            while (true) {
+            if (assetDepreciation.isActive()) {
+                while (true) {
+                    long nextDate = assetDepreciation.nextDate(date);
+                    if (nextDate > DateTimeUtil.getDayStartTime()) {
+                        // Still time hasn't arrived to calculate
+                        break;
+                    }
 
-                long nextDate = assetDepreciation.nextDate(date);
-                if (nextDate > DateTimeUtil.getDayStartTime()) {
-                    // Still time hasn't arrived to calculate
-                    break;
+                    float totalDepreciationAmount = totalPrice;
+                    if (salvageAmount > 0) {
+                        totalDepreciationAmount -= salvageAmount;
+                    }
+
+                    float newPrice = ((Number) assetDepreciation.getDepreciationTypeEnum().nextDepreciatedUnitPrice(totalDepreciationAmount, assetDepreciation.getFrequency(), currentAmount)).floatValue();
+
+                    AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
+                    newlyCalculated.setAsset(assetContext);
+                    newlyCalculated.setCalculatedDate(nextDate);
+                    newlyCalculated.setCurrentPrice(newPrice);
+                    newlyCalculated.setDepreciatedAmount(currentAmount - newPrice);
+                    newlyCalculated.setDepreciationId(assetDepreciation.getId());
+                    list.add(newlyCalculated);
+
+                    date = nextDate;
+                    currentAmount = newPrice;
                 }
-
-
-                float totalDepreciationAmount = totalPrice;
-                if (salvageAmount > 0) {
-                    totalDepreciationAmount -= salvageAmount;
-                }
-
-                float newPrice = ((Number) assetDepreciation.getDepreciationTypeEnum().nextDepreciatedUnitPrice(totalDepreciationAmount, assetDepreciation.getFrequency(), currentAmount)).floatValue();
-
-                AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
-                newlyCalculated.setAsset(assetContext);
-                newlyCalculated.setCalculatedDate(nextDate);
-                newlyCalculated.setCurrentPrice(newPrice);
-                newlyCalculated.setDepreciatedAmount(currentAmount - newPrice);
-                newlyCalculated.setDepreciationId(assetDepreciation.getId());
-                list.add(newlyCalculated);
-
-                date = nextDate;
-                currentAmount = newPrice;
             }
             return list;
         } catch (IllegalArgumentException ex) {
