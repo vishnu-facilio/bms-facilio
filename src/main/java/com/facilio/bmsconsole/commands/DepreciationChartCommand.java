@@ -64,7 +64,8 @@ public class DepreciationChartCommand extends FacilioCommand {
                 totalPrice -= salvageAmount;
             }
 
-            while (true) {
+            int counter = 0;
+            while (counter <= assetDepreciation.getFrequency()) {
 
                 Map<String, Object> map = new HashMap<>();
 
@@ -85,6 +86,8 @@ public class DepreciationChartCommand extends FacilioCommand {
                 float currentPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
                 lastDepreciation = unitPrice - currentPrice;
                 unitPrice = currentPrice;
+
+                counter ++;
             }
 
             context.put("depreciationList", mapList);
