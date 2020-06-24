@@ -31,6 +31,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
 
 //import com.facilio.bmsconsole.commands.FacilioContext;
 
@@ -61,6 +62,13 @@ public class PickListAction extends FacilioAction {
 				pagination.put("page", getPage());
 				pagination.put("perPage", getPerPage());
 				context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+			}
+			
+			if (getClientCriteria() != null) {
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+				Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+				context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
 			}
 			
 			if (getFilters() != null) {
@@ -120,6 +128,17 @@ public class PickListAction extends FacilioAction {
 		return this.perPage;
 	}
 	
+	
+	private String clientCriteria;
+	
+	public String getClientCriteria() {
+		return clientCriteria;
+	}
+
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
+	}
+
 	private String filters;
 
 	public void setFilters(String filters) {

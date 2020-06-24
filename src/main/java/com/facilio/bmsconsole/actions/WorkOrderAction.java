@@ -2024,12 +2024,21 @@ public class WorkOrderAction extends FacilioAction {
 		if( getSubView() != null) {
 			context.put(FacilioConstants.ContextNames.SUB_VIEW, getSubView());
 		}
+		
+		if (getClientCriteria() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+			Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+		}
+		
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
+		
 		context.put(ContextNames.WO_FETCH_ALL, getFetchAllType());
 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
 
@@ -2382,6 +2391,17 @@ public class WorkOrderAction extends FacilioAction {
 		return this.criteriaIds;
 	}
 	
+	private String clientCriteria;
+	
+	
+	public String getClientCriteria() {
+		return clientCriteria;
+	}
+
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
+	}
+
 	Criteria criteria;
 
 	public Criteria getCriteria() {

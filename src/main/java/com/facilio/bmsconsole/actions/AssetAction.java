@@ -216,6 +216,16 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private String clientCriteria;
+	
+	public String getClientCriteria() {
+		return clientCriteria;
+	}
+
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
+	}
+
 	Criteria clientFilterCriteria;
 	
 	
@@ -233,6 +243,13 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientFilterCriteria);
+ 		
+ 		if (getClientCriteria() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+			Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+		}
  		
  		if(getFilters() != null)
  		{	

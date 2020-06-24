@@ -607,6 +607,16 @@ public class ModuleAction extends FacilioAction {
 
 	Criteria criteria;
 	
+	private String clientCriteria;
+	
+	public String getClientCriteria() {
+		return clientCriteria;
+	}
+
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
+	}
+
 	public String getModuleDataList() throws Exception {
 		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
 		FacilioContext context = dataList.getContext();
@@ -616,6 +626,13 @@ public class ModuleAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
 		dataList.execute();
+		
+		if (getClientCriteria() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+			Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+		}
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
  		

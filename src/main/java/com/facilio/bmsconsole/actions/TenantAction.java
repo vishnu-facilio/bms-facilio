@@ -16,6 +16,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
 import com.facilio.pdf.PdfUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -719,7 +720,17 @@ private Map<String, Double> readingData;
    
          }
    
-	    Criteria criteria;
+    private String clientCriteria;
+   
+	public String getClientCriteria() {
+	return clientCriteria;
+	}
+	
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
+	}
+
+		Criteria criteria;
 	   
 	    public Criteria getCriteria() {
 		return criteria;
@@ -739,6 +750,13 @@ private Map<String, Double> readingData;
 		      context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		      context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");      
 		      context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tenants.ID asc");
+		      
+		      if (getClientCriteria() != null) {
+					JSONParser parser = new JSONParser();
+					JSONObject json = (JSONObject) parser.parse(getClientCriteria());
+					Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+					context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+				}
 		      
 		      if(getFilters() != null)
 		      {  
