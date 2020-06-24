@@ -153,7 +153,7 @@ public class AssetPageFactory extends PageFactory {
 			Section tab7Sec1 = page.new Section();
 			tab7.addSection(tab7Sec1);
 
-			if (AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 155 || isDemoOrg()) {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
 				addAssetCostDetailsWidget(tab7Sec1);
 			}
 
@@ -168,13 +168,13 @@ public class AssetPageFactory extends PageFactory {
 			criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
 			addMaintenanceCostTrendWidget(tab7Sec1, criteria);
 
-			if (AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 155 || isDemoOrg()) {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
 				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
 					addDepreciationScheduleWidget(tab7Sec1);
 				}
 			}
 
-			if (AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 155 || isDemoOrg()) {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
 				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
 					fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
 					Criteria depreciationCostCriteria = new Criteria();
