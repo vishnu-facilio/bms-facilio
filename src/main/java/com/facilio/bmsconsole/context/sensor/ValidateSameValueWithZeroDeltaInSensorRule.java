@@ -61,7 +61,7 @@ public class ValidateSameValueWithZeroDeltaInSensorRule implements SensorRuleTyp
 				return false;
 			}
 			
-			Long noOfHoursToBeFetched = (Long)fieldConfig.get("timeInterval");
+			Long noOfHoursToBeFetched = Long.valueOf(String.valueOf(fieldConfig.get("timeInterval")));
 			if(noOfHoursToBeFetched == null) {
 				noOfHoursToBeFetched = 6l;
 			}

@@ -176,9 +176,6 @@ public class SensorRuleUtil {
 			
 			List<SensorEventContext> sensorEvents = new ArrayList<SensorEventContext>();
 			List<SensorRollUpEventContext> sensorFieldRollUpEvents = new ArrayList<SensorRollUpEventContext>();
-			
-//			for(Long assetId: assetReadingsMap.keySet()) {	
-//				List<ReadingContext> assetReadings = assetReadingsMap.get(assetId);
 				
 			for(ReadingContext reading: readings) 
 			{
@@ -460,6 +457,7 @@ public class SensorRuleUtil {
 		allowedMetricIds.add(Metric.SPECIFIC_HUMIDITY.getMetricId());
 		allowedMetricIds.add(Metric.PRESSURE.getMetricId());
 		allowedMetricIds.add(Metric.VAPOUR_PRESSURE.getMetricId());
+		allowedMetricIds.add(Metric.ENERGY.getMetricId());
 		
 		Integer fieldMetricId = numberField.getMetric();
 		if(fieldMetricId != null && fieldMetricId != - 1) {

@@ -50,8 +50,8 @@ public class ValidatePermissibleLimitViolationInSensorRule implements SensorRule
 				return false;
 			}
 			
-			Double lowerLimit = (Double)fieldConfig.get("lowerLimit");
-			Double upperLimit = (Double)fieldConfig.get("upperLimit");
+			Double lowerLimit = Double.valueOf(String.valueOf(fieldConfig.get("lowerLimit")));
+			Double upperLimit = Double.valueOf(String.valueOf(fieldConfig.get("upperLimit")));
 			if(lowerLimit == null || upperLimit == null) {
 				return false;
 			}
