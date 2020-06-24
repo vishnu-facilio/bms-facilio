@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context.sensor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Metric;
 import com.facilio.util.FacilioUtil;
 
-public class SensorRuleContext {
+public class SensorRuleContext implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(SensorRuleContext.class.getName());

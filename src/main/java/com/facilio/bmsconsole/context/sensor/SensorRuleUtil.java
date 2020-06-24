@@ -143,8 +143,7 @@ public class SensorRuleUtil {
 				for(SensorRuleContext sensorRule: sensorRules) 
 				{		
 					sensorRule.setReadingField(fieldMap.get(sensorRule.getReadingFieldId()));
-					sensorRule.setModule(modBean.getModule(sensorRule.getModuleId()));
-					sensorRule.getReadingField().setModule(sensorRule.getModule());
+					sensorRule.setModule(modBean.getModule(sensorRule.getModuleId())); //category will be the rule module
 					fetchAlarmMeta(sensorRule);
 				}
 			}
