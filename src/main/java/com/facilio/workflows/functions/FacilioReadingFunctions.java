@@ -1,11 +1,13 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DataUtil;
@@ -27,8 +29,11 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
@@ -295,6 +300,86 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			addCurrentReading.execute();
 			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	UPDATE(6,"update") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			
+			Map<String,Object> readingProps = (Map<String,Object>)objects[1];
+			
+			if(readingProps.get("id") == null) {
+				throw new Exception("cannot update without reading id");
+			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			ReadingContext reading = FieldUtil.getAsBeanFromMap(readingProps, ReadingContext.class);
+			
+			reading.setParentId(workflowReadingContext.getParentId());
+			
+			FacilioChain updateCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			
+			FacilioContext context = updateCurrentReading.getContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
+			context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(reading));
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			
+			updateCurrentReading.execute();
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	CONVERT_TO_INPUT_UNIT_FROM_DISPLAY_UNIT(7,"convertToInputUnitFromDisplayUnit") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			
+			Object readingVal = objects[1];
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			if(field instanceof NumberField) {
+				
+				NumberField numberField = (NumberField) field;
+				
+				if(numberField.getMetric() > 0) {
+					
+					ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(workflowReadingContext.getParentId(), field);
+					int inputUnit = rdm.getUnit();
+					if(inputUnit < 0) {
+						inputUnit = numberField.getMetricEnum().getSiUnitId();
+					}
+					int displayUnit = numberField.getUnitId();
+					if(displayUnit < 0) {
+						displayUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric()).getUnitId();
+					}
+					
+					readingVal = UnitsUtil.convert(readingVal, displayUnit, inputUnit);
+					
+				}
+			}
+			
+			return readingVal;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
