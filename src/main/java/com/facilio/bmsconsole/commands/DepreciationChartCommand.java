@@ -3,19 +3,19 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
-import com.facilio.bmsconsole.context.AssetDepreciationRelContext;
 import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DepreciationChartCommand extends FacilioCommand {
 
@@ -50,9 +50,6 @@ public class DepreciationChartCommand extends FacilioCommand {
             AssetDepreciationContext.DepreciationType depreciationType = assetDepreciation.getDepreciationTypeEnum();
 
             List<Map<String, Object>> mapList = new ArrayList<>();
-            Calendar instance = Calendar.getInstance();
-            instance.setTimeInMillis(date);
-            int dayOfMonth = instance.get(Calendar.DATE);
 
             float unitPrice = totalPrice;
             float lastDepreciation = 0;
@@ -64,14 +61,12 @@ public class DepreciationChartCommand extends FacilioCommand {
                 totalPrice -= salvageAmount;
             }
 
+            date = DateTimeUtil.getMonthStartTimeOf(date);
+
             int counter = 0;
             while (counter <= assetDepreciation.getFrequency()) {
 
                 Map<String, Object> map = new HashMap<>();
-
-                instance.setTimeInMillis(date);
-                instance.set(Calendar.DATE, dayOfMonth);
-                date = instance.getTimeInMillis();
 
                 map.put("price", Math.floor(unitPrice));
                 map.put("date", date);
