@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -88,21 +89,22 @@ public class GetAvailableStateCommand extends FacilioCommand {
 		Iterator<WorkflowRuleContext> iterator = states.iterator();
 		while (iterator.hasNext()) {
 			AbstractStateTransitionRuleContext transition = (AbstractStateTransitionRuleContext) iterator.next();
-			if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
-				iterator.remove();
-				continue;
-			}
-			
-			if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.TENANT_PORTAL.getIndex()) {
-				if (!transition.isShowInTenantPortal()) {
+			if (transition instanceof StateflowTransitionContext) {
+				if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
 					iterator.remove();
 					continue;
 				}
-			}
-			else if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.VENDOR_PORTAL.getIndex()) {
-				if (!transition.isShowInVendorPortal()) {
-					iterator.remove();
-					continue;
+
+				if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.TENANT_PORTAL.getIndex()) {
+					if (!transition.isShowInTenantPortal()) {
+						iterator.remove();
+						continue;
+					}
+				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.VENDOR_PORTAL.getIndex()) {
+					if (!transition.isShowInVendorPortal()) {
+						iterator.remove();
+						continue;
+					}
 				}
 			}
 		}
