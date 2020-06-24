@@ -242,6 +242,23 @@ public class AssetDepreciationAPI {
         assetBuilder.update(assetContext);
     }
 
+    public static List<AssetDepreciationCalculationContext> getAssetDepreciationCalculation(Long assetId, Long depreciationId) throws Exception {
+        if (assetId == null || depreciationId == null) {
+            return new ArrayList<>();
+        }
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_DEPRECIATION_CALCULATION);
+
+        SelectRecordsBuilder<AssetDepreciationCalculationContext> builder = new SelectRecordsBuilder<AssetDepreciationCalculationContext>()
+                .module(module)
+                .select(modBean.getAllFields(module.getName()))
+                .beanClass(AssetDepreciationCalculationContext.class)
+                .andCondition(CriteriaAPI.getCondition("DEPRECIATION_ID", "depreciationId", String.valueOf(depreciationId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetId), NumberOperators.EQUALS));
+        return builder.get();
+    }
+
     public static List<AssetDepreciationCalculationContext> calculateAssetDepreciation(AssetDepreciationContext assetDepreciation, AssetContext assetContext,
                                                                                        AssetDepreciationCalculationContext lastCalculation) throws Exception {
         try {
@@ -259,9 +276,13 @@ public class AssetDepreciationAPI {
                 currentAmount = totalPrice;
             }
 
+            int counter;
             List<AssetDepreciationCalculationContext> list = new ArrayList<>();
             if (lastCalculation != null) {
                 date = lastCalculation.getCalculatedDate();
+
+                List<AssetDepreciationCalculationContext> calculations = getAssetDepreciationCalculation(assetContext.getId(), assetDepreciation.getId());
+                counter = calculations.size();
             }
             else {
                 if (date == -1) {
@@ -276,10 +297,12 @@ public class AssetDepreciationAPI {
                 newlyCalculated.setDepreciatedAmount(0);
                 newlyCalculated.setDepreciationId(assetDepreciation.getId());
                 list.add(newlyCalculated);
+
+                counter = 1;
             }
 
             if (assetDepreciation.isActive()) {
-                while (true) {
+                while (counter <= assetDepreciation.getFrequency()) {
                     long nextDate = assetDepreciation.nextDate(date);
                     if (nextDate > DateTimeUtil.getDayStartTime()) {
                         // Still time hasn't arrived to calculate
@@ -303,6 +326,8 @@ public class AssetDepreciationAPI {
 
                     date = nextDate;
                     currentAmount = newPrice;
+
+                    counter ++;
                 }
             }
             return list;
