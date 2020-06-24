@@ -29,16 +29,7 @@ public class DepreciationChartCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid asset depreciation");
             }
 
-//            List<AssetDepreciationRelContext> assetDepreciationRelList = assetDepreciation.getAssetDepreciationRelList();
             AssetContext assetContext = AssetsAPI.getAssetInfo(assetId);
-//            if (CollectionUtils.isNotEmpty(assetDepreciationRelList)) {
-//                for (AssetDepreciationRelContext relContext : assetDepreciationRelList) {
-//                    if (relContext.getAssetId() == assetId) {
-//                        assetContext = AssetsAPI.getAssetInfo(assetId);
-//                        break;
-//                    }
-//                }
-//            }
             if (assetContext == null) {
                 throw new IllegalArgumentException("Asset not found");
             }
@@ -63,15 +54,17 @@ public class DepreciationChartCommand extends FacilioCommand {
             instance.setTimeInMillis(date);
             int dayOfMonth = instance.get(Calendar.DATE);
 
-            // remove the salvage amount from total depreciate amount
-            if (salvageAmount != null && salvageAmount > 0) {
-                totalPrice -= salvageAmount;
-            }
-
             float unitPrice = totalPrice;
             float lastDepreciation = 0;
 
-            while (unitPrice >= 0) {
+            // remove the salvage amount from total depreciate amount
+            float endValue = 0;
+            if (salvageAmount != null && salvageAmount > 0) {
+                endValue = salvageAmount;
+                totalPrice -= salvageAmount;
+            }
+
+            while (true) {
 
                 Map<String, Object> map = new HashMap<>();
 
@@ -79,18 +72,17 @@ public class DepreciationChartCommand extends FacilioCommand {
                 instance.set(Calendar.DATE, dayOfMonth);
                 date = instance.getTimeInMillis();
 
-                map.put("price", unitPrice);
+                map.put("price", Math.floor(unitPrice));
                 map.put("date", date);
-                map.put("depreciationAmount", lastDepreciation);
+                map.put("depreciationAmount", Math.floor(lastDepreciation));
                 mapList.add(map);
 
-                if (unitPrice <= 0) {
+                if (Math.floor(unitPrice) <= endValue) {
                     break;
                 }
 
                 date = assetDepreciation.nextDate(date);
                 float currentPrice = depreciationType.nextDepreciatedUnitPrice(totalPrice, assetDepreciation.getFrequency(), unitPrice);
-                currentPrice = Math.round(currentPrice);
                 lastDepreciation = unitPrice - currentPrice;
                 unitPrice = currentPrice;
             }

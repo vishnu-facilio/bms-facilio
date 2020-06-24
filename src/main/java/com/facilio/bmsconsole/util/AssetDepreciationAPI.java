@@ -296,7 +296,7 @@ public class AssetDepreciationAPI {
 
                 AssetDepreciationCalculationContext newlyCalculated = new AssetDepreciationCalculationContext();
                 newlyCalculated.setAsset(assetContext);
-                newlyCalculated.setCalculatedDate(DateTimeUtil.getMonthStartTimeOf(nextDate));
+                newlyCalculated.setCalculatedDate(nextDate);
                 newlyCalculated.setCurrentPrice(newPrice);
                 newlyCalculated.setDepreciatedAmount(currentAmount - newPrice);
                 newlyCalculated.setDepreciationId(assetDepreciation.getId());

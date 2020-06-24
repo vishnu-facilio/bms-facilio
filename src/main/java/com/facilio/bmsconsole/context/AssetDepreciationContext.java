@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.context.V3Context;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
+public class AssetDepreciationContext extends V3Context {
 
     private String name;
     public String getName() {
@@ -41,11 +42,11 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         this.assetDepreciationRelList = assetDepreciationRelList;
     }
 
-    private int frequency = -1;
-    public int getFrequency() {
+    private Integer frequency;
+    public Integer getFrequency() {
         return frequency;
     }
-    public void setFrequency(int frequency) {
+    public void setFrequency(Integer frequency) {
         this.frequency = frequency;
     }
 
@@ -66,35 +67,35 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
         this.frequencyType = frequencyType;
     }
 
-    private long totalPriceFieldId = -1;
-    public long getTotalPriceFieldId() {
+    private Long totalPriceFieldId;
+    public Long getTotalPriceFieldId() {
         return totalPriceFieldId;
     }
-    public void setTotalPriceFieldId(long totalPriceFieldId) {
+    public void setTotalPriceFieldId(Long totalPriceFieldId) {
         this.totalPriceFieldId = totalPriceFieldId;
     }
 
-    private long salvagePriceFieldId = -1;
-    public long getSalvagePriceFieldId() {
+    private Long salvagePriceFieldId;
+    public Long getSalvagePriceFieldId() {
         return salvagePriceFieldId;
     }
-    public void setSalvagePriceFieldId(long salvagePriceFieldId) {
+    public void setSalvagePriceFieldId(Long salvagePriceFieldId) {
         this.salvagePriceFieldId = salvagePriceFieldId;
     }
 
-    private long currentPriceFieldId = -1;
-    public long getCurrentPriceFieldId() {
+    private Long currentPriceFieldId;
+    public Long getCurrentPriceFieldId() {
         return currentPriceFieldId;
     }
-    public void setCurrentPriceFieldId(long currentPriceFieldId) {
+    public void setCurrentPriceFieldId(Long currentPriceFieldId) {
         this.currentPriceFieldId = currentPriceFieldId;
     }
 
-    private long startDateFieldId = -1;
-    public long getStartDateFieldId() {
+    private Long startDateFieldId;
+    public Long getStartDateFieldId() {
         return startDateFieldId;
     }
-    public void setStartDateFieldId(long startDateFieldId) {
+    public void setStartDateFieldId(Long startDateFieldId) {
         this.startDateFieldId = startDateFieldId;
     }
 
@@ -113,6 +114,7 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
     }
 
     public long nextDate(long date) {
+        date = DateTimeUtil.getMonthStartTimeOf(date);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(date);
 
@@ -145,18 +147,18 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
     public enum DepreciationType implements FacilioEnum {
         SINGLE {
             @Override
-            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice) {
+            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, Integer frequency, float currentPrice) {
                 float depreciatedAmount = totalDepreciationAmount / frequency;
                 float newPrice = currentPrice - depreciatedAmount;
-                if (newPrice < depreciatedAmount) {
-                    return 0;
+                if (newPrice < 0) {
+                    newPrice = 0;
                 }
                 return newPrice;
             }
         },
         DOUBLE {
             @Override
-            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice) {
+            public float nextDepreciatedUnitPrice(float totalDepreciationAmount, Integer frequency, float currentPrice) {
                 float newPrice = currentPrice - ((currentPrice / frequency) * 2);
                 if (newPrice < 0) {
                     newPrice = 0;
@@ -173,7 +175,7 @@ public class AssetDepreciationContext extends ModuleBaseWithCustomFields {
             return null;
         }
 
-        public abstract float nextDepreciatedUnitPrice(float totalDepreciationAmount, int frequency, float currentPrice);
+        public abstract float nextDepreciatedUnitPrice(float totalDepreciationAmount, Integer frequency, float currentPrice);
 
         @Override
         public int getIndex() {
