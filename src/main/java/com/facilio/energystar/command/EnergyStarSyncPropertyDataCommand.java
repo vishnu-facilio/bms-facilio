@@ -50,28 +50,25 @@ public class EnergyStarSyncPropertyDataCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(EnergyStarUtil.ENERGY_STAR_PROPERTY_DATA_MODULE_NAME));
 		
 		Long firstDataRecivedDate = (Long)context.get(EnergyStarUtil.FIRST_DATA_RECIEVIED_TIME);
-		 
-		for(EnergyStarPropertyContext propertyContext : propertyContexts) {
-			
-			deletePropertyData(propertyContext,logger, dataModule, fieldMap);
-			
-			FacilioChain chain = TransactionChainFactory.getEnergyStarFetchDataChain();
-			
-			FacilioContext context1 = chain.getContext();
-			
-			context1.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, propertyContext);
-			if(firstDataRecivedDate != null) {
-				context1.put(FacilioConstants.ContextNames.START_TIME,firstDataRecivedDate);
-			}
-			else {
-				context1.put(FacilioConstants.ContextNames.START_TIME,logger.getStartTime());
-			}
-			context1.put(FacilioConstants.ContextNames.END_TIME,logger.getEndTime());
-			
-			chain.execute();
-			
-		}
 		
+		if(firstDataRecivedDate != null) {
+			for(EnergyStarPropertyContext propertyContext : propertyContexts) {
+				
+				deletePropertyData(propertyContext,logger, dataModule, fieldMap);
+				
+				FacilioChain chain = TransactionChainFactory.getEnergyStarFetchDataChain();
+				
+				FacilioContext context1 = chain.getContext();
+				
+				context1.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, propertyContext);
+				
+				context1.put(FacilioConstants.ContextNames.START_TIME,firstDataRecivedDate);
+				context1.put(FacilioConstants.ContextNames.END_TIME,logger.getEndTime());
+				
+				chain.execute();
+			}
+		}
+		 
 		return false;
 	}
 	

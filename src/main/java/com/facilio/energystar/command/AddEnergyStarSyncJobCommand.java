@@ -24,6 +24,9 @@ public class AddEnergyStarSyncJobCommand extends FacilioCommand {
 		
 		EnergyStarCustomerContext customer = (EnergyStarCustomerContext)context.get(EnergyStarUtil.ENERGY_STAR_CUSTOMER_CONTEXT);
 		
+		if(customer == null) {
+			return false;
+		}
 		if(customer.getSyncStatus() == Sync_Status.SYNC_IN_PROGRESS.getIntVal()) {
 			throw new Exception("Sync In progress");
 		}

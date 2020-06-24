@@ -5393,6 +5393,9 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain doEnergyStarSyncChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnergyStarCustomerCommand());
+		c.addCommand(new ConfirmESPropertyShareCommand());
+		c.addCommand(new ConfirmESMeterShareCommand());
 		c.addCommand(ReadOnlyChainFactory.getESfetchSetupData());
 		c.addCommand(new EnergyStarSyncMeterDataCommand());
 		c.addCommand(new EnergyStarSyncPropertyDataCommand());

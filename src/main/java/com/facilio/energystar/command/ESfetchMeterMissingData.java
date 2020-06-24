@@ -43,6 +43,10 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
+		if(propertyContexts == null) {
+			return false;
+		}
+		
 		for(EnergyStarPropertyContext propertyContext :propertyContexts) {
 			
 			for(EnergyStarMeterContext meter : propertyContext.getMeterContexts()) {

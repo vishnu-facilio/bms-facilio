@@ -40,6 +40,10 @@ public class EnergyStarSyncMeterDataCommand extends FacilioCommand {
 		
 		List<EnergyStarPropertyContext> propertyContexts = (List<EnergyStarPropertyContext>)context.get(EnergyStarUtil.ENERGY_STAR_PROPERTIES_CONTEXT);
 		
+		if(propertyContexts == null) {
+			return false;
+		}
+		
 		HistoricalLoggerContext logger = (HistoricalLoggerContext) context.get(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -50,7 +54,7 @@ public class EnergyStarSyncMeterDataCommand extends FacilioCommand {
 		 
 		List<EnergyStarMeterDataContext> meterDatas = new ArrayList<EnergyStarMeterDataContext>();
 		
-		long firstDataRecivedDate = Long.MAX_VALUE;
+		Long firstDataRecivedDate = Long.MAX_VALUE;
 		
 		for(EnergyStarPropertyContext propertyContext : propertyContexts) {
 			
@@ -77,15 +81,19 @@ public class EnergyStarSyncMeterDataCommand extends FacilioCommand {
 			}
 		}
 		
-		FacilioChain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-		
-		FacilioContext newContext = addCurrentOccupancy.getContext();
-		newContext.put(FacilioConstants.ContextNames.MODULE_NAME, EnergyStarUtil.ENERGY_STAR_METER_DATA_MODULE_NAME);
-		newContext.put(FacilioConstants.ContextNames.READINGS, meterDatas);
-		newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.INTEGRATION);
-		newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-		addCurrentOccupancy.execute();
-		
+		if(!meterDatas.isEmpty()) {
+			FacilioChain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			
+			FacilioContext newContext = addCurrentOccupancy.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, EnergyStarUtil.ENERGY_STAR_METER_DATA_MODULE_NAME);
+			newContext.put(FacilioConstants.ContextNames.READINGS, meterDatas);
+			newContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.INTEGRATION);
+			newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			addCurrentOccupancy.execute();
+		}
+		if(firstDataRecivedDate == Long.MAX_VALUE) {
+			firstDataRecivedDate = null;
+		}
 		context.put(EnergyStarUtil.FIRST_DATA_RECIEVIED_TIME, firstDataRecivedDate);
 		
 		return false;
