@@ -35,11 +35,24 @@ public class EnergyStarMeterDataContext extends ReadingContext {
 		return DateTimeUtil.getFormattedTime((long)this.getDatum("toDate"), "yyyy-MM-dd");
 	}
 	
+	@JsonIgnore
+	@JSON(serialize=false)
 	public long getfromDate() {
-		return (long)this.getDatum("fromDate");
+		Object fromDate = this.getDatum("fromDate");
+		if(fromDate != null) {
+			return (long) fromDate;
+		}
+		return -1;
 	}
 	
+	@JsonIgnore
+	@JSON(serialize=false)
 	public long getToDate() {
-		return (long)this.getDatum("toDate");
+
+		Object toDate = this.getDatum("toDate");
+		if(toDate != null) {
+			return (long) toDate;
+		}
+		return -1;
 	}
 }
