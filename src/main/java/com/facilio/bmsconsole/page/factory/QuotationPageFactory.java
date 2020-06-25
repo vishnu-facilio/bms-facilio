@@ -50,7 +50,7 @@ public class QuotationPageFactory extends PageFactory {
         page.addTab(tab3);
             Page.Section tab3Sec1 = page.new Section();
             tab3.addSection(tab3Sec1);
-            addRelatedListWidget(tab3Sec1, "quotationterms", quotationModule.getModuleId());
+            addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
 
 
         Page.Tab tab4 = page.new Tab("Activity");

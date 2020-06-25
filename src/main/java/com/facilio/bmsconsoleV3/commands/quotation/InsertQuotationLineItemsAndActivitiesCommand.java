@@ -52,7 +52,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     QuotationContext quotationContext = new QuotationContext();
                     quotationContext.setId(quotation.getId());
                     for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
-                        lineItem.setQuotation(quotationContext);
+                        lineItem.setQuote(quotationContext);
                     }
                     V3RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
                 }

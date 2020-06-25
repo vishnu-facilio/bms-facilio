@@ -1789,6 +1789,7 @@ http://www.w3.org/TR/html401/struct/global.html
 
         <tag name="div" action="validate"/>
         <tag name="i" action="validate"/>
+        <tag name="p" action="validate"/>
         <tag name="b" action="validate"/>
         <tag name="em" action="validate"/>
         <tag name="blockquote" action="validate"/>

@@ -14,7 +14,7 @@ public class QuotationLineItemsContext extends V3Context {
      */
     private static final long serialVersionUID = 1L;
 
-    private QuotationContext quotation;
+    private QuotationContext quote;
     private Type type;
     private ItemTypesContext itemType;
     private ToolTypesContext toolType;
@@ -43,12 +43,12 @@ public class QuotationLineItemsContext extends V3Context {
         this.taxAmount = taxAmount;
     }
 
-    public QuotationContext getQuotation() {
-        return quotation;
+    public QuotationContext getQuote() {
+        return quote;
     }
 
-    public void setQuotation(QuotationContext quotation) {
-        this.quotation = quotation;
+    public void setQuote(QuotationContext quotation) {
+        this.quote = quotation;
     }
 
     public void setType(Integer type) {

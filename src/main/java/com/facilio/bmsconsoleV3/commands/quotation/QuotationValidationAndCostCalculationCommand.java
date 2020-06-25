@@ -43,6 +43,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Customer Type is required to be tenant");
                     }
                 }
+                else {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tenant is required");
+                }
                 QuotationAPI.validateForWorkorder(quotation);
             }
         }

@@ -124,7 +124,7 @@ public class QuotationAPI {
                 .moduleName(lineItemModuleName)
                 .select(fields)
                 .beanClass(QuotationLineItemsContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quotation"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quote"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
                 .fetchSupplements(fetchSupplementsList);
         List<QuotationLineItemsContext> list = builder.get();
         quotation.setLineItems(list);
@@ -140,7 +140,7 @@ public class QuotationAPI {
                 .module(module)
                 .beanClass(QuotationAssociatedTermsContext.class)
                 .select(fields)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quotation"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quote"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
                 .fetchSupplement((LookupField) fieldsAsMap.get("terms"));
         List<QuotationAssociatedTermsContext> list = builder.get();
         quotation.setTermsAssociated(list);
@@ -240,7 +240,7 @@ public class QuotationAPI {
             QuotationContext quotation = new QuotationContext();
             quotation.setId(id);
             for (QuotationAssociatedTermsContext term : termsAssociated) {
-                term.setQuotation(quotation);
+                term.setQuote(quotation);
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);

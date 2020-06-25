@@ -3819,8 +3819,8 @@ public class ModuleFactory {
 
     public static FacilioModule getQuotationModule() {
         FacilioModule module = new FacilioModule();
-        module.setName("quotation");
-        module.setDisplayName("Quotation");
+        module.setName("quote");
+        module.setDisplayName("Quote");
         module.setTableName("Quotation");
         return module;
     }

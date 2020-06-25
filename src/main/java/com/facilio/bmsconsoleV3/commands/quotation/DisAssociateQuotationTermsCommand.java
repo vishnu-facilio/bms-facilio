@@ -53,7 +53,7 @@ public class DisAssociateQuotationTermsCommand extends FacilioCommand {
             JSONObject info = new JSONObject();
             String termsName = StringUtils.join(terms.stream().map(term -> term.getTerms().getName()).collect(Collectors.toList()), " ,");
             info.put(FacilioConstants.ContextNames.TERMS_NAME, termsName);
-            CommonCommandUtil.addActivityToContext(terms.get(0).getQuotation().getId(), -1, QuotationActivityType.DISASSOCIATE_TERMS, info, (FacilioContext) context);
+            CommonCommandUtil.addActivityToContext(terms.get(0).getQuote().getId(), -1, QuotationActivityType.DISASSOCIATE_TERMS, info, (FacilioContext) context);
         }
         return false;
     }
