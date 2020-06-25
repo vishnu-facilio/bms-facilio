@@ -35,7 +35,6 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -97,8 +96,12 @@ public abstract class FileStore {
 		}
 	}
 
-	protected static NamespaceConfig getNamespace (String namespace) {
+	public static NamespaceConfig getNamespace (String namespace) {
 		return NAMESPACES.get(namespace);
+	}
+
+	public static Set<String> getAllNamespaces() {
+		return NAMESPACES.keySet();
 	}
 
 	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
@@ -107,7 +110,8 @@ public abstract class FileStore {
 	private static final int DEFAULT_FILE_URL_EXPIRY = 300000;
 
 	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-	protected static final String DEFAULT_NAMESPACE = "default";
+
+	public static final String DEFAULT_NAMESPACE = "default";
 
 	private long orgId;
 	private long userId;
@@ -162,12 +166,13 @@ public abstract class FileStore {
 
 	protected boolean updateFileEntry(String namespace, long fileId, String compressedFilePath, long fileSize) throws Exception {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
-		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding file entry");
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while updating file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE FacilioFile SET COMPRESSED_FILE_PATH=?, COMPRESSED_FILE_SIZE=? WHERE FILE_ID=? AND ORGID=?");
+			String sql = MessageFormat.format("UPDATE {0} SET COMPRESSED_FILE_PATH=?, COMPRESSED_FILE_SIZE=? WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, compressedFilePath);
 			pstmt.setLong(2, fileSize);
 			pstmt.setLong(3, fileId);
@@ -188,12 +193,12 @@ public abstract class FileStore {
 
 	protected boolean updateFileEntry(String namespace, long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
-		Objects.requireNonNull(namespaceConfig, "Invalid namespace while adding file entry");
+		Objects.requireNonNull(namespaceConfig, "Invalid namespace while updating file entry");
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			String sql = MessageFormat.format("UPDATE {FacilioFile} SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
+			String sql = MessageFormat.format("UPDATE {0} SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?", namespaceConfig.getTableName());
 			pstmt = conn.prepareStatement(sql);
 
 			pstmt.setString(1, fileName);
@@ -212,44 +217,6 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt);
-		}
-	}
-
-
-	protected boolean updateResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		boolean olderCommit = false;
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getDirectConnection(); //Getting connection from pool since this has to be done outside transaction
-			olderCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-
-			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
-			pstmt.setString(1, fileInfo.getUrl());
-			pstmt.setLong(2, fileInfo.getExpiryTime());
-			pstmt.setLong(3, fileInfo.getFileId());
-			pstmt.setLong(4, getOrgId());
-			pstmt.setInt(5, fileInfo.getWidth());
-			pstmt.setInt(6, fileInfo.getHeight());
-			if(pstmt.executeUpdate() < 1) {
-				throw new RuntimeException("Unable to update file");
-			}
-
-			conn.commit();
-			return true;
-		}
-		catch(SQLException | RuntimeException e) {
-			if (conn != null) {
-				conn.rollback();
-			}
-			throw e;
-		}
-		finally {
-			if (conn != null) {
-				conn.setAutoCommit(olderCommit);
-			}
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
@@ -311,6 +278,9 @@ public abstract class FileStore {
 	}
 
 
+	public String encodeFileToBase64Binary(long fileId) throws Exception {
+		return encodeFileToBase64Binary(DEFAULT_NAMESPACE, fileId);
+	}
 	public String encodeFileToBase64Binary(String namespace, long fileId) throws Exception {
 
 

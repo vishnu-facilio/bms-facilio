@@ -99,8 +99,6 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	private static final Logger LOGGER = LogManager.getLogger(ModuleCRUDBeanImpl.class.getName());
-	private static List<FacilioField> FacilioFileFields = FieldFactory.getFileFields();
-	private static Map<String, FacilioField> FacilioFileFieldMap = FieldFactory.getAsMap(FacilioFileFields);
 
 	@Override
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception {

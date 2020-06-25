@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,7 +77,8 @@ public class AttachmentsAPI {
 	public static final List<AttachmentContext> getAttachments(String moduleName, List<Long> attachmentIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioField> fields = FieldFactory.getFileFields();
+		FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
+		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		fields.addAll(modBean.getAllFields(moduleName));
 		
 		Condition idCondition = new Condition();
@@ -88,8 +90,8 @@ public class AttachmentsAPI {
 																		.beanClass(AttachmentContext.class)
 																		.select(fields)
 																		.module(module)
-																		.innerJoin("FacilioFile")
-																		.on("FacilioFile.FILE_ID = "+module.getTableName()+".FILE_ID")
+																		.innerJoin(namespaceConfig.getTableName())
+																		.on(MessageFormat.format("{0}.FILE_ID = {1}.FILE_ID", namespaceConfig.getTableName(), module.getTableName()))
 																		.andCondition(idCondition);
 		
 		return selectBuilder.get();
@@ -123,7 +125,8 @@ public class AttachmentsAPI {
 	private static SelectRecordsBuilder<AttachmentContext> getListBuilder(String moduleName, Long parentId, boolean fetchDeleted, List<Long>... attachmentIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioField> fields = FieldFactory.getFileFields();
+		FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
+		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		fields.addAll(modBean.getAllFields(moduleName));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
@@ -131,8 +134,8 @@ public class AttachmentsAPI {
 				.beanClass(AttachmentContext.class)
 				.select(fields)
 				.module(module)
-				.innerJoin("FacilioFile")
-				.on("FacilioFile.FILE_ID = "+module.getTableName()+".FILE_ID");
+				.innerJoin(namespaceConfig.getTableName())
+				.on(MessageFormat.format("{0}.FILE_ID = {1}.FILE_ID", namespaceConfig.getTableName(), module.getTableName()));
 				
 		if (!fetchDeleted) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("isDeleted"), String.valueOf(false), BooleanOperators.IS));

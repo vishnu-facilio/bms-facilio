@@ -24,6 +24,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -36,6 +37,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -302,7 +304,8 @@ public enum CardLayout {
 							className = AttachmentContext.class;
 						}
 						List<FacilioField> subModuleFields = modBean.getAllFields(subModuleName);
-						List<FacilioField> fileFields = FieldFactory.getFileFields();
+						FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
+						List<FacilioField> fileFields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 						subModuleFields.addAll(fileFields);
 						Map<String, FacilioField> subModuleFieldsMap = FieldFactory.getAsMap(subModuleFields);
 					Map<String, FacilioField> fileFieldsMap = FieldFactory.getAsMap(subModuleFields);
@@ -311,10 +314,10 @@ public enum CardLayout {
 							.select(subModuleFields)
 							.module(subModule)
 							.beanClass(className)
-							.innerJoin("FacilioFile")
-							.on("FacilioFile.FILE_ID = " + subModule.getTableName() + ".FILE_ID")
+							.innerJoin(namespaceConfig.getTableName())
+							.on(MessageFormat.format("{0}.FILE_ID = {1}.FILE_ID", namespaceConfig.getTableName(), subModule.getTableName()))
 							.andCondition(CriteriaAPI.getCondition(fileFieldsMap.get("contentType"), "image", StringOperators.CONTAINS))
-							.orderBy("FacilioFile.UPLOADED_TIME DESC")
+							.orderBy(MessageFormat.format("{0}.UPLOADED_TIME DESC", namespaceConfig.getTableName()))
 					;
 					if (limit != null) {
 						attachmentBuilder.limit(limit.intValue());
