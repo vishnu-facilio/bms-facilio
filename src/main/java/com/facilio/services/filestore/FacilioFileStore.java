@@ -1,16 +1,7 @@
 package com.facilio.services.filestore;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -20,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -101,7 +93,7 @@ public class FacilioFileStore extends FileStore {
 
 					String resizedFilePath = getRootPath(namespace) + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
 
-					Integer statusCode = postFile(fileId, fileName, contentType, imageInByte);
+					Integer statusCode = postFile(namespace, fileId, fileName, contentType, imageInByte);
 					if (statusCode == 200) {
 						addResizedFileEntry(namespace, fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
 					}
@@ -165,10 +157,9 @@ public class FacilioFileStore extends FileStore {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
 		
-		Integer statusCode = postFile(fileId, fileName, contentType, content);
+		Integer statusCode = postFile(namespace, fileId, fileName, contentType, content);
 		if (statusCode == 200) {
-			String filePath;
-			filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
+			String filePath = getRootPath(namespace) + File.separator + fileId + "-" + fileName;
 			updateFileEntry(namespace, fileId, fileName, filePath, content.length, contentType);
 			return fileId;
 		} else {
@@ -187,12 +178,26 @@ public class FacilioFileStore extends FileStore {
 		FileInfo fileInfo = getFileInfo(namespace, fileId, fetchOriginal);
 		return readFile(fileInfo);
 	}
+
+	private String getFileUrl(FileInfo fileInfo, String mode) throws UnsupportedEncodingException {
+		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("files.url"))
+				.append("/api/file/get?orgId=").append(getOrgId());
+		if (!DEFAULT_NAMESPACE.equals(fileInfo.getNamespace())) {
+			url.append("&namespace=").append(fileInfo.getNamespace());
+		}
+		url.append("&fileName=").append(URLEncoder.encode(fileInfo.getFileName(), "UTF-8"))
+				.append("&fileId=").append(fileInfo.getFileId())
+				.append("&contentType=").append(fileInfo.getContentType());
+		if (StringUtils.isNotEmpty(mode)) {
+			url.append("&mode=").append(mode);
+		}
+		return url.toString();
+	}
 	
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		// TODO Auto-generated method stub
-		String url = FacilioProperties.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8") +"&fileId=" + fileInfo.getFileId() + "&contentType=" + fileInfo.getContentType();
-		URL obj = new URL(url);
+		URL obj = new URL(getFileUrl(fileInfo, null));
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 
@@ -226,7 +231,7 @@ public class FacilioFileStore extends FileStore {
 	
 	private String getFileUrl(String namespace, long fileId, String mode) throws Exception {
 		FileInfo fileInfo = getFileInfo(namespace, fileId);
-		return FacilioProperties.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&namespace=" + namespace + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
+		return getFileUrl(fileInfo, mode);
 	}
 
 	public static class HttpUtil {
@@ -403,18 +408,21 @@ public class FacilioFileStore extends FileStore {
 				String resizedFilePath = getRootPath(namespace) + File.separator + fileId + "-compressed";
 				byte[] imageInByte = writeCompressedFile(namespace, fileId, file, contentType, baos, resizedFilePath);
 				if (imageInByte != null) {
-					postFile(fileId, fileName, contentType, imageInByte);
+					postFile(namespace, fileId, fileName, contentType, imageInByte);
 				}
 			} 
 		}
 	}
 	
-	private int postFile(long fileId, String fileName, String contentType, byte[] imageInByte) throws Exception {
+	private int postFile(String namespace, long fileId, String fileName, String contentType, byte[] imageInByte) throws Exception {
 		HttpUtil httpConn;
 
 		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
-		httpConn.addFormField("orgId", getOrgId() + "");
-		httpConn.addFormField("fileId", fileId + "");
+		httpConn.addFormField("orgId", String.valueOf(getOrgId()));
+		if (!DEFAULT_NAMESPACE.equals(namespace)) {
+			httpConn.addFormField("namespace", namespace);
+		}
+		httpConn.addFormField("fileId", String.valueOf(fileId));
 		httpConn.addFormField("fileName", fileName);
 		httpConn.addFormField("contentType", contentType);
 		httpConn.addFilePart("fileContent", fileName, imageInByte);
@@ -426,7 +434,7 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
+	public boolean deleteFilePermanently(String namespace, long fileId) throws Exception {
 		
 		// TODO call api to delete file
 //		return deleteFileEntry(fileId);
