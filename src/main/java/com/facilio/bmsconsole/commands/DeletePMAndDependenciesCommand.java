@@ -12,10 +12,12 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 
 
 public class DeletePMAndDependenciesCommand extends FacilioCommand{
-	
+	private static final Logger LOGGER = Logger.getLogger(DeletePMAndDependenciesCommand.class.getName());
 	private boolean isPMDelete;
 	private boolean isStatusUpdate = false;
 	public DeletePMAndDependenciesCommand(boolean isDelete, boolean... isStatusUpdate) {
@@ -75,6 +77,9 @@ public class DeletePMAndDependenciesCommand extends FacilioCommand{
 		PreventiveMaintenanceAPI.deletePmResourcePlanner(pmIds);
 		PreventiveMaintenanceAPI.deletePmIncludeExclude(pmIds);
 		PreventiveMaintenanceAPI.deleteTriggers(triggerPMIds);
+		if (CollectionUtils.isNotEmpty(actionIds)) {
+			LOGGER.error("deleting actions ");
+		}
 		ActionAPI.deleteActions(actionIds);
 		PreventiveMaintenanceAPI.deletePMReminders(pmIds);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
