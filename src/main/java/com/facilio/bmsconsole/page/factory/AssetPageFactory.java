@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,6 +26,7 @@ import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.util.AssetDepreciationAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -36,11 +35,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
-import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -149,59 +148,33 @@ public class AssetPageFactory extends PageFactory {
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 173 || isDemoOrg() || AccountUtil.getCurrentOrg().getOrgId() == 183){
-			Tab tab7 = page.new Tab("financial");
-			page.addTab(tab7);
-			Section tab7Sec1 = page.new Section();
-			tab7.addSection(tab7Sec1);
+		
+		// ----- Financial Tab Start --------
+		Tab tab7 = page.new Tab("financial");
+		page.addTab(tab7);
+		Section tab7Sec1 = page.new Section();
+		tab7.addSection(tab7Sec1);
 
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
-				addAssetCostDetailsWidget(tab7Sec1);
-			}
+		addAssetCostDetailsWidget(tab7Sec1);
 
-			Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
-			Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+		Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
 
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
-			addCostBreakupWidget(tab7Sec1,criteria);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
+		addCostBreakupWidget(tab7Sec1,criteria);
 
-			criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-			addMaintenanceCostTrendWidget(tab7Sec1, criteria);
+		criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		addMaintenanceCostTrendWidget(tab7Sec1, criteria);
 
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
-				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
-					addDepreciationScheduleWidget(tab7Sec1);
-				}
-			}
-
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.ASSET_DEPRECIATION)) {
-				if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
-					AssetDepreciationContext assetDepreciation = AssetDepreciationAPI.getDepreciationOfAsset(asset.getId());
-					fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
-					Criteria depreciationCostCriteria = new Criteria();
-					depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-					switch(assetDepreciation.getFrequencyTypeEnum()) {
-					case MONTHLY:
-						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
-						break;
-					case QUARTERLY:
-						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"3",DateAggregateOperator.QUARTERLY);
-						break;
-					case HALF_YEARLY:
-						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"6",DateAggregateOperator.QUARTERLY);
-						break;
-					case YEARLY:
-						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"12",DateAggregateOperator.YEAR);
-						break;
-					default:
-						addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
-						break;
-				}
-				}
-			}
+		if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+			addDepreciationScheduleWidget(tab7Sec1);
 		}
+		addDepreciationCostTrendWidget(tab7Sec1, asset, modBean);
+		
+		// ----- Financial Tab End --------
+		
 		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if ((isDemoOrg() && asset.isConnected() ) 
@@ -418,6 +391,32 @@ public class AssetPageFactory extends PageFactory {
 		cardWidget.addToLayoutParams(section, 24, 7);
 		cardWidget.addCardType(CardType.DEPRECIATION_SCHEDULE);
 		section.addWidget(cardWidget);
+	}
+	
+	private static void addDepreciationCostTrendWidget(Section tab7Sec1, AssetContext asset, ModuleBean modBean) throws Exception {
+		if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+			AssetDepreciationContext assetDepreciation = AssetDepreciationAPI.getDepreciationOfAsset(asset.getId());
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_DEPRECIATION_CALCULATION));
+			Criteria depreciationCostCriteria = new Criteria();
+			depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+			switch(assetDepreciation.getFrequencyTypeEnum()) {
+				case MONTHLY:
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
+					break;
+				case QUARTERLY:
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"3",DateAggregateOperator.QUARTERLY);
+					break;
+				case HALF_YEARLY:
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"6",DateAggregateOperator.QUARTERLY);
+					break;
+				case YEARLY:
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_N_YEAR,"12",DateAggregateOperator.YEAR);
+					break;
+				default:
+					addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria,DateOperators.CURRENT_YEAR,null,DateAggregateOperator.MONTHANDYEAR);
+					break;
+			}
+		}
 	}
 	
 	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
