@@ -48,7 +48,7 @@ public class IAMOrgUtil {
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
-			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
+			FileStore fs = FacilioFactory.getFileStore();
 //			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
 			org.setLogoUrl(fs.newPreviewFileUrl("organization",org.getLogoId()));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));

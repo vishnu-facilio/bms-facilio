@@ -32,8 +32,6 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStoreFromOrg(long orgId, long ouid) {
-
-		
 		String fileStoreProp = FacilioProperties.getFileStore();
 		FileStore fs = null;
 		switch (fileStoreProp){
