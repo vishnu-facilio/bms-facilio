@@ -110,7 +110,8 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 						.aggregate(aggr, field)
 						.module(module)
 						.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), meter.getMeterId()+"", NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
+						.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
+						.skipUnitConversion();
 				
 				List<Map<String, Object>> props = select.getAsProps();
 				
