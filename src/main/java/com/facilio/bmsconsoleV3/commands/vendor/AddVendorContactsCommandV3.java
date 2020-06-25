@@ -76,7 +76,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
         V3ContactsAPI.unMarkPrimaryContact(-1, vendor.getId(), V3ContactsContext.ContactType.VENDOR);
         V3ContactsContext contact = new V3ContactsContext();
         contact.setName(vendor.getPrimaryContactName() != null ? vendor.getPrimaryContactName() : vendor.getName());
-        contact.setContactType(V3ContactsContext.ContactType.VENDOR);
+        contact.setContactType(V3ContactsContext.ContactType.VENDOR.getIndex());
         contact.setVendor(vendor);
         contact.setEmail(vendor.getPrimaryContactEmail());
         contact.setPhone(vendor.getPrimaryContactPhone());

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V3WorkorderTemplate extends V3Template {
+public class V3WorkorderTemplate extends Template {
     /**
      *
      */

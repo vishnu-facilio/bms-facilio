@@ -53,7 +53,7 @@ public class AddTasksCommandV3 extends FacilioCommand implements PostTransaction
                 for(V3TaskContext task : tasks) {
                     task.setCreatedTime(System.currentTimeMillis());
                     task.setSectionId(sectionId);
-                    task.setStatusNew(V3TaskContext.TaskStatus.OPEN);
+                    task.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());
                     task.setPreRequest(Boolean.FALSE);
                     if(workOrder != null) {
                         task.setParentTicketId(workOrder.getId());
@@ -121,7 +121,7 @@ public class AddTasksCommandV3 extends FacilioCommand implements PostTransaction
                 for (V3TaskContext task : tasks) {
                     task.setCreatedTime(System.currentTimeMillis());
                     task.setSectionId(sectionId);
-                    task.setStatusNew(V3TaskContext.TaskStatus.OPEN);
+                    task.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());
                     task.setPreRequest(Boolean.TRUE);
                     if (workOrder != null) {
                         task.setParentTicketId(workOrder.getId());

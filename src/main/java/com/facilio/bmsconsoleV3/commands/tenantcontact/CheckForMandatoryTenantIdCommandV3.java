@@ -42,7 +42,7 @@ public class CheckForMandatoryTenantIdCommandV3 extends FacilioCommand {
                     contact.setName(tc.getName());
                     contact.setEmail(tc.getEmail());
                     contact.setPhone(tc.getPhone());
-                    contact.setContactType(V3ContactsContext.ContactType.TENANT);
+                    contact.setContactType(V3ContactsContext.ContactType.TENANT.getIndex());
                     contact.setTenant(tc.getTenant());
                     contact.setIsPrimaryContact(tc.isPrimaryContact());
                     V3RecordAPI.addRecord(true, java.util.Collections.singletonList(contact), module, fields);

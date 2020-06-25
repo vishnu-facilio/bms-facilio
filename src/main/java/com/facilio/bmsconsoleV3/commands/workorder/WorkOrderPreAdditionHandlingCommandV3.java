@@ -26,7 +26,7 @@ public class WorkOrderPreAdditionHandlingCommandV3 extends FacilioCommand {
         }
         if(CollectionUtils.isNotEmpty(wos)) {
             for(V3WorkOrderContext wo : wos) {
-                wo.setSourceType(V3TicketContext.SourceType.WEB_ORDER);
+                wo.setSourceType(V3TicketContext.SourceType.WEB_ORDER.getIntVal());
             }
         }
 

@@ -122,7 +122,7 @@ public class AddTenantUserCommandV3 extends FacilioCommand {
         V3ContactsAPI.unMarkPrimaryContact(-1, tenant.getId(), V3ContactsContext.ContactType.TENANT);
         V3ContactsContext contact = new V3ContactsContext();
         contact.setName(tenant.getPrimaryContactName() != null ? tenant.getPrimaryContactName() : tenant.getName());
-        contact.setContactType(V3ContactsContext.ContactType.TENANT);
+        contact.setContactType(V3ContactsContext.ContactType.TENANT.getIndex());
         contact.setTenant(tenant);
         contact.setEmail(tenant.getPrimaryContactEmail());
         contact.setPhone(tenant.getPrimaryContactPhone());

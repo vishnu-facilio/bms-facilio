@@ -95,7 +95,7 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                     task.setUniqueId(++maxUniqueId);
                 }
                 if (task.getInputTypeEnum() == null) {
-                    task.setInputType(V3TaskContext.InputType.NONE);
+                    task.setInputType(V3TaskContext.InputType.NONE.getVal());
                 }
                 else {
                     switch(task.getInputTypeEnum()) {

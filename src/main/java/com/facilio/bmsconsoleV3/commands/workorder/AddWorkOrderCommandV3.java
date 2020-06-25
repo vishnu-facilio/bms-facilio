@@ -66,7 +66,7 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
 
             workOrder.setModifiedTime(workOrder.getCreatedTime());
             workOrder.setScheduledStart(workOrder.getCreatedTime());
-            workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
+            workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED.getValue());
 
             if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
                 workOrder.setPriority(V3TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "Low"));
