@@ -55,12 +55,13 @@ public class LocalFileStore extends FileStore {
 									.append(File.separator)
 									.append(getOrgId())
 									.append(File.separator);
-			if (namespaceConfig.isDailyDirectoryNeeded()) {
-				path.append(dateVal).append(File.separator);
-			}
 			path.append("files")
 				.append(File.separator)
-				.append(namespace);
+				.append(namespace)
+				.append(File.separator);
+			if (namespaceConfig.isDailyDirectoryNeeded()) {
+				path.append(dateVal);
+			}
 			rootPath = path.toString();
 			File rootDir = new File(rootPath);
 			if (!(rootDir.exists() && rootDir.isDirectory())) {
