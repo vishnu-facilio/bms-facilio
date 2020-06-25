@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class AssetDepartmentContext extends ModuleBaseWithCustomFields {
+public class AssetDepartmentContext extends V3Context {
 	/**
 	 * 
 	 */
