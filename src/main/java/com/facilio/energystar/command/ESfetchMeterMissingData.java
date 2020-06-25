@@ -126,6 +126,12 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 							dataMissingRangesThatCanBeFilled.add(dataMissingRangeThatCanBeFilled);
 						}
 					}
+					else if (dataAvailabeRange != null && (dataMissingRanges == null || dataMissingRanges.isEmpty())) {
+						dataMissingRanges = new ArrayList<>();
+						dataMissingRanges.add(dataAvailabeRange);
+						meter.setEnergyStarDataMissingRanges(dataMissingRanges);
+						dataMissingRangesThatCanBeFilled.add(dataAvailabeRange);
+					}
 					
 					meter.setDataAvailableInFacilio(dataAvailabeRange);
 					meter.setEnergyStarDataMissingRangesThatCanBeFilled(dataMissingRangesThatCanBeFilled);
@@ -199,7 +205,8 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(energydata.getTableName())
 				.select(selectFields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), meterId+"", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), meterId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), DateTimeUtil.getCurrenTime()+"", NumberOperators.LESS_THAN));
 		
 		 List<Map<String, Object>> result = select.get();
 		
