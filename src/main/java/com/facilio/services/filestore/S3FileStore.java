@@ -415,7 +415,7 @@ public class S3FileStore extends FileStore {
 	}
 	
 	@Override
-	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
+	public boolean deleteFilePermanently(String namespace, long fileId) throws Exception {
 		
 		FileInfo fileInfo = getFileInfo(namespace, fileId);
 		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), fileInfo.getFilePath());

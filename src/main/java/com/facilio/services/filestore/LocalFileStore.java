@@ -311,7 +311,7 @@ public class LocalFileStore extends FileStore {
 	}
 	
 	@Override
-	public boolean deleteFilePermenantly(String namespace, long fileId) throws Exception {
+	public boolean deleteFilePermanently(String namespace, long fileId) throws Exception {
 		return deleteFilesPermanently(namespace, Collections.singletonList(fileId));
 	}
 	

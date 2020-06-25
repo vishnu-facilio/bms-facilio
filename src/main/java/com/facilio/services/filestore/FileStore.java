@@ -79,10 +79,6 @@ public abstract class FileStore {
 		}
 		private boolean dailyDirectoryNeeded = false;
 	}
-	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
-	private static final Map<String, NamespaceConfig> NAMESPACES = Collections.unmodifiableMap(initNamespaces());
-	protected static final String DEFAULT_NAMESPACE = "default";
 
 	private static Map<String, NamespaceConfig> initNamespaces() {
 		try {
@@ -105,7 +101,13 @@ public abstract class FileStore {
 		return NAMESPACES.get(namespace);
 	}
 
+	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
+	private static final Map<String, NamespaceConfig> NAMESPACES = Collections.unmodifiableMap(initNamespaces());
 	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
+	private static final int DEFAULT_FILE_URL_EXPIRY = 300000;
+
+	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+	protected static final String DEFAULT_NAMESPACE = "default";
 
 	private long orgId;
 	private long userId;
@@ -401,20 +403,38 @@ public abstract class FileStore {
 
 	protected abstract String getRootPath(String namespace);
 
+	public long addFile (String fileName, File file, String contentType) throws Exception {
+		return addFile(DEFAULT_NAMESPACE,fileName, file, contentType);
+	}
 	public abstract long addFile(String namespace, String fileName, File file, String contentType) throws Exception;
 
+	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addFile(DEFAULT_NAMESPACE, fileName, file, contentType, resize);
+	}
 	public abstract long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
 
+	public long addOrphanedFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return addOrphanedFile(DEFAULT_NAMESPACE, fileName, file, contentType, resize);
+	}
 	public abstract long addOrphanedFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
 
+	public long addFile(String fileName, String content, String contentType) throws Exception {
+		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType);
+	}
 	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
 
 	public abstract void addComppressedFile(String namespace, long fileId, String fileName, File file, String contentType) throws Exception;
 
+	public FileInfo getFileInfo(long fileId) throws Exception {
+		return getFileInfo(DEFAULT_NAMESPACE, fileId);
+	}
 	public FileInfo getFileInfo(String namespace, long fileId) throws Exception {
 		return getFileInfo(namespace, fileId, false);
 	}
 
+	public FileInfo getFileInfo(long fileId, boolean fetchOriginal) throws Exception {
+		return getFileInfo(DEFAULT_NAMESPACE, fileId, fetchOriginal);
+	}
 	public FileInfo getFileInfo(String namespace, long fileId, boolean fetchOriginal) throws Exception {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
 		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching file info");
@@ -431,7 +451,7 @@ public abstract class FileStore {
 
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs, fetchOriginal);
+				FileInfo fileInfo = getFileInfoFromRS(namespace, rs, fetchOriginal);
 				return fileInfo;
 			}
 		}
@@ -444,7 +464,9 @@ public abstract class FileStore {
 		return null;
 	}
 
-
+	public FileInfo getResizedFileInfo(long fileId, int width, int height) throws Exception {
+		return getResizedFileInfo(DEFAULT_NAMESPACE, fileId, width, height);
+	}
 	public FileInfo getResizedFileInfo(String namespace, long fileId, int width, int height) throws Exception {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
 		Objects.requireNonNull(namespaceConfig, "Invalid namespace while fetching resized file info");
@@ -463,7 +485,7 @@ public abstract class FileStore {
 
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs);
+				FileInfo fileInfo = getFileInfoFromRS(namespace, rs);
 				return fileInfo;
 			}
 			LOGGER.debug(pstmt);
@@ -478,6 +500,9 @@ public abstract class FileStore {
 		return null;
 	}
 
+	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId, Connection conn) throws Exception {
+		return getFileInfoAsMap(DEFAULT_NAMESPACE, fileId, conn);
+	}
 	public Map<Long, FileInfo> getFileInfoAsMap(String namespace, List<Long> fileId, Connection conn) throws Exception {
 
 		// TODO return compressed file by default
@@ -500,7 +525,7 @@ public abstract class FileStore {
 
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				FileInfo fileInfo = getFileInfoFromRS(rs, true);
+				FileInfo fileInfo = getFileInfoFromRS(namespace, rs, true);
 				fileMap.put(fileInfo.getFileId(), fileInfo);
 			}
 		}
@@ -550,14 +575,15 @@ public abstract class FileStore {
 		}
 	}
 
-	private FileInfo getFileInfoFromRS(ResultSet rs) throws Exception {
-		return getFileInfoFromRS(rs, false);
+	private FileInfo getFileInfoFromRS(String namespace, ResultSet rs) throws Exception {
+		return getFileInfoFromRS(namespace, rs, false);
 	}
 
-	private FileInfo getFileInfoFromRS(ResultSet rs, boolean fetchOriginal) throws Exception {
+	private FileInfo getFileInfoFromRS(String namespace, ResultSet rs, boolean fetchOriginal) throws Exception {
 
 		ResizedFileInfo fileInfo = new ResizedFileInfo();
 		fileInfo.setOrgId(rs.getLong("ORGID"));
+		fileInfo.setNamespace(namespace);
 		fileInfo.setFileId(rs.getLong("FILE_ID"));
 		if (rs.getString("FILE_NAME") != null) {
 			fileInfo.setFileName(rs.getString("FILE_NAME").trim());
@@ -676,6 +702,9 @@ public abstract class FileStore {
 		return getUrl(fileId, true, isPortalUser, -1, -1);
 	}
 
+	public int unOrphan(List<Long> fileIds) throws SQLException {
+		return unOrphan(DEFAULT_NAMESPACE, fileIds);
+	}
 	public int unOrphan(String namespace, List<Long> fileIds) throws SQLException {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
 		Objects.requireNonNull(namespaceConfig, "Invalid namespace while making files unorphan");
@@ -697,6 +726,9 @@ public abstract class FileStore {
 		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
 
+	public int markAsDeleted(List<Long> fileIds) throws SQLException {
+		return markAsDeleted(DEFAULT_NAMESPACE, fileIds);
+	}
 	public int markAsDeleted(String namespace, List<Long> fileIds) throws SQLException {
 		NamespaceConfig namespaceConfig = NAMESPACES.get(namespace);
 		Objects.requireNonNull(namespaceConfig, "Invalid namespace while marking files as deleted");
@@ -725,23 +757,38 @@ public abstract class FileStore {
 		return builder.batchUpdate(Collections.singletonList(fieldMap.get("fileId")), batchUpdateList);
 	}
 
+	public String orginalFileUrl (long fileId) throws Exception {
+		return orginalFileUrl(DEFAULT_NAMESPACE, fileId);
+	}
 	public String orginalFileUrl (String namespace, long fileId) throws Exception {
 		return getOrgiDownloadUrl(namespace, fileId);
 	}
 
+	public String newPreviewFileUrl (String moduleName, long fileId) throws Exception {
+		return newPreviewFileUrl(moduleName, DEFAULT_NAMESPACE, fileId);
+	}
 	public String newPreviewFileUrl (String moduleName, String namespace, long fileId) throws Exception {
-		return newPreviewFileUrl(moduleName, namespace, fileId, System.currentTimeMillis() + 300000);
+		return newPreviewFileUrl(moduleName, namespace, fileId, System.currentTimeMillis() + DEFAULT_FILE_URL_EXPIRY);
 	}
 
+	public String newPreviewFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
+		return newPreviewFileUrl(moduleName, DEFAULT_NAMESPACE, fileId, expiryTime);
+	}
 	public String newPreviewFileUrl (String moduleName, String namespace, long fileId, long expiryTime) throws Exception {
 		String url = getUrl(moduleName, namespace, fileId, expiryTime, false);
 		return url;
 	}
 
+	public String newDownloadFileUrl (String moduleName, long fileId) throws Exception {
+		return newDownloadFileUrl(moduleName, DEFAULT_NAMESPACE, fileId);
+	}
 	public String newDownloadFileUrl (String moduleName, String namespace, long fileId) throws Exception {
-		return newDownloadFileUrl(moduleName, namespace, fileId,  System.currentTimeMillis() + 300000);
+		return newDownloadFileUrl(moduleName, namespace, fileId,  System.currentTimeMillis() + DEFAULT_FILE_URL_EXPIRY);
 	}
 
+	public String newDownloadFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
+		return newDownloadFileUrl(moduleName, DEFAULT_NAMESPACE, fileId, expiryTime);
+	}
 	public String newDownloadFileUrl (String moduleName, String namespace, long fileId, long expiryTime) throws Exception {
 		String url = getUrl(moduleName, namespace, fileId, expiryTime, true);
 		return url;
@@ -774,24 +821,52 @@ public abstract class FileStore {
 		url.append("?q=");
 		return url.toString()+token;
 	}
+
+	public InputStream readFile(long fileId) throws Exception {
+		return readFile(DEFAULT_NAMESPACE, fileId);
+	}
 	public abstract InputStream readFile(String namespace, long fileId) throws Exception;
 
+	public InputStream readFile(long fileId, boolean fetchOriginal) throws Exception {
+		return readFile(DEFAULT_NAMESPACE, fileId, fetchOriginal);
+	}
 	public abstract InputStream readFile(String namespace, long fileId, boolean fetchOriginal) throws Exception;
 
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
 
+	public boolean deleteFile(long fileId) throws Exception {    // Mark As Deleted
+		return deleteFile(DEFAULT_NAMESPACE, fileId);
+	}
 	public abstract boolean deleteFile(String namespace, long fileId) throws Exception;	// Mark As Deleted
 
+	public boolean deleteFiles(List<Long> fileId) throws Exception {    // Mark As Deleted
+		return deleteFiles(DEFAULT_NAMESPACE, fileId);
+	}
 	public abstract boolean deleteFiles(String namespace, List<Long> fileId) throws Exception; 	// Mark As Deleted
 
-	public abstract boolean deleteFilePermenantly(String namespace, long fileId) throws Exception;
+	public boolean deleteFilePermanently(long fileId) throws Exception {
+		return deleteFilePermanently(DEFAULT_NAMESPACE, fileId);
+	}
+	public abstract boolean deleteFilePermanently(String namespace, long fileId) throws Exception;
 
+	public boolean deleteFilesPermanently(List<Long> fileIds) throws Exception {
+		return deleteFilesPermanently(DEFAULT_NAMESPACE, fileIds);
+	}
 	public abstract boolean deleteFilesPermanently(String namespace, List<Long> fileIds) throws Exception;
 
+	public boolean renameFile(long fileId, String newName) throws Exception {
+		return renameFile(DEFAULT_NAMESPACE, fileId, newName);
+	}
 	public abstract boolean renameFile(String namespace, long fileId, String newName) throws Exception;
 
+	public String getOrgiFileUrl(long fileId) throws Exception {
+		return getOrgiFileUrl(DEFAULT_NAMESPACE, fileId);
+	}
 	public abstract String getOrgiFileUrl(String namespace, long fileId) throws Exception;
 
+	public String getOrgiDownloadUrl(long fileId) throws Exception {
+		return getOrgiDownloadUrl(DEFAULT_NAMESPACE, fileId);
+	}
 	public abstract String getOrgiDownloadUrl(String namespace, long fileId) throws Exception;
 
 	public abstract boolean isFileExists(String newVersion);
@@ -865,11 +940,9 @@ public abstract class FileStore {
 
 	public abstract long addSecretFile(String fileName,File file,String contentType) throws Exception;
 
-
 	public abstract InputStream getSecretFile(String tag) throws Exception;
 
 	public abstract boolean removeSecretFile(String tag) throws Exception;
-
 
 	public abstract boolean isSecretFileExists(String fileName);
 
@@ -907,13 +980,6 @@ public abstract class FileStore {
 			}
 		}
 		return null;
-	}
-
-	protected int addResizedFileEntry(List<ResizedFileInfo> rfileInfos) throws Exception {
-		new GenericInsertRecordBuilder().table(ModuleFactory.getResizedFilesModule().getTableName())
-				.fields(FieldFactory.getResizedFileFields())
-				.addRecords(FieldUtil.getAsMapList(rfileInfos, ResizedFileInfo.class)).save();
-		return rfileInfos.size();
 	}
 
 }
