@@ -15,7 +15,7 @@ public class QuotationScopingConfig extends ModuleScopingConfiguration {
     public void addScopingConfiguration() {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
 
             //adding site scope in Facilio
             long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);

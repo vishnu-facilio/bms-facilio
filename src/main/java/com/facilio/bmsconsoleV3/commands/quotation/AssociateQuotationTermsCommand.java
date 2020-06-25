@@ -22,7 +22,7 @@ public class AssociateQuotationTermsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-        List<QuotationAssociatedTermsContext> terms = (List<QuotationAssociatedTermsContext>) context.get(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+        List<QuotationAssociatedTermsContext> terms = (List<QuotationAssociatedTermsContext>) context.get(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
         if (CollectionUtils.isNotEmpty(terms)) {
             QuotationAPI.addQuotationTerms(recordId, terms);
             JSONObject info = new JSONObject();

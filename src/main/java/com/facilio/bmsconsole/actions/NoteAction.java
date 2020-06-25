@@ -98,8 +98,8 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
 			context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID, alarmOccurrenceId);
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ALARM_ACTIVITY);
-		} else if (moduleName.equals(FacilioConstants.ContextNames.QUOTATION_NOTES)) {
-			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
+		} else if (moduleName.equals(FacilioConstants.ContextNames.QUOTE_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.QUOTE_ACTIVITY);
 		}  else if (moduleName.equals(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
 		}

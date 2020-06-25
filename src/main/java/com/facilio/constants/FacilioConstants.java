@@ -1651,20 +1651,20 @@ public class FacilioConstants {
 		public static final String ALARM_TYPE = "alarmType";
 		public static final String PERMISSION_TYPE = "permissionType";
 
-        public static final String QUOTATION = "quotation";
-        public static final String QUOTATION_LINE_ITEMS = "quotationlineitems";
+        public static final String QUOTE = "quote";
+        public static final String QUOTE_LINE_ITEMS = "quotelineitems";
 		public static final String TAX = "tax";
 		public static final String DO_FIELD_PERMISSIONS_VALIDATION = "doFieldPermissionValidation";
 
 		public static final String TAX_GROUPS = "taxgroup";
-		public static final String QUOTATION_ASSOCIATED_TERMS = "quotationterms";
+		public static final String QUOTE_ASSOCIATED_TERMS = "quoteterms";
 		public static final String OLD_TAX_ID = "oldTaxId";
 		public static final String OLD_RECORD_ID = "oldRecordId";
-		public static final String QUOTATION_NOTES = "quotationnotes";
-		public static final String QUOTATION_ATTACHMENTS = "quotationattachments";
-		public static final String QUOTATION_MAIL_ATTACHMENTS = "quotationMailAttachments";
-		public static final String QUOTATION_PDF_URL = "quotationPdfUrl";
-		public static final String QUOTATION_ACTIVITY = "quotationactivity";
+		public static final String QUOTE_NOTES = "quotenotes";
+		public static final String QUOTE_ATTACHMENTS = "quoteattachments";
+		public static final String QUOTE_MAIL_ATTACHMENTS = "quoteMailAttachments";
+		public static final String QUOTE_PDF_URL = "quotePdfUrl";
+		public static final String QUOTE_ACTIVITY = "quoteactivity";
 
 		public static final String FETCH_MY_APPS = "fetchMyApps";
 		public static final String APP_DOMAIN = "applicationDomain";
@@ -1918,12 +1918,12 @@ public class FacilioConstants {
 
 			classMap.put(ASSET_DEPRECIATION, AssetDepreciationContext.class);
 
-            classMap.put(QUOTATION, QuotationContext.class);
-            classMap.put(QUOTATION_LINE_ITEMS, QuotationLineItemsContext.class);
+            classMap.put(QUOTE, QuotationContext.class);
+            classMap.put(QUOTE_LINE_ITEMS, QuotationLineItemsContext.class);
 			classMap.put(TAX, TaxContext.class);
 			classMap.put(TAX_GROUPS, TaxGroupContext.class);
-			classMap.put(QUOTATION_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
-			classMap.put(QUOTATION_ACTIVITY, ActivityContext.class);
+			classMap.put(QUOTE_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
+			classMap.put(QUOTE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(WorkPermit.WORKPERMIT, WorkPermitContext.class);
 			classMap.put(WorkPermit.WORK_PERMIT_CHECKLIST, WorkPermitChecklistContext.class);

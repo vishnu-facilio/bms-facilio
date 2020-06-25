@@ -44,7 +44,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
                 if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
-                    FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_LINE_ITEMS);
+                    FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.QUOTE_LINE_ITEMS);
                     DeleteRecordBuilder<QuotationLineItemsContext> deleteBuilder = new DeleteRecordBuilder<QuotationLineItemsContext>()
                             .module(lineItemModule)
                             .andCondition(CriteriaAPI.getCondition("QUOTATION_ID", "quotation", String.valueOf(quotation.getId()), NumberOperators.EQUALS));
@@ -65,7 +65,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     }
                     Long oldRecordId = (Long) context.get(FacilioConstants.ContextNames.OLD_RECORD_ID);
                     FacilioChain activitiesChain = ReadOnlyChainFactory.getActivitiesChain();
-                    activitiesChain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
+                    activitiesChain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.QUOTE_ACTIVITY);
                     activitiesChain.getContext().put(FacilioConstants.ContextNames.PARENT_ID, oldRecordId);
                     activitiesChain.execute();
                     List<ActivityContext> activities = (List<ActivityContext>) activitiesChain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);

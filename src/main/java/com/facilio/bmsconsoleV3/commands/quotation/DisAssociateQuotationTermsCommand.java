@@ -33,8 +33,8 @@ public class DisAssociateQuotationTermsCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
-        List<FacilioField> termsFields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
+        List<FacilioField> termsFields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(termsFields);
         SelectRecordsBuilder<QuotationAssociatedTermsContext> selectBuilder = new SelectRecordsBuilder<QuotationAssociatedTermsContext>()
                 .module(module)

@@ -19,7 +19,7 @@ public class QuotationPageFactory extends PageFactory {
 
     public static Page getQuotationPage(QuotationContext record, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule quotationModule = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
+        FacilioModule quotationModule = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
 
         Page page = new Page();
 
@@ -59,7 +59,7 @@ public class QuotationPageFactory extends PageFactory {
         tab4.addSection(tab4Sec1);
         PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
         activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
-        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.QUOTATION_ACTIVITY);
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.QUOTE_ACTIVITY);
         tab4Sec1.addWidget(activityWidget);
 
 

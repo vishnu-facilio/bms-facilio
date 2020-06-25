@@ -784,7 +784,7 @@ public class ViewFactory {
         order = 1;
         views = new LinkedHashMap<>();
         views.put("all", getAllQuotations().setOrder(order++));
-        viewsMap.put(FacilioConstants.ContextNames.QUOTATION, views);
+        viewsMap.put(FacilioConstants.ContextNames.QUOTE, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -795,7 +795,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllQuotationTerms().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS, views);
+		viewsMap.put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, views);
 
 		return viewsMap;
 	}
@@ -7160,7 +7160,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Quotations");
+        allView.setDisplayName("All Quotes");
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
         allView.setCriteria(nonRevisedCriteria);
@@ -7214,7 +7214,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Quotation Terms");
+		allView.setDisplayName("All Quote Terms");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 

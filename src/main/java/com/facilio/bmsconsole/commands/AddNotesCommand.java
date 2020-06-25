@@ -95,7 +95,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	     		} else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
 	     			long occurrenceId = (long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
 					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
-				} else if(moduleName.equals(FacilioConstants.ContextNames.QUOTATION_NOTES)) {
+				} else if(moduleName.equals(FacilioConstants.ContextNames.QUOTE_NOTES)) {
 					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
 				}
 				

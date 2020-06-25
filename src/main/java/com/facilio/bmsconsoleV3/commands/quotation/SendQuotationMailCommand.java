@@ -30,9 +30,9 @@ public class SendQuotationMailCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         EMailTemplate emailTemplate = (EMailTemplate) context.get(FacilioConstants.ContextNames.TEMPLATE);
-        List<File> mailAttachments = (List<File>) context.get(FacilioConstants.ContextNames.QUOTATION_MAIL_ATTACHMENTS);
-        String quotationPdfUrl = (String) context.get(FacilioConstants.ContextNames.QUOTATION_PDF_URL);
-        QuotationContext quotationContext = (QuotationContext) context.get(FacilioConstants.ContextNames.QUOTATION);
+        List<File> mailAttachments = (List<File>) context.get(FacilioConstants.ContextNames.QUOTE_MAIL_ATTACHMENTS);
+        String quotationPdfUrl = (String) context.get(FacilioConstants.ContextNames.QUOTE_PDF_URL);
+        QuotationContext quotationContext = (QuotationContext) context.get(FacilioConstants.ContextNames.QUOTE);
 
         emailTemplate.setFrom("noreply@facilio.com");
 

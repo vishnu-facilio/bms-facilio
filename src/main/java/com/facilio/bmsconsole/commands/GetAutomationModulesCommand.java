@@ -42,7 +42,7 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         }
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTATION));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTE));
         }
 
        

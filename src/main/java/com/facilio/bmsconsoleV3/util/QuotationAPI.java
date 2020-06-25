@@ -115,7 +115,7 @@ public class QuotationAPI {
 
     public static void setLineItems(QuotationContext quotation) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String lineItemModuleName = FacilioConstants.ContextNames.QUOTATION_LINE_ITEMS;
+        String lineItemModuleName = FacilioConstants.ContextNames.QUOTE_LINE_ITEMS;
         List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
@@ -132,7 +132,7 @@ public class QuotationAPI {
 
     public static void setQuotationAssociatedTerms(QuotationContext quotation) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
@@ -243,7 +243,7 @@ public class QuotationAPI {
                 term.setQuotation(quotation);
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS);
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
             List<FacilioField> fields = modBean.getAllFields(module.getName());
             V3RecordAPI.addRecord(false, termsAssociated, module, fields);
         }
@@ -366,8 +366,8 @@ public class QuotationAPI {
         // Considering one Quotation for a Workorder.
         if (lookupValueIsNotEmpty(quotation.getWorkorder())) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
-            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTATION);
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTE);
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
             SelectRecordsBuilder<QuotationContext> builder = new SelectRecordsBuilder<QuotationContext>()
                     .module(module)

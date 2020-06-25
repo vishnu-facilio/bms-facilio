@@ -77,19 +77,19 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module("quotation")
+    @Module("quote")
     public static Supplier<V3Config> getQuotation() {
         return () -> new V3Config(QuotationContext.class)
 
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getQuotationBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterSaveChain())
-                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY))
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY))
 
                 .update()
                 .beforeSave(new QuotationValidationAndCostCalculationCommand())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterUpdateChain())
-                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY))
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY))
 
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())

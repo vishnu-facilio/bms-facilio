@@ -70,7 +70,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VENDOR_CONTACT);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.EMPLOYEE);
-		modulesWithLocalId.add(FacilioConstants.ContextNames.QUOTATION);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.QUOTE);
 		
 		return modulesWithLocalId;
 	}

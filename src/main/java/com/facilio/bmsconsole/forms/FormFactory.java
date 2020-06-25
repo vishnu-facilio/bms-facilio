@@ -301,7 +301,7 @@ public class FormFactory {
 				sections.add(shippingSection);
 				sections.add(lineItemSection);
 			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.QUOTATION)) {
+			else if (moduleName.equals(FacilioConstants.ContextNames.QUOTE)) {
 				List<FormSection> sections = new ArrayList<>();
 				List<FormField> defaultFields = new ArrayList<>();
 				List<FormField> billingAddressFields = new ArrayList<>();
@@ -407,7 +407,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getFormMap(invReqFormsList))
 				.put(FacilioConstants.ContextNames.ITEM_TYPES, getFormMap(itemTypesFormsList))
 				.put(FacilioConstants.ContextNames.TOOL_TYPES, getFormMap(toolTypesFormsList))
-				.put(FacilioConstants.ContextNames.QUOTATION, getFormMap(quotationFormsList))
+				.put(FacilioConstants.ContextNames.QUOTE, getFormMap(quotationFormsList))
 				.build();
 	}
 	
@@ -2129,9 +2129,9 @@ public class FormFactory {
 	private static FacilioForm getQuotationForm() {
 
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Quotation");
-		form.setName("default_quotation_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.QUOTATION));
+		form.setDisplayName("Quote");
+		form.setName("default_quote_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.QUOTE));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getQuotationFormFields());
 		form.setFormType(FormType.WEB);

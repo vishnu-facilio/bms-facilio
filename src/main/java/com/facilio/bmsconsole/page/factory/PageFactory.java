@@ -111,7 +111,7 @@ public class PageFactory {
 				return TemplatePageFactory.getTemplatePage((DefaultTemplate) record);
 			case ContextNames.TENANT_UNIT_SPACE:
 				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record, module);
-			case ContextNames.QUOTATION:
+			case ContextNames.QUOTE:
 				return QuotationPageFactory.getQuotationPage((QuotationContext) record, module);
 				
 		}

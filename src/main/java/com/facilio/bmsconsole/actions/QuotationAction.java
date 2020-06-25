@@ -89,9 +89,9 @@ public class QuotationAction extends FacilioAction {
 
         FacilioChain chain = TransactionChainFactory.getAssociateQuotationTermsChain();
         chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-        chain.getContext().put(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS, termsAssociated );
+        chain.getContext().put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, termsAssociated );
         chain.execute();
-        setResult(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.QUOTATION_ASSOCIATED_TERMS));
+        setResult(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS));
 
         return SUCCESS;
     }
@@ -110,9 +110,9 @@ public class QuotationAction extends FacilioAction {
 
         FacilioChain chain = TransactionChainFactory.getSendQuotationMailChain();
         chain.getContext().put(FacilioConstants.ContextNames.TEMPLATE, emailTemplate);
-        chain.getContext().put(FacilioConstants.ContextNames.QUOTATION_MAIL_ATTACHMENTS, mailAttachments);
-        chain.getContext().put(FacilioConstants.ContextNames.QUOTATION_PDF_URL, pdfUrl);
-        chain.getContext().put(FacilioConstants.ContextNames.QUOTATION, quotation);
+        chain.getContext().put(FacilioConstants.ContextNames.QUOTE_MAIL_ATTACHMENTS, mailAttachments);
+        chain.getContext().put(FacilioConstants.ContextNames.QUOTE_PDF_URL, pdfUrl);
+        chain.getContext().put(FacilioConstants.ContextNames.QUOTE, quotation);
         chain.execute();
 
         return SUCCESS;

@@ -33,7 +33,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
             List<QuotationContext> list = recordMap.get(moduleName);
             if (CollectionUtils.isNotEmpty(list)) {//also check for closed status type. only mark as sent has to be revised.
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTATION);
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
                 List<FacilioField> fields = modBean.getAllFields(module.getName());
                 FacilioStatus revisedStatus = TicketAPI.getStatus(module, "Revised");
                 FacilioStatus sentStatus = TicketAPI.getStatus(module, "Sent");

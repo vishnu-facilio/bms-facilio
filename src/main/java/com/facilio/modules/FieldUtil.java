@@ -392,7 +392,7 @@ public class FieldUtil {
                     // FacilioConstants.ContextNames.VENDOR_CONTACT,
                     FacilioConstants.ContextNames.CLIENT_CONTACT,
                     //FacilioConstants.ContextNames.EMPLOYEE,
-                    FacilioConstants.ContextNames.QUOTATION
+                    FacilioConstants.ContextNames.QUOTE
 			)));
 
 
@@ -446,7 +446,7 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.HAZARD,
 					FacilioConstants.ContextNames.PRECAUTION,
                     FacilioConstants.ContextNames.SERVICE_REQUEST,
-                    FacilioConstants.ContextNames.QUOTATION
+                    FacilioConstants.ContextNames.QUOTE
 			))
 			);
 

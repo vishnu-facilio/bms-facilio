@@ -115,14 +115,14 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateQuotationParentIdCommand());
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
-        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
         return c;
     }
 
     public static FacilioChain getQuotationAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
-        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTATION_ACTIVITY));
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
         return c;
     }
 
