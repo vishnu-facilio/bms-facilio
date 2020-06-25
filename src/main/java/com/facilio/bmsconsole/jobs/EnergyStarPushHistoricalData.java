@@ -28,6 +28,7 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class EnergyStarPushHistoricalData extends FacilioJob {
 	
@@ -49,6 +50,12 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			FacilioChain chain = TransactionChainFactory.getESPushMeterDataChain();
 			
 			FacilioContext context = chain.getContext();
+			
+			long lastMonthEndTime = DateTimeUtil.getMonthStartTime()-1;
+			
+			if(endTime > lastMonthEndTime) {
+				endTime = lastMonthEndTime;
+			}
 			
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
 			List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
