@@ -113,17 +113,17 @@ public class V3TaskContext extends V3Context {
     public V3TaskContext.TaskStatus getStatusNewEnum() {
         return statusNew;
     }
-    public void setStatusNew(V3TaskContext.TaskStatus statusNew) {
-        this.statusNew = statusNew;
-    }
-    public int getStatusNew() {
+    public Integer getStatusNew() {
         if (statusNew != null) {
             return statusNew.getValue();
         }
-        return -1;
+        return null;
     }
-    public void setStatusNew(int statusNew) {
-        this.statusNew = V3TaskContext.TaskStatus.valueOf(statusNew);
+    public void setStatusNew(Integer statusNew) {
+
+        if(statusNew != null) {
+            this.statusNew = V3TaskContext.TaskStatus.valueOf(statusNew);
+        }
     }
 
     private Long parentTicketId;
@@ -195,15 +195,17 @@ public class V3TaskContext extends V3Context {
         return readingFieldUnit;
     }
 
-    public int getReadingFieldUnit() {
+    public Integer getReadingFieldUnit() {
         if (readingFieldUnit != null) {
             return readingFieldUnit.getUnitId();
         }
-        return -1;
+        return null;
     }
 
-    public void setReadingFieldUnit(int readingFieldUnit) {
-        this.readingFieldUnit = Unit.valueOf(readingFieldUnit);
+    public void setReadingFieldUnit(Integer readingFieldUnit) {
+        if(readingFieldUnit != null) {
+            this.readingFieldUnit = Unit.valueOf(readingFieldUnit);
+        }
     }
 
 
@@ -240,17 +242,17 @@ public class V3TaskContext extends V3Context {
     }
 
     private V3TaskContext.InputType inputType;
-    public int getInputType() {
+    public Integer getInputType() {
         if(inputType != null) {
             return inputType.getVal();
         }
-        return -1;
+        return null;
     }
-    public void setInputType(int inputType) {
-        this.inputType = V3TaskContext.InputType.valueOf(inputType);
-    }
-    public void setInputType(V3TaskContext.InputType inputType) {
-        this.inputType = inputType;
+    public void setInputType(Integer inputType) {
+
+        if(inputType != null) {
+            this.inputType = V3TaskContext.InputType.valueOf(inputType);
+        }
     }
     public V3TaskContext.InputType getInputTypeEnum() {
         return inputType;

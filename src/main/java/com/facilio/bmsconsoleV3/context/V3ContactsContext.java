@@ -43,22 +43,20 @@ public class V3ContactsContext extends V3Context {
     }
 
     private V3ContactsContext.ContactType contactType;
-    public int getContactType() {
+    public Integer getContactType() {
         if (contactType != null) {
             return contactType.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setContactType(int contactType) {
-        this.contactType = V3ContactsContext.ContactType.valueOf(contactType);
+    public void setContactType(Integer contactType) {
+        if(contactType != null) {
+            this.contactType = V3ContactsContext.ContactType.valueOf(contactType);
+        }
     }
     public V3ContactsContext.ContactType getContactTypeEnum() {
         return contactType;
     }
-    public void setContactType(V3ContactsContext.ContactType contactType) {
-        this.contactType = contactType;
-    }
-
     public static enum ContactType implements FacilioEnum {
         TENANT, VENDOR, EMPLOYEE, CLIENT;
 

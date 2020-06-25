@@ -21,7 +21,7 @@ public class CheckForMandatoryVendorIdCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(vendorContacts)) {
             for(V3VendorContactContext vc : vendorContacts) {
-                vc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT);
+                vc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT.getIndex());
                 if(vc.getVendor() == null || vc.getVendor().getId() <=0 ) {
                     throw new IllegalArgumentException("Vendor Contact must have a vendor id associated");
                 }

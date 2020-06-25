@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V3WorkorderTemplate extends Template {
+public class V3WorkorderTemplate extends V3Template {
     /**
      *
      */
@@ -90,9 +90,9 @@ public class V3WorkorderTemplate extends Template {
     public String getResourceId() {
         return resourceId;
     }
-    public long getResourceIdVal() {
+    public Long getResourceIdVal() {
         if (resourceId == null || !StringUtils.isNumeric(resourceId)) {
-            return -1;
+            return null;
         }
         return Long.parseLong(resourceId);
     }

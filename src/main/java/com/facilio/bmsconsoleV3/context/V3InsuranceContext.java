@@ -41,20 +41,19 @@ public class V3InsuranceContext extends ModuleBaseWithCustomFields {
     }
 
     private V3InsuranceContext.InsuranceType insuranceType;
-    public int getInsuranceType() {
+    public Integer getInsuranceType() {
         if (insuranceType != null) {
             return insuranceType.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setInsuranceType(int insuranceType) {
-        this.insuranceType = V3InsuranceContext.InsuranceType.valueOf(insuranceType);
+    public void setInsuranceType(Integer insuranceType) {
+        if(insuranceType != null) {
+            this.insuranceType = V3InsuranceContext.InsuranceType.valueOf(insuranceType);
+        }
     }
     public V3InsuranceContext.InsuranceType getInsuranceTypeEnum() {
         return insuranceType;
-    }
-    public void setInsuranceType(V3InsuranceContext.InsuranceType insuranceType) {
-        this.insuranceType = insuranceType;
     }
 
     public static enum InsuranceType implements FacilioEnum {

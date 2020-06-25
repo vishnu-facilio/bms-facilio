@@ -52,18 +52,20 @@ public class QuotationLineItemsContext extends V3Context {
         this.quotation = quotation;
     }
 
-    public void setType(int type) {
-        this.type = Type.valueOf(type);
+    public void setType(Integer type) {
+        if(type != null){
+            this.type = Type.valueOf(type);
+        }
     }
 
     public Type getTypeEnum() {
         return type;
     }
-    public int getType() {
+    public Integer getType() {
         if (type != null) {
             return type.getIndex();
         }
-        return -1;
+        return null;
     }
 
     public ItemTypesContext getItemType() {

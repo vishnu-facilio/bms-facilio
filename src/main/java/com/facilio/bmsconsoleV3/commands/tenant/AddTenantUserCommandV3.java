@@ -136,7 +136,7 @@ public class AddTenantUserCommandV3 extends FacilioCommand {
         tc.setName(tenant.getPrimaryContactName());
         tc.setEmail(tenant.getPrimaryContactEmail());
         tc.setPhone(tenant.getPrimaryContactPhone());
-        tc.setPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT);
+        tc.setPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT.getIndex());
         tc.setTenant(tenant);
         tc.setIsPrimaryContact(true);
 

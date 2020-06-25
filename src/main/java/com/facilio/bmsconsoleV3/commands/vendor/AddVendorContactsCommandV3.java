@@ -89,7 +89,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
         tc.setName(vendor.getPrimaryContactName());
         tc.setEmail(vendor.getPrimaryContactEmail());
         tc.setPhone(vendor.getPrimaryContactPhone());
-        tc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT);
+        tc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT.getIndex());
         tc.setVendor(vendor);
         tc.setIsPrimaryContact(true);
 

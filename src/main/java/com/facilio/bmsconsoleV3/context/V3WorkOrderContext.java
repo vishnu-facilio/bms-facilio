@@ -137,19 +137,17 @@ public class V3WorkOrderContext extends V3TicketContext {
         return approvalState;
     }
 
-    public void setApprovalState(ApprovalState approvalState) {
-        this.approvalState = approvalState;
-    }
-
-    public int getApprovalState() {
+    public Integer getApprovalState() {
         if (approvalState != null) {
             return approvalState.getValue();
         }
-        return -1;
+        return null;
     }
 
-    public void setApprovalState(int approvalState) {
-        this.approvalState = ApprovalState.valueOf(approvalState);
+    public void setApprovalState(Integer approvalState) {
+        if(approvalState != null) {
+            this.approvalState = ApprovalState.valueOf(approvalState);
+        }
     }
 
     private StateFlowRuleContext stateFlowRule;
@@ -376,15 +374,18 @@ public class V3WorkOrderContext extends V3TicketContext {
         return urgency;
     }
 
-    public int getUrgency() {
+    public Integer getUrgency() {
         if (urgency != null) {
             return urgency.getValue();
         }
-        return -1;
+        return null;
     }
 
-    public void setUrgency(int urgencyval) {
-        this.urgency = V3WorkOrderContext.WOUrgency.valueOf(urgencyval);
+    public void setUrgency(Integer urgencyval) {
+        if(urgency != null) {
+            this.urgency = V3WorkOrderContext.WOUrgency.valueOf(urgencyval);
+        }
+
     }
 
     public Long getWoCreationOffset() {
@@ -438,19 +439,17 @@ public class V3WorkOrderContext extends V3TicketContext {
         return status;
     }
 
-    public void setJobStatus(V3WorkOrderContext.JobsStatus status) {
-        this.status = status;
-    }
-
-    public int getJobStatus() {
+    public Integer getJobStatus() {
         if (status != null) {
             return status.getValue();
         }
-        return -1;
+        return null;
     }
 
-    public void setJobStatus(int status) {
-        this.status = V3WorkOrderContext.JobsStatus.valueOf(status);
+    public void setJobStatus(Integer status) {
+        if(status != null) {
+            this.status = V3WorkOrderContext.JobsStatus.valueOf(status);
+        }
     }
 
     public enum JobsStatus {
@@ -477,11 +476,11 @@ public class V3WorkOrderContext extends V3TicketContext {
         return preRequestStatus;
     }
 
-    public int getPreRequestStatus() {
+    public Integer getPreRequestStatus() {
         if (preRequestStatus != null) {
             return preRequestStatus.getValue();
         }
-        return -1;
+        return null;
     }
 
     public String getPreRequestStatusVal() {
@@ -547,19 +546,17 @@ public class V3WorkOrderContext extends V3TicketContext {
         return allowNegativePreRequisite;
     }
 
-    public void setAllowNegativePreRequisite(V3WorkOrderContext.AllowNegativePreRequisite allowNegativePreRequisite) {
-        this.allowNegativePreRequisite = allowNegativePreRequisite;
+    public void setAllowNegativePreRequisite(Integer allowNegativePreRequisite) {
+        if(allowNegativePreRequisite != null) {
+            this.allowNegativePreRequisite = V3WorkOrderContext.AllowNegativePreRequisite.valueOf(allowNegativePreRequisite);
+        }
     }
 
-    public void setAllowNegativePreRequisite(int allowNegativePreRequisite) {
-        this.allowNegativePreRequisite = V3WorkOrderContext.AllowNegativePreRequisite.valueOf(allowNegativePreRequisite);
-    }
-
-    public int getAllowNegativePreRequisite() {
+    public Integer getAllowNegativePreRequisite() {
         if (allowNegativePreRequisite != null) {
             return allowNegativePreRequisite.getValue();
         }
-        return -1;
+        return null;
     }
 
     public enum AllowNegativePreRequisite {

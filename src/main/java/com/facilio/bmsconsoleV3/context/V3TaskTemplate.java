@@ -55,11 +55,11 @@ public class V3TaskTemplate extends Template {
     public void setStatus(V3TaskContext.TaskStatus status) {
         this.status = status;
     }
-    public int getStatus() {
+    public Integer getStatus() {
         if (status != null) {
             return status.getValue();
         }
-        return -1;
+        return null;
     }
     public void setStatus(int status) {
         this.status = V3TaskContext.TaskStatus.valueOf(status);
@@ -138,17 +138,17 @@ public class V3TaskTemplate extends Template {
     }
 
     private V3TaskContext.InputType inputType;
-    public int getInputType() {
+    public Integer getInputType() {
         if(inputType != null) {
             return inputType.getVal();
         }
-        return -1;
+        return null;
     }
-    public void setInputType(int inputType) {
-        this.inputType = V3TaskContext.InputType.valueOf(inputType);
-    }
-    public void setInputType(V3TaskContext.InputType inputType) {
-        this.inputType = inputType;
+    public void setInputType(Integer inputType) {
+
+        if(inputType != null) {
+            this.inputType = V3TaskContext.InputType.valueOf(inputType);
+        }
     }
     public V3TaskContext.InputType getInputTypeEnum() {
         return inputType;
@@ -183,14 +183,16 @@ public class V3TaskTemplate extends Template {
         return attachmentRequiredEnum;
     }
 
-    public void setAttachmentRequiredInt(int attachmentRequired) {
-        attachmentRequiredEnum = V3TaskTemplate.AttachmentRequiredEnum.valueOf(attachmentRequired);
+    public void setAttachmentRequiredInt(Integer attachmentRequired) {
+        if(attachmentRequired != null) {
+            attachmentRequiredEnum = V3TaskTemplate.AttachmentRequiredEnum.valueOf(attachmentRequired);
+        }
     }
-    public int getAttachmentRequiredInt() {
+    public Integer getAttachmentRequiredInt() {
         if(attachmentRequiredEnum != null) {
             return attachmentRequiredEnum.getVal();
         }
-        return -1;
+        return null;
     }
 
     public void setAttachmentRequired(boolean attachmentRequired) {
@@ -378,11 +380,11 @@ public class V3TaskTemplate extends Template {
 
     PreventiveMaintenance.PMAssignmentType assignmentType;
 
-    public int getAssignmentType() {
+    public Integer getAssignmentType() {
         if(assignmentType != null) {
             return assignmentType.getVal();
         }
-        return -1;
+        return null;
     }
     public void setAssignmentType(int assignmentType) {
         this.assignmentType = PreventiveMaintenance.PMAssignmentType.valueOf(assignmentType);

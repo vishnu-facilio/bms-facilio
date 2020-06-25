@@ -106,20 +106,19 @@ public class V3VendorContext extends ModuleBaseWithCustomFields {
     }
 
     private VendorContext.VendorSource vendorSource;
-    public int getInviteSource() {
+    public Integer getInviteSource() {
         if (vendorSource != null) {
             return vendorSource.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setVendorSource(int vendorSource) {
-        this.vendorSource = VendorContext.VendorSource.valueOf(vendorSource);
+    public void setVendorSource(Integer vendorSource) {
+        if(vendorSource != null) {
+            this.vendorSource = VendorContext.VendorSource.valueOf(vendorSource);
+        }
     }
     public VendorContext.VendorSource getVendorSourceEnum() {
         return vendorSource;
-    }
-    public void setVendorSource(VendorContext.VendorSource vendorSource) {
-        this.vendorSource = vendorSource;
     }
 
     public static enum VendorSource implements FacilioEnum {

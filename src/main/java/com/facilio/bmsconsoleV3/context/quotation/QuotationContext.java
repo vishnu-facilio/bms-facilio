@@ -133,18 +133,20 @@ public class QuotationContext extends V3Context {
 
     private ClientContext client;
 
-    public void setCustomerType(int customerType) {
-        this.customerType = CustomerType.valueOf(customerType);
+    public void setCustomerType(Integer customerType) {
+        if(customerType != null) {
+            this.customerType = CustomerType.valueOf(customerType);
+        }
     }
 
     public CustomerType getCustomerTypeEnum() {
         return customerType;
     }
-    public int getCustomerType() {
+    public Integer getCustomerType() {
         if (customerType != null) {
             return customerType.getIndex();
         }
-        return -1;
+        return null;
     }
 
     public List<QuotationAssociatedTermsContext> getTermsAssociated() {

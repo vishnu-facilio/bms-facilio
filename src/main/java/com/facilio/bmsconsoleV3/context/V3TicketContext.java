@@ -120,12 +120,12 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     }
 
     private V3TicketContext.SourceType sourceType;
-    public int getSourceType() {
+    public Integer getSourceType() {
         if(sourceType != null) {
             return sourceType.getIntVal();
         }
         else {
-            return -1;
+            return null;
         }
     }
     public String getSourceTypeVal() {
@@ -134,11 +134,10 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
         }
         return null;
     }
-    public void setSourceType(int type) {
-        this.sourceType = V3TicketContext.SourceType.typeMap.get(type);
-    }
-    public void setSourceType(V3TicketContext.SourceType type) {
-        this.sourceType = type;
+    public void setSourceType(Integer type) {
+        if(type != null) {
+            this.sourceType = V3TicketContext.SourceType.typeMap.get(type);
+        }
     }
     public V3TicketContext.SourceType getSourceTypeEnum() {
         return sourceType;

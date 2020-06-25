@@ -19,20 +19,19 @@ public class AssetDepreciationContext extends V3Context {
     }
 
     private DepreciationType depreciationType;
-    public int getDepreciationType() {
+    public Integer getDepreciationType() {
         if (depreciationType != null) {
             return depreciationType.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setDepreciationType(int depreciationTypeInt) {
-        this.depreciationType = DepreciationType.valueOf(depreciationTypeInt);
+    public void setDepreciationType(Integer depreciationTypeInt) {
+        if(depreciationTypeInt != null) {
+            this.depreciationType = DepreciationType.valueOf(depreciationTypeInt);
+        }
     }
     public DepreciationType getDepreciationTypeEnum() {
         return depreciationType;
-    }
-    public void setDepreciationType(DepreciationType depreciationType) {
-        this.depreciationType = depreciationType;
     }
 
     private List<AssetDepreciationRelContext> assetDepreciationRelList;
@@ -52,20 +51,19 @@ public class AssetDepreciationContext extends V3Context {
     }
 
     private FrequencyType frequencyType;
-    public int getFrequencyType() {
+    public Integer getFrequencyType() {
         if (frequencyType != null) {
             return frequencyType.getIndex();
         }
-        return -1;
+        return null;
     }
     public FrequencyType getFrequencyTypeEnum() {
         return frequencyType;
     }
-    public void setFrequencyType(int frequencyTypeInt) {
-        this.frequencyType = FrequencyType.valueOf(frequencyTypeInt);
-    }
-    public void setFrequencyType(FrequencyType frequencyType) {
-        this.frequencyType = frequencyType;
+    public void setFrequencyType(Integer frequencyTypeInt) {
+        if(frequencyTypeInt != null) {
+            this.frequencyType = FrequencyType.valueOf(frequencyTypeInt);
+        }
     }
 
     private Long totalPriceFieldId;

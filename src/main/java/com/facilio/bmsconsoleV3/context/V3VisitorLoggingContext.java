@@ -502,20 +502,19 @@ public class V3VisitorLoggingContext extends V3Context {
     }
 
     private V3VisitorLoggingContext.Source source;
-    public int getSource() {
+    public Integer getSource() {
         if (source != null) {
             return source.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setSource(int source) {
-        this.source = V3VisitorLoggingContext.Source.valueOf(source);
+    public void setSource(Integer source) {
+        if(source != null) {
+            this.source = V3VisitorLoggingContext.Source.valueOf(source);
+        }
     }
     public V3VisitorLoggingContext.Source getSourceEnum() {
         return source;
-    }
-    public void setSource(V3VisitorLoggingContext.Source source) {
-        this.source = source;
     }
 
     private PMTriggerContext trigger;

@@ -67,11 +67,11 @@ public class V3WorkPermitContext extends V3Context {
         this.issuedToUser = issuedToUser;
     }
 
-    public int getWorkType() {
+    public Integer getWorkType() {
         if (workType != null) {
             return workType.getIndex();
         }
-        return -1;
+        return null;
     }
 
     public void setWorkType(int workType) {

@@ -39,14 +39,13 @@ public class V3PeopleContext extends V3Context {
         }
         return null;
     }
-    public void setPeopleType(int peopleType) {
-        this.peopleType = V3PeopleContext.PeopleType.valueOf(peopleType);
+    public void setPeopleType(Integer peopleType) {
+        if(peopleType != null) {
+            this.peopleType = V3PeopleContext.PeopleType.valueOf(peopleType);
+        }
     }
     public V3PeopleContext.PeopleType getPeopleTypeEnum() {
         return peopleType;
-    }
-    public void setPeopleType(V3PeopleContext.PeopleType occupantType) {
-        this.peopleType = occupantType;
     }
 
     public static enum PeopleType implements FacilioEnum {

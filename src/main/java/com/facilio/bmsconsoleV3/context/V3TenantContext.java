@@ -132,11 +132,11 @@ public class V3TenantContext extends V3Context {
     public TenantContext.Status getStatusEnum() {
         return status;
     }
-    public int getStatus() {
+    public Integer getStatus() {
         if (status != null) {
             return status.getValue();
         }
-        return -1;
+        return null;
     }
 
     public void setStatus(int status) {
@@ -173,22 +173,21 @@ public class V3TenantContext extends V3Context {
     }
 
     private V3TenantContext.TenantType tenantType;
-    public int getTenantType() {
+    public Integer getTenantType() {
         if (tenantType != null) {
             return tenantType.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setTenantType(int tenantType) {
-        this.tenantType = V3TenantContext.TenantType.valueOf(tenantType);
+    public void setTenantType(Integer tenantType) {
+
+        if(tenantType != null) {
+            this.tenantType = V3TenantContext.TenantType.valueOf(tenantType);
+        }
     }
     public V3TenantContext.TenantType getTenantTypeEnum() {
         return tenantType;
     }
-//	public void setTenantType(TenantType tenantType) {
-//		this.tenantType = tenantType;
-//	}
-
     public static enum TenantType implements FacilioEnum {
         COMMERCIAL, RESIDENTIAL;
 

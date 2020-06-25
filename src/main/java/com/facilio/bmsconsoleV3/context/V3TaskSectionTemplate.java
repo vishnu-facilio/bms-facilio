@@ -75,17 +75,16 @@ public class V3TaskSectionTemplate extends V3TaskTemplate {
     }
 
     private V3TaskContext.InputType inputType;
-    public int getInputType() {
+    public Integer getInputType() {
         if(inputType != null) {
             return inputType.getVal();
         }
-        return -1;
+        return null;
     }
-    public void setInputType(int inputType) {
-        this.inputType = V3TaskContext.InputType.valueOf(inputType);
-    }
-    public void setInputType(V3TaskContext.InputType inputType) {
-        this.inputType = inputType;
+    public void setInputType(Integer inputType) {
+        if(inputType != null) {
+            this.inputType = V3TaskContext.InputType.valueOf(inputType);
+        }
     }
     public V3TaskContext.InputType getInputTypeEnum() {
         return inputType;
@@ -183,11 +182,11 @@ public class V3TaskSectionTemplate extends V3TaskTemplate {
 
     PreventiveMaintenance.PMAssignmentType assignmentType;
 
-    public int getAssignmentType() {
+    public Integer getAssignmentType() {
         if(assignmentType != null) {
             return assignmentType.getVal();
         }
-        return -1;
+        return null;
     }
     public void setAssignmentType(int assignmentType) {
         this.assignmentType = PreventiveMaintenance.PMAssignmentType.valueOf(assignmentType);
