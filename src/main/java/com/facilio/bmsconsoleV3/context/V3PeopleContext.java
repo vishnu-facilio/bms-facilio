@@ -33,11 +33,11 @@ public class V3PeopleContext extends V3Context {
     }
 
     private V3PeopleContext.PeopleType peopleType;
-    public int getPeopleType() {
+    public Integer getPeopleType() {
         if (peopleType != null) {
             return peopleType.getIndex();
         }
-        return -1;
+        return null;
     }
     public void setPeopleType(int peopleType) {
         this.peopleType = V3PeopleContext.PeopleType.valueOf(peopleType);

@@ -4,15 +4,17 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckforPeopleDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
@@ -249,10 +251,17 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getTenantContactAfterUpdateChain() {
+    public static FacilioChain getVendorContactBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new CheckForMandatoryVendorIdCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getVendorContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
-        c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
+        c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
         return c;
     }
 

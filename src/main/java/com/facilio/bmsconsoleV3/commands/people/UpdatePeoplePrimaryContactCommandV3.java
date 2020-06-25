@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.tenantcontact;
+package com.facilio.bmsconsoleV3.commands.people;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;

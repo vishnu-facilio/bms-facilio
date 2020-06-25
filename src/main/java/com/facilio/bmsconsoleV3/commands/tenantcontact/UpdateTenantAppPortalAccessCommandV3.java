@@ -22,7 +22,7 @@ public class UpdateTenantAppPortalAccessCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TenantContactContext> tenantContacts = recordMap.get(moduleName);
 
-        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
         if(CollectionUtils.isNotEmpty(tenantContacts) && MapUtils.isNotEmpty(changeSet)) {
             for(V3TenantContactContext tc : tenantContacts) {
                 List<UpdateChangeSet> changes = changeSet.get(tc.getId());

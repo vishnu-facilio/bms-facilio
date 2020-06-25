@@ -9,13 +9,14 @@ import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -252,11 +253,27 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .update()
                     .beforeSave(new CheckforPeopleDuplicationCommandV3())
-		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterUpdateChain())
+		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
                 .summary()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
+                .build();
+    }
+
+    @Module("vendorcontact")
+    public static Supplier<V3Config> getVendorContact() {
+        return () -> new V3Config(V3VendorContactContext.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getVendorContactBeforeSaveChain())
+                    .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
+                .update()
+                    .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                    .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
+                .list()
+                    .beforeFetch(new LoadVendorContactLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadVendorContactLookupCommandV3())
                 .build();
     }
 

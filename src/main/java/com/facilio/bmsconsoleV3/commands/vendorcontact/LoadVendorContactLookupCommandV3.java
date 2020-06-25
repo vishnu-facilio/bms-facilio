@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.tenantcontact;
+package com.facilio.bmsconsoleV3.commands.vendorcontact;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadTenantcontactLookupsCommandV3 extends FacilioCommand {
+public class LoadVendorContactLookupCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -26,8 +26,8 @@ public class LoadTenantcontactLookupsCommandV3 extends FacilioCommand {
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField tenantField = (LookupField) fieldsAsMap.get("tenant");
-        additionaLookups.add(tenantField);
+        LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
+        additionaLookups.add(vendorField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }

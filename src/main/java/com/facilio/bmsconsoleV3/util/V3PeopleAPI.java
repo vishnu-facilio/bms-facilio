@@ -7,6 +7,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.TenantContactContext;
+import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -320,6 +321,42 @@ public class V3PeopleAPI {
                     }
                     else {
                         addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier());
+                    }
+                }
+                else {
+                    if(user != null) {
+                        ApplicationApi.deleteUserFromApp(user, appId);
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Invalid App Domain");
+            }
+        }
+    }
+
+    public static void updateVendorContactAppPortalAccess(V3VendorContactContext person, String linkName) throws Exception {
+
+        V3VendorContactContext existingPeople = (V3VendorContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, person.getId(), V3VendorContactContext.class);
+
+        if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isVendorPortalAccess())){
+            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+        }
+        if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+            AppDomain appDomain = null;
+            long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+            appDomain = ApplicationApi.getAppDomainForApplication(appId);
+            if(appDomain != null) {
+                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
+                    if(user != null) {
+                        user.setAppDomain(appDomain);
+                        user.setApplicationId(appId);
+                        ApplicationApi.addUserInApp(user, false);
+                    }
+                    else {
+                        User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier());
+                        newUser.setAppDomain(appDomain);
                     }
                 }
                 else {
