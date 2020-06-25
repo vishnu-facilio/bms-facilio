@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
+import com.facilio.accounts.dto.Account;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -602,6 +603,9 @@ public class TemplateAPI {
 	}
 	
 	public static void deleteTemplate(long id) throws Exception {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 343L) {
+			LOGGER.error("deleting template " + id);
+		}
 		Template template = getTemplate(id);
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
