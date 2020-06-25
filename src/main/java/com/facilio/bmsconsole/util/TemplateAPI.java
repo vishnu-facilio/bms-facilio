@@ -603,9 +603,6 @@ public class TemplateAPI {
 	}
 	
 	public static void deleteTemplate(long id) throws Exception {
-		if (AccountUtil.getCurrentOrg().getOrgId() == 343L) {
-			LOGGER.error("deleting template " + id);
-		}
 		Template template = getTemplate(id);
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);

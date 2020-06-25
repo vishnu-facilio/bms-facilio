@@ -62,7 +62,6 @@ public class DeletePMAndDependenciesCommand extends FacilioCommand{
 							for(PMReminderAction reminderAction : reminder.getReminderActions()) {
 								actionIds.add(reminderAction.getActionId());
 							}
-							reminder.setReminderActions(null);			// temp fix, should handle differently for custom template case
 						}
 					}
 					
@@ -77,9 +76,6 @@ public class DeletePMAndDependenciesCommand extends FacilioCommand{
 		PreventiveMaintenanceAPI.deletePmResourcePlanner(pmIds);
 		PreventiveMaintenanceAPI.deletePmIncludeExclude(pmIds);
 		PreventiveMaintenanceAPI.deleteTriggers(triggerPMIds);
-		if (CollectionUtils.isNotEmpty(actionIds)) {
-			LOGGER.error("deleting actions ");
-		}
 		ActionAPI.deleteActions(actionIds);
 		PreventiveMaintenanceAPI.deletePMReminders(pmIds);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

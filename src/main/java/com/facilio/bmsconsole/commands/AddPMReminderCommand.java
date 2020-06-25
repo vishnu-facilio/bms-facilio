@@ -85,17 +85,7 @@ public class AddPMReminderCommand extends FacilioCommand {
 									}
 									reminderAction.getAction().setId(-1L);
 									long templateId;
-									if (reminderAction.getAction().getTemplateId() > -1L) {
-										Template template = TemplateAPI.getTemplate(reminderAction.getAction().getTemplateId());
-										reminderAction.getAction().setTemplate(template);
-										if (AccountUtil.getCurrentOrg().getOrgId() == 343L) {
-											LOGGER.error("template id is " + reminderAction.getAction().getTemplateId());
-											if (template == null) {
-												LOGGER.error("template is null");
-											}
-										}
-										templateId = template.getId();
-									} else if (reminderAction.getAction().getTemplate() != null) {
+									if (reminderAction.getAction().getTemplate() != null) {
 										templateId = TemplateAPI.addTemplate(reminderAction.getAction().getTemplate());
 									} else {
 										ActionAPI.addActions(Collections.singletonList(reminderAction.getAction()), null, false);
