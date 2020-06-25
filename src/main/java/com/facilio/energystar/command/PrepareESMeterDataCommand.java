@@ -115,7 +115,7 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 				
 				List<Map<String, Object>> props = select.getAsProps();
 				
-				if(props != null) {
+				if(props != null && !props.isEmpty()) {
 					Object value = props.get(0).get(field.getName());
 					
 					data.addReading(point.getName(), value);
