@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;

@@ -26,7 +26,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;

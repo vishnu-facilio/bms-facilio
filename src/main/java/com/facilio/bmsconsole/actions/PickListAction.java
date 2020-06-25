@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
