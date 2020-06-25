@@ -42,7 +42,7 @@ public abstract class FileStore {
 
 	public static class NamespaceConfig {
 		private static final int DEFAULT_DATA_RETENTION_PERIOD = 5; //In days
-		private NamespaceConfig (String name, String tableName, String resizedTableName, Integer dataRetention, String dailyDirectoryNeeded) {
+		private NamespaceConfig (String name, String tableName, String resizedTableName, Integer dataRetention, Boolean dailyDirectoryNeeded) {
 			Objects.requireNonNull(name, "Name cannot be null in namespace");
 			Objects.requireNonNull(tableName, "File Table Name cannot be null in namespace");
 			Objects.requireNonNull(resizedTableName, " Resized File Table Name cannot be null in namespace");
@@ -50,7 +50,7 @@ public abstract class FileStore {
 			this.tableName = tableName;
 			this.resizedTableName = resizedTableName;
 			this.dataRetention = dataRetention == null || dataRetention <= 0 ? DEFAULT_DATA_RETENTION_PERIOD : dataRetention;
-			this.dailyDirectoryNeeded = Boolean.valueOf(dailyDirectoryNeeded);
+			this.dailyDirectoryNeeded = Boolean.TRUE.equals(dailyDirectoryNeeded);
 		}
 
 		public String getName() {
@@ -85,7 +85,7 @@ public abstract class FileStore {
 			List<Map<String, Object>> namespaceConfList = (List<Map<String, Object>>) namespaceConf.get("namespaces");
 			Map<String, NamespaceConfig> namespaces = new HashMap<>();
 			for (Map<String, Object> conf : namespaceConfList) {
-				NamespaceConfig namespace = new NamespaceConfig( (String) conf.get("name"), (String) conf.get("tableName"), (String) conf.get("resizedTableName"), (Integer) conf.get("dataRetention"), (String) conf.get("dailyDirectoryNeeded"));
+				NamespaceConfig namespace = new NamespaceConfig( (String) conf.get("name"), (String) conf.get("tableName"), (String) conf.get("resizedTableName"), (Integer) conf.get("dataRetention"), (Boolean) conf.get("dailyDirectoryNeeded"));
 				namespaces.put(namespace.getName(), namespace);
 			}
 			return namespaces;
@@ -104,9 +104,9 @@ public abstract class FileStore {
 		return NAMESPACES.keySet();
 	}
 
+	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
 	private static final String NAMESPACE_CONF_PATH = "conf/filestorenamespaces.yml";
 	private static final Map<String, NamespaceConfig> NAMESPACES = Collections.unmodifiableMap(initNamespaces());
-	private static final Logger LOGGER = LogManager.getLogger(FileStore.class.getName());
 	private static final int DEFAULT_FILE_URL_EXPIRY = 300000;
 
 	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
