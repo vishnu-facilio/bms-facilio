@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -33,9 +35,13 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     LocationContext shipToAddressLocation = quotation.getShipToAddress();
                     QuotationAPI.addLocation(quotation, shipToAddressLocation);
                 }
-                if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant()) && quotation.getCustomerType() <= 0) {
-                    // TEMP remove this once customer type is configured in form
-                    quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
+                if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
+                    // TEMP @Aashiq remove this once customer type is configured in form
+                    if (quotation.getCustomerType() == null) {
+                        quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
+                    } else if (quotation.getCustomerType() != QuotationContext.CustomerType.TENANT.getIndex()){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Customer Type is required to be tenant");
+                    }
                 }
                 QuotationAPI.validateForWorkorder(quotation);
             }

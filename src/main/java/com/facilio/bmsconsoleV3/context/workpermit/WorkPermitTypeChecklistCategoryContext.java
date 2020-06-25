@@ -30,12 +30,21 @@ public class WorkPermitTypeChecklistCategoryContext extends V3Context {
         this.description = description;
     }
 
-    public ValidationType getValidationType() {
+    public Integer getValidationType() {
+        if (validationType != null) {
+            return validationType.getIndex();
+        }
+        return null;
+    }
+
+    public ValidationType getValidationTypeEnum() {
         return validationType;
     }
 
-    public void setValidationType(int validationType) {
-        this.validationType = ValidationType.valueOf(validationType);
+    public void setValidationType(Integer validationType) {
+        if (validationType != null) {
+            this.validationType = ValidationType.valueOf(validationType);
+        }
     }
 
     public WorkPermitTypeContext getWorkPermitType() {

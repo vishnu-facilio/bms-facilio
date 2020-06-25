@@ -69,7 +69,7 @@ public class TaxContext extends V3Context {
     }
 
     public void setType(Integer type) {
-        if(type != null) {
+        if (type != null) {
             this.type = Type.valueOf(type);
         }
     }

@@ -32,7 +32,7 @@ public class InsertTaxGroupsCommand extends FacilioCommand {
         List<TaxContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (TaxContext tax : list) {
-                if (tax.getType() == TaxContext.Type.GROUP.getIndex()) {
+                if (tax.getType() != null && tax.getType() == TaxContext.Type.GROUP.getIndex()) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     FacilioModule taxGroupsModule = modBean.getModule(FacilioConstants.ContextNames.TAX_GROUPS);
                     List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TAX_GROUPS);

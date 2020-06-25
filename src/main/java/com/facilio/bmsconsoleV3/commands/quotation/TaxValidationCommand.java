@@ -28,11 +28,11 @@ public class TaxValidationCommand extends FacilioCommand {
                     if (StringUtils.isEmpty(tax.getName())) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tax Name is mandatory");
                     }
-                    if (tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                    if (tax.getType() != null && tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
                         if (tax.getRate() == null) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tax Rate is mandatory");
                         }
-                    } else if (tax.getType() == TaxContext.Type.GROUP.getIndex()) {
+                    } else if (tax.getType() != null && tax.getType() == TaxContext.Type.GROUP.getIndex()) {
                         if (CollectionUtils.isNotEmpty(tax.getChildTaxes()) && tax.getChildTaxes().size() > 1) {
                             List<Long> taxIds = tax.getChildTaxes().stream().map(TaxContext::getId).collect(Collectors.toList());
                             List<TaxContext> childTaxes = QuotationAPI.getTaxesForIdList(taxIds);

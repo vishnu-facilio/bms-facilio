@@ -185,7 +185,7 @@ public class QuotationAPI {
     }
 
     public static void fillTaxDetails(List<TaxContext> taxList) throws Exception {
-        List<TaxContext> taxGroupsList = taxList.stream().filter(tax -> tax.getType() == TaxContext.Type.GROUP.getIndex()).collect(Collectors.toList());
+        List<TaxContext> taxGroupsList = taxList.stream().filter(tax -> tax.getType() != null && tax.getType() == TaxContext.Type.GROUP.getIndex()).collect(Collectors.toList());
         List<Long> parentTaxIds = taxGroupsList.stream().map(TaxContext::getId).collect(Collectors.toList());
         List<TaxGroupContext> taxGroups = getTaxesForGroups(parentTaxIds);
         HashMap<Long, List<TaxContext>> parentTaxIdsVsChildTaxes = new HashMap<>();
@@ -262,7 +262,7 @@ public class QuotationAPI {
 
     public static void updateTaxGroupsOnChildUpdate(TaxContext tax, Long oldTaxId) throws Exception {
 
-        if (tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+        if (tax.getType() != null && tax.getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule taxModule = modBean.getModule(FacilioConstants.ContextNames.TAX);
             List<FacilioField> taxFields = modBean.getAllFields(taxModule.getName());
@@ -312,10 +312,10 @@ public class QuotationAPI {
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
                 if (lookupValueIsNotEmpty(lineItem.getTax())) {
-                    if (lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                    if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
                         Double taxAmount = getTaxAmount(lineItem, lineItem.getTax().getRate());
                         setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
-                    } else if (lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
+                    } else if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
                         List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
                         for (TaxGroupContext taxGroup : taxGroups) {
                             if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {

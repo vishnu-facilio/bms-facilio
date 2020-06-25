@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 
 import java.io.File;
@@ -134,7 +133,7 @@ public class QuotationContext extends V3Context {
     private ClientContext client;
 
     public void setCustomerType(Integer customerType) {
-        if(customerType != null) {
+        if (customerType != null) {
             this.customerType = CustomerType.valueOf(customerType);
         }
     }

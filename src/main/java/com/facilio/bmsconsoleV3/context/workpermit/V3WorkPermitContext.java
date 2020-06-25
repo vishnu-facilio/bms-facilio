@@ -50,12 +50,21 @@ public class V3WorkPermitContext extends V3Context {
     }
 
 
-    public PermitType getPermitType() {
+    public PermitType getPermitTypeEnum() {
         return permitType;
     }
 
-    public void setPermitType(int permitType) {
-        this.permitType = PermitType.valueOf(permitType);
+    public Integer getPermitType() {
+        if (permitType != null) {
+            return permitType.getIndex();
+        }
+        return null;
+    }
+
+    public void setPermitType(Integer permitType) {
+        if (permitType != null) {
+            this.permitType = PermitType.valueOf(permitType);
+        }
     }
 
 
@@ -74,12 +83,17 @@ public class V3WorkPermitContext extends V3Context {
         return null;
     }
 
-    public void setWorkType(int workType) {
-        this.workType = V3WorkPermitContext.WorkType.valueOf(workType);
+    public void setWorkType(Integer workType) {
+        if (workType != null) {
+            this.workType = WorkType.valueOf(workType);
+        }
     }
 
-    public V3WorkPermitContext.WorkType getWorkTypeEnum() {
-        return workType;
+    public WorkType getWorkTypeEnum() {
+        if (workType != null) {
+            return workType;
+        }
+        return null;
     }
 
     public Boolean getIsRecurring() {

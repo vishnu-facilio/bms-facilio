@@ -58,12 +58,21 @@ public class WorkPermitChecklistContext extends V3Context {
         return false;
     }
 
-    public Required getRequired() {
+    public Required getRequiredEnum() {
         return required;
     }
 
-    public void setRequired(int required) {
-        this.required = Required.valueOf(required);
+    public Integer getRequired() {
+        if (required != null) {
+            return required.getIndex();
+        }
+        return null;
+    }
+
+    public void setRequired(Integer required) {
+        if (required != null) {
+            this.required = Required.valueOf(required);
+        }
     }
 
 
