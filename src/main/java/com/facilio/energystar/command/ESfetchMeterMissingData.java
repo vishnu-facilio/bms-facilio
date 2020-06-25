@@ -126,7 +126,7 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 							dataMissingRangesThatCanBeFilled.add(dataMissingRangeThatCanBeFilled);
 						}
 					}
-					else if (dataAvailabeRange != null && (dataMissingRanges == null || dataMissingRanges.isEmpty())) {
+					else if (dataAvailabeRange != null && (dataAvailableRanges == null || dataAvailableRanges.isEmpty())) {
 						dataMissingRanges = new ArrayList<>();
 						dataMissingRanges.add(dataAvailabeRange);
 						meter.setEnergyStarDataMissingRanges(dataMissingRanges);
