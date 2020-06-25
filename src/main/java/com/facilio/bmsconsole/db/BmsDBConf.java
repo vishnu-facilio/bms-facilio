@@ -484,13 +484,23 @@ public class BmsDBConf extends DBConf {
 		return FacilioFactory.getFileStore().addFile(fileName, msg,contentType );
 	}
 
-	@Override
+    @Override
+    public long addFile(String namespace, String msg, String fileName, String contentType) throws Exception {
+        return FacilioFactory.getFileStore().addFile(namespace, fileName, msg,contentType );
+    }
+
+    @Override
 	public InputStream getFileContent(long fileId) throws Exception {
 		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().readFile(fileId);
 	}
 
-	@Override
+    @Override
+    public InputStream getFileContent(String namespace, long fileId) throws Exception {
+        return FacilioFactory.getFileStore().readFile(namespace, fileId);
+    }
+
+    @Override
 	public boolean deleteFileContent(List<Long> fileIds) throws Exception {
 		// TODO Auto-generated method stub
 		return FacilioFactory.getFileStore().deleteFiles(fileIds);
