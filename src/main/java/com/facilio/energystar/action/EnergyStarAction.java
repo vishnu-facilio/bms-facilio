@@ -249,6 +249,15 @@ public class EnergyStarAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String syncPropertyMetaAndUseData() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.syncPropertyMetaAndUseDataChain();
+		
+		chain.execute();
+		
+		return SUCCESS;
+	}
+	
 	public String fetchHistoricalData() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.addFetchESHistoricalDataJobChain();

@@ -6073,6 +6073,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="bulkPushHistoricalData" />
 		<action name="fetchMissingData"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchMissingData" />
+		<action name="syncPropertyMetaAndUseData"
+			class="com.facilio.energystar.action.EnergyStarAction" method="syncPropertyMetaAndUseData" />
 		<action name="fetchProperty"
 			class="com.facilio.energystar.action.EnergyStarAction" method="fetchProperty" >
 			<result name="success" type="json">

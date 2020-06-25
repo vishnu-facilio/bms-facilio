@@ -79,17 +79,17 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 	}
 
 
-	List<EnergyStarProperyUseContext> propertyUseContexts;
+	List<EnergyStarPropertyUseContext> propertyUseContexts;
 	
 	List<EnergyStarMeterContext> meterContexts;
 
 	
-	public List<EnergyStarProperyUseContext> getPropertyUseContexts() {
+	public List<EnergyStarPropertyUseContext> getPropertyUseContexts() {
 		return propertyUseContexts;
 	}
 
 
-	public void setPropertyUseContexts(List<EnergyStarProperyUseContext> propertyUseContexts) {
+	public void setPropertyUseContexts(List<EnergyStarPropertyUseContext> propertyUseContexts) {
 		this.propertyUseContexts = propertyUseContexts;
 	}
 
@@ -209,6 +209,17 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 		}
 
 		private static final Map<Integer, Building_Type> optionMap = Collections.unmodifiableMap(initTypeMap());
+		
+		private static final Map<String, Building_Type> nameMap = Collections.unmodifiableMap(initNameMap());
+		
+		private static Map<String, Building_Type> initNameMap() {
+			Map<String, Building_Type> typeMap = new HashMap<>();
+
+			for (Building_Type type : values()) {
+				typeMap.put(type.getName(), type);
+			}
+			return typeMap;
+		}
 
 		private static Map<Integer, Building_Type> initTypeMap() {
 			Map<Integer, Building_Type> typeMap = new HashMap<>();
@@ -221,6 +232,10 @@ public class EnergyStarPropertyContext extends ModuleBaseWithCustomFields {
 
 		public static Map<Integer, Building_Type> getAllAppTypes() {
 			return optionMap;
+		}
+		
+		public static Map<String, Building_Type> getAllNameTypes() {
+			return nameMap;
 		}
 	}
 }

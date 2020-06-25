@@ -5397,6 +5397,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ConfirmESPropertyShareCommand());
 		c.addCommand(new ConfirmESMeterShareCommand());
 		c.addCommand(ReadOnlyChainFactory.getESfetchSetupData());
+		c.addCommand(new EnergyStarSyncPropertyMetaCommand());
 		c.addCommand(new EnergyStarSyncMeterDataCommand());
 		c.addCommand(new EnergyStarSyncPropertyDataCommand());
 		return c;
@@ -5446,6 +5447,13 @@ public class TransactionChainFactory {
 	public static FacilioChain addBulkPushESHistoricalDataJobChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new EnergyStarHistoricalBulkPushDataAddJobCommand());
+		return c;
+	}
+	
+	public static FacilioChain syncPropertyMetaAndUseDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(ReadOnlyChainFactory.getESfetchSetupData());
+		c.addCommand(new EnergyStarSyncPropertyMetaCommand());
 		return c;
 	}
 	

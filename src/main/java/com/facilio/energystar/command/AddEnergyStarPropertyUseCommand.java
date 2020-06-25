@@ -7,7 +7,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
-import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext;
 import com.facilio.energystar.util.EnergyStarSDK;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.modules.FieldFactory;
@@ -34,7 +34,7 @@ public class AddEnergyStarPropertyUseCommand extends FacilioCommand {
 			
 			EnergyStarUtil.updateEnergyStarRelModule(ModuleFactory.getEnergyStarPropertyModule(), FieldFactory.getEnergyStarPropertyFields(), propContext,criteria);
 			
-			for(EnergyStarProperyUseContext propertyUse : propContext.getPropertyUseContexts()) {
+			for(EnergyStarPropertyUseContext propertyUse : propContext.getPropertyUseContexts()) {
 				propertyUse.setPropertyId(propContext.getId());
 				EnergyStarUtil.addEnergyStarPropertyUse(propertyUse);
 			}

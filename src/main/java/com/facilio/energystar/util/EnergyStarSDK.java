@@ -7,6 +7,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.http.HttpHeaders;
@@ -22,7 +23,9 @@ import com.facilio.energystar.context.EnergyStarCustomerContext;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
-import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyContext.Building_Type;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext.Property_Use;
 import com.facilio.energystar.context.Meter_Category;
 import com.facilio.energystar.context.Meter_Category_Points;
 import com.facilio.energystar.context.Property_Metrics;
@@ -77,6 +80,66 @@ public class EnergyStarSDK {
 		return XMLBuilder.parse(response).getElement("id").text();
 	}
 	
+	public static void fillPropertyMetaAndUseData(EnergyStarPropertyContext propertyContext) throws Exception {
+		
+		try {
+			
+			String returnString = sendAPI("property/"+propertyContext.getEnergyStarPropertyId(), HttpMethod.GET,null);
+			
+			XMLBuilder parser = XMLBuilder.parse(returnString);
+			
+			String primaryFunction = parser.getElement("primaryFunction").text();
+			
+			if(primaryFunction != null) {
+				propertyContext.setBuildingType(Building_Type.getAllNameTypes().get(primaryFunction).getIntVal());
+			}
+			
+			String yearBuild = parser.getElement("yearBuilt").text();
+			propertyContext.setYearBuild(yearBuild);
+			
+			String occupancyPercentage = parser.getElement("occupancyPercentage").text();
+			
+			propertyContext.setOccupancyPercentage(occupancyPercentage);
+			
+			returnString = sendAPI("property/"+propertyContext.getEnergyStarPropertyId()+"/propertyUse/list", HttpMethod.GET,null);
+			
+			XMLBuilder parser1 = XMLBuilder.parse(returnString);
+			
+			String propertyUseId = parser1.getElement("links").getElement("link").a("id");
+			
+			returnString = sendAPI("propertyUse/"+propertyUseId, HttpMethod.GET,null);
+			
+			XMLBuilder parser2 = XMLBuilder.parse(returnString);
+			
+			XMLBuilder useDetail = parser2.getElement("useDetails");
+			
+			List<Property_Use> useList = EnergyStarPropertyUseContext.Property_Use.getPropertyUseBuildingTypeMap().get(propertyContext.getBuildingType());
+			
+			List<EnergyStarPropertyUseContext> energyStarPropertyUseContexts = new ArrayList<>();
+			for(Property_Use use : useList) {
+				
+				XMLBuilder el = useDetail.getElement(use.getFieldName());
+				if(el != null) {
+					String value = el.getElement("value").getText();
+					
+					EnergyStarPropertyUseContext useContext = new EnergyStarPropertyUseContext();
+					
+					useContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+					useContext.setPropertyId(propertyContext.getId());
+					useContext.setProperyUseType(use.getIntVal());
+					useContext.setValue(value);
+					
+					energyStarPropertyUseContexts.add(useContext);
+				}
+			}
+			propertyContext.setPropertyUseContexts(energyStarPropertyUseContexts);
+		}
+		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		
+	}
+	
 	public static String addProperty(EnergyStarCustomerContext customerContext,EnergyStarPropertyContext propertyContext) throws Exception {
 		
 		Organization org = AccountUtil.getCurrentOrg();
@@ -120,7 +183,7 @@ public class EnergyStarSDK {
 								.element("useDetails")
 								;
 		
-		for(EnergyStarProperyUseContext propertyUse : propertyContext.getPropertyUseContexts()) {
+		for(EnergyStarPropertyUseContext propertyUse : propertyContext.getPropertyUseContexts()) {
 			
 			XMLBuilder element = builder.constructElement(propertyUse.getProperyUseTypeEnum().getFieldName()).a("temporary", Boolean.FALSE.toString());
 			

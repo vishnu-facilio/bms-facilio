@@ -1,18 +1,20 @@
 package com.facilio.energystar.context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.energystar.context.EnergyStarPropertyContext.Building_Type;
 import com.facilio.modules.FieldType;
 
-public class EnergyStarProperyUseContext {
+public class EnergyStarPropertyUseContext {
 
 	long id;
 	long orgId;
 	long propertyId;
-	Propert_Use properyUseType;
+	Property_Use properyUseType;
 	String value;
 	
 	public long getId() {
@@ -39,11 +41,11 @@ public class EnergyStarProperyUseContext {
 		}
 		return -1;
 	}
-	public Propert_Use getProperyUseTypeEnum() {
+	public Property_Use getProperyUseTypeEnum() {
 		return properyUseType;
 	}
 	public void setProperyUseType(int properyUseType) {
-		this.properyUseType = Propert_Use.getAllAppTypes().get(properyUseType);
+		this.properyUseType = Property_Use.getAllAppTypes().get(properyUseType);
 	}
 	public String getValue() {
 		return value;
@@ -52,7 +54,7 @@ public class EnergyStarProperyUseContext {
 		this.value = value;
 	}
 	
-	public enum Propert_Use {
+	public enum Property_Use {
 		
 		totalGrossFloorArea(1, "Total gross floor area","totalGrossFloorArea",FieldType.STRING,Building_Type.OFFICE,"ft\u00B2"),
 		numberOfComputers(2, "No. of computers","numberOfComputers",FieldType.STRING,Building_Type.OFFICE,null),
@@ -93,7 +95,7 @@ public class EnergyStarProperyUseContext {
 			return intVal;
 		}
 
-		private Propert_Use(int intVal, String displayName,String fieldName,FieldType fieldType, Building_Type building_Type,String unit) {
+		private Property_Use(int intVal, String displayName,String fieldName,FieldType fieldType, Building_Type building_Type,String unit) {
 			this.intVal = intVal;
 			this.displayName = displayName;
 			this.fieldName = fieldName;
@@ -101,20 +103,53 @@ public class EnergyStarProperyUseContext {
 			this.buildingType = building_Type;
 			this.unit = unit;
 		}
-
-		private static final Map<Integer, Propert_Use> optionMap = Collections.unmodifiableMap(initTypeMap());
-
-		private static Map<Integer, Propert_Use> initTypeMap() {
-			Map<Integer, Propert_Use> typeMap = new HashMap<>();
-
-			for (Propert_Use type : values()) {
-				typeMap.put(type.getIntVal(), type);
+		
+		private static final Map<Integer, List<Property_Use>> PROPERTY_USE_BUILDING_TYPE_MAP = Collections.unmodifiableMap(initPointUseBuilddingTypeMap());
+		
+		private static Map<Integer, List<Property_Use>> initPointUseBuilddingTypeMap() {
+			Map<Integer, List<Property_Use>> typeMap = new HashMap<>();
+			
+			for(Property_Use type : values()) {
+				List<Property_Use> useList = typeMap.get(type.getBuildingType().getIntVal()) == null ? new ArrayList<>() : typeMap.get(type.getBuildingType().getIntVal()); 
+				useList.add(type);
+				
+				typeMap.put(type.getBuildingType().getIntVal(), useList);
 			}
 			return typeMap;
 		}
 
-		public static Map<Integer, Propert_Use> getAllAppTypes() {
+		private static final Map<Integer, Property_Use> optionMap = Collections.unmodifiableMap(initTypeMap());
+		
+		private static final Map<String, Property_Use> nameMap = Collections.unmodifiableMap(initNameMap());
+
+		private static Map<Integer, Property_Use> initTypeMap() {
+			Map<Integer, Property_Use> typeMap = new HashMap<>();
+
+			for (Property_Use type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+		
+		private static Map<String, Property_Use> initNameMap() {
+			Map<String, Property_Use> typeMap = new HashMap<>();
+
+			for (Property_Use type : values()) {
+				typeMap.put(type.getFieldName(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Property_Use> getAllAppTypes() {
 			return optionMap;
+		}
+		
+		public static Map<String, Property_Use> getNameMap() {
+			return nameMap;
+		}
+		
+		public static Map<Integer, List<Property_Use>> getPropertyUseBuildingTypeMap() {
+			return PROPERTY_USE_BUILDING_TYPE_MAP;
 		}
 	}
 }

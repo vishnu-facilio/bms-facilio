@@ -9,7 +9,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
-import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -35,7 +35,7 @@ public class UpdateEnergyStarPropertyUseCommand extends FacilioCommand {
 			
 			EnergyStarUtil.deleteEnergyStarRelated(ModuleFactory.getEnergyStarPropertyUseModule(), criteria);
 			
-			for(EnergyStarProperyUseContext propertyUse : propContext.getPropertyUseContexts()) {
+			for(EnergyStarPropertyUseContext propertyUse : propContext.getPropertyUseContexts()) {
 				propertyUse.setId(-1);
 				propertyUse.setPropertyId(propContext.getId());
 				EnergyStarUtil.addEnergyStarPropertyUse(propertyUse);

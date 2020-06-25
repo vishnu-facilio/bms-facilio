@@ -24,7 +24,7 @@ import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarMeterPointContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.EnergyStarPropertyMetricsContext;
-import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext;
 import com.facilio.energystar.context.Meter_Category;
 import com.facilio.energystar.context.Property_Metrics;
 import com.facilio.energystar.context.EnergyStarPropertyContext.Building_Type;
@@ -228,7 +228,7 @@ public class EnergyStarUtil {
 		return energyStarPropertyContext;
 	}
 	
-	public static EnergyStarProperyUseContext addEnergyStarPropertyUse(EnergyStarProperyUseContext energyStarProperyUseContext) throws Exception {
+	public static EnergyStarPropertyUseContext addEnergyStarPropertyUse(EnergyStarPropertyUseContext energyStarProperyUseContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getEnergyStarPropertyUseModule().getTableName())

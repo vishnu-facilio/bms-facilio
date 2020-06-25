@@ -16,7 +16,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
-import com.facilio.energystar.context.EnergyStarProperyUseContext;
+import com.facilio.energystar.context.EnergyStarPropertyUseContext;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -89,7 +89,7 @@ public class EnergyStarFetchDataPropertyEnergyCommand extends FacilioCommand {
 		List<Map<String, Object>> props = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarPropertyUseModule(), FieldFactory.getEnergyStarPropertyUseFields(), null, CriteriaAPI.getCondition("PROPERTY_ID", "propertyId", property.getId()+"", NumberOperators.EQUALS));
 	
 		if(props != null && !props.isEmpty()) {
-			List<EnergyStarProperyUseContext> propertyUse = FieldUtil.getAsBeanListFromMapList(props, EnergyStarProperyUseContext.class);
+			List<EnergyStarPropertyUseContext> propertyUse = FieldUtil.getAsBeanListFromMapList(props, EnergyStarPropertyUseContext.class);
 			
 			property.setPropertyUseContexts(propertyUse);
 		}
