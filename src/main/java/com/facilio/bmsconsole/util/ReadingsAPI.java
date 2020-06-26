@@ -1367,7 +1367,7 @@ public class ReadingsAPI {
 	}
 	
 	public static void convertUnitForRdmData (ReadingDataMeta meta) throws Exception {
-		if (meta.getField() instanceof NumberField) {
+		if (meta.getField() instanceof NumberField && meta.getActualValue() != null && !meta.getActualValue().equals("-1")) {
 			Object value = meta.getValue();
 			
 			NumberField numberField =  (NumberField)meta.getField();

@@ -76,19 +76,22 @@ public class PermissionUtil {
 		|| moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) || moduleName.equals(FacilioConstants.ContextNames.BMS_ALARM) ||
 				moduleName.equals(FacilioConstants.ContextNames.ML_ALARM) || moduleName.equals(FacilioConstants.ContextNames.VIOLATION_ALARM) || moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM))
 		{
-			Condition condition = new Condition();
-			if (moduleName.equals("planned")) {
-				condition.setColumnName("Workorder_Template.RESOURCE_ID");
-			}
-			else {
-				condition.setColumnName("RESOURCE_ID");
-			}
-			condition.setFieldName("resourceId");
-			condition.setOperator(BuildingOperator.BUILDING_IS);
-			condition.setValue(StringUtils.join(accessibleSpace, ","));
-
 			criteria = new Criteria();
-			criteria.addAndCondition(condition);
+			if (!moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM)) {
+				Condition condition = new Condition();
+				if (moduleName.equals("planned")) {
+					condition.setColumnName("Workorder_Template.RESOURCE_ID");
+				}
+				else {
+					condition.setColumnName("RESOURCE_ID");
+				}
+				condition.setFieldName("resourceId");
+				condition.setOperator(BuildingOperator.BUILDING_IS);
+				condition.setValue(StringUtils.join(accessibleSpace, ","));
+				
+				
+				criteria.addAndCondition(condition);
+			}
 
 			String siteColumn = "SITE_ID";
 			switch (moduleName) {

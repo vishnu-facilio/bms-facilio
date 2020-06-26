@@ -47,6 +47,7 @@ public class FormTemplate extends Template {
 					}
 				}
 			}
+			jsonObj.put("formId", form.getId());
 		}
 		return jsonObj;
 	}
