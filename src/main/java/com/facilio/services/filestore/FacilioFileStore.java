@@ -40,13 +40,13 @@ public class FacilioFileStore extends FileStore {
 		if (rootPath == null) {
 			StringBuilder path = new StringBuilder()
 									.append(getOrgId())
-									.append(File.separator);
+									.append(File.separator)
+									.append("files")
+									.append(File.separator)
+									.append(namespace);
 			if (namespaceConfig.isDailyDirectoryNeeded()) {
-				path.append(dateVal).append(File.separator);
+				path.append(File.separator).append(dateVal);
 			}
-			path.append("files")
-				.append(File.separator)
-				.append(namespace);
 			 rootPath = path.toString();
 			 ROOT_PATHS.put(key, rootPath);
 		}

@@ -54,13 +54,12 @@ public class LocalFileStore extends FileStore {
 									.append("facilio-data")
 									.append(File.separator)
 									.append(getOrgId())
-									.append(File.separator);
-			path.append("files")
-				.append(File.separator)
-				.append(namespace)
-				.append(File.separator);
+									.append(File.separator)
+									.append("files")
+									.append(File.separator)
+									.append(namespace);
 			if (namespaceConfig.isDailyDirectoryNeeded()) {
-				path.append(dateVal);
+				path.append(File.separator).append(dateVal);
 			}
 			rootPath = path.toString();
 			File rootDir = new File(rootPath);

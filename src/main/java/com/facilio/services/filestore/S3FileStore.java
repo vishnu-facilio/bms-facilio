@@ -63,13 +63,12 @@ public class S3FileStore extends FileStore {
 		Objects.requireNonNull(namespaceConfig, "Invalid namespace in getting root path");
 		StringBuilder rootPath = new StringBuilder();
 		rootPath.append(getOrgId())
-				.append(File.separator);
-		rootPath.append(FILES_DIR)
 				.append(File.separator)
-				.append(namespace)
-				.append(File.separator);
+				.append(FILES_DIR)
+				.append(File.separator)
+				.append(namespace);
 		if(namespaceConfig.isDailyDirectoryNeeded() || getOrgId() <= 0 /* The 2nd condition is Temp fix for backward compatibility. Will remove when I have separate namespace for instant jobs*/) {
-			rootPath.append(DATE_FORMAT.format(new Date()));
+			rootPath.append(File.separator).append(DATE_FORMAT.format(new Date()));
 		}
 		return rootPath.toString();
 	}
