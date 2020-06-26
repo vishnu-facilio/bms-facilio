@@ -489,7 +489,7 @@ public abstract class FileStore {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 			}
 
-			String sql = MessageFormat.format("SELECT * FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId), ",");
+			String sql = MessageFormat.format("SELECT * FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId, ","));
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 
@@ -524,7 +524,7 @@ public abstract class FileStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			String sql = MessageFormat.format("SELECT FILE_PATH FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId), ",");
+			String sql = MessageFormat.format("SELECT FILE_PATH FROM {0} WHERE FILE_ID IN ({1})  AND ORGID=? ORDER BY FILE_NAME", namespaceConfig.getTableName(), StringUtils.join(fileId, ","));
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 
