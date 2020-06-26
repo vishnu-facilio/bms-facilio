@@ -8,6 +8,8 @@ import com.facilio.bmsconsoleV3.util.V3TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -27,10 +29,10 @@ public class UpdateWorkorderFieldsForUpdateCommandV3 extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(wos)) {
             V3WorkOrderContext oldWoForSync = oldWos.get(0);
             if (lastSyncTime != null && oldWoForSync.getModifiedTime() > lastSyncTime) {
-                throw new RuntimeException("The workorder was modified after the last sync");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The workorder was modified after the last sync");
             }
             if (wos.get(0).getSyncTime() != null && oldWoForSync.getModifiedTime() > wos.get(0).getSyncTime()) {
-                throw new RuntimeException("The workorder was modified after the last sync");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The workorder was modified after the last sync");
             }
             updateWODetails(wos.get(0));
         }

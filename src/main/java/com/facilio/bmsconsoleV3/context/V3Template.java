@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.text.StringSubstitutor;
@@ -234,12 +236,12 @@ public abstract class V3Template implements Serializable {
             return TYPE_MAP;
         }
 
-        public static V3Template.Type getType(int val) {
+        public static V3Template.Type getType(int val) throws RESTException {
             if(TYPE_MAP.containsKey(val)) {
                 return TYPE_MAP.get(val);
             }
             else {
-                throw new IllegalArgumentException("Invalid Template Type val");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Template Type val");
             }
         }
     }

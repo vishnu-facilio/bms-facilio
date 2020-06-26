@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -23,7 +25,7 @@ public class CheckForMandatoryVendorIdCommandV3 extends FacilioCommand {
             for(V3VendorContactContext vc : vendorContacts) {
                 vc.setPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT.getIndex());
                 if(vc.getVendor() == null || vc.getVendor().getId() <=0 ) {
-                    throw new IllegalArgumentException("Vendor Contact must have a vendor id associated");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Vendor Contact must have a vendor id associated");
                 }
             }
         }

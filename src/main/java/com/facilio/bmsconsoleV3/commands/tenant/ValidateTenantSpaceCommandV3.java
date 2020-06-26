@@ -20,6 +20,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -75,7 +77,7 @@ public class ValidateTenantSpaceCommandV3 extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(baseSpaceParentIds)) {
             for(long parentId: baseSpaceParentIds) {
                 if (spaceIds.contains(parentId)) {
-                    throw new IllegalArgumentException("Please select only parent space");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please select only parent space");
                 }
             }
             criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("space"), baseSpaceParentIds, NumberOperators.EQUALS));
@@ -103,7 +105,7 @@ public class ValidateTenantSpaceCommandV3 extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(props)) {
                 long count = (long) props.get(0).get("id");
                 if (count > 0) {
-                    throw new IllegalArgumentException((spaceIds.size() == 1 ? "Selected " : "Some of the ") + " space is already occupied by another tenant");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, (spaceIds.size() == 1 ? "Selected " : "Some of the ") + " space is already occupied by another tenant");
                 }
             }
         }

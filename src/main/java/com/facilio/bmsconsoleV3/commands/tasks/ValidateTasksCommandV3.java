@@ -21,6 +21,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
@@ -104,7 +106,7 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
 //								throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
 //							}
                             if(task.getReadingFieldId() == -1) {
-                                throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Reading ID cannot be null when reading is enabled for task");
                             }
                             FacilioField readingField = modBean.getField(task.getReadingFieldId());
                             if (task.getResource() != null) {
@@ -113,18 +115,18 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                                 if (meta == null) {
                                     LOGGER.log(Level.SEVERE, "RDM Entry missing for resourceId: " + task.getResource().getId() + " readingFieldId " + task.getReadingFieldId());
                                     CommonCommandUtil.emailAlert("RDM Entry missing"," resourceId: " + task.getResource().getId() + " readingFieldId " + task.getReadingFieldId());
-                                    throw new IllegalStateException("RDM Entry missing");
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "RDM Entry missing");
                                 }
 
                                 switch (meta.getInputTypeEnum()) {
                                     case CONTROLLER_MAPPED:
-                                        throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
+                                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Readings that are mapped with controller cannot be used.");
                                     case FORMULA_FIELD:
                                     case HIDDEN_FORMULA_FIELD:
-                                        throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
+                                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Readings that are mapped with formula field cannot be used.");
                                     case TASK:
                                         if (!pmExecution && !updatePM) {//Temp fix
-                                            throw new IllegalArgumentException(readingField.getDisplayName() + " cannot be used as it is already used in another task.");
+                                            throw new RESTException(ErrorCode.VALIDATION_ERROR, readingField.getDisplayName() + " cannot be used as it is already used in another task.");
                                         }
                                     default:
                                         metaList.add(meta);
@@ -137,12 +139,12 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                             if (task.getReadingFieldId() != -1) {
                                 task.setReadingField(modBean.getField(task.getReadingFieldId()));
                                 if(task.getReadingField() != null && ((EnumField) task.getReadingField()).getValues().size() < 2) {
-                                    throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Minimum two options has to be added for CHECKBOX/ RADIO task");
                                 }
                             }
                             else {
                                 if(task.getOptions() == null || task.getOptions().size() < 2) {
-                                    throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Minimum two options has to be added for CHECKBOX/ RADIO task");
                                 }
                             }
                             break;
@@ -151,12 +153,12 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                                 BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
                                 task.setReadingField(field);
                                 if(field != null &&( field.getTrueVal() == null || field.getFalseVal() == null)) {
-                                    throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Both true and false valuse has to be set for BOOLEAN task");
                                 }
                             }
                             else {
                                 if (task.getOptions() == null || task.getOptions().size() != 2) {
-                                    throw new IllegalArgumentException("Both true and false valuse has to be set for BOOLEAN task");
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Both true and false valuse has to be set for BOOLEAN task");
                                 }
                             }
                         default:
@@ -236,9 +238,9 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
             if (resourceSiteId > 0) {
                 if (resourceSiteId != siteId) {
                     if (resource.getResourceTypeEnum() == ResourceContext.ResourceType.SPACE) {
-                        throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder request's Site.");
                     } else {
-                        throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder request's Site.");
                     }
                 }
             }

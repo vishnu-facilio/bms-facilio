@@ -18,6 +18,8 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -50,7 +52,7 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
             V3WorkOderAPI.handleSiteRelations(workOrder);
             V3TicketAPI.validateSiteSpecificData(workOrder);
             if (workOrder.getSiteId() == -1) {
-                throw new IllegalArgumentException("Please select site");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please select site");
             }
 
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
@@ -82,7 +84,7 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
             CommonCommandUtil.handleLookupFormData(fields, workOrder.getData());
         }
         else {
-            throw new IllegalArgumentException("WorkOrder Object cannot be null");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "WorkOrder Object cannot be null");
         }
         return false;
     }
@@ -91,7 +93,7 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
         V3WorkOrderContext parentWO = V3WorkOderAPI.getWorkOrder(workOrder.getParentWO().getId());
         FacilioStatus status = V3TicketAPI.getStatus(parentWO.getStatus().getId());
         if (status.getType() == FacilioStatus.StatusType.CLOSED) {
-            throw new IllegalArgumentException("Cannot add open WO as a child to closed parent");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot add open WO as a child to closed parent");
         }
     }
 

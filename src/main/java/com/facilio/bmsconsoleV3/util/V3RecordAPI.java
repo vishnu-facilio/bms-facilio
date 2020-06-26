@@ -10,6 +10,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -71,7 +73,7 @@ public class V3RecordAPI {
 
             FacilioField field = modBean.getField(fieldName, moduleName);
             if(field == null) {
-                throw new IllegalArgumentException("Invalid Field");
+                throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, "Invalid Field");
             }
             for(UpdateChangeSet change : changes) {
                 if(change.getFieldId() == field.getFieldId()) {

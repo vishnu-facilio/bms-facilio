@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -565,11 +567,11 @@ public class V3VisitorManagementAPI {
         if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
             V3VisitorContext visitor = getVisitor(-1, visitorPhoneNumber);
             if(visitor == null) {
-                throw new IllegalArgumentException("Invalid phone number");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid phone number");
             }
             V3VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true, -1);
             if(activeLog == null) {
-                throw new IllegalArgumentException("No active CheckIn Log found");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No active CheckIn Log found");
             }
             List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, activeLog, context);
             activeLog.setCheckOutTime(System.currentTimeMillis());

@@ -12,6 +12,8 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -35,7 +37,7 @@ public class ValidateWorkOrderFieldsCommandV3 extends FacilioCommand {
             V3WorkOrderContext woContext = wos.get(0);
 
             if(woContext.getSubject() == null || woContext.getSubject().isEmpty()) {
-                throw new IllegalArgumentException("Subject is invalid");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Subject is invalid");
             }
             else {
                 woContext.setSubject(woContext.getSubject().trim());

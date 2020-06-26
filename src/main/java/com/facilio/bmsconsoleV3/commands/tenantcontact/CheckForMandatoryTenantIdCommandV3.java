@@ -12,6 +12,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +32,7 @@ public class CheckForMandatoryTenantIdCommandV3 extends FacilioCommand {
             for(V3TenantContactContext tc : tenantContacts) {
                 tc.setPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT.getIndex());
                 if(tc.getTenant() == null || tc.getTenant().getId() <=0 ) {
-                    throw new IllegalArgumentException("Tenant Contact must have a tenant id associated");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tenant Contact must have a tenant id associated");
                 }
                 //adding a default contact(old) when adding a new tenant contact for handling tenant portal till visitor host lookup is changed
                 //should be removed

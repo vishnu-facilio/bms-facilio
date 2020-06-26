@@ -10,6 +10,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -52,13 +54,13 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
                         if (!skipChecking) {
                             FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
                             if (status.isRequestedState()) {
-                                throw new IllegalArgumentException("In Approval process, cannot edit meanwhile");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "In Approval process, cannot edit meanwhile");
                             }
                         }
                     }
                     else if ((stateContext.isRecordLocked())) {
                         if (cannotEdit) {
-                            throw new IllegalArgumentException("Record with lock cannot be updated");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record with lock cannot be updated");
                         }
                     }
 

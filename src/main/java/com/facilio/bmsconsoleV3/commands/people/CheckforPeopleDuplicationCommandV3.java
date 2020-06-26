@@ -8,10 +8,13 @@ import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.xml.bind.ValidationException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +28,7 @@ public class CheckforPeopleDuplicationCommandV3 extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(peopleList)) {
             for (V3PeopleContext people : peopleList) {
                 if(StringUtils.isNotEmpty(people.getEmail()) && V3PeopleAPI.checkForDuplicatePeople(people)) {
-                    throw new IllegalArgumentException("People with the same email id already exists");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
                 }
                 //setting tenant's site to all the contacts
                 if(people instanceof V3TenantContactContext && ((V3TenantContactContext)people).getTenant() != null && ((V3TenantContactContext)people).getTenant().getId() > 0) {

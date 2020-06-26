@@ -16,6 +16,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class V3WorkOderAPI {
                     workOrder.setSiteId(tenant.getSiteId());
                 }
                 else if (tenant.getSiteId() != workOrder.getSiteId()) {
-                    throw new IllegalArgumentException("Tenant doesn't bellong to work order site");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tenant doesn't belong to work order site");
                 }
             }
             else {

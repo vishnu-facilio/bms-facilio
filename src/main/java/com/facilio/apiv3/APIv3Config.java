@@ -7,8 +7,10 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.AddPeopleAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -274,6 +276,20 @@ public class APIv3Config {
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
+                .build();
+    }
+
+    @Module("employee")
+    public static Supplier<V3Config> getEmployee() {
+        return () -> new V3Config(V3EmployeeContext.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getEmployeeBeforeSaveChain())
+                    .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
+                .update()
+                    .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                    .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
+                .list()
+                .summary()
                 .build();
     }
 

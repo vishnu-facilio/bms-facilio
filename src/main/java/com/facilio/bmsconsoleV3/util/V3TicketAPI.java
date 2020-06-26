@@ -20,6 +20,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.log4j.LogManager;
@@ -40,7 +42,7 @@ public class V3TicketAPI {
                 if (AccountUtil.getCurrentOrg().getOrgId() != 320l) {
                     List<V3TenantContext> tenants = V3TenantsAPI.getAllTenantsForResource(ticket.getResource().getId());
                     if (tenants == null || tenants.stream().noneMatch(tenant -> tenant.getId() == ticket.getTenant().getId())) {
-                        throw new IllegalArgumentException("The tenant associated doesn't belong to the workorder space/asset");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "The tenant associated doesn't belong to the workorder space/asset");
                     }
                 }
             }
@@ -81,16 +83,16 @@ public class V3TicketAPI {
                     if (resourceSiteId != siteId) {
                         if (resource.getResourceTypeEnum() == ResourceContext.ResourceType.SPACE) {
                             if (isWorkOrder) {
-                                throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder's Site.");
                             } else {
-                                throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder request's Site.");
                             }
 
                         } else {
                             if (isWorkOrder) {
-                                throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder's Site.");
                             } else {
-                                throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder request's Site.");
                             }
                         }
                     }
@@ -124,11 +126,11 @@ public class V3TicketAPI {
             for (V3TicketContext oldWo: oldTickets) {
                 long siteId = oldWo.getSiteId();
                 if (groupSiteId > 0 && groupSiteId != siteId) {
-                    throw new IllegalArgumentException("The Team does not belong to current site.");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Team does not belong to current site.");
                 }
 
                 if (!userSiteIds.isEmpty() && !userSiteIds.contains(siteId)) {
-                    throw new IllegalArgumentException("The User does not belong to current site.");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "The User does not belong to current site.");
                 }
             }
         }
@@ -174,16 +176,16 @@ public class V3TicketAPI {
                 if (resourceSiteId != siteId) {
                     if (resource.getResourceTypeEnum() == ResourceContext.ResourceType.SPACE) {
                         if (isWorkOrder) {
-                            throw new IllegalArgumentException("The Space does not belong in the Workorder's Site.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder's Site.");
                         } else {
-                            throw new IllegalArgumentException("The Space does not belong in the Workorder request's Site.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Space does not belong in the Workorder request's Site.");
                         }
 
                     } else {
                         if (isWorkOrder) {
-                            throw new IllegalArgumentException("The Asset does not belong in the Workorder's Site.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder's Site.");
                         } else {
-                            throw new IllegalArgumentException("The Asset does not belong in the Workorder request's Site.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Asset does not belong in the Workorder request's Site.");
                         }
                     }
                 }
@@ -222,11 +224,11 @@ public class V3TicketAPI {
         }
 
         if (groupSiteId > 0 && groupSiteId != siteId) {
-            throw new IllegalArgumentException("The Team does not belong to current site.");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Team does not belong to current site.");
         }
 
         if (!userSiteIds.isEmpty() && !userSiteIds.contains(siteId)) {
-            throw new IllegalArgumentException("The User does not belong to current site.");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The User does not belong to current site.");
         }
 
     }

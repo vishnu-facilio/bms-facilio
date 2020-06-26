@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.TenantContactContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
@@ -23,6 +24,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -107,7 +110,7 @@ public class V3PeopleAPI {
             V3RecordAPI.updateRecord(ppl, module, fields);
             return;
         }
-        throw new IllegalArgumentException("People with the same email id already exists");
+        throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
 
     }
 
@@ -119,7 +122,7 @@ public class V3PeopleAPI {
 
             return;
         }
-        throw new IllegalArgumentException("People with the same email id already exists");
+        throw new RESTException(ErrorCode.VALIDATION_ERROR, "People with the same email id already exists");
 
     }
 
@@ -196,7 +199,7 @@ public class V3PeopleAPI {
     public static V3TenantContext getTenantForUser(long ouId) throws Exception {
         long pplId = PeopleAPI.getPeopleIdForUser(ouId);
         if(pplId <= 0) {
-            throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
         }
         V3TenantContactContext tc = (V3TenantContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId, V3TenantContactContext.class);
         if (tc != null && tc.getTenant() != null && tc.getTenant().getId() > 0) {
@@ -246,7 +249,7 @@ public class V3PeopleAPI {
 
         V3TenantContactContext existingPeople = (V3TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, person.getId());
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isTenantPortalAccess())){
-            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
         if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
             long appId = -1;
@@ -271,14 +274,14 @@ public class V3PeopleAPI {
                 }
             }
             else {
-                throw new IllegalArgumentException("Invalid App Domain");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
             }
         }
     }
 
     public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier) throws Exception {
         if(StringUtils.isEmpty(linkName)) {
-            throw new IllegalArgumentException("Invalid link name");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid link name");
         }
         long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
 
@@ -305,7 +308,7 @@ public class V3PeopleAPI {
 
         V3PeopleContext existingPeople = (V3PeopleContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId(), V3PeopleContext.class);
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
-            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
         if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
             AppDomain appDomain = null;
@@ -330,7 +333,7 @@ public class V3PeopleAPI {
                 }
             }
             else {
-                throw new IllegalArgumentException("Invalid App Domain");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
             }
         }
     }
@@ -340,7 +343,7 @@ public class V3PeopleAPI {
         V3VendorContactContext existingPeople = (V3VendorContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, person.getId(), V3VendorContactContext.class);
 
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isVendorPortalAccess())){
-            throw new IllegalArgumentException("Email Id associated with this contact is empty");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
         if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
             AppDomain appDomain = null;
@@ -366,8 +369,81 @@ public class V3PeopleAPI {
                 }
             }
             else {
-                throw new IllegalArgumentException("Invalid App Domain");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
             }
         }
     }
+
+    public static void updateEmployeeAppPortalAccess(V3EmployeeContext person, String linkname) throws Exception {
+
+        V3EmployeeContext existingPeople = (V3EmployeeContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId(),  V3EmployeeContext.class);
+        if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
+        }
+        if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+
+            if(existingPeople.isAppAccess() && existingPeople.getRoleId() <= 0) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Role cannot be null");
+            }
+
+            AppDomain appDomain = null;
+            long appId = -1;
+            appId = ApplicationApi.getApplicationIdForLinkName(linkname);
+            appDomain = ApplicationApi.getAppDomainForApplication(appId);
+
+            if(appDomain != null) {
+                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                if((linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && existingPeople.isAppAccess())) {
+                    if(user != null) {
+                        user.setApplicationId(appId);
+                        user.setAppDomain(appDomain);
+                        ApplicationApi.addUserInApp(user, false);
+                        if(user.getRoleId() != existingPeople.getRoleId()) {
+                            user.setRoleId(existingPeople.getRoleId());
+                            AccountUtil.getUserBean().updateUser(user);
+                        }
+                    }
+                    else {
+                        addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                    }
+                }
+                else {
+                    if(user != null) {
+                        ApplicationApi.deleteUserFromApp(user, appId);
+                    }
+                }
+            }
+            else {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
+            }
+        }
+
+    }
+
+    public static User addAppUser(V3PeopleContext existingPeople, String linkName) throws Exception {
+        if(StringUtils.isEmpty(linkName)) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Link name");
+        }
+        long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+        AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+        User user = new User();
+        user.setEmail(existingPeople.getEmail());
+        user.setPhone(existingPeople.getPhone());
+        user.setName(existingPeople.getName());
+        user.setUserVerified(false);
+        user.setInviteAcceptStatus(false);
+        user.setInvitedTime(System.currentTimeMillis());
+        user.setPeopleId(existingPeople.getId());
+        user.setUserType(AccountConstants.UserType.USER.getValue());
+        user.setRoleId(existingPeople.getRoleId());
+
+        user.setApplicationId(appId);
+        user.setAppDomain(appDomainObj);
+
+        AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true, false);
+        return user;
+
+    }
+
+
 }

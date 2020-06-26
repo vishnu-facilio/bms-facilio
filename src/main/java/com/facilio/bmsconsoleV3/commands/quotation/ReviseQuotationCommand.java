@@ -14,6 +14,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -41,7 +43,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                 List<QuotationContext> revisedQuoteList = new ArrayList<>();
                 for (QuotationContext quotation : list) {
                     if(quotation.getId() <= 0){
-                        throw new IllegalArgumentException("Parent record Id is needed for revising the quote");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Parent record Id is needed for revising the quote");
                     }
                     QuotationContext exitingQuotation = (QuotationContext) V3RecordAPI.getRecord(moduleName,quotation.getId(), QuotationContext.class);
                     if (exitingQuotation.getModuleState() != null && exitingQuotation.getModuleState().getId() == sentStatus.getId()) {
@@ -55,7 +57,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         QuotationContext revisedQuotation = quotation.clone();
                         revisedQuoteList.add(revisedQuotation);
                     } else {
-                        throw new IllegalArgumentException("Only Quotation in sent status can be revised");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only Quotation in sent status can be revised");
                     }
                 }
                 recordMap.put(moduleName, revisedQuoteList);
