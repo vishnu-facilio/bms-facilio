@@ -54,7 +54,7 @@ public class ApprovalPageFactory extends PageFactory {
         if (CollectionUtils.isNotEmpty(approvers) && approvers.size() > 1) {
         		addApproversWidget(tab1Sec1);
         }
-        addSecondaryDetailWidget(tab1Sec1);
+        addSecondaryDetailsWidget(tab1Sec1);
         
         HashMap<String, String> titles = new HashMap<>();
         titles.put("notes", "Comment");
@@ -111,4 +111,10 @@ public class ApprovalPageFactory extends PageFactory {
 		section.addWidget(pageWidget);
 	}
 
+	private static void addSecondaryDetailsWidget(Section section) {
+		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+		detailsWidget.addToLayoutParams(section, 24, 5);
+		detailsWidget.setTitle("More Details");
+		section.addWidget(detailsWidget);
+	}
 }

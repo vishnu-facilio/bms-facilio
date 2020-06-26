@@ -262,8 +262,6 @@ public class PageFactory {
 	}
 	
 	protected static void addSecondaryDetailWidget(Section section) {
-		// col1Sec2.setName("overview");
-		// col1Sec2.setDisplayName("common.page.overview");
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(detailsWidget);
