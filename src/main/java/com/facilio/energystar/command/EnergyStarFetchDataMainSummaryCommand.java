@@ -57,10 +57,12 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 				if(propertMetric != Property_Metrics.SCORE) {
 					Map<String, Object> dataValue = (Map<String, Object>) values.get(propertMetric.getName());
 					
-					double val = Double.parseDouble(dataValue.get("max").toString());
-					
-					if(val > max) {
-						max = val;
+					if(dataValue != null && dataValue.get("max") != null) {
+						double val = Double.parseDouble(dataValue.get("max").toString());
+						
+						if(val > max) {
+							max = val;
+						}
 					}
 				}
 				
@@ -71,7 +73,7 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 		if(propertMetric != null) {
 			
 			if(propertMetric != Property_Metrics.SCORE) {
-				double maxValue = max + (max * 20 /100);
+				double maxValue = max;
 				
 				for(EnergyStarPropertyContext prop :properties) {
 					
@@ -79,7 +81,9 @@ public class EnergyStarFetchDataMainSummaryCommand extends FacilioCommand {
 					
 					Map<String, Object> dataValue = (Map<String, Object>)values.get(propertMetric.getName());
 					
-					dataValue.put("maxValue", maxValue);
+					if(dataValue != null) {
+						dataValue.put("maxValue", maxValue);
+					}
 				}
 			}
 		}

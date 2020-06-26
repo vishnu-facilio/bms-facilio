@@ -1,5 +1,6 @@
 package com.facilio.energystar.action;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -10,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.energystar.context.EnergyStarMeterContext;
 import com.facilio.energystar.context.EnergyStarMeterDataContext;
 import com.facilio.energystar.context.EnergyStarPropertyContext;
 import com.facilio.energystar.context.Property_Metrics;
@@ -28,9 +30,17 @@ public class EnergyStarAction extends FacilioAction {
 	long startTime;
 	long endTime;
 	boolean createAccount;
+	public EnergyStarMeterContext getMeter() {
+		return meter;
+	}
+	public void setMeter(EnergyStarMeterContext meter) {
+		this.meter = meter;
+	}
+
 	List<EnergyStarMeterDataContext> meterData;
 	String fieldName;
 	DateRange dateRange;
+	EnergyStarMeterContext meter;
 	
 	JSONArray pushMeterData;
 	
@@ -154,11 +164,25 @@ public class EnergyStarAction extends FacilioAction {
 	
 	public String addEnergyStarProperty() throws Exception {
 		
-		FacilioChain chain = TransactionChainFactory.addEnergyStarProperyChain();
+		FacilioChain chain = TransactionChainFactory.addEnergyStarProperyOnlyChain();
 		
 		FacilioContext context = chain.getContext();
 		
 		context.put(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, getPropertyContext());
+		
+		chain.execute();
+		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String addEnergyStarMeter() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addEnergyStarMeterOnlyChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXTS, Collections.singletonList(meter));
 		
 		chain.execute();
 		setResult(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT, context.get(EnergyStarUtil.ENERGY_STAR_PROPERTY_CONTEXT));

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.json.simple.JSONObject;
 
@@ -100,6 +101,19 @@ public class EnergyStarSDK {
 			String occupancyPercentage = parser.getElement("occupancyPercentage").text();
 			
 			propertyContext.setOccupancyPercentage(occupancyPercentage);
+			
+			returnString = sendAPI("property/"+propertyContext.getEnergyStarPropertyId()+"/baselineAndTarget", HttpMethod.GET,null);
+			
+			XMLBuilder parser12 = XMLBuilder.parse(returnString);
+			
+			String baselineDate = parser12.getElement("baseline").getElement("energyBaselineDate").getText();
+			
+			if(baselineDate != null && !baselineDate.equals("System Determined")) {
+				baselineDate =baselineDate + "-01 00:00";
+				long baselineTime = DateTimeUtil.getTime(baselineDate, "yyyy-MM-dd HH:mm");
+				propertyContext.setBaselineMonth(baselineTime);
+			}
+			
 			
 			returnString = sendAPI("property/"+propertyContext.getEnergyStarPropertyId()+"/propertyUse/list", HttpMethod.GET,null);
 			
@@ -416,30 +430,47 @@ public class EnergyStarSDK {
 		
 		Map<String,String> headers = new HashMap<>();
 		
-		headers.put("PM-Metrics", getMetrics());
-		
-		String response = sendAPI("/property/"+property.getEnergyStarPropertyId()+"/metrics?year="+year+"&month="+month+"&measurementSystem=EPA", HttpMethod.GET, null,headers);
-		
-		LOGGER.info(response);
-		
-		List<XMLBuilder> metrics = XMLBuilder.parse(response).getElementList("metric");
-		
 		ReadingContext readingContext = null;
 		
-		for(XMLBuilder metric :metrics) {
+		List<String> metricList = getMetrics();
+		
+		int from = 0,max = 10; 
+		while(true) {
 			
-			XMLBuilder value = metric.getElement("value");
-			String isNullstring = value.getAttribute("xsi:nil");
-			if(isNullstring == null || !Boolean.valueOf(isNullstring)) {
-				String name = metric.getAttribute("name");
-				String valueString = value.getText();
-				readingContext = readingContext == null ? new ReadingContext() : readingContext;
+			if(from > metricList.size()) {
+				break;
+			}
+			int to = from+max;
+			if(to > metricList.size()) {
+				to = metricList.size();
+			}
+			List<String> subList = metricList.subList(from, to);
+			
+			headers.put("PM-Metrics", StringUtils.join(subList, ','));
+			
+			String response = sendAPI("/property/"+property.getEnergyStarPropertyId()+"/metrics?year="+year+"&month="+month+"&measurementSystem=EPA", HttpMethod.GET, null,headers);
+			
+			LOGGER.info(response);
+			
+			List<XMLBuilder> metrics = XMLBuilder.parse(response).getElementList("metric");
+			
+			for(XMLBuilder metric :metrics) {
 				
-				readingContext.setDatum(name, valueString);
+				XMLBuilder value = metric.getElement("value");
+				String isNullstring = value.getAttribute("xsi:nil");
+				if(isNullstring == null || !Boolean.valueOf(isNullstring)) {
+					String name = metric.getAttribute("name");
+					String valueString = value.getText();
+					readingContext = readingContext == null ? new ReadingContext() : readingContext;
+					
+					readingContext.setDatum(name, valueString);
+				}
+				
 			}
 			
+			from += max;
 		}
-
+		
 		return readingContext;
 	}
 	
@@ -492,15 +523,19 @@ public class EnergyStarSDK {
 		return meterDatas;
 	}
 	
-	private static String getMetrics() {
+	private static List<String> getMetrics() {
 		
-		String metrics = "";
+		List<String> metricsList = new ArrayList<>();
 		for(Property_Metrics metric : Property_Metrics.values()) {
-			metrics += metric.getName() + ",";
+			metricsList.add(metric.getName());
+			if(metric.getTargetFieldName() != null) {
+				metricsList.add(metric.getTargetFieldName());
+			}
+			if(metric.getMedianFieldName() != null) {
+				metricsList.add(metric.getMedianFieldName());
+			}
 		}
-		metrics = metrics.substring(0, metrics.length()-1);
-		
-		return metrics;
+		return metricsList;
 	}
 	
 	

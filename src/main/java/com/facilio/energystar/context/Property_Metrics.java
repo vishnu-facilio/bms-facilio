@@ -11,16 +11,18 @@ import com.facilio.modules.fields.FacilioField;
 
 public enum Property_Metrics {
 	
-	SCORE(1, "score","Score"),
-	SOURCE_EUI(2, "sourceIntensity","Source EUI"),	
-	SITE_EUI(3, "siteIntensity","Site EUI"),		
-	TOTAL_GHG_EMISSION(4, "totalGHGEmissions","Total GHG Emissions"),
-	COST(5, "energyCost","Energy Cost"),
+	SCORE(1, "score","Score","targetScore","medianScore"),
+	SOURCE_EUI(2, "sourceIntensity","Source EUI","targetSourceIntensity","medianSourceIntensity"),	
+	SITE_EUI(3, "siteIntensity","Site EUI","targetSiteIntensity","medianSiteIntensity"),		
+	TOTAL_GHG_EMISSION(4, "totalGHGEmissions","Total GHG Emissions","targetTotalGHGEmissions","medianTotalGHGEmissions"),
+	COST(5, "energyCost","Energy Cost","targetEnergyCost","medianEnergyCost"),
 	;
 
 	int intVal;
 	String name;
 	String displayName;
+	String targetFieldName;
+	String medianFieldName;
 
 	public int getIntVal() {
 		return intVal;
@@ -39,10 +41,20 @@ public enum Property_Metrics {
 		return modBean.getField(getName(), EnergyStarUtil.ENERGY_STAR_PROPERTY_DATA_MODULE_NAME);
 	}
 
-	private Property_Metrics(int intVal, String name,String displayName) {
+	private Property_Metrics(int intVal, String name,String displayName,String targetFieldName,String medianFieldName) {
 		this.intVal = intVal;
 		this.name = name;
 		this.displayName = displayName;
+		this.targetFieldName = targetFieldName;
+		this.medianFieldName = medianFieldName;
+	}
+
+	public String getTargetFieldName() {
+		return targetFieldName;
+	}
+
+	public String getMedianFieldName() {
+		return medianFieldName;
 	}
 
 	private static final Map<Integer, Property_Metrics> optionMap = Collections.unmodifiableMap(initTypeMap());

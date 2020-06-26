@@ -84,29 +84,6 @@ public class EnergyStarUtil {
 	
 	public static final String FIRST_DATA_RECIEVIED_TIME = "firstDataRecievedTime";
 	
-	public static final Map<Integer,Map<Integer,Double>> NATIONAL_MEDIAN = new HashMap<>();
-	
-	static {
-		
-		Map<Integer,Double> scoreMap = new HashMap<>();
-		
-		scoreMap.put(Property_Metrics.SCORE.getIntVal(), 50.0);
-		scoreMap.put(Property_Metrics.SOURCE_EUI.getIntVal(), 116.4);
-		scoreMap.put(Property_Metrics.SITE_EUI.getIntVal(), 52.9);
-		scoreMap.put(Property_Metrics.COST.getIntVal(), 427744.71);
-		scoreMap.put(Property_Metrics.TOTAL_GHG_EMISSION.getIntVal(), 2167.4);
-		
-		NATIONAL_MEDIAN.put(Building_Type.OFFICE.getIntVal(), scoreMap);
-	}
-	
-	public static Double getNationalMedian(int buildingType, int propertyMetric) {
-		Map<Integer, Double> scoreMap = NATIONAL_MEDIAN.get(buildingType);
-		if(scoreMap != null) {
-			return scoreMap.get(propertyMetric);
-		}
-		return null;
-	}
-	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {
 		List<FacilioField> fields = FieldFactory.getEnergyStarCustomerFields();
@@ -308,8 +285,6 @@ public class EnergyStarUtil {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		Map<String, FacilioField> propertyMetricsfieldMap = FieldFactory.getAsMap(FieldFactory.getEnergyStarPropertyMetricsFields());
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(propertyData.getTableName())
@@ -341,16 +316,6 @@ public class EnergyStarUtil {
 			
 			Map<String,Object> dataValues = new HashMap<>();
 			
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(propertyMetricsfieldMap.get("propertyId"), property.getId()+"",NumberOperators.EQUALS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(propertyMetricsfieldMap.get("metric"), metric.getIntVal()+"",NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> props = EnergyStarUtil.fetchEnergyStarRelated(ModuleFactory.getEnergyStarPropertyMetricsModule(), FieldFactory.getEnergyStarPropertyMetricsFields(), criteria, null);
-			
-			EnergyStarPropertyMetricsContext mericContext = null;
-			if(props != null && !props.isEmpty()) {
-				mericContext = FieldUtil.getAsBeanFromMap(props.get(0), EnergyStarPropertyMetricsContext.class);
-			}
 			
 			if(lastMonthProps != null && !lastMonthProps.isEmpty() && lastMonthProps.get(0).get(metric.getName()) != null) {
 				dataValues.put("current", lastMonthProps.get(0).get(metric.getName()));
@@ -358,14 +323,12 @@ public class EnergyStarUtil {
 			if(baselineProps != null && !baselineProps.isEmpty() && baselineProps.get(0).get(metric.getName()) != null) {
 				dataValues.put("baseline", baselineProps.get(0).get(metric.getName()));
 			}
-			if(mericContext != null) {
-				if(mericContext.getTarget() != null) {
-					dataValues.put("target", mericContext.getTarget());
-				}
+			
+			if(metric.getTargetFieldName() != null && lastMonthProps.get(0).get(metric.getTargetFieldName()) != null) {
+				dataValues.put("target",  lastMonthProps.get(0).get(metric.getTargetFieldName()));
 			}
-			Double nationalMedian = EnergyStarUtil.getNationalMedian(property.getBuildingType(), metric.getIntVal());
-			if(nationalMedian != null) {
-				dataValues.put("median", nationalMedian);
+			if(metric.getMedianFieldName() != null && lastMonthProps.get(0).get(metric.getMedianFieldName()) != null) {
+				dataValues.put("median", lastMonthProps.get(0).get(metric.getMedianFieldName()));
 			}
 			
 			if(!dataValues.isEmpty()) {
@@ -391,7 +354,7 @@ public class EnergyStarUtil {
 				max = val;
 			}
 		}
-		double maxValue = max + (max * 20/100);
+		double maxValue = max;
 		
 		values.put("max", max);
 		values.put("maxValue", maxValue);

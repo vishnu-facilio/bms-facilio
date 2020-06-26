@@ -6049,6 +6049,8 @@
 			class="com.facilio.energystar.action.EnergyStarAction" method="confirmPendingShares" />
 		<action name="addProperty"
 			class="com.facilio.energystar.action.EnergyStarAction" method="addEnergyStarProperty" />
+		<action name="addEnergyStarMeter"
+			class="com.facilio.energystar.action.EnergyStarAction" method="addEnergyStarMeter" />
 		<action name="updateProperty"
 			class="com.facilio.energystar.action.EnergyStarAction" method="updateEnergyStarProperty" />
 		<action name="deleteProperty"

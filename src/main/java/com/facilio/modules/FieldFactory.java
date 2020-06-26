@@ -8292,19 +8292,6 @@ public class FieldFactory {
         return fields;
     }
     
-    public static List<FacilioField> getEnergyStarPropertyMetricsFields() {
-        List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getEnergyStarPropertyMetricsModule();
-
-        fields.add(getIdField(module));
-        fields.add(getField("propertyId", "PROPERTY_ID", module, FieldType.NUMBER));
-        fields.add(getField("metric", "METRIC_ID", module, FieldType.NUMBER));
-        fields.add(getField("target", "TARGET", module, FieldType.STRING));
-        fields.add(getField("nationalMedian", "NATIONAL_MEDIAN", module, FieldType.STRING));
-        
-        return fields;
-    }
-    
     public static List<FacilioField> getEnergyStarPropertyUseFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getEnergyStarPropertyUseModule();
