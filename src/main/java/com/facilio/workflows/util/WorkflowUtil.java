@@ -483,6 +483,12 @@ public class WorkflowUtil {
 			validateWorkflow(workflowContext);
 		}
 		
+		if(workflowContext.isV2Script()) {
+			if(!workflowContext.validateWorkflow()) {
+				throw new Exception("Syntax Error in Workflow Script");
+			}
+		}
+		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
