@@ -61,8 +61,16 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 				if (workorder == null) {
 					workorder = new WorkOrderContext();
 				}
-				workorder.setSubject(baseAlarm.getSubject());
-				workorder.setDescription(baseAlarm.getDescription());
+				if (workorder.getSubject() == null) {
+					workorder.setSubject(baseAlarm.getSubject());
+				}
+				if (workorder.getDescription() == null) {
+					if (baseAlarm.getLastOccurrence() != null && baseAlarm.getLastOccurrence().getProblem() != null) {
+						workorder.setDescription(baseAlarm.getLastOccurrence().getProblem());
+					} else {
+						workorder.setDescription(baseAlarm.getDescription());
+					}
+				}
 				workorder.setSourceType(SourceType.ALARM);
 				workorder.setResource(baseAlarm.getResource());
 				workorder.setScheduledStart(baseAlarm.getLastOccurredTime());
