@@ -191,8 +191,8 @@ public class ColumnFactory {
 		columnMap.put("people-default",getDefaultPeopleColumns());
 		columnMap.put("client-default", getDefaultClientColumns());
 
-		columnMap.put("quotation-default", getDefaultQuotationColumns());
-		columnMap.put("quotationterms-default", getDefaultQuotationTermsColumns());
+		columnMap.put("quote-default", getDefaultQuotationColumns());
+		columnMap.put("quoteterms-default", getDefaultQuotationTermsColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -1444,6 +1444,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("adjustmentsCost", "Adjustments Cost"));
 		columns.add(new ViewField("miscellaneousCharges", "Miscellaneous Charges"));
 
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("workorder", "Workorder"));
 		columns.add(new ViewField("moduleState", "Status"));
 
 

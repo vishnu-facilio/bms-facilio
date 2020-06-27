@@ -696,4 +696,39 @@ public class V3WorkOrderContext extends V3TicketContext {
     public void setTasksList(List<V3TaskContext> tasksList) {
         this.tasksList = tasksList;
     }
+
+    public Boolean getIsQuotationNeeded() {
+        return isQuotationNeeded;
+    }
+
+    public void setIsQuotationNeeded(Boolean quotationNeeded) {
+        isQuotationNeeded = quotationNeeded;
+    }
+
+    public Boolean isQuotationNeeded() {
+        if(isQuotationNeeded != null) {
+            return isQuotationNeeded.booleanValue();
+        }
+        return false;
+    }
+
+    private Boolean isQuotationNeeded;
+
+    public Boolean getIsQuotationApproved() {
+        return isQuotationApproved;
+    }
+
+    public void setIsQuotationApproved(Boolean quotationApproved) {
+        isQuotationApproved = quotationApproved;
+    }
+
+    public Boolean isQuotationApproved() {
+        if(isQuotationApproved != null) {
+            return isQuotationApproved.booleanValue();
+        }
+        return false;
+    }
+
+    private Boolean isQuotationApproved;
+
 }
