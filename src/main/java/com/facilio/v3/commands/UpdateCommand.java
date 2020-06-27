@@ -2,6 +2,7 @@ package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -13,7 +14,6 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,6 @@ public class UpdateCommand extends FacilioCommand {
             fields = modBean.getAllFields(moduleName);
         }
 
-        Map<Long, List<UpdateChangeSet>> allChangesets = new HashMap<>();
         int totalCount = 0;
 
         for (V3Context record: recordMap.get(module.getName())) {
@@ -60,11 +59,10 @@ public class UpdateCommand extends FacilioCommand {
             updateBuilder.ignoreSplNullHandling();
             totalCount += updateBuilder.update(record);
             Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
-            allChangesets.putAll(changeSet);
+            CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
         }
 
         context.put(Constants.ROWS_UPDATED, totalCount);
-        context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, allChangesets);
 
         return false;
     }

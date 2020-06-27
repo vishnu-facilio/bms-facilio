@@ -2,11 +2,15 @@ package com.facilio.v3.context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -158,6 +162,22 @@ public class Constants {
 
     public static void setCountMap(Context context, Map<String, Integer> countMap) {
         context.put(COUNT_MAP, countMap);
+    }
+    
+    public static Map<Long, List<UpdateChangeSet>> getModuleChangeSets(Context context, String moduleName) {
+        Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.getOrDefault(FacilioConstants.ContextNames.CHANGE_SET_MAP, null);
+        if (MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
+            return allChangeSet.get(moduleName);
+        }
+        return new HashMap<>();
+    }
+
+    public static List<UpdateChangeSet> getRecordChangeSets(Context context, String moduleName, Long recordId) {
+        Map<Long, List<UpdateChangeSet>> moduleChangeSet = getModuleChangeSets(context,moduleName);
+        if (moduleChangeSet.containsKey(recordId)) {
+            return moduleChangeSet.get(recordId);
+        }
+        return new ArrayList<>();
     }
 
 }

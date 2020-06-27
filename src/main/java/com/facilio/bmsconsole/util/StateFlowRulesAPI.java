@@ -186,9 +186,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 		updateBuilder.updateViaMap(prop);
 		Map<Long, List<UpdateChangeSet>> changeSet = updateBuilder.getChangeSet();
-		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = new HashMap<>();
-		changeSetMap.put(module.getName(), changeSet);
-		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSetMap);
+		CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,module.getName());
 
 		if (oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();

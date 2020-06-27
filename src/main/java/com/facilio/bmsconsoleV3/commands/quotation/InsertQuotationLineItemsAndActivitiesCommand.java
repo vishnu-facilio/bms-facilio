@@ -6,10 +6,10 @@ import com.facilio.bmsconsole.activity.QuotationActivityType;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -83,24 +83,18 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     info.put("quotationId", oldRecordId);
                     CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info, (FacilioContext) context);
                 } else if (quotationId != null && quotationId > 0) {
-                    Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
-                    if (MapUtils.isNotEmpty(changeSet)) {
-                        List<UpdateChangeSet> updatedSet = changeSet.get(quotationId);
-                        if (CollectionUtils.isNotEmpty(updatedSet)) {
-                            Boolean addedActivity = false;
-                            FacilioField moduleStateField = modBean.getField(FacilioConstants.ContextNames.MODULE_STATE, moduleName);
-                            FacilioField approvalStateField = modBean.getField(FacilioConstants.ContextNames.APPROVAL_STATUS, moduleName);
-                            FacilioField totalCostField = modBean.getField(FacilioConstants.ContextNames.TOTAL_COST, moduleName);
-                            List<Long> updatedFieldIdsList = updatedSet.stream().map(change -> change.getFieldId()).collect(Collectors.toList());
-                            if ((updatedFieldIdsList.contains(moduleStateField.getFieldId()) || updatedFieldIdsList.contains(approvalStateField.getFieldId()))) {
-                                addedActivity = true;
-                            } else if (updatedFieldIdsList.contains(totalCostField.getFieldId())) {
+                    List<UpdateChangeSet> updatedSet = Constants.getRecordChangeSets(context, moduleName, quotationId);
+                    if (CollectionUtils.isNotEmpty(updatedSet)) {
+                        FacilioField moduleStateField = modBean.getField(FacilioConstants.ContextNames.MODULE_STATE, moduleName);
+                        FacilioField approvalStateField = modBean.getField(FacilioConstants.ContextNames.APPROVAL_STATUS, moduleName);
+                        FacilioField totalCostField = modBean.getField(FacilioConstants.ContextNames.TOTAL_COST, moduleName);
+                        List<Long> updatedFieldIdsList = updatedSet.stream().map(change -> change.getFieldId()).collect(Collectors.toList());
+                        if (!((updatedFieldIdsList.contains(moduleStateField.getFieldId()) || updatedFieldIdsList.contains(approvalStateField.getFieldId())) && updatedFieldIdsList.size() == 1)) {
+                            if (updatedFieldIdsList.contains(totalCostField.getFieldId())) {
                                 JSONObject info = new JSONObject();
                                 info.put(FacilioConstants.ContextNames.TOTAL_COST, quotation.getTotalCost());
                                 CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
-                                addedActivity = true;
-                            }
-                            if (!addedActivity) {
+                            } else {
                                 JSONObject info = new JSONObject();
                                 CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.UPDATE, info, (FacilioContext) context);
                             }

@@ -65,7 +65,7 @@ public class SaveCommand extends FacilioCommand {
 
         Map<Long, List<UpdateChangeSet>> changeSet = insertRecordBuilder.getChangeSet();
 
-        context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSet);
+        CommonCommandUtil.appendChangeSetMapToContext(context,changeSet,moduleName);
 
         return false;
     }
