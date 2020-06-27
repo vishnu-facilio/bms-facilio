@@ -103,7 +103,11 @@ import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
+import com.facilio.workflowv2.contexts.Value;
+import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
@@ -1995,13 +1999,33 @@ public class WorkflowUtil {
 				}
 			}
 		}
-		if(objects == null) {
-			LOGGER.fine("function params--- IS NULL");
+		if(defaultFunctions != null) {
+			if(objects == null) {
+				LOGGER.fine("function params--- IS NULL");
+			}
+			else {
+				LOGGER.fine("function params---"+Arrays.toString(objects));
+			}
+			return defaultFunctions.execute(globalParams, objects);
 		}
 		else {
-			LOGGER.fine("function params---"+Arrays.toString(objects));
+			
+			List<Object> paramValues = new ArrayList<>();
+			
+			if(objects != null) {
+				for(int i=0;i<objects.length;i++) {
+					paramValues.add(objects[i]);
+				}
+			}
+			
+			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(workflowFunctionContext.getNameSpace(), workflowFunctionContext.getFunctionName());
+			wfContext.setParams(paramValues);
+			wfContext.setGlobalParameters(globalParams);
+			
+			Object res = wfContext.executeWorkflow();
+			
+			return res;
 		}
-		return defaultFunctions.execute(globalParams, objects);
 	}
 	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
