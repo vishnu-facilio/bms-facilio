@@ -17,7 +17,6 @@ public class Constants {
     public static final String FILTER_CRITERIA = "filterCriteria";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String MODULE_BEAN = "moduleBean";
-    public static final String RECORD_ID = "recordId";
     public static final String WITH_COUNT = "withCount";
     public static final String COUNT = "count";
     public static final String BEAN_CLASS = "beanClass";
@@ -124,6 +123,41 @@ public class Constants {
 
     public static Map getQueryParams(Context context) {
         return (Map) context.get(QUERY_PARAMS);
+    }
+
+    public static final String RECORD_ID = "recordId";
+    public static long getRecordId(Context context) {
+        return (long) context.get(RECORD_ID);
+    }
+
+    public static void setRecordId(Context context, long recordId) {
+        context.put(RECORD_ID, recordId);
+    }
+
+    public static final String RECORD_ID_LIST = FacilioConstants.ContextNames.RECORD_ID_LIST;
+    public static List<Long> getRecordIds(Context context) {
+        return (List<Long>) context.get(RECORD_ID_LIST);
+    }
+
+    public static void setRecordIds(Context context, List<Long> recordIds) {
+        context.put(RECORD_ID_LIST, recordIds);
+    }
+
+    public static void setRowsUpdated(Context context, int no) {
+        context.put(ROWS_UPDATED, no);
+    }
+
+    public static Integer getRowsUpdated(Context context) {
+        return (Integer) context.get(ROWS_UPDATED);
+    }
+
+    public static final String COUNT_MAP = "countMap";
+    public static Map<String, Integer> getCountMap(Context context) {
+        return (Map<String, Integer>) context.get(COUNT_MAP);
+    }
+
+    public static void setCountMap(Context context, Map<String, Integer> countMap) {
+        context.put(COUNT_MAP, countMap);
     }
 
 }

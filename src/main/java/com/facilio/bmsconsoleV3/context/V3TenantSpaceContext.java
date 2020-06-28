@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 
 public class V3TenantSpaceContext extends V3Context {

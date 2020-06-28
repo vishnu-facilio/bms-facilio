@@ -105,6 +105,11 @@
                 method="patch">
         </action>
 
+        <action name="delete"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="delete">
+        </action>
+
         <action name="files"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="files">

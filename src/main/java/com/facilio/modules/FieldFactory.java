@@ -891,6 +891,8 @@ public class FieldFactory {
         }
         field.add(childModuleId);
 
+        field.add(getField("deleteType", "DELETE_TYPE", module, FieldType.NUMBER));
+
 
         return field;
     }

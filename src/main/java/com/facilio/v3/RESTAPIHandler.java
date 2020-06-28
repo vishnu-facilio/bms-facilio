@@ -512,7 +512,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         transactionChain.execute();
 
-        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
+        Integer count = Constants.getRowsUpdated(context);
 
         if (count == null || count <= 0) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
@@ -534,6 +534,47 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         Map<String, Long> attachmentNameVsId = Constants.getAttachmentNameVsId(context);
         this.setData("attachments", FieldUtil.getAsJSON(attachmentNameVsId));
+    }
+
+    private void deleteHandler(String moduleName, Map<String, Object> deleteObj, Map<String, Object> bodyParams) throws Exception {
+        V3Config v3Config = getV3Config(moduleName);
+
+        Command initCommand = new DefaultDeleteInit();
+        Command beforeDeleteCommand = null;
+        Command afterDeleteCommand = null;
+        Command afterTransactionCommand = null;
+
+        if (v3Config != null) {
+            V3Config.DeleteHandler deleteHandler = v3Config.getDeleteHandler();
+            if (deleteHandler != null) {
+                initCommand = deleteHandler.getInitCommand();
+                beforeDeleteCommand = deleteHandler.getBeforeDeleteCommand();
+                afterDeleteCommand = deleteHandler.getAfterDeleteCommand();
+                afterTransactionCommand = deleteHandler.getAfterTransactionCommand();
+            }
+        }
+
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+        addIfNotNull(transactionChain, initCommand);
+        addIfNotNull(transactionChain, beforeDeleteCommand);
+        transactionChain.addCommand(new DeleteCommand());
+        addIfNotNull(transactionChain, afterDeleteCommand);
+        addIfNotNull(transactionChain, afterTransactionCommand);
+
+        FacilioContext context = transactionChain.getContext();
+
+        Constants.setModuleName(context, moduleName);
+        Constants.setRawInput(context, deleteObj);
+        Constants.setBodyParams(context, bodyParams);
+        transactionChain.execute();
+
+        Map<String, Integer> countMap = Constants.getCountMap(context);
+
+        if (MapUtils.isEmpty(countMap)) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        this.setData(FieldUtil.getAsJSON(countMap));
     }
 
 
@@ -623,6 +664,25 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             //removing permission restricted fields
             removeRestrictedFields(this.getData(), this.getModuleName(), true);
             patchHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+            this.setMessage("Internal Server Error");
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
+        return SUCCESS;
+    }
+
+    public String delete() {
+        try {
+            deleteHandler(this.getModuleName(), this.getData(), this.getParams());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
