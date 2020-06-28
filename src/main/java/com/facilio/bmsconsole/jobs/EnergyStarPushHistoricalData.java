@@ -51,7 +51,7 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			
 			FacilioContext context = chain.getContext();
 			
-			long lastMonthEndTime = DateTimeUtil.getMonthStartTime()-1;
+			long lastMonthEndTime = DateTimeUtil.getMonthStartTime();
 			
 			if(endTime > lastMonthEndTime) {
 				endTime = lastMonthEndTime;
