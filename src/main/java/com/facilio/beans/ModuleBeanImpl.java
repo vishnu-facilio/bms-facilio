@@ -18,6 +18,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -206,6 +207,16 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 
+	private List<Pair<FacilioModule, Integer>> getSubModulesDeleteTypeFromRS(ResultSet rs) throws SQLException, Exception {
+		List<Pair<FacilioModule, Integer>> subModules = new ArrayList<>();
+		while(rs.next()) {
+			FacilioModule module = getMod(rs.getLong("CHILD_MODULE_ID"));
+			Integer deletType = rs.getInt("DELETE_TYPE");
+			subModules.add(Pair.of(module, deletType));
+		}
+		return subModules;
+	}
+
 	private List<FacilioModule> getSubModulesFromRS(ResultSet rs) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
 		while(rs.next()) {
@@ -297,6 +308,39 @@ public class ModuleBeanImpl implements ModuleBean {
 			joiner.add(String.valueOf(type.getValue()));
 		}
 		return joiner.toString();
+	}
+
+	@Override
+	public List<Pair<FacilioModule, Integer>> getSubModulesWithDeleteType(long moduleId, FacilioModule.ModuleType... types) throws Exception {
+		if (types == null || types.length == 0) {
+			return null;
+		}
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.deletetype"), getTypes(types));
+		ResultSet rs = null;
+
+		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, moduleId);
+			pstmt.setLong(3, getOrgId());
+			pstmt.setLong(4, moduleId);
+			pstmt.setLong(5, getOrgId());
+			rs = pstmt.executeQuery();
+			return getSubModulesDeleteTypeFromRS(rs);
+		}
+		catch(Exception e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+		finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				}
+				catch(SQLException e) {
+					log.info("Exception occurred ", e);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -1616,5 +1660,24 @@ public class ModuleBeanImpl implements ModuleBean {
 		return permissibleFieldIds;
 
 	}
+
+	@Override
+    public Map<FacilioModule, List<FacilioField>> getRelatedLookupFields(long moduleId) throws Exception {
+		List<FacilioModule> subModules = getSubModules(moduleId,
+						FacilioModule.ModuleType.CUSTOM, FacilioModule.ModuleType.BASE_ENTITY);
+		Map<FacilioModule, List<FacilioField>> relatedList = null;
+		if (CollectionUtils.isNotEmpty(subModules)) {
+				relatedList = new HashMap<>();
+				for (FacilioModule subModule : subModules) {
+						List<FacilioField> allFields = getAllFields(subModule.getName());
+						List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
+						if (CollectionUtils.isNotEmpty(fields)) {
+								relatedList.put(subModule, fields);
+							}
+					}
+			}
+		return relatedList;
+	}
+
 
 }
