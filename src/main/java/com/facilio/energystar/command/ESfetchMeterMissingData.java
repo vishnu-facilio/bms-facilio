@@ -1,5 +1,6 @@
 package com.facilio.energystar.command;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,9 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 				
 				DateRange currentDateRange = null;
 				long toalDataMissingTime = 0;
-				for(EnergyStarMeterDataContext data : dataList) {
+				for(int i=0;i< dataList.size();i++) {
+					
+					EnergyStarMeterDataContext data = dataList.get(i);
 					
 					if(currentDateRange != null) {
 						
@@ -93,6 +96,27 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 					currentDateRange.setEndTime(data.getToDate());
 					
 					dataAvailableRanges.add(currentDateRange);
+					
+					if(i == dataList.size()-1) {
+						long getLastendTime = data.getToDate();
+						ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+						int currentDate = zdt.getDayOfMonth();
+						
+						long expectedEndTime = 0l;
+						if(currentDate < EnergyStarUtil.ENERGY_STAR_DATA_PUSHING_DATE) {
+							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(-1), -1);
+						}
+						else {
+							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(), -1);
+						}
+						if(getLastendTime < expectedEndTime) {
+							DateRange currentDateRange1 = new DateRange();
+							currentDateRange1.setStartTime(getLastendTime);
+							currentDateRange1.setEndTime(expectedEndTime);
+							
+							dataMissingRanges.add(currentDateRange1);
+						}
+					}
 				}
 				
 				fillMissingDateRangeString(meter, toalDataMissingTime);

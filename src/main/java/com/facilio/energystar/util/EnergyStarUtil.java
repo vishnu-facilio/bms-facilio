@@ -84,6 +84,8 @@ public class EnergyStarUtil {
 	
 	public static final String FIRST_DATA_RECIEVIED_TIME = "firstDataRecievedTime";
 	
+	public static final int ENERGY_STAR_DATA_PUSHING_DATE = 10;
+	
 	
 	public static EnergyStarCustomerContext getEnergyStarCustomer() throws Exception {
 		List<FacilioField> fields = FieldFactory.getEnergyStarCustomerFields();
