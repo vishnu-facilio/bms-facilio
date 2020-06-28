@@ -71,6 +71,28 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 					
 					EnergyStarMeterDataContext data = dataList.get(i);
 					
+					System.out.println("i -- "+i);
+					if(i == dataList.size()-1) {
+						long getLastendTime = data.getToDate();
+						ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+						int currentDate = zdt.getDayOfMonth();
+						
+						long expectedEndTime = 0l;
+						if(currentDate < EnergyStarUtil.ENERGY_STAR_DATA_PUSHING_DATE) {
+							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(-1), -1);
+						}
+						else {
+							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(), -1);
+						}
+						if(getLastendTime < expectedEndTime) {
+							DateRange currentDateRange1 = new DateRange();
+							currentDateRange1.setStartTime(DateTimeUtil.addDays(getLastendTime, 1));
+							currentDateRange1.setEndTime(expectedEndTime);
+							
+							dataMissingRanges.add(currentDateRange1);
+						}
+					}
+					
 					if(currentDateRange != null) {
 						
 						long lastEndtime = DateTimeUtil.addDays(currentDateRange.getEndTime(), 1);
@@ -97,26 +119,6 @@ public class ESfetchMeterMissingData extends FacilioCommand {
 					
 					dataAvailableRanges.add(currentDateRange);
 					
-					if(i == dataList.size()-1) {
-						long getLastendTime = data.getToDate();
-						ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
-						int currentDate = zdt.getDayOfMonth();
-						
-						long expectedEndTime = 0l;
-						if(currentDate < EnergyStarUtil.ENERGY_STAR_DATA_PUSHING_DATE) {
-							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(-1), -1);
-						}
-						else {
-							expectedEndTime = DateTimeUtil.addDays(DateTimeUtil.getMonthStartTime(), -1);
-						}
-						if(getLastendTime < expectedEndTime) {
-							DateRange currentDateRange1 = new DateRange();
-							currentDateRange1.setStartTime(getLastendTime);
-							currentDateRange1.setEndTime(expectedEndTime);
-							
-							dataMissingRanges.add(currentDateRange1);
-						}
-					}
 				}
 				
 				fillMissingDateRangeString(meter, toalDataMissingTime);
