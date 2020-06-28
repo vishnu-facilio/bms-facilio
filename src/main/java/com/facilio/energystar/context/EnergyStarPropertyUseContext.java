@@ -58,8 +58,8 @@ public class EnergyStarPropertyUseContext {
 		
 		totalGrossFloorArea(1, "Total gross floor area","totalGrossFloorArea",FieldType.STRING,Building_Type.OFFICE,"ft\u00B2"),
 		numberOfComputers(2, "No. of computers","numberOfComputers",FieldType.STRING,Building_Type.OFFICE,null),
-		percentOfficeCooled(3, "Percent office cooled","percentOfficeCooled",FieldType.STRING,Building_Type.OFFICE,"%"),
-		percentOfficeHeated(4, "Percent office heated","percentOfficeHeated",FieldType.STRING,Building_Type.OFFICE,"%"),
+		percentOfficeCooled(3, "Percent office cooled","percentOfficeCooled",FieldType.STRING,Building_Type.OFFICE,null),
+		percentOfficeHeated(4, "Percent office heated","percentOfficeHeated",FieldType.STRING,Building_Type.OFFICE,null),
 		weeklyOperatingHours(5, "Weekly operating hours","weeklyOperatingHours",FieldType.STRING,Building_Type.OFFICE,null),
 		numberOfWorkers(6, "Number of workers","numberOfWorkers",FieldType.STRING,Building_Type.OFFICE,null),
 		;
