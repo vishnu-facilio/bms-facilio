@@ -532,6 +532,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         if (CollectionUtils.isEmpty(this.getFiles())) {
             LOGGER.log(Level.SEVERE, "files is empty");
+        } else {
+            LOGGER.log(Level.SEVERE, "files is not empty " + this.getFiles().size());
         }
 
         transactionChain.execute();
