@@ -5,10 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.EmployeeContext;
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -444,6 +441,43 @@ public class V3PeopleAPI {
         return user;
 
     }
+
+    public static void updateClientContactAppPortalAccess(V3ClientContactContext person, String linkName) throws Exception {
+
+        V3ClientContactContext existingPeople = (V3ClientContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CLIENT_CONTACT, person.getId(), V3ClientContactContext.class);
+
+        if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isClientPortalAccess())){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
+        }
+        if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
+            AppDomain appDomain = null;
+            long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+            appDomain = ApplicationApi.getAppDomainForApplication(appId);
+            if(appDomain != null) {
+                User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
+                if((linkName.equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP) && existingPeople.isClientPortalAccess())) {
+                    if(user != null) {
+                        user.setAppDomain(appDomain);
+                        user.setApplicationId(appId);
+                        ApplicationApi.addUserInApp(user, false);
+                    }
+                    else {
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, appDomain.getIdentifier());
+                    }
+                }
+                else {
+                    if(user != null) {
+                        ApplicationApi.deleteUserFromApp(user, appId);
+                    }
+                }
+            }
+            else {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
+            }
+
+        }
+    }
+
 
 
 }

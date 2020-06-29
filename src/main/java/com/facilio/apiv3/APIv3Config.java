@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
@@ -290,6 +292,21 @@ public class APIv3Config {
                     .afterSave(new UpdateEmployeePeopleAppPortalAccessCommandV3())
                 .list()
                 .summary()
+                .build();
+    }
+
+    @Module("clientcontact")
+    public static Supplier<V3Config> getClientContact() {
+        return () -> new V3Config(V3ClientContactContext.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getClientContactBeforeSaveChain())
+                .update()
+                    .beforeSave(new CheckforPeopleDuplicationCommandV3())
+                    .afterSave(new UpdateClientAppPortalAccessCommandV3())
+                .list()
+                    .beforeFetch(new LoadClientContactLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadClientContactLookupCommandV3())
                 .build();
     }
 

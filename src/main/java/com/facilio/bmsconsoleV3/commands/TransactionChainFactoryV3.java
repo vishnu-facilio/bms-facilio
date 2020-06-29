@@ -4,6 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
@@ -270,6 +272,20 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
         c.addCommand(new AddPeopleTypeForEmployeeCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getClientContactBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckforPeopleDuplicationCommandV3());
+        c.addCommand(new CheckForMandatoryClientIdCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getClientContactAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
+        c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         return c;
     }
 
