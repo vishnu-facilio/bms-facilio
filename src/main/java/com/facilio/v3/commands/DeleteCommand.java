@@ -45,6 +45,8 @@ public class DeleteCommand extends FacilioCommand {
         List<Pair<FacilioModule, Integer>> subModules = bean.getSubModulesWithDeleteType(module.getModuleId(),
                 FacilioModule.ModuleType.CUSTOM, FacilioModule.ModuleType.BASE_ENTITY);
 
+        count += deleteRows(module, recordIds);
+
         List<FacilioModule> cascadeModules = new ArrayList<>();
         List<FacilioModule> throwErrorModules = new ArrayList<>();
         for (Pair<FacilioModule, Integer> subModule: subModules) {
@@ -70,7 +72,6 @@ public class DeleteCommand extends FacilioCommand {
             }
             deleteModuleRecords(rowIds, cascadeModule.getName(), deleteCount);
         }
-        count += deleteRows(module, recordIds);
         deleteCount.put(moduleName, count);
     }
 
