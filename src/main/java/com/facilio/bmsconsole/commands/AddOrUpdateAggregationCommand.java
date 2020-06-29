@@ -15,6 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,7 @@ import java.util.List;
 public class AddOrUpdateAggregationCommand extends FacilioCommand {
 
     private static final long HALF_HOUR_IN_SECONDS = 30 * 60;
+    private static final String SCHEDULER = "AggregationJob";
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -93,6 +95,8 @@ public class AddOrUpdateAggregationCommand extends FacilioCommand {
                 builder.addRecords(FieldUtil.getAsMapList(columnList, AggregationColumnMetaContext.class));
                 builder.save();
             }
+
+            FacilioTimer.schedulePeriodicJob(aggregationMeta.getId(), SCHEDULER, 30, aggregationMeta.getInterval().intValue(), "facilio");
         }
         return false;
     }

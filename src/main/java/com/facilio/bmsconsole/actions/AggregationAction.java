@@ -38,7 +38,7 @@ public class AggregationAction extends FacilioAction {
 
     public String runAggregationJob() throws Exception {
         FacilioChain chain = FacilioChain.getTransactionChain();
-        chain.addCommand(new AggregationJob());
+//        chain.addCommand(new AggregationJob());
         Context context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, id);
 
