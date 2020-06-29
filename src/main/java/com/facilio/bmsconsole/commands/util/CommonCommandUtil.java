@@ -1037,7 +1037,7 @@ public class CommonCommandUtil {
 	}
 
 	public static void appendChangeSetMapToContext(Context context, Map<Long, List<UpdateChangeSet>> changeSet, String moduleName) {
-		Map<String, Map<Long, List<UpdateChangeSet>>> oldChangeSetMap = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.getOrDefault(FacilioConstants.ContextNames.CHANGE_SET_MAP, null);
+		Map<String, Map<Long, List<UpdateChangeSet>>> oldChangeSetMap = getChangeSetMap((FacilioContext)context);
 		if (MapUtils.isNotEmpty(oldChangeSetMap)) {
 			if (oldChangeSetMap.containsKey(moduleName)) {
 				Map<Long, List<UpdateChangeSet>> oldModuleChangeSetMap = oldChangeSetMap.get(moduleName);
