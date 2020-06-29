@@ -7,12 +7,14 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AttachmentCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(AttachmentCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
@@ -25,6 +27,7 @@ public class AttachmentCommand extends FacilioCommand {
 
         Map<String, Long> attachmentNameVsId = new HashMap<>();
 
+        LOGGER.log(Level.SEVERE,"attachment status " + (attachmentList != null && !attachmentList.isEmpty()));
         if (attachmentList != null && !attachmentList.isEmpty()) {
             for (int i=0; i< attachmentList.size(); i++) {
                 File file = attachmentList.get(i);
@@ -32,6 +35,7 @@ public class AttachmentCommand extends FacilioCommand {
                 String contentType = attachmentContentType.get(i);
                 int[] resize = {80, 120, 360};
                 long fileId = fs.addOrphanedFile(fileName, file, contentType, resize);
+                LOGGER.log(Level.SEVERE,"file id " + fileId);
                 attachmentNameVsId.put(fileName, fileId);
             }
 

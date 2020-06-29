@@ -333,8 +333,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
-
-
         FacilioContext context = transactionChain.getContext();
 
         if (module.isCustom()) {
