@@ -22,13 +22,16 @@ public class AddRequesterCommand extends FacilioCommand {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
+			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 			long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+			if((isPublicRequest == null || !isPublicRequest) && AccountUtil.getCurrentUser() != null){
+				appId = AccountUtil.getCurrentUser().getApplicationId();
+			}
 			AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			
 			if(appId > 0 && appDomain != null) {
 				
 				User portalUser = AccountUtil.getUserBean().getAppUserForUserName(requester.getUserName(), appId, orgid);
-				Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 				requester.setApplicationId(appId);
 				requester.setAppDomain(appDomain);
 			
