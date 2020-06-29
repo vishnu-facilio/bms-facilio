@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -18,6 +19,26 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	private User requestedBy;
 	
 	private User issuedToUser;
+
+	public WorkPermitTypeContext getWorkPermitType() {
+		return workPermitType;
+	}
+
+	public void setWorkPermitType(WorkPermitTypeContext workPermitType) {
+		this.workPermitType = workPermitType;
+	}
+
+	private WorkPermitTypeContext workPermitType;
+
+	public PeopleContext getPeople() {
+		return people;
+	}
+
+	public void setPeople(PeopleContext people) {
+		this.people = people;
+	}
+
+	private PeopleContext people;
 	
 	public User getIssuedToUser() {
 		return issuedToUser;

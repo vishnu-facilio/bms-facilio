@@ -1,9 +1,13 @@
 package com.facilio.bmsconsoleV3.context.workpermit;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.V3TicketContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -13,19 +17,19 @@ public class V3WorkPermitContext extends V3Context {
      */
     private static final long serialVersionUID = 1L;
 
-    private TicketContext ticket;
+    private V3TicketContext ticket;
     private String name;
     private String description;
     private User requestedBy;
     private User issuedToUser;
     private WorkType workType;
-    private VendorContext vendor;
+    private V3VendorContext vendor;
     private Boolean isRecurring;
     private BusinessHoursContext recurringInfo;
     private Long recurringInfoId;
     private Long expectedStartTime;
     private Long expectedEndTime;
-    private TenantContext tenant;
+    private V3TenantContext tenant;
     private ContactsContext vendorContact;
     private BaseSpaceContext space;
     private PermitType permitType;
@@ -111,11 +115,11 @@ public class V3WorkPermitContext extends V3Context {
         return false;
     }
 
-    public TicketContext getTicket() {
+    public V3TicketContext getTicket() {
         return ticket;
     }
 
-    public void setTicket(TicketContext ticket) {
+    public void setTicket(V3TicketContext ticket) {
         this.ticket = ticket;
     }
 
@@ -135,11 +139,11 @@ public class V3WorkPermitContext extends V3Context {
         this.description = description;
     }
 
-    public VendorContext getVendor() {
+    public V3VendorContext getVendor() {
         return vendor;
     }
 
-    public void setVendor(VendorContext vendor) {
+    public void setVendor(V3VendorContext vendor) {
         this.vendor = vendor;
     }
 
@@ -185,11 +189,11 @@ public class V3WorkPermitContext extends V3Context {
     }
 
 
-    public TenantContext getTenant() {
+    public V3TenantContext getTenant() {
         return tenant;
     }
 
-    public void setTenant(TenantContext tenant) {
+    public void setTenant(V3TenantContext tenant) {
         this.tenant = tenant;
     }
 

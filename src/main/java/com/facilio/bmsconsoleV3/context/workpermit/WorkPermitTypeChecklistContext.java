@@ -10,9 +10,27 @@ public class WorkPermitTypeChecklistContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private String item;
+    private String description;
     private WorkPermitTypeContext workPermitType;
     private ValidationType validationType;
-    private WorkPermitTypeChecklistCategoryContext checklist;
+    private WorkPermitTypeChecklistCategoryContext category;
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public WorkPermitTypeChecklistCategoryContext getCategory() {
+        return category;
+    }
+
+    public void setCategory(WorkPermitTypeChecklistCategoryContext category) {
+        this.category = category;
+    }
 
     public Integer getValidationType() {
         return validationType.getIndex();
@@ -26,14 +44,6 @@ public class WorkPermitTypeChecklistContext extends V3Context {
         if (validationType != null) {
             this.validationType = ValidationType.valueOf(validationType);
         }
-    }
-
-    public WorkPermitTypeChecklistCategoryContext getChecklist() {
-        return checklist;
-    }
-
-    public void setChecklist(WorkPermitTypeChecklistCategoryContext checklist) {
-        this.checklist = checklist;
     }
 
     public String getItem() {
