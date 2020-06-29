@@ -625,7 +625,6 @@ public class ModuleAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
-		dataList.execute();
 		
 		if (getClientCriteria() != null) {
 			JSONParser parser = new JSONParser();
@@ -633,6 +632,7 @@ public class ModuleAction extends FacilioAction {
 			Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
 			context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
 		}
+		dataList.execute();
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
  		
