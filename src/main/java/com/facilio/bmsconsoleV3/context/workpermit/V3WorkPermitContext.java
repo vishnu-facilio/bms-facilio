@@ -4,8 +4,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.modules.FacilioEnum;
@@ -29,7 +29,7 @@ public class V3WorkPermitContext extends V3Context {
     private Long recurringInfoId;
     private Long expectedStartTime;
     private Long expectedEndTime;
-    private V3TenantContext tenant;
+    private TenantContext tenant;
     private ContactsContext vendorContact;
     private BaseSpaceContext space;
     private PermitType permitType;
@@ -189,11 +189,11 @@ public class V3WorkPermitContext extends V3Context {
     }
 
 
-    public V3TenantContext getTenant() {
+    public TenantContext getTenant() {
         return tenant;
     }
 
-    public void setTenant(V3TenantContext tenant) {
+    public void setTenant(TenantContext tenant) {
         this.tenant = tenant;
     }
 
