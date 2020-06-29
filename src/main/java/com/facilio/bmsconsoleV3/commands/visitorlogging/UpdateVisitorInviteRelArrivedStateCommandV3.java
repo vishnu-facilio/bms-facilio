@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.visitorlogging;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
@@ -49,7 +50,7 @@ public class UpdateVisitorInviteRelArrivedStateCommandV3 extends FacilioCommand 
                 }
             }
             moduleChangeSetMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, changeSet);
-            context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, moduleChangeSetMap);
+            CommonCommandUtil.appendChangeSetMapToContext(context, changeSet, moduleName);
         }
         return false;
     }

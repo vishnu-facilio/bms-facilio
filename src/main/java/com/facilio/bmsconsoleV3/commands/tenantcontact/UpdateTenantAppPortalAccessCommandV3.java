@@ -1,10 +1,12 @@
 package com.facilio.bmsconsoleV3.commands.tenantcontact;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.v3.context.Constants;
@@ -22,14 +24,14 @@ public class UpdateTenantAppPortalAccessCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TenantContactContext> tenantContacts = recordMap.get(moduleName);
 
-        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+        Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
         if(CollectionUtils.isNotEmpty(tenantContacts) && MapUtils.isNotEmpty(changeSet)) {
             for(V3TenantContactContext tc : tenantContacts) {
                 List<UpdateChangeSet> changes = changeSet.get(tc.getId());
-                if(CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isTenantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
+                if (CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isTenantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
                     V3PeopleAPI.updateTenantContactAppPortalAccess(tc, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
                 }
-                if(CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
+                if (CollectionUtils.isNotEmpty(changes) && V3RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.TENANT_CONTACT)) {
                     V3PeopleAPI.updatePeoplePortalAccess(tc, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
                 }
             }

@@ -23,7 +23,7 @@ public class UpdateEmployeePeopleAppPortalAccessCommandV3 extends FacilioCommand
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3EmployeeContext> employees = recordMap.get(moduleName);
 
-        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
+        Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
 
         if(CollectionUtils.isNotEmpty(employees) && MapUtils.isNotEmpty(changeSet)) {
             for(V3EmployeeContext emp : employees) {

@@ -45,10 +45,9 @@ public class FillContextAfterWorkorderAddCommandV3 extends FacilioCommand {
             }
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrder.getId()));
-            Map<Long, List<UpdateChangeSet>> changeSets = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
-            if (MapUtils.isNotEmpty(changeSets)) {
-                context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSets);
-                addActivity(context, changeSets, workOrder, modBean, moduleName);
+            Map<Long, List<UpdateChangeSet>> moduleChangeSet = Constants.getModuleChangeSets(context);
+            if (MapUtils.isNotEmpty(moduleChangeSet)) {
+                addActivity(context, moduleChangeSet, workOrder, modBean, moduleName);
             }
             context.put(FacilioConstants.ContextNames.RECORD, workOrder);
         }

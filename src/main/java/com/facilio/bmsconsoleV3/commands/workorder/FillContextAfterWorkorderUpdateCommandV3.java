@@ -21,6 +21,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         EventType activityType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 
-        Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+        Map<Long, List<UpdateChangeSet>> moduleChangeSet = Constants.getModuleChangeSets(context);
 
         if(CollectionUtils.isNotEmpty(wos)) {
             V3WorkOrderContext workOrder = wos.get(0);
@@ -59,7 +60,10 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
             }
 
-            addActivity(workOrder, oldWos, changeSet, recordIds, modBean, moduleName, context);
+            if(MapUtils.isNotEmpty(moduleChangeSet)){
+                addActivity(workOrder, oldWos, moduleChangeSet, recordIds, modBean, moduleName, context);
+            }
+
         }
 
         return false;

@@ -83,7 +83,7 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     info.put("quotationId", oldRecordId);
                     CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info, (FacilioContext) context);
                 } else if (quotationId != null && quotationId > 0) {
-                    List<UpdateChangeSet> updatedSet = Constants.getRecordChangeSets(context, moduleName, quotationId);
+                    List<UpdateChangeSet> updatedSet = Constants.getRecordChangeSets(context, quotationId);
                     if (CollectionUtils.isNotEmpty(updatedSet)) {
                         FacilioField moduleStateField = modBean.getField(FacilioConstants.ContextNames.MODULE_STATE, moduleName);
                         FacilioField approvalStateField = modBean.getField(FacilioConstants.ContextNames.APPROVAL_STATUS, moduleName);

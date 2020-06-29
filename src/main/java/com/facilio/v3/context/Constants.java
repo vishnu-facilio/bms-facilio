@@ -1,5 +1,7 @@
 package com.facilio.v3.context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
@@ -164,17 +166,18 @@ public class Constants {
         context.put(COUNT_MAP, countMap);
     }
     
-    public static Map<Long, List<UpdateChangeSet>> getModuleChangeSets(Context context, String moduleName) {
-        Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = (Map<String, Map<Long, List<UpdateChangeSet>>>) context.getOrDefault(FacilioConstants.ContextNames.CHANGE_SET_MAP, null);
-        if (MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
-            return allChangeSet.get(moduleName);
+    public static Map<Long, List<UpdateChangeSet>> getModuleChangeSets(Context context) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = CommonCommandUtil.getChangeSetMap((FacilioContext)context);
+        if(MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
+            allChangeSet.get(moduleName);
         }
         return new HashMap<>();
     }
 
-    public static List<UpdateChangeSet> getRecordChangeSets(Context context, String moduleName, Long recordId) {
-        Map<Long, List<UpdateChangeSet>> moduleChangeSet = getModuleChangeSets(context,moduleName);
-        if (moduleChangeSet.containsKey(recordId)) {
+    public static List<UpdateChangeSet> getRecordChangeSets(Context context, Long recordId) {
+        Map<Long,List<UpdateChangeSet>> moduleChangeSet = getModuleChangeSets(context);
+        if(MapUtils.isNotEmpty(moduleChangeSet) && moduleChangeSet.containsKey(recordId)){
             return moduleChangeSet.get(recordId);
         }
         return new ArrayList<>();
