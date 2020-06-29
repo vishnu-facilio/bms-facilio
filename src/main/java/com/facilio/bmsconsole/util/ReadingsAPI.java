@@ -798,7 +798,7 @@ public class ReadingsAPI {
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
 									if (AccountUtil.getCurrentOrg().getId() == 343l) {
-										LOGGER.info("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
+										LOGGER.info("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId + ", fieldId: " +fieldId+ ", Meta: "+meta);
 									}
 									continue;
 								}
