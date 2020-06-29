@@ -343,10 +343,9 @@ public class LoginAction extends FacilioAction {
 		//temp handling to show portal related info in client..will need portal info for each app
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String appDomain = request.getServerName();
-		long appId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
-		if(appId > 0) {
-			ApplicationContext app = ApplicationApi.getApplicationForId(appId);
-			account.put("application", app);
+		AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
+		if(appDomainObj != null) {
+			account.put("appDomain", appDomainObj);
 		}
 
 		account.put("org", AccountUtil.getCurrentOrg());
