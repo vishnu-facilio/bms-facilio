@@ -41,6 +41,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -63,12 +64,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ConnectedDeviceContext;
-import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
-import com.facilio.bmsconsole.context.FeedbackKioskContext;
-import com.facilio.bmsconsole.context.SmartControlKioskContext;
-import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -343,6 +339,16 @@ public class LoginAction extends FacilioAction {
 	public String portalAccount() throws Exception {
 
 		account = new HashMap<>();
+
+		//temp handling to show portal related info in client..will need portal info for each app
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String appDomain = request.getServerName();
+		long appId = ApplicationApi.getApplicationIdForAppDomain(appDomain);
+		if(appId > 0) {
+			ApplicationContext app = ApplicationApi.getApplicationForId(appId);
+			account.put("application", app);
+		}
+
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("portalInfo", AccountUtil.getPortalInfo());

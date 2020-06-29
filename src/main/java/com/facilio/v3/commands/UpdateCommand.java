@@ -34,6 +34,7 @@ public class UpdateCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
 
+        Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         List<FacilioField> fields = (List<FacilioField>) context.get(Constants.PATCH_FIELDS);
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
@@ -54,7 +55,7 @@ public class UpdateCommand extends FacilioCommand {
                     .fields(fields)
                     .andCondition(CriteriaAPI.getIdCondition(recordId, module));
 
-            updateBuilder.withChangeSet(V3Context.class);
+            updateBuilder.withChangeSet(beanClass);
 
             updateBuilder.ignoreSplNullHandling();
             totalCount += updateBuilder.update(record);
