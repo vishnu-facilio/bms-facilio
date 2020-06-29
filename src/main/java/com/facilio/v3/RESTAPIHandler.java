@@ -530,12 +530,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setAttachmentContentTypes(context, this.getContentTypes());
         Constants.setAttachmentFileList(context, this.getFiles());
 
-        if (CollectionUtils.isEmpty(this.getFiles())) {
-            LOGGER.log(Level.SEVERE, "files is empty");
-        } else {
-            LOGGER.log(Level.SEVERE, "files is not empty " + this.getFiles().size());
-        }
-
         transactionChain.execute();
 
         Map<String, Long> attachmentNameVsId = Constants.getAttachmentNameVsId(context);

@@ -27,7 +27,6 @@ public class AttachmentCommand extends FacilioCommand {
 
         Map<String, Long> attachmentNameVsId = new HashMap<>();
 
-        LOGGER.log(Level.SEVERE,"attachment status " + (attachmentList != null && !attachmentList.isEmpty()));
         if (attachmentList != null && !attachmentList.isEmpty()) {
             for (int i=0; i< attachmentList.size(); i++) {
                 File file = attachmentList.get(i);
