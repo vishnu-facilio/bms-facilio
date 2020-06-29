@@ -47,6 +47,8 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			long startTime = logger.getStartTime();
 			long endTime = logger.getEndTime();
 			
+			endTime = DateTimeUtil.addDays(endTime, 1);
+			
 			FacilioChain chain = TransactionChainFactory.getESPushMeterDataChain();
 			
 			FacilioContext context = chain.getContext();
