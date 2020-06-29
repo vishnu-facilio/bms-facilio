@@ -60,6 +60,9 @@ public class EnergyStarPushHistoricalData extends FacilioJob {
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
 			List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
 			
+			LOGGER.info("st -- "+startTime+" et --"+endTime);
+			LOGGER.info("intervals --" +intervals);
+			
 			context.put(EnergyStarUtil.ENERGY_STAR_METER_CONTEXT, meter);
 			context.put(FacilioConstants.ContextNames.INTERVAL, intervals);
 			
