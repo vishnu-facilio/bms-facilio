@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>com.facilio.framework</groupId>
 			<artifactId>facilio-framework</artifactId>
-			<version>1.0.265</version>
+			<version>1.0.266-rc1</version>
 		</dependency>
 
 		<dependency>
