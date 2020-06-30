@@ -1,38 +1,55 @@
 package com.facilio.agentv2.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class SubscribeUnsbscribeCommand extends AgentV2Command {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if(containsCheck(AgentConstants.POINT_IDS,context) && containsCheck(AgentConstants.CONTROLLER_TYPE,context) && containsCheck(AgentConstants.COMMAND,context)){
-            List<Long> pointIds = (List<Long>) context.get(AgentConstants.POINT_IDS);
-            if((pointIds == null) || (  pointIds.isEmpty())){
+        if(containsCheck(FacilioConstants.ContextNames.INSTANCE_INFO,context) && containsCheck(AgentConstants.CONTROLLER_TYPE,context) && containsCheck(AgentConstants.COMMAND,context)){
+            List<Map<String,Object>> instances = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.INSTANCE_INFO);
+            if(CollectionUtils.isEmpty(instances)){
                 throw new Exception("pointIds cant be empty ");
             }
             FacilioCommand command = (FacilioCommand) context.get(AgentConstants.COMMAND);
-            PointsAPI.updatePointsSubscribedOrUnsubscribed(pointIds, command);
-            GetPointRequest getPointRequest = new GetPointRequest().fromIds(pointIds)
+    		List<Long> ids = new ArrayList<>();
+    		for(Map<String, Object> instance: instances) {
+    			long id = (long) instance.get("id");
+    			ids.add(id);
+    			Map<String, Object> newInstance =new HashMap<>();
+    			newInstance.put("subscribeStatus", PointEnum.SubscribeStatus.IN_PROGRESS.getIndex());
+    			if (instance.get("thresholdJson") != null) {
+    				newInstance.put("thresholdJson", instance.get("thresholdJson"));
+    			}
+    			 PointsAPI.updatePointsSubscribedOrUnsubscribed(Collections.singletonList(id), newInstance,command);
+    		}
+           
+            GetPointRequest getPointRequest = new GetPointRequest().fromIds(ids)
                     .ofType((FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
-            List<Point> points = getPointRequest.getPoints();
-            if(FacilioCommand.UNSUBSCRIBE == command){
-                ControllerMessenger.subscribeUnscbscribePoints(points,command);
-            }
-            else if(FacilioCommand.SUBSCRIBE == command){
-                ControllerMessenger.subscribeUnscbscribePoints(points,command);
+            List<Point> instanceList = getPointRequest.getPoints();
+            if(FacilioCommand.UNSUBSCRIBE == command || FacilioCommand.SUBSCRIBE == command){
+                ControllerMessenger.subscribeUnscbscribePoints(instanceList,command);
             }
             else {
-                throw new Exception(" command cant be anything other than sub  and unsub");
+                throw new IllegalArgumentException(" command cant be anything other than sub  and unsub");
             }
         }
         return false;

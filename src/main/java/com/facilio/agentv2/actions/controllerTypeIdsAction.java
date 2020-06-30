@@ -12,13 +12,24 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
 
 public class controllerTypeIdsAction extends IdsAction {
 
     private static final Logger LOGGER = LogManager.getLogger(controllerTypeIdsAction.class.getName());
 
+    private List<Map<String,Object>> instances = null;
+    
+    
+    public List<Map<String, Object>> getInstances() {
+		return instances;
+	}
 
-    public Integer getControllerType() {
+	public void setInstances(List<Map<String, Object>> instances) {
+		this.instances = instances;
+	}
+
+	public Integer getControllerType() {
         return controllerType;
     }
 
@@ -88,7 +99,7 @@ public class controllerTypeIdsAction extends IdsAction {
 
     public String subscribePoints() {
         try {
-            setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getRecordIds(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.SUBSCRIBE));
+            setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getInstances(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.SUBSCRIBE));
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
         } catch (Exception e) {
@@ -102,7 +113,7 @@ public class controllerTypeIdsAction extends IdsAction {
 
     public String unsubscribePoints() {
         try {
-            setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getRecordIds(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.UNSUBSCRIBE));
+            setResult(AgentConstants.RESULT, PointsAPI.subscribeUnsubscribePoints(getInstances(), FacilioControllerType.valueOf(getControllerType()), FacilioCommand.UNSUBSCRIBE));
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
         } catch (Exception e) {

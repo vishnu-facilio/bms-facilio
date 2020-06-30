@@ -1,5 +1,21 @@
 package com.facilio.agentv2.point;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
@@ -31,16 +47,12 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
@@ -733,25 +745,27 @@ public class PointsAPI {
         return (rowsAffected > 0);
     }
 
-    public static boolean subscribeUnsubscribePoints(List<Long> pointIds, FacilioControllerType type, FacilioCommand command) throws Exception {
+    public static boolean subscribeUnsubscribePoints(List<Map<String,Object>> instances, FacilioControllerType type, FacilioCommand command) throws Exception {
         FacilioChain chain = TransactionChainFactory.subscribeUnsbscribechain();
         FacilioContext context = chain.getContext();
-        context.put(AgentConstants.POINT_IDS, pointIds);
+        context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
         context.put(AgentConstants.CONTROLLER_TYPE, type);
         context.put(AgentConstants.COMMAND, command);
         chain.execute();
         return true;
     }
 
-    public static boolean updatePointsSubscribedOrUnsubscribed(List<Long> pointIds, FacilioCommand command) throws Exception {
+    public static boolean updatePointsSubscribedOrUnsubscribed(List<Long> pointIds, Map<String, Object> newInstance, FacilioCommand command) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             FacilioChain editChain = TransactionChainFactory.getEditPointChain();
             FacilioContext context = editChain.getContext();
             context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
             if (command == FacilioCommand.SUBSCRIBE) {
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex()));
+            	newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex());
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, newInstance);
             } else if (command == FacilioCommand.UNSUBSCRIBE) {
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
+            	newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
+            	context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,newInstance);
             } else {
                 throw new Exception(" command cant be anything other than sub or unsub");
             }
