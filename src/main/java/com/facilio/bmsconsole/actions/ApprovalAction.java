@@ -148,11 +148,17 @@ public class ApprovalAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getApprovalModuleActivityListChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		constructListContext((FacilioContext) context);
 		chain.execute();
 
-		setResult(FacilioConstants.ContextNames.ACTIVITY_LIST, context.get(FacilioConstants.ContextNames.ACTIVITY_LIST));
-		setResult(FacilioConstants.ContextNames.PICKLIST, context.get(FacilioConstants.ContextNames.PICKLIST));
-		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+		if (isFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,
+					chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		} else {
+			setResult(FacilioConstants.ContextNames.ACTIVITY_LIST, context.get(FacilioConstants.ContextNames.ACTIVITY_LIST));
+			setResult(FacilioConstants.ContextNames.PICKLIST, context.get(FacilioConstants.ContextNames.PICKLIST));
+			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+		}
 
 		return SUCCESS;
 	}

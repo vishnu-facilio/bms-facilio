@@ -65,7 +65,7 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
         info.put("fromStateId", getFromStateId());
         info.put("toStateId", getToStateId());
         info.put("user", AccountUtil.getCurrentUser().getId());
-        info.put("ruleId", getId());
+        info.put("ruleId", getStateFlowId());
         CommonCommandUtil.addActivityToContext(moduleRecord.getId(), moduleRecord.getCurrentTime(), activityType, info, (FacilioContext) context);
     }
 

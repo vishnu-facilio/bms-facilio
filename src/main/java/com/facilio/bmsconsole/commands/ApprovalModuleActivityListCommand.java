@@ -30,58 +30,86 @@ public class ApprovalModuleActivityListCommand extends FacilioCommand {
             if (CollectionUtils.isEmpty(subModules)) {
                 throw new IllegalArgumentException("No Activity module found");
             }
+            boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+
             FacilioModule activityModule = subModules.get(0);
 
             List<FacilioField> fields = modBean.getAllFields(activityModule.getName());
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
             SelectRecordsBuilder<ActivityContext> builder = new SelectRecordsBuilder<ActivityContext>()
                     .module(activityModule)
-                    .select(fields)
                     .beanClass(ActivityContext.class)
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("type"),
                             CommonActivityType.APPROVAL.getValue() + "," + CommonActivityType.APPROVAL_ENTRY.getValue(),
                             NumberOperators.EQUALS))
                     .orderBy(fieldMap.get("ttime").getCompleteColumnName() + " DESC ");
-            List<ActivityContext> activityContexts = builder.get();
 
-            if (CollectionUtils.isNotEmpty(activityContexts)) {
-                List<Long> parentIds = new ArrayList<>();
-                List<Long> ruleIds = new ArrayList<>();
-                for (ActivityContext activityContext : activityContexts) {
-                    parentIds.add(activityContext.getParentId());
-                    JSONObject info = activityContext.getInfo();
-                    if (info != null) {
-                        if (info.containsKey("ruleId")) {
-                            ruleIds.add((Long) info.get("ruleId"));
-                        }
-                    }
-                }
-
-                FacilioModule module = modBean.getModule(moduleName);
-                FacilioField primaryField = modBean.getPrimaryField(moduleName);
-                SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
-                        .module(module)
-                        .select(Collections.singletonList(primaryField))
-                        .andCondition(CriteriaAPI.getIdCondition(parentIds, module));
-
-                List<Map<String, Object>> records = selectRecordsBuilder.getAsProps();
-                Map<Long, String> pickList = new HashMap<>();
-                if(records != null && records.size() > 0) {
-                    for(Map<String, Object> record : records) {
-                        pickList.put((Long) record.get("id"), record.get(primaryField.getName()).toString());
-                    }
-                }
-
-                context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
-
-                List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(ruleIds, false, false);
-                if (CollectionUtils.isNotEmpty(workflowRules)) {
-                    Map<Long, String> workflowMap = workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
-                    context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowMap);
-                }
+            if (fetchCount) {
+                builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(activityModule));
+            }
+            else {
+                builder.select(fields);
             }
 
-            context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activityContexts);
+            JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+            if (pagination != null && !fetchCount) {
+                int page = (int) pagination.get("page");
+                int perPage = (int) pagination.get("perPage");
+
+                int offset = ((page-1) * perPage);
+                if (offset < 0) {
+                    offset = 0;
+                }
+
+                builder.offset(offset);
+                builder.limit(perPage);
+            }
+
+            List<ActivityContext> activityContexts = builder.get();
+            if (fetchCount) {
+                if (CollectionUtils.isNotEmpty(activityContexts)) {
+                    context.put(FacilioConstants.ContextNames.RECORD_COUNT, activityContexts.get(0).getId());
+                }
+            }
+            else {
+                if (CollectionUtils.isNotEmpty(activityContexts)) {
+                    List<Long> parentIds = new ArrayList<>();
+                    List<Long> ruleIds = new ArrayList<>();
+                    for (ActivityContext activityContext : activityContexts) {
+                        parentIds.add(activityContext.getParentId());
+                        JSONObject info = activityContext.getInfo();
+                        if (info != null) {
+                            if (info.containsKey("ruleId")) {
+                                ruleIds.add((Long) info.get("ruleId"));
+                            }
+                        }
+                    }
+
+                    FacilioModule module = modBean.getModule(moduleName);
+                    FacilioField primaryField = modBean.getPrimaryField(moduleName);
+                    SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
+                            .module(module)
+                            .select(Collections.singletonList(primaryField))
+                            .andCondition(CriteriaAPI.getIdCondition(parentIds, module));
+
+                    List<Map<String, Object>> records = selectRecordsBuilder.getAsProps();
+                    Map<Long, String> pickList = new HashMap<>();
+                    if (records != null && records.size() > 0) {
+                        for (Map<String, Object> record : records) {
+                            pickList.put((Long) record.get("id"), record.get(primaryField.getName()).toString());
+                        }
+                    }
+
+                    context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
+
+                    List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(ruleIds, false, false);
+                    if (CollectionUtils.isNotEmpty(workflowRules)) {
+                        Map<Long, String> workflowMap = workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
+                        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowMap);
+                    }
+                }
+                context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activityContexts);
+            }
         }
         return false;
     }

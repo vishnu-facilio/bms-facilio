@@ -181,7 +181,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 					Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
 					if (userObj != null) {
 						Long ouid = (Long) userObj.get("id");
-						map.put("permisionId", ouid);
+						map.put("permissionId", ouid);
 						ouIds.add(ouid);
 					}
 					break;
@@ -200,7 +200,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 						}
 
 						if (tenantContext != null) {
-							map.put("tenantId", tenantContext.getId());
+							map.put("permissionId", tenantContext.getId());
 							tenantIds.add(tenantContext.getId());
 						}
 					}
