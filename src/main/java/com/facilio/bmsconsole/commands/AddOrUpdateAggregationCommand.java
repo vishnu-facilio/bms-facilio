@@ -89,12 +89,12 @@ public class AddOrUpdateAggregationCommand extends FacilioCommand {
             Long aggregationMetaId = aggregationMeta.getId();
             for (AggregationColumnMetaContext columnMetaContext : columnList) {
                 columnMetaContext.setAggregationMetaId(aggregationMetaId);
-                GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getAggregationColumnMetaModule().getTableName())
-                        .fields(FieldFactory.getAggregationColumnMetaFields());
-                builder.addRecords(FieldUtil.getAsMapList(columnList, AggregationColumnMetaContext.class));
-                builder.save();
             }
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getAggregationColumnMetaModule().getTableName())
+                    .fields(FieldFactory.getAggregationColumnMetaFields());
+            builder.addRecords(FieldUtil.getAsMapList(columnList, AggregationColumnMetaContext.class));
+            builder.save();
 
             FacilioTimer.schedulePeriodicJob(aggregationMeta.getId(), SCHEDULER, 30, aggregationMeta.getInterval().intValue(), "facilio");
         }
