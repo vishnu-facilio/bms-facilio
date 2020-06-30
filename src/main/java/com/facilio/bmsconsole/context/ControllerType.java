@@ -13,9 +13,9 @@ public enum ControllerType {
 
 	NIAGARA(3, "Niagara", true),
 
-	MODBUS_IP(4,"Modbus_Ip"),
+	MODBUS_IP(4,"Modbus_Ip", true),
 
-	MODBUS_RTU(5,"Modbus_Rtu"),
+	MODBUS_RTU(5,"Modbus_Rtu", true),
 
 	OPC_DA (6,"Opc DA"),
 
