@@ -35,11 +35,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 			Set<String> namespaces = FileStore.getAllNamespaces();
 			for (String namespace : namespaces) {
 				FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(namespace);
-				if (orgId > -1) {
-					deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), namespaceConfig.getDataRetention());
-				} else {
-					deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -5); // TODO : Backward compatibility. Have to remove when we have separate namespace for instant jobs
-				}
+				deletedTime = DateTimeUtil.addDays(System.currentTimeMillis(), -namespaceConfig.getDataRetention());
 				if (deletedTime <= 0) {
 					throw new IllegalArgumentException("Deleted Time must not empty..." + deletedTime);
 				}
