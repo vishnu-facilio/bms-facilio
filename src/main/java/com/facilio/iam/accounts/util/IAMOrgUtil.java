@@ -46,12 +46,12 @@ public class IAMOrgUtil {
 		FacilioService.runAsService(() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}
 
+	private static final int DEFAULT_URL_TIMEOUT = 3600000;
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
-//			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
-			org.setLogoUrl(fs.newPreviewFileUrl("organization", org.getLogoId(), 3600000));
+			org.setLogoUrl(fs.newPreviewFileUrl("organization", org.getLogoId(), System.currentTimeMillis() + DEFAULT_URL_TIMEOUT));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 		}
 		return org;
