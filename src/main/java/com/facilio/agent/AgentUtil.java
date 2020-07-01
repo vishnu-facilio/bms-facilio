@@ -246,10 +246,10 @@ public class AgentUtil {
                 if (jsonObject.containsKey(AgentKeys.STATUS)) {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
                     if (status == 0) {
-                        AgentUtilV2.raiseAgentAlarm(AgentApiV2.getAgent(agent.getId()));
+                        AgentUtilV2.raiseAgentAlarm(AgentApiV2.getAgent(agent.getName()));
                     }
                     if (status == 1) {
-                        AgentUtilV2.dropAgentAlarm(AgentApiV2.getAgent(agent.getId()));
+                        AgentUtilV2.dropAgentAlarm(AgentApiV2.getAgent(agent.getName()));
                     }
                 }
 
