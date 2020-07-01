@@ -81,6 +81,7 @@ public class ImapsClient {
             Map<Long, List<Object>> mailAttachment = new HashMap<>();
             // inbox.get
             long lastUID = 0;
+            log.info("Mail fetched ===> Message Size" + messages.length);
             if (messages.length > 0) {
                 for (Message message : messages) {
                     V3MailMessageContext mailMessage = new V3MailMessageContext();
@@ -92,7 +93,7 @@ public class ImapsClient {
                     if (mailMessage.getAttachmentsList().size() > 0) {
                         mailAttachment.put(lastUID, mailMessage.getAttachmentsList());
                     }
-                    log.info("getUId" + mailMessage.getMessageUID());
+                    // log.info("getUId" + mailMessage.getMessageUID());
                     mailMessages.add(mailMessage);
                 }
                 CustomMailMessageApi.insertV3CustomMailMessage(mailMessages);

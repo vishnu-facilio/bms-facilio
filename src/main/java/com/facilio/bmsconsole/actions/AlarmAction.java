@@ -611,30 +611,6 @@ public class AlarmAction extends FacilioAction {
 		return SUCCESS;
 		
 	}
-
-	public String v2updateMail() throws Exception{
-//		updateStatus();
-//		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		List<SupportEmailContext> imapEmails = SupportEmailAPI.getImapsEmailsOfOrg();
-		if (CollectionUtils.isNotEmpty(imapEmails)) {
-			for (SupportEmailContext imapMail : imapEmails) {
-				long latestUID = imapMail.getLatestMessageUID();
-				ImapsClient mailService = new ImapsClient(imapMail);
-				if (latestUID > 0) {
-					// fetch mail which is greater than messageUID
-					mailService.getMessageGtUID(latestUID);
-				} else {
-					// fetch today's Mail//
-					// n days
-					mailService.getNDaysMails(1);
-				}
-
-			}
-		}
-		return SUCCESS;
-
-	}
-	
 	public String v2deleteAlarm() throws Exception{
 		deleteAlarm();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);

@@ -1267,14 +1267,6 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
-
-		<action name="updateMail"
-				class="com.facilio.bmsconsole.actions.AlarmAction"
-				method="v2updateMail">
-			<param name="moduleName">alarm</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-		</action>
-
 		<action name="createWorkorder"
 			class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="v2createWorkorder">
