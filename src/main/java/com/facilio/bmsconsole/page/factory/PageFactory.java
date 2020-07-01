@@ -353,5 +353,38 @@ public class PageFactory {
 		
 		widget.addToWidgetParams("chartParams", obj);
 	}
+	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
+			List<String> yFieldNameArray,String groupByFieldName, DateOperators dateOperator, List<Long> dateOperatorValue, Criteria criteria) {
+		JSONObject obj = new JSONObject();
+		obj.put("chartType", chartType);
+		
+		JSONObject xField = new JSONObject();
+		xField.put("aggr", xAggr.getValue());
+		xField.put("fieldName", xFieldName);
+		obj.put("xField", xField);
+		
+		org.json.simple.JSONArray yFields = new JSONArray();
+		
+		for(String yFieldName:yFieldNameArray) {
+			JSONObject yField = new JSONObject();
+			yField.put("aggr", yAggr.getValue());
+			yField.put("fieldName", yFieldName);
+			yFields.add(yField);
+		}
+		
+		obj.put("yField", yFields);
+		obj.put("isMultipleMetric",true);
+		
+		JSONObject groupBy = new JSONObject();
+		groupBy.put("fieldName", groupByFieldName);
+		obj.put("groupBy", groupBy);
+		
+		obj.put("dateOperator", dateOperator.getOperatorId());
+
+		obj.put("dateOperatorValue", dateOperatorValue);
+		obj.put("criteria", criteria);
+		
+		widget.addToWidgetParams("chartParams", obj);
+	}
 
 }
