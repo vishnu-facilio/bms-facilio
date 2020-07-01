@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.modules.ModuleFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -67,6 +68,8 @@ public class SupportEmailAPI {
 		}
 		return null;
 	}
+
+
 	
 	public static List<SupportEmailContext> getSupportEmailsOfOrg(long orgId) throws Exception {
 		try {
@@ -150,5 +153,21 @@ public class SupportEmailAPI {
 				.table("SupportEmails")
 				.andCustomWhere("ID = ?", supportEmailId);
 		builder.delete();
+	}
+
+
+	public static List<SupportEmailContext> getImapsEmailsOfOrg() throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSupportEmailFields())
+				.table(ModuleFactory.getSupportEmailsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("IS_CUSTOM_MAIL", "isCustomMail", String.valueOf(true), BooleanOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<SupportEmailContext> imapsMails = new ArrayList<SupportEmailContext>();
+		if (props != null && !props.isEmpty()) {
+			imapsMails  = FieldUtil.getAsBeanListFromMapList(props, SupportEmailContext.class);
+		}
+		return imapsMails;
 	}
  }

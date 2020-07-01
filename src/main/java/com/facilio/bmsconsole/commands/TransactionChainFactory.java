@@ -5544,7 +5544,11 @@ public class TransactionChainFactory {
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
 		return c;
 	}
-
+	public static  FacilioChain addMultipleAttachment () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddMultipleAttachmentCommand());
+		return c;
+	}
 	public static FacilioChain getAddOrUpdateAggregation() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateAggregationCommand());

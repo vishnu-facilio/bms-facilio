@@ -149,4 +149,12 @@
 	<job name='EnergyStarFetchHistoricalData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarFetchHistoricalData' transactionTimeout='900000'/>
 	<job name='EnergyStarSyncData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarSyncData' transactionTimeout='900000'/>
 
+
+	<!-- custom Mail messaging jobs-->
+	<job name='ImapJob' classname='com.facilio.bmsconsole.jobs.ImapJob' transactionTimeout='7200000' />
+
+
+	<!-- custom Mail messaging jobs-->
+	<job name='ImapJob' classname='com.facilio.bmsconsole.jobs.ImapJob' transactionTimeout='7200000' />
+
 </scheduler>

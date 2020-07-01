@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.services.email.ImapsClient;
 import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -23,10 +27,6 @@ import com.facilio.bmsconsole.commands.FetchAlarmFromOccurrenceCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -610,6 +610,29 @@ public class AlarmAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		return SUCCESS;
 		
+	}
+
+	public String v2updateMail() throws Exception{
+//		updateStatus();
+//		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		List<SupportEmailContext> imapEmails = SupportEmailAPI.getImapsEmailsOfOrg();
+		if (CollectionUtils.isNotEmpty(imapEmails)) {
+			for (SupportEmailContext imapMail : imapEmails) {
+				long latestUID = imapMail.getLatestMessageUID();
+				ImapsClient mailService = new ImapsClient(imapMail);
+				if (latestUID > 0) {
+					// fetch mail which is greater than messageUID
+					mailService.getMessageGtUID(latestUID);
+				} else {
+					// fetch today's Mail//
+					// n days
+					mailService.getNDaysMails(1);
+				}
+
+			}
+		}
+		return SUCCESS;
+
 	}
 	
 	public String v2deleteAlarm() throws Exception{

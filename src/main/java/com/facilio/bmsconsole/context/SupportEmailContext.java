@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FacilioEnum;
+
 public class SupportEmailContext {
 	
 	private long id = -1;
@@ -81,4 +83,115 @@ public class SupportEmailContext {
 	public void setPrimarySupportMail(boolean primarySupportMail) {
 		this.primarySupportMail = primarySupportMail;
 	}
+
+
+	public Boolean getCustomMail() {
+		return isCustomMail;
+	}
+
+	public void setCustomMail(Boolean customMail) {
+		isCustomMail = customMail;
+	}
+
+	private Boolean isCustomMail;
+
+
+	public String getMailServer() {
+		return mailServer;
+	}
+
+	public void setMailServer(String mailServer) {
+		this.mailServer = mailServer;
+	}
+
+	private String mailServer;
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	private int port;
+
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	private String userName;
+
+
+	private String password;
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	private AuthenticationType authentication;
+	public int getAuthentication() {
+		if (authentication == null) {
+			return -1;
+		}
+		return authentication.getIndex();
+	}
+	public AuthenticationType getAuthenticationEnum() {
+		return authentication;
+	}
+	public void setAuthenticationType(AuthenticationType authenticationType) {
+		this.authentication = authenticationType;
+	}
+	public void setAuthenticationType(int type) {
+		this.authentication = AuthenticationType.valueOf(type);
+	}
+
+	public static enum AuthenticationType implements FacilioEnum {
+		PLAIN
+		;
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static AuthenticationType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+
+	public long getLatestMessageUID() {
+		return latestMessageUID;
+	}
+
+	public void setLatestMessageUID(long latestMessageUID) {
+		this.latestMessageUID = latestMessageUID;
+	}
+
+	private long latestMessageUID ;
+
+	public long getUidValidaity() {
+		return uidValidaity;
+	}
+
+	public void setUidValidaity(long uidValidaity) {
+		this.uidValidaity = uidValidaity;
+	}
+
+	private long uidValidaity;
 }

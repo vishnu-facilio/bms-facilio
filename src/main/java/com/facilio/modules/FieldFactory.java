@@ -2375,8 +2375,36 @@ public class FieldFactory {
 
         fields.add(getField("autoAssignGroupId", "AUTO_ASSIGN_GROUP_ID", module, FieldType.LOOKUP));
 
+        fields.add(getField("isCustomMail", "IS_CUSTOM_MAIL", module, FieldType.BOOLEAN));
+        fields.add(getField("mailServer", "MAIL_SERVER", module, FieldType.STRING));
+        fields.add(getField("port", "PORT", module, FieldType.NUMBER));
+        fields.add(getField("userName", "USER_NAME", module, FieldType.STRING));
+        fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
+        fields.add(getField("authenticationType", "AUTHENTICATION_TYPE", module, FieldType.ENUM));
+        fields.add(getField("latestMessageUID", "LATEST_MESSAGE_UID", module, FieldType.NUMBER));
+        fields.add(getField("uidValidaity", "UID_VALIDAITY", module, FieldType.NUMBER));
+
         return fields;
     }
+
+//    public static List<FacilioField> getCustomMailMessageFields() {
+//        List<FacilioField> fields = new ArrayList<>();
+//        FacilioModule module = ModuleFactory.getCustomMailMessageModule();
+//
+//        fields.add(getIdField(module));
+//
+//        fields.add(getField("supportMailId", "SUPPORT_MAIL_ID", module, FieldType.LOOKUP));
+//        fields.add(getField("messageUID", "MESSAGE_UID", module, FieldType.NUMBER));
+//        fields.add(getField("subject", "MAIL_SUBJECT", module, FieldType.STRING));
+//        fields.add(getField("from", "FROM_MAIL", module, FieldType.STRING));
+//        fields.add(getField("to", "TO_MAIL", module, FieldType.STRING));
+//        fields.add(getField("bcc", "BCC", module, FieldType.STRING));
+//        fields.add(getField("contentType", "CONTENT_TYPE", module, FieldType.STRING));
+//        fields.add(getField("sentDate", "SENT_DATE", module, FieldType.STRING));
+//        fields.add(getField("receviedDate", "RECEVIED_DATE", module, FieldType.STRING));
+//        fields.add(getField("content", "CONTENT", module, FieldType.STRING));
+//        return fields;
+//    }
 
     public static List<FacilioField> getRequesterFields() {
         List<FacilioField> fields = new ArrayList<>();
