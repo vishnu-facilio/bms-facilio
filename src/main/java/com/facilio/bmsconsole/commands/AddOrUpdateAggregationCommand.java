@@ -25,7 +25,7 @@ import java.util.List;
 public class AddOrUpdateAggregationCommand extends FacilioCommand {
 
     private static final long HALF_HOUR_IN_SECONDS = 30 * 60;
-    private static final String SCHEDULER = "AggregationJob";
+    private static final String JOB_NAME = "AggregationJob";
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -96,7 +96,8 @@ public class AddOrUpdateAggregationCommand extends FacilioCommand {
             builder.addRecords(FieldUtil.getAsMapList(columnList, AggregationColumnMetaContext.class));
             builder.save();
 
-            FacilioTimer.schedulePeriodicJob(aggregationMeta.getId(), SCHEDULER, 30, aggregationMeta.getInterval().intValue(), "facilio");
+            FacilioTimer.deleteJob(aggregationMeta.getId(), JOB_NAME);
+            FacilioTimer.schedulePeriodicJob(aggregationMeta.getId(), JOB_NAME, 30, aggregationMeta.getInterval().intValue(), "facilio");
         }
         return false;
     }

@@ -584,7 +584,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator) throws Exception {
 		if (dataPoints != null && !dataPoints.isEmpty()) {
-			if ((FacilioProperties.isDevelopment() || (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 173l))) {
+			if ((!FacilioProperties.isProduction() ||
+					(FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 173l))) {
 				if ((reportType != null && reportType == ReportType.READING_REPORT)
 						&& aggregateOperator instanceof DateAggregateOperator) {
 					// replace live reading data with aggregated data
