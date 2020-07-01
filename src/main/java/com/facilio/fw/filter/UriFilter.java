@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public class UriFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         if (StringUtils.isEmpty((CharSequence) request.getAttribute(RequestUtil.REQUEST_APP_NAME))) {
-            String reqUri = request.getRequestURI();
+            String reqUri = RequestUtil.normalize(request.getRequestURI(), true);
             if (isWhiteListedUri(reqUri)) {
                 req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
             }

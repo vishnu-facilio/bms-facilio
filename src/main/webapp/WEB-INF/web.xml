@@ -229,7 +229,6 @@
 	</jsp-config>
 
 	<error-page>
-		<error-code>404</error-code>
 		<location>/jsps/index.jsp</location>
 	</error-page>
 
