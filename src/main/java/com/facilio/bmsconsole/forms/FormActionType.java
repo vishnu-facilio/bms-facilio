@@ -114,9 +114,11 @@ public enum FormActionType {
 			
 			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 			
+			Map<String,Object> tempFormData = new HashMap<>(formData);
+			
 			Map<String,Object> placeHolders = new HashMap<>();
 			
-			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formData, placeHolders);
+			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
