@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.v3.RESTAPIHandler;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -121,7 +122,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
-			RESTAPIHandler.initRESTAPIHandler("com.facilio.apiv3");
+			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool

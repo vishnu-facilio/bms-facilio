@@ -12,6 +12,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 import java.util.*;
 
@@ -19,6 +20,9 @@ public class DefaultInit extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        if (MapUtils.isNotEmpty(Constants.getRecordMap(context))) {
+            return false;
+        }
         Map<String, Object> data = Constants.getRawInput(context);
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         Long id = (Long) context.get(Constants.RECORD_ID);
