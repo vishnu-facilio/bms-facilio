@@ -67,6 +67,7 @@ public class AggregationJob extends FacilioJob {
                     .module(module)
                     .select(Collections.singletonList(parentIdField))
                     .beanClass(ReadingContext.class)
+                    .skipUnitConversion()
                     .aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, ttimeField)
                     .groupBy(parentIdField.getCompleteColumnName() + ", " + groupByColumn);
             for (AggregationColumnMetaContext columnMeta : columnList) {
