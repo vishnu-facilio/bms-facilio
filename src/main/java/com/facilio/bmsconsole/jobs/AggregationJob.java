@@ -70,7 +70,9 @@ public class AggregationJob extends FacilioJob {
                     .aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, ttimeField)
                     .groupBy(parentIdField.getCompleteColumnName() + ", " + groupByColumn);
             for (AggregationColumnMetaContext columnMeta : columnList) {
-                selectBuilder.aggregate(columnMeta.getAggregateOperatorEnum(), columnMeta.getField());
+                FacilioField field = columnMeta.getField();
+                field.setName(columnMeta.getStorageField().getName());
+                selectBuilder.aggregate(columnMeta.getAggregateOperatorEnum(), field);
             }
 
             Long nextSync = frequencyType.getNextSyncTime(lastSync);
@@ -107,7 +109,8 @@ public class AggregationJob extends FacilioJob {
                     uniqueAggregatedTime.add(aggregatedTime);
 
                     for (AggregationColumnMetaContext columnMeta : columnList) {
-                        map.put(columnMeta.getStorageField().getName(), prop.get(columnMeta.getField().getName()));
+                        String fieldName = columnMeta.getStorageField().getName();
+                        map.put(fieldName, prop.get(fieldName));
                     }
                     insertBuilder.addRecordProp(map);
                 }
