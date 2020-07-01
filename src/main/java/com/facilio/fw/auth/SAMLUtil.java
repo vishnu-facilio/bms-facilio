@@ -74,6 +74,46 @@ public class SAMLUtil {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(SAMLUtil.class.getName());
 	
 	private static final SimpleDateFormat SAML_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	private static final SimpleDateFormat SAML_DATE_FORMAT_MILLIS = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	
+	public static Date parseDate(String dateTime) throws Exception {
+		SAML_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+		SAML_DATE_FORMAT_MILLIS.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
+		Date parsedData = null;
+		try {
+			parsedData = SAML_DATE_FORMAT.parse(dateTime);
+		} catch(Exception e) {
+			return SAML_DATE_FORMAT_MILLIS.parse(dateTime);
+		}
+		return parsedData;
+	}
+	
+	public static String formatDate(Date date) throws Exception {
+		SAML_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+		SAML_DATE_FORMAT_MILLIS.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
+		return SAML_DATE_FORMAT.format(date);
+	}
+	
+	public static X509Certificate loadCertificate(String certificate) throws Exception {
+		ByteArrayInputStream bis = null;
+		try {
+			bis = new ByteArrayInputStream(certificate.getBytes());
+		
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			return (X509Certificate) cf.generateCertificate(bis);
+		}
+		catch (Exception e) {
+			throw new Exception("Couldn't load public key", e);
+		}
+		finally {
+			if (bis != null) {
+				bis.close();
+			}
+		}
+	}
+
 
 	public static String getFileAsString(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);

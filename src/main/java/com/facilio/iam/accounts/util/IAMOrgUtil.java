@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldUtil;
@@ -55,6 +56,20 @@ public class IAMOrgUtil {
 		}
 		return org;
 	}
-
-
+	
+	public static boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().addOrUpdateAccountSSO(orgId, sso));
+	}
+	
+	public static AccountSSO getAccountSSO(long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgId));
+	}
+	
+	public static AccountSSO getAccountSSO(String orgDomain) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgDomain));
+	}
+	
+	public static boolean deleteAccountSSO(long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().deleteAccountSSO(orgId));
+	}
 }

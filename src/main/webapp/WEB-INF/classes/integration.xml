@@ -126,6 +126,65 @@
 	</action>
 
 	</package>
+	
+	<package name="ssoApi" namespace="/api/integ/sso" extends="integration">
+		<action name="login" class="com.facilio.auth.actions.FacilioSSOAction" method="login">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="login">
+			<param name="auth">false</param>
+			<param name="ssoToken">{1}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="ssoAcsApi" namespace="/api/integ/sso/acs" extends="integration">
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="acs">
+			<param name="auth">false</param>
+			<param name="ssoToken">{1}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="ssoMetadataApi" namespace="/api/integ/sso/metadata" extends="integration">
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="metadata">
+			<param name="auth">false</param>
+			<param name="ssoToken">{1}</param>
+			<result name="success" type="stream">
+				<param name="contentType">application/download</param>
+				<param name="contentDisposition">attachment;filename="facilio_metadata.xml"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="authApi" namespace="/auth/api" extends="integration">
 

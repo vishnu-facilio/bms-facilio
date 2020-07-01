@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.accounts.sso.SamlSSOConfig;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -25,6 +28,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -149,6 +154,94 @@ public String importData() throws Exception {
 //		}
 //		
 		AccountUtil.getOrgBean().updateOrg(AccountUtil.getCurrentOrg().getOrgId(), org);
+		return SUCCESS;
+	}
+	
+	private AccountSSO sso;
+	
+	public void setSso(AccountSSO sso) {
+		this.sso = sso;
+	}
+	
+	public AccountSSO getSso() {
+		return this.sso;
+	}
+	
+	private String spEntityId;
+	
+	public String getSpEntityId() {
+		return spEntityId;
+	}
+
+	public void setSpEntityId(String spEntityId) {
+		this.spEntityId = spEntityId;
+	}
+	
+	private String spAcsURL;
+
+	public String getSpAcsURL() {
+		return spAcsURL;
+	}
+
+	public void setSpAcsURL(String spAcsURL) {
+		this.spAcsURL = spAcsURL;
+	}
+	
+	private String errorMessage;
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	
+	public String updateSSOSettings() throws Exception {
+		
+		if (sso != null) {
+			if (sso.getId() <= 0) {
+				sso.setCreatedBy(AccountUtil.getCurrentUser().getId());
+				sso.setCreatedTime(System.currentTimeMillis());
+			}
+			sso.setModifiedBy(AccountUtil.getCurrentUser().getId());
+			sso.setModifiedTime(System.currentTimeMillis());
+			
+			if (sso.getSSOConfig() != null) {
+				SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
+				if (ssoConfig.getCertificate() != null) {
+					try {
+						SAMLUtil.loadCertificate(ssoConfig.getCertificate());
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						setErrorMessage("Invalid certificate.");
+						return ERROR;
+					}
+				}
+			}
+			
+			IAMOrgUtil.addOrUpdateAccountSSO(AccountUtil.getCurrentOrg().getOrgId(), sso);
+			
+			setSso(IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId()));
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String getSSOSettings() throws Exception {
+		
+		setSso(IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId()));
+		setSpEntityId(SSOUtil.getSPMetadataURL(getSso()));
+		setSpAcsURL(SSOUtil.getSPAcsURL(getSso()));
+		
+		return SUCCESS;
+	}
+	
+	public String deleteSSOSettings() throws Exception {
+		
+		IAMOrgUtil.deleteAccountSSO(AccountUtil.getCurrentOrg().getOrgId());
+		
 		return SUCCESS;
 	}
 	

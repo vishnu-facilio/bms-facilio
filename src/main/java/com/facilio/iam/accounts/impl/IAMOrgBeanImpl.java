@@ -14,9 +14,10 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -32,6 +33,7 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -319,4 +321,99 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return false;
 	}
 
+	@Override
+	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception {
+		AccountSSO dbSso = getAccountSSO(orgId);
+		
+		if (dbSso == null) {
+			sso.setOrgId(orgId);
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.fields(IAMAccountConstants.getAccountSSOFields())
+					.table(IAMAccountConstants.getAccountSSOModule().getTableName());
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(sso);
+			props.put("ssoType", sso.getSsoType());
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			
+			long ssoId = (Long) props.get("id");
+			sso.setId(ssoId);
+			return true;
+		}
+		else {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(IAMAccountConstants.getAccountSSOModule().getTableName())
+					.fields(IAMAccountConstants.getAccountSSOFields());
+
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+			
+			if (sso.getId() > 0) {
+				updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(sso.getId()), NumberOperators.EQUALS));
+			}
+			else {
+				updateBuilder.andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(sso.getSsoType()), NumberOperators.EQUALS));
+			}
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(sso);
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
+	@Override
+	public AccountSSO getAccountSSO(long orgId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountSSOFields())
+				.table(IAMAccountConstants.getAccountSSOModule().getTableName())
+				.innerJoin("Organizations")
+   				.on("Account_SSO.ORGID = Organizations.ORGID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_SSO.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			AccountSSO sso = FieldUtil.getAsBeanFromMap(props.get(0), AccountSSO.class);
+			return sso;
+		}
+		return null;
+	}
+
+	@Override
+	public AccountSSO getAccountSSO(String orgDomain) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountSSOFields())
+				.table(IAMAccountConstants.getAccountSSOModule().getTableName())
+				.innerJoin("Organizations")
+   				.on("Account_SSO.ORGID = Organizations.ORGID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "domain", orgDomain, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			AccountSSO sso = FieldUtil.getAsBeanFromMap(props.get(0), AccountSSO.class);
+			return sso;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean deleteAccountSSO(long orgId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getAccountSSOModule().getTableName());
+		
+		builder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		
+		builder.delete();
+		return true;
+	}
 }

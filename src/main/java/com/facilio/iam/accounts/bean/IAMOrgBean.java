@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.db.criteria.Criteria;
 
 public interface IAMOrgBean {
@@ -32,6 +33,12 @@ public interface IAMOrgBean {
 	public List<Organization> getOrgs() throws Exception ;
 	
  	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
- 		  
-		
+ 	
+ 	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;
+	
+	public AccountSSO getAccountSSO(long orgId) throws Exception;
+	
+	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
+	
+	public boolean deleteAccountSSO(long orgId) throws Exception;
 }
