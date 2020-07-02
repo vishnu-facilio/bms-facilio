@@ -65,6 +65,21 @@
 	<filter>
 		<filter-name>UrlFilter</filter-name>
 		<filter-class>com.facilio.fw.filter.UriFilter</filter-class>
+
+		<!-- Probably move these params to security.xml when we implement it properly -->
+		<init-param>
+			<!-- The following urls won't be excluded. They will forwarded without app name parsing
+			If a url is added here, it needs to be handled in web.xml as well for struts2 to work. But that shouldn't be done. -->
+			<param-name>exclude</param-name>
+			<param-value>/auth/api/, /iot/api/</param-value>
+		</init-param>
+
+		<!-- Do not include . -->
+		<!-- If this empty all extensions will be allowed -->
+		<init-param>
+			<param-name>allowed-extensions</param-name>
+			<param-value>js, jsp, css</param-value>
+		</init-param>
 	</filter>
 
 	<filter>
