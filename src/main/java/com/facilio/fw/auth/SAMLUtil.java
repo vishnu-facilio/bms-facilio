@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyException;
@@ -99,7 +100,9 @@ public class SAMLUtil {
 	public static X509Certificate loadCertificate(String certificate) throws Exception {
 		ByteArrayInputStream bis = null;
 		try {
-			bis = new ByteArrayInputStream(certificate.getBytes());
+			certificate = formatCert(certificate, true);
+			
+			bis = new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8));
 		
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			return (X509Certificate) cf.generateCertificate(bis);
@@ -220,13 +223,12 @@ public class SAMLUtil {
 	public static String formatCert(String cert, Boolean heads) {
 		String x509cert = "";
 
-		if (cert != null) {		
+		if (cert != null) {
 			x509cert = cert.replace("\\x0D", "").replace("\r", "").replace("\n", "").replace(" ", "");
 
-			if (x509cert != null && !"".equals(x509cert)) {
+			if (!x509cert.trim().isEmpty()) {
 				x509cert = x509cert.replace("-----BEGINCERTIFICATE-----", "").replace("-----ENDCERTIFICATE-----", "");
-				x509cert = x509cert.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "");
-			
+
 				if (heads) {
 					x509cert = "-----BEGIN CERTIFICATE-----\n" + chunkString(x509cert, 64) + "-----END CERTIFICATE-----";
 				}
