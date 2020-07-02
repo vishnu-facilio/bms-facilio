@@ -246,6 +246,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		ASSET_ROLLUP_ALARM,
 		SENSOR_ALARM, 
 		SENSOR_ROLLUP_ALARM,
+		MULTIVARIATE_ANOMALY_ALARM,
 		;
 		public int getIndex() {
 			return ordinal() + 1;

@@ -68,7 +68,8 @@ public class NewEventAPI {
 				return SensorEventContext.class;
 			case SENSOR_ROLLUP_ALARM:
 				return SensorRollUpEventContext.class;
-
+			case MULTIVARIATE_ANOMALY_ALARM:
+				return MultiVariateAnomalyEvent.class;
 			default:
 				throw new IllegalArgumentException("Invalid event type");
 		}
@@ -114,6 +115,8 @@ public class NewEventAPI {
 				return FacilioConstants.ContextNames.SENSOR_EVENT;
 			case SENSOR_ROLLUP_ALARM:
 				return FacilioConstants.ContextNames.SENSOR_ROLLUP_EVENT;
+			case MULTIVARIATE_ANOMALY_ALARM:
+				return FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_EVENT;
 
 			default:
 				throw new IllegalArgumentException("Invalid event type");

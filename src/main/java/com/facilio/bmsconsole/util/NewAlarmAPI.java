@@ -136,6 +136,8 @@ public class NewAlarmAPI {
 				return SensorAlarmOccurrenceContext.class;
 			case SENSOR_ROLLUP:
 				return SensorRollUpAlarmOccurrenceContext.class;
+			case MULTIVARIATE_ANOMALY:
+				return MultiVariateAnomalyAlarmOccurrence.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -170,6 +172,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.SENSOR_ALARM_OCCURRENCE;
 			case SENSOR_ROLLUP:
 				return FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM_OCCURRENCE;
+			case MULTIVARIATE_ANOMALY:
+				return FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -209,6 +213,8 @@ public class NewAlarmAPI {
 				return SensorAlarmContext.class;
 			case SENSOR_ROLLUP_ALARM:
 				return SensorRollUpAlarmContext.class;
+			case MULTIVARIATE_ANOMALY_ALARM:
+				return MultiVariateAnomalyAlarm.class;
 				
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -246,7 +252,7 @@ public class NewAlarmAPI {
 				if (sensorRule instanceof LookupField) {
 					lookupFields.add((LookupField) sensorRule);
 				}
-				
+				break;			
 		}
 		return lookupFields;
 	}
@@ -285,6 +291,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.SENSOR_ALARM;
 			case SENSOR_ROLLUP_ALARM:
 				return FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM;
+			case MULTIVARIATE_ANOMALY_ALARM:
+				return FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
@@ -317,6 +325,8 @@ public class NewAlarmAPI {
 				return AlarmOccurrenceContext.Type.SENSOR;
 			case SENSOR_ROLLUP_ALARM:
 				return AlarmOccurrenceContext.Type.SENSOR_ROLLUP;
+			case MULTIVARIATE_ANOMALY_ALARM:
+				return AlarmOccurrenceContext.Type.MULTIVARIATE_ANOMALY;
 			default:
 				throw new IllegalArgumentException("Invalid alarm type to fetch occurrence type");
 		}

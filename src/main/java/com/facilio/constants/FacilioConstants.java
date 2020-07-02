@@ -405,6 +405,9 @@ public class FacilioConstants {
 		public static final String SENSOR_ROLLUP_ALARM ="sensorrollupalarm";
 		public static final String SENSOR_ROLLUP_ALARM_OCCURRENCE ="sensorrollupalarmoccurrence";
 		public static final String SENSOR_ROLLUP_EVENT ="sensorrollupevent";
+		public static final String MULTIVARIATE_ANOMALY_ALARM ="multivariateanomalyalarm";
+		public static final String MULTIVARIATE_ANOMALY_ALARM_OCCURRENCE ="multivariateanomalyalarmoccurrence";
+		public static final String MULTIVARIATE_ANOMALY_EVENT ="multivariateanomalyevent";
 
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
@@ -1866,6 +1869,9 @@ public class FacilioConstants {
 			classMap.put(SENSOR_ROLLUP_ALARM, SensorRollUpAlarmContext.class);
 			classMap.put(SENSOR_ROLLUP_ALARM_OCCURRENCE, SensorRollUpAlarmOccurrenceContext.class);
 			classMap.put(SENSOR_ROLLUP_EVENT, SensorRollUpEventContext.class);
+			classMap.put(MULTIVARIATE_ANOMALY_ALARM, MultiVariateAnomalyAlarm.class);
+			classMap.put(MULTIVARIATE_ANOMALY_ALARM_OCCURRENCE, MultiVariateAnomalyAlarmOccurrence.class);
+			classMap.put(MULTIVARIATE_ANOMALY_EVENT, MultiVariateAnomalyEvent.class);
 
 			classMap.put(VISITOR, VisitorContext.class);
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);

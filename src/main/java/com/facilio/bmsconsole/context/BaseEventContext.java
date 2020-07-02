@@ -381,6 +381,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			case AGENT_ALARM:
 				baseEvent = new AgentEventContext();
 				break;
+			case MULTIVARIATE_ANOMALY_ALARM:
+				baseEvent = new MultiVariateAnomalyEvent();
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}

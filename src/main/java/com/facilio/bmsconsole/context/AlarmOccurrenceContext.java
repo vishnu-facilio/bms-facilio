@@ -319,6 +319,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		ASSET_ROLLUP,
 		SENSOR,
 		SENSOR_ROLLUP,
+		MULTIVARIATE_ANOMALY,
 		;
 
 		public int getIndex() {
