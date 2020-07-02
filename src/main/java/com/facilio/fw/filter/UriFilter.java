@@ -74,13 +74,13 @@ public class UriFilter implements Filter {
 
         // Commenting out the if check because it shouldn't be called when app name is set
 //        if (StringUtils.isEmpty((CharSequence) request.getAttribute(RequestUtil.REQUEST_APP_NAME))) {
-            String reqUri = RequestUtil.normalize(request.getRequestURI(), true);
-            if (isWhiteListedUri(reqUri)) {
-                req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
-            }
-            else if (!isAllowedExtension(reqUri)) {
+            String reqUri = FilenameUtils.normalize(request.getRequestURI());
+            if (!isAllowedExtension(reqUri)) {
                 send404(response);
             }
+            else if (isWhiteListedUri(reqUri)) {
+                req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
+            } 
             else {
                 int idx = reqUri.indexOf(URL_PATTERN);
                 if (idx == 0) { //Doing this to make APIs called without app name to go through the usual security/ validation filters since we have struts2 configured to handle index.jsp globally
