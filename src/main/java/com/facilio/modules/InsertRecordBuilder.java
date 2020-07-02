@@ -272,8 +272,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					}
 				}
 
-				if (FieldUtil.isSystemFieldsPresent(currentModule)) {
-					currentFields.addAll(FieldFactory.getSystemPointFields(currentModule));
+				if (currentLevel == 1 && FieldUtil.isSystemFieldsPresent(currentModule)) {
+					currentFields.addAll(FieldFactory.getSystemPointFields(currentModule.getParentModule()));
 				}
 
 				if (FieldUtil.isBaseEntityRootModule(currentModule)) {
@@ -391,7 +391,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		prop.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		prop.put("sysCreatedTime", System.currentTimeMillis());
 		prop.put("sysModifiedTime", System.currentTimeMillis());
-		if (AccountUtil.getCurrentUser() != null) {
+		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getId() > 0) {
 			prop.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
 			prop.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
 		}

@@ -430,7 +430,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			selectFields.add(moduleIdField);
 			selectFields.add(FieldFactory.getIdField(module));
 			if (FieldUtil.isSystemFieldsPresent(module)) {
-				selectFields.addAll(FieldFactory.getSystemPointFields(module));
+				selectFields.addAll(FieldFactory.getSystemPointFields(module.getParentModule()));
 			}
 			if (FieldUtil.isBaseEntityRootModule(module)) {
 				selectFields.addAll(FieldFactory.getBaseModuleSystemFields(module));

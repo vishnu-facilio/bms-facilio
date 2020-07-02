@@ -459,7 +459,8 @@ public class FieldUtil {
 		if (module.isCustom()
 				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
 				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE
-				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING) {
+				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
+				|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
 			return true;
 		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());

@@ -392,7 +392,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateFields.addAll(scopeFieldsAndCriteria.getFields());
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
-			updateFields.addAll(FieldFactory.getSystemPointFields(module));
+			updateFields.addAll(FieldFactory.getSystemPointFields(module.getParentModule()));
 		}
 		if (FieldUtil.isBaseEntityRootModule(module)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
