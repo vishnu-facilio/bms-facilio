@@ -187,6 +187,16 @@ public String importData() throws Exception {
 		this.spAcsURL = spAcsURL;
 	}
 	
+	private String spMetadataURL;
+
+	public String getSpMetadataURL() {
+		return spMetadataURL;
+	}
+
+	public void setSpMetadataURL(String spMetadataURL) {
+		this.spMetadataURL = spMetadataURL;
+	}
+	
 	private String errorMessage;
 
 	public String getErrorMessage() {
@@ -231,9 +241,19 @@ public String importData() throws Exception {
 	
 	public String getSSOSettings() throws Exception {
 		
-		setSso(IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId()));
-		setSpEntityId(SSOUtil.getSPMetadataURL(getSso()));
-		setSpAcsURL(SSOUtil.getSPAcsURL(getSso()));
+		AccountSSO sso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId());
+		if (sso != null) {
+			setSso(sso);
+			setSpEntityId(SSOUtil.getSPMetadataURL(sso));
+			setSpMetadataURL(SSOUtil.getSPMetadataURL(sso));
+			setSpAcsURL(SSOUtil.getSPAcsURL(sso));
+		}
+		else {
+			setSso(null);
+			setSpEntityId(null);
+			setSpMetadataURL(null);
+			setSpAcsURL(null);
+		}
 		
 		return SUCCESS;
 	}

@@ -49,7 +49,7 @@
 			<param name="permission">GENERAL,COMPANY_PROFILE</param>
             <result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">spEntityId, spAcsURL, ^sso.*</param>
+				<param name="includeProperties">spEntityId, spMetadataURL, spAcsURL, ^sso.*</param>
 			</result>
 		</action>
 	</package>
