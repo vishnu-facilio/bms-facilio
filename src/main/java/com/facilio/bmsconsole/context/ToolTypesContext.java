@@ -191,4 +191,13 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.minimumQuantity = minimumQuantity;
 	}
 
+	private double sellingPrice;
+
+	public double getSellingPrice() {
+		return sellingPrice;
+	}
+
+	public void setSellingPrice(double sellingPrice) {
+		this.sellingPrice = sellingPrice;
+	}
 }

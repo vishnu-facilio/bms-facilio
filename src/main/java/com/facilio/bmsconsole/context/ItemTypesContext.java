@@ -207,4 +207,13 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 
+	private double sellingPrice = -1;
+
+	public double getSellingPrice() {
+		return sellingPrice;
+	}
+
+	public void setSellingPrice(double sellingPrice) {
+		this.sellingPrice = sellingPrice;
+	}
 }
