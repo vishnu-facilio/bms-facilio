@@ -128,7 +128,6 @@ public interface IAMUserBean {
     
 	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
 			String ipAddress, boolean startUserSession, String appDomain) throws Exception;
-    
-    
-    
+
+	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
 }

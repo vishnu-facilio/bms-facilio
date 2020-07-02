@@ -474,6 +474,41 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public boolean deleteUserPhoto(long uid, long photoId) throws Exception {
+
+		if (photoId > 0) {
+			FileStore fs = FacilioFactory.getFileStore();
+			boolean isDeleted = fs.deleteFile(photoId);
+			if(isDeleted) {
+				FacilioField photoField = new FacilioField();
+				photoField.setName("photoId");
+				photoField.setDataType(FieldType.NUMBER);
+				photoField.setColumnName("PHOTO_ID");
+				photoField.setModule(IAMAccountConstants.getAccountsUserModule());
+
+				List<FacilioField> fields = new ArrayList<FacilioField>();
+				fields.add(photoField);
+
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(IAMAccountConstants.getAccountsUserModule().getTableName())
+						.fields(fields);
+
+				updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+
+				Map<String, Object> props = new HashMap<>();
+				props.put("photoId", -99);
+
+				int updatedRows = updateBuilder.update(props);
+				if(updatedRows > 0) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	@Override
 	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
 		TransactionManager transactionManager = null;
 		try {

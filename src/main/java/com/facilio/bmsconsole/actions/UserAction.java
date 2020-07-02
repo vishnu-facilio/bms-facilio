@@ -647,7 +647,6 @@ public class UserAction extends FacilioAction {
 	
 	public String uploadUserAvatar() throws Exception {
 
-			FileStore fs = FacilioFactory.getFileStore();
 //			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
 			String url = AccountUtil.getUserBean().updateUserPhoto(userId, user);
@@ -664,11 +663,12 @@ public class UserAction extends FacilioAction {
 		
 		long photoId = AccountUtil.getCurrentUser().getPhotoId();
 		if (photoId > 0) {
-			FileStore fs = FacilioFactory.getFileStore();
-			fs.deleteFile(photoId);
+			boolean isDeleted = AccountUtil.getUserBean().deleteUserPhoto(userId, photoId);
+			if(isDeleted){
+				return SUCCESS;
+			}
 		}
-		
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	private String error;

@@ -113,6 +113,10 @@ public class IAMUserUtil {
 	public static String updateUserPhoto(long uid, User user) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
 	}
+
+	public static boolean deleteUserPhoto(long uid, long photoId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserPhoto(uid, photoId));
+	}
 	
 	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generatePermalinkForURL(url, uId, orgId));

@@ -61,7 +61,9 @@ public interface UserBean {
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
+	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
+
+	public User getAppUserForUserName(String username, long appId, long orgId) throws Exception;
     
     public User getUser(String email, String identifier) throws Exception;
     

@@ -764,6 +764,11 @@ public class UserBeanImpl implements UserBean {
 		return IAMUserUtil.updateUserPhoto(uid, user);
 	}
 
+	@Override
+	public boolean deleteUserPhoto(long uid, long photoId) throws Exception {
+		return IAMUserUtil.deleteUserPhoto(uid, photoId);
+	}
+
 	private void addAccessibleSpace(long uid, List<Long> accessibleSpace) throws Exception {
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
