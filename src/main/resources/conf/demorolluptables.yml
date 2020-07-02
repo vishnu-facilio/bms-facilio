@@ -151,6 +151,10 @@ demoRollUpTableList :
      
    - tableName: Chiller_Readings2 
      columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME
+
+   - tableName: Formula_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
      primaryColumn: TTIME      
  
     

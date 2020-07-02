@@ -5,9 +5,9 @@ import com.facilio.modules.FacilioEnum;
 
 public enum FaultType implements FacilioEnum{
 	
-	CONTROL_FAULTS("Control Faults"),
-	EQUIPMENT_FAULTS("Equipment Faults"),
-	OPERATIONAL_FAULTS("Operational Faults"),
+	CONTROL_FAULT("Control Fault"),
+	EQUIPMENT_FAULT("Equipment Fault"),
+	OPERATIONAL_FAULT("Operational Fault"),
 	;
 	
 	private String name;
