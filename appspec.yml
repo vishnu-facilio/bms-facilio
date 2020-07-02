@@ -3,6 +3,8 @@ os: linux
 files:
   - source: /ROOT.war
     destination: /home/facilio/tomcat/webapps
+  - source: /clean_server.sh
+    destination: /home/facilio
   - source: /kill_server.sh
     destination: /home/facilio
   - source: /start_server.sh
@@ -72,6 +74,10 @@ permissions:
 hooks:
   ApplicationStop:
     - location: /kill_server.sh
+      timeout: 3600
+      runas: facilio
+  BeforeInstall:
+    - location: /clean_server.sh
       timeout: 3600
       runas: facilio
   AfterInstall:
