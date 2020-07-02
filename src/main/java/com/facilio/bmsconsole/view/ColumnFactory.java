@@ -1227,7 +1227,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("client", "Client"));
-		columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
+		//columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
 		return columns;
 	}
 
@@ -1236,7 +1236,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("email", "Email"));
-		columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
+		//columns.add(new ViewField("isClientPortalAccess", "Client Portal Access"));
 
 		return columns;
 	}
