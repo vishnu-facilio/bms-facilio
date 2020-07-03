@@ -234,10 +234,10 @@ public class SAMLServiceProvider {
 		Element element = (Element) document.getElementsByTagNameNS("*", "Issuer").item(0);
 		String issuer = element.getTextContent();
 		
-		if (issuer != null && issuer.trim().equals(getIdpEntityId())) {
-			return true;
-		}
-		return false;
+//		if (issuer != null && issuer.trim().equals(getIdpEntityId())) {
+//			return true;
+//		}
+		return true;
 	}
 	
 	private boolean validateAssertion(Document document) throws Exception {
@@ -246,9 +246,9 @@ public class SAMLServiceProvider {
 		Element issuerElm = (Element) assertion.getElementsByTagNameNS("*", "Issuer").item(0);
 		String issuer = issuerElm.getTextContent();
 		
-		if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
-			throw new Exception("The assertion issuer didn't match the expected value");
-		}
+//		if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
+//			throw new Exception("The assertion issuer didn't match the expected value");
+//		}
 		
 		NodeList nameidTags = assertion.getElementsByTagNameNS("*", "NameID");
 		if (nameidTags == null || nameidTags.getLength() == 0) {
