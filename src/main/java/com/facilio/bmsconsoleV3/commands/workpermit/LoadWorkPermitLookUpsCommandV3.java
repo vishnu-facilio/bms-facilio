@@ -38,6 +38,7 @@ public class LoadWorkPermitLookUpsCommandV3 extends FacilioCommand {
         LookupField requestedByField = (LookupField)fieldsAsMap.get("requestedBy");
         LookupField issuedToUserField = (LookupField)fieldsAsMap.get("issuedToUser");
         LookupField baseSpaceField = (LookupField)fieldsAsMap.get("space");
+        LookupField workPermitTypeField = (LookupField)fieldsAsMap.get("workPermitType");
 
         additionaLookups.add(vendorField);
         additionaLookups.add(ticketField);
@@ -46,6 +47,7 @@ public class LoadWorkPermitLookUpsCommandV3 extends FacilioCommand {
         additionaLookups.add(requestedByField);
         additionaLookups.add(issuedToUserField);
         additionaLookups.add(baseSpaceField);
+        additionaLookups.add(workPermitTypeField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
 
         return false;

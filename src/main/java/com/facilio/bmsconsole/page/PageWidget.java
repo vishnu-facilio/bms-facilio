@@ -250,6 +250,7 @@ public class PageWidget {
 		APPROVERS("approvers"),
 		APPROVAL_FIELDS_WIDGET("approvalFields"),
 		QUOTATION_PREVIEW("quotationPreview"),
+		WORKPERMIT_PREVIEW("workPermitPreview"),
 		
 		CONNNECTED_APP("connectedApp")
  		;

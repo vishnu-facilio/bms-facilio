@@ -148,7 +148,7 @@ public class APIv3Config {
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
-                    .afterFetch(new LoadWorkPermitRecurringInfoCommandV3())
+                    .afterFetch(TransactionChainFactoryV3.getWorkPermitSummaryAfterFetchChain())
                 .build();
     }
 

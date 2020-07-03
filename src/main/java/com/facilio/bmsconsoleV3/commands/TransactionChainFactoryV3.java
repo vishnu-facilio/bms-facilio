@@ -9,7 +9,10 @@ import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAcce
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
@@ -22,7 +25,9 @@ import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCo
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
+import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -55,6 +60,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
 
+        return c;
+    }
+
+    public static FacilioChain getWorkPermitSummaryAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadWorkPermitRecurringInfoCommandV3());
+        c.addCommand(new FillWorkPermitChecklistCommand());
         return c;
     }
 

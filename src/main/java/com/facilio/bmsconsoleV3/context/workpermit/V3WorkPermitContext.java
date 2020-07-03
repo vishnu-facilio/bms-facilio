@@ -11,6 +11,8 @@ import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class V3WorkPermitContext extends V3Context {
     /**
      *
@@ -35,6 +37,15 @@ public class V3WorkPermitContext extends V3Context {
     private PermitType permitType;
     private WorkPermitTypeContext workPermitType;
     private V3PeopleContext people;
+    private List<WorkPermitChecklistContext> checklist;
+
+    public List<WorkPermitChecklistContext> getChecklist() {
+        return checklist;
+    }
+
+    public void setChecklist(List<WorkPermitChecklistContext> checklist) {
+        this.checklist = checklist;
+    }
 
 
     public WorkPermitTypeContext getWorkPermitType() {
