@@ -2,12 +2,9 @@ package com.facilio.v3;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.LoadViewCommand;
-import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -23,8 +20,6 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -95,9 +90,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         }
         return beanClass;
     }
-
-
-
 
     private void handleListRequest(String moduleName) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
@@ -199,7 +191,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
         long id = recordMap.get(moduleName).get(0).getId();
         this.setId(id);
-        summary();
+        handleSummaryRequest(moduleName, id);
     }
 
     private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
@@ -255,7 +247,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }
 
-        summary();
+        handleSummaryRequest(moduleName, id);
     }
 
 
@@ -286,7 +278,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }
 
-        summary();
+        handleSummaryRequest(moduleName, id);
     }
 
     private void addFiles() throws Exception {
