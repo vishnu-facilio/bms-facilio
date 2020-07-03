@@ -302,6 +302,10 @@ public class FormsAPI {
 			fields = getFormFieldsFromSections(form.getSections());
 		}
 		
+		addFormFields(formId, fields, false);
+	}
+	
+	public static void addFormFields(long formId, List<FormField> fields, boolean seqInitialized) throws Exception {
 		if (fields != null) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			int i = 1;
@@ -310,7 +314,9 @@ public class FormsAPI {
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
-				f.setSequenceNumber(i);
+				if (!seqInitialized) {
+					f.setSequenceNumber(i++);
+				}
 				if (f.getSpan() == -1) {
 					f.setSpan(1);
 				}
@@ -322,7 +328,6 @@ public class FormsAPI {
 					prop.put("required", false);
 				}
 				fieldProps.add(prop);
-				++i;
 			}
 			
 			FacilioModule formFieldModule = ModuleFactory.getFormFieldsModule();
@@ -335,7 +340,7 @@ public class FormsAPI {
 		}
 	}
 	
-	private static void addFormSections (long formId, List<FormSection> sections) throws Exception {
+	private static void addFormSections (long formId, List<FormSection> sections, boolean... seqInitialized) throws Exception {
 		if (sections != null) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			int i = 1;
@@ -345,8 +350,10 @@ public class FormsAPI {
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
-				f.setSequenceNumber(i);
-				sectionMap.put(Long.valueOf(i++), f);
+				if (seqInitialized.length == 0 || !seqInitialized[0]) {
+					f.setSequenceNumber(i++);
+				}
+				sectionMap.put(f.getSequenceNumber(), f);
 				Map<String, Object> prop = FieldUtil.getAsProperties(f);
 				props.add(prop);
 			}
@@ -375,64 +382,133 @@ public class FormsAPI {
 		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
 	
-	public static int deleteFormFields(long formId) throws Exception {
-		deleteFormSections(formId);
+	private static int deleteFormFields(List<Long> fieldIds) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getIdCondition(fieldIds, module))
 														;
 		return deleteBuilder.delete();
 	}
 	
-	private static int deleteFormSections(long formId) throws Exception {
+	private static int deleteFormSections(List<Long> sectionIds) throws Exception {
 		FacilioModule module = ModuleFactory.getFormSectionModule();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getIdCondition(sectionIds, module))
 														;
 		return deleteBuilder.delete();
 	}
 	
-	// To update fields based on formfieldid...values for fieldNamesToUpdate should not be null
+	// To update fields based on formfieldid...if fieldNamesToUpdate is not given, then the all the values for the record should be set
 	public static void updateFormFields(List<FormField> formFields, List<String> fieldNamesToUpdate) throws Exception {
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
+		List<FacilioField> updateFields = FieldFactory.getFormFieldsFields();
+		updateFormRecords(formFields, fieldNamesToUpdate, module, updateFields, FormField.class);
+	}
+	public static void updateFormSections(List<FormSection> formSections, List<String> fieldNamesToUpdate) throws Exception {
+		FacilioModule module = ModuleFactory.getFormSectionModule();
+		List<FacilioField> updateFields = FieldFactory.getFormSectionFields();
+		updateFormRecords(formSections, fieldNamesToUpdate, module, updateFields, FormSection.class);
+	}
+	
+	
+	// To update fields based on id...if fieldNamesToUpdate is not given, then the all the values for the record should be set
+	public static <E> void updateFormRecords(List<E> records, List<String> fieldNamesToUpdate, FacilioModule module, List<FacilioField> updateFields, Class<E> classObj) throws Exception {
 		
-		List<FacilioField> updateFields = new ArrayList<>();
-		for(String fieldName: fieldNamesToUpdate) {
-			updateFields.add(fieldMap.get(fieldName));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(updateFields);
+
+		if (fieldNamesToUpdate != null) {
+			updateFields = new ArrayList<>();
+			for(String fieldName: fieldNamesToUpdate) {
+				updateFields.add(fieldMap.get(fieldName));
+			}
 		}
 
-		List<Map<String, Object>> props = FieldUtil.getAsMapList(formFields, FormField.class);
-		
-		List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = props.stream().map(field -> {
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(records, classObj);
+		List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+		for(Map<String, Object> field: props) {
 			GenericUpdateRecordBuilder.BatchUpdateByIdContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
-			
-			for(String fieldName: fieldNamesToUpdate) {
-				updateVal.addUpdateValue(fieldName,  field.get(fieldName));
-			}
-			
-			updateVal.setWhereId((long) field.get("id"));
 
-			return updateVal;
-		}).collect(Collectors.toList());
+			for(FacilioField updateField: updateFields) {
+				String name = updateField.getName();
+				updateVal.addUpdateValue(name,  field.get(name));
+			}
+
+			updateVal.setWhereId((long) field.get("id"));
+			batchUpdateList.add(updateVal);
+		}
 
 		new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
-				.fields(updateFields)
-				.batchUpdateById(batchUpdateList)
-				;
+		.table(module.getTableName())
+		.fields(updateFields)
+		.batchUpdateById(batchUpdateList)
+		;
 	}
 	
 	public static void initFormFields(FacilioForm form) throws Exception {
-		FormsAPI.deleteFormFields(form.getId());
-		FormsAPI.addFormFields(form.getId(), form);
+		List<FormSection> sectionsToUpdate = new ArrayList<>();
+		List<FormSection> sectionsToAdd = new ArrayList<>();
+		
+		List<FormField> fieldsToUpdate = new ArrayList<>();
+		List<FormField> fieldsToAdd = new ArrayList<>();
+		
+		
+		FacilioForm dbForm = getFormFromDB(form.getId());
+		List<FormField> dbFields = getFormFieldsFromSections(dbForm.getSections());
+		
+		List<Long> dbFieldIds = dbFields.stream().map(field -> field.getId()).collect(Collectors.toList());
+		List<Long> dbSectionIds =  dbForm.getSections().stream().map(field -> field.getId()).collect(Collectors.toList());
+		
+		int sectionSeq = 1;
+		int formSeq = 1;
+		for(FormSection section: form.getSections()) {
+			section.setSequenceNumber(sectionSeq++);
+			if (section.getId() == -1) {
+				sectionsToAdd.add(section);
+			}
+			else {
+				dbSectionIds.remove(section.getId());
+				sectionsToUpdate.add(section);
+			}
+			
+			
+			for(FormField field: section.getFields()) {
+				field.setSequenceNumber(formSeq++);
+				field.setSectionId(section.getId());
+				if (field.getId() == -1) {
+					fieldsToAdd.add(field);
+				}
+				else {
+					dbFieldIds.remove(field.getId());
+					field.setFormId(form.getId());
+					fieldsToUpdate.add(field);
+				}
+			}
+		}
+		
+		
+		
+		if (!dbSectionIds.isEmpty()) {
+			deleteFormSections(dbSectionIds);
+		}
+		if (!sectionsToUpdate.isEmpty()) {
+			updateFormSections(sectionsToUpdate, null);
+		}
+		if (!sectionsToAdd.isEmpty()) {
+			addFormSections(form.getId(), sectionsToAdd, true);
+		}
+		
+		if (!dbFieldIds.isEmpty()) {
+			deleteFormFields(dbFieldIds);
+		}
+		if (!fieldsToUpdate.isEmpty()) {
+			updateFormFields(fieldsToUpdate, null);
+		}
+		if (!fieldsToAdd.isEmpty()) {
+			addFormFields(form.getId(), fieldsToAdd, true);
+		}
 	}
 	
 	public static List<FacilioForm> getFormsFromDB(Collection<Long> ids) throws Exception {
