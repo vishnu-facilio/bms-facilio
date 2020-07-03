@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.workpermit;
 
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class WorkPermitTypeChecklistCategoryContext extends V3Context {
 
     /**
@@ -13,6 +15,15 @@ public class WorkPermitTypeChecklistCategoryContext extends V3Context {
     private String description;
     private ValidationType validationType;
     private WorkPermitTypeContext workPermitType;
+    private List<WorkPermitTypeChecklistContext> checklist;
+
+    public List<WorkPermitTypeChecklistContext> getChecklist() {
+        return checklist;
+    }
+
+    public void setChecklist(List<WorkPermitTypeChecklistContext> checklist) {
+        this.checklist = checklist;
+    }
 
     public String getName() {
         return name;

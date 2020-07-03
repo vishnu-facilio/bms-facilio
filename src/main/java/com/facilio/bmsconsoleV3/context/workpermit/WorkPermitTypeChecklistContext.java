@@ -33,7 +33,10 @@ public class WorkPermitTypeChecklistContext extends V3Context {
     }
 
     public Integer getValidationType() {
-        return validationType.getIndex();
+        if (validationType != null) {
+            return validationType.getIndex();
+        }
+        return null;
     }
 
     public ValidationType getValidationTypeEnum() {

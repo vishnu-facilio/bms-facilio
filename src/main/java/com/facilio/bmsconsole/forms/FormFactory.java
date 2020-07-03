@@ -352,8 +352,6 @@ public class FormFactory {
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
 		List<FacilioForm> visitorLoggingForms = Arrays.asList(getPortalVisitorPreRegisterForm());
 		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm(), getPortalVendorForm());
-		
-		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
 		List<FacilioForm> watchListForm = Arrays.asList(getWatchListForm());
 		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
@@ -376,6 +374,11 @@ public class FormFactory {
 		List<FacilioForm> toolTypesFormsList = Arrays.asList(getTooltypesForm());
 		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
 
+		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
+		List<FacilioForm> workPermitTypeForm = Arrays.asList(getWorkPermitTypeForm());
+		List<FacilioForm> workPermitTypeChecklistCategoryForm = Arrays.asList(getWorkPermitTypeChecklistCategoryForm());
+		List<FacilioForm> workPermitTypeChecklistForm = Arrays.asList(getWorkPermitTypeChecklistForm());
+
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -384,7 +387,6 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
-				.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, getFormMap(workPermitForm))
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
@@ -408,6 +410,10 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.ITEM_TYPES, getFormMap(itemTypesFormsList))
 				.put(FacilioConstants.ContextNames.TOOL_TYPES, getFormMap(toolTypesFormsList))
 				.put(FacilioConstants.ContextNames.QUOTE, getFormMap(quotationFormsList))
+				.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, getFormMap(workPermitForm))
+				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE, getFormMap(workPermitTypeForm))
+				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, getFormMap(workPermitTypeChecklistCategoryForm))
+				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
 				.build();
 	}
 	
@@ -2158,6 +2164,49 @@ public class FormFactory {
 		fields.add(new FormField("notes", FieldDisplayType.TEXTAREA, "Customer Notes", Required.OPTIONAL, 13, 1));
 
 		return fields;
+	}
+
+	public static FacilioForm getWorkPermitTypeForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK PERMIT TYPE");
+		form.setName("default_workpermittype_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("type", FieldDisplayType.TEXTBOX, "Type", Required.REQUIRED, 1, 1));
+		form.setFields(fields);
+		return form;
+	}
+
+	public static FacilioForm getWorkPermitTypeChecklistCategoryForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK PERMIT TYPE CHECKLIST CATEGORY");
+		form.setName("default_workpermittypechecklistcategory_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+
+		form.setFields(fields);
+		return form;
+	}
+
+	public static FacilioForm getWorkPermitTypeChecklistForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK PERMIT TYPE CHECKLIST");
+		form.setName("default_workpermittypechecklist_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("item", FieldDisplayType.TEXTBOX, "Item", Required.REQUIRED, 1, 1));
+		form.setFields(fields);
+		return form;
 	}
 
 }

@@ -127,7 +127,9 @@ public class QuotationAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quote"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
                 .fetchSupplements(fetchSupplementsList);
         List<QuotationLineItemsContext> list = builder.get();
-        quotation.setLineItems(list);
+        if (CollectionUtils.isNotEmpty(list)) {
+            quotation.setLineItems(list);
+        }
     }
 
     public static void setQuotationAssociatedTerms(QuotationContext quotation) throws Exception {
@@ -143,7 +145,9 @@ public class QuotationAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quote"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
                 .fetchSupplement((LookupField) fieldsAsMap.get("terms"));
         List<QuotationAssociatedTermsContext> list = builder.get();
-        quotation.setTermsAssociated(list);
+        if (CollectionUtils.isNotEmpty(list)) {
+            quotation.setTermsAssociated(list);
+        }
     }
 
     public static List<TaxGroupContext> getTaxesForGroups(List<Long> parentTaxIds) throws Exception {

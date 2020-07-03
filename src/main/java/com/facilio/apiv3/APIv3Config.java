@@ -2,7 +2,9 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.apiv3.sample.*;
-import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
+import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
@@ -12,7 +14,6 @@ import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAcce
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.AddPeopleAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -25,13 +26,13 @@ import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -307,6 +308,35 @@ public class APIv3Config {
                     .beforeFetch(new LoadClientContactLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadClientContactLookupCommandV3())
+                .build();
+    }
+
+    @Module("workpermittypechecklist")
+    public static Supplier<V3Config> getWorkPermitTypeChecklist() {
+        return () -> new V3Config(WorkPermitTypeChecklistContext.class)
+                .create()
+                .beforeSave(new WorkPermitTypeChecklistValidationCommand())
+
+                .update()
+                .beforeSave(new WorkPermitTypeChecklistValidationCommand())
+
+                .list()
+                .beforeFetch(new LoadWorkPermitTypeChecklistLookupsCommand())
+                .build();
+    }
+
+    @Module("workpermittypechecklistcategory")
+    public static Supplier<V3Config> getWorkPermitTypeChecklistCategory() {
+        return () -> new V3Config(WorkPermitTypeChecklistCategoryContext.class)
+                .create()
+                .beforeSave(new WorkPermitChecklistCategoryValidationCommand())
+
+                .update()
+                .beforeSave(new WorkPermitChecklistCategoryValidationCommand())
+
+                .list()
+                .afterFetch(new WorkPermitFillChecklistForCategoryCommand())
+
                 .build();
     }
 
