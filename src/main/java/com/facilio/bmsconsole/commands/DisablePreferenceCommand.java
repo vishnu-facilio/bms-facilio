@@ -27,8 +27,11 @@ public class DisablePreferenceCommand extends FacilioCommand{
 		if(pref.getRecordId() > 0) {
 			preference = PreferenceFactory.getModuleRecordPreference(module.getName(), pref.getPreferenceName());
 		}
-		else {
+		else if(pref.getModuleId() > 0){
 			preference = PreferenceFactory.getModulePreference(module.getName(), pref.getPreferenceName());
+		}
+		else {
+			preference = PreferenceFactory.getOrgPreference(pref.getPreferenceName());
 		}
 		preference.disable(pref.getRecordId(), pref.getModuleId());
 		int rows_updated = PreferenceAPI.deleteEnabledPreference(pref.getId());

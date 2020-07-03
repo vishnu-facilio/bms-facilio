@@ -9978,6 +9978,9 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 VALUES (${orgId}, @TAX_GROUP_MODULEID, 'childTax', 'Child Tax', 10, 'CHILD_TAX_ID', 7, true, false, true,1);
 INSERT INTO LookupFields (FIELDID, ORGID, LOOKUP_MODULE_ID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, @TAX_MODULEID);
 
+--Tax application Preference
+INSERT INTO Preferences (ORGID, PREFERENCE_NAME, IS_ACTIVE, FORM_DATA) VALUES (${orgId}, 'taxApplication',true, '{"taxApplication" : 1}');
+
 
 -- Quotation Module Start ***
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED, STATE_FLOW_ENABLED) VALUES (${orgId}, 'quote', 'Quote', 'Quotation', @BASE_ENTITY_MODULE_TYPE, true, true);

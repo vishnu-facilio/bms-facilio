@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.PreferenceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.lang3.StringUtils;
 
 public class EnablePreferenceCommand extends FacilioCommand {
 
@@ -21,39 +22,42 @@ public class EnablePreferenceCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		String name = (String) context.get(FacilioConstants.ContextNames.PREFERENCE_NAME);
-		
+		Long enabledPrefId = (Long)context.get(FacilioConstants.ContextNames.PREFERENCE_ID);
+
 		if(name == null) {
 			throw new IllegalArgumentException("Preference name is mandatory");
 		}
-		if(moduleName == null) {
-			throw new IllegalArgumentException("Module name is mandatory");
-		}
 		Preference preference = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-	
-		PreferenceMetaContext pref = PreferenceAPI.checkForEnabledPreference(module.getModuleId(), name, recordId);
-		if(pref != null) {
-			if(pref.getRecordId() > 0) {
-				preference = PreferenceFactory.getModuleRecordPreference(module.getName(), pref.getPreferenceName());
+		FacilioModule module = StringUtils.isNotEmpty(moduleName) ? modBean.getModule(moduleName) : null;
+
+		if(recordId > 0) {
+			if(module != null) {
+				preference = PreferenceFactory.getModuleRecordPreference(module.getName(), name);
 			}
 			else {
-				preference = PreferenceFactory.getModulePreference(module.getName(), pref.getPreferenceName());
+				throw new IllegalArgumentException("Module name is mandatory for record level preferences");
 			}
-			preference.disable(pref.getRecordId(), pref.getModuleId());
-			PreferenceAPI.deleteEnabledPreference(pref.getId());
-			context.put(FacilioConstants.ContextNames.PREFERENCE_ID, null);
+		}
+		else if(recordId <= 0 && module != null){
+			preference = PreferenceFactory.getModulePreference(module.getName(), name);
 		}
 		else {
-			if(recordId > 0) {
-				preference = PreferenceFactory.getModuleRecordPreference(moduleName, name);
+			preference = PreferenceFactory.getOrgPreference(name);
+		}
+
+		if(enabledPrefId != null && enabledPrefId > 0) {
+			PreferenceMetaContext pref = PreferenceAPI.checkForEnabledPreference(module != null ? module.getModuleId() : -1, name, recordId);
+			if (pref != null) {
+				preference.disable(pref.getRecordId(), pref.getModuleId());
 			}
-			else {
-				preference = PreferenceFactory.getModulePreference(moduleName, name);
+			else{
+				throw new IllegalArgumentException("Invalid pref id");
 			}
 		}
+
 		if (preference != null) {
-			preference.subsituteAndEnable(map, recordId > 0 ? recordId : -1, module.getModuleId());
+			preference.subsituteAndEnable(map, recordId > 0 ? recordId : -1, module != null ? module.getModuleId() : -1);
 		}
 		else {
 			throw new IllegalArgumentException("Invalid preference configuration");

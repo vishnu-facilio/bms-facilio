@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,10 +16,12 @@ import com.facilio.constants.FacilioConstants;
 public class PreferenceFactory {
 	private final static Map<String, List<Preference>> map = new HashMap<String, List<Preference>>();
 	private final static Map<String, List<Preference>> modulePrefMap = new HashMap<String, List<Preference>>();
-	
+	private final static Map<String, Preference> orgPrefMap = new HashMap<String, Preference>();
+
 	static {
 		initializeMap();
 		initializeModuleMap();
+		initializeOrgPrefMap();
 	}
 	
 	private static void initializeMap() {
@@ -32,7 +32,11 @@ public class PreferenceFactory {
 		map.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getContractsPrefList());
 		map.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, getContractsPrefList());
 	}
-	
+
+	private static void initializeOrgPrefMap() {
+		orgPrefMap.put("taxApplication", QuotationAPI.getTaxPref());
+	}
+
 	private static void initializeModuleMap() {
 		
 	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
@@ -50,7 +54,11 @@ public class PreferenceFactory {
 	public static List<Preference> getAllPreferencesForModule(String moduleName) {
 		return modulePrefMap.get(moduleName);
 	}
-	
+
+	public static Map<String, Preference> getAllPreferencesForOrg() {
+		return orgPrefMap;
+	}
+
 	public static Preference getModuleRecordPreference(String moduleName, String name) {
 		List<Preference> list = map.get(moduleName);
 		if (CollectionUtils.isNotEmpty(list)) {
@@ -73,6 +81,11 @@ public class PreferenceFactory {
 			}
 		}
 		return null;
+	}
+
+	public static Preference getOrgPreference(String name) {
+		Preference pref = orgPrefMap.get(name);
+		return pref;
 	}
 	
 	private static List<Preference> getContractsPrefList() {
@@ -150,5 +163,6 @@ public class PreferenceFactory {
 		visitorLogGeneralPreferences.add(VisitorManagementAPI.getVisitorCheckOutPref());
 		return visitorLogGeneralPreferences;
 	}
+
 
 }

@@ -3,7 +3,11 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
@@ -19,6 +23,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -408,4 +413,31 @@ public class QuotationAPI {
     public static boolean lookupValueIsNotEmpty(ModuleBaseWithCustomFields context) {
         return context != null && context.getId() > 0;
     }
+
+    public static Preference getTaxPref() {
+        FacilioForm form = new FacilioForm();
+        List<FormSection> sections = new ArrayList<FormSection>();
+        FormSection formSection = new FormSection();
+        formSection.setName("Tax Preference");
+        List<FormField> fields = new ArrayList<FormField>();
+        fields.add(new FormField("taxApplication", FacilioField.FieldDisplayType.SELECTBOX, "Apply Tax At", FormField.Required.REQUIRED, 1, 1));
+
+        formSection.setFields(fields);
+        sections.add(formSection);
+        form.setSections(sections);
+        form.setFields(fields);
+        form.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        return new Preference("taxApplication", "Tax Application Preference", form, "Choose how the tax rates are to be applied.") {
+            @Override
+            public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+            }
+
+            @Override
+            public void disable(Long recordId, Long moduleId) throws Exception {
+            }
+
+        };
+
+    }
+
 }

@@ -42,6 +42,7 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -68,17 +69,6 @@ import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.DevicesAPI;
-import com.facilio.bmsconsole.util.EncryptionUtil;
-import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.InventoryApi;
-import com.facilio.bmsconsole.util.ShiftAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
@@ -892,6 +882,8 @@ public class LoginAction extends FacilioAction {
 		
 		Map<String, Object> data = new HashMap<>();
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		data.put("orgPrefs", PreferenceAPI.getAllOrgPreferences());
+		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
 		data.put("users", users);
 		data.put("userSites", userSites);
 		account.put("data", data);
