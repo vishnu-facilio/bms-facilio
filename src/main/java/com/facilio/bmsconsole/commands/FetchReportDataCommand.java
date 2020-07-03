@@ -83,9 +83,14 @@ public class FetchReportDataCommand extends FacilioCommand {
 			reportState.put(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA, (Boolean)dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA));
 			report.setReportState(reportState);
 		}
-		
-		
-		
+
+		Boolean shouldIncludeMarked = (Boolean)
+				context.get(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED);
+		if (shouldIncludeMarked == null) {
+			shouldIncludeMarked = false;
+		}
+
+
 		if(report!=null && report.getReportState() != null && !report.getReportState().isEmpty()) {
 			if(report.getReportState().containsKey(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA)
 				&& (Boolean) report.getReportState().get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA) == true) {
@@ -130,7 +135,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
 		ReportDataContext sortedData = null;
 		if (sortPoint != null) {
-			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null);
+			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked);
 			reportData.add(sortedData);
 		}
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum());
@@ -141,7 +146,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					dataPoints.remove(dataPointList.get(0));
 					report.setHasEdit(false);
 				}else{
-					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
+					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked);
 					reportData.add(data);
 				}
 			}
@@ -174,7 +179,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		return null;
 	}
 	
-	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues) throws Exception {
+	private ReportDataContext fetchDataForGroupedDPList (List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues, boolean shouldIncludeMarked) throws Exception {
 		ReportDataContext data = new ReportDataContext();
 		data.setDataPoints(dataPointList);
 		
@@ -197,9 +202,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
 
-		FacilioField marked = modBean.getField("marked", baseModule.getName());
-		if (marked != null) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
+
+		if (!shouldIncludeMarked) {
+			FacilioField marked = modBean.getField("marked", baseModule.getName());
+			if (marked != null) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
+			}
 		}
 
 		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);

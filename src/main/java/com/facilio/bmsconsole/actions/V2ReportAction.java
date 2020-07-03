@@ -56,7 +56,6 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
@@ -162,7 +161,15 @@ public class V2ReportAction extends FacilioAction {
 		setResult("report", reportContext);
 		return SUCCESS;
 	}
-	
+
+	private Boolean shouldIncludeMarked;
+	public Boolean isShouldIncludeMarked() {
+		return shouldIncludeMarked;
+	}
+	public void setShouldIncludeMarked(Boolean shouldIncludeMarked) {
+		this.shouldIncludeMarked = shouldIncludeMarked;
+	}
+
 	public String fetchReportWithData() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -636,6 +643,9 @@ public class V2ReportAction extends FacilioAction {
 		}
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
+
+		// temporary variable
+		context.put(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED, shouldIncludeMarked);
 		
 		if(template != null) {
 			context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
@@ -1794,7 +1804,7 @@ public class V2ReportAction extends FacilioAction {
 //		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
 		setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 		setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
-		
+
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		if (module != null) {
 			setResult("module", module);
