@@ -2,8 +2,6 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -13,6 +11,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -116,6 +115,31 @@ public class V3RecordAPI {
         List<? extends ModuleBaseWithCustomFields> records = builder.get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records.get(0);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public static List<? extends ModuleBaseWithCustomFields> getRecordsList (String modName, List<Long> recordIds) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(modName);
+        List<FacilioField> fields = modBean.getAllFields(modName);
+
+        Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+        if (beanClassName == null) {
+            beanClassName = V3Context.class;
+        }
+        SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+                .module(module)
+                .beanClass(beanClassName)
+                .select(fields)
+                .andCondition(CriteriaAPI.getIdCondition(StringUtils.join(recordIds, ","), module))
+                ;
+
+        List<? extends ModuleBaseWithCustomFields> records = builder.get();
+        if(CollectionUtils.isNotEmpty(records)) {
+            return records;
         }
         else {
             return null;
