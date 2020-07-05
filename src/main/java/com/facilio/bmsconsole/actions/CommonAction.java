@@ -41,7 +41,7 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
 		context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
-		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, false);
+		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, true);
 		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, false);
 		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
