@@ -714,6 +714,7 @@ public enum ActionType {
 								workOrder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 								CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CREATE_WORKORDER, obj, (FacilioContext) context, lastOccurrence.getId() );
 								woContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+								woContext.put(FacilioConstants.ContextNames.TASK_MAP, workOrder.getTaskList());
 							}
 							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
 							c.execute();
