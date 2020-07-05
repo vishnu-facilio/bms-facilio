@@ -28,7 +28,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -666,16 +665,8 @@ public class ExportUtil {
 		}
 		if (specialFields) {
 			List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
-			for (int j = 0; j < viewFields.size(); j++) {
-				if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
-
-					viewFields.remove(viewFields.get(j));
-
-				}
-				if (viewFields.get(j).getField().getName().equals("noOfTasks")) {
-					viewFields.remove(viewFields.get(j));
-				}
-			}
+			viewFields.removeIf(viewField -> viewField.getField() != null && viewField.getField().getName().equals("noOfNotes"));
+			
 			ViewField comment = new ViewField("comment", "Comment");
 			FacilioField commentField = new FacilioField();
 			commentField.setName("comment");
