@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -22,6 +23,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
                 List<FacilioField> fields = modBean.getAllFields(module.getName());
+                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
                 FacilioStatus revisedStatus = TicketAPI.getStatus(module, "Revised");
                 FacilioStatus sentStatus = TicketAPI.getStatus(module, "Sent");
 
@@ -49,7 +52,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                     if (exitingQuotation.getModuleState() != null && exitingQuotation.getModuleState().getId() == sentStatus.getId()) {
                         quotation.setModuleState(revisedStatus);
                         quotation.setIsQuotationRevised(true);
-                        V3RecordAPI.updateRecord(quotation, module, fields);
+                        V3RecordAPI.updateRecord(quotation, module, Arrays.asList(fieldsMap.get("isQuotationRevised"),fieldsMap.get("moduleState")));
                         context.put(FacilioConstants.ContextNames.OLD_RECORD_ID, quotation.getId());
                         JSONObject info = new JSONObject();
                         info.put("quotationId", quotation.getId());

@@ -135,23 +135,6 @@ public class APIv3Config {
          */
     }
 
-    @Module("workpermit")
-    public static Supplier<V3Config> getWorkPermit() {
-        return () -> new V3Config(V3WorkPermitContext.class)
-                .create()
-                    .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
-                    .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
-                .update()
-                    .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
-                .list()
-                    .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
-                    .showStateFlowList()
-                .summary()
-                    .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
-                    .afterFetch(TransactionChainFactoryV3.getWorkPermitSummaryAfterFetchChain())
-                .build();
-    }
-
     @Module("insurance")
     public static Supplier<V3Config> getInsurance() {
         return () -> new V3Config(V3InsuranceContext.class)
@@ -308,6 +291,26 @@ public class APIv3Config {
                     .beforeFetch(new LoadClientContactLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadClientContactLookupCommandV3())
+                .build();
+    }
+
+    @Module("workpermit")
+    public static Supplier<V3Config> getWorkPermit() {
+        return () -> new V3Config(V3WorkPermitContext.class)
+                .create()
+                .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
+                .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
+
+                .update()
+                .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
+
+                .list()
+                .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
+                .showStateFlowList()
+
+                .summary()
+                .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getWorkPermitSummaryAfterFetchChain())
                 .build();
     }
 
