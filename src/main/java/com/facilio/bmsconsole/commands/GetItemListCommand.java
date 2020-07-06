@@ -74,7 +74,7 @@ public class GetItemListCommand extends FacilioCommand {
 					.on(ModuleFactory.getItemTypesModule().getTableName() + ".ID = "
 							+ ModuleFactory.getInventryModule().getTableName() + ".ITEM_TYPES_ID");
 			builder.andCustomWhere(
-					"(Item_Types.INDIVIDUAL_TRACKING = 0) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
+					"(Item_Types.INDIVIDUAL_TRACKING = 0 OR Item_Types.INDIVIDUAL_TRACKING IS NULL) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
 		} 
 		else if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory",

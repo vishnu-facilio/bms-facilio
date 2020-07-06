@@ -72,6 +72,14 @@ private ServiceStatus status;
 	public void setServiceVendors(List<ServiceVendorContext> serviceVendors) {
 		this.serviceVendors = serviceVendors;
 	}
-	
 
+	private double sellingPrice;
+
+	public double getSellingPrice() {
+		return sellingPrice;
+	}
+
+	public void setSellingPrice(double sellingPrice) {
+		this.sellingPrice = sellingPrice;
+	}
 }
