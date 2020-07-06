@@ -5,6 +5,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.Organization;
@@ -253,7 +254,11 @@ public class EnergyStarUtil {
 				.table(module.getTableName())
 				.andCriteria(deleteCriteria);
 
-		return deleteBuilder.delete();
+		int detedRows =  deleteBuilder.delete();
+		
+		LOGGER.log(Level.SEVERE, "module -- "+module+" deleteCriteria -- "+deleteCriteria + " detedRows -- "+detedRows);
+		
+		return detedRows;
 	}
 	
 	public static List<Map<String, Object>> fetchEnergyStarRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
