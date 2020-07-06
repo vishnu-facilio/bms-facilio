@@ -48,6 +48,10 @@ public class GetAutomationModulesCommand extends FacilioCommand {
        
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
+            FacilioModule bmsAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BMS_ALARM);
+            if (bmsAlarmModule != null) {
+                modules.add(bmsAlarmModule);
+            }
             FacilioModule agentAlarm = modBean.getModule(FacilioConstants.ContextNames.AGENT_ALARM);
 
             if (agentAlarm != null) {
