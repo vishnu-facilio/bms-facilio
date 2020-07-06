@@ -237,7 +237,6 @@ public class FieldFactory {
             workOrderFieldsInclude.add("resource");
             workOrderFieldsInclude.add("scheduledStart");
             workOrderFieldsInclude.add("sourceType");
-            workOrderFieldsInclude.add("status");
             workOrderFieldsInclude.add("moduleState");
             workOrderFieldsInclude.add("type");
             workOrderFieldsInclude.add("vendor");
