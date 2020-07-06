@@ -8,7 +8,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.struts2.dispatcher.multipart.StrutsUploadedFile;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -24,34 +23,40 @@ import com.facilio.modules.fields.LookupField;
 
 public class SaveSubFormCommand extends FacilioCommand {
 
-    private ModuleBaseWithCustomFields getRecord(Context context) {
+    private List<ModuleBaseWithCustomFields> getRecord(Context context) {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        return recordMap.get(moduleName).get(0);
+        return recordMap.get(moduleName);
     }
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ModuleBaseWithCustomFields record = getRecord(context);
-        if (record == null) {
+        List<ModuleBaseWithCustomFields> records = getRecord(context);
+        if (CollectionUtils.isEmpty(records)) {
             return false;
         }
 
-        Map<String, List<Map<String, Object>>> subFormMap = record.getSubForm();
-        if (MapUtils.isEmpty(subFormMap)) {
-            return false;
-        }
-
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         String mainModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-        Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-        for (String moduleName : subFormMap.keySet()) {
-            List<Map<String, Object>> subForm = subFormMap.get(moduleName);
-            List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subForm, record.getId());
-            recordMap.put(moduleName, beanList);
-        }
-        context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+        for (ModuleBaseWithCustomFields record: records) {
+            Map<String, List<Map<String, Object>>> subFormMap = record.getSubForm();
+            if (MapUtils.isEmpty(subFormMap)) {
+                continue;
+            }
 
+            for (String moduleName : subFormMap.keySet()) {
+                List<Map<String, Object>> subForm = subFormMap.get(moduleName);
+                List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subForm, record.getId());
+                List<ModuleBaseWithCustomFields> list = recordMap.get(moduleName);
+                if (list == null) {
+                    recordMap.put(moduleName, new ArrayList<>());
+                }
+                recordMap.get(moduleName).addAll(beanList);
+            }
+        }
+
+        context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
         return false;
     }
 
