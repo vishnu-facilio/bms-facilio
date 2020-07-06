@@ -89,16 +89,16 @@ public class SaveSubFormCommand extends FacilioCommand {
 
         for (Map<String, Object> map : maps) {
             map.put(lookupField.getName(), parentObject);
-            Map<FacilioField, StrutsUploadedFile> fileMap = new HashMap<>();
+            Map<FacilioField, File> fileMap = new HashMap<>();
             for (FacilioField f : fileFields) {
                 Object remove = map.remove(f.getName());
                 if (remove != null) {
-                    fileMap.put(f, (StrutsUploadedFile) remove);
+                   fileMap.put(f, (File) remove);
                 }
             }
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
             for (FacilioField field : fileMap.keySet()) {
-                File file = fileMap.get(field).getContent();
+                File file = fileMap.get(field);
                 if (field.isDefault()) {
                     PropertyUtils.setProperty(moduleRecord, field.getName(), file);
                 }
