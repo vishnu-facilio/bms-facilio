@@ -103,7 +103,7 @@ public class EnergyStarSyncMeterDataCommand extends FacilioCommand {
 		
 		Criteria deleteCriteria = new Criteria();
 		deleteCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), meter.getId()+"", NumberOperators.EQUALS));
-		deleteCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), logger.getStartTime()+","+logger.getEndTime(), DateOperators.BETWEEN));
+		deleteCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("fromDate"), logger.getStartTime()+","+logger.getEndTime(), DateOperators.BETWEEN));
 		
 		EnergyStarUtil.deleteEnergyStarRelated(meterDataModule, deleteCriteria);
 	}
