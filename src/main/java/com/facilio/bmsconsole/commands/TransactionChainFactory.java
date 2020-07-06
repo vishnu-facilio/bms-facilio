@@ -902,6 +902,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}
+
+		public static FacilioChain previousRecordRuleExecutionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchPreviousRecordsRuleMatchingRecordsCommand());
+			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
+			return c;
+		}
 		
 		public static FacilioChain recordRuleExecutionChain() {
 			FacilioChain c = getDefaultChain();

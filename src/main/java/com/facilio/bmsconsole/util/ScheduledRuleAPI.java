@@ -63,11 +63,13 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	protected static void addScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
 
+		String jobName = rule.getSchedulerJobName();
+
 		if (rule.getTimeObj() != null) {
-			FacilioTimer.scheduleCalendarJob(rule.getId(), "ScheduledRuleExecution", startTime, getDateSchedule(rule), "facilio");
+			FacilioTimer.scheduleCalendarJob(rule.getId(), jobName, startTime, getDateSchedule(rule), "facilio");
 		}
 		else {
-			FacilioTimer.schedulePeriodicJob(rule.getId(), "ScheduledRuleExecution", 300, DATE_TIME_RULE_INTERVAL * 60, "facilio");
+			FacilioTimer.schedulePeriodicJob(rule.getId(), jobName, 300, DATE_TIME_RULE_INTERVAL * 60, "facilio");
 		}
 	}
 	
@@ -77,7 +79,7 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
-		FacilioTimer.deleteJob(rule.getId(), "ScheduledRuleExecution");
+		FacilioTimer.deleteJob(rule.getId(), rule.getSchedulerJobName());
 	}
 	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30

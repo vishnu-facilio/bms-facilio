@@ -343,6 +343,7 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         NORMAL,
         SCHEDULED,
         CONDITIONED,
+        FIELD_SCHEDULED,
         ;
 
         public int getValue() {

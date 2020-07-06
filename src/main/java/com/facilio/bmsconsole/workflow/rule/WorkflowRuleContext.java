@@ -555,7 +555,7 @@ public class WorkflowRuleContext implements Serializable {
 		READING_ALARM_RULE,			//24
 		
 		ALARM_RCA_RULES(false,true,true),
-		ASSET_NOTIFICATION_RULE,		// Not in use
+		STATE_TRANSACTION_FIELD_SCHEDULED,
 		PM_READING_TRIGGER,			// 27
 		
 		STATE_RULE(true),
@@ -743,9 +743,8 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		return false;
 	}
-	
-	
-	
-	
-		
+
+	public String getSchedulerJobName() {
+		return "ScheduledRuleExecution";
+	}
 }

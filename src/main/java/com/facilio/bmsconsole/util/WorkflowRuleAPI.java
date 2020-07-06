@@ -26,6 +26,7 @@ import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -107,12 +108,7 @@ public class WorkflowRuleAPI {
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
-			case SLA_POLICY_RULE:
-//				addExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), ruleProps);
-//				SLAWorkflowAPI.addEscalations((SLAPolicyContext) rule);
-				break;
 			case SLA_WORKFLOW_RULE:
-//				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
 				SLAWorkflowAPI.addSLACommitmentDuration((SLAWorkflowCommitmentRuleContext) rule);
 				break;
 			case APPROVAL_RULE:
@@ -783,6 +779,9 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, AlarmWorkflowRuleContext.class);
 							break;
+						case STATE_TRANSACTION_FIELD_SCHEDULED:
+							rule = FieldUtil.getAsBeanFromMap(prop, StateTransitionFieldScheduleRuleContext.class);
+							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 							break;
@@ -1022,22 +1021,35 @@ public class WorkflowRuleAPI {
 		
 		RuleType[] ruleTypes = new RuleType[ruleTypeList.size()];
 		return ruleTypeList.toArray(ruleTypes);
-	}	
-	
-	public static WorkflowRuleContext getWorkflowRuleByRuletype(long parentRuleId,RuleType ruletype) throws Exception {
+	}
+
+	public static List<WorkflowRuleContext> getWorkflowRuleByRuletype(List<Long> parentRuleIds,RuleType ruletype) throws Exception {
+		if (CollectionUtils.isEmpty(parentRuleIds)) {
+			return null;
+		}
+
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 		select.table(ModuleFactory.getWorkflowRuleModule().getTableName()).select(fields)
-		.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleType"),String.valueOf(ruletype.getIntVal()) ,NumberOperators.EQUALS))
-		.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleId"), String.valueOf(parentRuleId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleType"),String.valueOf(ruletype.getIntVal()) ,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleId"), StringUtils.join(parentRuleIds, ","), NumberOperators.EQUALS));
 		//to fetch the rules without parent id
 		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 
 		List<Map<String, Object>> props = select.get();
 		List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, true, true);
-		return (workflowRuleContexts!=null) ? workflowRuleContexts.get(0) : null;
+		return (workflowRuleContexts!=null) ? workflowRuleContexts : null;
 	}
+
+	public static WorkflowRuleContext getWorkflowRuleByRuletype(long parentRuleId,RuleType ruletype) throws Exception {
+		List<WorkflowRuleContext> workflowRuleByRuletype = getWorkflowRuleByRuletype(Collections.singletonList(parentRuleId), ruletype);
+		if (CollectionUtils.isNotEmpty(workflowRuleByRuletype)) {
+			return workflowRuleByRuletype.get(0);
+		}
+		return null;
+	}
+
 	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
 		
 		if(readingGroupId > 0) {

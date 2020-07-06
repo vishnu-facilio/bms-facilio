@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -52,6 +54,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static void constructStateRule(List<WorkflowRuleContext> list) throws Exception {
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<Long> formIds = null;
+			List<Long> fieldWorkflowRuleIds = null;
 			for (WorkflowRuleContext workflowRuleContext : list) {
 				if (workflowRuleContext instanceof ApproverWorkflowRuleContext) {
 					ApproverWorkflowRuleContext approverWorkflowRuleContext = (ApproverWorkflowRuleContext) workflowRuleContext;
@@ -66,12 +69,38 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 						}
 						formIds.add(abstractStateTransitionRuleContext.getFormId());
 					}
+
+					if (abstractStateTransitionRuleContext.getTypeEnum() == TransitionType.FIELD_SCHEDULED) {
+						if (fieldWorkflowRuleIds == null) {
+							fieldWorkflowRuleIds = new ArrayList<>();
+						}
+						fieldWorkflowRuleIds.add(abstractStateTransitionRuleContext.getId());
+					}
 				}
 
 				if (workflowRuleContext instanceof StateflowTransitionContext) {
 					StateflowTransitionContext stateFlowRule = (StateflowTransitionContext) workflowRuleContext;
 					List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
 					stateFlowRule.setValidations(validations);
+				}
+			}
+
+			if (CollectionUtils.isNotEmpty(fieldWorkflowRuleIds)) {
+				List<WorkflowRuleContext> workflowRuleByRuletype = WorkflowRuleAPI.getWorkflowRuleByRuletype(fieldWorkflowRuleIds, WorkflowRuleContext.RuleType.STATE_TRANSACTION_FIELD_SCHEDULED);
+				if (CollectionUtils.isNotEmpty(workflowRuleByRuletype)) {
+					Map<Long, WorkflowRuleContext> workflowMap = workflowRuleByRuletype.stream().collect(Collectors.toMap(WorkflowRuleContext::getParentRuleId, Function.identity()));
+					for (WorkflowRuleContext workflowRuleContext : list) {
+						if (workflowRuleContext instanceof AbstractStateTransitionRuleContext) {
+							AbstractStateTransitionRuleContext abstractStateTransitionRuleContext = (AbstractStateTransitionRuleContext) workflowRuleContext;
+							if (abstractStateTransitionRuleContext.getTypeEnum() == TransitionType.FIELD_SCHEDULED) {
+								WorkflowRuleContext rule = workflowMap.get(abstractStateTransitionRuleContext.getId());
+								abstractStateTransitionRuleContext.setDateField(rule.getDateField());
+								abstractStateTransitionRuleContext.setDateFieldId(rule.getDateFieldId());
+								abstractStateTransitionRuleContext.setScheduleType(rule.getScheduleTypeEnum());
+								abstractStateTransitionRuleContext.setInterval(rule.getInterval());
+							}
+						}
+					}
 				}
 			}
 
@@ -558,10 +587,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateTransitions;
 	}
 
+	public static WorkflowRuleContext getStateTransition(long stateTransitionId) throws Exception {
+		return getStateTransition(-1, stateTransitionId);
+	}
+
 	public static WorkflowRuleContext getStateTransition(long stateFlowID, long stateTransitionId) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getIdCondition(stateTransitionId, ModuleFactory.getStateRuleTransitionModule()));
-		criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowID), NumberOperators.EQUALS));
+		if (stateFlowID > 0) {
+			criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowID), NumberOperators.EQUALS));
+		}
 
 		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), fields, criteria);

@@ -46,6 +46,7 @@
 	 <job name='HistoricalAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalAlarmProcessingJob' transactionTimeout='1200000'/>
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
+	 <job name='PreviousRecordRuleExecution' classname = 'com.facilio.bmsconsole.jobs.PreviousRecordRuleExecutionJob' transactionTimeout='900000'/>
 
 	<job name="RuleRollupJob" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />
 	<job name="RuleRollupJob-OneTime" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />
