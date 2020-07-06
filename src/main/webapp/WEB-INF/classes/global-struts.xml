@@ -13,6 +13,7 @@
 
 	<include file="baseapiv1.xml" />
 	<include file="admin.xml" />
+	<include file="sso.xml" />
 	<include file="internal.xml" />
 
 	<!-- Add packages here -->

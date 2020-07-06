@@ -19,7 +19,7 @@ public class SSOUtil {
 		
 		String ssoKey = base64EncodeUrlSafe(sso.getOrgId() + "_" + sso.getId());
 		
-		String metadataUrl = FacilioProperties.getClientAppUrl() + "/api/integ/sso/metadata/" + ssoKey;
+		String metadataUrl = FacilioProperties.getClientAppUrl() + "/sso/metadata/" + ssoKey;
 		
 		return metadataUrl;
 	}
@@ -28,7 +28,7 @@ public class SSOUtil {
 		
 		String ssoKey = base64EncodeUrlSafe(sso.getOrgId() + "_" + sso.getId());
 		
-		String acsUrl = FacilioProperties.getClientAppUrl() + "/api/integ/sso/acs/" + ssoKey;
+		String acsUrl = FacilioProperties.getClientAppUrl() + "/sso/acs/" + ssoKey;
 		
 		return acsUrl;
 	}

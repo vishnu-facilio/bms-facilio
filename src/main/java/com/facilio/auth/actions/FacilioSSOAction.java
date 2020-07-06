@@ -3,6 +3,7 @@ package com.facilio.auth.actions;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ public class FacilioSSOAction extends FacilioAction {
 	private String ssoToken;
 	private String domain;
 	private AccountSSO sso;
+	private String relay;
 	
 	public String getSsoToken() {
 		return ssoToken;
@@ -46,32 +48,33 @@ public class FacilioSSOAction extends FacilioAction {
 	public void setSso(AccountSSO sso) {
 		this.sso = sso;
 	}
+	public String getRelay() {
+		return relay;
+	}
+	public void setRelay(String relay) {
+		this.relay = relay;
+	}
+	
+	private InputStream resultStream;
+	public InputStream getResultStream() {
+		return resultStream;
+	}
 	
 	public String login() throws Exception {
 		
-		if (getSsoToken() == null && getDomain() == null) {
+		if (getDomain() == null) {
 			setResponseCode(1);
-			setResult("message", "Invalid SSO access.");
-			return SUCCESS;
+			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
 		}
 		
-		AccountSSO sso = null;
-		
-		if (getSsoToken() != null) {
-			String str = SSOUtil.base64Decode(getSsoToken());
-			long orgId = Long.parseLong(str.split("_")[0]);
-			long ssoId = Long.parseLong(str.split("_")[1]);
-			
-			sso = IAMOrgUtil.getAccountSSO(orgId);
-		}
-		else {
-			sso = IAMOrgUtil.getAccountSSO(getDomain());
-		}
-		
+		AccountSSO sso = IAMOrgUtil.getAccountSSO(getDomain());
 		if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
 			setResponseCode(1);
-			setResult("message", "Invalid SSO access.");
-			return SUCCESS;
+			String message = "Invalid domain or Single Sign-On is not enabled for this domain.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
+			return ERROR;
 		}
 		
 		SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
@@ -79,8 +82,15 @@ public class FacilioSSOAction extends FacilioAction {
 		SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(sso), SSOUtil.getSPAcsURL(sso), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
 		String samlRequest = samlClient.getSAMLRequest();
 		
-		setResult("samlRequest", samlRequest);
-		setResult("ssoURL", ssoConfig.getLoginUrl());
+		String relayState = (getRelay() != null && getRelay().trim().isEmpty()) ? getRelay() : null;
+		
+		String ssoURL = ssoConfig.getLoginUrl() + "?SAMLRequest=" + URLEncoder.encode(samlRequest, StandardCharsets.UTF_8.toString());
+		if (relayState != null) {
+			ssoURL += "&RelayState=" + URLEncoder.encode(relayState, StandardCharsets.UTF_8.toString());
+		}
+		
+		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
+		response.sendRedirect(ssoURL);
 		return SUCCESS;
 	}
 	
@@ -96,9 +106,10 @@ public class FacilioSSOAction extends FacilioAction {
 	
 	public String metadata() throws Exception {
 		
-		if (getSsoToken() == null) {
+		if (getSsoToken() == null || !isValidSSOToken(getSsoToken())) {
 			setResponseCode(1);
-			setResult("message", "Invalid SSO access.");
+			String message = "Invalid SSO Access.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
 			return ERROR;
 		}
 		
@@ -111,7 +122,8 @@ public class FacilioSSOAction extends FacilioAction {
 		
 		if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
 			setResponseCode(1);
-			setResult("message", "Invalid SSO access.");
+			String message = "Invalid SSO Access.";
+			resultStream = new ByteArrayInputStream(message.getBytes());
 			return ERROR;
 		}
 		
@@ -125,21 +137,43 @@ public class FacilioSSOAction extends FacilioAction {
 	
 	public String acs() throws Exception {
 		
-		FacilioAuthAction authAction = new FacilioAuthAction();
-		authAction.setSsoToken(getSsoToken());
-		
-		authAction.ssoSignIn();
+		String message = null;
 		
 		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
 		
-		JSONObject result = authAction.getResult();
-		if (result.containsKey("url")) {
-			response.sendRedirect((String) result.get("url"));
+		if (getSsoToken() != null && isValidSSOToken(getSsoToken())) {
+			
+			FacilioAuthAction authAction = new FacilioAuthAction();
+			authAction.setSsoToken(getSsoToken());
+			
+			authAction.ssoSignIn();
+			
+			JSONObject result = authAction.getResult();
+			if (result.containsKey("url")) {
+				response.sendRedirect((String) result.get("url"));
+				return SUCCESS;
+			}
+			else {
+				message = (String) result.get("message");
+			}
 		}
 		else {
-			String loginUrl = SSOUtil.getSPLoginURL() + "?ssoError=" + URLEncoder.encode((String) result.get("message"), "UTF-8");
-			response.sendRedirect(loginUrl);
+			message = "Invalid SSO Access.";
 		}
+		
+		String loginUrl = SSOUtil.getSPLoginURL() + "?ssoError=" + URLEncoder.encode(message, "UTF-8");
+		response.sendRedirect(loginUrl);
 		return SUCCESS;
+	}
+	
+	private boolean isValidSSOToken(String ssoToken) {
+		try {
+			String str = SSOUtil.base64Decode(ssoToken);
+			long orgId = Long.parseLong(str.split("_")[0]);
+			long ssoId = Long.parseLong(str.split("_")[1]);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

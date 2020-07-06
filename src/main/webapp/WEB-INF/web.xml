@@ -227,6 +227,25 @@
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 	<!-- iot API Filter mapping end -->
+	
+	<!-- /sso needs to go through the same filters as /api. Adding them separately for backward compatibility -->
+	<!-- SSO API Filter mapping start -->
+	<filter-mapping>
+		<filter-name>SecurityFilter</filter-name>
+		<url-pattern>/sso/*</url-pattern>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>InputValidationFilter</filter-name>
+		<url-pattern>/sso/*</url-pattern>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>api-struts2</filter-name>
+		<url-pattern>/sso/*</url-pattern>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<!-- SSO API Filter mapping end -->
 
 	<welcome-file-list>
 		<welcome-file>/jsps/index.jsp</welcome-file>

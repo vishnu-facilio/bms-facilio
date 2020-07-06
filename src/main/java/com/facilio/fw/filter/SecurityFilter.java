@@ -35,6 +35,7 @@ public class SecurityFilter implements Filter {
         urls.add("/api/v3/service/files");
         urls.add("/api/integ/loadWebView");
         urls.add("/websocket/");
+        urls.add("/sso/");
         return urls;
     }
 

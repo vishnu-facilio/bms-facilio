@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="ssoEndpoint" namespace="/sso" extends="baseV1Api">
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="login">
+			<param name="auth">false</param>
+			<param name="domain">{1}</param>
+			<result name="error" type="stream">
+		    	<param name="contentType">text/html</param>
+		   		<param name="inputName">resultStream</param>
+		   </result>
+		</action>
+	</package>
+	
+	<package name="ssoAcsEndpoint" namespace="/sso/acs" extends="ssoEndpoint">
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="acs">
+			<param name="auth">false</param>
+			<param name="ssoToken">{1}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
+
+	<package name="ssoMetadataEndpoint" namespace="/sso/metadata" extends="ssoEndpoint">
+		<action name="*" class="com.facilio.auth.actions.FacilioSSOAction" method="metadata">
+			<param name="auth">false</param>
+			<param name="ssoToken">{1}</param>
+			<result name="success" type="stream">
+				<param name="contentType">application/download</param>
+				<param name="contentDisposition">attachment;filename="facilio_metadata.xml"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="error" type="stream">
+		    	<param name="contentType">text/html</param>
+		   		<param name="inputName">resultStream</param>
+		   </result>
+		</action>
+	</package>
+
+</struts>
