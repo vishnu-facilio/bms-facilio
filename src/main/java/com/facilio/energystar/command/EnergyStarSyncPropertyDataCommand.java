@@ -72,12 +72,12 @@ public class EnergyStarSyncPropertyDataCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void deletePropertyData(EnergyStarPropertyContext property,HistoricalLoggerContext logger,FacilioModule meterDataModule,Map<String, FacilioField> fieldMap) throws Exception {
+	private void deletePropertyData(EnergyStarPropertyContext property,HistoricalLoggerContext logger,FacilioModule propertyDataModule,Map<String, FacilioField> fieldMap) throws Exception {
 		
 		Criteria deleteCriteria = new Criteria();
 		deleteCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), property.getId()+"", NumberOperators.EQUALS));
 		deleteCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), logger.getStartTime()+","+logger.getEndTime(), DateOperators.BETWEEN));
 		
-		EnergyStarUtil.deleteEnergyStarRelated(meterDataModule, deleteCriteria);
+		EnergyStarUtil.deleteEnergyStarRelated(propertyDataModule, deleteCriteria);
 	}
 }

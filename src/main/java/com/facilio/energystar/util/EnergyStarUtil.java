@@ -326,10 +326,10 @@ public class EnergyStarUtil {
 				dataValues.put("baseline", baselineProps.get(0).get(metric.getName()));
 			}
 			
-			if(metric.getTargetFieldName() != null && lastMonthProps.get(0).get(metric.getTargetFieldName()) != null) {
+			if(metric.getTargetFieldName() != null && !lastMonthProps.isEmpty() && lastMonthProps.get(0).get(metric.getTargetFieldName()) != null) {
 				dataValues.put("target",  lastMonthProps.get(0).get(metric.getTargetFieldName()));
 			}
-			if(metric.getMedianFieldName() != null && lastMonthProps.get(0).get(metric.getMedianFieldName()) != null) {
+			if(metric.getMedianFieldName() != null && !lastMonthProps.isEmpty() && lastMonthProps.get(0).get(metric.getMedianFieldName()) != null) {
 				dataValues.put("median", lastMonthProps.get(0).get(metric.getMedianFieldName()));
 			}
 			
