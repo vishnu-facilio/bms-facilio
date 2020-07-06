@@ -290,6 +290,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public void markFilesAsDeleted(String namespace, List<Long> fileIds) throws Exception {
+        FacilioFactory.getFileStore().markAsDeleted(namespace, fileIds);
+    }
+
+    @Override
     public AggregateOperator getAggregateOperator(int value) {
         return BmsAggregateOperators.getAggregateOperator(value);
     }
