@@ -28,6 +28,7 @@ public class AddOrUpdateServiceCommand extends FacilioCommand{
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ServiceContext serviceContext = (ServiceContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (serviceContext != null) {
+			serviceContext.setSellingPrice((double)Math.round(serviceContext.getSellingPrice()*100)/100);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			FacilioModule serviceVendorModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
