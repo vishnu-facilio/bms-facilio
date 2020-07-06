@@ -50,8 +50,9 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 		for(DateRange interval :intervals) {
 			
 			EnergyStarMeterDataContext esMeterData = getEnergyStarMeterData(meter, interval.getStartTime(), interval.getEndTime());
-			
-			dataList.add(esMeterData);
+			if(esMeterData != null) {
+				dataList.add(esMeterData);
+			}
 		}
 		
 		context.put(EnergyStarUtil.ENERGY_STAR_METER_DATA_CONTEXTS,dataList);
@@ -79,6 +80,7 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 		
 		Map<Integer, EnergyStarMeterPointContext> pointMap = EnergyStarUtil.getEnergyStarMeterPointMap(meter.getId());
 		
+		boolean filledAtleastOneProp = false;
 		
 		for(Meter_Category_Points point :points) {
 			
@@ -117,11 +119,18 @@ public class PrepareESMeterDataCommand extends FacilioCommand {
 				
 				if(props != null && !props.isEmpty()) {
 					Object value = props.get(0).get(field.getName());
-					
-					data.addReading(point.getName(), value);
+					if(value != null) {
+						data.addReading(point.getName(), value);
+						filledAtleastOneProp = true;
+					}
 				}
 			}
 		}
-		return data;
+		if(filledAtleastOneProp) {
+			return data;
+		}
+		else {
+			return null;
+		}
 	}
 }
