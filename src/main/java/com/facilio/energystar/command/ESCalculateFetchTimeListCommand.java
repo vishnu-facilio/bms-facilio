@@ -1,5 +1,6 @@
 package com.facilio.energystar.command;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.energystar.util.EnergyStarUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class ESCalculateFetchTimeListCommand extends FacilioCommand {
 	
@@ -24,6 +26,12 @@ public class ESCalculateFetchTimeListCommand extends FacilioCommand {
 		
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
+		
+		long lastScoreAvailableDate = lastScoreAvailableDate();
+		
+		if(endTime > lastScoreAvailableDate) {
+			endTime = lastScoreAvailableDate;
+		}
 		
 		ScheduleInfo schedule = FormulaFieldAPI.getSchedule(FacilioFrequency.MONTHLY);
 		List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
@@ -37,5 +45,18 @@ public class ESCalculateFetchTimeListCommand extends FacilioCommand {
 		
 		return false;
 	}
-
+	
+	private long lastScoreAvailableDate() {
+		int scoreAvailableOn = 15;
+		ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+		int currentDate = zdt.getDayOfMonth();
+		
+		if(currentDate > scoreAvailableOn) {
+			return DateTimeUtil.getMonthStartTime();
+		}
+		else {
+			return DateTimeUtil.addMonths(DateTimeUtil.getMonthStartTime(), -1);
+		}
+		
+	}
 }
