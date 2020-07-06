@@ -2,7 +2,7 @@ namespaces :
   - name : default # Do not remove the default namespace
     tableName : FacilioFile
     resizedTableName : ResizedFile
-    dataRetention : 30 #in days #Optional. Default : 5 days
+    dataRetention : 5 #in days #Optional. Default : 5 days
     dailyDirectoryNeeded: false #Optional. Default : false. If true we'll create day wise root directories
   - name: queue_data # Do not remove the default namespace
     tableName: Queue_Data_File
