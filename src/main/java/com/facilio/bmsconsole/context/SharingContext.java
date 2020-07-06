@@ -177,6 +177,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 				case FIELD: {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field = modBean.getField(sharingContext.getFieldId());
+					map.put("field", field);
 					// todo check here
 					Map<String, Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
 					if (userObj != null) {

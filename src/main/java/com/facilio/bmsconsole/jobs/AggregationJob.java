@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AggregationAPI;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -74,6 +75,11 @@ public class AggregationJob extends FacilioJob {
                 FacilioField field = columnMeta.getField();
                 field.setName(columnMeta.getStorageField().getName());
                 selectBuilder.aggregate(columnMeta.getAggregateOperatorEnum(), field);
+            }
+
+            FacilioField marked = modBean.getField("marked", module.getName());
+            if (marked != null) {
+                selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
             }
 
             Long nextSync = frequencyType.getNextSyncTime(lastSync);
