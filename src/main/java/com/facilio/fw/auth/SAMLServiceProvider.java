@@ -5,9 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PublicKey;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -234,10 +232,17 @@ public class SAMLServiceProvider {
 		Element element = (Element) document.getElementsByTagNameNS("*", "Issuer").item(0);
 		String issuer = element.getTextContent();
 		
-//		if (issuer != null && issuer.trim().equals(getIdpEntityId())) {
-//			return true;
-//		}
-		return true;
+		if (getIdpEntityId() != null && !getIdpEntityId().trim().isEmpty()) {
+			if (issuer != null && issuer.trim().equals(getIdpEntityId())) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return true;
+		}
 	}
 	
 	private boolean validateAssertion(Document document) throws Exception {
@@ -246,9 +251,11 @@ public class SAMLServiceProvider {
 		Element issuerElm = (Element) assertion.getElementsByTagNameNS("*", "Issuer").item(0);
 		String issuer = issuerElm.getTextContent();
 		
-//		if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
-//			throw new Exception("The assertion issuer didn't match the expected value");
-//		}
+		if (getIdpEntityId() != null && !getIdpEntityId().trim().isEmpty()) {
+			if (issuer == null || !issuer.trim().equals(getIdpEntityId())) {
+				throw new Exception("The assertion issuer didn't match the expected value");
+			}
+		}
 		
 		NodeList nameidTags = assertion.getElementsByTagNameNS("*", "NameID");
 		if (nameidTags == null || nameidTags.getLength() == 0) {
