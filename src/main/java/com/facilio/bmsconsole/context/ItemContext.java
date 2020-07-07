@@ -107,7 +107,7 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 	public void setQuantity(double quantity) {
 		this.quantity = 0;
 		if (quantity > 0) {
-			this.quantity = Math.round(quantity*10.0)/10.0;
+			this.quantity = Math.round(quantity*1000.0)/1000.0;
 		}
 	}
 
