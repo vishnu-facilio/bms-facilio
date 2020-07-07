@@ -38,6 +38,24 @@ public class V3WorkPermitContext extends V3Context {
     private WorkPermitTypeContext workPermitType;
     private V3PeopleContext people;
     private List<WorkPermitChecklistContext> checklist;
+    private Boolean isPreValidationDone;
+    private Boolean isPostValidationDone;
+
+    public Boolean getPreValidationDone() {
+        return isPreValidationDone;
+    }
+
+    public void setPreValidationDone(Boolean preValidationDone) {
+        isPreValidationDone = preValidationDone;
+    }
+
+    public Boolean getPostValidationDone() {
+        return isPostValidationDone;
+    }
+
+    public void setPostValidationDone(Boolean postValidationDone) {
+        isPostValidationDone = postValidationDone;
+    }
 
     public List<WorkPermitChecklistContext> getChecklist() {
         return checklist;

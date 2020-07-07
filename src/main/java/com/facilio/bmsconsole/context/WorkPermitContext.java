@@ -93,6 +93,40 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	
 	private Boolean isRecurring;
 
+	private Boolean isPreValidationDone;
+
+	public Boolean getPreValidationDone() {
+		return isPreValidationDone;
+	}
+
+	public void setPreValidationDone(Boolean preValidationDone) {
+		isPreValidationDone = preValidationDone;
+	}
+
+	public boolean isPreValidationDone() {
+		if (isPreValidationDone != null) {
+			return isPreValidationDone.booleanValue();
+		}
+		return false;
+	}
+
+	public boolean isPostValidationDone() {
+		if (isPostValidationDone != null) {
+			return isPostValidationDone.booleanValue();
+		}
+		return false;
+	}
+
+	public Boolean getPostValidationDone() {
+		return isPostValidationDone;
+	}
+
+	public void setPostValidationDone(Boolean postValidationDone) {
+		isPostValidationDone = postValidationDone;
+	}
+
+	private Boolean isPostValidationDone;
+
 	public Boolean getIsRecurring() {
 		return isRecurring;
 	}

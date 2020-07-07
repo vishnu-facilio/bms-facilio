@@ -5561,6 +5561,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateAggregationCommand());
 		return chain;
 	}
+
+	public static FacilioChain updateWorkPermitChecklistChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateWorkPermitCommand());
+		return c;
+	}
 }
 
 

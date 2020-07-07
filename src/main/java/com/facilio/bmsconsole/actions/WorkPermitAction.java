@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class WorkPermitAction extends FacilioAction {
 
@@ -116,6 +116,16 @@ private static final long serialVersionUID = 1L;
 	public void setApprovalTransitionId(Long approvalTransitionId) {
 		this.approvalTransitionId = approvalTransitionId;
 	}
+
+	public List<WorkPermitChecklistContext> getChecklistRecords() {
+		return checklistRecords;
+	}
+
+	public void setChecklistRecords(List<WorkPermitChecklistContext> checklistRecords) {
+		this.checklistRecords = checklistRecords;
+	}
+
+	private List<WorkPermitChecklistContext> checklistRecords;
 	
 	private Map<String, List<WorkflowRuleContext>> stateFlows;
 	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
@@ -237,6 +247,25 @@ private static final long serialVersionUID = 1L;
 		WorkPermitContext workPermitContext = (WorkPermitContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
 		setResult(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, workPermitContext);
 		
+		return SUCCESS;
+	}
+
+	public String updateChecklist() throws Exception {
+
+		if(!CollectionUtils.isEmpty(checklistRecords)) {
+			List<Long> recordIds = new ArrayList<>();
+			for(WorkPermitChecklistContext checklist: checklistRecords) {
+				recordIds.add(checklist.getId());
+			}
+			FacilioChain c = TransactionChainFactory.updateWorkPermitChecklistChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, checklistRecords);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+			c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
+			c.getContext().put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, workPermit);
+
+			c.execute();
+			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		}
 		return SUCCESS;
 	}
 	

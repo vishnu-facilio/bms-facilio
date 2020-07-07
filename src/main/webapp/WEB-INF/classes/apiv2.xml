@@ -5540,6 +5540,8 @@
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="deleteWorkPermit" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
+		<action name="updateChecklist"
+				class="com.facilio.bmsconsole.actions.WorkPermitAction" method="updateChecklist" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList">
 			<param name="viewName">{1}</param>
