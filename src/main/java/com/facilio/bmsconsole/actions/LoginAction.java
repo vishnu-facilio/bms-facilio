@@ -212,7 +212,6 @@ public class LoginAction extends FacilioAction {
 						if(portalUser) {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
 						}
-						FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 						
@@ -233,7 +232,6 @@ public class LoginAction extends FacilioAction {
 		session.invalidate();
 		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
 		FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
-		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 		setResult("message", "success");

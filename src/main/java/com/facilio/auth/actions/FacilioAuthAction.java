@@ -619,16 +619,6 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		
 		addAuthCookies(authtoken, isPotalUser, isDeviceUser, request);
-
-		Cookie token = new Cookie("fc.idToken", "facilio");
-		token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-		token.setPath("/");
-		token.setHttpOnly(false);
-		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-			token.setSecure(true);
-		}
-		token.setDomain(request.getServerName());
-		response.addCookie(token);
 		
 		if (org.apache.commons.lang3.StringUtils.isNotEmpty(currentOrg)) {
 			FacilioCookie.addOrgDomainCookie(currentOrg, response);
@@ -667,9 +657,6 @@ public class FacilioAuthAction extends FacilioAction {
 			setCookieProperties(portalCookie, parentdomain, true);
 			response.addCookie(portalCookie);
 		}
-		Cookie authmodel = new Cookie("fc.authtype", "facilio");
-		setCookieProperties(authmodel, parentdomain, false);
-		response.addCookie(authmodel);
 	}
 
 	private void setCookieProperties(Cookie cookie, String parentdomain, boolean authModel) {
@@ -1150,7 +1137,6 @@ public class FacilioAuthAction extends FacilioAction {
 						if(portalUser) {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
 						}
-						FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 						
