@@ -6123,5 +6123,12 @@
 		</action>
 
 	</package>
+	<package name="dashboardFilter" namespace="/api/v2/dashboardFilter" extends="v2Api">
+		<action name="getModules"
+				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
+				method="getDashboardModules">			
+		</action>
+		
+	</package>
 
 </struts>

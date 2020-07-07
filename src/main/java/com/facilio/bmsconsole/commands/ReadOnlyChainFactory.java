@@ -2533,4 +2533,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new ApprovalModuleActivityListCommand());
 		return chain;
 	}
+	public static FacilioChain getFetchModulesInDashboardChain()
+	{
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new FetchModulesInDashboardCommand());
+		return chain;
+		
+	}
 }
