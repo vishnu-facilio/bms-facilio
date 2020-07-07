@@ -24,8 +24,9 @@ public class FetchModulesInDashboardCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long dashboardId=(Long)context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
+		Long dashboardTabId=(Long)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB_ID);
 		
-		 List<DashboardWidgetContext> dashboardWidgets=DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboardId, null);
+		 List<DashboardWidgetContext> dashboardWidgets=DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboardId, dashboardTabId);
 		 
 		 List<String> moduleNames=new ArrayList<>();
 		 

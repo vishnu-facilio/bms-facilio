@@ -13,10 +13,13 @@ public class DashboardFilterAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	
 	private Long dashboardId;
+	private Long dashboardTabId;
+	
 	public String getDashboardModules() throws Exception{
 		FacilioChain chain=ReadOnlyChainFactory.getFetchModulesInDashboardChain();
 		FacilioContext context=chain.getContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD_ID,getDashboardId());
+		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID,getDashboardTabId());
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.MODULE_LIST, (List<String>)context.get(FacilioConstants.ContextNames.MODULE_LIST));
 		return SUCCESS;
@@ -26,6 +29,12 @@ public class DashboardFilterAction extends FacilioAction{
 	}
 	public void setDashboardId(Long dashboardId) {
 		this.dashboardId = dashboardId;
+	}
+	public Long getDashboardTabId() {
+		return dashboardTabId;
+	}
+	public void setDashboardTabId(Long dashboardTabId) {
+		this.dashboardTabId = dashboardTabId;
 	}
 	
 }
