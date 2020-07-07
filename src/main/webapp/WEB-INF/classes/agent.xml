@@ -455,6 +455,29 @@
         <action name="addIntegration" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="addAltairIntegration">
         </action>
     </package>
-
+    <package name="inboundConnectionConf" namespace="/api/v2/agent/inboundConnections" extends="agent">
+        <action name="add" class="com.facilio.agentv2.actions.InboundConnectionsAction" method="add">
+        </action>
+    </package>
+    <package name="inboundConnections" namespace="/api/agent/inboundConnection" extends="struts-default,json-default">
+        <interceptors>
+            <interceptor name="agentInboundConnectionInterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AgentInboundConnectionInterceptor">
+            </interceptor>
+            <interceptor-stack name="inboundInterceptorStack">
+                <interceptor-ref name="agentInboundConnectionInterceptor"/>
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="inboundInterceptorStack" />
+        <action name="notifications" class="com.facilio.agentv2.actions.InboundNotificationAction">
+            <result name="success" type="json">
+                <param name="statusCode">200</param>
+            </result>
+        </action>
+    </package>
 
 </struts>

@@ -428,7 +428,9 @@ public class FacilioProperties {
     }
 
     public static String getsentrydsn() {return sentrydsn; }
+
     public static String getSentryslownessdsn() {return sentryslownessdsn;}
+
     public static String getSentryschedulerdsn() {return sentryschedulerdsn;}
     
     public static String getPythonAI() {

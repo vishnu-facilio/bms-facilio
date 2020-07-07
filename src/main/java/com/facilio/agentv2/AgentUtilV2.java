@@ -19,14 +19,13 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class AgentUtilV2
 {
@@ -298,6 +297,9 @@ public class AgentUtilV2
             return true;
         }
         return false;
+    }
+    public static String generateRandomAPIKey(){
+       return UUID.randomUUID().toString().replace("-","");
     }
 
 }

@@ -3860,5 +3860,12 @@ public class ModuleFactory {
 		module.setTableName("QuotationAssociatedTerms");
 		return module;
 	}
+	public static FacilioModule getInboundConnectionsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("inboundConnections");
+		module.setDisplayName("Inbound Connections");
+		module.setTableName("Inbound_Connections");
+		return module;
+	}
 
 }

@@ -8656,4 +8656,19 @@ public class FieldFactory {
 		      	     	      
 	        return fields;
 	 }
+	 public static List<FacilioField> getInboundConnectionsFields() {
+		 List<FacilioField> fields = new ArrayList<>();
+	        FacilioModule module = ModuleFactory.getInboundConnectionsModule();
+
+	        fields.add(getIdField(module));
+            fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+	        fields.add(getField("name", "NAME", module, FieldType.STRING));
+	        fields.add(getField("sender", "SENDER", module, FieldType.STRING));
+	        fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+	        fields.add(getField("apiKey", "API_KEY", module, FieldType.STRING));
+	        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+	        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.ENUM));
+	        return fields;
+	 }
+
 }
