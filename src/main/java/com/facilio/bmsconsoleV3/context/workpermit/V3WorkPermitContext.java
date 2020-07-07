@@ -41,20 +41,34 @@ public class V3WorkPermitContext extends V3Context {
     private Boolean isPreValidationDone;
     private Boolean isPostValidationDone;
 
-    public Boolean getPreValidationDone() {
+    public Boolean getIsPreValidationDone() {
         return isPreValidationDone;
     }
 
-    public void setPreValidationDone(Boolean preValidationDone) {
+    public void setIsPreValidationDone(Boolean preValidationDone) {
         isPreValidationDone = preValidationDone;
     }
 
-    public Boolean getPostValidationDone() {
+    public Boolean getIsPostValidationDone() {
         return isPostValidationDone;
     }
 
-    public void setPostValidationDone(Boolean postValidationDone) {
+    public void setIsPostValidationDone(Boolean postValidationDone) {
         isPostValidationDone = postValidationDone;
+    }
+
+    public Boolean isPostValidationDone() {
+        if (isPostValidationDone != null) {
+            return isPostValidationDone.booleanValue();
+        }
+        return false;
+    }
+
+    public Boolean isPreValidationDone() {
+        if (isPreValidationDone != null) {
+            return isPreValidationDone.booleanValue();
+        }
+        return false;
     }
 
     public List<WorkPermitChecklistContext> getChecklist() {

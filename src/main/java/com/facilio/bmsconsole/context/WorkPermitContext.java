@@ -95,11 +95,11 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 
 	private Boolean isPreValidationDone;
 
-	public Boolean getPreValidationDone() {
+	public Boolean getIsPreValidationDone() {
 		return isPreValidationDone;
 	}
 
-	public void setPreValidationDone(Boolean preValidationDone) {
+	public void setIsPreValidationDone(Boolean preValidationDone) {
 		isPreValidationDone = preValidationDone;
 	}
 
@@ -117,11 +117,11 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 
-	public Boolean getPostValidationDone() {
+	public Boolean getIsPostValidationDone() {
 		return isPostValidationDone;
 	}
 
-	public void setPostValidationDone(Boolean postValidationDone) {
+	public void setIsPostValidationDone(Boolean postValidationDone) {
 		isPostValidationDone = postValidationDone;
 	}
 

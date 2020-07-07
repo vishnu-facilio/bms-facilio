@@ -15,6 +15,23 @@ public class WorkPermitChecklistContext extends V3Context {
 
     private WorkPermitTypeChecklistContext checklist;
     private String remarks;
+
+
+    public Boolean getIsReviewed() {
+        return isReviewed;
+    }
+
+    public void setIsReviewed(Boolean reviewed) {
+        isReviewed = reviewed;
+    }
+
+    public Boolean isReviewed() {
+        if (isReviewed != null) {
+            return isReviewed.booleanValue();
+        }
+        return false;
+    }
+
     private Boolean isReviewed;
     private Required required;
 
@@ -43,20 +60,6 @@ public class WorkPermitChecklistContext extends V3Context {
         this.remarks = remarks;
     }
 
-    public Boolean getReviewed() {
-        return isReviewed;
-    }
-
-    public void setReviewed(Boolean reviewed) {
-        isReviewed = reviewed;
-    }
-
-    public Boolean isReviewed() {
-        if (isReviewed != null) {
-            return isReviewed.booleanValue();
-        }
-        return false;
-    }
 
     public Required getRequiredEnum() {
         return required;

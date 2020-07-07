@@ -252,20 +252,18 @@ private static final long serialVersionUID = 1L;
 
 	public String updateChecklist() throws Exception {
 
-		if(!CollectionUtils.isEmpty(checklistRecords)) {
-			List<Long> recordIds = new ArrayList<>();
-			for(WorkPermitChecklistContext checklist: checklistRecords) {
-				recordIds.add(checklist.getId());
-			}
-			FacilioChain c = TransactionChainFactory.updateWorkPermitChecklistChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, checklistRecords);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
-			c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
-			c.getContext().put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, workPermit);
-
-			c.execute();
-			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		List<Long> recordIds = new ArrayList<>();
+		for (WorkPermitChecklistContext checklist : checklistRecords) {
+			recordIds.add(checklist.getId());
 		}
+		FacilioChain c = TransactionChainFactory.updateWorkPermitChecklistChain();
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, checklistRecords);
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
+		c.getContext().put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, workPermit);
+
+		c.execute();
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		return SUCCESS;
 	}
 	
