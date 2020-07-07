@@ -27,7 +27,7 @@ public class RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3 extends FacilioCo
             newWo.setWorkPermitIssued(true);
 
             for(V3WorkPermitContext wp: workPermits) {
-                if(wp.getTicket() != null && wp.getTicket().getId() > 0 && wp.getModuleState().getStatus().trim().equals("Active")) {
+                if(wp.getTicket() != null && wp.getTicket().getId() > 0 && wp.getModuleState() != null && wp.getModuleState().getStatus().trim().equals("Active")) {
                     wos.add(wp.getTicket().getId());
                 }
             }
