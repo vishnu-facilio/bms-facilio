@@ -111,6 +111,10 @@ public class ColumnFactory {
 		columnMap.put("inventoryrequest-pendingapproval", getDefaultInventoryRequestColumns());
 		columnMap.put("visitor-default", getDefaultVisitorColumns());
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
+		columnMap.put("visitorinvite-myInvites", getMyVisitorInvitesColumns());
+		columnMap.put("visitorinvite-myExpired", getMyExpiredVisitorInvitesColumns());
+
+
 		// visitor logging
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		// vl tenant portal
