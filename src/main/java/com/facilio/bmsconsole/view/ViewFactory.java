@@ -3821,7 +3821,7 @@ public class ViewFactory {
 			List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, false));
 
 			FacilioView myVisitorInvitesView = new FacilioView();
-			myVisitorInvitesView.setName("myActive");
+			myVisitorInvitesView.setName("invite_myActive");
 			myVisitorInvitesView.setDisplayName("Active");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
@@ -3953,7 +3953,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
 
 		FacilioView myVisitorInvitesView = new FacilioView();
-		myVisitorInvitesView.setName("myExpired");
+		myVisitorInvitesView.setName("invite_myExpired");
 		myVisitorInvitesView.setDisplayName("Expired");
 		myVisitorInvitesView.setCriteria(criteria);
 		myVisitorInvitesView.setSortFields(sortFields);
