@@ -614,8 +614,8 @@ public class ViewFactory {
 		views.put("invite_today", getTodayVisitorInvitesView().setOrder(order++));
 		views.put("invite_pending", getPendingVisitorInvitesView().setOrder(order++));
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
-		views.put("myInvites", getActiveVisitorInvites().setOrder(order++));
-		views.put("myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
+		views.put("invite_myInvites", getActiveVisitorInvites().setOrder(order++));
+		views.put("invite_myExpired", getExpiredVisitorInvites().setOrder(order++)); // 3
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
