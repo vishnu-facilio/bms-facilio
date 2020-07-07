@@ -19,10 +19,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -2549,6 +2546,21 @@ public class ViewFactory {
 
 		return myUserCondition;
 	}
+
+	public static Condition getPreregisteredCondition() {
+		BooleanField preregisteredField = new BooleanField();
+		preregisteredField.setName("isPreregistered");
+		preregisteredField.setColumnName("IS_PREREGISTERED");
+		preregisteredField.setDataType(FieldType.BOOLEAN);
+		preregisteredField.setModule(ModuleFactory.getVisitorLoggingModule());
+
+		Condition inviteCondition = new Condition();
+		inviteCondition.setField(preregisteredField);
+		inviteCondition.setOperator(BooleanOperators.IS);
+		inviteCondition.setValue("true");
+
+		return inviteCondition;
+	}
 	
 	public static Condition getMyWorkPermitsCondition() {
 		LookupField userField = new LookupField();
@@ -3814,14 +3826,14 @@ public class ViewFactory {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
 			criteria.addAndCondition(getActiveInvitesCondition());
-			criteria.addAndCondition(CriteriaAPI.getCondition("IS_PREREGISTERED", "isPreregistered", "true",BooleanOperators.IS));
+			criteria.addAndCondition(getPreregisteredCondition());
 
 		FacilioField expectedCheckin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, false));
 
 			FacilioView myVisitorInvitesView = new FacilioView();
-			myVisitorInvitesView.setName("invite_myActive");
+			myVisitorInvitesView.setName("invite_myInvites");
 			myVisitorInvitesView.setDisplayName("Active");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
@@ -3948,7 +3960,7 @@ public class ViewFactory {
 //		criteria.addAndCondition(CriteriaAPI.getCondition(checkin, CommonOperators.IS_EMPTY));
 		FacilioField expectedCheckin = FieldFactory.getField("expectedCheckInTime","EXPECTED_CHECKIN_TIME", FieldType.DATE_TIME);
 //		criteria.addAndCondition(CriteriaAPI.getCondition(expectedCheckin, DateOperators.TILL_NOW));
-		criteria.addAndCondition(CriteriaAPI.getCondition("IS_PREREGISTERED", "isPreregistered", "true",BooleanOperators.IS));
+		criteria.addAndCondition(getPreregisteredCondition());
 
 		List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
 
