@@ -5566,6 +5566,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateWorkPermitCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY));
 		return c;
 	}
 }

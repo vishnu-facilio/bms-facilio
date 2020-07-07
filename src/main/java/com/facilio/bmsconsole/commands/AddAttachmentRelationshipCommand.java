@@ -20,6 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -118,7 +119,7 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
 				CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
-			else if(moduleName.equals(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS)) {
+			else if(Arrays.asList(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS,FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ATTACHMENTS).contains(moduleName)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
 				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}

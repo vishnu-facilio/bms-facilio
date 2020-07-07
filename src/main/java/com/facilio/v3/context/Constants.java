@@ -170,7 +170,7 @@ public class Constants {
         String moduleName = Constants.getModuleName(context);
         Map<String, Map<Long,List<UpdateChangeSet>>> allChangeSet = CommonCommandUtil.getChangeSetMap((FacilioContext)context);
         if(MapUtils.isNotEmpty(allChangeSet) && allChangeSet.containsKey(moduleName)) {
-            allChangeSet.get(moduleName);
+           return allChangeSet.get(moduleName);
         }
         return new HashMap<>();
     }

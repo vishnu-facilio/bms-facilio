@@ -231,7 +231,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 			else if ((module.getName().contains("assetmovement"))) {
 				activityType = AssetActivityType.LOCATION;
-			} else if (module.getName().contains(FacilioConstants.ContextNames.QUOTE)) {
+			} else if (Arrays.asList(FacilioConstants.ContextNames.QUOTE,FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName())) {
 				activityType = CommonActivityType.UPDATE_STATUS;
 			}
 			if (activityType != null) {

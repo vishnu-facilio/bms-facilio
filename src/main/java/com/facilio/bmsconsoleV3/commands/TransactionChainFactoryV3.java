@@ -25,10 +25,7 @@ import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCo
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
-import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
-import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -43,20 +40,18 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkPermitAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
+        c.addCommand(new InsertWorkPermitActivitiesCommand());
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
+
         return c;
     }
 
     public static FacilioChain getWorkPermitAfterSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
 
+        c.addCommand(new InsertWorkPermitActivitiesCommand());
         c.addCommand(new LoadWorkPermitLookUpsCommandV3());
-        c.addCommand(new GenericGetModuleDataListCommand());
-        c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-        c.addCommand(new VerifyApprovalCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
 
@@ -130,14 +125,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateQuotationParentIdCommand());
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
-        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
         return c;
     }
 
     public static FacilioChain getQuotationAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new InsertQuotationLineItemsAndActivitiesCommand());
-        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
         return c;
     }
 

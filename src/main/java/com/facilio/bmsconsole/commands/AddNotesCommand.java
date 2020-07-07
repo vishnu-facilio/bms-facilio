@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
@@ -26,6 +17,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
@@ -95,7 +91,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	     		} else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
 	     			long occurrenceId = (long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
 					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
-				} else if(moduleName.equals(FacilioConstants.ContextNames.QUOTE_NOTES)) {
+				} else if(Arrays.asList(FacilioConstants.ContextNames.QUOTE_NOTES,FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_NOTES).contains(moduleName)) {
 					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
 				}
 				

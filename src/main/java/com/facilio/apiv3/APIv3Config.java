@@ -300,9 +300,11 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
                 .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
 
                 .update()
                 .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnUpdateChain())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
 
                 .list()
                 .beforeFetch(new LoadWorkPermitLookUpsCommandV3())

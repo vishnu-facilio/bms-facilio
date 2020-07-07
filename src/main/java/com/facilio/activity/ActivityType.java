@@ -35,10 +35,13 @@ public interface ActivityType {
 		for (ActivityType type: QuotationActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
+		for (ActivityType type: WorkPermitActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
 		for (ActivityType type: CommonActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 76
+		// Max number = 78
 
 		return activityMap;
 	}
