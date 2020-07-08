@@ -45,7 +45,7 @@ public class InsertWorkPermitActivitiesCommand extends FacilioCommand {
                     CommonCommandUtil.addActivityToContext(workPermit.getId(), -1, CommonActivityType.UPDATE_RECORD, info, (FacilioContext) context);
                 }
             }
-            if (CollectionUtils.isNotEmpty(workPermit.getChecklist())) {
+            if (CollectionUtils.isNotEmpty(workPermit.getWorkpermitchecklist())) {
                 FacilioModule checklistModule = modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
                 DeleteRecordBuilder<WorkPermitChecklistContext> deleteBuilder = new DeleteRecordBuilder<WorkPermitChecklistContext>()
                         .module(checklistModule)
@@ -53,10 +53,10 @@ public class InsertWorkPermitActivitiesCommand extends FacilioCommand {
                 deleteBuilder.delete();
                 V3WorkPermitContext workPermitContext = new V3WorkPermitContext();
                 workPermitContext.setId(workPermit.getId());
-                for (WorkPermitChecklistContext lineItem : workPermit.getChecklist()) {
+                for (WorkPermitChecklistContext lineItem : workPermit.getWorkpermitchecklist()) {
                     lineItem.setWorkPermit(workPermitContext);
                 }
-                V3RecordAPI.addRecord(false, workPermit.getChecklist(), checklistModule, modBean.getAllFields(checklistModule.getName()));
+                V3RecordAPI.addRecord(false, workPermit.getWorkpermitchecklist(), checklistModule, modBean.getAllFields(checklistModule.getName()));
             }
         } else {
             List<V3WorkPermitContext> workPermitList = (List<V3WorkPermitContext>) CommandUtil.getModuleDataList(context, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT);
