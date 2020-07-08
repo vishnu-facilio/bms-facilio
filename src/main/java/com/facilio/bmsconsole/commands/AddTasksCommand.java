@@ -60,6 +60,9 @@ public class AddTasksCommand extends FacilioCommand implements PostTransactionCo
 					task.setPreRequest(Boolean.FALSE);
 					if(workOrder != null) {
 						task.setParentTicketId(workOrder.getId());
+						if (task.getSiteId() == -1) {
+							task.setSiteId(workOrder.getSiteId());
+						}
 					}
 					task.setInputValue(task.getDefaultValue());
 					if(StringUtils.isNotEmpty(task.getInputValue()) && StringUtils.isNotEmpty(task.getFailureValue())) {

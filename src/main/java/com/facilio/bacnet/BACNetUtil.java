@@ -22,7 +22,7 @@ public class BACNetUtil {
 	    	PROGRAM,
 	    	SCHEDULE,
 	    	AVERAGING,
-	    	MULTI_STATE_VALUE,	// 19
+	    	MULTI_STATE_VALUE(true),	// 19
 	    	TREND_LOG,
 	    	LIFE_SAFETY_POINT,
 	    	LIFE_SAFETY_ZONE,
