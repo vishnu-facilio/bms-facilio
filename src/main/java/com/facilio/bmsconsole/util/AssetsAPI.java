@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -1221,6 +1222,7 @@ public class AssetsAPI {
 				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T))
 				.groupBy(FieldFactory.getIdField(assetCategoryModule).getCompleteColumnName());
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
@@ -1260,7 +1262,8 @@ public class AssetsAPI {
 				.on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+assetModule.getTableName()+".ID")
 				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
-				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
 		
 		if (buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"), StringUtils.join(categoryIds, ","), NumberOperators.EQUALS));
