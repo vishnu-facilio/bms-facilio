@@ -59,7 +59,7 @@ public class ChangeVisitorInviteStateCommandV3 extends FacilioCommand {
                                                 c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
                                                 c.execute();
                                             }
-                                            if (record.getCheckInTime() <= 0) {
+                                            if (record.getCheckInTime() == null ||  record.getCheckInTime() <= 0) {
                                                 V3VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
                                                 V3VisitorManagementAPI.updateVisitorRollUps(record, oldRecords.get(0));
                                                 V3VisitorManagementAPI.updateVisitorLastVisitRollUps(record);

@@ -149,7 +149,7 @@ public class V3VendorContext extends ModuleBaseWithCustomFields {
         return sourceId;
     }
 
-    public void setSourceId(long sourceId) {
+    public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
     }
 

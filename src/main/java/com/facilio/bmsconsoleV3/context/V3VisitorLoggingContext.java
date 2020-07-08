@@ -135,7 +135,7 @@ public class V3VisitorLoggingContext extends V3Context {
         return signatureId;
     }
 
-    public void setSignatureId(long signatureId) {
+    public void setSignatureId(Long signatureId) {
         this.signatureId = signatureId;
     }
 
@@ -175,7 +175,7 @@ public class V3VisitorLoggingContext extends V3Context {
         return ndaId;
     }
 
-    public void setNdaId(long ndaId) {
+    public void setNdaId(Long ndaId) {
         this.ndaId = ndaId;
     }
 
@@ -216,7 +216,7 @@ public class V3VisitorLoggingContext extends V3Context {
         return avatarId;
     }
 
-    public void setAvatarId(long avatarId) {
+    public void setAvatarId(Long avatarId) {
         this.avatarId = avatarId;
     }
 
@@ -333,7 +333,7 @@ public class V3VisitorLoggingContext extends V3Context {
         this.isNdaSigned = isNdaSigned;
     }
 
-    public boolean isNdaSigned() {
+    public Boolean isNdaSigned() {
         if (isNdaSigned != null) {
             return isNdaSigned.booleanValue();
         }
@@ -350,7 +350,7 @@ public class V3VisitorLoggingContext extends V3Context {
         this.isInvited = isInvited;
     }
 
-    public boolean isInvited() {
+    public Boolean isInvited() {
         if (isInvited != null) {
             return isInvited.booleanValue();
         }
@@ -414,7 +414,7 @@ public class V3VisitorLoggingContext extends V3Context {
         this.isRecurring = isRecurring;
     }
 
-    public boolean isRecurring() {
+    public Boolean isRecurring() {
         if (isRecurring != null) {
             return isRecurring.booleanValue();
         }
@@ -530,7 +530,7 @@ public class V3VisitorLoggingContext extends V3Context {
     public V3VisitorLoggingContext getChildLog(long expectedCheckInTime) throws Exception{
         V3VisitorLoggingContext childLog = FieldUtil.cloneBean(this, V3VisitorLoggingContext.class);
         childLog.setExpectedCheckInTime(expectedCheckInTime * 1000);
-        childLog.setExpectedCheckOutTime((expectedCheckInTime * 1000) + this.getExpectedVisitDuration());
+        childLog.setExpectedCheckOutTime((expectedCheckInTime * 1000) + (this.getExpectedVisitDuration() != null ? this.getExpectedVisitDuration() : 0));
         childLog.setIsRecurring(false);
         childLog.setParentLogId(this.getId());
         childLog.setIsInviteApprovalNeeded(false);

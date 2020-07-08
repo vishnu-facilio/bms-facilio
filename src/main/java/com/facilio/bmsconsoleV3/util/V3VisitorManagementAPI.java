@@ -159,11 +159,11 @@ public class V3VisitorManagementAPI {
 
         V3VisitorLoggingContext records = builder.fetchFirst();
         if(records != null && records.getModuleState().getId() == checkedOutStatus.getId()) {
-            if(currenttime >= records.getCheckInTime()) {
-                if(records.getExpectedCheckOutTime() <= 0) {
+            if(records.getCheckInTime() !=  null && currenttime >= records.getCheckInTime()) {
+                if(records.getExpectedCheckOutTime() == null || records.getExpectedCheckOutTime() <= 0) {
                     return true;
                 }
-                if(records.getExpectedCheckOutTime() > 0 && currenttime <= records.getExpectedCheckOutTime()) {
+                if(records.getExpectedCheckOutTime() != null && records.getExpectedCheckOutTime() > 0 && currenttime <= records.getExpectedCheckOutTime()) {
                     return true;
                 }
                 return false;
@@ -252,28 +252,7 @@ public class V3VisitorManagementAPI {
 
     }
 
-    public static V3VisitorLoggingContext getVisitorLogging(long visitorId, long inviteId) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
-        SelectRecordsBuilder<V3VisitorLoggingContext> builder = new SelectRecordsBuilder<V3VisitorLoggingContext>()
-                .module(module)
-                .beanClass(V3VisitorLoggingContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS))
-                ;
-
-        if(inviteId > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("VISITOR_INVITE", "visitorInvite", String.valueOf(inviteId), NumberOperators.EQUALS));
-
-        }
-        V3VisitorLoggingContext records = builder.fetchFirst();
-        return records;
-
-    }
-
-    public static V3VisitorLoggingContext getValidChildLogForToday(long parentLogId, long currentTime, boolean fetchUpcoming, long visitorId) throws Exception {
+    public static V3VisitorLoggingContext getValidChildLogForToday(Long parentLogId, Long currentTime, boolean fetchUpcoming, Long visitorId) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -287,10 +266,10 @@ public class V3VisitorManagementAPI {
                 .andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKOUT_TIME", "expectedCheckOutTime", String.valueOf(currentTime) , DateOperators.IS_AFTER))
 
                 ;
-        if(parentLogId > 0) {
+        if(parentLogId != null && parentLogId > 0) {
             builder.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS));
         }
-        if(visitorId > 0) {
+        if(visitorId != null && visitorId > 0) {
             builder.andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS));
         }
         if(fetchUpcoming) {
@@ -437,7 +416,7 @@ public class V3VisitorManagementAPI {
         return record;
 
     }
-    public static V3VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
+    public static V3VisitorContext getVisitor(Long id, String phoneNumber) throws Exception {
 
         if(id <= 0 && StringUtils.isEmpty(phoneNumber)) {
             return null;
@@ -454,7 +433,7 @@ public class V3VisitorManagementAPI {
         if(StringUtils.isNotEmpty(phoneNumber)) {
             builder.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
         }
-        if(id > 0) {
+        if(id != null && id > 0) {
             builder.andCondition(CriteriaAPI.getIdCondition(id, module));
         }
 
@@ -480,15 +459,13 @@ public class V3VisitorManagementAPI {
 
                 FacilioField overStayField = modBean.getField("isOverStay", module.getName());
                 boolean isOverStay = false;
-                if(time - vLog.getExpectedCheckOutTime() > 0) {
+                if(vLog.getExpectedCheckOutTime() != null && time - vLog.getExpectedCheckOutTime() > 0) {
                     isOverStay = true;
                 }
                 else {
                     isOverStay = false;
                 }
-                long actualVisitDuration = time - vLog.getCheckInTime();
                 updateMap.put("isOverStay", isOverStay);
-                //updateMap.put("actualVisitDuration", actualVisitDuration);
 
                 updatedfields.add(checkOutTimeField);
                 updatedfields.add(overStayField);
@@ -503,7 +480,7 @@ public class V3VisitorManagementAPI {
                 updatedfields.add(checkInTimeField);
                 updateMap.put("checkInTime", time);
                 vLog.setCheckInTime(time);
-                if(vLog.getExpectedVisitDuration() > 0) {
+                if(vLog.getExpectedVisitDuration() != null && vLog.getExpectedVisitDuration() > 0) {
                     FacilioField expectedCheckOutTimeField = modBean.getField("expectedCheckOutTime", module.getName());
                     updateMap.put("expectedCheckOutTime", time + vLog.getExpectedVisitDuration());
                     updatedfields.add(expectedCheckOutTimeField);
@@ -565,7 +542,7 @@ public class V3VisitorManagementAPI {
     public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
 
         if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
-            V3VisitorContext visitor = getVisitor(-1, visitorPhoneNumber);
+            V3VisitorContext visitor = getVisitor(-1L, visitorPhoneNumber);
             if(visitor == null) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid phone number");
             }
@@ -625,7 +602,7 @@ public class V3VisitorManagementAPI {
                 updatedfields.add(lastVisitedSpace);
             }
             V3VisitorContext visitor = getVisitor(visitorLog.getVisitor().getId(), null);
-            if(visitor.getFirstVisitedTime() <= 0) {
+            if(visitor.getFirstVisitedTime() == null || visitor.getFirstVisitedTime() <= 0) {
                 updateMap.put("firstVisitedTime", visitorLog.getCheckInTime());
                 updatedfields.add(firstVisitedTime);
             }
@@ -668,7 +645,7 @@ public class V3VisitorManagementAPI {
             updateMap.put("visitorType", FieldUtil.getAsProperties(updatedVisitorLog.getVisitorType()));
 
             List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-            if(updatedVisitorLog.getAvatarId() > 0) {
+            if(updatedVisitorLog.getAvatarId() != null && updatedVisitorLog.getAvatarId() > 0) {
                 updatedfields.add(avatarId);
                 updateMap.put("avatar", oldRecord.getAvatar());
             }
@@ -1812,7 +1789,7 @@ public class V3VisitorManagementAPI {
 
     public static long getStartTime(int action, V3VisitorLoggingContext log, PMTriggerContext trigger) {
         long startTime = -1;
-        if (action == 1) {
+        if (action == 1 && log.getExpectedCheckInTime() != null) {
             startTime = getStartTimeInSecond(log.getExpectedCheckInTime());
         } else if (action == 2) {
             startTime = log.getLogGeneratedUpto();
@@ -2344,7 +2321,7 @@ public class V3VisitorManagementAPI {
     }
 
     public static boolean checkForDuplicateVisitor(V3VisitorContext visitor) throws Exception {
-        V3VisitorContext visitorExisiting = getVisitor(-1, visitor.getPhone());
+        V3VisitorContext visitorExisiting = getVisitor(-1L, visitor.getPhone());
         if(visitorExisiting != null && visitor.getId() != visitorExisiting.getId()) {
             return true;
         }

@@ -38,7 +38,7 @@ public class AddOrUpdateVisitorFromVisitsCommandV3 extends FacilioCommand {
             for(V3VisitorLoggingContext vL : visitorLogs) {
                 CommonCommandUtil.handleLookupFormData(modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING), vL.getData());
                 if(StringUtils.isNotEmpty(vL.getVisitorPhone())) {
-                    V3VisitorContext visitor = V3VisitorManagementAPI.getVisitor(-1, vL.getVisitorPhone());
+                    V3VisitorContext visitor = V3VisitorManagementAPI.getVisitor(-1L, vL.getVisitorPhone());
                     if(visitor == null) {
                         visitor = new V3VisitorContext();
                         visitor.setEmail(vL.getVisitorEmail());
