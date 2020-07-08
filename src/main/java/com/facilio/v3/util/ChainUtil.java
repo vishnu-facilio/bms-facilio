@@ -3,12 +3,15 @@ package com.facilio.v3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -204,11 +207,18 @@ public class ChainUtil {
         return transactionChain;
     }
 
+    private static FacilioChain getPatchInitChain() throws Exception {
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+        transactionChain.addCommand(new DefaultInit());
+        transactionChain.addCommand(new PatchSubModules());
+        return transactionChain;
+    }
+
     public static FacilioChain getPatchChain(String moduleName) throws Exception {
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioModule module = ChainUtil.getModule(moduleName);
 
-        Command initCommand = new DefaultInit();
+        Command initCommand = getPatchInitChain();
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
@@ -232,6 +242,8 @@ public class ChainUtil {
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new PatchSubFormCommand());
+        transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new VerifyApprovalCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
@@ -318,5 +330,23 @@ public class ChainUtil {
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
         );
         chain.addCommand(new ExecuteRollUpFieldCommand());
+    }
+
+    public static Class getBeanClass(V3Config config, FacilioModule module) {
+        Class beanClass = null;
+        if (config != null) {
+            beanClass = config.getBeanClass();
+        }
+        if (beanClass == null) {
+            beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+            if (beanClass == null) {
+                if (module.isCustom()) {
+                    beanClass = CustomModuleData.class;
+                } else {
+                    beanClass = ModuleBaseWithCustomFields.class;
+                }
+            }
+        }
+        return beanClass;
     }
 }

@@ -27,7 +27,7 @@ public class SummaryCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long id = (long) context.get(Constants.RECORD_ID);
+        List<Long> recordIds = Constants.getRecordIds(context);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = module.getName();
@@ -38,7 +38,7 @@ public class SummaryCommand extends FacilioCommand {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
                 .select(fields)
                 .module(module)
-                .andCondition(CriteriaAPI.getIdCondition(id, module))
+                .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
                 .beanClass(beanClass);
 
         List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);

@@ -118,6 +118,10 @@ public class SaveSubFormCommand extends FacilioCommand {
         }
 
         for (Map<String, Object> map : subForm) {
+            // ignoring patched records
+            if (map.get("id") != null) {
+                continue;
+            }
             map.put(lookupField.getName(), parentObject);
             Map<FacilioField, File> fileMap = new HashMap<>();
             for (FacilioField f : fileFields) {

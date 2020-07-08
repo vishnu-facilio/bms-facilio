@@ -7,6 +7,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -42,14 +43,14 @@ public class UpdateCommand extends FacilioCommand {
 
         int totalCount = 0;
 
-        for (V3Context record: recordMap.get(module.getName())) {
+        for (ModuleBaseWithCustomFields record: recordMap.get(module.getName())) {
             if(record == null || record.getId() < 0) {
                 continue;
             }
 
             long recordId = record.getId();
 
-            UpdateRecordBuilder<V3Context> updateBuilder = new UpdateRecordBuilder<V3Context>()
+            UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<>()
                     .module(module)
                     .fields(fields)
                     .andCondition(CriteriaAPI.getIdCondition(recordId, module));

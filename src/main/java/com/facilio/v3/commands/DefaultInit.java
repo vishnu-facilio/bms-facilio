@@ -21,6 +21,7 @@ public class DefaultInit extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        // This is when the command is used for scheduler, where there is no necessity for parsing json
         if (MapUtils.isNotEmpty(Constants.getRecordMap(context))) {
             return false;
         }
@@ -30,9 +31,7 @@ public class DefaultInit extends FacilioCommand {
 
         String moduleName = Constants.getModuleName(context);
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);;
-        if (id == null) {
-            setFormData(data, moduleName, moduleRecord);
-        }
+        setFormData(data, moduleName, moduleRecord);
 
         if (id != null) {
             moduleRecord.setId(id);
