@@ -23,7 +23,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -266,7 +265,8 @@ public class QuotationAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TAX);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
-        V3RecordAPI.updateRecord(updateTaxContext, module, fields);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        V3RecordAPI.updateRecord(updateTaxContext, module, Arrays.asList(fieldsMap.get("isActive")));
     }
 
     public static void updateTaxGroupsOnChildUpdate(TaxContext tax, Long oldTaxId) throws Exception {
