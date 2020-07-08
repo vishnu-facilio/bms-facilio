@@ -39,6 +39,7 @@ public class QuotationPageFactory extends PageFactory {
             tab2.addSection(tab2Sec1);
             PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
             notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
+            notesWidget.setTitle("Notes");
             tab2Sec1.addWidget(notesWidget);
 
             PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);

@@ -61,8 +61,11 @@ public class WorkPermitChecklistContext extends V3Context {
     }
 
 
-    public Required getRequiredEnum() {
-        return required;
+    public String getRequiredEnum() {
+        if (required != null) {
+           return required.getValue();
+        }
+        return null;
     }
 
     public Integer getRequired() {
@@ -82,7 +85,7 @@ public class WorkPermitChecklistContext extends V3Context {
     public enum Required implements FacilioEnum {
         YES("Yes"),
         NO("No"),
-        NA("Not Applicable");
+        NA("N/A");
         private String name;
 
         Required(String name) {

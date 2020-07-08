@@ -68,6 +68,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		Page.Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+		notesWidget.setTitle("Notes");
 		notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
 		tab2Sec1.addWidget(notesWidget);
 
