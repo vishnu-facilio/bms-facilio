@@ -169,11 +169,13 @@ public class GetFormMetaCommand extends FacilioCommand {
 
 		
 		if (childModule != null) {
-			List<FacilioField> facilioFields = modBean.getAllFields(childModule.getName());
-			for (FacilioField f: facilioFields) {
-				if ((f.getModule().equals(childModule)) || !f.isDefault()) {
-					count = count + 1;
-					fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));									
+			if (form.getId() == -1) {
+				List<FacilioField> facilioFields = modBean.getAllFields(childModule.getName());
+				for (FacilioField f: facilioFields) {
+					if ((f.getModule().equals(childModule)) || !f.isDefault()) {
+						count = count + 1;
+						fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));									
+					}
 				}
 			}
 		}
