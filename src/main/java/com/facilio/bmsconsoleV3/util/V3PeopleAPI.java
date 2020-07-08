@@ -66,6 +66,25 @@ public class V3PeopleAPI {
 
     }
 
+    public static List<V3ClientContactContext> getClientContacts(Long clientId, boolean fetchOnlyPrimaryContact) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT);
+
+        SelectRecordsBuilder<V3ClientContactContext> builder = new SelectRecordsBuilder<V3ClientContactContext>()
+                .module(module)
+                .beanClass(V3ClientContactContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS));
+        ;
+        if(fetchOnlyPrimaryContact) {
+            builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
+        }
+        List<V3ClientContactContext> records = builder.get();
+        return records;
+
+    }
+
     public static void addParentPrimaryContactAsPeople(V3PeopleContext tc, FacilioModule module, List<FacilioField> fields, long parentId, V3PeopleContext primaryContactForParent) throws Exception {
 
         if(primaryContactForParent != null) {

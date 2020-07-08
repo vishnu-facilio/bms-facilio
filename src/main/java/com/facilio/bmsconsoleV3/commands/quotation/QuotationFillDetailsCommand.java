@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
@@ -26,11 +27,24 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
         QuotationAPI.setTaxSplitUp(quotation);
 
         Map<String, Object> queryParams = Constants.getQueryParams(context);
-        if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchTenantContacts") && QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-                List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), false);
-                if (CollectionUtils.isNotEmpty(tenantContacts)) {
-                    quotation.getTenant().setPeopleTenantContacts(tenantContacts);
+        if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchContacts"))  {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+                if(quotation.getCustomerType() != null) {
+                    if (quotation.getCustomerTypeEnum() == QuotationContext.CustomerType.TENANT) {
+                        if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
+                            List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), false);
+                            if (CollectionUtils.isNotEmpty(tenantContacts)) {
+                                quotation.getTenant().setPeopleTenantContacts(tenantContacts);
+                            }
+                        }
+                    } else if (quotation.getCustomerTypeEnum() == QuotationContext.CustomerType.CLIENT) {
+                        if (QuotationAPI.lookupValueIsNotEmpty(quotation.getClient())) {
+                            List<V3ClientContactContext> clientContacts = V3PeopleAPI.getClientContacts(quotation.getClient().getId(), false);
+                            if (CollectionUtils.isNotEmpty(clientContacts)) {
+                                quotation.getClient().setPeopleClientContacts(clientContacts);
+                            }
+                        }
+                    }
                 }
             }
         }

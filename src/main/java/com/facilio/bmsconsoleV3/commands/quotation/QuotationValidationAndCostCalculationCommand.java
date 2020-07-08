@@ -2,8 +2,11 @@ package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -35,16 +38,23 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     LocationContext shipToAddressLocation = quotation.getShipToAddress();
                     QuotationAPI.addLocation(quotation, shipToAddressLocation);
                 }
-                if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
-                    // TEMP @Aashiq remove this once customer type is configured in form
-                    if (quotation.getCustomerType() == null) {
-                        quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
-                    } else if (quotation.getCustomerType() != QuotationContext.CustomerType.TENANT.getIndex()){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Customer Type is required to be tenant");
+                if (QuotationAPI.lookupValueIsNotEmpty(quotation.getClient())){
+                    quotation.setCustomerType(QuotationContext.CustomerType.CLIENT.getIndex());
+                    if(quotation.getContact() == null) {
+                        List<V3ClientContactContext> clientContacts =  V3PeopleAPI.getClientContacts(quotation.getClient().getId(), true);
+                        if(CollectionUtils.isNotEmpty(clientContacts)) {
+                            quotation.setContact(clientContacts.get(0));
+                        }
                     }
                 }
-                else {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tenant is required");
+                else if(QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
+                    quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
+                    if(quotation.getContact() == null) {
+                        List<V3TenantContactContext> tenantContacts =  V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), true);
+                        if(CollectionUtils.isNotEmpty(tenantContacts)) {
+                            quotation.setContact(tenantContacts.get(0));
+                        }
+                    }
                 }
                 QuotationAPI.validateForWorkorder(quotation);
             }

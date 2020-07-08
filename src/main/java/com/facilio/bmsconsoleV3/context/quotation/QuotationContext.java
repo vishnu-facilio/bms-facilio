@@ -125,15 +125,15 @@ public class QuotationContext extends V3Context {
         this.tenant = tenant;
     }
 
-    public ClientContext getClient() {
+    public V3ClientContext getClient() {
         return client;
     }
 
-    public void setClient(ClientContext client) {
+    public void setClient(V3ClientContext client) {
         this.client = client;
     }
 
-    private ClientContext client;
+    private V3ClientContext client;
 
     public void setCustomerType(Integer customerType) {
         if (customerType != null) {
