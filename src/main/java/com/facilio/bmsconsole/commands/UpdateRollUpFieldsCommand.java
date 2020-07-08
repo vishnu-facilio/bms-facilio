@@ -97,8 +97,8 @@ public class UpdateRollUpFieldsCommand extends FacilioCommand {
 		Long oldCriteriaId = null;
 		if(criteria != null) {
 			oldCriteriaId = rollUpField.getChildCriteriaId();
-			if(criteria.getCriteriaId() == -99) {
-				rollUpField.setChildCriteriaId(-99);
+			if(criteria.getCriteriaId() == -99l) {
+				rollUpField.setChildCriteriaId(-99l);
 			}
 			else {
 				long childCriteriaId = CriteriaAPI.addCriteria(criteria);

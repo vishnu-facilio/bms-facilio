@@ -84,7 +84,7 @@ public class AddRollUpFieldsCommand extends FacilioCommand {
 				rollUpFieldContext.setParentRollUpFieldId(rollUpField.getId());
 				rollUpFieldContext.setAggregateFunctionId(aggregateFunctionId);
 				rollUpFieldContext.setAggregateFieldId(aggregateFieldId);
-				if(criteria != null) {
+				if(criteria != null && criteria.getCriteriaId() != -99l) {
 					long childCriteriaId = CriteriaAPI.addCriteria(criteria);
 					rollUpFieldContext.setChildCriteriaId(childCriteriaId);
 				}
