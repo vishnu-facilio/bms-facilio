@@ -339,7 +339,8 @@ public class QuotationContext extends V3Context {
 
     public enum CustomerType implements FacilioEnum {
         TENANT("Tenant"),
-        CLIENT("Client");
+        CLIENT("Client"),
+        OTHERS("Others");
         private String name;
 
         CustomerType(String name) {

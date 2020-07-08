@@ -56,6 +56,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                         }
                     }
                 }
+                else {
+                    quotation.setCustomerType(QuotationContext.CustomerType.OTHERS.getIndex());
+                }
                 QuotationAPI.validateForWorkorder(quotation);
             }
         }
