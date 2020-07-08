@@ -2,8 +2,11 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -413,5 +416,15 @@ public class QuotationContext extends V3Context {
             return revisionHistoryAvailable.booleanValue();
         }
         return false;
+    }
+
+    private V3PeopleContext contact;
+
+    public V3PeopleContext getContact() {
+        return contact;
+    }
+
+    public void setContact(V3PeopleContext contact) {
+        this.contact = contact;
     }
 }
