@@ -14,12 +14,14 @@ import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
+
 public class WorkpermitPageFactory extends PageFactory {
 	private static final Logger LOGGER = LogManager.getLogger(WorkpermitPageFactory.class.getName());
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155) {
+		if (Arrays.asList(75,155,173).contains(AccountUtil.getCurrentOrg().getOrgId())) {
 			return getNewWorkPermitPage(workpermit);
 		}
 
