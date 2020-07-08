@@ -19,7 +19,7 @@ public class WorkpermitPageFactory extends PageFactory {
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 75 || AccountUtil.getCurrentOrg().getOrgId() == 173) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 75 || AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 343 || AccountUtil.getCurrentOrg().getOrgId() == 1) {
 			return getNewWorkPermitPage(workpermit);
 		}
 

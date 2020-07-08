@@ -632,7 +632,6 @@ public class ViewFactory {
 		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
 		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
 		views.put("myRequested", getMyRequestedWorkPermitView().setOrder(order++));
-		views.put("requested", getRequestedWorkPermitView().setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, views);
 

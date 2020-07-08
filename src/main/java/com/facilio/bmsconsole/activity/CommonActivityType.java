@@ -42,13 +42,13 @@ public enum CommonActivityType implements ActivityType {
     ADD_RECORD(74) {
         @Override
         public String constructMessage(JSONObject json) {
-            return "added Record";
+            return "added the record";
         }
     },
     UPDATE_RECORD(75) {
         @Override
         public String constructMessage(JSONObject json) {
-            return "updated Record";
+            return "updated the record";
         }
     },
     EMAIL_RECORD(76) {

@@ -8,14 +8,14 @@ public enum WorkPermitActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " verified Prerequisites Checklist";
+            return " reviewed Prerequisites";
         }
     },
     POST_WORK_VERIFIED(78) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " verified Post Work Checklist";
+            return " updated Post-Work checklist";
         }
     };
 

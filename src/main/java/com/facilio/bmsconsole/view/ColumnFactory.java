@@ -1073,13 +1073,14 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getDefaultWorkPermitColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("name", "Subject"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
-		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
-		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("people", "Contact"));
+		columns.add(new ViewField("space", "Location"));
+		columns.add(new ViewField("expectedStartTime", "Valid From"));
+		columns.add(new ViewField("expectedEndTime", "Valid To"));
+		columns.add(new ViewField("workPermitType", "Permit Type"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
-		columns.add(new ViewField("isRecurring", "Is Recurring"));
 		columns.add(new ViewField("moduleState", "Status"));
 		return columns;
 	}
