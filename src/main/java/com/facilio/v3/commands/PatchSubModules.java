@@ -54,15 +54,12 @@ public class PatchSubModules extends FacilioCommand {
             Set<String> subModuleNameList = subForm.keySet();
             for (String subModuleName: subModuleNameList) {
                 List<Map<String, Object>> subModulePropList = subForm.get(subModuleName);
-                if (moduleNameVsRecordId.get(subModuleName) == null) {
-                    moduleNameVsRecordId.put(subModuleName, new ArrayList<>());
-                }
                 for (Map<String, Object> subModuleProp: subModulePropList) {
                     Long id = (Long) subModuleProp.get("id");
                     if (id == null) {
                         continue;
                     }
-
+                    moduleNameVsRecordId.computeIfAbsent(subModuleName, k -> new ArrayList<>());
                     moduleNameVsRecordId.get(subModuleName).add(id);
                 }
             }

@@ -242,6 +242,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new DeleteSubModuleRecordCommand());
         transactionChain.addCommand(new PatchSubFormCommand());
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());

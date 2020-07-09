@@ -31,7 +31,6 @@ public class PatchSubFormCommand extends FacilioCommand {
         }
 
         String mainModuleName = Constants.getModuleName(context);
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
 
         for (ModuleBaseWithCustomFields record: records) {
             Map<String, List<Map<String, Object>>> subFormMap = record.getSubForm();
@@ -42,7 +41,6 @@ public class PatchSubFormCommand extends FacilioCommand {
             for (String moduleName : subFormMap.keySet()) {
                 List<Map<String, Object>> subForm = subFormMap.get(moduleName);
                 update(mainModuleName, moduleName, subForm, record.getId());
-                recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
             }
         }
         return false;

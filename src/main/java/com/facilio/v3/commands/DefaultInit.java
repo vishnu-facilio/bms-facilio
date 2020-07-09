@@ -10,6 +10,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -31,7 +32,7 @@ public class DefaultInit extends FacilioCommand {
 
         String moduleName = Constants.getModuleName(context);
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);;
-        setFormData(data, moduleName, moduleRecord);
+        setFormData(context, data, moduleName, moduleRecord);
 
         if (id != null) {
             moduleRecord.setId(id);
@@ -67,7 +68,7 @@ public class DefaultInit extends FacilioCommand {
         return (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(recordMap, beanClass);
     }
 
-    private void setFormData(Map<String, Object> data, String moduleName, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+    private void setFormData(Context context, Map<String, Object> data, String moduleName, ModuleBaseWithCustomFields moduleRecord) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         Set subModuleNames = new HashSet<>(getSubModuleRels(module.getModuleId()));
@@ -79,6 +80,15 @@ public class DefaultInit extends FacilioCommand {
             String fieldNameStr = (String) fieldName;
             FacilioField facilioField = fieldMap.get(fieldNameStr);
             Object nodeValue = data.get(fieldNameStr);
+            if (facilioField == null && fieldNameStr.endsWith("_deleted") && nodeValue instanceof List) {
+                List<Long> moduleDeleteList = new ArrayList<>();
+                for (Object obj: (List) nodeValue) {
+                    moduleDeleteList.add((Long) obj);
+                }
+                Constants.setDeleteRecordIdMap(context,
+                        ImmutableMap.of(StringUtils.removeEnd(fieldNameStr, "_deleted"), moduleDeleteList));
+            }
+
             if (facilioField == null
                     && (nodeValue instanceof List)
                     && subModuleNames.contains(fieldNameStr)) {

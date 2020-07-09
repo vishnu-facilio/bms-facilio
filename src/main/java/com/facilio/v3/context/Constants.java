@@ -183,4 +183,13 @@ public class Constants {
         return new ArrayList<>();
     }
 
+    private static final String DELETE_RECORD_ID_MAP = "deleteRecordIdMap";
+    public static Map<String, List<Long>> getDeleteRecordIdMap(Context context) {
+        return (Map<String, List<Long>>) context.get(DELETE_RECORD_ID_MAP);
+    }
+
+    public static void setDeleteRecordIdMap(Context context, Map<String, List<Long>> deleteRecordIdMap) {
+        context.put(DELETE_RECORD_ID_MAP, deleteRecordIdMap);
+    }
+
 }
