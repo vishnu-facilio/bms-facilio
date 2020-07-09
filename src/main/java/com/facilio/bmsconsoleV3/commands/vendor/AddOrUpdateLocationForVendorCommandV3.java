@@ -1,10 +1,13 @@
 package com.facilio.bmsconsoleV3.commands.vendor;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
@@ -26,6 +29,12 @@ public class AddOrUpdateLocationForVendorCommandV3 extends FacilioCommand {
                 //set vendor source if doesnt have
                 if(v.getRegisteredBy() != null && v.getRegisteredBy().getId() > 0) {
                     v.setVendorSource(1);
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
+                        V3TenantContext tenant = V3PeopleAPI.getTenantForUser(v.getRegisteredBy().getId());
+                        if(tenant != null && tenant.getId() > 0) {
+                            v.setSourceId(tenant.getId());
+                        }
+                    }
                 }
                 //update location
                 LocationContext location = v.getAddress();

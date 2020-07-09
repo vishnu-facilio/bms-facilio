@@ -105,7 +105,7 @@ public class V3VendorContext extends ModuleBaseWithCustomFields {
         this.hasInsurance = hasInsurance;
     }
 
-    private VendorContext.VendorSource vendorSource;
+    private V3VendorContext.VendorSource vendorSource;
     public Integer getInviteSource() {
         if (vendorSource != null) {
             return vendorSource.getIndex();
@@ -114,10 +114,10 @@ public class V3VendorContext extends ModuleBaseWithCustomFields {
     }
     public void setVendorSource(Integer vendorSource) {
         if(vendorSource != null) {
-            this.vendorSource = VendorContext.VendorSource.valueOf(vendorSource);
+            this.vendorSource = V3VendorContext.VendorSource.valueOf(vendorSource);
         }
     }
-    public VendorContext.VendorSource getVendorSourceEnum() {
+    public V3VendorContext.VendorSource getVendorSourceEnum() {
         return vendorSource;
     }
 

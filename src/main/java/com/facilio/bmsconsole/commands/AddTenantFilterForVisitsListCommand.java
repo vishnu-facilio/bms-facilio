@@ -22,6 +22,7 @@ public class AddTenantFilterForVisitsListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		//This class can be removed once new tenant portal is released
 		Boolean isFromTenantPortal = (Boolean) context.get(FacilioConstants.ContextNames.IS_TENANT_PORTAL);
 		if (isFromTenantPortal) {
 			String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);

@@ -8,8 +8,11 @@ import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3ContactsContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -43,13 +46,28 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
             List<FacilioField> fields = modBean.getAllFields(module.getName());
             for(V3VisitorLoggingContext vL : visitorLogs) {
 
+                //need to change this to tenant contact context once host is changed to people lookup
+
                 if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
                     vL.setRequestedBy(AccountUtil.getCurrentUser());
                 }
-                //need to change this to tenant contact context once host is changed to people lookup
-                V3ContactsContext contact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-                if(contact != null && contact.getTenant() != null) {
-                    vL.setTenant(contact.getTenant());
+                else {
+                    if(vL.getHost() == null) {
+                        V3ContactsContext tenantContact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+                        if(tenantContact != null){
+                            vL.setHost(tenantContact);
+                        }
+                    }
+                }
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+                    V3TenantContext tenant = V3PeopleAPI.getTenantForUser(vL.getRequestedBy().getOuid());
+                    vL.setTenant(tenant);
+                }
+                else {
+                    V3ContactsContext contact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+                    if (contact != null && contact.getTenant() != null) {
+                        vL.setTenant(contact.getTenant());
+                    }
                 }
                 if(vL.getTenant() == null && vL.getHost() != null) {
                     V3ContactsContext host = (V3ContactsContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId(), V3ContactsContext.class);

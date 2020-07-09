@@ -27,7 +27,7 @@ public class V3VisitorLoggingContext extends V3Context {
     }
 
     private VisitorInviteContext invite;
-    private ContactsContext host;
+    private V3ContactsContext host;
     private Long checkInTime;
     private Long checkOutTime;
     private V3VisitorContext visitor;
@@ -51,11 +51,11 @@ public class V3VisitorLoggingContext extends V3Context {
         this.invite = invite;
     }
 
-    public ContactsContext getHost() {
+    public V3ContactsContext getHost() {
         return host;
     }
 
-    public void setHost(ContactsContext host) {
+    public void setHost(V3ContactsContext host) {
         this.host = host;
     }
 

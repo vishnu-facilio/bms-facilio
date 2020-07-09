@@ -5,7 +5,12 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.V3ContactsContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -46,9 +51,11 @@ public class ComputeScheduleForWorkPermitCommandV3 extends FacilioCommand {
                     }
                 }
                 if(permit.getRequestedBy() != null && permit.getRequestedBy().getId() > 0) {
-                    ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
-                    if(contact != null && contact.getTenant() != null) {
-                        permit.setTenant(contact.getTenant());
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
+                        V3TenantContext tenant = V3PeopleAPI.getTenantForUser(permit.getRequestedBy().getId());
+                        if(tenant != null) {
+                            permit.setTenant(tenant);
+                        }
                     }
                 }
                 BusinessHoursContext visitTime = permit.getRecurringInfo();
