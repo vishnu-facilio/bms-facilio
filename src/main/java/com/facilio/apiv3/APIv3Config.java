@@ -16,6 +16,8 @@ import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCom
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
@@ -146,6 +148,20 @@ public class APIv3Config {
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
                 .summary()
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
+                .build();
+    }
+    
+    @Module("storeRoom")
+    public static Supplier<V3Config> getStoreRoom() {
+        return () -> new V3Config(V3StoreRoomContext.class)
+                .create()
+                    .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
+                .update()
+                	.afterSave(new UpdateServingSitesinStoreRoomCommandV3())
+                .list()
+                    .beforeFetch(new LoadStoreRoomLookUpCommandV3())
+                .summary()
+                    .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .build();
     }
 
