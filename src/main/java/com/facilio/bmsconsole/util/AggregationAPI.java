@@ -86,11 +86,18 @@ public class AggregationAPI {
         return aggregationMetaContexts;
     }
 
-    public static List<AggregationColumnMetaContext> getAggregateFields(Set<Long> fieldIds) throws Exception {
+    public static List<AggregationColumnMetaContext> getAggregateFields(Set<Long> fieldIds, long endTime) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAggregationColumnMetaModule().getTableName())
                 .select(FieldFactory.getAggregationColumnMetaFields())
+                .innerJoin(ModuleFactory.getAggregationMetaModule().getTableName())
+                    .on(ModuleFactory.getAggregationColumnMetaModule().getTableName() + ".AGGREGATION_META_ID = " + ModuleFactory.getAggregationMetaModule().getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
+
+        if (endTime > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("LAST_SYNC", "lastSync", String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+        }
+
         List<AggregationColumnMetaContext> columnMetaList = FieldUtil.getAsBeanListFromMapList(builder.get(), AggregationColumnMetaContext.class);
         if (CollectionUtils.isNotEmpty(columnMetaList)) {
             Set<Long> aggregationMetaIds = columnMetaList.stream().map(AggregationColumnMetaContext::getAggregationMetaId).collect(Collectors.toSet());

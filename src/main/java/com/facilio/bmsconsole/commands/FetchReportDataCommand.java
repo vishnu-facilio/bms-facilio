@@ -138,7 +138,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked);
 			reportData.add(sortedData);
 		}
-		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum());
+		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields, report.getTypeEnum(), report.getxAggrEnum(), report.getDateRange());
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (int i = 0; i < groupedDataPoints.size(); i++) {
 				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
@@ -590,16 +590,23 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 	}
 
-	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator) throws Exception {
+	private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator, DateRange dateRange) throws Exception {
 		if (dataPoints != null && !dataPoints.isEmpty()) {
 			if ((!FacilioProperties.isProduction() ||
 					(FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 173l))) {
 				if ((reportType != null && reportType == ReportType.READING_REPORT)
 						&& aggregateOperator instanceof DateAggregateOperator) {
 					// replace live reading data with aggregated data
+					long endTime = System.currentTimeMillis();
+					if (dateRange != null) {
+						if (dateRange.getEndTime() > 0) {
+							endTime = dateRange.getEndTime();
+						}
+					}
+
 					Set<Long> fieldIds = dataPoints.stream().filter(point -> point.getxAxis().getField().getName().equalsIgnoreCase("ttime"))
 							.map(point -> point.getyAxis().getField().getFieldId()).collect(Collectors.toSet());
-					List<AggregationColumnMetaContext> aggregateFields = AggregationAPI.getAggregateFields(fieldIds);
+					List<AggregationColumnMetaContext> aggregateFields = AggregationAPI.getAggregateFields(fieldIds, endTime);
 					if (CollectionUtils.isNotEmpty(aggregateFields)) {
 						Map<Long, List<AggregationColumnMetaContext>> columnMap = new HashMap<>();
 						for (AggregationColumnMetaContext aggregateField : aggregateFields) {
