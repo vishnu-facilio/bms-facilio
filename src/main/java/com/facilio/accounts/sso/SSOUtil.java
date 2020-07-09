@@ -1,8 +1,14 @@
 package com.facilio.accounts.sso;
 
-import org.apache.commons.codec.binary.Base64;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.struts2.ServletActionContext;
+
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class SSOUtil {
@@ -15,11 +21,28 @@ public class SSOUtil {
 		return new String(Base64.decodeBase64(encodedStr));
 	}
 	
+	public static String getCurrentAppURL() {
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			if (request != null) {
+				AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+				if (appDomain != null) {
+					return request.getScheme() + "://" + appDomain.getDomain();
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return FacilioProperties.getClientAppUrl();
+	}
+	
 	public static String getSPMetadataURL(AccountSSO sso) {
 		
 		String ssoKey = base64EncodeUrlSafe(sso.getOrgId() + "_" + sso.getId());
 		
-		String metadataUrl = FacilioProperties.getClientAppUrl() + "/sso/metadata/" + ssoKey;
+		String metadataUrl = getCurrentAppURL() + "/sso/metadata/" + ssoKey;
 		
 		return metadataUrl;
 	}
@@ -28,7 +51,7 @@ public class SSOUtil {
 		
 		String ssoKey = base64EncodeUrlSafe(sso.getOrgId() + "_" + sso.getId());
 		
-		String acsUrl = FacilioProperties.getClientAppUrl() + "/sso/acs/" + ssoKey;
+		String acsUrl = getCurrentAppURL() + "/sso/acs/" + ssoKey;
 		
 		return acsUrl;
 	}
@@ -37,16 +60,23 @@ public class SSOUtil {
 		
 		String ssoKey = base64EncodeUrlSafe(sso.getOrgId() + "_" + sso.getId());
 		
-		String acsUrl = FacilioProperties.getClientAppUrl() + "/app/logout";
+		String acsUrl = getCurrentAppURL() + "/app/logout";
 		
 		return acsUrl;
 	}
 	
 	public static String getSPLoginURL() {
 		
-		String acsUrl = FacilioProperties.getClientAppUrl() + "/app/login";
+		String acsUrl = getCurrentAppURL() + "/app/login";
 		
 		return acsUrl;
+	}
+	
+	public static String getSSOEndpoint(long orgId) throws Exception {
+		
+		String ssoEndpoint = getCurrentAppURL() + "/sso/" + IAMOrgUtil.getOrg(orgId).getDomain();
+		
+		return ssoEndpoint;
 	}
 	
 	public static String getSPMetadataXML(AccountSSO sso) throws Exception {

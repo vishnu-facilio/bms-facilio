@@ -572,7 +572,7 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					setResult("url", FacilioProperties.getClientAppUrl());
+					setResult("url", SSOUtil.getCurrentAppURL());
 				}
 	
 				addAuthCookies(authtoken, portalUser, false, request);

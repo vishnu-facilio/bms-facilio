@@ -6,18 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -76,7 +82,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 						request.setAttribute("iamAccount", iamAccount);
 					}
 					else {
-						return Action.LOGIN;
+						return handleLogin();
 					}
 				}
 			}
@@ -89,11 +95,27 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 		} catch (Exception e) {
 			LOGGER.log(Level.FATAL, "error in auth interceptor", e);
-			return Action.LOGIN;
+			return handleLogin();
 		}
 
 		request.getAttribute("iamAccount");
 		return arg0.invoke();
+	}
+	
+	private String handleLogin() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		if (request != null) {
+			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+			if (appDomain != null && appDomain.getOrgId() > 0) {
+				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
+				if (sso != null) {
+					String ssoEndpoint = SSOUtil.getSSOEndpoint(appDomain.getOrgId());
+					response.sendRedirect(ssoEndpoint);
+				}
+			}
+		}
+		return Action.LOGIN;
 	}
 
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
