@@ -80,13 +80,13 @@ public class DefaultInit extends FacilioCommand {
             String fieldNameStr = (String) fieldName;
             FacilioField facilioField = fieldMap.get(fieldNameStr);
             Object nodeValue = data.get(fieldNameStr);
-            if (facilioField == null && fieldNameStr.endsWith("_deleted") && nodeValue instanceof List) {
+            if (facilioField == null && fieldNameStr.endsWith("_delete") && nodeValue instanceof List) {
                 List<Long> moduleDeleteList = new ArrayList<>();
                 for (Object obj: (List) nodeValue) {
                     moduleDeleteList.add((Long) obj);
                 }
                 Constants.setDeleteRecordIdMap(context,
-                        ImmutableMap.of(StringUtils.removeEnd(fieldNameStr, "_deleted"), moduleDeleteList));
+                        ImmutableMap.of(StringUtils.removeEnd(fieldNameStr, "_delete"), moduleDeleteList));
             }
 
             if (facilioField == null
