@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
@@ -383,6 +384,16 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setConnectedAppWidgetList(List<ConnectedAppWidgetContext> connectedAppWidgetList) {
 		this.connectedAppWidgetList = connectedAppWidgetList;
 	}
+	
+	private String moduleName;
+	
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	public String getModuleName() {
+		return this.moduleName;
+	}
 
 	public String connectedAppWidgetList() throws Exception {
 		
@@ -392,6 +403,21 @@ public class ConnectedAppAction extends FacilioAction {
 		if (getFilters() != null) {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		
+	 		if (getModuleName() != null) {
+	 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	 			FacilioModule module = modBean.getModule(getModuleName());
+	 			if (module != null && module.getModuleId() > 0) {
+	 				JSONArray entityId = new JSONArray();
+	 				entityId.add(module.getModuleId()+"");
+
+	 				JSONObject entityIdFilter = new JSONObject();
+	 				entityIdFilter.put("operatorId", 9);
+	 				entityIdFilter.put("value", entityId);
+	 				
+	 				json.put("entityId", entityIdFilter);
+	 			}
+	 		}
 	 		fetchListChain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		}
 		
