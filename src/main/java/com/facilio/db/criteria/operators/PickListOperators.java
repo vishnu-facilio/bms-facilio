@@ -261,6 +261,15 @@ public enum PickListOperators implements Operator<String> {
 					else if(PropertyUtils.isReadable(object, "id")) {
 						currentId = (long) PropertyUtils.getProperty(object, "id");
 					}
+					else if(object instanceof Map) {
+						Map<String,Object> objectMap = (Map<String,Object>) object;
+						if(objectMap.containsKey("id")) {
+							currentId = (long) objectMap.get("id");
+						}
+						else {
+							return false;
+						}
+					}
 					else {
 						return false;
 					}
