@@ -5567,6 +5567,13 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateWorkPermitCommand());
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY));
+		c.addCommand(new SetWorkPermitRecordCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 		return c;
 	}
 }

@@ -257,6 +257,7 @@ private static final long serialVersionUID = 1L;
 			recordIds.add(checklist.getId());
 		}
 		FacilioChain c = TransactionChainFactory.updateWorkPermitChecklistChain();
+		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, checklistRecords);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
