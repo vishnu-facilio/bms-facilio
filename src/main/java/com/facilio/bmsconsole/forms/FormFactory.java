@@ -1455,8 +1455,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration(Hr)", Required.REQUIRED, 3, 1));
-		fields.add(new FormField("paymentType", FieldDisplayType.SELECTBOX, "Payment Type", Required.REQUIRED, 4, 1));
-
+		
 		fields.add(new FormField("buyingPrice", FieldDisplayType.DECIMAL, "Buying Price", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("sellingPrice", FieldDisplayType.DECIMAL, "Selling Price", Required.OPTIONAL, 6, 1));
 
