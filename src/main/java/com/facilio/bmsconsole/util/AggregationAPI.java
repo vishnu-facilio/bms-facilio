@@ -12,13 +12,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -86,17 +84,20 @@ public class AggregationAPI {
         return aggregationMetaContexts;
     }
 
-    public static List<AggregationColumnMetaContext> getAggregateFields(Set<Long> fieldIds, long endTime) throws Exception {
+    public static List<AggregationColumnMetaContext> getAggregateFields(Set<Long> fieldIds, DateRange range) throws Exception {
+        if (range == null) {
+            return null;
+        }
+
+        long currentTimeMillis = System.currentTimeMillis();
+        if (range.getStartTime() > currentTimeMillis) {
+            return null;
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAggregationColumnMetaModule().getTableName())
                 .select(FieldFactory.getAggregationColumnMetaFields())
-                .innerJoin(ModuleFactory.getAggregationMetaModule().getTableName())
-                    .on(ModuleFactory.getAggregationColumnMetaModule().getTableName() + ".AGGREGATION_META_ID = " + ModuleFactory.getAggregationMetaModule().getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
-
-        if (endTime > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("LAST_SYNC", "lastSync", String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
-        }
 
         List<AggregationColumnMetaContext> columnMetaList = FieldUtil.getAsBeanListFromMapList(builder.get(), AggregationColumnMetaContext.class);
         if (CollectionUtils.isNotEmpty(columnMetaList)) {
@@ -117,6 +118,20 @@ public class AggregationAPI {
 
                     FacilioField storageField = modBean.getField(columnMeta.getStorageFieldId(), aggregationMeta.getStorageModuleId());
                     columnMeta.setStorageField(storageField);
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(columnMetaList)) {
+            long endTime = range.getEndTime();
+            if (endTime > currentTimeMillis) {
+                endTime = currentTimeMillis;
+            }
+            Iterator<AggregationColumnMetaContext> iterator = columnMetaList.iterator();
+            while (iterator.hasNext()) {
+                AggregationColumnMetaContext columnMetaContext = iterator.next();
+                AggregationMetaContext aggregationMeta = columnMetaContext.getAggregationMeta();
+                if (aggregationMeta.getFrequencyTypeEnum().getAggregatedTime(endTime) > aggregationMeta.getLastSync()) {
+                    iterator.remove();
                 }
             }
         }

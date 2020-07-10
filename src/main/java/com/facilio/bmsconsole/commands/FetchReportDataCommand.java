@@ -597,16 +597,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 				if ((reportType != null && reportType == ReportType.READING_REPORT)
 						&& aggregateOperator instanceof DateAggregateOperator) {
 					// replace live reading data with aggregated data
-					long endTime = System.currentTimeMillis();
-					if (dateRange != null) {
-						if (dateRange.getEndTime() > 0) {
-							endTime = dateRange.getEndTime();
-						}
-					}
-
 					Set<Long> fieldIds = dataPoints.stream().filter(point -> point.getxAxis().getField().getName().equalsIgnoreCase("ttime"))
 							.map(point -> point.getyAxis().getField().getFieldId()).collect(Collectors.toSet());
-					List<AggregationColumnMetaContext> aggregateFields = AggregationAPI.getAggregateFields(fieldIds, endTime);
+					List<AggregationColumnMetaContext> aggregateFields = AggregationAPI.getAggregateFields(fieldIds, dateRange);
 					if (CollectionUtils.isNotEmpty(aggregateFields)) {
 						Map<Long, List<AggregationColumnMetaContext>> columnMap = new HashMap<>();
 						for (AggregationColumnMetaContext aggregateField : aggregateFields) {
