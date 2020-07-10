@@ -82,12 +82,12 @@ public class WorkOrderServiceAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(parentId));
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderServiceList);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getWorkorderServiceIds());
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE,4 );
 
 		FacilioChain deleteServiceChain = TransactionChainFactory.getDeleteWorkorderServiceChain();
 		deleteServiceChain.execute(context);
-		setResult(FacilioConstants.ContextNames.WO_SERVICE_IDS, context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult(FacilioConstants.ContextNames.WO_SERVICE_IDS, getWorkorderServiceIds());
 		return SUCCESS;
 	}
 	
