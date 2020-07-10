@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.scoping;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.ModuleScopingConfiguration;
@@ -21,9 +22,9 @@ public class VendorScopingConfig extends ModuleScopingConfiguration {
             //adding tenant scope in tenant portal
             long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
-            tenantScoping.setFieldName("sourceId");
+            tenantScoping.setFieldName("tenant");
             tenantScoping.setScopingId(tenantPortalScopingId);
-            tenantScoping.setOperatorId(9);
+            tenantScoping.setOperatorId(36);
             tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             tenantScoping.setModuleId(vendorsModule.getModuleId());
 

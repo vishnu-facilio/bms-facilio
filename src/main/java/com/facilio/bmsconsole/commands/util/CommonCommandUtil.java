@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands.util;
 
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -484,7 +485,7 @@ public class CommonCommandUtil {
      //will be changed soon
     public static List<Long> getMySiteIds() throws Exception {
     	
-    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) || (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() != AppDomain.AppDomainType.TENANT_PORTAL)) {
 	    	FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
 			GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
 					.select(AccountConstants.getAccessbileSpaceFields())
@@ -517,7 +518,7 @@ public class CommonCommandUtil {
     
     //will be removed soon..so please dont use this further
     public static List<BaseSpaceContext> getMySites() throws Exception {
-    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) || (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() != AppDomain.AppDomainType.TENANT_PORTAL)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);

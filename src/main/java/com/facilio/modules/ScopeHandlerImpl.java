@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.AppDomain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public Collection<FacilioField> updateValuesForInsertAndGetFields(FacilioModule module, List<Map<String, Object>> props) {
         try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)){
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL){
 				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
 				if(scopeFields != null) {
 					return scopeFields.getFields();
@@ -57,7 +58,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria updateValuesForUpdateAndGetFieldsAndCriteria (FacilioModule module, Collection<FacilioModule> joinModules, Map<String, Object> prop) {
         try {
-        	if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+        	if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
         		Map<Long, Map<String, Object>> scopingMap = AccountUtil.getCurrentAppScopingMap();
 				if(MapUtils.isNotEmpty(scopingMap)) {
 					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
@@ -107,7 +108,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria getFieldsAndCriteriaForSelect(FacilioModule module, Collection<FacilioModule> joinModules) {
         try {
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
 				return constructScopingFieldsAndCriteria(module, joinModules, false);
 			}
 			else {

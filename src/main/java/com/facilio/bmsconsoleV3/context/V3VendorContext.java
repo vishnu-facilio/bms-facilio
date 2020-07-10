@@ -182,6 +182,13 @@ public class V3VendorContext extends ModuleBaseWithCustomFields {
         this.primaryContactPhone = primaryContactPhone;
     }
 
+    private V3TenantContext tenant;
 
+    public V3TenantContext getTenant() {
+        return tenant;
+    }
 
+    public void setTenant(V3TenantContext tenant) {
+        this.tenant = tenant;
+    }
 }

@@ -32,7 +32,7 @@ public class AddOrUpdateLocationForVendorCommandV3 extends FacilioCommand {
                     if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
                         V3TenantContext tenant = V3PeopleAPI.getTenantForUser(v.getRegisteredBy().getId());
                         if(tenant != null && tenant.getId() > 0) {
-                            v.setSourceId(tenant.getId());
+                            v.setTenant(tenant);
                         }
                     }
                 }
