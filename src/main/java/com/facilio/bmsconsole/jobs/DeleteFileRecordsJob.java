@@ -39,7 +39,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 				if (deletedTime <= 0) {
 					throw new IllegalArgumentException("Deleted Time must not empty..." + deletedTime);
 				}
-				deleteFiles(deletedTime, orgId, namespaceConfig.getTableName());
+				deleteFiles(deletedTime, orgId, namespaceConfig);
 			}
 			LOGGER.info("FacilioFile deletion Job -- time taken to complete is  :"+(System.currentTimeMillis()-jobStart));
 		} catch (Exception e) {
@@ -49,15 +49,15 @@ public class DeleteFileRecordsJob extends FacilioJob {
 		}
 	}
 
-	private void deleteFiles(long deletedTime, long orgId, String tableName) throws Exception {
-		List<FacilioField> fields = FieldFactory.getFileFields(tableName);
+	private void deleteFiles(long deletedTime, long orgId, FileStore.NamespaceConfig namespaceConfig) throws Exception {
+		List<FacilioField> fields = FieldFactory.getFileFields(namespaceConfig.getTableName());
 		FacilioField deleteColumn = FieldFactory.getAsMap(fields).get("deletedTime"); 
 		FacilioField orgIdColumn = FieldFactory.getAsMap(fields).get("orgId");
 		FacilioField idColumn = FieldFactory.getAsMap(fields).get("fileId");
 		List<FacilioField> idField = new ArrayList<>();
 		idField.add(idColumn);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(idField)
-				.table(tableName)
+				.table(namespaceConfig.getTableName())
 				.andCondition(CriteriaAPI.getCondition(orgIdColumn, String.valueOf(orgId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(deleteColumn, String.valueOf(deletedTime),DateOperators.IS_BEFORE))
 				.orderBy("ORGID,DELETED_TIME").limit(10000);
@@ -67,7 +67,7 @@ public class DeleteFileRecordsJob extends FacilioJob {
 				break;
 			}
 			List<Long> fileIds = props.stream().map(p -> (Long) p.get("fileId")).collect(Collectors.toList());
-			FacilioFactory.getFileStore().deleteFilesPermanently(fileIds);
+			FacilioFactory.getFileStore().deleteFilesPermanently(namespaceConfig.getName(), fileIds);
 		}
 	}
 }
