@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import javax.xml.ws.Service;
 
 public class ServiceContext extends ModuleBaseWithCustomFields{
 
@@ -81,5 +84,53 @@ private ServiceStatus status;
 
 	public void setSellingPrice(double sellingPrice) {
 		this.sellingPrice = sellingPrice;
+	}
+
+	private ServiceContext.PaymentType paymentType;
+	public int getPaymentType() {
+		if (paymentType != null) {
+			return paymentType.getIndex();
+		}
+		return -1;
+	}
+	public void setPaymentType(int paymentType) {
+		this.paymentType = ServiceContext.PaymentType.valueOf(paymentType);
+	}
+	public ServiceContext.PaymentType getPaymentTypeEnum() {
+		return paymentType;
+	}
+	public void setPaymentType(ServiceContext.PaymentType paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public static enum PaymentType implements FacilioEnum {
+		SINGLE_PAYMENT, HOURLY_PAYMENT;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static ServiceContext.PaymentType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+
+	private double buyingPrice;
+
+	public double getBuyingPrice() {
+		return buyingPrice;
+	}
+
+	public void setBuyingPrice(double buyingPrice) {
+		this.buyingPrice = buyingPrice;
 	}
 }

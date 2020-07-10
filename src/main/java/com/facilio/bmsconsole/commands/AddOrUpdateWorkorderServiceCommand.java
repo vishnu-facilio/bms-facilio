@@ -5,14 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ContractsContext;
-import com.facilio.bmsconsole.context.WarrantyContractContext;
-import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
-import com.facilio.bmsconsole.context.WorkOrderServiceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -38,41 +36,107 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		lookUpfields.add((LookupField) serviceFieldsMap.get("service"));
 		List<WorkOrderServiceContext> workorderServices = (List<WorkOrderServiceContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<WorkOrderServiceContext> workorderServicelist = new ArrayList<>();
+
+		List<WorkOrderServiceContext> woServiceToBeAdded = new ArrayList<>();
+
 		if (CollectionUtils.isNotEmpty(workorderServices)) {
+			long parentId = workorderServices.get(0).getParentId();
+			WorkOrderContext workorder = (WorkOrderContext) RecordAPI.getRecord(FacilioConstants.ContextNames.WORK_ORDER, parentId);
+
 			for (WorkOrderServiceContext woService : workorderServices) {
 				woService.setCost(getCostForService(woService.getVendor(), woService.getService().getId()));
 				if (woService.getId() > 0) {
+					SelectRecordsBuilder<WorkOrderServiceContext> selectBuilder = new SelectRecordsBuilder<WorkOrderServiceContext>()
+							.select(workorderServiceFields).table(workorderServiceModule.getTableName())
+							.moduleName(workorderServiceModule.getName()).beanClass(WorkOrderServiceContext.class)
+							.andCondition(CriteriaAPI.getIdCondition(woService.getId(), workorderServiceModule))
+							.fetchSupplements(lookUpfields);
+					;
+					List<WorkOrderServiceContext> woServiceContext = selectBuilder.get();
+					woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), parentId, workorder, woService);
+					workorderServicelist.add(woService);
 					updateWorkorderService(workorderServiceModule, workorderServiceFields, woService);
 				}
 				else
 				{
-					addWorkorderService(workorderServiceModule, workorderServiceFields, woService);
+					woService = setWorkorderServiceObj(woService.getService(), parentId, workorder, woService);
+					woServiceToBeAdded.add(woService);
+					workorderServicelist.add(woService);
+
 				}
+			}
+
+			if (CollectionUtils.isNotEmpty(woServiceToBeAdded)) {
+				addWorkorderService(workorderServiceModule, workorderServiceFields, woServiceToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderServices.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderServices.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServices);
-			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 3);
-			context.put(FacilioConstants.ContextNames.WO_LABOUR_LIST, workorderServices);
+			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 4);
+			context.put(FacilioConstants.ContextNames.WO_SERVICE_LIST, workorderServices);
 		}
 
 		return false;
 	}
 
-	private void addWorkorderService(FacilioModule module, List<FacilioField> fields, WorkOrderServiceContext woServices)
+	private void addWorkorderService(FacilioModule module, List<FacilioField> fields, List<WorkOrderServiceContext> woServices)
 			throws Exception {
 		InsertRecordBuilder<WorkOrderServiceContext> readingBuilder = new InsertRecordBuilder<WorkOrderServiceContext>()
-				.module(module).fields(fields).addRecord(woServices);
+				.module(module).fields(fields).addRecords(woServices);
 		readingBuilder.save();
 	}
 
-	private void updateWorkorderService(FacilioModule module, List<FacilioField> fields, WorkOrderServiceContext labour)
+	private void updateWorkorderService(FacilioModule module, List<FacilioField> fields, WorkOrderServiceContext service)
 			throws Exception {
 
 		UpdateRecordBuilder<WorkOrderServiceContext> updateBuilder = new UpdateRecordBuilder<WorkOrderServiceContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(labour.getId(), module));
-		updateBuilder.update(labour);
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(service.getId(), module));
+		updateBuilder.update(service);
 
+	}
+
+	private WorkOrderServiceContext setWorkorderServiceObj(ServiceContext service, long parentId, WorkOrderContext workorder, WorkOrderServiceContext workorderService) {
+		WorkOrderServiceContext woService = new WorkOrderServiceContext();
+		woService.setStartTime(workorderService.getStartTime());
+		woService.setEndTime(workorderService.getEndTime());
+		woService.setDuration(workorderService.getDuration());
+		woService.setId(workorderService.getId());
+		double duration = 0;
+		if (woService.getDuration() <= 0) {
+			if (woService.getStartTime() <= 0) {
+				woService.setStartTime(workorder.getScheduledStart());
+			}
+			if (woService.getEndTime() <= 0) {
+				woService.setEndTime(workorder.getEstimatedEnd());
+			}
+			if (woService.getStartTime() >= 0 && woService.getEndTime() >= 0) {
+				duration = getEstimatedWorkDuration(woService.getStartTime(), woService.getEndTime());
+			} else {
+				duration = 0;
+			}
+		} else {
+			duration = woService.getDuration();
+			if (woService.getStartTime() > 0) {
+				long durationVal = (long) (woService.getDuration() * 60 * 60 * 1000);
+				woService.setEndTime(woService.getStartTime() + durationVal);
+			}
+		}
+
+		woService.setParentId(parentId);
+		double costOccured = 0;
+		if(service.getBuyingPrice() > 0) {
+			if (service.getPaymentTypeEnum() == ServiceContext.PaymentType.SINGLE_PAYMENT) {
+				costOccured = service.getBuyingPrice();
+			}
+			else {
+				costOccured = service.getBuyingPrice() * duration;
+			}
+		}
+		woService.setCost(costOccured);
+		woService.setService(service);
+		woService.setDuration(duration);
+		return woService;
 	}
 	
 	private double getCostForService(long vendorId, long serviceId) throws Exception {
@@ -106,4 +170,16 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		}
 		return 0;
 	}
+
+	public static double getEstimatedWorkDuration(long issueTime, long returnTime) {
+		double duration = -1;
+		if (issueTime != -1 && returnTime != -1) {
+			duration = returnTime - issueTime;
+		}
+
+		double hours = ((duration / (1000 * 60 * 60)));
+		return Math.round(hours*100.0)/100.0;
+	}
+
+
 }

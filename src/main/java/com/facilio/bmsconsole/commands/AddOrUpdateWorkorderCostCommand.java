@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderLabourContext;
-import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.EnumOperators;
@@ -60,6 +56,13 @@ public class AddOrUpdateWorkorderCostCommand extends FacilioCommand {
 					Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 					cost = getTotalLabourCost(parentId, module, fieldsMap);
 					qty = getTotalNoOfLabour(parentId, module, fieldsMap);
+				}
+				else if (costType == 4) {
+					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WO_SERVICE);
+					Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+					cost = getTotalServiceCost(parentId, module, fieldsMap);
+					qty = getTotalNoOfServices(parentId, module, fieldsMap);
 				}
 
 				FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
@@ -191,6 +194,31 @@ public class AddOrUpdateWorkorderCostCommand extends FacilioCommand {
 		return 0d;
 	}
 
+	public static double getTotalServiceCost(long id, FacilioModule module, Map<String, FacilioField> fieldsMap)
+			throws Exception {
+
+		if (id <= 0) {
+			return 0d;
+		}
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalServiceCost", "sum(COST)", FieldType.DECIMAL));
+
+		SelectRecordsBuilder<WorkOrderServiceContext> builder = new SelectRecordsBuilder<WorkOrderServiceContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(
+						CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.setAggregation();
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalServiceCost") != null) {
+				return (double) rs.get(0).get("totalServiceCost");
+			}
+			return 0d;
+		}
+		return 0d;
+	}
+
 	private long getTotalNoOfTool(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
 		if (id <= 0) {
 			return 0;
@@ -256,6 +284,29 @@ public class AddOrUpdateWorkorderCostCommand extends FacilioCommand {
 		if (rs != null && rs.size() > 0) {
 			if (rs.get(0).get("totalLabours") != null) {
 				return (long) rs.get(0).get("totalLabours");
+			}
+			return 0;
+		}
+		return 0;
+	}
+
+	private long getTotalNoOfServices(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
+		if (id <= 0) {
+			return 0;
+		}
+
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalServices", "COUNT(DISTINCT SERVICE)", FieldType.NUMBER));
+
+		SelectRecordsBuilder<WorkOrderServiceContext> builder = new SelectRecordsBuilder<WorkOrderServiceContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(
+						CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS)).setAggregation();
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalServices") != null) {
+				return (long) rs.get(0).get("totalServices");
 			}
 			return 0;
 		}

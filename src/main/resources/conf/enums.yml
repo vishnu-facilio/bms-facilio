@@ -90,3 +90,6 @@ enums:
 
   - name: ChecklistRequired
     enumClassName: com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext$Required
+
+  - name: PaymentType
+    enumClassName: com.facilio.bmsconsole.context.ServiceContext$PaymentType

@@ -63,8 +63,38 @@ public class WorkOrderServiceContext extends ModuleBaseWithCustomFields{
 	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
-	
-	
 
-	
+	private long startTime = -1;
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	private long endTime = -1;
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	private double duration = 0;
+
+	public void setDuration(double duration) {
+		this.duration = duration;
+	}
+
+	public double getDuration() {
+		return duration;
+	}
+
+
+
+
 }
