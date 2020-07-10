@@ -53,7 +53,7 @@
 		</init-param>
 		<init-param>
 			<param-name>cors.exposed.headers</param-name>
-			<param-value>Access-Control-Allow-Origin</param-value>
+			<param-value>Access-Control-Allow-Origin,X-Redirect-To</param-value>
 		</init-param>
 	</filter>
 

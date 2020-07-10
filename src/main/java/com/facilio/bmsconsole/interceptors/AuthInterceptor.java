@@ -111,7 +111,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
 				if (sso != null) {
 					String ssoEndpoint = SSOUtil.getSSOEndpoint(appDomain.getOrgId());
-					response.sendRedirect(ssoEndpoint);
+					response.setHeader("X-Redirect-To", ssoEndpoint);
 				}
 			}
 		}
