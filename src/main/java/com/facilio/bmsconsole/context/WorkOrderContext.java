@@ -93,13 +93,14 @@ public class WorkOrderContext extends TicketContext {
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {
-			if (approvalState == ApprovalState.REQUESTED) {
-				// /app/wo/approvals/requested/summary/
-				return FacilioProperties.getConfig("clientapp.url")+"/app/wo/approvals/summary/"+getId();
-			}
-			else {
+//Commenting it out as I'm told it's no longer required
+//			if (approvalState == ApprovalState.REQUESTED) {
+//				// /app/wo/approvals/requested/summary/
+//				return FacilioProperties.getConfig("clientapp.url")+"/app/wo/approvals/summary/"+getId();
+//			}
+//			else {
 				return FacilioProperties.getConfig("clientapp.url")+"/app/wo/orders/summary/"+getId();
-			}
+//			}
 		}
 		else {
 			return null;
