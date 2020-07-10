@@ -329,6 +329,7 @@ public class ReadingAction extends FacilioAction {
 	
 	private String getCategoryReadings(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		if (StringUtils.isNotEmpty(getReadingType())) {

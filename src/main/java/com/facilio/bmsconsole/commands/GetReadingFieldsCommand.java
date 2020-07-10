@@ -45,11 +45,11 @@ public class GetReadingFieldsCommand extends FacilioCommand {
 				dataPoints.addAll(modBean.getAllFields(reading.getName()));
 				reading.setFields(new ArrayList<>());
 			}
-			Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
+			Boolean excludeEmptyFields = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, false);
 			Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
 			
 			String filter = (String) context.get(FacilioConstants.ContextNames.FILTER);
-			dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(dataPoints,parentId, filter);
+			dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(dataPoints,parentId, filter, excludeEmptyFields);
 			
 			Map<Long, FacilioModule> readingMap = readings.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity(), (prevValue, curValue) -> {
                 return prevValue;
