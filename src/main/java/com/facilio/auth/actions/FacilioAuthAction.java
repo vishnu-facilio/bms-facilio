@@ -599,6 +599,43 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+	
+	private String domain;
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	
+	public String domainDetails() throws Exception {
+		if (getDomain() == null) {
+			setResponseCode(1);
+			setResult("message", "Invalid domain");
+			return ERROR;
+		}
+		
+		Organization org = IAMOrgUtil.getOrg(getDomain());
+		if (org == null) {
+			setResponseCode(1);
+			setResult("message", "Invalid domain");
+			return ERROR;
+		}
+		
+		JSONObject domainDetails = new JSONObject();
+		domainDetails.put("logo_url", org.getLogoUrl());
+		
+		AccountSSO sso = IAMOrgUtil.getAccountSSO(getDomain());
+		if (sso != null && sso.getIsActive()) {
+			domainDetails.put("sso_enabled", true);
+			domainDetails.put("sso_url", SSOUtil.getSSOEndpoint(org.getDomain()));
+		}
+		
+		setResult("domainDetails", domainDetails);
+		
+		return SUCCESS;
+	}
 
 	public String loadWebView() {
 		HttpServletRequest request = ServletActionContext.getRequest();

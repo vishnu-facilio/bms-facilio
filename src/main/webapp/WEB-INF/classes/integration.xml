@@ -60,6 +60,18 @@
 		</result>
 	</action>
 	
+	<action name="domainDetails" class="com.facilio.auth.actions.FacilioAuthAction" method="domainDetails">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^result.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^result.*</param>
+		</result>
+	</action>
+	
 	<action name="google_sign_in" class="com.facilio.auth.actions.FacilioAuthAction" method="googleSignIn">
 		<param name="auth">false</param>
 		<result name="success" type="json">

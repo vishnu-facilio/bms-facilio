@@ -107,12 +107,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		if (request != null) {
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
-			if (appDomain != null && appDomain.getOrgId() > 0) {
-				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
-				if (sso != null) {
-					String ssoEndpoint = SSOUtil.getSSOEndpoint(appDomain.getOrgId());
-					response.setHeader("X-Redirect-To", ssoEndpoint);
-				}
+			if (appDomain != null && appDomain.getOrgId() > 0 && appDomain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+				String domainLoginEndpoint = SSOUtil.getDomainLoginURL(appDomain.getOrgId());
+				response.setHeader("X-Redirect-To", domainLoginEndpoint);
 			}
 		}
 		return Action.LOGIN;

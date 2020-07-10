@@ -72,9 +72,14 @@ public class SSOUtil {
 		return acsUrl;
 	}
 	
-	public static String getSSOEndpoint(long orgId) throws Exception {
+	public static String getDomainLoginURL(long orgId) throws Exception {
+		String domainLoginURL = getCurrentAppURL() + "/domainlogin/" + IAMOrgUtil.getOrg(orgId).getDomain();
+		return domainLoginURL;
+	}
+	
+	public static String getSSOEndpoint(String domain) {
 		
-		String ssoEndpoint = getCurrentAppURL() + "/sso/" + IAMOrgUtil.getOrg(orgId).getDomain();
+		String ssoEndpoint = getCurrentAppURL() + "/sso/" + domain;
 		
 		return ssoEndpoint;
 	}
