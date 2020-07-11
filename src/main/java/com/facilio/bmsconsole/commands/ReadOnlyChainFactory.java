@@ -2540,4 +2540,10 @@ public class ReadOnlyChainFactory {
 		return chain;
 		
 	}
+	public static FacilioChain getFetchDashboardFilterChain()
+	{
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new FetchDashboardFilterCommand());
+		return chain;
+	}
 }

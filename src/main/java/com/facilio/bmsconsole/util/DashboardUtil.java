@@ -850,6 +850,7 @@ public class DashboardUtil {
 			dashboardJson.put("clientMetaJsonString", dashboard.getClientMetaJsonString());
 			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
 			dashboardJson.put("dashboardSharingContext", dashboard.getDashboardSharingContext());
+			dashboardJson.put("dashboardFilter",dashboard.getDashboardFilter());
 			result.add(dashboardJson);
 		 }
 		return result;

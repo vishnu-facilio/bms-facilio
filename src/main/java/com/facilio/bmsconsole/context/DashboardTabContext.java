@@ -67,6 +67,15 @@ public class DashboardTabContext implements Comparable<DashboardTabContext> {
 		this.dashboardWidgets = dashboardWidgets;
 	}
 	
+	public DashboardFilterContext getDashboardFilter() {
+		return dashboardFilter;
+	}
+	public void setDashboardFilter(DashboardFilterContext dashboardFilter) {
+		this.dashboardFilter = dashboardFilter;
+	}
+
+	private DashboardFilterContext dashboardFilter;
+	
 	public void addDashboardWidget(DashboardWidgetContext dashboardWidgetContext) {
 		if(this.dashboardWidgets == null) {
 			this.dashboardWidgets = new ArrayList<>();

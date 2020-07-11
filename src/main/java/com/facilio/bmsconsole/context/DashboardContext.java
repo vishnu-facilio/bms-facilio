@@ -245,6 +245,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public String getModuleName() {
 		return this.moduleName;
 	}
+	public DashboardFilterContext getDashboardFilter() {
+		return dashboardFilter;
+	}
+	public void setDashboardFilter(DashboardFilterContext dashboardFilter) {
+		this.dashboardFilter = dashboardFilter;
+	}
+
+	private DashboardFilterContext dashboardFilter;
 	
 	public static enum DashboardPublishStatus {
 		NONE,

@@ -1494,6 +1494,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
+			c.addCommand( getAddOrUpdateDashboardFilterChain());
 			return c;
 		}
 	    
@@ -5576,6 +5577,12 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 		return c;
+
+	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddOrUpdateDashboardFilterCommand());
+		c.addCommand(new AddOrUpdateDashboardUserFilterCommand());
+		return null;
 	}
 	public static FacilioChain getSaveMailMessage() {
 		FacilioChain chain = getDefaultChain();

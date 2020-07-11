@@ -543,6 +543,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD_FOLDERS = "dashboardFolders";
 		public static final String DASHBOARD_FOLDER = "dashboardFolder";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
+		public static final String DASHBOARD_FILTER = "dashboardFilter";
 		public static final String WIDGET = "widget";
 		public static final String WIDGET_UPDATE_LIST = "widgetUpdateList";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";

@@ -495,6 +495,13 @@ public class DashboardAction extends FacilioAction {
 		return this.heatMapRange;
 	}
 	
+	private DashboardFilterContext dashboardFilter;
+	public DashboardFilterContext getDashboardFilter() {
+		return dashboardFilter;
+	}
+	public void setDashboardFilter(DashboardFilterContext dashboardFilter) {
+		this.dashboardFilter = dashboardFilter;
+	}
 	public String getReadingReportData() throws Exception {							// report functions
 		if (derivation != null) {
 			return getDerivationData();
@@ -6527,8 +6534,20 @@ public class DashboardAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
+		
+		context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilterFromDashboardMeta(dashboardMeta.get("dashboardFilter")));
+		
 		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
+		
+		
+		
+//		FacilioChain updateDashboardFilterChain=TransactionChainFactory.addOrUpdateDashboardFilterChain();
+//		FacilioContext updateDashboardFilterContext=updateDashboardChain.getContext();
+//		updateDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilter());
+//		updateDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
+//		updateDashboardFilterChain.execute();
+		
 		return SUCCESS;
 	}
 	
@@ -6559,6 +6578,18 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private DashboardFilterContext getDashboardFilterFromDashboardMeta(Object  dashboardFilterJson) throws Exception
+	{
+		if(dashboardFilterJson!=null)
+		{
+			return (DashboardFilterContext)dashboardFilterJson;
+		}
+		else {
+			return null;
+		}
+		
+		
+	}
 	private List<DashboardWidgetContext> getDashboardWidgetsFromWidgetMeta(List dashboardWidgets) {
 		List<DashboardWidgetContext> widgets = new ArrayList<>();
 		if (dashboardWidgets != null) {
@@ -6699,6 +6730,10 @@ public class DashboardAction extends FacilioAction {
 			}
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
+		FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterChain();
+		FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+		getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD,getDashboard());		
+		getDashboardFilterChain.execute();
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
 	}
@@ -6730,6 +6765,11 @@ public class DashboardAction extends FacilioAction {
 	public String viewDashboardTab() throws Exception {
 
 		dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
+		FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterChain();
+		FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+		getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB,getDashboardTabContext());
+		getDashboardFilterChain.execute();
+		
 		DashboardUtil.getDashboardTabResponseJson(Collections.singletonList(dashboardTabContext));
 		return SUCCESS;
 	}

@@ -3876,4 +3876,24 @@ public class ModuleFactory {
 		return module;
 	}
 
+	
+	public static FacilioModule getDashboardFilterModule()
+	{	
+		FacilioModule module = new FacilioModule();
+		module.setName("dashboardFilter");
+		module.setDisplayName("Dashboard Filter");
+		module.setTableName("Dashboard_Filter");
+		return module;
+		
+	}
+	
+	public static FacilioModule getDashboardUserFilterModule()
+	{	
+		FacilioModule module = new FacilioModule();
+		module.setName("dashboardUserFilter");
+		module.setDisplayName("Dashboard User Filter");
+		module.setTableName("Dashboard_User_Filter");
+		return module;
+		
+	}
 }

@@ -8682,4 +8682,29 @@ public class FieldFactory {
 	        return fields;
 	 }
 
+	 
+	 public static List<FacilioField>  getDashboardFilterFields()
+	 {
+		 FacilioModule module=ModuleFactory.getDashboardFilterModule();
+		 List<FacilioField> fields =new ArrayList<>();
+		 fields.add(getIdField(module));
+		 fields.add(getField("dashboardId","DASHBOARD_ID", module,FieldType.NUMBER));
+		 fields.add(getField("dashboardTabId","DASHBOARD_TAB_ID", module,FieldType.NUMBER));
+		 fields.add(getField("isTimelineFilterEnabled","IS_TIMELINE_FILTER_ENABLED", module,FieldType.BOOLEAN));
+		 fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+	     fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
+		 		 
+		 return fields;
+	 }
+	 
+	 public static List<FacilioField>  getDashboardUserFilterFields()
+	 {
+		 FacilioModule module=ModuleFactory.getDashboardUserFilterModule();
+		 List<FacilioField> fields =new ArrayList<>();
+		 fields.add(getIdField(module));
+		 fields.add(getField("dashboardFilterId", "DASHBOARD_FILTER_ID", module, FieldType.NUMBER));
+		 fields.add(getField("dashboardUserFilterJson","DASHBOARD_USER_FILTER_JSON", module,FieldType.BOOLEAN));
+		 		     				 
+		 return fields;
+	 }
 }
