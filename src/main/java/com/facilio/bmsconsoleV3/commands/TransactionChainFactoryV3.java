@@ -41,7 +41,6 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new InsertWorkPermitActivitiesCommand());
-        c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
 
         return c;
@@ -52,7 +51,6 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new InsertWorkPermitActivitiesCommand());
         c.addCommand(new LoadWorkPermitLookUpsCommandV3());
-        c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
 
         return c;
@@ -84,8 +82,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new AddNdaForVisitorLogCommandV3())
                 .addCommand(new GenerateQrInviteUrlCommandV3())
+                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
                 .addCommand(new VisitorFaceRecognitionCommandV3()));
-        c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
         return c;
     }
@@ -101,7 +99,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getVisitorLoggingAfterSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ChangeVisitorInviteStateCommandV3());
-        c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         return c;
     }
 
