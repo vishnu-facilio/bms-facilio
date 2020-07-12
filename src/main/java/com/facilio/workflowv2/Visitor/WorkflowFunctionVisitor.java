@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ConnectionContext;
@@ -22,7 +21,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldType;
@@ -34,13 +32,17 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.AtomContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Catch_statementContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.ListInitialisationWithElementsContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_catchContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_statementContext;
+import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
+import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
+import com.facilio.workflowv2.contexts.WorkflowDataParent;
+import com.facilio.workflowv2.contexts.WorkflowModuleDataContext;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
+import com.facilio.workflowv2.scope.Workflow_Scope;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2TypeUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -53,7 +55,28 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     
     private Map<String, Object> globalVarMemoryMap = new HashMap<String, Object>();		// keeping this as <String, Object> since we have to move this to all sub functions;
     
-    private void putParamValue(String key,Value value) {
+    Workflow_Scope scope = Workflow_Scope.DEFAULT;
+    
+    Workflow_Scope tempScope = null;
+    
+    public Workflow_Scope getTempScope() {
+		return tempScope;
+	}
+
+	public void setTempScope(Workflow_Scope tempScope) {
+		this.tempScope = tempScope;
+	}
+	
+	public Workflow_Scope getCurrentScope() {
+		if(getTempScope() != null) {
+			Workflow_Scope temp = getTempScope();
+			setTempScope(null);
+			return temp;
+		}
+		return getScope();
+	}
+
+	private void putParamValue(String key,Value value) {
     	if(key != null) {
     		varMemoryMap.put(key, value);
     	}
@@ -84,6 +107,14 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
 	public void setWorkflowContext(WorkflowContext workflowContext) {
 		this.workflowContext = workflowContext;
+	}
+	
+	public void setScope(Workflow_Scope scope) throws Exception {
+		this.scope = scope;
+	}
+	
+	public Workflow_Scope getScope() {
+		return scope;
 	}
 
 	boolean breakCodeFlow;
@@ -147,15 +178,112 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		
     		Value value = this.visit(ctx.atom());
     		
-    		WorkflowV2Util.checkForNullAndThrowException(value, ctx.atom().getText());
+    		boolean ifScopeSetted = false;
+    		if(value.asObject() == null) {													// on error command this if
+    			String scopeString = ctx.atom().getText();
+    	    	
+    	    	Workflow_Scope tempScope = Workflow_Scope.getNameMap().get(scopeString);
+    	    	
+    	    	if(tempScope != null) {
+    	    		setTempScope(tempScope);
+    	    		ifScopeSetted = true;
+    	    	}
+    		}
+    		if(!ifScopeSetted) {
+    			WorkflowV2Util.checkForNullAndThrowException(value, ctx.atom().getText());
+    		}
     		
-    		for(Recursive_expressionContext functionCall :ctx.recursive_expression()) {
-    			if(functionCall.OPEN_PARANTHESIS() != null && functionCall.CLOSE_PARANTHESIS() != null) {
+    		for(int i=0;i<ctx.recursive_expression().size();i++) {
+    			
+    			Recursive_expressionContext functionCall = ctx.recursive_expression(i);
+    			
+    			if(ifScopeSetted) {
+    				
+    				String moduleName = functionCall.VAR().getText();
+    				
+    				Object scopedObject = getCurrentScope().getObject(moduleName, this, functionCall.expr());
+    	    		if(scopedObject != null) {
+    	    			value = new Value(scopedObject); 
+    	    		}
+    	    		else {
+    	    			throw new Exception("no scoped object found - "+moduleName);
+    	    		}
+    				ifScopeSetted = false;
+    				continue;
+    			}
+    			
+    			if(value.asObject() instanceof WorkflowDataParent) {
+    				
+    				WorkflowDataParent workflowData = (WorkflowDataParent) value.asObject();
+    				
+    				boolean fetch = false;
+    				boolean continueOnFetch = false;
+    				
+    				if(functionCall.OPEN_PARANTHESIS() == null && functionCall.CLOSE_PARANTHESIS() == null && functionCall.OPEN_BRACKET() == null && functionCall.CLOSE_BRACKET() ==  null) {
+    					String varName = functionCall.VAR().getText();
+    					
+    					DBParamContext dbParam = workflowData.getDbParam();
+    					
+    					if(i == ctx.recursive_expression().size()-1) {
+        					fetch = true;
+        					continueOnFetch = true;
+        				}
+    					
+    					if(dbParam.getFieldName() == null) {
+    						dbParam.setFieldName(varName);
+    						if(!fetch) {
+    							continue;
+    						}
+    					}
+    					else if (dbParam.getAggregateString() == null) {
+    						dbParam.setAggregateString(varName);
+    						if(!fetch) {
+    							continue;
+    						}
+    					}
+    					else {
+    						fetch = true;
+    					}
+    				}
+    				else if(functionCall.OPEN_PARANTHESIS() != null && functionCall.CLOSE_PARANTHESIS() != null) {
+    					
+    					String varName = functionCall.VAR().getText();
+    					
+    					if(varName.equals(WorkflowV2Util.WORKFLOW_WHERE_STRING)) {
+    						
+    						Value criteriaValue = this.visit(functionCall.expr(0));
+    						
+    						workflowData.getDbParam().addAndCriteria(criteriaValue.asCriteria());
+    						
+    						fetch =true;
+    						continueOnFetch =true;
+    					}
+    					else {
+    						if(dbParamContext == null || dbParamContext.getFieldName() == null) {
+    							fetch = false;
+    						}
+    						else {
+    							fetch = true;
+    						}
+    					}
+    				}
+    				
+    				if(fetch) {
+    					Object result = workflowData.fetchResult(this);
+    	    			
+    	    			value = new Value(result);
+    					
+    					if(continueOnFetch) {
+    						continue;
+    					}
+    				}
+    			}
+				if(functionCall.OPEN_PARANTHESIS() != null && functionCall.CLOSE_PARANTHESIS() != null) {
+    				
+    				String functionName = functionCall.VAR().getText();
     				if (value.asObject() instanceof FacilioModule) {									// module Functions
         				FacilioModule module = (FacilioModule) value.asObject();
         				
-        				String functionName = functionCall.VAR().getText();
-            			
         				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
             			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
@@ -164,6 +292,30 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
             			value =  new Value(result);
                 	}
+    				else if(value.asObject() instanceof WorkflowModuleDataContext) {
+    					
+    					WorkflowModuleDataContext moduleDataContext = (WorkflowModuleDataContext) value.asObject();
+    					DBParamContext dbParam = moduleDataContext.getDbParam();
+    					
+    					List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,new Value(moduleDataContext.getModule()));
+    					if(dbParam != null) {
+    						params.add(1, dbParam);
+    					}
+    					
+    					FacilioModule module = moduleDataContext.getModule();
+        				
+        				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
+            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
+            			
+            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
+            			
+            			if(moduleDataContext.isSingleParent() && result instanceof List) {
+            				List<Object> resultList = (List<Object>) result;
+            				result = resultList.get(0);
+            			}
+            			value =  new Value(result);
+    					
+    				}
             		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
             			
             			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
@@ -201,6 +353,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                     	}
                     	else if(value.asObject() instanceof WorkflowReadingContext) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.READINGS.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof WorkflowCategoryReadingContext) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.WORKFLOW_READINGS.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if(value.asObject() instanceof FacilioField) {
@@ -253,6 +409,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		    	}
     			}
     		}
+
     		return value;
     	}
     	catch(Exception e) {
@@ -470,25 +627,47 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     @Override 
     public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
     	try {
-    		String moduleDisplayName = ctx.VAR(0).getText();
-        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
-        	if(module == null) {
-        		String nameSpaceString = ctx.VAR(0).getText();
-            	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
-            	if(nameSpaceEnum == null) {
-            		throw new RuntimeException("No Module Or System NameSpace With this Name -> "+moduleDisplayName);
-            	}
-            	return new Value(nameSpaceEnum); 
+    		String moduleDisplayName = ctx.VAR().getText();
+
+    		Object scopedObject = getCurrentScope().getObject(moduleDisplayName, this, ctx.expr());
+    		if(scopedObject != null) {
+    			return new Value(scopedObject); 
+    		}
+    		String nameSpaceString = ctx.VAR().getText();
+        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
+        	if(nameSpaceEnum == null) {
+        		throw new RuntimeException("No Module Or System NameSpace With this Name -> "+moduleDisplayName);
         	}
-        	else {
-        		return new Value(module);
-        	}
+        	return new Value(nameSpaceEnum); 
     	}
     	catch(Exception e) {
     		throw new RuntimeException(e.getMessage());
     	}
     }
+    
+    // on error command the above mthod and open the bellow one
+    
+//    public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
+//    	try {
+//    		String moduleDisplayName = ctx.VAR().getText();
+//        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
+//        	if(module == null) {
+//        		String nameSpaceString = ctx.VAR().getText();
+//            	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
+//            	if(nameSpaceEnum == null) {
+//            		throw new RuntimeException("No Module Or System NameSpace With this Name -> "+moduleDisplayName);
+//            	}
+//            	return new Value(nameSpaceEnum); 
+//        	}
+//        	else {
+//        		return new Value(module);
+//        	}
+//    	}
+//    	catch(Exception e) {
+//    		throw new RuntimeException(e.getMessage());
+//    	}
+//    }
     
     @Override 
     public Value visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { 
@@ -560,8 +739,48 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	catch(Exception e) {
     		throw new RuntimeException(e);
     	}
-    	
     }
+    
+//    @Override
+//    public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
+//    	try {
+//    		String newObject = ctx.VAR().toString();
+//        	
+//        	switch(newObject) {
+//        		case WorkflowV2Util.NEW_NAMESPACE_INITIALIZATION :
+//        			Value nameSpaceName = this.visit(ctx.expr(0));
+//        			
+//        			WorkflowV2Util.checkForNullAndThrowException(nameSpaceName, ctx.expr(0).getText());
+//        			
+//        			FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName.asString());
+//                	if(nameSpaceEnum == null) {
+//                		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceName.asString());
+//                		if(namespace == null) {
+//                			throw new RuntimeException("No such namespace - "+nameSpaceName.asString());
+//                		}
+//                		return new Value(namespace);
+//                	}
+//                	return new Value(nameSpaceEnum); 
+//        		case WorkflowV2Util.NEW_CONNECTION_INITIALIZATION :
+//					Value connectionNameValue = this.visit(ctx.expr(0));
+//		    		
+//		    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr(0).getText());
+//		    		
+//		    		String connectionName = connectionNameValue.asString();
+//		        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
+//		        	if(connection == null) {
+//		        		throw new RuntimeException("Connection "+connectionNameValue+ " Does not exist");
+//		        	}
+//		        	return new Value(connection); 
+//        		default:
+//        			throw new RuntimeException("invalid use of new keyword");
+//        	}
+//    	}
+//    	catch(Exception e) {
+//    		throw new RuntimeException(e);
+//    	}
+//    }
+    
 
     @Override
     public Value visitUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) {

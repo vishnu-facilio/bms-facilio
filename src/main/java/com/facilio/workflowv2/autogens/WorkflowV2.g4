@@ -122,7 +122,7 @@ atom
  | 'Module' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS										#customModuleInitialization
  | 'Connection' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS									#connectionInitialization
  | 'Reading' OPEN_PARANTHESIS expr ',' expr CLOSE_PARANTHESIS							#readingInitialization
- | (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+											#moduleAndSystemNameSpaceInitialization
+ | VAR OPEN_PARANTHESIS (expr)*(COMMA expr)* CLOSE_PARANTHESIS							#moduleAndSystemNameSpaceInitialization
  | list_opperations																		#listOpp
  | map_opperations																		#mapOpps
  ;

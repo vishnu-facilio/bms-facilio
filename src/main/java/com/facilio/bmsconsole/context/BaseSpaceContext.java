@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -296,19 +297,21 @@ public class BaseSpaceContext extends ResourceContext {
 	}
 	
 	public enum SpaceType {
-		SITE(1, "Site"),
-		BUILDING(2, "Building"),
-		FLOOR(3, "Floor"),
-		SPACE(4, "Space"),
-		ZONE(5, "Zone")
+		SITE(1, "Site",FacilioConstants.ContextNames.SITE),
+		BUILDING(2, "Building",FacilioConstants.ContextNames.BUILDING),
+		FLOOR(3, "Floor",FacilioConstants.ContextNames.FLOOR),
+		SPACE(4, "Space",FacilioConstants.ContextNames.SPACE),
+		ZONE(5, "Zone",FacilioConstants.ContextNames.ZONE)
 		;
 		
 		private int intVal;
 		private String strVal;
+		private String moduleName;
 		
-		private SpaceType(int intVal, String strVal) {
+		private SpaceType(int intVal, String strVal,String moduleName) {
 			this.intVal = intVal;
 			this.strVal = strVal;
+			this.moduleName = moduleName;
 		}
 		
 		public int getIntVal() {
@@ -316,6 +319,9 @@ public class BaseSpaceContext extends ResourceContext {
 		}
 		public String getStringVal() {
 			return strVal;
+		}
+		public String getModuleName() {
+			return moduleName;
 		}
 		
 		public static SpaceType getType(int val) {
@@ -333,6 +339,19 @@ public class BaseSpaceContext extends ResourceContext {
 		}
 		public Map<Integer, SpaceType> getAllTypes() {
 			return typeMap;
+		}
+		
+		private static final Map<String, SpaceType> moduleMap = Collections.unmodifiableMap(initModuleMap());
+		private static Map<String, SpaceType> initModuleMap() {
+			Map<String, SpaceType> typeMap = new HashMap<>();
+			
+			for(SpaceType type : values()) {
+				typeMap.put(type.getModuleName(), type);
+			}
+			return typeMap;
+		}
+		public static Map<String, SpaceType> getModuleMap() {
+			return moduleMap;
 		}
 	}
 }

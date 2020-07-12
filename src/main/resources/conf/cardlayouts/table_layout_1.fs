@@ -31,7 +31,7 @@ Map cardLayout(Map params) {
   	criteriaObj = null;
   	assetCategoryCriteria = [category == assetCategoryId];
   	if (buildingId != null && buildingId > 0) {
-      bs = resource().getBaseSpace(buildingId);
+      bs = NameSpace("resource").getBaseSpace(buildingId);
       assetCategoryCriteria = [category == assetCategoryId && space == bs];
     }
   	if (filterCriteria == null) {

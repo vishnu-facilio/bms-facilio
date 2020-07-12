@@ -36,7 +36,10 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 		List<Long> ids = new ArrayList();
 		Map<Long, BaseSpaceContext> spaces = new HashMap<>();
 		SpaceType spaceType = null;
-		if(type.equalsIgnoreCase("Sites"))
+		
+		SpaceType typeEnum = (SpaceType)context.get(FacilioConstants.ContextNames.SPACE_TYPE_ENUM);
+		
+		if("Sites".equalsIgnoreCase(type) || (typeEnum != null && typeEnum == SpaceType.SITE))
 		{
 			List<SiteContext> sites = SpaceAPI.getAllSites();
 			for(int i=0; i<sites.size();i++)
@@ -47,7 +50,7 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 			}
 			spaceType = SpaceType.SITE;
 		}
-		else if(type.equalsIgnoreCase("Buildings"))
+		else if("Buildings".equalsIgnoreCase(type) || (typeEnum != null && typeEnum == SpaceType.BUILDING))
 		{
 			List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
 			List<Long> parentIdList = new ArrayList<>();
@@ -74,7 +77,7 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 			spaceType = SpaceType.BUILDING;
 
 		}
-		else if(type.equalsIgnoreCase("Floors"))
+		else if("Floors".equalsIgnoreCase(type) || (typeEnum != null && typeEnum == SpaceType.FLOOR))
 		{
 			List<FloorContext> floors = SpaceAPI.getAllFloors();
 			List<Long> parentIdList = new ArrayList<>();

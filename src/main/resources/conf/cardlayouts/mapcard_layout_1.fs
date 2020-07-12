@@ -36,7 +36,7 @@ Map cardLayout(Map params) {
             locationEntry["icon"] = params.marker.icon;
             valueMap = {};
             if (params.marker.type == "noOfAlarms") {
-                spaceIds = BaseSpace().getSubordinates(record.id);
+                spaceIds = Module("basespace").getSubordinates(record.id);
                 occurenceCount = {
                     criteria: [resource == spaceIds && severity != clearSeverityId.id],
                     field: "id",
@@ -45,7 +45,7 @@ Map cardLayout(Map params) {
                 valueMap["label"] = "No of Active Alarms";
                 valueMap["value"] = Module("alarmoccurrence").fetch(occurenceCount);
             } else if (params.marker.type == "noOfWorkorders") {
-                spaceIds = BaseSpace().getSubordinates(record.id);
+                spaceIds = Module("basespace").getSubordinates(record.id);
                 woCount = {
                     criteria: [resource == spaceIds],
                     field: "id",

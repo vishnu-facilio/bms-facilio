@@ -36,6 +36,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
+import com.facilio.workflowv2.contexts.WorkflowDataParent;
 
 public class WorkflowV2Util {
 
@@ -78,7 +79,13 @@ public class WorkflowV2Util {
 	public static final String SCHEDULED_WORKFLOW_CONTEXT_LIST = "scheduledWorkflowContextList";
 	public static final String WORKFLOW_SYNTAX_ERROR = "workflowSyntaxError";
 	
+	public static final String WORKFLOW_WHERE_STRING = "where";
+	
 	public static final String SCHEDULED_WORKFLOW_JOB_NAME = "ScheduledWorkflow";
+	
+	public static final String NEW_NAMESPACE_INITIALIZATION = "NameSpace";
+	public static final String NEW_CONNECTION_INITIALIZATION = "Connection";
+	
 
 	static {
 		try {
@@ -206,12 +213,17 @@ public class WorkflowV2Util {
 				criteria = paramValue.asCriteria();
 			}
 				
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			for (String key : criteria.getConditions().keySet()) {
-				Condition condition = criteria.getConditions().get(key);
-				FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
-				condition.setField(field);
-			}
+			fillCriteriaField(criteria, module.getName());
+		}
+	}
+	
+	public static void fillCriteriaField(Criteria criteria,String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for (String key : criteria.getConditions().keySet()) {
+			Condition condition = criteria.getConditions().get(key);
+			FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+			condition.setField(field);
 		}
 	}
 

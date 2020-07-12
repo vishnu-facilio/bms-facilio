@@ -16,12 +16,12 @@ public enum FacilioSystemFunctionNameSpace {
 	THERMOPHYSICALR134A(8,"thermoPhysical.R134a"),
 	READINGS(9,"readings"),
 	PSYCHROMETRICS(10,"psychrometrics"),
-	ENERGYMETER(11,"energyMeter"),
+	ENERGYMETER(11,"energyMeter"),				
 	MODULE(12,"module"),
-	RESOURCE(13,"resource"),
+	RESOURCE(13,"resource"),					//check
 	SYSTEM(14, "system"), //For internal purpose only. Should never be exposed for Users
-	ASSET(15, "asset"),
-	WORKORDER(16, "workorder"),
+	ASSET(15, "asset"),							//check
+	WORKORDER(16, "workorder"),					//check
 	CONSUMPTION(17, "consumption"),
 	ML(18,"ml"),
 	NOTIFICATION(19,"notification"),
@@ -33,6 +33,7 @@ public enum FacilioSystemFunctionNameSpace {
 	NUMBER(25,"number"),
 	CHAT_BOT(26,"chatBot"),
 	HTTP(27,"http"),
+	WORKFLOW_READINGS(28,"workflowReadings"),
 	;
 	
 	

@@ -674,6 +674,7 @@ public class FacilioConstants {
 		public static final String SPACE_LIST = "spaces";
 		public static final String SPACE_ID = "spaceId";
 		public static final String SPACE_TYPE = "spaceType";
+		public static final String SPACE_TYPE_ENUM = "spaceTypeEnum";
 		public static final String IS_ZONE = "isZone";
 		
 		public static final String SPACE_CATEGORY = "spacecategory";

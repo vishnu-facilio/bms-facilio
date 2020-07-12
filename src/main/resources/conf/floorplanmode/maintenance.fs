@@ -5,7 +5,7 @@ spaceIds = params.spaceId;
  areas = [];
    for each index, spaceId in spaceIds {
     area = {};
-      resource = BaseSpace().getSubordinates(spaceId);
+      resource = Module("basespace").getSubordinates(spaceId);
     log "" + resource;
   db = {
     criteria: [resource == resource],

@@ -298,12 +298,12 @@
                                          wo.site = siteId;
                                          wo.sendForApproval = true;
                                          
-                                         WorkOrder().add(wo);
+                                         Module("workorder").add(wo);
                                          
                                          if(data.attachment != null) {
                                             photoIds = data.attachment; 
        
-                                            WorkOrder().addAttachements(wo.id,photoIds);
+                                            Module("workorder").addAttachements(wo.id,photoIds);
                                          }
                                          
                                          meg1 = "Your service request has been submitted successfully with ID __[#"+wo.id+"](/tenant/workorder/summary/"+wo.id+")__";
@@ -470,7 +470,7 @@
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
     
-                                         WorkOrder().addNote(data.woId,data.comment);
+                                         Module("workorder").addNote(data.woId,data.comment);
                                          
                                          resultMap = {};
                                          
@@ -578,7 +578,7 @@
                    
                                          photoIds = data.attachment; 
     
-                                         WorkOrder().addAttachements(data.woId,photoIds);
+                                         Module("workorder").addAttachements(data.woId,photoIds);
                                          
                                          resultMap = {};
                                          
@@ -676,7 +676,7 @@
                    isV2Script : true
                    workflowV2String : 'Map test(Map data){
                    
-                                         wo = WorkOrder().fetch([id == data.woId])[0];
+                                         wo = Module("workorder").fetch([id == data.woId])[0];
                                        	
                                          status = Module("ticketstatus").fetch([id == wo.status.id])[0];
                                          
@@ -1268,7 +1268,7 @@
                                              invite.expectedCheckInTime = invitePerson.checkinDate;
                                              invite.expectedCheckOutTime = invitePerson.checkoutDate;
                                              
-                                             VisitorLogging().add(invite);
+                                             Module("visitorlogging").add(invite);
                                          }
                                          
                                          
@@ -1928,7 +1928,7 @@
 								             aggregation : "count",
 							             };
     
-                                         wos = WorkOrder().fetch(db);
+                                         wos = Module("workorder").fetch(db);
                                          
                                          count = 0;
                                          if(wos != null) {

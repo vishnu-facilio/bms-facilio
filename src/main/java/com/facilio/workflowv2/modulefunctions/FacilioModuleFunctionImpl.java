@@ -193,6 +193,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			throw new RuntimeException("criteria cannot be null during update");
 		}
 		
+		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
 		if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
@@ -230,6 +232,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			throw new Exception("criteria cannot be null during delete");
 		}
 		
+		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		
 		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
 				.module(module)
 				.andCriteria(criteria);
@@ -251,6 +255,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			dbParamContext = new DBParamContext();
 			dbParamContext.setCriteria((Criteria)objects.get(1));
 		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		WorkflowV2Util.fillCriteriaField(dbParamContext.getCriteria(), module.getName());
 		
 		Map<String, List<Map<String, Object>>> cache = null;
 		Map<String, ReadingDataMeta> cachedRDM = null;
@@ -273,7 +280,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		List<Map<String, Object>> props = null;
 		if (!LookupSpecialTypeUtil.isSpecialType(module.getName())) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
@@ -580,6 +586,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		if(FacilioProperties.isDevelopment()) {
 			isS3Value = false;
 		}
+		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
 		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, isS3Value, false, 2000);
 		
 		return fileUrl;

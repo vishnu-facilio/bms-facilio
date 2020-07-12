@@ -1,8 +1,5 @@
 package com.facilio.workflowv2.contexts;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.db.criteria.Criteria;
@@ -72,6 +69,14 @@ public class DBParamContext {
 	}
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
+	}
+	public void addAndCriteria(Criteria criteria) {
+		if(this.criteria == null) {
+			this.criteria = criteria;
+		}
+		else {
+			this.criteria.andCriteria(criteria);
+		}
 	}
 	
 	public int getSeqOrder() {

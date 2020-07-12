@@ -180,12 +180,6 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			dbParamContext.setFieldName(field.getName());
 			
-			for (String key : dbParamContext.getCriteria().getConditions().keySet()) {
-				Condition condition = dbParamContext.getCriteria().getConditions().get(key);
-				FacilioField field1 = modBean.getField(condition.getFieldName(), module.getName());
-				condition.setField(field1);
-			}
-			
 			if(objects.length >2) {
 				boolean skipUnitConversion = (boolean) objects[2];
 				dbParamContext.setSkipUnitConversion(skipUnitConversion);
