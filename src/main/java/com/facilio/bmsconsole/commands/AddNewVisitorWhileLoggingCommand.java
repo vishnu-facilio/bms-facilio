@@ -5,11 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsoleV3.context.V3ContactsContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +65,7 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					}
 				}
 				if(vL.getTenant() == null && vL.getHost() != null) {
-					ContactsContext host = (ContactsContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId(), V3ContactsContext.class);
+					ContactsContext host = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId());
 					if (host != null) {
 						vL.setTenant(host.getTenant());
 					}
