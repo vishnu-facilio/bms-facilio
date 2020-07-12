@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsoleV3.context.V3ContactsContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,21 +45,38 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
-				
+
+				//need to change this to tenant contact context once host is changed to people lookup
+
 				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
 					vL.setRequestedBy(AccountUtil.getCurrentUser());
 				}
-				//if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
-					//need to uncomment when all users are migrated as employees
-				//	vL.setTenant(PeopleAPI.getTenantForUser(vL.getRequestedBy().getId()));
-				//}
-				//else {
+				else {
+					if(vL.getHost() == null) {
+						ContactsContext tenantContact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+						if(tenantContact != null){
+							vL.setHost(tenantContact);
+						}
+					}
+				}
+				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+					TenantContext tenant = PeopleAPI.getTenantForUser(vL.getRequestedBy().getOuid());
+					vL.setTenant(tenant);
+				}
+				else {
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-					if(contact != null && contact.getTenant() != null) {
+					if (contact != null && contact.getTenant() != null) {
 						vL.setTenant(contact.getTenant());
 					}
-				//}
-			
+				}
+				if(vL.getTenant() == null && vL.getHost() != null) {
+					ContactsContext host = (ContactsContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId(), V3ContactsContext.class);
+					if (host != null) {
+						vL.setTenant(host.getTenant());
+					}
+				}
+
+
 				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
 					vL.setIsReturningVisitor(true);
 					vL.getVisitor().setIsReturningVisitor(true);
