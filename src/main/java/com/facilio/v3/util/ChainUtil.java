@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
+import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -310,11 +311,12 @@ public class ChainUtil {
 
     public static void addWorkflowChain(Chain chain) {
         chain.addCommand(new ExecuteStateFlowCommand());
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        chain.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION)));
-        chain.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+        chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+        );
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 }

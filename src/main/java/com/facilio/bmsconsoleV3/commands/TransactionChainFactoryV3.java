@@ -82,7 +82,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new AddNdaForVisitorLogCommandV3())
                 .addCommand(new GenerateQrInviteUrlCommandV3())
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
                 .addCommand(new VisitorFaceRecognitionCommandV3()));
 
         return c;
@@ -114,7 +113,8 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new VisitorFaceRecognitionCommand()));
+                .addCommand(new VisitorFaceRecognitionCommand())
+        );
         return c;
     }
 
@@ -173,10 +173,10 @@ public class TransactionChainFactoryV3 {
 
         if (sendNotification) {
             if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
-                c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+                c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
             } else {
                 c.addCommand(new ForkChainToInstantJobCommand()
-                        .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION)));
+                        .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE)));
             }
         }
         return c;
@@ -230,7 +230,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
                 .addCommand(new ClearAlarmOnWOCloseCommand())
                 .addCommand(new ExecuteTaskFailureActionCommand())
         );
