@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
@@ -12,9 +13,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -49,15 +52,20 @@ public class ChangeVisitorInviteStateCommandV3 extends FacilioCommand {
                                         if (status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
                                             V3VisitorManagementAPI.updateVisitorLogInvitationStatus(record, true);
                                         } else if (status.getStatus().toString().trim().equals("CheckedIn")) {
-                                            FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+                                            FacilioChain updateChain = ChainUtil.getUpdateChain(FacilioConstants.ContextNames.VISITOR_LOGGING);
+                                            V3VisitorLoggingContext vLog = (V3VisitorLoggingContext)updateChain.getContext().get("visitorLogging");
+                                            Long nextTransitionId = (Long)updateChain.getContext().get("nextTransitionId");
                                             if (record.getVisitor() != null && record.getVisitor().getId() > 0) {
-                                                V3VisitorManagementAPI.getActiveLogExcludingCurrentLog(record, c.getContext());
+                                                V3VisitorManagementAPI.getActiveLogExcludingCurrentLog(record, updateChain.getContext());
                                             }
-                                            if (c.getContext().get("visitorLogging") != null) {
-                                                c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
-                                                V3VisitorLoggingContext visitorLoggingContext = (V3VisitorLoggingContext) c.getContext().get("visitorLogging");
-                                                c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
-                                                c.execute();
+                                            if (updateChain.getContext().get("visitorLogging") != null) {
+                                                FacilioContext updatecontext = updateChain.getContext();
+                                                updatecontext.put(Constants.RECORD_ID, vLog.getId());
+                                                Constants.setModuleName(updatecontext, moduleName);
+                                                Constants.setRawInput(updatecontext, FieldUtil.getAsJSON(vLog));
+                                                updatecontext.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+                                                updatecontext.put(Constants.BEAN_CLASS, V3VisitorLoggingContext.class);
+                                                updateChain.execute();
                                             }
                                             if (record.getCheckInTime() == null ||  record.getCheckInTime() <= 0) {
                                                 V3VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
