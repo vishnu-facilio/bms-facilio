@@ -73,6 +73,13 @@ public class WorkOrderServiceAction extends FacilioAction{
 		FacilioChain addWorkorderServiceChain = TransactionChainFactory.getAddOrUdpateWorkorderServiceChain();
 		addWorkorderServiceChain.execute(context);
 		setResult(FacilioConstants.ContextNames.WO_SERVICES, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
+
 		return SUCCESS;
 	}
 	
@@ -88,6 +95,13 @@ public class WorkOrderServiceAction extends FacilioAction{
 		FacilioChain deleteServiceChain = TransactionChainFactory.getDeleteWorkorderServiceChain();
 		deleteServiceChain.execute(context);
 		setResult(FacilioConstants.ContextNames.WO_SERVICE_IDS, getWorkorderServiceIds());
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
+
 		return SUCCESS;
 	}
 	
