@@ -496,7 +496,7 @@ public class AdminAction extends ActionSupport {
 
 		String bridgeUrl = FacilioProperties.getBridgeUrl();
 		if (bridgeUrl == null || domain == null || domain.isEmpty() ) {
-			throw new IllegalArgumentException("Facilio ALerts URL is null  ");
+			throw new IllegalArgumentException("Facilio alerts param is null or empty " +" bridge URL : "+bridgeUrl + " and  domain is : "+domain);
 		}
 		bridgeUrl = bridgeUrl + "=" + domain;
 		URL url = new URL(bridgeUrl);
