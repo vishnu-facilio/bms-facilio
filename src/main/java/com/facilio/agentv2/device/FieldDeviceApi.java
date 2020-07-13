@@ -184,8 +184,7 @@ public class FieldDeviceApi {
 					String.valueOf(agentId), NumberOperators.EQUALS));
 		}
 		if ((controllerType != null) && (controllerType >= 0)) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), String.valueOf(0),
-					NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), "NULL",StringOperators.IS));
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),
 					String.valueOf(controllerType), NumberOperators.EQUALS));
 		} 
