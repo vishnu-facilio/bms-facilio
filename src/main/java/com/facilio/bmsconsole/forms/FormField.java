@@ -281,4 +281,19 @@ public class FormField implements Serializable {
 	public void setConfig(JSONObject config) {
 		this.config = config;
 	}
+	
+	public void addToConfig(String key, Object value) {
+		if (this.config == null) {
+			this.config = new JSONObject();
+		}
+		this.config.put(key, value);
+	}
+	
+	// For date field
+	public void setTodayDate() {
+		addToConfig("setToday", true);
+	}
+	public void addDays(int dayCount) {
+		addToConfig("dayCount", dayCount);
+	}
 }

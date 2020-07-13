@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
@@ -25,10 +24,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateTimeUtil;
 
 public class GetFormMetaCommand extends FacilioCommand {
 
@@ -76,31 +75,25 @@ public class GetFormMetaCommand extends FacilioCommand {
 				if (form == null) {
 					throw new IllegalArgumentException("Invalid Form " + formName);
 				}
-				String moduleName = form.getModule().getName();
-				form.setModule(modBean.getModule(moduleName));
+				form.setModule(modBean.getModule(form.getModule().getName()));
 				
-				if (form.getSections() == null && formModuleName != null) {
-					List<FormSection> sections = new ArrayList<>();
-					form.setSections(sections);
-					FormSection section = new FormSection("Default", 1, form.getFields(), false);
-					sections.add(section);
-				}
-				else {
+				if (formModuleName == null) {
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
-					setFields(form, modBean, fields, moduleName, childModule);
+					setFields(form, modBean, fields, form.getModule().getName(), childModule, -1);
 				}
 				
 				if (form.getSections() != null) {
 					boolean isFirstSection = true;
+					int sequenceNumber = Collections.max(FormsAPI.getFormFieldsFromSections(form.getSections()), Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 					for(FormSection section: form.getSections()) {
 						List<FormField> fields = section.getFields();
 						if (isFirstSection) {
-							setFields(form, modBean, fields, formModuleName, childModule);
+							setFields(form, modBean, fields, formModuleName, childModule, sequenceNumber);
 							isFirstSection = false;
 						}
 						else {
-							FormsAPI.setFieldDetails(modBean, fields, moduleName);
+							FormsAPI.setFieldDetails(modBean, fields, formModuleName);
 						}
 					}
 				}
@@ -123,15 +116,9 @@ public class GetFormMetaCommand extends FacilioCommand {
 		}
 		if (form != null) {
 			for(FormField field: form.getFields()) {
-				if (field.getValue() != null && field.getField() != null && field.getField().getDataTypeEnum() == FieldType.LOOKUP && ((LookupField)field.getField()).getLookupModule().getName().equals(ContextNames.RESOURCE)) {
-					String val = field.getValue().toString();
-					if (StringUtils.isNumeric(val)) {
-						ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
-						field.setValue(resource);
-					}
-				}
+				handleDefaultValue(field);
 			}
-			if (AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 104) {
+			if (AccountUtil.getCurrentUser() == null) {
 				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false, true));
 				if (CollectionUtils.isNotEmpty(form.getSections())) {
 					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true, true));
@@ -151,13 +138,15 @@ public class GetFormMetaCommand extends FacilioCommand {
 		return form;
 	}
 	
-	private void setFields(FacilioForm form, ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule) throws Exception {
+	private void setFields(FacilioForm form, ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule, int count) throws Exception {
 		FormsAPI.setFieldDetails(modBean, fields, moduleName);
 		if (form.getFormTypeEnum()  == FormType.PORTAL) {
 			return;
 		}
 
-		int count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
+		if (count == -1) {
+			count = Collections.max(fields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
+		}
 		//commenting out as we force update tenant for wo and pm
 //		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS) && (formName.equalsIgnoreCase("workOrderForm") || formName.equalsIgnoreCase("web_pm"))) {
 //			  fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", ++count, 1));
@@ -173,8 +162,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 				List<FacilioField> facilioFields = modBean.getAllFields(childModule.getName());
 				for (FacilioField f: facilioFields) {
 					if ((f.getModule().equals(childModule)) || !f.isDefault()) {
-						count = count + 1;
-						fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));									
+						fields.add(FormsAPI.getFormFieldFromFacilioField(f, ++count));									
 					}
 				}
 			}
@@ -188,11 +176,45 @@ public class GetFormMetaCommand extends FacilioCommand {
 			}
 			if (customFields != null && !customFields.isEmpty()) {
 				for (FacilioField f: customFields) {
-					count = count + 1;
-					fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
+					fields.add(FormsAPI.getFormFieldFromFacilioField(f, ++count));
 				}
 			}
 		}
+	}
+	
+	private void handleDefaultValue(FormField formField) throws Exception {
+		if (formField.getField() != null) {
+			Object value = null;
+			switch(formField.getField().getDataTypeEnum()) {
+				case DATE:
+				case DATE_TIME:
+					if (formField.getConfig() != null) {
+						Boolean setToday = (Boolean) formField.getConfig().get("setToday");
+						if (setToday != null && setToday) {
+							value = DateTimeUtil.getDayStartTime();
+						}
+						else if (formField.getConfig().containsKey("dayCount")) {
+							Integer dayCount = Integer.parseInt(formField.getConfig().get("dayCount").toString());
+							value = DateTimeUtil.addDays(DateTimeUtil.getDayStartTime(), dayCount);
+						}
+					}
+					break;
+					
+				case LOOKUP:
+					if (formField.getValue() != null && ((LookupField)formField.getField()).getLookupModule().getName().equals(ContextNames.RESOURCE)) {
+						String val = formField.getValue().toString();
+						if (StringUtils.isNumeric(val)) {
+							value = ResourceAPI.getResource(Long.parseLong(val.toString()));
+						}
+					}
+					break;
+			}
+			
+			if (value != null) {
+				formField.setValue(value);
+			}
+		}
+		
 	}
 
 }

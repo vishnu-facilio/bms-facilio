@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 
@@ -56,7 +58,8 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			break;
 		}
 		
-		
+		FacilioForm form = FormsAPI.getFormFromDB(formId);
+		context.put(ContextNames.FORM, form);
 		
 		return false;
 	}

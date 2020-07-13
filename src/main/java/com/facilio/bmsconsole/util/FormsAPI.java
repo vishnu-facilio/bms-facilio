@@ -378,7 +378,7 @@ public class FormsAPI {
 		}
 	}
 	
-	private static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
+	public static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
 		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
 	

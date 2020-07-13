@@ -47,6 +47,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
 				moduleList.add(modBean.getModule(ContextNames.PEOPLE));
 			}
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+				moduleList.add(modBean.getModule(ContextNames.CLIENT));
+			}
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		return false;

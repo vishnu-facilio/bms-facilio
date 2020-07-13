@@ -1,19 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class AddFormCommand extends FacilioCommand {
 
@@ -44,13 +50,24 @@ public class AddFormCommand extends FacilioCommand {
 			form.setLabelPosition(LabelPosition.LEFT);
 		}
 		
-		if (form.getSections() == null && (!module.isCustom())) {
+		if (form.getSections() == null && !module.isCustom()) {
 			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
-			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
-				form.setSections(new ArrayList<>(defaultForm.getSections()));
-				for(FormSection section: form.getSections()) {
-					FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
+			if (defaultForm != null) {
+				if (CollectionUtils.isNotEmpty(defaultForm.getSections())) {
+					form.setSections(new ArrayList<>(defaultForm.getSections()));
+					for(FormSection section: form.getSections()) {
+						FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
+					}
 				}
+			}
+			// For modules having no default form in form factory
+			else {
+				FormSection section = new FormSection();
+				section.addField(FormsAPI.getFormFieldFromFacilioField(modBean.getPrimaryField(moduleName), 1));
+				if (FieldUtil.isSiteIdFieldPresent(module)) {
+					section.addField(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+				}
+				form.setSections(Collections.singletonList(section));
 			}
 		}
 		if (module.isCustom()) {

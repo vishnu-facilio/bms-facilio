@@ -205,34 +205,6 @@ public class FormFactory {
 				
 //				form.setFields(null);
 			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-				List<FormSection> sections = new ArrayList<>();
-				form.setSections(sections);
-				FormSection section = new FormSection("", 1, form.getFields(), true);
-				section.setShowLabel(false);
-				sections.add(section);
-			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
-				List<FormSection> sections = new ArrayList<>();
-				form.setSections(sections);
-				FormSection section = new FormSection("", 1, form.getFields(), true);
-				section.setShowLabel(false);
-				sections.add(section);
-			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.TENANT)) {
-				List<FormSection> sections = new ArrayList<>();
-				form.setSections(sections);
-				FormSection section = new FormSection("", 1, form.getFields(), true);
-				section.setShowLabel(false);
-				sections.add(section);
-			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
-				List<FormSection> sections = new ArrayList<>();
-				form.setSections(sections);
-				FormSection section = new FormSection("", 1, form.getFields(), true);
-				section.setShowLabel(false);
-				sections.add(section);
-			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
 				List<FormSection> sections = new ArrayList<>();
 				
