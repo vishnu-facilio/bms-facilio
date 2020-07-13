@@ -2,6 +2,7 @@ package com.facilio.events.actions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -10,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -297,6 +299,15 @@ public class EventAction extends FacilioAction {
 	
 	public String getAllSources() throws Exception {
 		setSources(EventAPI.getAllSources(AccountUtil.getCurrentOrg().getOrgId()));
+		setResult("sources", getSources());
+		if (getSources() != null) {
+			List<Long> resourceIds = getSources().stream().filter(source -> source.get("resourceId") != null)
+					.map(source -> (long)source.get("resourceId")).collect(Collectors.toList());
+			if (!resourceIds.isEmpty()) {
+				Map<Long, Map<String, Object>> resourceMap = ResourceAPI.getResourceMapFromIds(resourceIds, false);
+				setResult("resources", resourceMap);
+			}
+		}
 		return SUCCESS;
 	}
 	
