@@ -21,6 +21,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -31,6 +32,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -459,6 +461,13 @@ public class ExpressionContext implements WorkflowExpression {
 			if(module != null && module.getName().equals("weather")) {						// temp handling must be removed (predicted weather data will be stored in same table with same module)
 				selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
 			}
+			if(AccountUtil.getCurrentOrg().getId() == 321l) {
+				
+				Long endTime = WorkflowUtil.demoCheckGetEndTime(module, criteria);
+				if(endTime > 0) {
+					selectBuilder.andCustomWhere("TTIME <= ?",endTime);
+				}
+			}
 			props = selectBuilder.getAsProps();
 			
 		}
@@ -471,7 +480,6 @@ public class ExpressionContext implements WorkflowExpression {
 				}
 			}
 		}
-		
 		LOGGER.fine("selectBuilder -- "+selectBuilder);
 		LOGGER.fine("selectBuilder result -- "+props);
 		

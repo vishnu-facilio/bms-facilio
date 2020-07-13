@@ -59,6 +59,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.conditions.context.ElseContext;
@@ -2449,5 +2450,27 @@ public class WorkflowUtil {
 		    return convertedString;	
 		}
 		return null;
+	}
+	
+	
+	public static Long demoCheckGetEndTime(FacilioModule module,Criteria criteria) {
+		if(criteria != null && criteria.getConditions() != null) {
+			
+			boolean isWithTtime= false;
+			Map<String, Condition> conditions = criteria.getConditions();
+			for(String key:conditions.keySet()) {
+				Condition condition = conditions.get(key);
+				if(condition.getFieldName().equals("ttime")) {
+					isWithTtime = true;
+					break;
+				}
+			}
+			
+			if(isWithTtime) {
+				Long endTime = DemoHelperUtil.getEndTime(module);
+				return endTime;
+			}
+		}
+		return -1l;
 	}
 }

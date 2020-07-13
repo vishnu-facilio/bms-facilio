@@ -471,6 +471,13 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			if(module != null && module.getName().equals("weather")) {						// temp handling must be removed (predicted weather data will be stored in same table with same module)
 				selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
 			}
+			if(AccountUtil.getCurrentOrg().getId() == 321l) {
+				
+				Long endTime = WorkflowUtil.demoCheckGetEndTime(module, dbParamContext.getCriteria());
+				if(endTime > 0) {
+					selectBuilder.andCustomWhere("TTIME <= ?",endTime);
+				}
+			}
 			props = selectBuilder.getAsProps();
 			
 		}

@@ -40,4 +40,21 @@ public class DemoHelperUtil {
 //		}
 		return currentTime;
 	}
+	
+	public static Long getEndTime(FacilioModule module) {
+		long currentTime = System.currentTimeMillis();
+		
+		String moduleName = module.getName();
+		
+		if("energypredictionmlreadings".equals(moduleName))  {
+			return -1l;
+		}
+		
+		if("loadpredictionmlreadings".equals(moduleName)) {
+			long mlReadingEndTime = DateTimeUtil.getDayEndTimeOf(currentTime) + DAY_IN_MILLISECONDS;
+			return mlReadingEndTime;
+		}
+			
+		return currentTime;
+	}
 }
