@@ -184,6 +184,10 @@ public class AggregationAPI {
             for (AggregationMetaContext aggregationMeta : aggregationMetaList) {
                 FacilioField parentIdField = modBean.getField("parentId", module.getName());
                 FacilioField ttimeField = modBean.getField("ttime", module.getName());
+                AggregationMetaContext.FrequencyType frequencyType = aggregationMeta.getFrequencyTypeEnum();
+                startTime = frequencyType.getAggregatedTime(startTime);
+                endTime = frequencyType.getNextSyncTime(
+                        frequencyType.getAggregatedTime(endTime));
                 AggregationJob.calculateAggregation(module, parentIdField, ttimeField, aggregationMeta, startTime, endTime, parentIds);
             }
         }
