@@ -53,11 +53,11 @@ public class ChangeVisitorInviteStateCommandV3 extends FacilioCommand {
                                             V3VisitorManagementAPI.updateVisitorLogInvitationStatus(record, true);
                                         } else if (status.getStatus().toString().trim().equals("CheckedIn")) {
                                             FacilioChain updateChain = ChainUtil.getUpdateChain(FacilioConstants.ContextNames.VISITOR_LOGGING);
-                                            V3VisitorLoggingContext vLog = (V3VisitorLoggingContext)updateChain.getContext().get("visitorLogging");
-                                            Long nextTransitionId = (Long)updateChain.getContext().get("nextTransitionId");
                                             if (record.getVisitor() != null && record.getVisitor().getId() > 0) {
                                                 V3VisitorManagementAPI.getActiveLogExcludingCurrentLog(record, updateChain.getContext());
                                             }
+                                            V3VisitorLoggingContext vLog = (V3VisitorLoggingContext)updateChain.getContext().get("visitorLogging");
+                                            Long nextTransitionId = (Long)updateChain.getContext().get("nextTransitionId");
                                             if (updateChain.getContext().get("visitorLogging") != null) {
                                                 FacilioContext updatecontext = updateChain.getContext();
                                                 updatecontext.put(Constants.RECORD_ID, vLog.getId());
