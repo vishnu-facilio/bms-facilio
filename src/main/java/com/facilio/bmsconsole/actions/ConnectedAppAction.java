@@ -412,7 +412,7 @@ public class ConnectedAppAction extends FacilioAction {
 	 				entityId.add(module.getModuleId()+"");
 
 	 				JSONObject entityIdFilter = new JSONObject();
-	 				entityIdFilter.put("operatorId", 9);
+	 				entityIdFilter.put("operatorId", 9l);
 	 				entityIdFilter.put("value", entityId);
 	 				
 	 				json.put("entityId", entityIdFilter);
