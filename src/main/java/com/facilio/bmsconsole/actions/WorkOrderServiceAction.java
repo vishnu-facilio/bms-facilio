@@ -72,7 +72,7 @@ public class WorkOrderServiceAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServiceList);
 		FacilioChain addWorkorderServiceChain = TransactionChainFactory.getAddOrUdpateWorkorderServiceChain();
 		addWorkorderServiceChain.execute(context);
-		setResult(FacilioConstants.ContextNames.WO_SERVICES, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		setResult(FacilioConstants.ContextNames.WO_SERVICES, context.get(FacilioConstants.ContextNames.WO_SERVICE_LIST));
 		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
 		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
 		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
