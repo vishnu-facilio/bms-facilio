@@ -1,5 +1,6 @@
 package com.facilio.dataprocessor;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
@@ -31,8 +32,10 @@ import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -54,6 +57,9 @@ public class DataProcessorUtil {
     private AckUtil ackUtil;
     private EventUtil eventUtil;
     private Boolean isStage = !FacilioProperties.isProduction();
+    private static final String TIME_TAKEN = "timetaken";
+    private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
+
 
     private static boolean isRestarted = true;
 
@@ -100,7 +106,9 @@ public class DataProcessorUtil {
      */
     public boolean processRecord(FacilioRecord record) {
         String recordId = record.getId();
+        long start = System.currentTimeMillis();
         try {
+            AccountUtil.getCurrentAccount().clearStateVariables();
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
@@ -236,10 +244,7 @@ public class DataProcessorUtil {
                         // updateDeviceTable(record.getPartitionKey());
                         break;
                     case agent:
-                        if (AccountUtil.getCurrentOrg().getOrgId() == 152 || AccountUtil.getCurrentOrg().getOrgId() == 343){
-                                LOGGER.info("Payload before processing : " + payLoad);
-                            }
-                            i = agentUtil.processAgent(payLoad, agentName);
+                        i = agentUtil.processAgent(payLoad, agentName);
                         processLog(payLoad, agent.getId());
                         break;
                     case devicepoints:
@@ -286,6 +291,33 @@ public class DataProcessorUtil {
                     + record.getId() + " in TimeSeries ", e, record.getData().toString());
             LOGGER.info("Exception occurred in processing payload ", e);
             return false;
+        } finally {
+            try {
+                long time = System.currentTimeMillis() - start;
+                Account account = AccountUtil.getCurrentAccount();
+                LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, recordId, null);
+                event.setProperty("fselect", String.valueOf(account.getSelectQueries()));
+                event.setProperty("finsert", String.valueOf(account.getInsertQueries()));
+                event.setProperty("fdelete", String.valueOf(account.getDeleteQueries()));
+                event.setProperty("fupdate", String.valueOf(account.getUpdateQueries()));
+                event.setProperty("fstime", String.valueOf(account.getSelectQueriesTime()));
+                event.setProperty("fitime", String.valueOf(account.getInsertQueriesTime()));
+                event.setProperty("fdtime", String.valueOf(account.getDeleteQueriesTime()));
+                event.setProperty("futime", String.valueOf(account.getUpdateQueriesTime()));
+                event.setProperty("frget", String.valueOf(account.getRedisGetCount()));
+                event.setProperty("frput", String.valueOf(account.getRedisPutCount()));
+                event.setProperty("frdel", String.valueOf(account.getRedisDeleteCount()));
+                event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
+                event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
+                event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
+                event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
+                event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
+                event.setProperty(TIME_TAKEN, String.valueOf(time / 1000));
+                event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(time));
+                LOGGER.callAppenders(event);
+            } catch (Exception e) {
+                LOGGER.info("record: " + recordId);
+            }
         }
         // LOGGER.info(" processing successful");
         return true;
