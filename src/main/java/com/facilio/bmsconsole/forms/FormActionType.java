@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -87,11 +88,11 @@ public enum FormActionType {
 			
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
-			Map<String,Object> tempFormData = new HashMap<>(formData);	
-			
 			Map<String,Object> placeHolders = new HashMap<>();
-			
-			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+			if (MapUtils.isNotEmpty(formData)) {
+				Map<String,Object> tempFormData = new HashMap<>(formData);	
+				CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+			}
 			
 			FacilioForm form = (FacilioForm) facilioContext.get(ContextNames.FORM);
 			
@@ -106,7 +107,6 @@ public enum FormActionType {
 				}
 				
 				// Date Field behaviour... TODO check if field is date type and then do the following
-				
 				value = getDateFieldSetValue(metaJson, resultJson, formData, value, form);
 				
 				JSONObject json = FormRuleAPI.getActionJson(actionField.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
@@ -124,11 +124,11 @@ public enum FormActionType {
 			
 			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 			
-			Map<String,Object> tempFormData = new HashMap<>(formData);
-			
 			Map<String,Object> placeHolders = new HashMap<>();
-			
-			CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+			if (MapUtils.isNotEmpty(formData)) {
+				Map<String,Object> tempFormData = new HashMap<>(formData);
+				CommonCommandUtil.appendModuleNameInKey(formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), formRuleActionContext.getRuleContext().getFormContext().getModule().getName(), tempFormData, placeHolders);
+			}
 			
 			for(FormRuleActionFieldsContext actionField : formRuleActionContext.getFormRuleActionFieldsContext()) {
 				
