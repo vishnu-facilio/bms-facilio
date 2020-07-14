@@ -58,7 +58,7 @@ public class DeleteSubFormLineItems extends FacilioCommand {
                             .module(module)
                             .andCondition(CriteriaAPI.getIdCondition(subFormContext.getDeleteIds(), module))
                             .andCondition(CriteriaAPI.getCondition(fieldMap.get(subFormContext.getFieldId()), record.getId()+"", NumberOperators.EQUALS));
-                    builder.delete();
+                    builder.markAsDelete();
                 }
             }
         }

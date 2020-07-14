@@ -5,7 +5,7 @@ import java.io.File;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 
-public class CustomModuleData extends V3Context {
+public class CustomModuleData extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
 
@@ -19,11 +19,11 @@ public class CustomModuleData extends V3Context {
 		this.name = name;
 	}
 
-	private Long photoId;
-	public Long getPhotoId() {
+	private long photoId;
+	public long getPhotoId() {
 		return photoId;
 	}
-	public void setPhotoId(Long photoId) {
+	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}
 
