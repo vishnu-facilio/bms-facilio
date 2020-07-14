@@ -10,6 +10,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddOrUpdateCustomButtomCommand extends FacilioCommand {
 
@@ -30,8 +31,29 @@ public class AddOrUpdateCustomButtomCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Module name cannot be empty");
             }
 
-            rule.setModuleName(module.getName());
+            rule.setModule(module);
 
+            if (rule.getButtonTypeEnum() == null) {
+                throw new IllegalArgumentException("Button type cannot be empty");
+            }
+            if (rule.getPositionTypeEnum() == null) {
+                throw new IllegalArgumentException("Position type cannot be empty");
+            }
+
+            if (rule.getPositionTypeEnum() == CustomButtonRuleContext.PositionType.LIST_TOP) {
+                if (rule.getCriteria() != null) {
+                    throw new IllegalArgumentException("Criteria cannot be applied with list top position type");
+                }
+                if (rule.getWorkflow() != null) {
+                    throw new IllegalArgumentException("Workflow cannot be applied with list top position type");
+                }
+            }
+
+            if (rule.getButtonTypeEnum() == CustomButtonRuleContext.ButtonType.SHOW_WIDGET) {
+                if (CollectionUtils.isNotEmpty(rule.getActions())) {
+                    throw new IllegalArgumentException("Actions cannot be configured with UI ButtonType");
+                }
+            }
 
             FacilioChain chain;
             if (rule.getId() < 0) {

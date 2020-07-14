@@ -182,6 +182,7 @@ public class FacilioConstants {
 		public static final String SYSTEM_CONTROLLER_MODULE_NAME = "systemController";
 		public static final String CONTROLLER_READINGS_MODULE_NAME = "controllerReadings";
 		public static final String AGGREGATION_META = "aggregationMeta";
+		public static final String POSITION_TYPE = "positionType";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -1345,8 +1346,6 @@ public class FacilioConstants {
 		public static final String CONNECTED_APP_CONNECTOR = "connectedAppConnector";
 		public static final String CONNECTED_APP_REQUEST = "connectedAppRequest";
 		public static final String SANDBOX_MODE = "sandboxMode";
-
-		public static final String CUSTOM_BUTTONS = "customButtons";
 
 		public static final String STATE_FLOW = "stateFlow";
 		public static final String STATE_FLOW_LIST = "stateFlows";

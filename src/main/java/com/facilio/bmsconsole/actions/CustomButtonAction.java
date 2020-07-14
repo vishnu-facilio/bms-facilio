@@ -25,12 +25,20 @@ public class CustomButtonAction extends FacilioAction {
         this.rule = rule;
     }
 
-    private long ruleId;
+    private long ruleId = -1;
     public long getRuleId() {
         return ruleId;
     }
     public void setRuleId(long ruleId) {
         this.ruleId = ruleId;
+    }
+
+    private long id = -1;
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String addOrUpdateCustomButton() throws Exception {
@@ -41,6 +49,8 @@ public class CustomButtonAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 
         chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
         return SUCCESS;
     }
 
@@ -50,7 +60,7 @@ public class CustomButtonAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
         chain.execute();
-        setResult(FacilioConstants.ContextNames.CUSTOM_BUTTONS, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 
         return SUCCESS;
     }
@@ -61,6 +71,27 @@ public class CustomButtonAction extends FacilioAction {
 
         context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
         chain.execute();
+
+        return SUCCESS;
+    }
+
+    private int positionType;
+    public int getPositionType() {
+        return positionType;
+    }
+    public void setPositionType(int positionType) {
+        this.positionType = positionType;
+    }
+
+    public String getAvailableButtons() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getAvailableButtons();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.POSITION_TYPE, positionType);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 
         return SUCCESS;
     }

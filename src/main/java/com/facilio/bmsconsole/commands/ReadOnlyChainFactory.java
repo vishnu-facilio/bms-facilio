@@ -1793,6 +1793,13 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAvailableButtons() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenericGetModuleDataDetailCommand());
+		chain.addCommand(new GetAvailableButtonsCommand());
+		return chain;
+	}
+
 	public static FacilioChain getAllServiceCatalogGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllServiceCatalogGroupCommand());

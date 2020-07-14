@@ -9,12 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -188,14 +190,6 @@ public class WorkflowRuleContext implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-//	private long eventId = -1;
-//	public long getEventId() {
-//		return eventId;
-//	}
-//	public void setEventId(long eventId) {
-//		this.eventId = eventId;
-//	}
 
 	private WorkflowEventContext event;
 	public WorkflowEventContext getEvent() throws Exception {
@@ -744,6 +738,8 @@ public class WorkflowRuleContext implements Serializable {
 		return false;
 	}
 
+	@JsonIgnore
+	@JSON(serialize = false)
 	public String getSchedulerJobName() {
 		return "ScheduledRuleExecution";
 	}
