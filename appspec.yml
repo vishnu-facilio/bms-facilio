@@ -15,6 +15,8 @@ files:
     destination: /home/facilio
   - source: /setenv.sh
     destination: /home/facilio
+  - source: /setenv-sp.sh
+    destination: /home/facilio
   - source: /threaddump.sh
     destination: /home/facilio
   - source: /oom.sh
@@ -39,7 +41,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
     destination: /home/facilio/deployment-files/
-
+  - source: /awsprops-sp-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-sp-user.properties
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio

@@ -34,6 +34,7 @@ public class FacilioProperties {
     private static boolean developmentEnvironment = true;
     private static boolean scheduleServer = false;
     private static boolean isSmtp = false;
+    private static String region;
     private static String deployment;
     private static String db;
     private static String dbClass;
@@ -101,6 +102,7 @@ public class FacilioProperties {
                 PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
                 environment = PROPERTIES.getProperty("environment");
                 deployment = PROPERTIES.getProperty("deployment", "facilio");
+                region = PROPERTIES.getProperty("region", "us-west-2");
                 HashMap<String, String> awsSecret = getPassword(environment +"-app.properties");
                 awsSecret.forEach((k,v) -> PROPERTIES.put(k.trim(), v.trim()));
                 productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
@@ -377,7 +379,7 @@ public class FacilioProperties {
 
     private static HashMap<String, String> getSecretFromAws(String secretKey) {
         HashMap<String, String> secretMap = new HashMap<>();
-        AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard().withCredentials(AwsUtil.getAWSCredentialsProvider()).withRegion(Regions.US_WEST_2).build();
+        AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard().withCredentials(AwsUtil.getAWSCredentialsProvider()).withRegion(region).build();
         GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest().withSecretId(secretKey);
         GetSecretValueResult getSecretValueResult = null;
         try {
@@ -460,5 +462,9 @@ public class FacilioProperties {
 
     public static String getClientVersion() {
         return clientVersion;
+    }
+
+    public static String getRegion() {
+        return region;
     }
 }

@@ -51,7 +51,7 @@ public class AwsUtil
     	if(region == null) {
     		synchronized (LOCK) {
     			if(region == null) {
-    				region = FacilioProperties.getConfig("region");
+    				region = FacilioProperties.getRegion();
 				}
 			}
 		}

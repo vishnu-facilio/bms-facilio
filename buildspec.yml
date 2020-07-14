@@ -14,6 +14,7 @@ artifacts:
     - scripts/change_conf.sh
     - scripts/move_logs.sh
     - scripts/setenv.sh
+    - scripts/setenv-sp.sh
     - scripts/oom.sh
     - scripts/threaddump.sh
     - deployment-files/*
