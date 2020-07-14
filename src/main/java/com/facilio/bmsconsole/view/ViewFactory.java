@@ -5401,7 +5401,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Service");
-		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		allView.setSortFields(Arrays.asList(new SortField(name, true)));
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 

@@ -305,6 +305,12 @@ public class ApplicationApi {
         if (agentApplication.getId() > 0) {
             addAgentAppWebTabs(agentApplication.getId());
         }
+
+        ApplicationContext tenantPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+
+        if (tenantPortal.getId() > 0) {
+            addTenantPortalWebTabs(tenantPortal.getId());
+        }
     }
 
     public static void addAgentAppWebTabs(long applicationId) {
@@ -347,6 +353,60 @@ public class ApplicationApi {
             configJSON.put("type", "agent_data");
             webTabs.add(new WebTabContext("Agent Data", "data", WebTabContext.Type.AGENT, webTabOrder++, null, applicationId, configJSON));
             groupNameVsWebTabsMap.put("agent", webTabs);
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    webTabContext.setGroupId(webTabGroupContext.getId());
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void addTenantPortalWebTabs(long appId) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+            int webTabOrder = 1;int groupOrder = 1;
+            webTabGroups.add(new WebTabGroupContext("Tenant", "tenant", appId, 1, groupOrder));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Overview", "overview", WebTabContext.Type.PORTAL_OVERVIEW, webTabOrder, null, appId, null));
+            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, webTabOrder, null, appId, null));
+            webTabs.add(new WebTabContext("Work Request", "workorder", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
+            webTabs.add(new WebTabContext("Work Permits", "workpermit", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("workpermit").getModuleId()), appId, null));
+            webTabs.add(new WebTabContext("Vendor", "vendor", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("vendors").getModuleId()), appId, null));
+            configJSON = new JSONObject();
+            configJSON.put("type", "visitorinvites");
+            webTabs.add(new WebTabContext("Visitor Invites", "visitorinvites", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, configJSON));
+            configJSON = new JSONObject();
+            configJSON.put("type", "visits");
+            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, webTabOrder++, Arrays.asList(modBean.getModule("visitorlogging").getModuleId()), appId, configJSON));
+            configJSON = new JSONObject();
+            configJSON.put("type", "serviceCatalog");
+            webTabs.add(new WebTabContext("Service Catalog", "catalog", WebTabContext.Type.CUSTOM, webTabOrder++, null, appId, configJSON));
+
+            groupNameVsWebTabsMap.put("tenant", webTabs);
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
                 System.out.println("we: " + webTabGroupContext.getRoute());

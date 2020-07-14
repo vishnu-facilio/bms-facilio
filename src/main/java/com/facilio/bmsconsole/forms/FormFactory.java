@@ -134,6 +134,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationForm())
 						.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesForm())
 						.put(FacilioConstants.ContextNames.TOOL_TYPES, getTooltypesForm())
+						.put(FacilioConstants.ContextNames.SERVICE, getServiceForm())
 						.build())
         			
 				.build();
@@ -345,6 +346,7 @@ public class FormFactory {
 		List<FacilioForm> itemTypesFormsList = Arrays.asList(getItemTypesForm());
 		List<FacilioForm> toolTypesFormsList = Arrays.asList(getTooltypesForm());
 		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
+		List<FacilioForm> serviceFormsList = Arrays.asList(getServiceForm());
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> workPermitTypeForm = Arrays.asList(getWorkPermitTypeForm());
@@ -386,6 +388,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE, getFormMap(workPermitTypeForm))
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, getFormMap(workPermitTypeChecklistCategoryForm))
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
+				.put(FacilioConstants.ContextNames.SERVICE, getFormMap(serviceFormsList))
 				.build();
 	}
 	
@@ -1414,7 +1417,7 @@ public class FormFactory {
 	public static FacilioForm getServiceForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Service");
-		form.setName("web_default");
+		form.setName("default_service_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SERVICE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceFormFields());
@@ -1427,11 +1430,11 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration(Hr)", Required.REQUIRED, 3, 1));
-		
+		fields.add(new FormField("paymentType", FieldDisplayType.SELECTBOX, "Payment Type", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("buyingPrice", FieldDisplayType.DECIMAL, "Buying Price", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("sellingPrice", FieldDisplayType.DECIMAL, "Selling Price", Required.OPTIONAL, 6, 1));
 
-		fields.add(new FormField("serviceVendors", FieldDisplayType.SERVICEVENDORS, "Service Vendors", Required.REQUIRED, 6, 1));
+		//fields.add(new FormField("serviceVendors", FieldDisplayType.SERVICEVENDORS, "Service Vendors", Required.REQUIRED, 6, 1));
 
 		return fields;
 	}
