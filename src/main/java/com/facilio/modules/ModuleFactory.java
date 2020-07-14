@@ -3868,4 +3868,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getWorkorderCostModule() {
+		FacilioModule module=new FacilioModule();
+		module.setTableName("Workorder_cost");
+		module.setDisplayName("Workorder Cost");
+		module.setName("workorderCost");
+		return module;
+	}
+
 }

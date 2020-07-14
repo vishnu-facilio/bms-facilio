@@ -802,6 +802,11 @@ public class ViewFactory {
 		views.put("all", getAllQuotationTerms().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderCostView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_COST, views);
+
 		return viewsMap;
 	}
 
@@ -7339,6 +7344,24 @@ public class ViewFactory {
 
 		return view;
 	}
+
+	private static FacilioView getAllWorkOrderCostView() {
+
+		FacilioModule module = ModuleFactory.getWorkorderCostModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Workorder Cost");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return allView;
+	}
+
 	private static FacilioView getAllQuotationTerms() {
 
 		FacilioModule module = ModuleFactory.getQuotationTermsModule();
