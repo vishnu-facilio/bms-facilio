@@ -218,11 +218,14 @@ public class BmsDBConf extends DBConf {
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
-                		Long id = (Long) record.get(field.getName()+"Id");
-                		record.put(field.getName()+"Url", fileUrls.get(id));
-                        record.put(field.getName()+"DownloadUrl", downloadUrls.get(id));
-                		record.put(field.getName()+"FileName", files.get(id).getFileName());
-                		record.put(field.getName()+"ContentType", files.get(id).getContentType());
+                    Long id = (Long) record.get(field.getName()+"Id");
+                    FileInfo info = files.get(id);
+                    record.put(field.getName()+"Url", fileUrls.get(id));
+                    record.put(field.getName()+"DownloadUrl", downloadUrls.get(id));
+                    record.put(field.getName()+"FileName", info.getFileName());
+                    record.put(field.getName()+"ContentType", info.getContentType());
+                    record.put(field.getName()+"UploadedBy", info.getUploadedBy());
+                    record.put(field.getName()+"UploadedTime", info.getUploadedTime());
                 }
             }
         }
