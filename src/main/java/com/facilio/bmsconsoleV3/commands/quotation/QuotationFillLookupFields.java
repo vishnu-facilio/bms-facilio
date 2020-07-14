@@ -7,6 +7,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -27,7 +28,12 @@ public class QuotationFillLookupFields extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("billToAddress"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("client"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("tenant"));
-        fetchLookupsList.add((LookupField) fieldsAsMap.get("workorder"));
+
+        LookupFieldMeta workorderField =  new LookupFieldMeta((LookupField) fieldsAsMap.get("workorder"));
+        LookupField pmTrigger = (LookupField) modBean.getField("trigger", FacilioConstants.ContextNames.WORK_ORDER);
+       workorderField.addChildLookupField(pmTrigger);
+        fetchLookupsList.add(workorderField);
+
         fetchLookupsList.add((LookupField) fieldsAsMap.get("moduleState"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("contact"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("tax"));
