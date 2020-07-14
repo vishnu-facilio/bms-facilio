@@ -290,12 +290,4 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         return c;
     }
-    
-    public static FacilioChain getUpdateServingSitesinStoreRoom() {
-    	FacilioChain c = getDefaultChain();
-		c.addCommand(new DeleteSitesForStoreRoomCommad());
-		c.addCommand(new AddSitesForStoreRoomCommand());
-		return c;
-    }
-
 }
