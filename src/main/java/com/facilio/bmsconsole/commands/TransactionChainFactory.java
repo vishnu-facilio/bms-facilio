@@ -5577,6 +5577,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 		return c;
+	}
 
 	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
 		FacilioChain c=getDefaultChain();
