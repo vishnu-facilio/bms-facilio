@@ -1,12 +1,9 @@
 package com.facilio.bmsconsoleV3.context.quotation;
 
-import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -49,6 +46,15 @@ public class QuotationContext extends V3Context {
     private Long revisionNumber;
     private Boolean isQuotationRevised;
     private Boolean revisionHistoryAvailable;
+    private TaxContext tax;
+
+    public TaxContext getTax() {
+        return tax;
+    }
+
+    public void setTax(TaxContext tax) {
+        this.tax = tax;
+    }
 
     public List<TaxSplitUpContext> getTaxSplitUp() {
         return taxSplitUp;
@@ -114,6 +120,7 @@ public class QuotationContext extends V3Context {
         setNotes(quotation.getNotes());
         setRevisionHistoryAvailable(true);
         setWorkorder(quotation.getWorkorder());
+        setTax(quotation.getTax());
         setId(-1);
     }
 

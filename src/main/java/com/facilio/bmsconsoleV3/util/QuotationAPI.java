@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.PreferenceAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
@@ -28,6 +29,8 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -68,6 +71,7 @@ public class QuotationAPI {
         */
         Double totalTaxAmount = 0.0;
         Double lineItemsSubtotal = 0.0;
+        Long taxMode = getTaxMode();
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             List<QuotationLineItemsContext> lineItems = quotation.getLineItems();
             List<Long> uniqueTaxIds = lineItems.stream().filter(lineItem -> lookupValueIsNotEmpty(lineItem.getTax())).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
@@ -77,14 +81,16 @@ public class QuotationAPI {
                 taxList.forEach(tax -> taxIdVsRateMap.put(tax.getId(), tax.getRate()));
             }
             for (QuotationLineItemsContext lineItem : lineItems) {
-                if (lineItem.getQuantity() < 0) {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be negative for Line Item");
+                if (lineItem.getQuantity() == null || lineItem.getQuantity() < 0) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be negative or empty for Line Item");
+                } else if (lineItem.getUnitPrice() == null || lineItem.getUnitPrice() < 0) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unit Price cannot be negative or empty for Line Item");
                 } else {
                     Double lineItemCost = lineItem.getQuantity() * lineItem.getUnitPrice();
                     Double taxRate = 0d;
                     Double taxAmount = 0d;
                     lineItem.setCost(lineItemCost);
-                    if (lookupValueIsNotEmpty(lineItem.getTax())) {
+                    if (taxMode != null && taxMode == 1 && lookupValueIsNotEmpty(lineItem.getTax())) {
                         taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
                         taxAmount = taxRate * lineItem.getCost() / 100;
                     }
@@ -94,6 +100,14 @@ public class QuotationAPI {
                 }
             }
         }
+
+        if (taxMode != null && taxMode == 2) {
+            if (lookupValueIsNotEmpty(quotation.getTax())) {
+                TaxContext tax = getTaxDetails(quotation.getTax().getId());
+                totalTaxAmount = (lineItemsSubtotal * tax.getRate()) / 100;
+            }
+        }
+
         quotation.setSubTotal(lineItemsSubtotal);
         quotation.setTotalTaxAmount(totalTaxAmount);
         Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
@@ -318,7 +332,8 @@ public class QuotationAPI {
 
     public static void setTaxSplitUp(QuotationContext quotation) throws Exception {
         Map<Long, TaxSplitUpContext> taxSplitUp = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
+        Long taxMode = getTaxMode();
+        if (taxMode  != null && taxMode == 1 && CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
                 if (lookupValueIsNotEmpty(lineItem.getTax())) {
                     if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
@@ -335,6 +350,8 @@ public class QuotationAPI {
                     }
                 }
             }
+        } else if (taxMode != null && taxMode == 2 && lookupValueIsNotEmpty(quotation.getTax())) {
+            setTaxAmountInMap(taxSplitUp, quotation.getTax(), quotation.getTotalTaxAmount());
         }
         if (MapUtils.isNotEmpty(taxSplitUp)) {
             List<TaxSplitUpContext> taxSplitUps = new ArrayList<>(taxSplitUp.values());
@@ -440,4 +457,21 @@ public class QuotationAPI {
 
     }
 
+    public static Long getTaxMode () throws Exception {
+        JSONObject orgPreference = PreferenceAPI.getEnabledOrgPreferences();
+        Long taxMode = 0l;
+        if (orgPreference != null && orgPreference.containsKey("taxApplication")) {
+            Map<String, Object> prefMeta = (Map<String, Object>) orgPreference.get("taxApplication");
+            String formDataString = (String) prefMeta.get("formData");
+            JSONObject prefFormData = new JSONObject();
+            if (StringUtils.isNotEmpty(formDataString)) {
+                JSONParser parser = new JSONParser();
+                prefFormData = (JSONObject)parser.parse(formDataString);
+            }
+            if (prefFormData.containsKey("taxApplication") && prefFormData.get("taxApplication") != null) {
+                taxMode = (Long) prefFormData.get("taxApplication");
+            }
+        }
+        return taxMode;
+    }
 }
