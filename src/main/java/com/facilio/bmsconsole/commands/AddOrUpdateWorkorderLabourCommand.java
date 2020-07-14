@@ -102,7 +102,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 					duration = Math.round(hours*100.0)/100.0;
 				}
 				else{
-					duration = 0;
+					duration = workorderLabour.getId() > 0 ? 0 : 1;
 				}
 			}
 		} else {

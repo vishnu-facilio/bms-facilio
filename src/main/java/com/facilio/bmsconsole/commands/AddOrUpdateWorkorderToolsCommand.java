@@ -196,7 +196,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 					duration = Math.round(hours*100.0)/100.0;
 				}
 				else{
-					duration = 0;
+					duration = workorderTools.getId() > 0 ? 0 : 1;
 				}
 			}
 		} else {
