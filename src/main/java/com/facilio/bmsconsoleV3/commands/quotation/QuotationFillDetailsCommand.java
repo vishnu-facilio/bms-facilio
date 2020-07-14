@@ -20,7 +20,7 @@ import java.util.Map;
 public class QuotationFillDetailsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long id = (long) context.get(Constants.RECORD_ID);
+        long id = Constants.getRecordIds(context).get(0);
         QuotationContext quotation = (QuotationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.QUOTE, id);
         QuotationAPI.setLineItems(quotation);
         QuotationAPI.setQuotationAssociatedTerms(quotation);

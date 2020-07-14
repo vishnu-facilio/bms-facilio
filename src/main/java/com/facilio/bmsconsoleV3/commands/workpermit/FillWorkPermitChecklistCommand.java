@@ -26,7 +26,7 @@ public class FillWorkPermitChecklistCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long id = (long) context.get(Constants.RECORD_ID);
+        long id = Constants.getRecordIds(context).get(0);
         V3WorkPermitContext workPermit = (V3WorkPermitContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, id);
 
         if (workPermit != null && workPermit.getId() > 0) {

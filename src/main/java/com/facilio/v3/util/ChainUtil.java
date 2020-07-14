@@ -132,6 +132,7 @@ public class ChainUtil {
 
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new SaveSubFormCommand());
+        transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
 
@@ -243,8 +244,11 @@ public class ChainUtil {
 
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());
+        transactionChain.addCommand(new DeleteSubFormLineItems());
         transactionChain.addCommand(new PatchSubFormCommand());
+        transactionChain.addCommand(new PatchSubFormLineItemsCommand());
         transactionChain.addCommand(new SaveSubFormCommand());
+        transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new VerifyApprovalCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());

@@ -3,8 +3,9 @@ package com.facilio.bmsconsole.view;
 import java.io.File;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class CustomModuleData extends ModuleBaseWithCustomFields {
+public class CustomModuleData extends V3Context {
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,11 +19,11 @@ public class CustomModuleData extends ModuleBaseWithCustomFields {
 		this.name = name;
 	}
 
-	private long photoId;
-	public long getPhotoId() {
+	private Long photoId;
+	public Long getPhotoId() {
 		return photoId;
 	}
-	public void setPhotoId(long photoId) {
+	public void setPhotoId(Long photoId) {
 		this.photoId = photoId;
 	}
 

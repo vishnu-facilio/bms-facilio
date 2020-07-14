@@ -13,6 +13,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 
@@ -21,6 +22,10 @@ public class DeleteSubModuleRecordCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List<Long>> deleteRecordIdMap = Constants.getDeleteRecordIdMap(context);
+        if (MapUtils.isEmpty(deleteRecordIdMap)) {
+            return false;
+        }
+
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         String moduleName = Constants.getModuleName(context);
 
@@ -39,7 +44,7 @@ public class DeleteSubModuleRecordCommand extends FacilioCommand {
                             .module(module)
                             .andCondition(CriteriaAPI.getIdCondition(deleteRecordIdMap.get(subModName), module))
                             .andCondition(CriteriaAPI.getCondition(lookupField, id+"", NumberOperators.EQUALS));
-            builder.delete();
+            builder.markAsDelete();
         }
 
         return false;

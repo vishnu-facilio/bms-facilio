@@ -51,11 +51,11 @@ public class SaveSubFormCommand extends FacilioCommand {
 
             for (String moduleName : subFormMap.keySet()) {
                 List<Map<String, Object>> subForm = subFormMap.get(moduleName);
-                List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subForm, record.getId());
-                List<ModuleBaseWithCustomFields> list = recordMap.get(moduleName);
-                if (list == null) {
-                    recordMap.put(moduleName, new ArrayList<>());
+                if (CollectionUtils.isEmpty(subForm)) {
+                    continue;
                 }
+                List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subForm, record.getId());
+                recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
                 recordMap.get(moduleName).addAll(beanList);
             }
         }
