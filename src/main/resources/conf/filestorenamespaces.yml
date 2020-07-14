@@ -7,5 +7,5 @@ namespaces :
   - name: queue_data # Do not remove the default namespace
     tableName: Queue_Data_File
     resizedTableName: Queue_Data_ResizedFile
-    dataRetention: 5
+    dataRetention: 2
     dailyDirectoryNeeded: true
