@@ -88,16 +88,22 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		woLabour.setId(workorderLabour.getId());
 		double duration = 0;
 		if (woLabour.getDuration() <= 0) {
-			if (woLabour.getStartTime() <= 0) {
-				woLabour.setStartTime(workorder.getScheduledStart());
-			}
-			if (woLabour.getEndTime() <= 0) {
-				woLabour.setEndTime(workorder.getEstimatedEnd());
-			}
+//			if (woLabour.getStartTime() <= 0) {
+//				woLabour.setStartTime(workorder.getScheduledStart());
+//			}
+//			if (woLabour.getEndTime() <= 0) {
+//				woLabour.setEndTime(workorder.getEstimatedEnd());
+//			}
 			if (woLabour.getStartTime() >= 0 && woLabour.getEndTime() >= 0) {
 				duration = getEstimatedWorkDuration(woLabour.getStartTime(), woLabour.getEndTime());
 			} else {
-				duration = 0;
+				if(workorder.getActualWorkDuration() > 0) {
+					double hours = (workorder.getActualWorkDuration() / (60 * 60));
+					duration = Math.round(hours*100.0)/100.0;
+				}
+				else{
+					duration = 0;
+				}
 			}
 		} else {
 			duration = woLabour.getDuration();

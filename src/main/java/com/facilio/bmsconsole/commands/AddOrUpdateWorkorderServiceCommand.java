@@ -104,16 +104,22 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		woService.setId(workorderService.getId());
 		double duration = 0;
 		if (woService.getDuration() <= 0) {
-			if (woService.getStartTime() <= 0) {
-				woService.setStartTime(workorder.getScheduledStart());
-			}
-			if (woService.getEndTime() <= 0) {
-				woService.setEndTime(workorder.getEstimatedEnd());
-			}
+//			if (woService.getStartTime() <= 0) {
+//				woService.setStartTime(workorder.getScheduledStart());
+//			}
+//			if (woService.getEndTime() <= 0) {
+//				woService.setEndTime(workorder.getEstimatedEnd());
+//			}
 			if (woService.getStartTime() >= 0 && woService.getEndTime() >= 0) {
 				duration = getEstimatedWorkDuration(woService.getStartTime(), woService.getEndTime());
 			} else {
-				duration = 0;
+				if(workorder.getActualWorkDuration() > 0) {
+					double hours = (workorder.getActualWorkDuration() / (60 * 60));
+					duration = Math.round(hours*100.0)/100.0;
+				}
+				else{
+					duration = 0;
+				}
 			}
 		} else {
 			duration = woService.getDuration();
