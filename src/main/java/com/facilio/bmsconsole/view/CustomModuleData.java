@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.view;
 import java.io.File;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.v3.context.V3Context;
 
 public class CustomModuleData extends ModuleBaseWithCustomFields {
 
