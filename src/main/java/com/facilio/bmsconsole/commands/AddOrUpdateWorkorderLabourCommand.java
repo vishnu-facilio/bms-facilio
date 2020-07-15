@@ -98,7 +98,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 				duration = getEstimatedWorkDuration(woLabour.getStartTime(), woLabour.getEndTime());
 			} else {
 				if(workorder.getActualWorkDuration() > 0) {
-					double hours = (workorder.getActualWorkDuration() / (60 * 60));
+					double hours = (((double)workorder.getActualWorkDuration()) / (60 * 60));
 					duration = Math.round(hours*100.0)/100.0;
 				}
 				else{

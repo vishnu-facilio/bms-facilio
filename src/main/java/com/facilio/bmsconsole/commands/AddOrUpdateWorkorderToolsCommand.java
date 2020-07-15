@@ -192,7 +192,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				duration = getEstimatedWorkDuration(woTool.getIssueTime(), woTool.getReturnTime());
 			} else {
 				if(workorder.getActualWorkDuration() > 0) {
-					double hours = (workorder.getActualWorkDuration() / (60 * 60));
+					double hours = (((double)workorder.getActualWorkDuration()) / (60 * 60));
 					duration = Math.round(hours*100.0)/100.0;
 				}
 				else{
