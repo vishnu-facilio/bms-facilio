@@ -44,8 +44,6 @@ public class WorkflowV2Util {
 	
 	public static Map<String, Object> MODULE_OBJECT_CACHE = new HashMap<>();
 	
-	public static Map<String, String> MODULE_DISPLAY_NAME_MAP = new HashMap<>();
-
 	private static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
 	
 	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
@@ -121,10 +119,8 @@ public class WorkflowV2Util {
 				if (moduleNode.getNodeType() == Node.ELEMENT_NODE) {
 	        		Element module  = (Element) moduleNode;
 	        		String moduleName = module.getAttribute("name");
-	        		String displayName = module.getAttribute("displayname");
 	        		String moduleClassName = module.getAttribute("classname");
 	        		MODULE_CLASS_MAPPER.put(moduleName, moduleClassName);
-	        		MODULE_DISPLAY_NAME_MAP.put(displayName, moduleName);
 	        	}
 			}
         }
@@ -195,10 +191,6 @@ public class WorkflowV2Util {
 
 	public static String getModuleClassNameFromModuleName(String moduleName) {
 		return MODULE_CLASS_MAPPER.get(moduleName);
-	}
-	
-	public static String getModuleName(String moduleDisplayName) {
-		return MODULE_DISPLAY_NAME_MAP.get(moduleDisplayName);
 	}
 	
 	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {

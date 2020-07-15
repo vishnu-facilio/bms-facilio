@@ -3,7 +3,7 @@ package com.facilio.services.email;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsoleV3.context.V3MailMessageContext;;
+import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

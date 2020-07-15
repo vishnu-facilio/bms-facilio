@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workflow>
-	 <module displayname = 'WorkOrder' name='workorder' classname='com.facilio.workflowv2.modulefunctions.FacilioWorkOrderModuleFunctions'/>
-	 <module displayname = 'BaseSpace' name='basespace' classname='com.facilio.workflowv2.modulefunctions.FacilioBaseSpaceModuleFunctions'/>
-	 <module displayname = 'Contact' name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
-	 <module displayname = 'User' name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
-	 <module displayname = 'VisitorLogging' name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
-	 <module displayname = 'AlarmOccurrence' name='alarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
-	 <module displayname = 'ReadingAlarmOccurrence' name='readingalarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
+	 <module name='workorder' classname='com.facilio.workflowv2.modulefunctions.FacilioWorkOrderModuleFunctions'/>
+	 <module name='basespace' classname='com.facilio.workflowv2.modulefunctions.FacilioBaseSpaceModuleFunctions'/>
+	 <module name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
+	 <module name='users' classname='com.facilio.workflowv2.modulefunctions.FacilioUserModuleFunctions'/>
+	 <module name='visitorlogging' classname='com.facilio.workflowv2.modulefunctions.FacilioVisitorLogingModuleFunctions'/>
+	 <module name='alarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioAlarmModuleFunctions'/>
+	 <module name='readingalarmoccurrence' classname='com.facilio.workflowv2.modulefunctions.FacilioReadingAlarmModuleFunctions'/>
 </workflow>
