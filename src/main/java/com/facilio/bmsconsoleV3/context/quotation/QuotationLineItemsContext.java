@@ -27,7 +27,7 @@ public class QuotationLineItemsContext extends V3Context {
     private Double taxAmount;
     private String description;
     private Long unitOfMeasure;
-    private String unitOfMeasureEnum;
+
 
     public Long getUnitOfMeasure() {
         return unitOfMeasure;
@@ -35,14 +35,6 @@ public class QuotationLineItemsContext extends V3Context {
 
     public void setUnitOfMeasure(Long unitOfMeasure) {
         this.unitOfMeasure = unitOfMeasure;
-    }
-
-    public String getUnitOfMeasureEnum() {
-        return unitOfMeasureEnum;
-    }
-
-    public void setUnitOfMeasureEnum(String unitOfMeasureEnum) {
-        this.unitOfMeasureEnum = unitOfMeasureEnum;
     }
 
     public TaxContext getTax() {

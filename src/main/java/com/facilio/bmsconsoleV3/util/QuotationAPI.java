@@ -337,13 +337,13 @@ public class QuotationAPI {
             for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
                 if (lookupValueIsNotEmpty(lineItem.getTax())) {
                     if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
-                        Double taxAmount = getTaxAmount(lineItem, lineItem.getTax().getRate());
+                        Double taxAmount = getTaxAmount(lineItem.getCost(), lineItem.getTax().getRate());
                         setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
                     } else if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
                         List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
                         for (TaxGroupContext taxGroup : taxGroups) {
                             if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
-                                Double taxAmount = getTaxAmount(lineItem, taxGroup.getChildTax().getRate());
+                                Double taxAmount = getTaxAmount(lineItem.getCost(), taxGroup.getChildTax().getRate());
                                 setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
                             }
                         }
@@ -351,7 +351,17 @@ public class QuotationAPI {
                 }
             }
         } else if (taxMode != null && taxMode == 2 && lookupValueIsNotEmpty(quotation.getTax())) {
-            setTaxAmountInMap(taxSplitUp, quotation.getTax(), quotation.getTotalTaxAmount());
+            if (quotation.getTax().getType() != null && quotation.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                setTaxAmountInMap(taxSplitUp, quotation.getTax(), quotation.getTotalTaxAmount());
+            } else if (quotation.getTax().getType() != null && quotation.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
+                List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(quotation.getTax().getId()));
+                for (TaxGroupContext taxGroup : taxGroups) {
+                    if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
+                        Double taxAmount = getTaxAmount(quotation.getSubTotal(), taxGroup.getChildTax().getRate());
+                        setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
+                    }
+                }
+            }
         }
         if (MapUtils.isNotEmpty(taxSplitUp)) {
             List<TaxSplitUpContext> taxSplitUps = new ArrayList<>(taxSplitUp.values());
@@ -361,10 +371,13 @@ public class QuotationAPI {
         }
     }
 
-    private static Double getTaxAmount(QuotationLineItemsContext lineItem, Double rate) {
-        Double taxAmount = lineItem.getCost() * rate / 100;
-        taxAmount = Math.round(taxAmount * 100.0) / 100.0;
-        return taxAmount;
+    private static Double getTaxAmount(Double cost, Double rate) {
+        if (cost != null && rate != null) {
+            Double taxAmount = cost * rate / 100;
+            taxAmount = Math.round(taxAmount * 100.0) / 100.0;
+            return taxAmount;
+        }
+        return 0d;
     }
 
     private static void setTaxAmountInMap(Map<Long, TaxSplitUpContext> taxSplitUp, TaxContext tax, Double taxAmount) {
