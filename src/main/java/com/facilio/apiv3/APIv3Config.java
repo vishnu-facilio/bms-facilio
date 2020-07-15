@@ -27,6 +27,8 @@ import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCo
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
+import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
@@ -162,6 +164,18 @@ public class APIv3Config {
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .summary()
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
+                .build();
+    }
+    
+    @Module("watchlist")
+    public static Supplier<V3Config> getWatchList() {
+        return () -> new V3Config(V3WatchListContext.class)
+                .create()
+                	.beforeSave(new CheckForExisitingWatchlistRecordsCommandV3())
+                .update()
+                .list()
+                .summary()
+                    .afterFetch(new GetLogsForWatchListCommandV3())
                 .build();
     }
 

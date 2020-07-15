@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.context.V3WatchListContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -442,7 +443,30 @@ public class V3VisitorManagementAPI {
 
     }
 
-
+    public static V3WatchListContext getBlockedWatchListRecordForPhoneNumber(String phoneNumber, String email) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WATCHLIST);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.WATCHLIST);
+		SelectRecordsBuilder<V3WatchListContext> builder = new SelectRecordsBuilder<V3WatchListContext>()
+														.module(module)
+														.beanClass(V3WatchListContext.class)
+														.select(fields)
+														;
+		Criteria criteria = new Criteria();
+		if(StringUtils.isNotEmpty(phoneNumber)) {
+			criteria.addAndCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
+		}
+		if(StringUtils.isNotEmpty(email)) {
+			criteria.addOrCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
+		}
+		
+		builder.andCriteria(criteria);
+		//builder.andCondition(CriteriaAPI.getCondition("IS_BLOCKED", "isBlocked", "true", BooleanOperators.IS));
+		
+		V3WatchListContext record = builder.fetchFirst();
+		return record;	
+	}
 
     public static void updateVisitorLogCheckInCheckoutTime(V3VisitorLoggingContext vLog, boolean isCheckIn, long time) throws Exception {
 
