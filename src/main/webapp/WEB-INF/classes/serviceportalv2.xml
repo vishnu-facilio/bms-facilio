@@ -1421,7 +1421,7 @@
 		</action>
 		
 	</package>
-	<package name="serviceDashboardCardApiv2" namespace="/api/v2/dashboard/cards" extends="newServicePortalApiV2">
+	<package name="serviceDashboardCardApiv2" namespace="/api/service/v2/dashboard/cards" extends="newServicePortalApiV2">
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.CardAction" method="getCardData">
 		</action>
 	</package>
