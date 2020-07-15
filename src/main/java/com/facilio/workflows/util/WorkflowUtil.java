@@ -696,10 +696,10 @@ public class WorkflowUtil {
 			String dateOperatorVal = null;
 			operatorStringValue = "\""+operatorStringValue+"\"";
 			if(dateOperatorValue != null && !dateOperatorValue.equals("null") && !dateOperatorValue.isEmpty()) {
-				dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+","+dateOperatorValue+")";
+				dateOperatorVal =  "new NameSpace(\"date\").getDateRange("+operatorStringValue+","+dateOperatorValue+")";
 			}
 			else {
-				dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+")";
+				dateOperatorVal =  "new NameSpace(\"date\").getDateRange("+operatorStringValue+")";
 			}
 			
 			conditionString = conditionFieldName +" == "+ dateOperatorVal;
@@ -757,7 +757,7 @@ public class WorkflowUtil {
 		
 		if(exp.getDefaultFunctionContext() != null) {
 			String paramString = exp.getDefaultFunctionContext().getParams().replace("'", "\"");
-			code = code + name +" = NameSpace(\""+exp.getDefaultFunctionContext().getNameSpace()+"\")."+exp.getDefaultFunctionContext().getFunctionName()+"("+paramString+");\n";
+			code = code + name +" = new NameSpace(\""+exp.getDefaultFunctionContext().getNameSpace()+"\")."+exp.getDefaultFunctionContext().getFunctionName()+"("+paramString+");\n";
 		}
 		else if(exp.getConstant() != null) {
 			code = code + name +" = "+getValueStringFromValue(exp.getConstant().toString())+";\n";

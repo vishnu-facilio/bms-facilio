@@ -286,12 +286,12 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code nameSpaceInitialization}
+	 * Visit a parse tree produced by the {@code newKeywordIntitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
+	T visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code customModuleInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
@@ -299,13 +299,6 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code connectionInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code readingInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.

@@ -1,10 +1,10 @@
 Map cardLayout(Map params) {
     result = {};
-    fieldObj = NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
+    fieldObj = new NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
     if (fieldObj != null) {
         fieldid = fieldObj.id();
         fieldMapInfo = fieldObj.asMap();
-        date = NameSpace("date");
+        date = new NameSpace("date");
         dateRangeObj = null;
         period = null;
         if (params.dateRange != null) {

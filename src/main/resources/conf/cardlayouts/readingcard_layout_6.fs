@@ -4,11 +4,11 @@ Map cardLayout(Map params) {
     for each index, reading in params.readings {
         valueMap = {};
         valueMap["title"] = reading.title;
-        fieldObj = NameSpace("module").getField(reading.fieldName, reading.moduleName);
+        fieldObj = new NameSpace("module").getField(reading.fieldName, reading.moduleName);
         if (fieldObj != null) {
             fieldid = fieldObj.id();
             fieldMapInfo = fieldObj.asMap();
-            date = NameSpace("date");
+            date = new NameSpace("date");
             dateRangeObj = null;
             period = null;
             if (params.dateRange != null) {

@@ -6,10 +6,10 @@ spaceIds = params.spaceId;
  readingFieldName = "setpoint";
  readingFieldName2 = "spacetemperature";
   
-  setPointObj = NameSpace("module").getField(readingFieldName, readingModule);
+  setPointObj = new NameSpace("module").getField(readingFieldName, readingModule);
   fieldId = setPointObj.id();
   
-  spaceTemp = NameSpace("module").getField(readingFieldName2, readingModule);
+  spaceTemp = new NameSpace("module").getField(readingFieldName2, readingModule);
   fieldId2 = spaceTemp.id();
   
   areas = [];

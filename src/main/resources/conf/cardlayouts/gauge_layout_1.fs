@@ -1,6 +1,6 @@
 Map cardLayout(Map params) {
     result = {};
-    date = NameSpace("date");
+    date = new NameSpace("date");
     dateRangeObj = null;
     period = null;
     if (params.dateRange != null) {
@@ -10,7 +10,7 @@ Map cardLayout(Map params) {
         dateRangeObj = date.getDateRange("Current Month");
         period = "Last Value";
     }
-    fieldObj = NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
+    fieldObj = new NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
     if (fieldObj != null) {
         fieldid = fieldObj.id();
         fieldMapInfo = fieldObj.asMap();
@@ -45,7 +45,7 @@ Map cardLayout(Map params) {
             targetValueMap["value"] = params.minSafeLimitConstant;
             result["minValue"] = targetValueMap;
         } else {
-            targetFieldObj = NameSpace("module").getField(params.minSafeLimitReading.fieldName, params.minSafeLimitReading.moduleName);
+            targetFieldObj = new NameSpace("module").getField(params.minSafeLimitReading.fieldName, params.minSafeLimitReading.moduleName);
             targetFieldId = targetFieldObj.id();
             targetFieldMap = targetFieldObj.asMap();
             db = {
@@ -78,7 +78,7 @@ Map cardLayout(Map params) {
             targetValueMap["value"] = params.maxSafeLimitConstant;
             result["maxValue"] = targetValueMap;
         } else {
-            targetFieldObj = NameSpace("module").getField(params.maxSafeLimitReading.fieldName, params.maxSafeLimitReading.moduleName);
+            targetFieldObj = new NameSpace("module").getField(params.maxSafeLimitReading.fieldName, params.maxSafeLimitReading.moduleName);
             targetFieldId = targetFieldObj.id();
             targetFieldMap = targetFieldObj.asMap();
             db = {

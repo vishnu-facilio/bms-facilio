@@ -54,7 +54,7 @@ Map cardLayout(Map params) {
                 valueMap["label"] = "No of Workorders";
                 valueMap["value"] = Module("workorder").fetch(woCount);
             } else if (params.moduleName == "asset" && params.marker.type == "reading") {
-                date = NameSpace("date");
+                date = new NameSpace("date");
                 dateRangeObj = null;
                 period = null;
                 if (params.dateRange != null) {
@@ -71,7 +71,7 @@ Map cardLayout(Map params) {
                 };
                 fetchModule = Module(params.marker.reading.moduleName);
                 cardValue = fetchModule.fetch(db);
-                fieldObj = NameSpace("module").getField(params.marker.reading.fieldName, params.marker.reading.moduleName);
+                fieldObj = new NameSpace("module").getField(params.marker.reading.fieldName, params.marker.reading.moduleName);
                 fieldid = fieldObj.id();
                 fieldMapInfo = fieldObj.asMap();
                 enumMap = Reading(fieldid, record.id).getEnumMap();

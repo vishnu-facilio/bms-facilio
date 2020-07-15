@@ -474,17 +474,17 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code nameSpaceInitialization}
+	 * Enter a parse tree produced by the {@code newKeywordIntitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
+	void enterNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code nameSpaceInitialization}
+	 * Exit a parse tree produced by the {@code newKeywordIntitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
+	void exitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code customModuleInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
@@ -497,18 +497,6 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code connectionInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void enterConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code connectionInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void exitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code readingInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.

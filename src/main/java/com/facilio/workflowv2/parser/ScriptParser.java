@@ -35,12 +35,10 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_sortContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.For_each_statementContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.NameSpaceInitializationContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
-import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class ScriptParser extends CommonParser<Value> {
@@ -156,26 +154,26 @@ public class ScriptParser extends CommonParser<Value> {
     	return Value.VOID;
     }
 	
-	@Override
-	public Value visitNameSpaceInitialization(NameSpaceInitializationContext ctx) {
-		try {
-    		String nameSpaceValue = ctx.expr().getText();
-    		nameSpaceValue = nameSpaceValue.substring(1, nameSpaceValue.trim().length()-1);
-        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue);
-        	if(nameSpaceEnum == null) {
-        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue);
-        		if(namespace == null) {
-        			throw new RuntimeException("No such namespace - "+nameSpaceValue);
-        		}
-        		return new Value(namespace);
-        	}
-        	return new Value(nameSpaceEnum); 
-    	}
-    	catch(Exception e) {
-    		throw new RuntimeException(e);
-    	}
-    	
-	}
+//	@Override
+//	public Value visitNameSpaceInitialization(NameSpaceInitializationContext ctx) {
+//		try {
+//    		String nameSpaceValue = ctx.expr().getText();
+//    		nameSpaceValue = nameSpaceValue.substring(1, nameSpaceValue.trim().length()-1);
+//        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue);
+//        	if(nameSpaceEnum == null) {
+//        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue);
+//        		if(namespace == null) {
+//        			throw new RuntimeException("No such namespace - "+nameSpaceValue);
+//        		}
+//        		return new Value(namespace);
+//        	}
+//        	return new Value(nameSpaceEnum); 
+//    	}
+//    	catch(Exception e) {
+//    		throw new RuntimeException(e);
+//    	}
+//    	
+//	}
 	
 	@Override
 	public Value visitAssignment(AssignmentContext ctx) {
@@ -184,7 +182,7 @@ public class ScriptParser extends CommonParser<Value> {
 		
 		ExpressionContext expressionContext = new ExpressionContext();
 		expressionContext.setName(var);
-		if(exprString.contains("Module") || exprString.contains("NameSpace")) {
+		if(exprString.contains("Module") || exprString.contains("new NameSpace")) {
 			Value value = visit(ctx.expr());
 			if(value.asObject() instanceof WorkflowFunctionContext) {
 				expressionContext.setDefaultFunctionContext((WorkflowFunctionContext)value.asObject());
@@ -321,8 +319,8 @@ public class ScriptParser extends CommonParser<Value> {
     	
     	Operator operator = null;
     	
-    	if(value.contains("NameSpace(\"date\").getDateRange")) {
-    		String nameSpaceParseRegex = "NameSpace\\(\\\"date\\\"\\)\\.getDateRange\\((.*)\\)";
+    	if(value.contains("new NameSpace(\"date\").getDateRange")) {
+    		String nameSpaceParseRegex = "new NameSpace\\(\\\"date\\\"\\)\\.getDateRange\\((.*)\\)";
     		
     		Pattern condtionStringpattern = Pattern.compile(nameSpaceParseRegex);
     		

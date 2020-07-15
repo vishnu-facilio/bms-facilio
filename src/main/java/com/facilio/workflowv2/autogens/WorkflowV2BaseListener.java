@@ -520,13 +520,13 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) { }
+	@Override public void enterNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) { }
+	@Override public void exitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -539,18 +539,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

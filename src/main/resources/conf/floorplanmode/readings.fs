@@ -5,7 +5,7 @@ Map floorPlanMode(Map params) {
   readingModule = params.viewParams.readingModule;
   readingFieldName = params.viewParams.readingFieldName;
   
-  fieldObj = NameSpace("module").getField(readingFieldName, readingModule);
+  fieldObj = new NameSpace("module").getField(readingFieldName, readingModule);
   fieldId = fieldObj.id();
   fieldMapInfo = fieldObj.asMap();
   

@@ -1,10 +1,10 @@
 Map cardLayout(Map params) {
     result = {};
-    fieldObj = NameSpace("module").getField("temperature", "weather");
+    fieldObj = new NameSpace("module").getField("temperature", "weather");
     if (fieldObj != null) {
         fieldid = fieldObj.id();
         fieldMapInfo = fieldObj.asMap();
-        date = NameSpace("date");
+        date = new NameSpace("date");
         dateRangeObj = date.getDateRange("Current Month");
         db = {
             criteria: [parentId == params.baseSpaceId && ttime == dateRangeObj],

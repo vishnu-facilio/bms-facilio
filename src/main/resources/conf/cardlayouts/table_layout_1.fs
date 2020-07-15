@@ -25,20 +25,20 @@ Map cardLayout(Map params) {
       perPage = 100;
     }
 
-    date = NameSpace("date");
+    date = new NameSpace("date");
     month = date.getDateRange(dateRange);
 
   	criteriaObj = null;
   	assetCategoryCriteria = [category == assetCategoryId];
   	if (buildingId != null && buildingId > 0) {
-      bs = NameSpace("resource").getBaseSpace(buildingId);
+      bs = new NameSpace("resource").getBaseSpace(buildingId);
       assetCategoryCriteria = [category == assetCategoryId && space == bs];
     }
   	if (filterCriteria == null) {
       criteriaObj = assetCategoryCriteria;
     }
 	else {
-      criteriaObj = NameSpace("criteria").get(filterCriteria);
+      criteriaObj = new NameSpace("criteria").get(filterCriteria);
       criteriaObj.and(assetCategoryCriteria);
     }
   
@@ -71,7 +71,7 @@ Map cardLayout(Map params) {
                 fieldObj = null;
                 fieldMapInfo = null;
                 if (column.type == "field") {
-                    fieldObj = NameSpace("module").getField(column.fieldName, moduleName);
+                    fieldObj = new NameSpace("module").getField(column.fieldName, moduleName);
                     fieldMapInfo = fieldObj.asMap();
                     
                     fieldValue = asset.get(column.fieldName);
@@ -109,7 +109,7 @@ Map cardLayout(Map params) {
                 }
                 else if (column.type == "reading") {
                     readingColumnCount = readingColumnCount + 1;
-                    fieldObj = NameSpace("module").getField(column.fieldName, column.moduleName);
+                    fieldObj = new NameSpace("module").getField(column.fieldName, column.moduleName);
                     fieldMapInfo = fieldObj.asMap();
                     db = {
                         criteria : [parentId == asset.id && ttime == month],

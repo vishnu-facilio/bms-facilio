@@ -669,27 +669,27 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 //    	}
 //    }
     
-    @Override 
-    public Value visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { 
-    	
-    	
-    	try {
-    		Value connectionNameValue = this.visit(ctx.expr());
-    		
-    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr().getText());
-    		
-    		String connectionName = connectionNameValue.asString();
-        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
-        	if(connection == null) {
-        		throw new RuntimeException("Connection "+connection+ " Does not exist");
-        	}
-        	return new Value(connection); 
-    	}
-    	catch(Exception e) {
-    		throw new RuntimeException(e.getMessage());
-    	}
-    
-    }
+//    @Override 
+//    public Value visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { 
+//    	
+//    	
+//    	try {
+//    		Value connectionNameValue = this.visit(ctx.expr());
+//    		
+//    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr().getText());
+//    		
+//    		String connectionName = connectionNameValue.asString();
+//        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
+//        	if(connection == null) {
+//        		throw new RuntimeException("Connection "+connection+ " Does not exist");
+//        	}
+//        	return new Value(connection); 
+//    	}
+//    	catch(Exception e) {
+//    		throw new RuntimeException(e.getMessage());
+//    	}
+//    
+//    }
     
     @Override 
     public Value visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) 
@@ -721,65 +721,65 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	}
     }
     
-    @Override 
-    public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
-    	try {
-    		Value nameSpaceValue = this.visit(ctx.expr());
-    		WorkflowV2Util.checkForNullAndThrowException(nameSpaceValue, ctx.expr().getText());
-        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue.asString());
-        	if(nameSpaceEnum == null) {
-        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue.asString());
-        		if(namespace == null) {
-        			throw new RuntimeException("No such namespace - "+nameSpaceValue.asString());
-        		}
-        		return new Value(namespace);
-        	}
-        	return new Value(nameSpaceEnum); 
-    	}
-    	catch(Exception e) {
-    		throw new RuntimeException(e);
-    	}
-    }
-    
-//    @Override
-//    public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
+//    @Override 
+//    public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
 //    	try {
-//    		String newObject = ctx.VAR().toString();
-//        	
-//        	switch(newObject) {
-//        		case WorkflowV2Util.NEW_NAMESPACE_INITIALIZATION :
-//        			Value nameSpaceName = this.visit(ctx.expr(0));
-//        			
-//        			WorkflowV2Util.checkForNullAndThrowException(nameSpaceName, ctx.expr(0).getText());
-//        			
-//        			FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName.asString());
-//                	if(nameSpaceEnum == null) {
-//                		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceName.asString());
-//                		if(namespace == null) {
-//                			throw new RuntimeException("No such namespace - "+nameSpaceName.asString());
-//                		}
-//                		return new Value(namespace);
-//                	}
-//                	return new Value(nameSpaceEnum); 
-//        		case WorkflowV2Util.NEW_CONNECTION_INITIALIZATION :
-//					Value connectionNameValue = this.visit(ctx.expr(0));
-//		    		
-//		    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr(0).getText());
-//		    		
-//		    		String connectionName = connectionNameValue.asString();
-//		        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
-//		        	if(connection == null) {
-//		        		throw new RuntimeException("Connection "+connectionNameValue+ " Does not exist");
-//		        	}
-//		        	return new Value(connection); 
-//        		default:
-//        			throw new RuntimeException("invalid use of new keyword");
+//    		Value nameSpaceValue = this.visit(ctx.expr());
+//    		WorkflowV2Util.checkForNullAndThrowException(nameSpaceValue, ctx.expr().getText());
+//        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue.asString());
+//        	if(nameSpaceEnum == null) {
+//        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue.asString());
+//        		if(namespace == null) {
+//        			throw new RuntimeException("No such namespace - "+nameSpaceValue.asString());
+//        		}
+//        		return new Value(namespace);
 //        	}
+//        	return new Value(nameSpaceEnum); 
 //    	}
 //    	catch(Exception e) {
 //    		throw new RuntimeException(e);
 //    	}
 //    }
+    
+    @Override
+    public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
+    	try {
+    		String newObject = ctx.VAR().toString();
+        	
+        	switch(newObject) {
+        		case WorkflowV2Util.NEW_NAMESPACE_INITIALIZATION :
+        			Value nameSpaceName = this.visit(ctx.expr(0));
+        			
+        			WorkflowV2Util.checkForNullAndThrowException(nameSpaceName, ctx.expr(0).getText());
+        			
+        			FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName.asString());
+                	if(nameSpaceEnum == null) {
+                		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceName.asString());
+                		if(namespace == null) {
+                			throw new RuntimeException("No such namespace - "+nameSpaceName.asString());
+                		}
+                		return new Value(namespace);
+                	}
+                	return new Value(nameSpaceEnum); 
+        		case WorkflowV2Util.NEW_CONNECTION_INITIALIZATION :
+					Value connectionNameValue = this.visit(ctx.expr(0));
+		    		
+		    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr(0).getText());
+		    		
+		    		String connectionName = connectionNameValue.asString();
+		        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
+		        	if(connection == null) {
+		        		throw new RuntimeException("Connection "+connectionNameValue+ " Does not exist");
+		        	}
+		        	return new Value(connection); 
+        		default:
+        			throw new RuntimeException("invalid use of new keyword");
+        	}
+    	}
+    	catch(Exception e) {
+    		throw new RuntimeException(e);
+    	}
+    }
     
 
     @Override

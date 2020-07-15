@@ -53,12 +53,12 @@
 										resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
-									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	  fieldObj = new NameSpace(\"module\").getField(variableObj.select, variableObj.module);
 									  	  if (fieldObj != null) {
 										  	  fieldid = fieldObj.id();
 										  	  fieldMapInfo = fieldObj.asMap();
 										  	  
-										  	  date = NameSpace(\"date\");
+										  	  date = new NameSpace(\"date\");
 											  month = date.getDateRange(\"Current Month\");
 											  if (variableParentId == 1145442) {
 											  	db = {
@@ -100,11 +100,11 @@
 									     }
 									  }
 									  else if (variableObj.fetchType == \"aggrValue\") {
-									  	fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	fieldObj = new NameSpace(\"module\").getField(variableObj.select, variableObj.module);
 									  	if (fieldObj != null) {
 									  	  fetchModule = Module(variableObj.module);
 										  
-										  date = NameSpace(\"date\");
+										  date = new NameSpace(\"date\");
 										  month = date.getDateRange(variableObj.dateRange);
 										  db = {
 											criteria : [parentId == (variableParentId) && ttime == month],
@@ -140,7 +140,7 @@
 								  }
 								  for each index, variableObj in variables {
 								  	if (variableObj.fetchType == \"function\") {
-									  	res = NameSpace(variableObj.namespace).executeFunc(resultMapValues);
+									  	res = new NameSpace(variableObj.new NameSpace).executeFunc(resultMapValues);
 									  	if (res != null) {
 									  		resultMapValues[variableObj.key] = res.get(\"value\");
 								          	resultMap[variableObj.key] = res;
@@ -166,11 +166,11 @@
 								          if(formating.get(\"criteria\") != null && formating.get(\"actions\") != null) {
 								          
 								             json = formating.get(\"criteria\");
-											 criteria1 = NameSpace(\"criteria\").get(json); 
+											 criteria1 = new NameSpace(\"criteria\").get(json); 
 								             res = criteria1.evaluate(resultMapValues);
 								             if(res) {
 								               actionMap = formating.actions;
-								               NameSpace(\"default\").mergeJson(conditionalFormatting,actionMap);
+								               new NameSpace(\"default\").mergeJson(conditionalFormatting,actionMap);
 								             }
 								          }
 								        }
@@ -209,9 +209,9 @@
 				  
 				    mvProject = Module(\"mvproject\").fetch([id == projectId])[0];
 				  
-				    lastMonthEndTime = NameSpace(\"date\").getDateRange(\"Last Month\").getEndTime();
+				    lastMonthEndTime = new NameSpace(\"date\").getDateRange(\"Last Month\").getEndTime();
 				    if (mvProject.frequency == 1) {
-				    	lastMonthEndTime = NameSpace(\"date\").getDateRange(\"Yesterday\").getEndTime();
+				    	lastMonthEndTime = new NameSpace(\"date\").getDateRange(\"Yesterday\").getEndTime();
 				    }
 				    db = {
 				      criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
@@ -299,7 +299,7 @@
 			"description" : "Most Common Alarm for asset",
 			"usage" : "AssetSummary",
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				durtaion = 0;
 				 durationInMilli = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
@@ -365,7 +365,7 @@
 			"description": "",
 			"usage": "",
 			"workflow": "Map assetAlarmDetails(Number resourceId) {
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarm\");
 				occurenceThisMonthCrit = null;
@@ -431,7 +431,7 @@
 			"workflow": "Map fetchKpiViolations(List formulaIds, Number startTime, Number endTime) {
 			  violations = {};
 			  violationModule = Module(\"violationalarmoccurrence\");
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  if (startTime != null) {
 			    ttimes = date.dateRange(startTime, endTime);
 			    db = {
@@ -493,7 +493,7 @@
 			"description" : "Alarm Details",
 			"usage" : "AlarmInsight",
 			"workflow" : "Map alarmMeanMetrics(Number alarmId){
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				thisMonthRanges = date.getDateRange(\"Current Month\");
 				lastMonthRanges = date.getDateRange(\"Last Month\");
 				alarmoccurrenceModule = Module(\"alarmoccurrence\");
@@ -578,7 +578,7 @@
 		"description" : "Alarm Overview",
 		"usage" : "Alarm Rank widget",
 		"workflow" : "Map newAlrmRankWorkflow(Number alarmId) {
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				monthRanges = date.getDateRange(\"Current Year\");
 				db = {
 					criteria: [lastCreatedTime == monthRanges],
@@ -629,7 +629,7 @@
                 	            }
                             }
                           	if (validCondition) {
-								criteria1 = NameSpace(\"criteria\").get(json); 
+								criteria1 = new NameSpace(\"criteria\").get(json); 
 								res = criteria1.evaluate(variables);
 								if(res) {
 									returnMap = {};
@@ -647,7 +647,7 @@
 			"description" : "Agent Alarm Insight",
 			"usage" : "Agent Alarm Summary",
 			"workflow" : "Map agentMetrics(Number alarmId) {
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				thisMonthRanges = date.getDateRange(\"Current Month\");
 				lastMonthRanges = date.getDateRange(\"Last Month\");
 				alarmoccurrenceModule = Module(\"alarmoccurrence\");
@@ -727,7 +727,7 @@
 			"workflow" : "Map calculateDeviation(List resourceIds, Number alarmId){
 			  resultMap = {};
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
 			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
@@ -743,7 +743,7 @@
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
 			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
-			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
+			  adjustedUpperBoundField = new NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  for each rindex,resourceId in resourceIds {
 			    result = {};
 			    deviation = 0;
@@ -817,7 +817,7 @@
 			"description" : "Mean Time Anomaly Metrics",
 			"usage" : "AnomalySummary",
 			"workflow" : "Map anomalyMeanMetrics(Number alarmId){
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
@@ -899,7 +899,7 @@
 			  resultMap = {};
 			  mlReadings = Module(\"anomalyalarmoccurrence\");
   			  resourceModule = Module(\"resource\");
-			  date = NameSpace(\"date\");			
+			  date = new NameSpace(\"date\");			
 			  occurenceThisMonthCrit = {
 			    criteria: [parentAlarm == alarmId]
 			  };
@@ -925,7 +925,7 @@
 			"workflow": "Map energyByCDD(List resourceIds, Number siteId){
 			  resourceIds.sort();
 			  result = {};
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  db = {
@@ -983,7 +983,7 @@
                   clearCondition = {
                     criteria :[severity == \"Clear\" ]
                   };
-            	date = NameSpace(\"date\");
+            	date = new NameSpace(\"date\");
             	ranges = date.getDateRange(\"Current Week\");
                 monthRanges = date.getDateRange(\"Current Month\");
 		    	alarmsCurrWeekCri = {
@@ -1035,7 +1035,7 @@
         "description" : "newAlarmRuleWoDetails",
         	"usage" : "rulesSummary",
         	"workflow": "Map ruleWoDetails(Number ruleId) {
-				  date = NameSpace(\"date\");
+				  date = new NameSpace(\"date\");
 				  ranges = date.getDateRange(\"Current Week\");
 				  monthRanges = date.getDateRange(\"Current Month\");
 				  alarmsCurrWeekCri = {
@@ -1135,7 +1135,7 @@
         	"description" : "newAlarmRuleRank",
         	"usage" : "ruleRank",
         	"workflow": "Map newAlrmRankWorkflow(Number ruleId) {
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				monthRanges = date.getDateRange(\"Current Year\");
 				db = {
 					criteria: [createdTime == monthRanges],
@@ -1170,7 +1170,7 @@
         	"usage" : "newAlarmrulesSummary",
         	"workflow": "Map getNewAlarmRuleTriggerDetials(Number ruleId)
 			{
-			date = NameSpace(\"date\");
+			date = new NameSpace(\"date\");
 			tillLastMonthranges = date.getDateRange(\"Current year upto last month\");
 			currentMonthranges = date.getDateRange(\"Current Month\");
 			tillLastMonthcri = {
@@ -1288,7 +1288,7 @@
 			  resultMap = {};
 			  lsMnRs = {};
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
 			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
@@ -1304,7 +1304,7 @@
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
 			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
-			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
+			  adjustedUpperBoundField = new NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  result = {};
 			  for each rindex,resourceId in resourceIds {
 			    energyWastage = 0;
@@ -1365,7 +1365,7 @@
         	"description" : "noOfAnomalies",
         	"usage" : "AnomalySummary",
         	"workflow": "Map test(List resourceIds, Number alarmId, Boolean isRCA){
-			  date = NameSpace(\"date\");
+			  date = new NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
@@ -1436,7 +1436,7 @@
 						criteria : [ruleId == ruleId && clearedTime > 0 ],
 		        		orderBy : \"createdTime\" asc
 					};
-		            date = NameSpace(\"date\");
+		            date = new NameSpace(\"date\");
 		            ranges = date.getDateRange(\"Last Month\");
 		        	readingAlarmModule = Module(\"readingalarm\"); 
 		        	res = readingAlarmModule.fetch(cri);
@@ -1535,7 +1535,7 @@
 					clearCondition = {
 						criteria :[severity == \"Clear\" ]
 					};
-					date = NameSpace(\"date\");
+					date = new NameSpace(\"date\");
 					ranges = date.getDateRange(\"Current Week\");
 					monthRanges = date.getDateRange(\"Current Month\");
 					alarmsCurrWeekCri = {
@@ -1594,7 +1594,7 @@
         	"description" : "ruleWoDetails",
         	"usage" : "rulesSummary",
         	"workflow": "Map ruleWoDetails(Number ruleId) {
-		    date = NameSpace(\"date\");
+		    date = new NameSpace(\"date\");
 		        ranges = date.getDateRange(\"Current Week\");
 		          monthRanges = date.getDateRange(\"Current Month\");
 		            alarmsCurrWeekCri = {
@@ -1671,7 +1671,7 @@
         	"description" : "ruleRank",
         	"usage" : "ruleRank",
         	"workflow": "Map rankWorkflow (Number ruleId){
-				  date = NameSpace(\"date\");
+				  date = new NameSpace(\"date\");
 				   monthRanges = date.getDateRange(\"Current Year\");
 				  db = {
 						criteria : [createdTime == monthRanges],
@@ -1710,7 +1710,7 @@
         "workflow" : "Map maintenanceCost(Number assetId) 
         			  	{ 
         			  		 woModule = Module(\"workorder\"); 
-						     date = NameSpace(\"date\");
+						     date = new NameSpace(\"date\");
 							 ranges = date.getDateRange(\"Current Year\");
 						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
 						    
@@ -1761,7 +1761,7 @@
         "workflow" : "Map costWorkorderIds(Number assetId,Number costType) 
         			  	{ 
         			  		 woModule = Module(\"workorder\"); 
-							 date = NameSpace(\"date\");
+							 date = new NameSpace(\"date\");
 		                     ranges = date.getDateRange(\"Current Year\");
 						    if(costType == 1){
 						      crit= [resource == assetId && createdTime == ranges];
@@ -1794,7 +1794,7 @@
 
     }
 
-    date = NameSpace(\"date\");
+    date = new NameSpace(\"date\");
     fetchModule = Module(paramsMap.module);
     if (paramsMap.module == \"asset\") {
         records = fetchModule.fetch([geoLocation != null]);
@@ -1889,7 +1889,7 @@
         "workflow" : "Map overallAlarmDuration(Number alarmId,Number cardId) 
         			  	{ 
         			  	module = Module(\"alarmoccurrence\"); 
-						     date = NameSpace(\"date\");
+						     date = new NameSpace(\"date\");
 							 thisMonthRange = date.getDateRange(\"Current Month\");
 						     lastMonthRange = date.getDateRange(\"Last Month\");
 						     
@@ -1961,7 +1961,7 @@
 		"workflow" : "Map durationCompersion(Number alarmId)
 			{
 			module = Module(\"alarmoccurrence\");
-			date = NameSpace(\"date\");
+			date = new NameSpace(\"date\");
 			thisMonthRange = date.getDateRange(\"Current Year\");
 			lastMonthRange = date.getDateRange(\"Last Year\");
 
@@ -1994,7 +1994,7 @@
 		"usage" : "opAlarmComRank",
 		"workflow" : "
 			Map opAlarmRank(Number alarmId) {
-			date = NameSpace(\"date\");
+			date = new NameSpace(\"date\");
 			monthRanges = date.getDateRange(\"Current Month\");
 			lastmonthRanges = date.getDateRange(\"Last Month\");
 			db = {
@@ -2057,7 +2057,7 @@
 			Map offDurationCompersion(Number alarmId)
 			{
 				module = Module(\"operationalarmoccurrence\");
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				thisMonthRange = date.getDateRange(\"Current Year\");
 				lastMonthRange = date.getDateRange(\"Last Year\");
 
@@ -2097,7 +2097,7 @@
 				Map onDurationCompersion(Number alarmId)
 				{
 					module = Module(\"operationalarmoccurrence\");
-					date = NameSpace(\"date\");
+					date = new NameSpace(\"date\");
 					thisMonthRange = date.getDateRange(\"Current Year\");
 					lastMonthRange = date.getDateRange(\"Last Year\");
 
@@ -2137,7 +2137,7 @@
 			Map overAllDurationCompersion(Number alarmId)
 			{
 				module = Module(\"operationalarmoccurrence\");
-				date = NameSpace(\"date\");
+				date = new NameSpace(\"date\");
 				thisMonthRange = date.getDateRange(\"Current Year\");
 				lastMonthRange = date.getDateRange(\"Last Year\");
 
@@ -2174,7 +2174,7 @@
 		"description" : "overallOutOfscheduleRank",
 		"usage" : "operationAlarmSummary",
 		"workflow" : "Map newOpAlrmRankWorkflow(Number alarmId, String moduleName) {
-			date = NameSpace(\"date\");
+			date = new NameSpace(\"date\");
 			monthRanges = date.getDateRange(\"Current Year\");
 			db = {
 				criteria: [lastCreatedTime == monthRanges],
