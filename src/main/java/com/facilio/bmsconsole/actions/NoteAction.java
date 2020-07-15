@@ -68,6 +68,14 @@ public class NoteAction extends FacilioAction {
 
 	public String deleteNote() throws Exception {
 		FacilioContext context = new FacilioContext();
+		
+		String parentModuleName = this.parentModuleName;
+		if (parentModuleName == null) {
+			parentModuleName = ticketModuleName;
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+		context.put(FacilioConstants.ContextNames.NOTE, note);
+		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
 		context.put(FacilioConstants.ContextNames.NOTE_ID, noteId);
 		FacilioChain deleteNote = FacilioChainFactory.deleteNotesChain();

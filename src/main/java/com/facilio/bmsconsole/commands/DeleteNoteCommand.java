@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -15,7 +18,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
-public class DeleteNoteCommand extends FacilioCommand {
+public class DeleteNoteCommand extends FacilioCommand implements PostTransactionCommand {
+	
+	private Set<Long> idsToUpdateCount;
+	private String parentModuleName;
+	private String moduleName;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -23,11 +30,25 @@ public class DeleteNoteCommand extends FacilioCommand {
 		
 		
 		Long noteId = (Long) context.get(FacilioConstants.ContextNames.NOTE_ID);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
+		parentModuleName =  (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+		if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
+			if (parentModuleName == null || parentModuleName.isEmpty()) {
+				throw new IllegalArgumentException("Module name for ticket notes should be specified");
+			}
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module =  modBean.getModule(moduleName);
 		
 		if (noteId != null && noteId > 0) {
+			
+			if (note != null) {
+				Set<Long> parentIds = new HashSet<>();
+				parentIds.add(note.getParentId());
+				idsToUpdateCount = parentIds;
+			}
 			
 			List<NoteContext> noteListContext = NotesAPI.fetchNotes(noteId, moduleName);
 			if (noteListContext != null && noteListContext.size() > 0) {
@@ -46,5 +67,9 @@ public class DeleteNoteCommand extends FacilioCommand {
 		return false;
 	}
 
+	public boolean postExecute() throws Exception {
+		NotesAPI.updateNotesCount(idsToUpdateCount, parentModuleName, moduleName);
+		return false;
+	}
 	
 }
