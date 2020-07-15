@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
@@ -290,4 +291,22 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         return c;
     }
+    
+    public static FacilioChain getItemOrToolTypesAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand()); 
+
+		return c;
+	}
+	
+	public static FacilioChain getUpdateItemTypesAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		c.addCommand(new AddActivitiesCommand());
+		return c;
+	}
 }

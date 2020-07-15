@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalA
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
@@ -22,6 +24,7 @@ import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoom
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
@@ -177,6 +180,78 @@ public class APIv3Config {
                 .list()
                 .summary()
                     .afterFetch(new GetLogsForWatchListCommandV3())
+                .build();
+    }
+    
+    @Module("itemTypes")
+    public static Supplier<V3Config> getItemTypes() {
+        return () -> new V3Config(V3ItemTypesContext.class)
+                .create()
+                	.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
+                .update()
+            		.afterSave(TransactionChainFactoryV3.getUpdateItemTypesAfterSaveChain())
+                .list()
+                	.beforeFetch(new LoadItemTypesLookUpCommandV3())
+                .summary()
+            		.beforeFetch(new LoadItemTypesLookUpCommandV3())
+                .build();
+    }
+    
+    @Module("itemTypesStatus")
+    public static Supplier<V3Config> getItemTypesStatus() {
+        return () -> new V3Config(V3ItemTypesStatusContext.class)
+                .create()
+        			.afterSave(new ExecuteAllWorkflowsCommand())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("itemTypesCategory")
+    public static Supplier<V3Config> getItemTypesCategory() {
+        return () -> new V3Config(V3ItemTypesCategoryContext.class)
+                .create()
+        			.afterSave(new ExecuteAllWorkflowsCommand())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("toolTypes")
+    public static Supplier<V3Config> getToolTypes() {
+        return () -> new V3Config(V3ToolTypesContext.class)
+                .create()
+            		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
+                .update()
+            		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
+                .list()
+                	.beforeFetch(new LoadToolTypesLookUpCommandV3())
+                .summary()
+            		.beforeFetch(new LoadToolTypesLookUpCommandV3())
+                .build();
+    }
+    
+    @Module("toolTypesStatus")
+    public static Supplier<V3Config> getToolTypesStatus() {
+        return () -> new V3Config(V3ToolTypesStatusContext.class)
+                .create()
+                	.afterSave(new ExecuteAllWorkflowsCommand())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    
+    @Module("toolTypesCategory")
+    public static Supplier<V3Config> getToolTypesCategory() {
+        return () -> new V3Config(V3ToolTypesCategoryContext.class)
+                .create()
+            		.afterSave(new ExecuteAllWorkflowsCommand())
+                .update()
+                .list()
+                .summary()
                 .build();
     }
 
