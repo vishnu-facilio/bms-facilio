@@ -140,7 +140,7 @@
 								  }
 								  for each index, variableObj in variables {
 								  	if (variableObj.fetchType == \"function\") {
-									  	res = new NameSpace(variableObj.new NameSpace).executeFunc(resultMapValues);
+									  	res = new NameSpace(variableObj.namespace).executeFunc(resultMapValues);
 									  	if (res != null) {
 									  		resultMapValues[variableObj.key] = res.get(\"value\");
 								          	resultMap[variableObj.key] = res;

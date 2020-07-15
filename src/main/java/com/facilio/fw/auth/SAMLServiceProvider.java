@@ -2,6 +2,7 @@ package com.facilio.fw.auth;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PublicKey;
@@ -33,6 +34,7 @@ public class SAMLServiceProvider {
 	private String acsURL;
 	private String idpURL;
 	private String idpEntityId;
+	private String idpLogoutURL;
 	private X509Certificate certificate;
 
 	public SAMLServiceProvider(String spEntityId, String acsURL, String idpEntityId, String idpURL, String certificate) throws Exception {
@@ -41,6 +43,18 @@ public class SAMLServiceProvider {
 		this.idpURL = idpURL;
 		this.idpEntityId = idpEntityId;
 		this.certificate = this.loadCertificate(certificate);
+	}
+	
+	public SAMLServiceProvider(String spEntityId, String acsURL, File idpMetadataXml) throws Exception {
+		this.spEntityId = spEntityId;
+		this.acsURL = acsURL;
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory
+				.newInstance();
+		factory.setNamespaceAware(true);
+
+		Document document = factory.newDocumentBuilder().parse(idpMetadataXml);
+		this.parseIdPMetadata(document);
 	}
 
 	public String getSpEntityId() {
@@ -76,6 +90,15 @@ public class SAMLServiceProvider {
 
 	public SAMLServiceProvider setIdpEntityId(String idpEntityId) {
 		this.idpEntityId = idpEntityId;
+		return this;
+	}
+	
+	public String getIdpLogoutURL() {
+		return idpLogoutURL;
+	}
+
+	public SAMLServiceProvider setIdpLogoutURL(String idpLogoutURL) {
+		this.idpLogoutURL = idpLogoutURL;
 		return this;
 	}
 
@@ -114,6 +137,47 @@ public class SAMLServiceProvider {
 		String authnRequest = getAuthnRequestTemplate(templateProps);
 		
 		return encodeSAMLRequest(authnRequest);
+	}
+	
+	private void parseIdPMetadata(Document document) throws Exception {
+		
+		String entityID = document.getDocumentElement().getAttribute("entityID");
+		if (entityID != null && !entityID.trim().isEmpty()) {
+			setIdpEntityId(entityID);
+		}
+		
+		Element x509CertElem = (Element) document.getElementsByTagNameNS("*", "X509Certificate").item(0);
+		if (x509CertElem != null) {
+			setCertificate(x509CertElem.getTextContent());
+		}
+		
+		NodeList ssElements = document.getElementsByTagNameNS("*", "SingleSignOnService");
+		if (ssElements != null && ssElements.getLength() > 0) {
+			for (int i=0; i < ssElements.getLength(); i++) {
+				Element loginElm = (Element) ssElements.item(i);
+				String binding = loginElm.getAttribute("Binding");
+				if (binding != null && "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect".equalsIgnoreCase(binding)) {
+					String idpLoginUrl = loginElm.getAttribute("Location");
+					setIdpURL(idpLoginUrl);
+				}
+			}
+		}
+		
+		NodeList slElements = document.getElementsByTagNameNS("*", "SingleLogoutService");
+		if (slElements != null && slElements.getLength() > 0) {
+			for (int i=0; i < slElements.getLength(); i++) {
+				Element logoutElm = (Element) ssElements.item(i);
+				String binding = logoutElm.getAttribute("Binding");
+				if (binding != null && "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect".equalsIgnoreCase(binding)) {
+					String idpLogoutUrl = logoutElm.getAttribute("Location");
+					setIdpLogoutURL(idpLogoutUrl);
+				}
+			}
+		}
+		
+		if (getIdpURL() == null || getCertificate() == null) {
+			throw new Exception("IdP Url or Certificate missing.");
+		}
 	}
 	
 	private String encodeSAMLRequest(String samlRequest) throws IOException {
