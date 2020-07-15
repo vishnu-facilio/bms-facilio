@@ -113,7 +113,7 @@ Long upperAnomalyFieldId;
             		 ratio1data.put(checkGamParentList[i]+"_ratio",prop.get(checkGamParentList[i]+"_ratio"));
                  }
             }
-            LOGGER.info("ratio1data length : "+ratio1data.length());
+            //LOGGER.info("ratio1data length : "+ratio1data.length());
             if(ratio1data.length()>0)
             {
                 JSONObject data = checkGamData.get(checkGamParentList[0]);
@@ -156,7 +156,7 @@ Long upperAnomalyFieldId;
             }
                    
             startTime = startTime+interval;
-            LOGGER.info("eventList size : "+eventList.size());
+            //LOGGER.info("eventList size : "+eventList.size());
         }
 		if(!eventList.isEmpty()){
 			addEventChain(eventList);
@@ -212,7 +212,7 @@ Long upperAnomalyFieldId;
     }
     private MLAnomalyEvent checkAndGenerateMLAnomalyEvent(long resourceID,JSONObject checkGamData,long ttime,long mlid) throws Exception
     {
-        LOGGER.info("data "+checkGamData + " resorceid : "+resourceID + " ttime : "+ttime);
+        //LOGGER.info("data "+checkGamData + " resorceid : "+resourceID + " ttime : "+ttime);
         if(checkGamData!=null && checkGamData.has("actualValue"))
         {
             Double actualValue = (Double)checkGamData.get("actualValue");
@@ -260,5 +260,5 @@ Long upperAnomalyFieldId;
     }
 }
 
-                                                                                                                                
-                                                                                                                                
+
+
