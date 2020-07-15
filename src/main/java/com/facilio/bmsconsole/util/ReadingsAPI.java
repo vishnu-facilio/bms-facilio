@@ -987,7 +987,6 @@ public class ReadingsAPI {
 				fieldsWithValues = readingMetaDatas.stream().map(meta -> meta.getFieldId()).collect(Collectors.toList());
 			}
 		}
-		
 		List<FacilioField> fieldsToReturn = new ArrayList<>();
 		for(FacilioField field: fields) {
 			if (!DEFAULT_READING_FIELDS.contains(field.getName()) ) {

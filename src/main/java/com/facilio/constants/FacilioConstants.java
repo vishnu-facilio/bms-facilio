@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
+import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
@@ -39,6 +40,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import com.facilio.v3.context.AttachmentV3Context;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -1680,6 +1682,11 @@ public class FacilioConstants {
 		public static final String MODULE_STATE = "moduleState";
 		public static final String TERMS_NAME = "termsName";
 
+		public static final String CUSTOM_MAIL_MESSAGE = "customMailMessages";
+		public static final String LATEST_MESSAGE_UID = "latestMessageUID";
+		public static final String MESSAGES = "messages";
+		public static final String MAIL_ATTACHMENT = "mailAttachments";
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1941,6 +1948,9 @@ public class FacilioConstants {
 			classMap.put(WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, WorkPermitTypeChecklistCategoryContext.class);
 			classMap.put(WorkPermit.WORK_PERMIT_TYPE, WorkPermitTypeContext.class);
 			classMap.put(WorkPermit.WORK_PERMIT_ACTIVITY, ActivityContext.class);
+
+			classMap.put(ContextNames.CUSTOM_MAIL_MESSAGE, V3MailMessageContext.class);
+			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
 
 			return classMap;
 		}

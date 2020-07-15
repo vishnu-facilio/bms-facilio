@@ -1,19 +1,11 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.bmsconsole.commands.AddAttachmentCommand;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.MailContext;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import javax.activation.DataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -26,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V3MailMessageContext extends ModuleBaseWithCustomFields {
+public class V3MailMessageContext extends V3Context {
 
     private static Logger logger = LogManager.getLogger(V3MailMessageContext.class.getName());
     private static final long serialVersionUID = 1L;
@@ -288,17 +280,17 @@ public class V3MailMessageContext extends ModuleBaseWithCustomFields {
         return null;
     }
 
-    public List<Object> getAttachmentsList() {
+    public List<Map<String, Object>> getAttachmentsList() {
         return attachmentsList;
     }
 
-    public void setAttachmentsList(List<Object> attachmentsList) {
+    public void setAttachmentsList(List<Map<String, Object>> attachmentsList) {
         this.attachmentsList = attachmentsList;
     }
 
-    List<Object> attachmentsList = new ArrayList<>();
+    List<Map<String, Object>> attachmentsList = new ArrayList<>();
 
-    public void addAttachmentList(Object attachment) {
+    public void addAttachmentList(Map<String, Object> attachment) {
         if (attachmentsList == null) {
             attachmentsList = new ArrayList<>();
         }
@@ -323,12 +315,12 @@ public class V3MailMessageContext extends ModuleBaseWithCustomFields {
                 MimeMessage attachmentMessage = new MimeMessage(null, bodyPart.getInputStream());
                 MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
                 parser.parse();
-                JSONObject attachmentObject = new JSONObject();
-                attachmentObject.put("attachedFilesFileName", bodyPart.getFileName());
-                attachmentObject.put("attachedFilesContentType", bodyPart.getContentType());
+                Map<String, Object> attachmentObject = new HashMap<>();
+                attachmentObject.put("attachmentFileName", bodyPart.getFileName());
+                attachmentObject.put("attachmentContentType", bodyPart.getContentType());
                 File file = File.createTempFile(fileName, "");
                 FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
-                attachmentObject.put("attachedFiles", file);
+                attachmentObject.put("attachment", file);
                 mailContext.addAttachmentList(attachmentObject);
             }
         }

@@ -1,15 +1,13 @@
 package com.facilio.services.email;
 
-
+import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.MailContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsole.util.CustomMailMessageApi;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.bmsconsoleV3.context.V3MailMessageContext;;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.sun.mail.imap.IMAPFolder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -32,6 +30,16 @@ public class ImapsClient {
             properties.setProperty("mail.store.protocol", "imaps");
             properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             properties.setProperty("mail.imap.socketFactory.fallback", "false");
+ //           properties.setProperty("mail.imap.sasl.enable", "true");
+//            properties.setProperty("mail.imap.starttls.enable", "true");
+//
+//
+//            properties.setProperty("mail.imap.auth.mechanisms", "CRAM-MD5");
+//            properties.setProperty("mail.imap.sasl.realm", "CRAM-MD5");
+
+
+            String md5 = FacilioAuthAction.cryptWithMD5( mailDetails.getPassword());
+
 
             Session session = Session.getDefaultInstance(properties, null);
 
@@ -76,37 +84,63 @@ public class ImapsClient {
     }
 
     private void parseMessage (Message[] messages, IMAPFolder inbox, SupportEmailContext mailDeta) throws MessagingException {
-        List<V3MailMessageContext> mailMessages = new ArrayList<>();
+        List<ModuleBaseWithCustomFields> mailMessages = new ArrayList<>();
         try {
-            Map<Long, List<Object>> mailAttachment = new HashMap<>();
-            // inbox.get
             long lastUID = 0;
             log.info("Mail fetched ===> Message Size" + messages.length);
             if (messages.length > 0) {
                 for (Message message : messages) {
-                    V3MailMessageContext mailMessage = new V3MailMessageContext();
-                    mailMessage = V3MailMessageContext.instance(message);
+                    Map<String, Object> data = new HashMap<>();
+                    V3MailMessageContext mailMessage = V3MailMessageContext.instance(message);
                     mailMessage.setSupportMailId(-1l);
                     lastUID = inbox.getUID(message);
                     mailMessage.setMessageUID(lastUID);
                     mailMessage.setSupportMailId(mailDeta.getId());
+                    Map
+                            <String,
+                                    List<Map<String, Object>>> attachments = new HashMap<>();
                     if (mailMessage.getAttachmentsList().size() > 0) {
-                        mailAttachment.put(lastUID, mailMessage.getAttachmentsList());
+                      attachments.put("mailAttachments", mailMessage.getAttachmentsList());
+                        mailMessage.setSubForm(attachments);
+                        // mailMessage.setData(attachments);
+//                        for (Map<String, Object> attach: mailMessage.getAttachmentsList()) {
+//                            mailMessage.addSubFormFiles(attach);
+//                        }
                     }
-                    // log.info("getUId" + mailMessage.getMessageUID());
                     mailMessages.add(mailMessage);
                 }
-                CustomMailMessageApi.insertV3CustomMailMessage(mailMessages);
-                SupportEmailContext updateLatestUID = new SupportEmailContext();
-                updateLatestUID.setLatestMessageUID(lastUID);
-                updateLatestUID.setUidValidaity(inbox.getUIDValidity());
-                if (mailAttachment.size() > 0 ) {
-                    FacilioContext context = new FacilioContext();
-                    context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, mailAttachment);
-                    FacilioChain c = TransactionChainFactory.addMultipleAttachment();
-                    c.execute(context);
-                }
-                CustomMailMessageApi.updateLatestMailUID(updateLatestUID, mailDeta.getId());
+                FacilioChain chain = TransactionChainFactory.getSaveMailMessage();
+
+                FacilioContext context = chain.getContext();
+
+
+                mailDeta.setLatestMessageUID(lastUID);
+                mailDeta.setUidValidaity(inbox.getUIDValidity());
+
+                context.put(FacilioConstants.ContextNames.MESSAGES, mailMessages);
+                context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, mailDeta);
+
+                chain.execute();
+
+//                Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+//                FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+//                FacilioContext context = createRecordChain.getContext();
+//                mailDeta.setLatestMessageUID(lastUID);
+//                mailDeta.setUidValidaity(inbox.getUIDValidity());
+//                context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, mailDeta);
+//                recordMap.put(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE, mailMessages);
+//                Constants.setRecordMap(context, recordMap);
+//                Constants.setModuleName(context, FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+//                FacilioModule module = ChainUtil.getModule(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+//                Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+//                context.put(Constants.BEAN_CLASS, beanClass);
+//                createRecordChain.execute();
+//                if (mailAttachment.size() > 0 ) {
+//                    FacilioContext context = new FacilioContext();
+//                    context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, mailAttachment);
+//                    FacilioChain c = TransactionChainFactory.addMultipleAttachment();
+//                    c.execute(context);
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,34 +162,6 @@ public class ImapsClient {
             parseMessage(messages, inbox, supportEmailContext);
         }
     }
-//    public List<MailContext> getLastHoursMails(int hours, String inboxName) throws Exception {
-//        IMAPFolder inbox = null;
-//
-//        try {
-//            List<MailContext> mailMessages = new ArrayList<>();
-//            inbox = (IMAPFolder) store.getFolder(inboxName);
-//            inbox.open(Folder.READ_ONLY);
-//            Message[] messages = inbox.getMessagesByUID(662310 + 1, UIDFolder.MAXUID);
-//
-//            log.info("Message Count " + messages.length);
-//            for (Message message: messages) {
-//                MailContext mailMessage = new MailContext();
-//                mailMessage = MailContext.instance(message);
-//                mailMessage.setSupportMailId(-1l);
-//                mailMessage.setMessageUID(inbox.getUID(message));
-//                log.info("getUId" + mailMessage.getMessageUID());
-//                mailMessages.add(mailMessage);
-//            }
-//            if (mailMessages.size() > 0) {
-//                CustomMailMessageApi.insertCustomMailMessage(mailMessages);
-//            }
-//            return  mailMessages;
-//        } catch (MessagingException e) {
-//            throw new Exception(e);
-//        } finally {
-//            closeFolder(inbox);
-//        }
-//    }
     private void closeFolder(Folder inbox) {
         try {
             if (inbox != null)

@@ -172,7 +172,7 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
 	                        map.put(lookupField.getName(), parentObject);
 	                        Map<FacilioField, Map<String, Object>> fileMap = new HashMap<>();
 	                        for (FacilioField f : fileFields) {
-	                        		Map<String, Object> fileDetails = new HashMap<>();
+	                        	Map<String, Object> fileDetails = new HashMap<>();
 	                            Object remove = map.remove(f.getName());
 	                            if (remove != null) {
 		                            	fileDetails.put(f.getName(), remove);
@@ -183,7 +183,7 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
 	                        }
 	                        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
 	                        for (FacilioField field : fileMap.keySet()) {
-	                        	    Map<String, Object> fileDetails = fileMap.get(field);
+	                        	Map<String, Object> fileDetails = fileMap.get(field);
 	                            File file = ((StrutsUploadedFile) fileDetails.get(field.getName())).getContent();
 	                            String  contentType = (String) fileDetails.get(field.getName()+"ContentType");
 	                            String  fileName = (String) fileDetails.get(field.getName()+"FileName");

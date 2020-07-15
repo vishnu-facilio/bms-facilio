@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
+import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
@@ -324,7 +325,6 @@ public class APIv3Config {
                     .beforeFetch(new LoadClientContactLookupCommandV3())
                 .build();
     }
-
     @Module("workpermit")
     public static Supplier<V3Config> getWorkPermit() {
         return () -> new V3Config(V3WorkPermitContext.class)
@@ -346,7 +346,6 @@ public class APIv3Config {
                 .afterFetch(TransactionChainFactoryV3.getWorkPermitSummaryAfterFetchChain())
                 .build();
     }
-
     @Module("workpermittypechecklist")
     public static Supplier<V3Config> getWorkPermitTypeChecklist() {
         return () -> new V3Config(WorkPermitTypeChecklistContext.class)
@@ -372,6 +371,17 @@ public class APIv3Config {
 
                 .list()
                 .afterFetch(new WorkPermitFillChecklistForCategoryCommand())
+
+
+                .build();
+    }
+    @Module("customMailMessages")
+    public static Supplier<V3Config> getCustomMailMessages() {
+        return () -> new V3Config(V3MailMessageContext.class)
+                .create()
+                .afterSave(new UpdateLatestMessageUIDCommandV3())
+
+                .update()
 
                 .build();
     }

@@ -22,8 +22,7 @@ public class ImapJob extends FacilioJob {
                     // fetch mail which is greater than messageUID
                     mailService.getMessageGtUID(latestUID);
                 } else {
-                    // fetch today's Mail//
-                    // n days
+                    // fetch today's Mail n days
                     mailService.getNDaysMails(1);
                 }
 

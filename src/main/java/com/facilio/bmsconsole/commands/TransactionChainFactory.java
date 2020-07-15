@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.AddDefaultScopingCommandV3;
+import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
@@ -5575,6 +5576,11 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 		return c;
+	}
+	public static FacilioChain getSaveMailMessage() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new SaveMailMessageCommandV3());
+		return chain;
 	}
 }
 

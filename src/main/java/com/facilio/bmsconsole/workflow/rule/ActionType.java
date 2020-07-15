@@ -12,10 +12,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -37,39 +42,8 @@ import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreEventContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViolationEventContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AttachmentsAPI;
-import com.facilio.bmsconsole.util.CallUtil;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SMSUtil;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WhatsappUtil;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.cb.context.ChatBotIntent;
@@ -109,6 +83,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+
+import javax.activation.DataSource;
 
 public enum ActionType {
 
@@ -1531,6 +1507,32 @@ public enum ActionType {
 			catch (Exception ex) {
 				LOGGER.error("Exception occurred ", ex);
 			}
+		}
+	},
+	MAIL_TO_CREATEWO(32) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			LOGGER.info("MAIL_TO_CREATEWO"+ currentRecord);
+			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
+
+			WorkOrderContext workorderContext = new WorkOrderContext();
+			workorderContext.setSendForApproval(true);
+			User requester = new User();
+			requester.setEmail(mailContext.getFrom());
+
+			workorderContext.setSubject(mailContext.getSubject());
+			if (mailContext.getContent() != null) {
+				workorderContext.setDescription(mailContext.getContent());
+			}
+			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
+			workorderContext.setSiteId(supportEmailContext.getSiteId());
+
+			workorderContext.setRequester(requester);
+			addWorkOrder(workorderContext, SourceType.EMAIL_REQUEST, null);
+
+			LOGGER.info("Added Workorder from Email Parser : "  );
 		}
 	}
 	
