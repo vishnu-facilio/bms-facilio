@@ -83,6 +83,8 @@
 	 <job name='testMLHistoricalJob' classname='com.facilio.bmsconsole.jobs.DefaultMLHistoricalJob' transactionTimeout='7200000'/>
 	 <job name='AddMLJob' classname='com.facilio.bmsconsole.jobs.AddMLJob' transactionTimeout='7200000'/>
 	 <job name='testMLSplitJob' classname='com.facilio.bmsconsole.jobs.DefaultMLSplitHistoricalJob' transactionTimeout='7200000'/>
+	 <job name='MultivariateAnomalyEventJob' classname='com.facilio.bmsconsole.jobs.MultivariateAnomalyEventJob' transactionTimeout='7200000'/>
+
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 
      <job name='HistoricalJob' classname='com.facilio.bmsconsole.jobs.HistoricalJob' transactionTimeout='7200000'/>
