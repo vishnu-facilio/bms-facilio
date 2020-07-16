@@ -4,7 +4,6 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.GetAvailableStateCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
@@ -45,7 +44,7 @@ public class GetStateflowsForModuleDataListCommandV3 extends FacilioCommand {
                     if (stateFlows.containsKey(key)) {
                         ArrayList<WorkflowRuleContext> list = new ArrayList<>(stateFlows.get(key));
                         GetAvailableStateCommand.removeUnwantedTranstions(list);
-                        List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(list, moduleName, record, context);
+                        List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.getExecutableStateTransitions(list, moduleName, record, context);
                         if (CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions)) {
                             record.setEvaluatedTransitionIds(evaluateStateFlowAndExecuteActions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
                         }

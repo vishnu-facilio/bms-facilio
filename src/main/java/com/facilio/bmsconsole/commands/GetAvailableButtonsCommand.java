@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.CustomButtonAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.*;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,21 +29,24 @@ public class GetAvailableButtonsCommand extends FacilioCommand {
             if (positionTypeEnum == null) {
                 throw new IllegalArgumentException("Position type cannot be empty");
             }
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("POSITION_TYPE", "positionType",
-                    String.valueOf(positionTypeEnum.getIndex()), NumberOperators.EQUALS));
-            List<WorkflowRuleContext> customButtons = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(),
-                    criteria, null, null, CustomButtonRuleContext.class);
-            customButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(customButtons, CustomButtonRuleContext.class), true, true);
 
-            Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleName);
+            if (module == null) {
+                throw new IllegalArgumentException("Invalid module");
+            }
 
-            Iterator<WorkflowRuleContext> iterator = customButtons.iterator();
-            while (iterator.hasNext()) {
-                WorkflowRuleContext stateFlow = iterator.next();
-                boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateFlow, moduleName, moduleData, null, recordPlaceHolders, (FacilioContext) context, false);
-                if (!evaluate) {
-                    iterator.remove();
+            List<WorkflowRuleContext> customButtons = CustomButtonAPI.getCustomButtons(module, positionTypeEnum);
+
+            if (CollectionUtils.isNotEmpty(customButtons)) {
+                Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
+                Iterator<WorkflowRuleContext> iterator = customButtons.iterator();
+                while (iterator.hasNext()) {
+                    WorkflowRuleContext stateFlow = iterator.next();
+                    boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateFlow, moduleName, moduleData, null, recordPlaceHolders, (FacilioContext) context, false);
+                    if (!evaluate) {
+                        iterator.remove();
+                    }
                 }
             }
             context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, customButtons);

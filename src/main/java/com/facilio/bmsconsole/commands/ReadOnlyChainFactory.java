@@ -216,6 +216,7 @@ public class ReadOnlyChainFactory {
 				return false;
 			}
 		});
+		c.addCommand(new GetCustomButtonsForModuleDataListCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}

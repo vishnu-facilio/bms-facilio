@@ -182,7 +182,7 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 			}
 			String key = workorder.getStateFlowId() + "_" + workorder.getModuleState().getId();
 			if(stateFlows.containsKey(key)) {
-				List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(new ArrayList<>(stateFlows.get(key)), ContextNames.WORK_ORDER, workorder, context);
+				List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.getExecutableStateTransitions(new ArrayList<>(stateFlows.get(key)), ContextNames.WORK_ORDER, workorder, context);
 				workorder.setCanCurrentUserApprove(CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions));
 			}
 		}

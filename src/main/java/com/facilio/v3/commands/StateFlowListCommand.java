@@ -51,7 +51,7 @@ public class StateFlowListCommand extends FacilioCommand {
                     if(stateFlows.containsKey(key)) {
                         ArrayList<WorkflowRuleContext> list = new ArrayList<>(stateFlows.get(key));
                         removeUnwantedTranstions(list);
-                        List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(list, moduleName, record, context);
+                        List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.getExecutableStateTransitions(list, moduleName, record, context);
                         if (CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions)) {
                             record.setEvaluatedTransitionIds(evaluateStateFlowAndExecuteActions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
                         }
