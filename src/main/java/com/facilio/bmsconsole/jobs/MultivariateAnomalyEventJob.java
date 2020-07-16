@@ -61,7 +61,7 @@ public class MultivariateAnomalyEventJob extends FacilioJob
         List<MultiVariateAnomalyEvent> eventList = new LinkedList<MultiVariateAnomalyEvent>();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        while(startTime<endTime)
+        while(startTime<=endTime)
         {
         	long outlierModuleId = Long.parseLong(props.get("outlierModuleId").toString());
             FacilioModule outlierModule = modBean.getModule(outlierModuleId);
@@ -103,11 +103,11 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                     neighbourCount.put("pctNeighbour" , eachRecord.get("pctNeighbour"));
                     neighbourCount.put("optPercentage" , eachRecord.get("optPercentage"));
 
-                    event = generateMultiVariateAnomalyEvent(mlId,assetId,neighbourCount,listOfVarFieldId,listOfVarRatioFields,causingVarFieldId,props.get("multivariateAnomalyID").toString(),Long.parseLong(props.get("ttime").toString()));
+                    event = generateMultiVariateAnomalyEvent(mlId,assetId,neighbourCount,listOfVarFieldId,listOfVarRatioFields,causingVarFieldId,props.get("multivariateAnomalyID").toString(),Long.parseLong(eachRecord.get("ttime").toString()));
                 }
                 else 
                 {
-                    event = clearMultiVariateAnomalyEvent(mlId,assetId,Long.parseLong(props.get("ttime").toString()));
+                    event = clearMultiVariateAnomalyEvent(mlId,assetId,Long.parseLong(eachRecord.get("ttime").toString()),props.get("multivariateAnomalyID").toString());
                 }
                 eventList.add(event);
             }
@@ -139,7 +139,7 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             event.setEventMessage("Anomaly Detected");
             event.setDescription(message);
             //event.setResource(resource);
-
+            event.setMessageKey("MultiVariateAnomaly_" + assetId +"_" + multiVariateAnomalyId);
             event.setSeverityString("Minor");
             //event.setReadingTime(ttime);
             event.setCreatedTime(ttime);
@@ -155,13 +155,14 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             return event;
      }
     
-     private MultiVariateAnomalyEvent clearMultiVariateAnomalyEvent(String mlId,String assetId,long ttime) throws Exception
+     private MultiVariateAnomalyEvent clearMultiVariateAnomalyEvent(String mlId,String assetId,long ttime ,String multivariateAnomalyId) throws Exception
      {
          String message = "Anomaly Cleared";
          MultiVariateAnomalyEvent event = new MultiVariateAnomalyEvent();
          //ResourceContext resource = ResourceAPI.getResource(assetID);
          event.setEventMessage(message);
          event.setDescription("Anomaly cleared");
+         event.setMessageKey("MultiVariateAnomaly_" + assetId +"_" + multivariateAnomalyId);
          //event.setResource(resource);
          event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
          event.setCreatedTime(ttime);
