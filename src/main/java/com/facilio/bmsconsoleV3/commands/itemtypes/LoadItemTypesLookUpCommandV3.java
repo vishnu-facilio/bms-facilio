@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.Unit;
 
 public class LoadItemTypesLookUpCommandV3 extends FacilioCommand {
     @Override
@@ -30,11 +34,8 @@ public class LoadItemTypesLookUpCommandV3 extends FacilioCommand {
         
         LookupField statusField = (LookupField) fieldsAsMap.get("status");
         LookupField categoryField = (LookupField) fieldsAsMap.get("category");
-        LookupField unitField = (LookupField) fieldsAsMap.get("unit");
-
         additionaLookups.add(statusField);
         additionaLookups.add(categoryField);
-        additionaLookups.add(unitField);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;

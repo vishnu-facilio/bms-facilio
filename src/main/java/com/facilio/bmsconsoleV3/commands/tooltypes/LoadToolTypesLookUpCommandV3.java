@@ -30,11 +30,9 @@ public class LoadToolTypesLookUpCommandV3 extends FacilioCommand {
         
         LookupField statusField = (LookupField) fieldsAsMap.get("status");
         LookupField categoryField = (LookupField) fieldsAsMap.get("category");
-        LookupField unitField = (LookupField) fieldsAsMap.get("unit");
 
         additionaLookups.add(statusField);
         additionaLookups.add(categoryField);
-        additionaLookups.add(unitField);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;

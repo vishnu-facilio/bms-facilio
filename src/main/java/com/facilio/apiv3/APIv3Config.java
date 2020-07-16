@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
@@ -192,6 +194,7 @@ public class APIv3Config {
             		.afterSave(TransactionChainFactoryV3.getUpdateItemTypesAfterSaveChain())
                 .list()
                 	.beforeFetch(new LoadItemTypesLookUpCommandV3())
+                    .afterFetch(new SetItemTypesUnitCommandV3())
                 .summary()
             		.beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .build();
@@ -228,6 +231,7 @@ public class APIv3Config {
             		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .list()
                 	.beforeFetch(new LoadToolTypesLookUpCommandV3())
+                    .afterFetch(new SetToolTypesUnitCommandV3())
                 .summary()
             		.beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .build();

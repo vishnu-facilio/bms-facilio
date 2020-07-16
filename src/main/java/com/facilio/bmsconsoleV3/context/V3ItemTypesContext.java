@@ -157,13 +157,6 @@ public class V3ItemTypesContext extends V3Context {
 		return false;
 	}
 
-	public String getPhotoUrl() throws Exception {
-		if (this.photoId > 0) {
-			return FacilioFactory.getFileStore().getPrivateUrl(this.photoId);
-		}
-		return null;
-	}
-
 	@Override
 	public long getLocalId() {
 		// TODO Auto-generated method stub
