@@ -1211,7 +1211,12 @@ public class DashboardUtil {
 					}
 				}
 			}
-			return folders;
+			if (getOnlyMobileDashboard) {
+				return sortDashboardFolderByOrder(folders);
+			}
+			else {
+				return folders;
+			}
 		}
 		return null;
 	}
@@ -1609,6 +1614,12 @@ public class DashboardUtil {
 		dashboards.sort(new dashboardSortByOrder());
 		
 		return dashboards;
+	}
+	public static List<DashboardFolderContext> sortDashboardFolderByOrder(List<DashboardFolderContext> folders) throws Exception {
+
+		folders.sort(new dashboardFolderSortByOrder());
+		
+		return folders;
 	}
 	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap) throws Exception {
 		return getFilteredDashboards(dashboardMap,false);
@@ -3280,6 +3291,20 @@ public class DashboardUtil {
 	}
 	
 }
+class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
+{ 
+    // Used for sorting in ascending order of dashboard folders
+	public int compare(DashboardFolderContext a, DashboardFolderContext b) 
+    { 
+    	if (b.getDisplayOrder() == -1) {
+            return (a.getDisplayOrder()== -1) ? 0 : -1;
+        }
+        if (a.getDisplayOrder() == -1) {
+            return 1;
+        }
+        return (int) (a.getDisplayOrder() - b.getDisplayOrder());
+    }
+}
 class dashboardSortByOrder implements Comparator<DashboardContext> 
 { 
     // Used for sorting in ascending order of dashboards
@@ -3293,4 +3318,5 @@ class dashboardSortByOrder implements Comparator<DashboardContext>
         }
         return (int) (a.getDisplayOrder() - b.getDisplayOrder());
     } 
-} 
+}
+
