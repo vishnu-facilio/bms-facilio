@@ -1,4 +1,3 @@
-
 package com.facilio.bmsconsole.util;
 
 import java.time.ZonedDateTime;
@@ -21,6 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Group;
+import java.util.Comparator;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -1164,6 +1164,9 @@ public class DashboardUtil {
 			selectBuilder.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID != ?", 1058);
 		}
 		
+		if(getOnlyMobileDashboard) {
+			selectBuilder.orderBy("DISPLAY_ORDER asc");
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		if (props != null && !props.isEmpty()) {
@@ -1181,8 +1184,17 @@ public class DashboardUtil {
 				
 				dashboardMap.put(dashboard.getId(), dashboard);
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap);
-			
+			List<DashboardContext> dashboards = new ArrayList<>();
+
+			if (getOnlyMobileDashboard) 
+			{
+				dashboards = sortDashboardByOrder(getFilteredDashboards(dashboardMap));
+
+			}
+			else {
+				dashboards = getFilteredDashboards(dashboardMap);
+			}
+						
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
 				getAllBuildingsForDashboard(dashboards);
 				
@@ -1591,6 +1603,12 @@ public class DashboardUtil {
 			}
 		}
 		return dashboardFolderContexts;
+	}
+	public static List<DashboardContext> sortDashboardByOrder(List<DashboardContext> dashboards) throws Exception {
+
+		dashboards.sort(new dashboardSortByOrder());
+		
+		return dashboards;
 	}
 	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap) throws Exception {
 		return getFilteredDashboards(dashboardMap,false);
@@ -3262,3 +3280,17 @@ public class DashboardUtil {
 	}
 	
 }
+class dashboardSortByOrder implements Comparator<DashboardContext> 
+{ 
+    // Used for sorting in ascending order of dashboards
+    public int compare(DashboardContext a, DashboardContext b) 
+    { 
+    	if (b.getDisplayOrder() == null) {
+            return (a.getDisplayOrder()== null) ? 0 : -1;
+        }
+        if (a.getDisplayOrder() == null) {
+            return 1;
+        }
+        return (int) (a.getDisplayOrder() - b.getDisplayOrder());
+    } 
+} 
