@@ -26,7 +26,8 @@ public class WorkflowV2Parser extends Parser {
 		POW=43, NOT=44, COMMA=45, SEMICOLON=46, COLON=47, ASSIGN=48, OPEN_PARANTHESIS=49, 
 		CLOSE_PARANTHESIS=50, OPEN_BRACE=51, CLOSE_BRACE=52, OPEN_BRACKET=53, 
 		CLOSE_BRACKET=54, TRUE=55, FALSE=56, NULL=57, IF=58, ELSE=59, FOR_EACH=60, 
-		LOG=61, VAR=62, INT=63, FLOAT=64, STRING=65, COMMENT=66, SPACE=67, OTHER=68;
+		LOG=61, VAR=62, INT=63, FLOAT=64, STRING=65, COMMENT=66, BLOCKCOMMENT=67, 
+		SPACE=68, OTHER=69;
 	public static final int
 		RULE_parse = 0, RULE_function_block = 1, RULE_function_name_declare = 2, 
 		RULE_function_param = 3, RULE_data_type = 4, RULE_block = 5, RULE_try_catch = 6, 
@@ -79,7 +80,7 @@ public class WorkflowV2Parser extends Parser {
 			"COLON", "ASSIGN", "OPEN_PARANTHESIS", "CLOSE_PARANTHESIS", "OPEN_BRACE", 
 			"CLOSE_BRACE", "OPEN_BRACKET", "CLOSE_BRACKET", "TRUE", "FALSE", "NULL", 
 			"IF", "ELSE", "FOR_EACH", "LOG", "VAR", "INT", "FLOAT", "STRING", "COMMENT", 
-			"SPACE", "OTHER"
+			"BLOCKCOMMENT", "SPACE", "OTHER"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -3984,7 +3985,7 @@ public class WorkflowV2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3F\u01f7\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3G\u01f7\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -4048,7 +4049,7 @@ public class WorkflowV2Parser extends Parser {
 		"\2\u008a\u008b\5\24\13\2\u008b\23\3\2\2\2\u008c\u0098\5\26\f\2\u008d\u0098"+
 		"\5\32\16\2\u008e\u0098\5 \21\2\u008f\u0098\5\"\22\2\u0090\u0091\5,\27"+
 		"\2\u0091\u0092\7\60\2\2\u0092\u0098\3\2\2\2\u0093\u0098\5$\23\2\u0094"+
-		"\u0098\5\16\b\2\u0095\u0096\7F\2\2\u0096\u0098\b\13\1\2\u0097\u008c\3"+
+		"\u0098\5\16\b\2\u0095\u0096\7G\2\2\u0096\u0098\b\13\1\2\u0097\u008c\3"+
 		"\2\2\2\u0097\u008d\3\2\2\2\u0097\u008e\3\2\2\2\u0097\u008f\3\2\2\2\u0097"+
 		"\u0090\3\2\2\2\u0097\u0093\3\2\2\2\u0097\u0094\3\2\2\2\u0097\u0095\3\2"+
 		"\2\2\u0098\25\3\2\2\2\u0099\u009a\5\30\r\2\u009a\u009b\7\62\2\2\u009b"+

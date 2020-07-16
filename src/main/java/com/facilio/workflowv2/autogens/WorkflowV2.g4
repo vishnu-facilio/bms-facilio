@@ -257,6 +257,10 @@ STRING :   '"' ( ESCAPED_QUOTE | ~('\n'|'\r') )*? '"';
 
 COMMENT : '//' ~[\r\n]* -> skip ;
 
+BLOCKCOMMENT 
+    : '/*' .*? '*/' -> skip
+    ;
+
 SPACE : [ \t\r\n] -> skip ;
 
 OTHER : . ;
