@@ -342,6 +342,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
 				formRuleContext.setFormContext(FormsAPI.getFormFromDB(formRuleContext.getFormId()));
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				formRuleContext.setTriggerFields(getFormRuleTriggerFields(formRuleContext));
 				formRuleContexts.add(formRuleContext);
 			}
 			return formRuleContexts;
