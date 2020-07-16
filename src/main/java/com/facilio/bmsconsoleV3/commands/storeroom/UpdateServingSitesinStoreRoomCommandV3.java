@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
@@ -34,17 +36,24 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 				{		
 					if(record != null && record instanceof ModuleBaseWithCustomFields && (ModuleBaseWithCustomFields)record != null)
 					{					
-						long storeRoomId = ((ModuleBaseWithCustomFields)record).getId();
+						Long storeRoomId = ((ModuleBaseWithCustomFields)record).getId();
 						Map<String, Object> recordProps = FieldUtil.getAsProperties(record);	
-						if(storeRoomId > 0) {
+						if(storeRoomId != null && storeRoomId > 0) {
 							GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 									.table(ModuleFactory.getSitesForStoreRoomModule().getTableName())
 									.andCustomWhere("STORE_ROOM_ID = ?", storeRoomId);
 							builder.delete();
 						}
-						if(storeRoomId > 0 && recordProps != null && recordProps.get(FacilioConstants.ContextNames.SITE_LIST) != null) 
+						if(storeRoomId != null && storeRoomId > 0 && recordProps != null) 
 						{			
-							List<Long> sites = (List<Long>) recordProps.get(FacilioConstants.ContextNames.SITE_LIST);			
+							List<Long> sites = (List<Long>) recordProps.get(FacilioConstants.ContextNames.SITE_LIST);
+							if(CollectionUtils.isEmpty(sites)) {
+								Long locatedSiteId = ((ModuleBaseWithCustomFields)record).getSiteId();
+								if(locatedSiteId != null && locatedSiteId > 0) {
+									sites.add(locatedSiteId); //adding located site as one of the serving sites if no serving site is given
+								}
+						     }
+							
 							if (sites != null && !sites.isEmpty()) 
 							{	
 								GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
