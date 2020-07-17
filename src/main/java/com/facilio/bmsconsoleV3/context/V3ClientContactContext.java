@@ -26,17 +26,17 @@ public class V3ClientContactContext extends V3PeopleContext {
         return false;
     }
 
-    private ClientContext client;
+    private V3ClientContext client;
 
-    public ClientContext getClient() {
-        return client;
-    }
+    public V3ClientContext getClient() {
+		return client;
+	}
 
-    public void setClient(ClientContext client) {
-        this.client = client;
-    }
+	public void setClient(V3ClientContext client) {
+		this.client = client;
+	}
 
-    private Boolean isPrimaryContact;
+	private Boolean isPrimaryContact;
 
     public Boolean getIsPrimaryContact() {
         return isPrimaryContact;

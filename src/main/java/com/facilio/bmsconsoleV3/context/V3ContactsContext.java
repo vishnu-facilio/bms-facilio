@@ -105,13 +105,15 @@ public class V3ContactsContext extends V3Context {
         this.vendor = vendor;
     }
 
-    private ClientContext client;
-    public ClientContext getClient() {
-        return client;
-    }
-    public void setClient(ClientContext client) {
-        this.client = client;
-    }
+    private V3ClientContext client;
+
+    public V3ClientContext getClient() {
+		return client;
+	}
+
+	public void setClient(V3ClientContext client) {
+		this.client = client;
+	}
 
     public Boolean isPortalAccessNeeded;
     public Boolean getIsPortalAccessNeeded() {

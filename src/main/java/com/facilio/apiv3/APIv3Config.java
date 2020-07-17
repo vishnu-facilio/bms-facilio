@@ -10,6 +10,10 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
+import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
+import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
@@ -182,6 +186,22 @@ public class APIv3Config {
                 .list()
                 .summary()
                     .afterFetch(new GetLogsForWatchListCommandV3())
+                .build();
+    }
+    
+    @Module("client")
+    public static Supplier<V3Config> getClient() {
+        return () -> new V3Config(V3ClientContext.class)
+                .create()
+            		.beforeSave(new AddAddressForClientLocationCommandV3())
+                    .afterSave(TransactionChainFactoryV3.getAddClientsAfterSaveChain())
+                .update()
+                	.beforeSave(new UpdateAddressForClientLocationCommandV3())
+                	.afterSave(new UpdateClientIdInSiteCommandV3())
+                .list()
+                    .beforeFetch(new LoadClientLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadClientLookupCommandV3())
                 .build();
     }
     

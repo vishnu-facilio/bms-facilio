@@ -5,6 +5,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
@@ -308,6 +309,13 @@ public class TransactionChainFactoryV3 {
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		c.addCommand(new AddActivitiesCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAddClientsAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateClientIdInSiteCommandV3());
+		c.addCommand(new AddClientUserCommandV3());
 		return c;
 	}
 }
