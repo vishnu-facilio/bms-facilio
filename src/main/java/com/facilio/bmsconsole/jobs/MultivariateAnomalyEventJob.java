@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -58,7 +60,12 @@ public class MultivariateAnomalyEventJob extends FacilioJob
         JSONParser parser = new JSONParser();
         String varFieldIdStr = props.get("varFieldId").toString();
         org.json.simple.JSONObject varFieldId = (org.json.simple.JSONObject) parser.parse(varFieldIdStr);
+
         List<MultiVariateAnomalyEvent> eventList = new LinkedList<MultiVariateAnomalyEvent>();
+        JSONObject listOfVarFieldId = new JSONObject();
+        JSONObject neighbourCount = new JSONObject();
+        JSONObject listOfVarRatioFields = new JSONObject();
+
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         while(startTime<=endTime)
@@ -73,10 +80,6 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             {
                 if(eachRecord.get("outlier").toString().equals("-1") )
                 {
-                	JSONObject listOfVarFieldId = new JSONObject();
-                    JSONObject neighbourCount = new JSONObject();
-                    JSONObject listOfVarRatioFields = new JSONObject();
-
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
                     List<FacilioField> ratioFields = modBean.getAllFields(ratioModule.getName());
@@ -104,11 +107,14 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                     neighbourCount.put("optPercentage" , eachRecord.get("optPercentage"));
 
                     event = generateMultiVariateAnomalyEvent(mlId,assetId,neighbourCount,listOfVarFieldId,listOfVarRatioFields,causingVarFieldId,props.get("multivariateAnomalyID").toString(),Long.parseLong(eachRecord.get("ttime").toString()));
+                    LOGGER.info("MultiVariateAnomaly event created");
                 }
                 else 
                 {
-                    event = clearMultiVariateAnomalyEvent(mlId,assetId,Long.parseLong(eachRecord.get("ttime").toString()),props.get("multivariateAnomalyID").toString());
+                    event = clearMultiVariateAnomalyEvent(mlId,assetId,Long.parseLong(eachRecord.get("ttime").toString()),props.get("multivariateAnomalyID").toString(),neighbourCount,listOfVarFieldId,listOfVarRatioFields);
+                    LOGGER.info("MultiVariateAnomaly clear event created");
                 }
+
                 eventList.add(event);
             }
         startTime = startTime+interval;
@@ -135,10 +141,10 @@ public class MultivariateAnomalyEventJob extends FacilioJob
     {
             String message = "data is anomaly due to "+causingVarFieldId;
             MultiVariateAnomalyEvent event = new MultiVariateAnomalyEvent();
-            //ResourceContext resource = ResourceAPI.getResource(resourceID);
+            ResourceContext resource = ResourceAPI.getResource(Long.parseLong(assetId));
             event.setEventMessage("Anomaly Detected");
             event.setDescription(message);
-            //event.setResource(resource);
+            event.setResource(resource);
             event.setMessageKey("MultiVariateAnomaly_" + assetId +"_" + multiVariateAnomalyId);
             event.setSeverityString("Minor");
             //event.setReadingTime(ttime);
@@ -146,8 +152,8 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             event.setCausingVariableId( Long.parseLong(causingVarFieldId));
             event.setListOfVarFieldsStr(listOfVarFieldId.toString());
             event.setNeighbourCountStr(neighbourCount.toString());
-            event.setMultivariateAnomalyId(Long.parseLong(causingVarFieldId));
-            event.setOutlier(true);
+            event.setMultivariateAnomalyId(Long.parseLong(multiVariateAnomalyId));
+            event.setOutlier(new Boolean(true));
             event.setRatioStr(listOfVarRatioFields.toString());
             //event.setType(MLAlarmOccurenceContext.MLAnomalyType.Anomaly);
             event.setEndDate(ttime);
@@ -155,17 +161,24 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             return event;
      }
     
-     private MultiVariateAnomalyEvent clearMultiVariateAnomalyEvent(String mlId,String assetId,long ttime ,String multivariateAnomalyId) throws Exception
+     private MultiVariateAnomalyEvent clearMultiVariateAnomalyEvent(String mlId,String assetId,long ttime ,String multivariateAnomalyId,JSONObject neighbourCount,JSONObject listOfVarFieldId,JSONObject listOfVarRatioFields) throws Exception
      {
          String message = "Anomaly Cleared";
          MultiVariateAnomalyEvent event = new MultiVariateAnomalyEvent();
-         //ResourceContext resource = ResourceAPI.getResource(assetID);
+         ResourceContext resource = ResourceAPI.getResource(Long.parseLong(assetId));
          event.setEventMessage(message);
          event.setDescription("Anomaly cleared");
          event.setMessageKey("MultiVariateAnomaly_" + assetId +"_" + multivariateAnomalyId);
-         //event.setResource(resource);
+         event.setResource(resource);
          event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
          event.setCreatedTime(ttime);
+         event.setOutlier(new Boolean(false));
+         event.setStartDate(ttime-(90*24*60*60*1000));
+         event.setEndDate(ttime);
+         event.setMultivariateAnomalyId(Long.parseLong(multivariateAnomalyId));
+         event.setListOfVarFieldsStr(listOfVarFieldId.toString());
+         event.setRatioStr(listOfVarRatioFields.toString());
+         event.setNeighbourCountStr(neighbourCount.toString());
          return event;
      }
      private void addEventChain(List<MultiVariateAnomalyEvent> eventList) throws Exception
