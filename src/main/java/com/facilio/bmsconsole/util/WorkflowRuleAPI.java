@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -20,6 +22,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
@@ -954,8 +957,15 @@ public class WorkflowRuleAPI {
 		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
 			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
 		}
-		
+
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
+		
+		if ((workflowRule.getParentRuleId() == 77401l || workflowRule.getId() == 77401l) && workflowRule.getOrgId() == 324l) {
+			if(record != null) {
+				LOGGER.info("CSUFanfailure Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag+
+						" \n ResourceId: " +((ReadingContext) record).getParentId()+ " \n Ttime: " + ((ReadingContext) record).getTtime() +" \n ModuleId: " + ((ReadingContext) record).getModuleId());
+			}
+		}
 		if (shouldExecute) {
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
