@@ -216,7 +216,7 @@ public class BmsDBConf extends DBConf {
             downloadUrls.put(fileId, fs.getDownloadUrl(fileId));
         }
         Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
-
+        Map<Long, Object> orgUserMap = new HashMap<>();
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
@@ -229,7 +229,14 @@ public class BmsDBConf extends DBConf {
                     if(field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")){
                         Long ouId = (Long)info.getUploadedBy().get("id");
                         if(ouId != null) {
-                            User user = AccountUtil.getUserBean().getUser(ouId, true);
+                            User user = null;
+                            if(!orgUserMap.containsKey(ouId)) {
+                                user = AccountUtil.getUserBean().getUser(ouId, true);
+                                orgUserMap.put(ouId, user);
+                            }
+                            else {
+                                user = (User) orgUserMap.get(ouId);
+                            }
                             if (user != null) {
                                 info.setUploadedBy(FieldUtil.getAsProperties(user));
                             }
