@@ -1483,7 +1483,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("miscellaneousCharges", "Miscellaneous Charges"));
 
 		columns.add(new ViewField("tenant", "Tenant"));
-		columns.add(new ViewField("workorder", "Workorder"));
 		columns.add(new ViewField("moduleState", "Status"));
 
 
