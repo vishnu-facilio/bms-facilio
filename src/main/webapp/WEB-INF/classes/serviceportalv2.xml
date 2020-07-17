@@ -439,7 +439,7 @@
 		</action> 
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderList">
+			method="v2workOrderCount">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="approval">true</param>
