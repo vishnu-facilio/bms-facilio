@@ -2,6 +2,7 @@ Map floorPlanMode(Map params) {
     floorId = params.floorId;
     spaceIds = params.spaceId;
     
+    
     assetCategoryId = 11692;
     assetCategoryId2 = 11693;
     readingModule = "spacetemperature";
@@ -107,10 +108,9 @@ Map floorPlanMode(Map params) {
         }
 
         icons = [];
-
+        area = {};
+        icon = {};
         if (rassetIds != null) {
-            area = {};
-            icon = {};
             valueMap = {};
             valueMap["value"] = val4;
             valueMap["label"] = fieldMapInfo.get("displayName");
@@ -129,9 +129,9 @@ Map floorPlanMode(Map params) {
         }
 
 
+        styles = {};
 
         if (assetIds != null) {
-            styles = {};
             styles.fill = "#b0b0b0";
             if (comp1 > -1 && comp1 < 22.1) {
                 styles["fill"] = "#0000ff"; // blue zone
@@ -144,8 +144,7 @@ Map floorPlanMode(Map params) {
         }
         area.spaceId = spaceId;
         if (icons.size() > 0) {
-            area["icons"] = icons;
-
+            area.icons = icons;
         }
         areas.add(area);
     }
