@@ -1,14 +1,19 @@
 Map floorPlanMode(Map params) {
     floorId = params.floorId;
     spaceIds = params.spaceId;
+    
     assetCategoryId = 11692;
     assetCategoryId2 = 11693;
     readingModule = "spacetemperature";
     readingFieldName = "setpoint";
     readingFieldName2 = "spacetemperature";
     readingFieldName3 = "returnairtemperaturesp";
-
+    readingFieldName4 = "temperture";
+    readingFieldName5 = "temperture";
     readigModule3 = "runcommand";
+
+    readigModule4 = "temperture";
+    readigModule5 = "temperture";
 
 
 
@@ -21,7 +26,10 @@ Map floorPlanMode(Map params) {
     returnAirTemp = new NameSpace("module").getField(readingFieldName3, readigModule3);
     fieldId3 = returnAirTemp.id();
 
+    temperture = new NameSpace("module").getField(readingFieldName4, readigModule4);
+    fieldId4 = temperture.id();
 
+    fieldMapInfo = temperture.asMap();
     areas = [];
     for each index, spaceId in spaceIds {
 
@@ -34,9 +42,13 @@ Map floorPlanMode(Map params) {
             criteria: [space == spaceId && category == 11693],
             field: "id"
         };
+        db2 = {
+            criteria: [space == spaceId && category == 11766],
+            field: "id"
+        };
         assetIds = assetModule.fetch(db);
         cscassetIds = assetModule.fetch(db1);
-
+        rassetIds = assetModule.fetch(db2);
         readingValue = null;
         readingValue2 = null;
         enumMap = null;
@@ -47,6 +59,7 @@ Map floorPlanMode(Map params) {
         if (assetIds != null) {
             avgValue1 = 0;
             avgValue2 = 0;
+            cavgValue1 = 0;
             for each aidx, assetId in assetIds {
                 readingValue = Reading(fieldId, assetId).getLastValue();
                 readingValue2 = Reading(fieldId2, assetId).getLastValue();
@@ -63,9 +76,23 @@ Map floorPlanMode(Map params) {
             for each idx, cassetId in cscassetIds {
                 creadingValue = Reading(fieldId3, cassetId).getLastValue();
                 cenumMap = Reading(fieldId3, cassetId).getEnumMap();
-                cavgValue1 = avgValue3 + creadingValue;
+                avgValue3 = avgValue3 + creadingValue;
             }
-            val3 = cavgValue1 / cscassetIds.size();
+            val3 = avgValue3 / cscassetIds.size();
+        }
+        val4 = 0;
+        enumMap3 = null;
+
+        rreadingValue = null;
+        if (rassetIds != null) {
+            avgValue4 = 0;
+            for each dx, ass in rassetIds {
+                rreadingValue = Reading(fieldId4, ass).getLastValue();
+                enumMap3 = Reading(fieldId4, ass).getEnumMap();
+                avgValue4 = avgValue4 + rreadingValue;
+            }
+            val4 = avgValue4 / rassetIds.size();
+            val4 = math().ceil(val4);
         }
 
         unitData = "";
@@ -79,7 +106,29 @@ Map floorPlanMode(Map params) {
             comp1 = val3;
         }
 
-        area = {};
+        icons = [];
+
+        if (rassetIds != null) {
+            area = {};
+            icon = {};
+            valueMap = {};
+            valueMap["value"] = val4;
+            valueMap["label"] = fieldMapInfo.get("displayName");
+            if (fieldMapInfo != null) {
+                valueMap["unit"] = fieldMapInfo.get("unit");
+                valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
+            }
+            icon["type"] = "READINGS";
+            icon["position"] = "center";
+            icon["value"] = valueMap;
+            unitData = "";
+            if (fieldMapInfo.get("unit") != null) {
+                unitData = fieldMapInfo.get("unit");
+            }
+            icons.add(icon);
+        }
+
+
 
         if (assetIds != null) {
             styles = {};
@@ -94,6 +143,10 @@ Map floorPlanMode(Map params) {
             area.styles = styles;
         }
         area.spaceId = spaceId;
+        if (icons.size() > 0) {
+            area["icons"] = icons;
+
+        }
         areas.add(area);
     }
     result = {};
