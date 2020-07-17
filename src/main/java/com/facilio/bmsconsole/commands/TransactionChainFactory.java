@@ -5583,7 +5583,7 @@ public class TransactionChainFactory {
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddOrUpdateDashboardFilterCommand());
 		c.addCommand(new AddOrUpdateDashboardUserFilterCommand());
-		return null;
+		return c;
 	}
 	public static FacilioChain getSaveMailMessage() {
 		FacilioChain chain = getDefaultChain();

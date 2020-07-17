@@ -39,12 +39,14 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 				
 				for(DashboardUserFilterContext dashboardUserFilterRel:currentDasboardUserFilters)
 				{
+					dashboardUserFilterRel.setDashboardFilterId(dashboardFilterContext.getId());
+					
 					if(dashboardUserFilterRel.getId()>0)
 					{
 						DashboardFilterUtil.updateDashboardUserFilerRel(dashboardUserFilterRel);
 					}
 					else {
-						dashboardFilterContext.setId(DashboardFilterUtil.insertDashboardUserFilterRel(dashboardUserFilterRel));
+						dashboardUserFilterRel.setId(DashboardFilterUtil.insertDashboardUserFilterRel(dashboardUserFilterRel));
 						
 					}
 					dashboardUserFilterRelIds.add(dashboardUserFilterRel.getId());
@@ -57,8 +59,11 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 		
 			List<Long> toRemove=new ArrayList<>(existingFilterIds);
 			toRemove.removeAll(dashboardUserFilterRelIds);
+			if(!toRemove.isEmpty())
+			{
+				DashboardFilterUtil.deleteDashboardUserFilterRel(toRemove);
+			}
 			
-			DashboardFilterUtil.deleteDashboardUserFilterRel(toRemove);
 			
 								
 		}

@@ -27,9 +27,9 @@ public class AddOrUpdateDashboardFilterCommand extends FacilioCommand {
 		if(dashboardFilterContext!=null)
 		{
 		
-		Long dashboardId=context.get(FacilioConstants.ContextNames.DASHBOARD)!=null?((DashboardContext)context.get(FacilioConstants.ContextNames.DASHBOARD)).getId():null;
+		long dashboardId=context.get(FacilioConstants.ContextNames.DASHBOARD)!=null?((DashboardContext)context.get(FacilioConstants.ContextNames.DASHBOARD)).getId():-1;
 
-		Long dashboardTabId=context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)!=null?((DashboardTabContext)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)).getId():null;
+		long dashboardTabId=context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)!=null?((DashboardTabContext)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)).getId():-1;
 
 			
 		dashboardFilterContext.setDashboardId(dashboardId);

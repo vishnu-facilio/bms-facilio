@@ -59,7 +59,7 @@ public class DashboardFilterUtil {
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getDashboardUserFilterFields())
-				.andCondition(CriteriaAPI.getIdCondition(dashboardFilterId, module));
+				.andCondition(CriteriaAPI.getCondition("DASHBOARD_FILTER_ID", "dashboardFilterId", ""+dashboardFilterId,NumberOperators.EQUALS));
 		
 				
 		List<Map<String,Object>> records= builder.get();

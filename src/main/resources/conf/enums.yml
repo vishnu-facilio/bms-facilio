@@ -93,3 +93,9 @@ enums:
 
   - name: PaymentType
     enumClassName: com.facilio.bmsconsole.context.ServiceContext$PaymentType
+
+  - name: ComponentType
+    enumClassName: com.facilio.bmsconsole.context.DashboardUserFilterContext$ComponentType
+
+  - name: OptionType
+    enumClassName: com.facilio.bmsconsole.context.DashboardUserFilterContext$OptionType

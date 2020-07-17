@@ -144,7 +144,14 @@ public class DashboardAction extends FacilioAction {
 	private WidgetListViewContext widgetListViewContext;
 	private WidgetStaticContext widgetStaticContext;
 	private WidgetWebContext widgetWebContext;
+	private DashboardFilterContext dashboardFilter;
 	
+	public DashboardFilterContext getDashboardFilter() {
+		return this.dashboardFilter;
+	}
+	public void setDashboardFilter(DashboardFilterContext dashboardFilter) {
+		this.dashboardFilter = dashboardFilter;
+	}
 	public WidgetWebContext getWidgetWebContext() {
 		return widgetWebContext;
 	}
@@ -495,13 +502,7 @@ public class DashboardAction extends FacilioAction {
 		return this.heatMapRange;
 	}
 	
-	private DashboardFilterContext dashboardFilter;
-	public DashboardFilterContext getDashboardFilter() {
-		return dashboardFilter;
-	}
-	public void setDashboardFilter(DashboardFilterContext dashboardFilter) {
-		this.dashboardFilter = dashboardFilter;
-	}
+//	
 	public String getReadingReportData() throws Exception {							// report functions
 		if (derivation != null) {
 			return getDerivationData();
@@ -6535,7 +6536,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
 		
-		context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilterFromDashboardMeta(dashboardMeta.get("dashboardFilter")));
+		context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilter());
 		
 		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
@@ -6578,18 +6579,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private DashboardFilterContext getDashboardFilterFromDashboardMeta(Object  dashboardFilterJson) throws Exception
-	{
-		if(dashboardFilterJson!=null)
-		{
-			return (DashboardFilterContext)dashboardFilterJson;
-		}
-		else {
-			return null;
-		}
-		
-		
-	}
+//	
 	private List<DashboardWidgetContext> getDashboardWidgetsFromWidgetMeta(List dashboardWidgets) {
 		List<DashboardWidgetContext> widgets = new ArrayList<>();
 		if (dashboardWidgets != null) {
