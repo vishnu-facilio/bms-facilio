@@ -365,7 +365,10 @@ public class LoginAction extends FacilioAction {
 		data.put("sites", SpaceAPI.getAllSites());
 		}
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
-		
+		data.put("orgPrefs", PreferenceAPI.getAllOrgPreferences());
+		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
+
+
 		// temp	
 		if (AccountUtil.getCurrentOrg().getOrgId() == 213l) {
 			data.put("buildingList", ReportsUtil.getBuildingMap());		
@@ -415,7 +418,10 @@ public class LoginAction extends FacilioAction {
 		data.put("orgs", orgs);
 		
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
-		
+		data.put("orgPrefs", PreferenceAPI.getAllOrgPreferences());
+		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
+
+
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));

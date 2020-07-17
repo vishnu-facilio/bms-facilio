@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -575,7 +576,9 @@ public abstract class FileStore {
 			fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
 		}
 		fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
-		fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
+		Map<String, Object> userMap = new HashMap<>();
+		userMap.put("id", rs.getLong("UPLOADED_BY"));
+		fileInfo.setUploadedBy(userMap);
 		fileInfo.setUploadedTime(rs.getLong("UPLOADED_TIME"));
 		try {
 			fileInfo.setUrl(rs.getString("URL"));

@@ -14,7 +14,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -224,6 +226,15 @@ public class BmsDBConf extends DBConf {
                     record.put(field.getName()+"DownloadUrl", downloadUrls.get(id));
                     record.put(field.getName()+"FileName", info.getFileName());
                     record.put(field.getName()+"ContentType", info.getContentType());
+                    if(field.getDisplayType() == FacilioField.FieldDisplayType.SIGNATURE && MapUtils.isNotEmpty(info.getUploadedBy()) && info.getUploadedBy().containsKey("id")){
+                        Long ouId = (Long)info.getUploadedBy().get("id");
+                        if(ouId != null) {
+                            User user = AccountUtil.getUserBean().getUser(ouId, true);
+                            if (user != null) {
+                                info.setUploadedBy(FieldUtil.getAsProperties(user));
+                            }
+                        }
+                    }
                     record.put(field.getName()+"UploadedBy", info.getUploadedBy());
                     record.put(field.getName()+"UploadedTime", info.getUploadedTime());
                 }
