@@ -78,18 +78,21 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             MultiVariateAnomalyEvent event = new MultiVariateAnomalyEvent();
             for(Map<String,Object> eachRecord : outlierData)
             {
+                LOGGER.info("each record outlier " + eachRecord.get("outlier").toString());
                 if(eachRecord.get("outlier").toString().equals("-1") )
                 {
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
                     List<FacilioField> ratioFields = modBean.getAllFields(ratioModule.getName());
                     List<Map<String,Object>> propsRatioData = getData(ratioFields,ratioModule,startTime, startTime+10000,assetId);
+                    LOGGER.info("ratioData " + propsRatioData.toString());
                     String causingVarFieldId = new String();
                     float maxValue = (float) 0.0;
                     for(Object key : varFieldId.keySet())
                     {
                         if(key.toString().contains("ratio"))
                         {
+                            LOGGER.info("listOfVarRatioFields "+ key.toString());
                             float currentValue = (float)propsRatioData.get(0).get(key);
                             listOfVarRatioFields.put(varFieldId.get(key).toString(),currentValue);
                             if(currentValue >= maxValue)
@@ -100,14 +103,18 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                         }
                         else
                         {
+                            LOGGER.info("listOfVarFieldId "+ key.toString()) ;
                             listOfVarFieldId.put(varFieldId.get(key).toString(),eachRecord.get(key.toString()));
                         }
                     }
                     neighbourCount.put("pctNeighbour" , eachRecord.get("pctNeighbour"));
                     neighbourCount.put("optPercentage" , eachRecord.get("optPercentage"));
-
+                    LOGGER.info("generateMultivariateAnomalyEvent "+ mlId + "assetId "+ assetId + " neighbourCount "+neighbourCount +" listOfVarFieldId " +listOfVarFieldId + " listOfVarRatioFields " +listOfVarRatioFields+ " causingVarFieldId " +causingVarFieldId + " multivariateAnomalyID "+ props.get("multivariateAnomalyID").toString() + " ttime "+Long.parseLong(eachRecord.get("ttime").toString()));
                     event = generateMultiVariateAnomalyEvent(mlId,assetId,neighbourCount,listOfVarFieldId,listOfVarRatioFields,causingVarFieldId,props.get("multivariateAnomalyID").toString(),Long.parseLong(eachRecord.get("ttime").toString()));
+
+
                     LOGGER.info("MultiVariateAnomaly event created");
+
                 }
                 else 
                 {
@@ -115,6 +122,18 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                     LOGGER.info("MultiVariateAnomaly clear event created");
                 }
 
+                LOGGER.info("eventDetails outlier - " + event.getOutlier().toString());
+                LOGGER.info("eventDetails getListOfVarFieldsStr - " + event.getListOfVarFieldsStr());
+                LOGGER.info("eventDetails getNeighbourCountStr - " + event.getNeighbourCountStr());
+                LOGGER.info("eventDetails getRatioStr - " + event.getRatioStr());
+                LOGGER.info("eventDetails getMessageKey - " + event.getMessageKey());
+                LOGGER.info("eventDetails getEventMessage - " + event.getEventMessage());
+                LOGGER.info("eventDetails getCausingVariableId - " + event.getCausingVariableId());
+                LOGGER.info("eventDetails getStartDate - " + event.getStartDate());
+                LOGGER.info("eventDetails getEndDate - " + event.getEndDate());
+                LOGGER.info("eventDetails getMultivariateAnomalyId - " + event.getMultivariateAnomalyId());
+                LOGGER.info("eventDetails getResource - " + event.getResource());
+                LOGGER.info("eventDetails ttime - " + event.getCreatedTime());
                 eventList.add(event);
             }
         startTime = startTime+interval;
