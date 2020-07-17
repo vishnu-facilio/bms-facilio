@@ -72,9 +72,14 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 					}
 				}
 				workorder.setSourceType(SourceType.ALARM);
-				workorder.setResource(baseAlarm.getResource());
+				if (baseAlarm.getResource() != null) {
+					workorder.setResource(baseAlarm.getResource());
+				}
 				workorder.setScheduledStart(baseAlarm.getLastOccurredTime());
-				workorder.setSiteId(baseAlarm.getSiteId());
+
+				if (baseAlarm.getSiteId() > 0) {
+					workorder.setSiteId(baseAlarm.getSiteId());
+				}
 				JSONObject info = new JSONObject();
 				info.put("field", "workOrder");
 				info.put("oldValue", workorder);
