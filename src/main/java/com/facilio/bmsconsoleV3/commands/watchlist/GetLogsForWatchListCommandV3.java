@@ -21,14 +21,15 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 
 public class GetLogsForWatchListCommandV3 extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        String moduleName = Constants.getModuleName(context);
 		
 		if(moduleName != null && !moduleName.isEmpty() && recordMap != null && MapUtils.isNotEmpty(recordMap)) 
 		{

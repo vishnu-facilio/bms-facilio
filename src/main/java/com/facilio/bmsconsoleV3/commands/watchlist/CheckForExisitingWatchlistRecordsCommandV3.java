@@ -32,8 +32,8 @@ public class CheckForExisitingWatchlistRecordsCommandV3 extends FacilioCommand {
     @Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+    	Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        String moduleName = Constants.getModuleName(context);
 		
 		if(moduleName != null && !moduleName.isEmpty() && recordMap != null && MapUtils.isNotEmpty(recordMap)) 
 		{
@@ -68,7 +68,7 @@ public class CheckForExisitingWatchlistRecordsCommandV3 extends FacilioCommand {
 				}
 				
 				if(CollectionUtils.isNotEmpty(toBeAdded)) {
-					context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(moduleName, toBeAdded));
+					context.put(Constants.RECORD_MAP, Collections.singletonMap(moduleName, toBeAdded));
 				}
 				else {
 					return true;

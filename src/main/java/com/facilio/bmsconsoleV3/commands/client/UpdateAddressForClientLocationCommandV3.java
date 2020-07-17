@@ -13,13 +13,14 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.v3.context.Constants;
 
 public class UpdateAddressForClientLocationCommandV3 extends FacilioCommand {	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        String moduleName = Constants.getModuleName(context);
 		
 		if(moduleName != null && !moduleName.isEmpty() && recordMap != null && MapUtils.isNotEmpty(recordMap)) 
 		{
