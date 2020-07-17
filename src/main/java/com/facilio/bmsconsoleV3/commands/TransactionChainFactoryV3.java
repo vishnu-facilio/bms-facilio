@@ -155,6 +155,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getWorkorderBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new AddPortalRequestsDetailsCommandV3());
         c.addCommand(new PMSettingsCommandV3());
         c.addCommand(new AddRequesterCommandV3());
         c.addCommand(new WorkOrderPreAdditionHandlingCommandV3());
