@@ -143,9 +143,6 @@ Map floorPlanMode(Map params) {
             area.styles = styles;
         }
         area.spaceId = spaceId;
-        if (icons.size() > 0) {
-            area.icons = icons;
-        }
         areas.add(area);
     }
     result = {};
