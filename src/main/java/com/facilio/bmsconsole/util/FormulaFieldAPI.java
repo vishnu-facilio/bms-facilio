@@ -320,14 +320,7 @@ public class FormulaFieldAPI {
 								Unit inputUnit = null; 
 								if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formulaField != null && formulaField.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && field instanceof NumberField) {	//temp check doing only for ENPI
 									NumberField numberfield = (NumberField) field;
-									if(numberfield.getMetricEnum() != null) {
-										if(numberfield.getUnitEnum() != null) {
-											inputUnit = numberfield.getUnitEnum();
-										}
-										else {
-											inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
-										}
-									}
+									inputUnit = getOrgDisplayUnit(numberfield);
 								}
 								
 								FacilioContext context = new FacilioContext();
@@ -813,14 +806,7 @@ public class FormulaFieldAPI {
 				Unit inputUnit = null; 
 				if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula != null && formula.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && formula.getReadingField() instanceof NumberField) {
 					NumberField numberfield = (NumberField) formula.getReadingField();
-					if(numberfield.getMetricEnum() != null) {
-						if(numberfield.getUnitEnum() != null) {
-							inputUnit = numberfield.getUnitEnum();
-						}
-						else {
-							inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
-						}
-					}
+					inputUnit = getOrgDisplayUnit(numberfield);
 				}
 				
 				FacilioContext context = new FacilioContext();
@@ -1073,14 +1059,7 @@ public class FormulaFieldAPI {
 				Unit inputUnit = null; 
 				if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula != null && formula.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && formula.getReadingField() instanceof NumberField) {
 					NumberField numberfield = (NumberField) formula.getReadingField();
-					if(numberfield.getMetricEnum() != null) {
-						if(numberfield.getUnitEnum() != null) {
-							inputUnit = numberfield.getUnitEnum();
-						}
-						else {
-							inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
-						}
-					}
+					inputUnit = getOrgDisplayUnit(numberfield);
 				}
 				
 				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
@@ -1094,6 +1073,23 @@ public class FormulaFieldAPI {
 			}				
 
 		}
+	}
+	
+	public static Unit getOrgDisplayUnit(NumberField numberfield) {
+		try {
+			if(numberfield.getMetricEnum() != null) {
+				if(numberfield.getUnitEnum() != null) {
+					return numberfield.getUnitEnum();
+				}
+				else {
+					return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+				}
+			}
+		}
+		catch(Exception e) {
+			
+		}
+		return null;
 	}
 	
 	private static int deleteOlderData(long startTime, long endTime, List<Long> parentIds, FacilioField readingField) throws Exception {

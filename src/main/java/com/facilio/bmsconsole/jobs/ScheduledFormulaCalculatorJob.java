@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -98,14 +99,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									Unit inputUnit = null; 
 									if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula.getReadingField() instanceof NumberField) {
 										NumberField numberfield = (NumberField) formula.getReadingField();
-										if(numberfield.getMetricEnum() != null) {
-											if(numberfield.getUnitEnum() != null) {
-												inputUnit = numberfield.getUnitEnum();
-											}
-											else {
-												inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
-											}
-										}
+										inputUnit = FormulaFieldAPI.getOrgDisplayUnit(numberfield);
 									}
 									
 									FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
