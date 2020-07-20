@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
 
 import java.io.File;
@@ -87,43 +88,6 @@ public class QuotationContext extends V3Context {
     }
 
     private String notes;
-
-    public QuotationContext() {
-
-    }
-    public QuotationContext(QuotationContext quotation) {
-        setName(quotation.getName());
-        setSubject(quotation.getSubject());
-        setDescription(quotation.getDescription());
-        setBillToAddress(quotation.getBillToAddress());
-        setShipToAddress(quotation.getShipToAddress());
-        setBillDate(quotation.getBillDate());
-        setExpiryDate(quotation.getExpiryDate());
-        setSubTotal(quotation.getSubTotal());
-        setTotalTaxAmount(quotation.getTotalTaxAmount());
-        setDiscountAmount(quotation.getDiscountAmount());
-        setDiscountPercentage(quotation.getDiscountPercentage());
-        setShippingCharges(quotation.getShippingCharges());
-        setAdjustmentsCost(quotation.getAdjustmentsCost());
-        setAdjustmentsCostName(quotation.getAdjustmentsCostName());
-        setMiscellaneousCharges(quotation.getMiscellaneousCharges());
-        setTotalCost(quotation.getTotalCost());
-        setLineItems(quotation.getLineItems());
-        setTermsAssociated(quotation.getTermsAssociated());
-        setCustomerType(quotation.getCustomerType());
-        setTotalCost(quotation.getTotalCost());
-        setTenant(quotation.getTenant());
-        setRevisionNumber(quotation.getRevisionNumber() + 1);
-        setParentId(quotation.getParentId());
-        setSiteId(quotation.getSiteId());
-        setFormId(quotation.getFormId());
-        setIsQuotationRevised(false);
-        setNotes(quotation.getNotes());
-        setRevisionHistoryAvailable(true);
-        setWorkorder(quotation.getWorkorder());
-        setTax(quotation.getTax());
-        setId(-1);
-    }
 
     public V3TenantContext getTenant() {
         return tenant;
@@ -393,7 +357,14 @@ public class QuotationContext extends V3Context {
     }
 
     public QuotationContext clone() {
-        return new QuotationContext(this);
+
+        QuotationContext newQuote = FieldUtil.cloneBean(this, QuotationContext.class);
+        newQuote.setId(-1);
+        newQuote.setRevisionNumber(this.getRevisionNumber() + 1);
+        newQuote.setIsQuotationRevised(false);
+        newQuote.setRevisionHistoryAvailable(true);
+        return newQuote;
+
     }
 
 
