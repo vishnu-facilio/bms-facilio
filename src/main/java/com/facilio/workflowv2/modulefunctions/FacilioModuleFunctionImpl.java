@@ -52,6 +52,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.QueryUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
@@ -309,6 +310,26 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			
 			boolean isLimitApplied = false;
 			
+			String parentIdString = null;
+			Map<String, Condition> conditions = dbParamContext.getCriteria().getConditions();
+			for(String key:conditions.keySet()) {
+				Condition condition = conditions.get(key);
+				if(condition.getFieldName().contains("parentId")) {
+					parentIdString = condition.getValue();
+					break;
+				}
+			}
+			
+			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString)) {
+				FacilioModule parentModule = ReadingsAPI.getParentModuleRelFromChildModule(module);
+				if(parentModule != null) {
+					List<Map<String, Object>> rec = QueryUtil.fetchRecord(parentModule.getName(), Long.parseLong(parentIdString));
+					if(rec == null || rec.isEmpty()) {
+						return null;
+					}
+				}
+			}
+			
 			
 			if(dbParamContext.getFieldName() != null && dbParamContext.getFieldCriteria() == null) {
 				List<FacilioField> selectFields = new ArrayList<>();
@@ -343,7 +364,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					else if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
-						Map<String, Condition> conditions = dbParamContext.getCriteria().getConditions();
+						conditions = dbParamContext.getCriteria().getConditions();
 						for(String key:conditions.keySet()) {
 							Condition condition = conditions.get(key);
 							if(condition.getFieldName().contains("ttime")) {
@@ -361,15 +382,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 						}
 						else {
 							
-							String parentIdString = null;
-							conditions = dbParamContext.getCriteria().getConditions();
-							for(String key:conditions.keySet()) {
-								Condition condition = conditions.get(key);
-								if(condition.getFieldName().contains("parentId")) {
-									parentIdString = condition.getValue();
-									break;
-								}
-							}
 							ReadingDataMeta readingDataMeta = null;
 							if(cachedRDM != null && !cachedRDM.isEmpty()) {
 								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(dbParamContext.getFieldName(), module.getName()));

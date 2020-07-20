@@ -110,6 +110,25 @@ public class ReadingsAPI {
 		}
 	}
 	
+	public static FacilioModule getParentModuleRelFromChildModule(FacilioModule childModule) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getSubModulesRelModule().getTableName())
+				.select(FieldFactory.getSubModuleRelFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), childModule.getModuleId()+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props !=null && !props.isEmpty()) {
+			Long parentModuleId = (Long) props.get(0).get("parentModuleId");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			return modBean.getModule(parentModuleId);
+		}
+		return null;
+	}
+	
 	public static int updateReadingDataMeta (ReadingDataMeta rdm) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();

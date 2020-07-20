@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -34,6 +35,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
+import com.facilio.util.QueryUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext implements WorkflowExpression {
@@ -314,6 +317,26 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
 			
+			String parentIdString = null;
+			Map<String, Condition> conditions = criteria.getConditions();
+			for(String key:conditions.keySet()) {
+				Condition condition = conditions.get(key);
+				if(condition.getFieldName().contains("parentId")) {
+					parentIdString = condition.getValue();
+					break;
+				}
+			}
+			
+			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString)) {
+				FacilioModule parentModule = ReadingsAPI.getParentModuleRelFromChildModule(module);
+				if(parentModule != null) {
+					List<Map<String, Object>> rec = QueryUtil.fetchRecord(parentModule.getName(), Long.parseLong(parentIdString));
+					if(rec == null || rec.isEmpty()) {
+						return null;
+					}
+				}
+			}
+			
 			
 			if(fieldName != null && !isManualAggregateQuery()) {
 				List<FacilioField> selectFields = new ArrayList<>();
@@ -339,7 +362,7 @@ public class ExpressionContext implements WorkflowExpression {
 					else if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
-						Map<String, Condition> conditions = criteria.getConditions();
+						conditions = criteria.getConditions();
 						for(String key:conditions.keySet()) {
 							Condition condition = conditions.get(key);
 							if(condition.getFieldName().contains("ttime")) {
@@ -356,15 +379,6 @@ public class ExpressionContext implements WorkflowExpression {
 						}
 						else {
 							
-							String parentIdString = null;
-							conditions = criteria.getConditions();
-							for(String key:conditions.keySet()) {
-								Condition condition = conditions.get(key);
-								if(condition.getFieldName().contains("parentId")) {
-									parentIdString = condition.getValue();
-									break;
-								}
-							}
 							ReadingDataMeta readingDataMeta = null;
 							if(workflowContext.getCachedRDM() != null && !workflowContext.getCachedRDM().isEmpty()) {
 								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
