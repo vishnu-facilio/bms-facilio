@@ -115,6 +115,8 @@ public interface IAMUserBean {
     public List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception;
     
     public AppDomain getAppDomain(String domain) throws Exception;
+
+	public List<AppDomain> getAppDomainForIdentifier(String identifier) throws Exception;
     
     public List<AppDomain> getPortalAppDomains() throws Exception;
     

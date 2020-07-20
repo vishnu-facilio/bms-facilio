@@ -14,7 +14,9 @@ import java.util.Objects;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.accounts.dto.*;
 import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,13 +33,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.EncryptionUtil;
@@ -47,11 +43,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.bean.IAMUserBean;
@@ -1127,7 +1118,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			AppDomain appDomainObj = getAppDomain(appDomainName);
 			if(appDomainObj != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", appDomainObj.getIdentifier(), StringOperators.IS));
+				if(appDomainObj.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM && appDomainObj.getOrgId() > 0){
+					selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(appDomainObj.getOrgId()), StringOperators.IS));
+				}
 			}
+
+
 			
 			log.info("Email Address  " + username);
 			log.info("PAssword  " + password);
@@ -1562,7 +1558,34 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 
 	}
-	
+
+	@Override
+	public List<AppDomain> getAppDomainForIdentifier(String identifier) throws Exception {
+		if(StringUtils.isNotEmpty(identifier)) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(IAMAccountConstants.getAppDomainFields())
+					.table("App_Domain");
+
+			String[] splitIdentifier = identifier.split("_");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "groupType", String.valueOf(splitIdentifier[0]), NumberOperators.EQUALS));
+
+			if(splitIdentifier.length == 2) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(splitIdentifier[1]), NumberOperators.EQUALS));
+			}
+			else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", "0", CommonOperators.IS_EMPTY));
+			}
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (CollectionUtils.isNotEmpty(props)) {
+				return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
+			}
+		}
+		return null;
+
+	}
+
+
 	@Override
 	public List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

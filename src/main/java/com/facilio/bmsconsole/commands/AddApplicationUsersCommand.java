@@ -11,6 +11,9 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.List;
 
 public class AddApplicationUsersCommand extends FacilioCommand{
 
@@ -23,8 +26,9 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 			throw new IllegalArgumentException("Invalid app id");
 		}
 		ApplicationContext app = ApplicationApi.getApplicationForId(appId);
-		AppDomain appDomain = IAMAppUtil.getAppDomain(app.getAppDomainId());
-		if(appDomain == null) {
+
+		List<AppDomain> appDomains = IAMAppUtil.getAppDomainForIdentifier(app.getDomainIdentifier());
+		if(CollectionUtils.isNotEmpty(appDomains)) {
 			throw new IllegalArgumentException("Invalid app domain");
 		}
 		
@@ -36,10 +40,10 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
-		user.setAppDomain(appDomain);
+		user.setAppDomain(appDomains.get(0));
 		user.setApplicationId(appId);
 	
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomain.getIdentifier(), true, false);
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomains.get(0).getIdentifier(), true, false);
 		context.put(FacilioConstants.ContextNames.ORG_USER_ID, user.getOuid());
 		
 		return false;

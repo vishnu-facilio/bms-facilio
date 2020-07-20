@@ -444,6 +444,13 @@ public class IAMAccountConstants {
 			orgId.setModule(module);
 			fields.add(orgId);
 
+			FacilioField domainType = new FacilioField();
+			domainType.setName("domainType");
+			domainType.setDataType(FieldType.SYSTEM_ENUM);
+			domainType.setColumnName("DOMAIN_TYPE");
+			domainType.setModule(module);
+			fields.add(domainType);
+
 			return fields;
 		}
 		

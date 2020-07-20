@@ -8058,7 +8058,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "APPLICATION_NAME", module, FieldType.STRING));
         fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
-        fields.add(getField("appDomainId", "APP_DOMAIN_ID", module, FieldType.NUMBER));
+        fields.add(getField("domainIdentifier", "DOMAIN_IDENTIFIER", module, FieldType.STRING));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("layoutType", "LAYOUT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));

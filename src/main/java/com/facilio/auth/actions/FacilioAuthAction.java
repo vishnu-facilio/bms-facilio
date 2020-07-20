@@ -684,14 +684,13 @@ public class FacilioAuthAction extends FacilioAction {
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
-		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
-		setCookieProperties(cookie, parentdomain, true);
+		setCookieProperties(cookie, request.getServerName(), true);
 		response.addCookie(cookie);
 
 		//temp handling. will be removed once service portal xml files are removed.
 		if(portalUser) {
 			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
-			setCookieProperties(portalCookie, parentdomain, true);
+			setCookieProperties(portalCookie, request.getServerName(), true);
 			response.addCookie(portalCookie);
 		}
 	}

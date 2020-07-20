@@ -19,11 +19,11 @@ public class ApplicationContext implements Serializable{
 		this.orgId = orgId;
 	}*/
 
-	public ApplicationContext(long orgId, String name, Boolean isDefault, long appDomainId, String linkName, int layoutType) {
+	public ApplicationContext(long orgId, String name, Boolean isDefault, String domainIdentifier, String linkName, int layoutType) {
 		this.orgId = orgId;
 		this.name = name;
 		this.isDefault = isDefault;
-		this.appDomainId = appDomainId;
+		this.domainIdentifier = domainIdentifier;
 		this.linkName = linkName;
 		this.layoutType = layoutType;
 	}
@@ -77,14 +77,6 @@ public class ApplicationContext implements Serializable{
 	}
 	public void setWebTabGroups(List<WebTabGroupContext> webTabGroups) {
 		this.webTabGroups = webTabGroups;
-	}
-
-	private long appDomainId;
-	public long getAppDomainId() {
-		return appDomainId;
-	}
-	public void setAppDomainId(long appDomainId) {
-		this.appDomainId = appDomainId;
 	}
 
 	private String linkName;
@@ -168,5 +160,13 @@ public class ApplicationContext implements Serializable{
 		this.scopingId = scopingId;
 	}
 	
-	
+	private String domainIdentifier;
+
+	public String getDomainIdentifier() {
+		return domainIdentifier;
+	}
+
+	public void setDomainIdentifier(String domainIdentifier) {
+		this.domainIdentifier = domainIdentifier;
+	}
 }

@@ -256,8 +256,11 @@ public class ApplicationApi {
 
         List<Map<String, Object>> list = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(list)) {
-            long appDomainId = (long) list.get(0).get("appDomainId");
-            return IAMAppUtil.getAppDomain(appDomainId);
+            String identifier = (String) list.get(0).get("domainIdentifier");
+            List<AppDomain> appDomains =  IAMAppUtil.getAppDomainForIdentifier(identifier);
+            if(CollectionUtils.isNotEmpty(appDomains)) {
+                return appDomains.get(0);
+            }
         }
         return null;
     }
@@ -270,22 +273,22 @@ public class ApplicationApi {
 
         Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
         AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-        ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getId(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex());
+        ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex());
 
 
         AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getPortalDomain());
-        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getId(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
         AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + ".faciliotenants.com");
-        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getId(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
         AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + ".faciliovendors.com");
-        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getId(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
         AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + ".facilioclients.com");
-        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getId(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
-        ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getId(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getIdentifier(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
 
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
@@ -437,10 +440,10 @@ public class ApplicationApi {
 
     public static void addDefaultAppDomains(long orgId) throws Exception {
         Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-        AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getPortalDomain(), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
-        AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId);
-        AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId);
-        AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId);
+        AppDomain servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getPortalDomain(), AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId, AppDomain.DomainType.DEFAULT.getIndex());
+        AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + ".faciliovendors.com", AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId, AppDomain.DomainType.DEFAULT.getIndex());
+        AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + ".faciliotenants.com", AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,AppDomain.DomainType.DEFAULT.getIndex());
+        AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + ".facilioclients.com", AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId, AppDomain.DomainType.DEFAULT.getIndex());
 
         List<AppDomain> appDomains = new ArrayList<AppDomain>();
         appDomains.add(servicePortalAppDomain);
@@ -553,7 +556,7 @@ public class ApplicationApi {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(ModuleFactory.getApplicationModule().getTableName());
-        selectBuilder.andCondition(CriteriaAPI.getCondition("APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomain.getId()), NumberOperators.EQUALS));
+        selectBuilder.andCondition(CriteriaAPI.getCondition("DOMAIN_IDENTIFIER", "domainIdentifier", String.valueOf(appDomain.getIdentifier()), StringOperators.IS));
         selectBuilder.orderBy("ID asc");
         List<Map<String, Object>> list = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(list)) {
@@ -586,7 +589,7 @@ public class ApplicationApi {
                 .innerJoin(ModuleFactory.getApplicationModule().getTableName())
                 .on("ORG_User_Apps.APPLICATION_ID = Application.ID")
                 .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "ouid", String.valueOf(ouId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("Application.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("Application.DOMAIN_IDENTIFIER", "domainIdentifier", String.valueOf(appDomainObj.getIdentifier()), StringOperators.IS));
         ;
 
         selectBuilder.orderBy("ID asc");
@@ -600,7 +603,7 @@ public class ApplicationApi {
 
     }
 
-    public static List<ApplicationContext> getAllApplications() throws Exception {
+   public static List<ApplicationContext> getAllApplications() throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName())
                 .select(FieldFactory.getApplicationFields());

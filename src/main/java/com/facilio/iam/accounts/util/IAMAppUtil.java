@@ -25,7 +25,11 @@ public class IAMAppUtil {
 	public static AppDomain getAppDomain(long appDomainId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(appDomainId));
 	}
-	
+
+	public static List<AppDomain> getAppDomainForIdentifier(String identifier) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomainForIdentifier(identifier));
+	}
+
 	public static List<AppDomain> getPortalAppDomains() throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPortalAppDomains());
 	}
