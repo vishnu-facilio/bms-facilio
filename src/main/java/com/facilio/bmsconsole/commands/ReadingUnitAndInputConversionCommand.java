@@ -19,6 +19,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
@@ -56,6 +57,13 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 										if(readingDataMeta.getUnitEnum() != null) {
 											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 											readingData.put(fieldName, value);
+										}
+										else {
+											Unit unit =(Unit) context.get(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING);
+											if(unit != null) {
+												Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), unit);
+												readingData.put(fieldName, value);
+											}
 										}
 										convertInputValue(readingDataMeta, valuesMap, readingData, fieldName);
 									}

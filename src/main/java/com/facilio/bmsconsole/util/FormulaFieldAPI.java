@@ -57,11 +57,14 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.ParameterContext;
@@ -308,11 +311,32 @@ public class FormulaFieldAPI {
 							readings.add(reading);
 							
 							if (addValue) {
+								
+								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+								
+								FacilioField field = modBean.getField(fieldName, moduleName);
+								FormulaFieldContext formulaField = getFormulaField(field);
+								
+								Unit inputUnit = null; 
+								if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formulaField != null && formulaField.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && field instanceof NumberField) {	//temp check doing only for ENPI
+									NumberField numberfield = (NumberField) field;
+									if(numberfield.getMetricEnum() != null) {
+										if(numberfield.getUnitEnum() != null) {
+											inputUnit = numberfield.getUnitEnum();
+										}
+										else {
+											inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+										}
+									}
+								}
+								
 								FacilioContext context = new FacilioContext();
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 								context.put(FacilioConstants.ContextNames.READING, reading);
 		//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 								context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+								
+								context.put(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING,inputUnit);
 								
 								FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 								addReadingChain.execute(context);
@@ -785,11 +809,26 @@ public class FormulaFieldAPI {
 			
 			LOGGER.debug("Historical Data to be added for formula "+readings.size());
 			if (!readings.isEmpty()) {
+				
+				Unit inputUnit = null; 
+				if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula != null && formula.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && formula.getReadingField() instanceof NumberField) {
+					NumberField numberfield = (NumberField) formula.getReadingField();
+					if(numberfield.getMetricEnum() != null) {
+						if(numberfield.getUnitEnum() != null) {
+							inputUnit = numberfield.getUnitEnum();
+						}
+						else {
+							inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+						}
+					}
+				}
+				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+				context.put(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING,inputUnit);
 				
 				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
@@ -1030,13 +1069,27 @@ public class FormulaFieldAPI {
 			
 			LOGGER.debug("Historical Data to be added for formula with readings size"+readings.size());
 			if (!isSelfDependent && !readings.isEmpty()) {
-						
+				
+				Unit inputUnit = null; 
+				if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula != null && formula.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && formula.getReadingField() instanceof NumberField) {
+					NumberField numberfield = (NumberField) formula.getReadingField();
+					if(numberfield.getMetricEnum() != null) {
+						if(numberfield.getUnitEnum() != null) {
+							inputUnit = numberfield.getUnitEnum();
+						}
+						else {
+							inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+						}
+					}
+				}
+				
 				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				FacilioContext context = addReadingChain.getContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+				context.put(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING,inputUnit);
 				addReadingChain.execute(context);
 			}				
 

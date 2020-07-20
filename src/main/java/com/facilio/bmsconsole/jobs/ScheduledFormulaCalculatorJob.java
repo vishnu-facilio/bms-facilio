@@ -29,11 +29,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
@@ -91,11 +94,26 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									LOGGER.info("Readings Calculated for : "+formula.getName());
 								}
 								if (!readings.isEmpty()) {
+									
+									Unit inputUnit = null; 
+									if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formula.getReadingField() instanceof NumberField) {
+										NumberField numberfield = (NumberField) formula.getReadingField();
+										if(numberfield.getMetricEnum() != null) {
+											if(numberfield.getUnitEnum() != null) {
+												inputUnit = numberfield.getUnitEnum();
+											}
+											else {
+												inputUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberfield.getMetricEnum());
+											}
+										}
+									}
+									
 									FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 									FacilioContext context = addReadingChain.getContext();
 									context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
 									context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+									context.put(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING,inputUnit);
 									
 									addReadingChain.execute();
 									
