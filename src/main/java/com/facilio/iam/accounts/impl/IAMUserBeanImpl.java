@@ -1560,26 +1560,28 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public List<AppDomain> getAppDomainForIdentifier(String identifier) throws Exception {
-		if(StringUtils.isNotEmpty(identifier)) {
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(IAMAccountConstants.getAppDomainFields())
-					.table("App_Domain");
+	public List<AppDomain> getAppDomainForType(Integer domainType, Long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
 
-			String[] splitIdentifier = identifier.split("_");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "groupType", String.valueOf(splitIdentifier[0]), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "domainType", String.valueOf(domainType), NumberOperators.EQUALS));
 
-			if(splitIdentifier.length == 2) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(splitIdentifier[1]), NumberOperators.EQUALS));
-			}
-			else {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", "0", CommonOperators.IS_EMPTY));
-			}
+		Criteria criteria = new Criteria();
+		if(domainType == null) {
+			return null;
+		}
+		if(orgId != null && orgId > 0){
+			criteria.addAndCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		if(domainType == 1) {
+			criteria.addOrCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", "1", CommonOperators.IS_EMPTY));
+		}
 
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (CollectionUtils.isNotEmpty(props)) {
-				return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
-			}
+		selectBuilder.andCriteria(criteria);
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
 		}
 		return null;
 

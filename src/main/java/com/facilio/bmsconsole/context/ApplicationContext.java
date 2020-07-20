@@ -19,11 +19,11 @@ public class ApplicationContext implements Serializable{
 		this.orgId = orgId;
 	}*/
 
-	public ApplicationContext(long orgId, String name, Boolean isDefault, String domainIdentifier, String linkName, int layoutType) {
+	public ApplicationContext(long orgId, String name, Boolean isDefault, int domainType, String linkName, int layoutType) {
 		this.orgId = orgId;
 		this.name = name;
 		this.isDefault = isDefault;
-		this.domainIdentifier = domainIdentifier;
+		this.domainType = domainType;
 		this.linkName = linkName;
 		this.layoutType = layoutType;
 	}
@@ -160,13 +160,13 @@ public class ApplicationContext implements Serializable{
 		this.scopingId = scopingId;
 	}
 	
-	private String domainIdentifier;
+	private int domainType;
 
-	public String getDomainIdentifier() {
-		return domainIdentifier;
+	public int getDomainType() {
+		return domainType;
 	}
 
-	public void setDomainIdentifier(String domainIdentifier) {
-		this.domainIdentifier = domainIdentifier;
+	public void setDomainType(int domainType) {
+		this.domainType = domainType;
 	}
 }

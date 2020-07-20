@@ -27,12 +27,12 @@ public class AddApplicationUsersCommand extends FacilioCommand{
 		}
 		ApplicationContext app = ApplicationApi.getApplicationForId(appId);
 
-		List<AppDomain> appDomains = IAMAppUtil.getAppDomainForIdentifier(app.getDomainIdentifier());
-		if(CollectionUtils.isNotEmpty(appDomains)) {
+		List<AppDomain> appDomains = IAMAppUtil.getAppDomainForType(app.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
+		if(CollectionUtils.isEmpty(appDomains)) {
 			throw new IllegalArgumentException("Invalid app domain");
 		}
 		
-		if (user.getRoleId() <= 0 && app.getLinkName().equals("agent")) {
+		if (user.getRoleId() <= 0 && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP)) {
 			long roleId = getAgentRole();
 			user.setRoleId(roleId);
 		}
