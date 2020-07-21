@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.JobPlanApi;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -209,7 +210,28 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		if(objects.size() > 2) {
 			Map<String, Object> data = (Map<String,Object>)objects.get(2);
 			for(String name : data.keySet()) {
-				actualData.put(name, data.get(name));
+				if(name.equals("tasks") && taskList != null) {
+					Map<String,Object> taskUniqueIdMap = (Map<String,Object>) data.get("tasks");
+					
+					for(String sectionName : taskList.keySet()) {
+						List<TaskContext> tasks = taskList.get(sectionName);
+						
+						for(TaskContext task : tasks) {
+							if(taskUniqueIdMap.get(task.getUniqueId()+"") != null) {
+								Map<String, Object> taskMap = (Map<String,Object>) taskUniqueIdMap.get(task.getUniqueId()+"");
+								if(taskMap.get("resourceId") != null) {
+									task.setResource(ResourceAPI.getResource((long)taskMap.get("resourceId")));
+								}
+								if(taskMap.get("subject") != null) {
+									task.setSubject((String)taskMap.get("subject"));
+								}
+							}
+						}
+					}
+				}
+				else {
+					actualData.put(name, data.get(name));
+				}
 			}
 		}
 		
