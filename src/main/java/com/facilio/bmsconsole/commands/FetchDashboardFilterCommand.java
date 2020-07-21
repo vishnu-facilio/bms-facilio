@@ -42,7 +42,7 @@ public class FetchDashboardFilterCommand extends FacilioCommand implements Comma
 			dashboardFilter.setDashboardUserFilters(DashboardFilterUtil.getDashboardUserFilters(dashboardFilter.getId()));
 		}
 			
-		
+		context.put(ContextNames.DASHBOARD_FILTER, dashboardFilter);
 		
 		if(dashboard!=null)
 		{

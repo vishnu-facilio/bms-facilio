@@ -2544,6 +2544,7 @@ public class ReadOnlyChainFactory {
 	{
 		FacilioChain chain=getDefaultChain();
 		chain.addCommand(new FetchDashboardFilterCommand());
+		chain.addCommand(new GetDashboardFilterToWidgetMapping());
 		return chain;
 	}
 }

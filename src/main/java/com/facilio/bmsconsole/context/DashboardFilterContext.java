@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -21,6 +22,14 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private long dateOperator;
 	private String dateValue;
 	private List<DashboardUserFilterContext> dashboardUserFilters;
+	JSONObject widgetTimeLineFilters;
+	
+	public JSONObject getWidgetTimeLineFilters() {
+		return widgetTimeLineFilters;
+	}
+	public void setWidgetTimeLineFilters(JSONObject widgetTimeLineFilters) {
+		this.widgetTimeLineFilters = widgetTimeLineFilters;
+	}
 	public long getDashboardId() {
 		return dashboardId;
 	}
