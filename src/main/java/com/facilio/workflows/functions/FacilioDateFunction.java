@@ -782,6 +782,30 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	CURRENT_YEAR(38,"getCurrentYear") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			int month = 0;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getCurrenTime());
+				month = zdt.getYear();
+			}
+			else {
+				Long startTime = (long) Double.parseDouble(objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				month = zdt.getYear();
+			}
+			
+			return month;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
