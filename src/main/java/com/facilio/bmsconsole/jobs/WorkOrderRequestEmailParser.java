@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.CustomMailMessageApi;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.constants.FacilioConstants;
@@ -66,8 +67,15 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						createWorkOrderRequest((long) emailProp.get("id"), rawEmail);
-						
+						if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
+							MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
+							MimeMessageParser parser = new MimeMessageParser(emailMsg);
+							parser.parse();
+							SupportEmailContext supportEmail = getSupportEmail(parser);
+							CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
+						} else {
+							createWorkOrderRequest((long) emailProp.get("id"), rawEmail);
+						}
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 //							createServiceRequest(rawEmail);
@@ -204,7 +212,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		}
 		updateEmailProp(emailpropId, requestId, orgId);
 	}
-	
+
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
 		SupportEmailContext supportEmail = getSupportEmail(parser.getTo());
 		if(supportEmail != null) {
@@ -238,5 +246,4 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		}
 		return null;
 	}
-
 }

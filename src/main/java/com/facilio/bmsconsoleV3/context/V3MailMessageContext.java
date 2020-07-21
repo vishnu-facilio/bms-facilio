@@ -130,6 +130,16 @@ public class V3MailMessageContext extends V3Context {
 
     private Long supportMailId ;
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    private Long parentId ;
+
     public String getContentType() {
         return contentType;
     }

@@ -1524,7 +1524,7 @@ public enum ActionType {
 
 			workorderContext.setSubject(mailContext.getSubject());
 			if (mailContext.getContent() != null) {
-				workorderContext.setDescription(mailContext.getContent());
+				workorderContext.setDescription(StringUtils.trim(mailContext.getContent()));
 			}
 			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			workorderContext.setSiteId(supportEmailContext.getSiteId());
@@ -1533,6 +1533,11 @@ public enum ActionType {
 			addWorkOrder(workorderContext, SourceType.EMAIL_REQUEST, null);
 
 			LOGGER.info("Added Workorder from Email Parser : "  );
+		}
+		@Override
+		public boolean isTemplateNeeded()
+		{
+			return false;
 		}
 	}
 	

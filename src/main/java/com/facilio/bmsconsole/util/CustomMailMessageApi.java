@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.MailContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -14,8 +18,8 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
+import javax.mail.Message;
+import java.util.*;
 
 public class CustomMailMessageApi {
 
@@ -75,4 +79,22 @@ public class CustomMailMessageApi {
         int rowupdate = builder.update(FieldUtil.getAsProperties(supportEmail));
         LOGGER.info("Updated" + rowupdate);
     }
+
+    public static void createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {
+        V3MailMessageContext mailMessage = V3MailMessageContext.instance(rawEmail);
+        mailMessage.setParentId(supportMail.getId());
+        Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
+        if (mailMessage.getAttachmentsList().size() > 0) {
+            attachments.put("mailAttachments", mailMessage.getAttachmentsList());
+            mailMessage.setSubForm(attachments);
+        }
+        FacilioChain chain = TransactionChainFactory.getSaveMailMessage();
+
+        FacilioContext context = chain.getContext();
+
+        context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singleton(mailMessage));
+
+        chain.execute();
+    }
+
 }

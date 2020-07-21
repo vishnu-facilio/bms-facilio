@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.context;
-
 import com.facilio.modules.FacilioEnum;
 
-public class SupportEmailContext {
-	
+import java.io.Serializable;
+
+public class SupportEmailContext implements  Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -65,7 +67,7 @@ public class SupportEmailContext {
 		return "SupportEmailContext [id=" + id + ", orgId=" + orgId + ", replyName=" + replyName + ", actualEmail="
 				+ actualEmail + ", fwdEmail=" + fwdEmail + ", autoAssignGroupId=" + autoAssignGroupId
 				+ ", autoAssignGroupId =" + autoAssignGroupId + ", verified=" + verified + ", primarySupportMail="
-				+ primarySupportMail + "]";
+				+ primarySupportMail + ", isCustomMail=" + isCustomMail + ", workflowRule=" + workflowRule + "]";
 	}
 
 	private boolean verified;
@@ -85,11 +87,11 @@ public class SupportEmailContext {
 	}
 
 
-	public Boolean getCustomMail() {
+	public Boolean getIsCustomMail() {
 		return isCustomMail;
 	}
 
-	public void setCustomMail(Boolean customMail) {
+	public void setIsCustomMail(Boolean customMail) {
 		isCustomMail = customMail;
 	}
 
@@ -194,4 +196,15 @@ public class SupportEmailContext {
 	}
 
 	private long uidValidaity;
+
+
+	private Long workflowRule;
+	public Long getWorkflowRule() {
+		return workflowRule;
+	}
+	public void setWorkflowRuleContext(Long workflowRule) {
+		this.workflowRule = workflowRule;
+	}
+
+
 }

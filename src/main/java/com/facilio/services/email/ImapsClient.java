@@ -30,16 +30,6 @@ public class ImapsClient {
             properties.setProperty("mail.store.protocol", "imaps");
             properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             properties.setProperty("mail.imap.socketFactory.fallback", "false");
- //           properties.setProperty("mail.imap.sasl.enable", "true");
-//            properties.setProperty("mail.imap.starttls.enable", "true");
-//
-//
-//            properties.setProperty("mail.imap.auth.mechanisms", "CRAM-MD5");
-//            properties.setProperty("mail.imap.sasl.realm", "CRAM-MD5");
-
-
-            String md5 = FacilioAuthAction.cryptWithMD5( mailDetails.getPassword());
-
 
             Session session = Session.getDefaultInstance(properties, null);
 
@@ -83,29 +73,21 @@ public class ImapsClient {
         }
     }
 
-    private void parseMessage (Message[] messages, IMAPFolder inbox, SupportEmailContext mailDeta) throws MessagingException {
+    public void parseMessage (Message[] messages, IMAPFolder inbox, SupportEmailContext mailDeta) throws MessagingException {
         List<ModuleBaseWithCustomFields> mailMessages = new ArrayList<>();
         try {
             long lastUID = 0;
             log.info("Mail fetched ===> Message Size" + messages.length);
             if (messages.length > 0) {
                 for (Message message : messages) {
-                    Map<String, Object> data = new HashMap<>();
                     V3MailMessageContext mailMessage = V3MailMessageContext.instance(message);
-                    mailMessage.setSupportMailId(-1l);
                     lastUID = inbox.getUID(message);
                     mailMessage.setMessageUID(lastUID);
-                    mailMessage.setSupportMailId(mailDeta.getId());
-                    Map
-                            <String,
-                                    List<Map<String, Object>>> attachments = new HashMap<>();
+                    mailMessage.setParentId(mailDeta.getId());
+                    Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
                     if (mailMessage.getAttachmentsList().size() > 0) {
                       attachments.put("mailAttachments", mailMessage.getAttachmentsList());
                         mailMessage.setSubForm(attachments);
-                        // mailMessage.setData(attachments);
-//                        for (Map<String, Object> attach: mailMessage.getAttachmentsList()) {
-//                            mailMessage.addSubFormFiles(attach);
-//                        }
                     }
                     mailMessages.add(mailMessage);
                 }
@@ -121,26 +103,6 @@ public class ImapsClient {
                 context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, mailDeta);
 
                 chain.execute();
-
-//                Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-//                FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
-//                FacilioContext context = createRecordChain.getContext();
-//                mailDeta.setLatestMessageUID(lastUID);
-//                mailDeta.setUidValidaity(inbox.getUIDValidity());
-//                context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, mailDeta);
-//                recordMap.put(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE, mailMessages);
-//                Constants.setRecordMap(context, recordMap);
-//                Constants.setModuleName(context, FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
-//                FacilioModule module = ChainUtil.getModule(FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
-//                Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-//                context.put(Constants.BEAN_CLASS, beanClass);
-//                createRecordChain.execute();
-//                if (mailAttachment.size() > 0 ) {
-//                    FacilioContext context = new FacilioContext();
-//                    context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, mailAttachment);
-//                    FacilioChain c = TransactionChainFactory.addMultipleAttachment();
-//                    c.execute(context);
-//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
