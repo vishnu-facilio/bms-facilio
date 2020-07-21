@@ -44,12 +44,17 @@ public class V3WorkOrderContext extends V3TicketContext {
     public void setCreatedTime(String createdTime) {
         if (createdTime != null && !createdTime.isEmpty()) {
             try {
-                this.createdTime = FacilioConstants.HTML5_DATE_FORMAT.parse(createdTime).getTime();
-            } catch (ParseException e) {
+                this.createdTime = Long.valueOf(createdTime);
+            }
+            catch(NumberFormatException ex) {
                 try {
-                    this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.createdTime = FacilioConstants.HTML5_DATE_FORMAT.parse(createdTime).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }

@@ -153,13 +153,18 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     public void setDueDate(String dueDate) {
         if(dueDate != null && !dueDate.isEmpty()) {
             try {
-                this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime();
+                this.dueDate = Long.valueOf(dueDate);
             }
-            catch (ParseException e) {
+            catch(NumberFormatException ex) {
+
                 try {
-                    this.dueDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(dueDate).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.dueDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(dueDate).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }
@@ -237,12 +242,17 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     public void setScheduledStart(String scheduledStart) {
         if(scheduledStart != null && !scheduledStart.isEmpty()) {
             try {
-                this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime();
-            } catch (ParseException e) {
+                this.scheduledStart = Long.valueOf(scheduledStart);
+            }
+            catch(NumberFormatException ex) {
                 try {
-                    this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(scheduledStart).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(scheduledStart).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }
@@ -263,12 +273,17 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     public void setEstimatedEnd(String estimatedEnd) {
         if(estimatedEnd != null && !estimatedEnd.isEmpty()) {
             try {
-                this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime();
-            } catch (ParseException e) {
+                this.estimatedEnd = Long.valueOf(estimatedEnd);
+            }
+            catch(NumberFormatException ex) {
                 try {
-                    this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(estimatedEnd).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(estimatedEnd).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }
@@ -285,12 +300,17 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     public void setActualWorkStart(String actualWorkStart) {
         if(actualWorkStart != null && !actualWorkStart.isEmpty()) {
             try {
-                this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime();
-            } catch (ParseException e) {
+                this.actualWorkStart = Long.valueOf(actualWorkStart);
+            }
+            catch(NumberFormatException ex) {
                 try {
-                    this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkStart).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkStart).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }
@@ -307,12 +327,17 @@ public class V3TicketContext extends ModuleBaseWithCustomFields {
     public void setActualWorkEnd(String actualWorkEnd) {
         if(actualWorkEnd != null && !actualWorkEnd.isEmpty()) {
             try {
-                this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime();
-            } catch (ParseException e) {
+                this.actualWorkEnd = Long.valueOf(actualWorkEnd);
+            }
+            catch(NumberFormatException ex) {
                 try {
-                    this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkEnd).getTime();
-                } catch (ParseException e1) {
-                    log.info("Exception occurred ", e1);
+                    this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime();
+                } catch (ParseException e) {
+                    try {
+                        this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkEnd).getTime();
+                    } catch (ParseException e1) {
+                        log.info("Exception occurred ", e1);
+                    }
                 }
             }
         }
