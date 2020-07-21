@@ -8062,8 +8062,6 @@ public class FieldFactory {
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("layoutType", "LAYOUT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
-        fields.add(getField("orgid","ORGID",module, FieldType.NUMBER));
-
         return fields;
     }
 
