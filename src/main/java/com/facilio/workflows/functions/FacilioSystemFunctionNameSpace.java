@@ -34,6 +34,7 @@ public enum FacilioSystemFunctionNameSpace {
 	CHAT_BOT(26,"chatBot"),
 	HTTP(27,"http"),
 	WORKFLOW_READINGS(28,"workflowReadings"),
+	SCHEDULE(29,"schedule"),
 	;
 	
 	

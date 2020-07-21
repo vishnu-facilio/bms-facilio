@@ -20,6 +20,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -373,6 +374,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                     	}
                     	else if(value.asObject() instanceof Number) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.NUMBER.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof ScheduleInfo) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.SCHEDULE.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {

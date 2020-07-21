@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -255,6 +256,123 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		
 		addWoDataChain.execute();
+		
+		return workorder.getData();
+	}
+	
+	public Map<String, Object> addTemplateDataInternal(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		String templateRef = objects.get(1).toString();
+		
+		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
+		if(FacilioUtil.isNumeric(templateRef)) {
+			
+			context.put(FacilioConstants.ContextNames.FORM_ID, Double.valueOf(templateRef).longValue());
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.FORM_NAME, templateRef);
+		}
+		
+		chain.execute();
+		
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		List<FormField> fields = form.getFields();
+		
+		Map<String, Object> actualData = new HashMap<>(); 
+		
+		Map<String, List<TaskContext>> taskList = null; 
+		
+		for(FormField field :fields) {
+			
+			if(field.getValue() != null) {
+				FacilioField facilioField = field.getField();
+				
+				if(facilioField != null) {
+					if(facilioField.getName().equals("resource")) {
+						actualData.put(field.getName(),field.getValue());
+						continue;
+					}
+					else if(facilioField.getDataTypeEnum() == FieldType.LOOKUP) {
+						JSONObject json = new JSONObject();
+						json.put("id", field.getValue());
+						actualData.put(field.getName(),json);
+						continue;
+					}
+				}
+				
+				if(field.getName() != null && field.getName().equals("assignment")) {
+					JSONObject assignmentJson = FacilioUtil.parseJson(field.getValue().toString());
+					for(Object key : assignmentJson.keySet()) {
+						if(assignmentJson.get(key) != null && !assignmentJson.get(key) .toString().contains("\"\"") ) {		// dummy check need to be removed
+							actualData.put(key.toString(), assignmentJson.get(key));
+						}
+					}
+					continue;
+				}
+				
+				if(field.getName() != null && field.getName().equals("tasks") && field.getValue() != null) {
+					JobPlanContext jobPlan = JobPlanApi.getJobPlan(Long.valueOf(field.getValue().toString()));
+					taskList = TemplateAPI.getTasksFromTemplate(jobPlan);
+					continue;
+				}
+				
+				actualData.put(field.getName(), field.getValue());
+			}
+		}
+		if(objects.size() > 2) {
+			Map<String, Object> data = (Map<String,Object>)objects.get(2);
+			for(String name : data.keySet()) {
+				if(name.equals("tasks") && taskList != null) {
+					Map<String,Object> taskUniqueIdMap = (Map<String,Object>) data.get("tasks");
+					
+					for(String sectionName : taskList.keySet()) {
+						List<TaskContext> tasks = taskList.get(sectionName);
+						
+						for(TaskContext task : tasks) {
+							if(taskUniqueIdMap.get(task.getUniqueId()+"") != null) {
+								Map<String, Object> taskMap = (Map<String,Object>) taskUniqueIdMap.get(task.getUniqueId()+"");
+								if(taskMap.get("resourceId") != null) {
+									task.setResource(ResourceAPI.getResource((long)taskMap.get("resourceId")));
+								}
+								if(taskMap.get("subject") != null) {
+									task.setSubject((String)taskMap.get("subject"));
+								}
+							}
+						}
+					}
+				}
+				else {
+					actualData.put(name, data.get(name));
+				}
+			}
+		}
+		
+		FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+		
+		context = addWOChain.getContext();
+		
+		WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap(actualData, WorkOrderContext.class);
+		
+		workorder.setSourceType(com.facilio.bmsconsole.context.TicketContext.SourceType.WEB_ORDER);
+		
+		if(taskList != null) {
+			workorder.setTaskList(taskList);
+//			context.put(FacilioConstants.ContextNames.TASK_MAP, taskList);
+		}
+		
+		
+		BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext();
+		bulkWorkOrderContext.addContexts(workorder, taskList, null, null);
+		context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+
+		addWOChain.execute();
 		
 		return workorder.getData();
 	}

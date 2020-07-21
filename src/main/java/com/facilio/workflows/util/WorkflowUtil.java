@@ -97,6 +97,7 @@ import com.facilio.workflows.functions.FacilioNumberFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
+import com.facilio.workflows.functions.FacilioScheduleFunctions;
 import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
@@ -2116,6 +2117,9 @@ public class WorkflowUtil {
 				case HTTP:
 					facilioWorkflowFunction = FacilioHTTPFunctions.getFacilioHTTPFunctions(functionName);
 					break;
+				case SCHEDULE:
+					facilioWorkflowFunction = FacilioScheduleFunctions.getFacilioScheduleFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2208,6 +2212,9 @@ public class WorkflowUtil {
 					break;
 				case HTTP:
 					facilioWorkflowFunction = new ArrayList<>( FacilioHTTPFunctions.getAllFunctions().values());
+					break;
+				case SCHEDULE:
+					facilioWorkflowFunction = new ArrayList<>( FacilioScheduleFunctions.getAllFunctions().values());
 					break;
 			}
 		}
