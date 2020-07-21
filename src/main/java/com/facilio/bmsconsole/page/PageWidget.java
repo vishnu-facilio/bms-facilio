@@ -251,6 +251,10 @@ public class PageWidget {
 		APPROVAL_FIELDS_WIDGET("approvalFields"),
 		QUOTATION_PREVIEW("quotationPreview"),
 		WORKPERMIT_PREVIEW("workPermitPreview"),
+		BILL_LIST("billList"),
+		BILL_ALERT_DETAILS("billAlertDetails"),
+		INVOICE_DETAILS("invoiceDetails"),
+
 		
 		CONNNECTED_APP("connectedApp")
  		;

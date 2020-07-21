@@ -116,7 +116,16 @@ public class PageFactory {
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
-			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record, module);
+			// etisalat changes will be changed to standard method
+			switch(module.getName()) {
+			case ContextNames.BILL_ALERT:
+				return BillAlertPageFactory.getBillAlertPage((ModuleBaseWithCustomFields) record, module);
+			case ContextNames.BILL_INVOICE:
+				return BillInvoicePageFactory.getBillInvoicePage((ModuleBaseWithCustomFields) record, module);
+			default:
+				return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record, module);	
+			}
+			//
 		}
 		return null;
 	}

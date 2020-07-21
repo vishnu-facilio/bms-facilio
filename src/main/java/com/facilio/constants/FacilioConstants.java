@@ -1700,6 +1700,11 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+		
+		// etisalat changes
+        public static final String BILL_ALERT = "custom_alert";
+        public static final String BILL_INVOICE = "custom_invoices";
+        //
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
