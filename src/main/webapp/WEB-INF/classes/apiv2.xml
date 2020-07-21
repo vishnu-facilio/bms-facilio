@@ -2584,6 +2584,24 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	
+	<package name="viewFilterApiv2" namespace="/api/v2/view/filter"
+		extends="v2Api">
+		<action name="addFilter"
+			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="addViewFilter">
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="updateFilter"
+			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="updateViewFilter">
+		</action>
+		<action name="deleteFilter"
+			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="deleteViewFilter">
+		</action>
+		<action name="getFilter"
+			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="getViewFilters">
+		</action> 
+
+	</package>
 
 	<package name="assetListApiv2" namespace="/api/v2/assets/view"
 		extends="v2Api">

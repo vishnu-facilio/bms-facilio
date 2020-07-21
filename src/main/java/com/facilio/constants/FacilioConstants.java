@@ -1001,6 +1001,11 @@ public class FacilioConstants {
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
+		public static final String VIEW_FILTER = "viewFilter";
+		public static final String VIEW_FILTER_CONTEXT = "viewFilterContext";
+		public static final String VIEW_FILTERS_LIST = "viewFiltersList";
+		public static final String CRITERIA_MAP = "criteriaMap";
+		public static final String FILTERS_MAP = "filterMap";
 		public static final String GROUP_VIEWS = "groupViews";
 
 		public static final String VIEW_NAME = "viewName";

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,21 @@ public class GenerateFilterFromCriteriaCommand extends FacilioCommand{
 				setFilters(criteria,filters);
 				view.setFilters(filters);
 			}
+		}
+		
+		Map<Long, Criteria> criteriaMap = (Map<Long, Criteria>) context.get(FacilioConstants.ContextNames.CRITERIA_MAP);
+		if (criteriaMap != null && !criteriaMap.isEmpty()) {
+			Map<Long, JSONObject> filtersMap = new HashMap<>();
+			for (Criteria criteria : criteriaMap.values())  {
+				
+				if(criteria != null) {
+					JSONObject filters = new JSONObject();
+					setFilters(criteria,filters);
+					filtersMap.put(criteria.getCriteriaId(), filters);
+				}
+				
+			}	
+			context.put(FacilioConstants.ContextNames.FILTERS_MAP, filtersMap);
 		}
 		
 		return false;

@@ -4076,6 +4076,30 @@ public class TransactionChainFactory {
 	    	c.addCommand(getUpdateAssetChain());
 	    	return c;
 	    }
+	    
+	    
+	    public static FacilioChain addViewFilterChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new GenerateCriteriaFromFilterCommand());
+	    	c.addCommand(new AddViewFilterCommand());
+	    	return c;
+	    }
+	    
+	    public static FacilioChain updateViewFilterChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new GenerateCriteriaFromFilterCommand());
+	    	c.addCommand(new updateViewFilterCommand());
+	    	return c;
+	    }
+	    
+	    public static FacilioChain deleteViewFilterChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new deleteViewFilterCommand());
+	    	return c;
+	    }
 
 		public static FacilioChain addVisitorChain() {
 			FacilioChain c = getDefaultChain();

@@ -5454,6 +5454,41 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getViewFiltersFields() {
+        FacilioModule module = ModuleFactory.getViewFiltersModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField id = new FacilioField();
+        id.setName("id");
+        id.setDataType(FieldType.NUMBER);
+        id.setColumnName("ID");
+        id.setModule(module);
+        fields.add(id);
+
+        FacilioField view = new FacilioField();
+        view.setName("viewId");
+        view.setDataType(FieldType.NUMBER);
+        view.setColumnName("VIEWID");
+        view.setModule(module);
+        fields.add(view);
+
+        FacilioField name = new FacilioField();
+        name.setName("name");
+        name.setDataType(FieldType.STRING);
+        name.setColumnName("NAME");
+        name.setModule(module);
+        fields.add(name);
+        
+        FacilioField criteriaId = new FacilioField();
+        criteriaId.setName("criteriaId");
+        criteriaId.setDataType(FieldType.LOOKUP);
+        criteriaId.setColumnName("CRITERIA_ID");
+        criteriaId.setModule(module);
+        fields.add(criteriaId);
+
+        return fields;
+    }
 
     public static List<FacilioField> getAfterPMReminderWORelFields() {
         FacilioModule module = ModuleFactory.getAfterPMRemindersWORelModule();

@@ -1646,6 +1646,14 @@ public class ModuleFactory {
 		viewSortColumnsModule.setTableName("View_Sort_Columns");
 		return viewSortColumnsModule;
 	}
+	
+	public static FacilioModule getViewFiltersModule() {
+		FacilioModule viewFiltersModule = new FacilioModule();
+		viewFiltersModule.setName("viewFilters");
+		viewFiltersModule.setDisplayName("View Filters");
+		viewFiltersModule.setTableName("View_Filters");
+		return viewFiltersModule;
+	}
 
 	public static FacilioModule getTaskInputOptionModule() {
 		FacilioModule taskInputOptionsModule = new FacilioModule();

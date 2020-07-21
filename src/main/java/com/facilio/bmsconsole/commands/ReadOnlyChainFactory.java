@@ -864,6 +864,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetFormRulesMapListCommand());
 		return c;
 	}
+	
+	public static FacilioChain getViewFiltersList() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetViewFiltersListCommand());
+		c.addCommand(new GenerateFilterFromCriteriaCommand());
+		c.addCommand(new ConstructViewFiltersListCommand());
+		return c;
+	}
 
 
 	public static FacilioChain getPurchaseRequestListChain() {
