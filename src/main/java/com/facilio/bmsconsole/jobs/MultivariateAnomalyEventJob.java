@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -16,8 +16,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.MultiVariateAnomalyEvent;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -169,7 +167,6 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             event.setResource(resource);
             event.setMessageKey("MultiVariateAnomaly_" + assetId +"_" + multiVariateAnomalyId);
             event.setSeverityString("Minor");
-            //event.setReadingTime(ttime);
             event.setCreatedTime(ttime);
             event.setCausingVariableId( Long.parseLong(causingVarFieldId));
             event.setListOfVarFieldsStr(listOfVarFieldId.toString());
@@ -182,7 +179,8 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             event.setStartDate(ttime-(90*24*60*60*1000));
             event.setModuleId(124830);
             event.setOrgId(78);
-            event.setSiteId(2236);
+            event.setSiteId(resource.getSiteId());
+            event.setEventType(BaseAlarmContext.Type.MULTIVARIATE_ANOMALY_ALARM.getIndex());
             return event;
      }
     
@@ -206,7 +204,9 @@ public class MultivariateAnomalyEventJob extends FacilioJob
          event.setNeighbourCountStr(neighbourCount.toString());
          event.setModuleId(124830);
          event.setOrgId(78);
-         event.setSiteId(2236);
+         event.setSiteId(resource.getSiteId());
+         event.setEventType(BaseAlarmContext.Type.MULTIVARIATE_ANOMALY_ALARM.getIndex());
+
          return event;
      }
      private void addEventChain(List<MultiVariateAnomalyEvent> eventList) throws Exception
