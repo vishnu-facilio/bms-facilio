@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.tenant;
 
 import com.facilio.bmsconsole.context.AssetContext;
 
-public class UtilityAsset {
+import java.io.Serializable;
+
+public class UtilityAsset implements Serializable {
 	private long id = -1;
 	public long getId() {
 		return id;
