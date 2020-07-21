@@ -134,6 +134,9 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                 LOGGER.info("eventDetails getMultivariateAnomalyId - " + event.getMultivariateAnomalyId());
                 LOGGER.info("eventDetails getResource - " + event.getResource());
                 LOGGER.info("eventDetails ttime - " + event.getCreatedTime());
+                LOGGER.info("eventDetails siteid - " + event.getSiteId());
+                LOGGER.info("eventDetails orgid - " + event.getOrgId());
+                LOGGER.info("eventDetails moduleid - " + event.getModuleId());
                 eventList.add(event);
             }
         startTime = startTime+interval;
@@ -172,11 +175,14 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             event.setListOfVarFieldsStr(listOfVarFieldId.toString());
             event.setNeighbourCountStr(neighbourCount.toString());
             event.setMultivariateAnomalyId(Long.parseLong(multiVariateAnomalyId));
-            event.setOutlier(new Boolean(true));
+            event.setOutlier(true);
             event.setRatioStr(listOfVarRatioFields.toString());
             //event.setType(MLAlarmOccurenceContext.MLAnomalyType.Anomaly);
             event.setEndDate(ttime);
             event.setStartDate(ttime-(90*24*60*60*1000));
+            event.setModuleId(124830);
+            event.setOrgId(78);
+            event.setSiteId(2236);
             return event;
      }
     
@@ -191,13 +197,16 @@ public class MultivariateAnomalyEventJob extends FacilioJob
          event.setResource(resource);
          event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
          event.setCreatedTime(ttime);
-         event.setOutlier(new Boolean(false));
+         event.setOutlier(false);
          event.setStartDate(ttime-(90*24*60*60*1000));
          event.setEndDate(ttime);
          event.setMultivariateAnomalyId(Long.parseLong(multivariateAnomalyId));
          event.setListOfVarFieldsStr(listOfVarFieldId.toString());
          event.setRatioStr(listOfVarRatioFields.toString());
          event.setNeighbourCountStr(neighbourCount.toString());
+         event.setModuleId(124830);
+         event.setOrgId(78);
+         event.setSiteId(2236);
          return event;
      }
      private void addEventChain(List<MultiVariateAnomalyEvent> eventList) throws Exception
