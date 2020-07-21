@@ -9,9 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.BaseCriteriaAPI;
@@ -39,7 +36,8 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(IntervalBasedInstantJobQueueDeletion.class.getName());
     
 	private static final String RULE_INSTANT_JOB_QUEUE_TABLE_NAME = "RuleInstantJobQueue";	
-	private static final String INSTANT_JOB_QUEUE_TABLE_NAME = "InstantJobQueue";	
+	private static final String INSTANT_JOB_QUEUE_TABLE_NAME = "InstantJobQueue";
+	private static final String FILE_NAMESPACE = "queue_data";
 
 	@Override
 	public void execute(JobContext jc) throws Exception {
@@ -84,7 +82,7 @@ public class IntervalBasedInstantJobQueueDeletion extends FacilioJob {
 				}
 				List<Long> ids = props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
 				List<Long> fileIds = props.stream().map(p ->(Long)p.get("fileId")).collect(Collectors.toList());
-				DBConf.getInstance().markFilesAsDeleted(fileIds);
+				DBConf.getInstance().markFilesAsDeleted(FILE_NAMESPACE, fileIds);
 				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder().table(tableName);
 				int deletionCount = builder.batchDeleteById(ids);
 				LOGGER.info(tableName + " IntervalBasedInstantJobQueueDeletion deleted queue count is : " +deletionCount+ ". DeletedBatchCount: "+ ++batchCount);
