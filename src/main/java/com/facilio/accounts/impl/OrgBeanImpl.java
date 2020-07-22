@@ -446,21 +446,21 @@ public class OrgBeanImpl implements OrgBean {
 			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 
-		if(appType != AppDomainType.SERVICE_PORTAL) {
+		if(appType == AppDomainType.SERVICE_PORTAL) {
 	        if(portalInfo.getCustomDomain() != null) {
 	            org.setDomain(portalInfo.getCustomDomain()); 
 	        } else { 
-	            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
+	            org.setDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
 	        } 
 		}
 		else if(appType == AppDomainType.TENANT_PORTAL) {
-			org.setDomain(org.getDomain() + ".faciliotenants.com");
+			org.setDomain(org.getDomain() + FacilioProperties.getTenantAppDomain());
 		}
 		else if(appType == AppDomainType.VENDOR_PORTAL) {
-			org.setDomain(org.getDomain() + ".faciliovendors.com");
+			org.setDomain(org.getDomain() + FacilioProperties.getVendorAppDomain());
 		}
 		else if(appType == AppDomainType.CLIENT_PORTAL) {
-			org.setDomain(org.getDomain() + ".facilioclients.com");
+			org.setDomain(org.getDomain() + FacilioProperties.getClientAppDomain());
 		}
 		
 	             

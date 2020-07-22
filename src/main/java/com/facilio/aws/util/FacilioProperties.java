@@ -42,7 +42,6 @@ public class FacilioProperties {
     private static boolean messageProcessor = false;
     private static String appDomain;
     private static String clientAppUrl;
-    private static String allowedPortalDomains;
     private static String pushNotificationKey;
     private static String portalPushNotificationKey;
     private static String environment;
@@ -81,7 +80,6 @@ public class FacilioProperties {
     private static String pythonPath;
     private static String allowedAppDomains;
 
-    private static String portalDomains;
     private static String emailClient;
     private static String fileStore;
     private static boolean isServicesEnabled;
@@ -89,6 +87,12 @@ public class FacilioProperties {
     private static String localFileStorePath;
     private static boolean facilioResponse;
     private static String clientVersion;
+
+    private static String mainAppDomain;
+    private static String tenantAppDomain;
+    private static String clientAppDomain;
+    private static String occupantAppDomain;
+    private static String vendorAppDomain;
 
     static {
         loadProperties();
@@ -117,10 +121,7 @@ public class FacilioProperties {
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 clientAppUrl = "https://"+ appDomain;
-                allowedPortalDomains = PROPERTIES.getProperty("allowedportal.domains");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
-                portalDomains = PROPERTIES.getProperty("portal.domain");
-
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -155,6 +156,13 @@ public class FacilioProperties {
                 pythonAI = PROPERTIES.getProperty("pythonai.url");
                 pythonPath = PROPERTIES.getProperty("pythonPath");
                 facilioResponse = "true".equals(PROPERTIES.get("response.size"));
+
+                mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
+                tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
+                clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
+                vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
+                occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
                         iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
@@ -233,14 +241,6 @@ public class FacilioProperties {
         return clientAppUrl;
     }
     
-    public static String getAllowedPortalDomainsUrl() {
-        return allowedPortalDomains;
-    }
-
-    public static String getPortalDomain() {
-        return portalDomains;
-    }
-
     public static String getAllowedAppDomains() {
         return allowedAppDomains;
     }
@@ -467,4 +467,29 @@ public class FacilioProperties {
     public static String getRegion() {
         return region;
     }
+
+    public static String getMainAppDomain() {
+        return mainAppDomain;
+    }
+
+    public static String getTenantAppDomain() {
+        return tenantAppDomain;
+    }
+
+    public static String getVendorAppDomain() {
+        return vendorAppDomain;
+    }
+
+    public static String getOccupantAppDomain() {
+        return occupantAppDomain;
+    }
+
+    public static String getPortalAppDomains() {
+        return occupantAppDomain + "," + tenantAppDomain + "," + vendorAppDomain + "," + clientAppDomain;
+    }
+
+    public static String getClientAppDomain() {
+        return clientAppDomain;
+    }
+
 }

@@ -6,7 +6,7 @@
 	}
 	
 	String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig("static.url") + clientVersion;
-	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("portal.domain");
+	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getOccupantAppDomain();
 %>
 <html>
 

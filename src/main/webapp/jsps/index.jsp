@@ -15,8 +15,8 @@
 	}
 	
 	String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig("static.url") + clientVersion;
-	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("portal.domain");
-	String allowedPortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("allowedportal.domains");
+	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getOccupantAppDomain();
+	String allowedPortalDomain = com.facilio.aws.util.FacilioProperties.getPortalAppDomains();
 	if(StringUtils.isNotEmpty(allowedPortalDomain)){
 		String[] portaldomains = allowedPortalDomain.split(",");
 		if(portaldomains.length > 0){
@@ -129,7 +129,7 @@
         } 40% {
           -webkit-transform: scale(1.0);
           transform: scale(1.0);
-        }§
+        }
       }
 
   </style>

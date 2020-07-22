@@ -24,14 +24,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.util.RequestUtil;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AccountUtil {
 
@@ -452,12 +450,9 @@ public class AccountUtil {
 	
 	
 	public static String getDefaultAppDomain() {
-		if(FacilioProperties.isDevelopment()) {
-			return "localhost";
-		}
-		return FacilioProperties.getAppDomain();
+		return FacilioProperties.getMainAppDomain();
 	}
-	
+
 	public static void setShouldApplySwitchScope(Boolean shouldApplySwitchScope) throws Exception {
 		if(shouldApplySwitchScope == null){
 			shouldApplySwitchScope = true;

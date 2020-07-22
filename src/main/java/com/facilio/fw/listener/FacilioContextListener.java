@@ -143,7 +143,7 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			//AgentIntegrationQueueFactory.startIntegrationQueues();
 
-			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getOccupantAppDomain());// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			setVersion(event);
@@ -209,7 +209,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 	private void initializeDB() {
 		if (FacilioProperties.isDevelopment()) {
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", null);
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", Collections.singletonMap("appDomain", FacilioProperties.getMainAppDomain()));
 			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
 		}
 	}
