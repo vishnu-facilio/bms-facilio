@@ -67,15 +67,15 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				for(Map<String, Object> emailProp : emailProps) {
 					String s3Id = (String) emailProp.get("s3MessageId");
 					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
-						if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-							MimeMessage emailMsg = new MimeMessage(null, is);
-							MimeMessageParser parser = new MimeMessageParser(emailMsg);
-							parser.parse();
-							SupportEmailContext supportEmail = getSupportEmail(parser);
-							CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
-						} else {
+//						if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
+//							MimeMessage emailMsg = new MimeMessage(null, is);
+//							MimeMessageParser parser = new MimeMessageParser(emailMsg);
+//							parser.parse();
+//							SupportEmailContext supportEmail = getSupportEmail(parser);
+//							CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
+//						} else {
 							createWorkOrderRequest((long) emailProp.get("id"), is);
-						}
+						// }
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 //							createServiceRequest(rawEmail);
