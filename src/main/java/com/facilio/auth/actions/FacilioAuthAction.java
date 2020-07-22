@@ -664,6 +664,8 @@ public class FacilioAuthAction extends FacilioAction {
 			FacilioCookie.addCurrentSiteCookie(currentSite, response);
 		}
 
+		FacilioCookie.addLoggedInCookie(response);
+
 		try {
 			response.sendRedirect(serviceurl);
 		} catch (IOException e) {

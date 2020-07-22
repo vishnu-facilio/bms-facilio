@@ -104,5 +104,13 @@ public class FacilioCookie {
 		sitecookie.setSecure(true);
 		response.addCookie(sitecookie);
     }
+
+    public static void addLoggedInCookie(HttpServletResponse response) {
+        Cookie loggedIn = new Cookie("fc.loggedIn", "true");
+        loggedIn.setPath("/");
+        loggedIn.setSecure(false);
+        loggedIn.setHttpOnly(false);
+        response.addCookie(loggedIn);
+    }
     
 }
