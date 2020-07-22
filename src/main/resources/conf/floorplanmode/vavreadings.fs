@@ -130,8 +130,12 @@ Map floorPlanMode(Map params) {
 
 
         styles = {};
+        condition = true;
+    if (assetIds == null && cscassetIds == null) {
+        condition = false;
+       }
 
-        if (assetIds != null) {
+        if (condition) {
             styles.fill = "#b0b0b0";
             if (comp1 > -1 && comp1 < 22.1) {
                 styles["fill"] = "#0000ff"; // blue zone
