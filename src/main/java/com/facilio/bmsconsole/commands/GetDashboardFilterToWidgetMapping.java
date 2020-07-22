@@ -66,7 +66,7 @@ public class GetDashboardFilterToWidgetMapping extends FacilioCommand {
 
 			}
 			context.put(FacilioConstants.ContextNames.DASHBOARD_WIDGET_TIMELINE_FILTER, widgetTimeLineFilters);
-			dashboardFilterContext.setWidgetTimeLineFilters(widgetTimeLineFilters);
+			dashboardFilterContext.setWidgetTimelineFilters((widgetTimeLineFilters));
 		}
 
 		return false;

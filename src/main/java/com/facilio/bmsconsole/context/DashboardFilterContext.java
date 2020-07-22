@@ -22,13 +22,14 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private long dateOperator;
 	private String dateValue;
 	private List<DashboardUserFilterContext> dashboardUserFilters;
-	JSONObject widgetTimeLineFilters;
+	JSONObject widgetTimelineFilters;
 	
-	public JSONObject getWidgetTimeLineFilters() {
-		return widgetTimeLineFilters;
+	
+	public JSONObject getWidgetTimelineFilters() {
+		return widgetTimelineFilters;
 	}
-	public void setWidgetTimeLineFilters(JSONObject widgetTimeLineFilters) {
-		this.widgetTimeLineFilters = widgetTimeLineFilters;
+	public void setWidgetTimelineFilters(JSONObject widgetTimelineFilters) {
+		this.widgetTimelineFilters = widgetTimelineFilters;
 	}
 	public long getDashboardId() {
 		return dashboardId;
