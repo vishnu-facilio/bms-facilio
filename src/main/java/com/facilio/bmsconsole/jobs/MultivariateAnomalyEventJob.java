@@ -177,8 +177,6 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             //event.setType(MLAlarmOccurenceContext.MLAnomalyType.Anomaly);
             event.setEndDate(ttime);
             event.setStartDate(ttime-(90*24*60*60*1000));
-            event.setModuleId(124830);
-            event.setOrgId(78);
             event.setSiteId(resource.getSiteId());
             event.setEventType(BaseAlarmContext.Type.MULTIVARIATE_ANOMALY_ALARM.getIndex());
             return event;
@@ -202,8 +200,6 @@ public class MultivariateAnomalyEventJob extends FacilioJob
          event.setListOfVarFieldsStr(listOfVarFieldId.toString());
          event.setRatioStr(listOfVarRatioFields.toString());
          event.setNeighbourCountStr(neighbourCount.toString());
-         event.setModuleId(124830);
-         event.setOrgId(78);
          event.setSiteId(resource.getSiteId());
          event.setEventType(BaseAlarmContext.Type.MULTIVARIATE_ANOMALY_ALARM.getIndex());
 
