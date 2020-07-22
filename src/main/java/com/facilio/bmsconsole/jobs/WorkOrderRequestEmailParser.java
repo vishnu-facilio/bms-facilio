@@ -35,6 +35,7 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,17 +65,16 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			LOGGER.info("EMail Props : "+emailProps);
 			if(emailProps != null) {
 				for(Map<String, Object> emailProp : emailProps) {
-					try {
-						String s3Id = (String) emailProp.get("s3MessageId");
-						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
+					String s3Id = (String) emailProp.get("s3MessageId");
+					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
 						if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-							MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
+							MimeMessage emailMsg = new MimeMessage(null, is);
 							MimeMessageParser parser = new MimeMessageParser(emailMsg);
 							parser.parse();
 							SupportEmailContext supportEmail = getSupportEmail(parser);
 							CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
 						} else {
-							createWorkOrderRequest((long) emailProp.get("id"), rawEmail);
+							createWorkOrderRequest((long) emailProp.get("id"), is);
 						}
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
@@ -111,8 +111,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	}
 	
 	
-	private void createWorkOrderRequest(long emailpropId, S3Object rawEmail) throws Exception {
-		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
+	private void createWorkOrderRequest(long emailpropId, InputStream is) throws Exception {
+		MimeMessage emailMsg = new MimeMessage(null, is);
 		MimeMessageParser parser = new MimeMessageParser(emailMsg);
 		parser.parse();
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
