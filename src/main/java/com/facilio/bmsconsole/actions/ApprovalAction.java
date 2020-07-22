@@ -91,7 +91,7 @@ public class ApprovalAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW.getIntVal());
 		chain.execute();
 
 		return SUCCESS;

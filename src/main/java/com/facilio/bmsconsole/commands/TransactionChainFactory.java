@@ -4818,7 +4818,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getReorderWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(ReadOnlyChainFactory.fetchWorkflowRules());
+		chain.addCommand(new GetCustomModuleWorkflowRulesCommand());
 		chain.addCommand(new ReOrderWorkflowCommand());
 		return chain;
 	}
