@@ -10,9 +10,11 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import joptsimple.internal.Strings;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import java.util.*;
 
@@ -134,10 +136,19 @@ public class DefaultInit extends FacilioCommand {
         List<FacilioField> subModuleRelFields = new ArrayList<>();
         subModuleRelFields.add(FieldFactory.getField("childModuleId", "CHILD_MODULE_ID", FieldType.NUMBER));
 
+        FacilioModule parentModule = modBean.getModule(moduleId);
+        List<Long> moduleIds = new ArrayList<>();
+
+        for (FacilioModule currentModule = parentModule;
+             currentModule != null;
+             currentModule = currentModule.getExtendModule()) {
+                moduleIds.add(currentModule.getModuleId());
+        }
+
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table("SubModulesRel")
                 .select(subModuleRelFields)
-                .andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", moduleId+"", NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", StringUtils.join(moduleIds, ","), NumberOperators.EQUALS));
         List<Map<String, Object>> props = selectRecordBuilder.get();
 
         List<String> result = new ArrayList<>();
