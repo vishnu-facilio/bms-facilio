@@ -483,6 +483,9 @@ public class FormsAPI {
 				else {
 					dbFieldIds.remove(field.getId());
 					field.setFormId(form.getId());
+					if (field.getFieldId() != -1) {
+						field.setName(null);
+					}
 					fieldsToUpdate.add(field);
 				}
 			}

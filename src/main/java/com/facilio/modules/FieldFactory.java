@@ -2950,6 +2950,8 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+        fields.add(getField("mappingJsonStr", "MAPPING_JSON", module, FieldType.STRING));
+        fields.add(getField("sourceType", "SOURCE_TYPE", module, FieldType.NUMBER));
 
         return fields;
     }

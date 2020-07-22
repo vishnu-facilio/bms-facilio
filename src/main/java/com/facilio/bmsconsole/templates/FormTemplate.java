@@ -4,10 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.JobPlanContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.JobPlanApi;
@@ -32,32 +35,79 @@ public class FormTemplate extends Template {
 		this.formId = formId;
 	}
 	
-	private JSONObject jsonObj;
-	
-	@Override
-	public JSONObject getOriginalTemplate() throws Exception {
-		if (form != null && jsonObj == null) {
-			List<FormField> formFields = form.getFields();
-			jsonObj = new JSONObject();
-			for(FormField field: formFields) {
-				if (field.getValue() != null) {
-					boolean valueHandled = handleValue(jsonObj, field);
-					if (!valueHandled) {
-						jsonObj.put(field.getName(), field.getValue());
-					}
-				}
-			}
-			jsonObj.put("formId", form.getId());
-		}
-		return jsonObj;
-	}
-	
 	private FacilioForm form;
 	public void setForm(FacilioForm form) {
 		this.form = form;
 	}
 	public FacilioForm getForm() {
 		return this.form;
+	}
+	
+	private JSONObject mappingJson;
+	public JSONObject getMappingJson() {
+		return mappingJson;
+	}
+	public void setMappingJson(JSONObject mappingJson) {
+		this.mappingJson = mappingJson;
+	}
+	
+	@JSON(serialize = false)
+	public String getMappingJsonStr() {
+		if (mappingJson != null) {
+			return mappingJson.toJSONString();
+		}
+		return null;
+	}
+	@JSON(serialize = false)
+	public void setMappingJsonStr(String mappingJsonStr) throws ParseException {
+		if (mappingJsonStr != null && mappingJson == null) {
+			this.mappingJson = FacilioUtil.parseJson(mappingJsonStr);
+		}
+	}
+	
+	private SourceType sourceType;
+	public int getSourceType() {
+		if(sourceType != null) {
+			return sourceType.getIntVal();
+		}
+		else {
+			return -1;
+		}
+	}
+	public void setSourceType(int type) {
+		this.sourceType = SourceType.getType(type);
+	}
+	public void setSourceType(SourceType type) {
+		this.sourceType = type;
+	}
+	@JSON(serialize = false)
+	public SourceType getSourceTypeEnum() {
+		return sourceType;
+	}
+	
+	private JSONObject jsonObj;
+	
+	@Override
+	public JSONObject getOriginalTemplate() throws Exception {
+		if (jsonObj == null) {
+			if (form != null) {
+				List<FormField> formFields = form.getFields();
+				jsonObj = new JSONObject();
+				for(FormField field: formFields) {
+					if (field.getValue() != null) {
+						boolean valueHandled = handleValue(jsonObj, field);
+						if (!valueHandled) {
+							jsonObj.put(field.getName(), field.getValue());
+						}
+					}
+				}
+				jsonObj.put("formId", form.getId());
+			}
+			if (MapUtils.isNotEmpty(mappingJson)) {
+				jsonObj.putAll(mappingJson);
+			}
+		}
+		return jsonObj;
 	}
 	
 	@JsonIgnore

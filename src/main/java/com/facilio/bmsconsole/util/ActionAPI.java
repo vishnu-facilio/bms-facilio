@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -16,11 +17,13 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.CallTemplate;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.FormTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
@@ -112,6 +115,35 @@ public class ActionAPI {
 				actionMap.put(action.getId(), action);
 			}
 			return actionMap;
+		}
+		return null;
+	}
+	
+	public static Map<Long,ActionContext> getActionsFromTemplate(List<Long> templateIds, boolean fetchDetails) throws Exception {
+		if (templateIds == null || templateIds.isEmpty()) {
+			return null;
+		}
+		
+		List<FacilioField> fields = FieldFactory.getActionFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		FacilioModule module = ModuleFactory.getActionModule();
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), templateIds, NumberOperators.EQUALS))
+														;
+		
+		List<Map<String, Object>> props = actionBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			List<ActionContext> actions;
+			if (fetchDetails) {
+				actions = getActionsFromPropList(props);
+			}
+			else {
+				actions = FieldUtil.getAsBeanListFromMapList(props, ActionContext.class);
+			}
+			return actions.stream().collect(Collectors.toMap(ActionContext::getTemplateId, Function.identity()));
 		}
 		return null;
 	}
@@ -368,6 +400,9 @@ public class ActionAPI {
 							case CHANGE_STATE:
 								setDefaultTemplate(action, rule);
 								break;
+							case MAIL_TO_CREATEWO:
+								setFormTemplate(action, SourceType.EMAIL_REQUEST);
+								break;
 							default:
 								break;
 						}
@@ -571,5 +606,17 @@ public class ActionAPI {
 		action.setStatus(Boolean.TRUE);
 		action.setTemplateJson(new JSONObject());
 		return action;
+	}
+	
+	private static void setFormTemplate(ActionContext action, SourceType sourceType) throws Exception {
+		FormTemplate formTemplate = new FormTemplate();
+		formTemplate.setFormId(((long) action.getTemplateJson().get("formId")));
+		formTemplate.setName((String) action.getTemplateJson().get("name"));
+		formTemplate.setMappingJson((JSONObject) action.getTemplateJson().get("mappingJson"));
+		formTemplate.setSourceType(sourceType);
+		formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
+		action.setTemplate(formTemplate);
+		
+		//checkAndSetWorkflow(action.getTemplateJson(), formTemplate);
 	}
 }

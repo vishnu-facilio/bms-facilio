@@ -8,11 +8,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.templates.FormTemplate;
@@ -55,10 +57,13 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 			return false;
 		}
 		
-		formMap = TemplateAPI.getFormTemplateMap(formIds);
+		formMap = TemplateAPI.getFormTemplateMap(formIds, SourceType.TASK_DEVIATION);
 		if (formMap == null) {
 			formMap = new HashMap<>();
 		}
+		
+		List<Long> templateIds = formMap.values().stream().map(template -> template.getId()).collect(Collectors.toList());
+		Map<Long, ActionContext> actionMap = ActionAPI.getActionsFromTemplate(templateIds, false);
 
 		List<ActionContext> actions = new ArrayList<>();
 
@@ -69,14 +74,18 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 			if (formTemplate == null) {
 				formTemplate = addFormTemplate(formId, formFields);
 				formMap.put(formId, formTemplate);
+				
+				ActionContext action = new ActionContext();
+				action.setTemplateId(formTemplate.getId());
+				action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
+				
+				task.setAction(action);
+				actions.add(action);
 			}
-			
-			ActionContext action = new ActionContext();
-			action.setTemplateId(formTemplate.getId());
-			action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
-			
-			task.setAction(action);
-			actions.add(action);
+			else {
+				ActionContext formAction = actionMap.get(formTemplate.getId());
+				task.setActionId(formAction.getId());
+			}
 		}
 		
 		if (!formFields.isEmpty()) {
@@ -160,7 +169,7 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 			}
 			formFields.add(field);
 		}
-		
+		formTemplate.setSourceType(SourceType.TASK_DEVIATION);
 		formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
 		TemplateAPI.addTemplate(formTemplate);
 		return formTemplate;

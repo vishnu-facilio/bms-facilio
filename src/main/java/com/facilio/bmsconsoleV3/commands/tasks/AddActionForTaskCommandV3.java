@@ -1,6 +1,16 @@
 package com.facilio.bmsconsoleV3.commands.tasks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.templates.FormTemplate;
@@ -11,9 +21,6 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-
-import java.util.*;
 
 public class AddActionForTaskCommandV3 extends FacilioCommand {
     @Override
@@ -37,10 +44,13 @@ public class AddActionForTaskCommandV3 extends FacilioCommand {
                 return false;
             }
 
-            formMap = TemplateAPI.getFormTemplateMap(formIds);
+            formMap = TemplateAPI.getFormTemplateMap(formIds, SourceType.TASK_DEVIATION);
             if (formMap == null) {
                 formMap = new HashMap<>();
             }
+            
+            List<Long> templateIds = formMap.values().stream().map(template -> template.getId()).collect(Collectors.toList());
+			Map<Long, ActionContext> actionMap = ActionAPI.getActionsFromTemplate(templateIds, false);
 
             for(V3TaskContext task : formTasks) {
                 long formId = task.getWoCreateFormId();
@@ -107,17 +117,22 @@ public class AddActionForTaskCommandV3 extends FacilioCommand {
                     }
 
                     formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
+                    formTemplate.setSourceType(SourceType.TASK_DEVIATION);
                     TemplateAPI.addTemplate(formTemplate);
 
                     formMap.put(formId, formTemplate);
+                    
+                    ActionContext action = new ActionContext();
+                    action.setTemplateId(formTemplate.getId());
+                    action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
+
+                    task.setAction(action);
+                    actions.add(action);
                 }
-
-                ActionContext action = new ActionContext();
-                action.setTemplateId(formTemplate.getId());
-                action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
-
-                task.setAction(action);
-                actions.add(action);
+                else {
+					ActionContext formAction = actionMap.get(formTemplate.getId());
+					task.setActionId(formAction.getId());
+				}
             }
 
             if (!formFields.isEmpty()) {

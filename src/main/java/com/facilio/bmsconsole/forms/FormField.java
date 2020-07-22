@@ -290,7 +290,7 @@ public class FormField implements Serializable {
 	}
 	
 	// For date field
-	public void setTodayDate() {
+	public void showTodayDate() {
 		addToConfig("setToday", true);
 	}
 	public void addDays(int dayCount) {

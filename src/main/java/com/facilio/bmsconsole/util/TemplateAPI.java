@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
-import com.facilio.accounts.dto.Account;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -48,6 +47,7 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.CallTemplate;
@@ -82,14 +82,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -1330,12 +1330,13 @@ public class TemplateAPI {
 		return template;
 	}
 	
-	public static List<Template> getFormTemplates(List<Long> formIds) throws Exception {
+	public static List<Template> getFormTemplates(List<Long> formIds, SourceType sourceType) throws Exception {
 		List<FacilioField> fields =  FieldFactory.getFormTemplateFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formIds, NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(sourceType.getIntVal()), NumberOperators.EQUALS));
 		
 		 List<Map<String,Object>> props = getExtendedProps(ModuleFactory.getFormTemplatesModule(), fields, -1, criteria);
 		 if (CollectionUtils.isNotEmpty(props)) {
@@ -1345,8 +1346,8 @@ public class TemplateAPI {
 		return null;
 	}
 	
-	public static Map<Long, FormTemplate> getFormTemplateMap(List<Long> formIds) throws Exception {
-		List<Template> templates = getFormTemplates(formIds);
+	public static Map<Long, FormTemplate> getFormTemplateMap(List<Long> formIds, SourceType sourceType) throws Exception {
+		List<Template> templates = getFormTemplates(formIds, sourceType);
 		if (CollectionUtils.isNotEmpty(templates)) {
 			Map<Long, FormTemplate> templateMap = new HashMap<>();
 			templates.stream().forEach(template -> {
