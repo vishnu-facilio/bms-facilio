@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -76,6 +77,9 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 					}
 					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					// LOGGER.log(Level.INFO, "Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
+					if(!FacilioProperties.isProduction()) {
+						LOGGER.info("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
+					}
 					builder.insert(baseAlarm);
 				}
 			}
