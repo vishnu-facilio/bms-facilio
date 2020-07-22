@@ -33,7 +33,10 @@ public class AddHistoricalMLReadingsJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception{
 		LOGGER.info("AddHistoricalMLReadingsJob started");
-		try{
+		try(
+				ByteArrayOutputStream result1 = new ByteArrayOutputStream();
+				ByteArrayOutputStream result2 = new ByteArrayOutputStream();
+				){
 			org.json.simple.JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 			String ratioCheckFileName = props.get("ratioCheckFileName").toString();
 			String checkGamFileName = props.get("checkGamFileName").toString();
@@ -51,8 +54,6 @@ public class AddHistoricalMLReadingsJob extends FacilioJob {
 			InputStream is = so.getObjectContent();
 			
 			LOGGER.info("RatioCheck is :: "+is);
-			
-			ByteArrayOutputStream result1 = new ByteArrayOutputStream();
 	        byte[] buffer = new byte[1024];
 	        int length;
 	        while ((length = is.read(buffer)) != -1) {
@@ -68,8 +69,7 @@ public class AddHistoricalMLReadingsJob extends FacilioJob {
 			is = so.getObjectContent();
 			
 			LOGGER.info("CheckGam is :: "+is);
-			
-			ByteArrayOutputStream result2 = new ByteArrayOutputStream();
+
 	        byte[] buffer1 = new byte[1024];
 	        int length1;
 	        while ((length1 = is.read(buffer1)) != -1) {

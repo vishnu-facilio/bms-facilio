@@ -77,19 +77,20 @@ public class FacilioFileStore extends FileStore {
 	private long addFile(String namespace, String fileName, File file, String contentType, int[] resize, boolean isOrphan) throws Exception {
 		long fileId = this.addFile(namespace, fileName, file, contentType, isOrphan);
 		for (int resizeVal : resize) {
-			try {
+			try(
+					FileInputStream fis = new FileInputStream(file);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				)
+			{
 				if (contentType.contains("image/")) {
 					// Image resizing...
 
-					FileInputStream fis = new FileInputStream(file);
 					BufferedImage imBuff = ImageIO.read(fis);
 					BufferedImage out = ImageScaleUtil.resizeImage(imBuff, resizeVal, resizeVal);
 
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					ImageIO.write(out, "png", baos);
 					baos.flush();
 					byte[] imageInByte = baos.toByteArray();
-					baos.close();
 
 					String resizedFilePath = getRootPath(namespace) + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
 

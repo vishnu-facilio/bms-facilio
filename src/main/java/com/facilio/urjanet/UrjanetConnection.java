@@ -25,6 +25,7 @@ import com.facilio.urjanet.entity.Meter;
 import com.facilio.urjanet.entity.Provider;
 import com.facilio.urjanet.entity.Template;
 
+@SuppressWarnings("IOResourceOpenedButNotSafelyClosed")
 public class UrjanetConnection {
 	
 	public String urjanetUrl = null;

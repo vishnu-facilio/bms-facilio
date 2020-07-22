@@ -55,10 +55,12 @@ public class QRCodeGenerator {
 	
 	 public static String readQRCode(String filePath, String charset, Map hintMap)
 			    throws FileNotFoundException, IOException, NotFoundException, com.google.zxing.NotFoundException {
-			        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-			            new BufferedImageLuminanceSource(
-			                ImageIO.read(new FileInputStream(filePath)))));
-			        com.google.zxing.Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap, hintMap);
-			        return qrCodeResult.getText();
+	            try(FileInputStream fis = new FileInputStream(filePath)) {
+                    BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
+                            new BufferedImageLuminanceSource(
+                                    ImageIO.read(fis))));
+                    com.google.zxing.Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap, hintMap);
+                    return qrCodeResult.getText();
+                }
 			    }
 }

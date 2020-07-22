@@ -101,15 +101,13 @@ public class MultipartHttpPost {
                 return result;
             }
 
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));) {
                 StringBuilder out = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
                     out.append(line);
                 }
                 result = out.toString();
-                reader.close();
 
                 return result;
             } catch (Exception e) {

@@ -29,6 +29,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.leed.context.ArcContext;
 
+@SuppressWarnings("IOResourceOpenedButNotSafelyClosed")
 public class LeedIntegrator {
 	
 	public static String hostname = "api.usgbc.org";

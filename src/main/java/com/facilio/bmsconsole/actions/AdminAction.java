@@ -505,18 +505,16 @@ public class AdminAction extends ActionSupport {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 		conn.setRequestMethod("GET");
-		try {
+		try(Scanner sc = new Scanner(url.openStream());) {
 			conn.connect();
 			int responseCode = conn.getResponseCode();
 			if (responseCode != 200) {
 				throw new RuntimeException("HttpResponseCode:" + responseCode);
 			} else {
-				Scanner sc = new Scanner(url.openStream());
 				StringBuilder inline = new StringBuilder();
 				while (sc.hasNext()) {
 					inline.append(sc.nextLine());
 				}
-				sc.close();
 				JSONParser parser = new JSONParser();
 				jsonArray = (JSONArray) parser.parse(inline.toString());
 			}
