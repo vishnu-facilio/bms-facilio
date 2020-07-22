@@ -5,8 +5,6 @@ import java.util.List;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-import javax.xml.ws.Service;
-
 public class ServiceContext extends ModuleBaseWithCustomFields{
 
 	private static final long serialVersionUID = 1L;
