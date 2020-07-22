@@ -8,7 +8,7 @@ Map floorPlanMode(Map params) {
     readingModule = "spacetemperature";
     readingFieldName = "setpoint";
     readingFieldName2 = "spacetemperature";
-    readingFieldName3 = "returnairtemperaturesp";
+    readingFieldName3 = "returnairtemperature";
     readingFieldName4 = "temperture";
     readingFieldName5 = "temperture";
     readigModule3 = "runcommand";
