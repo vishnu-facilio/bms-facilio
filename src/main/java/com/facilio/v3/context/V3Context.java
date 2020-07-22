@@ -13,7 +13,7 @@ public class V3Context extends ModuleBaseWithCustomFields {
         return relations;
     }
 
-    public void setLineItems(Map<String, List<SubFormContext>> relations) {
+    public void setRelations(Map<String, List<SubFormContext>> relations) {
         this.relations = relations;
     }
 

@@ -54,11 +54,14 @@ public class DeleteSubFormLineItems extends FacilioCommand {
                         fieldMap.put(lookupField.getId(), lookupField);
                     }
 
-                    DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<>()
-                            .module(module)
-                            .andCondition(CriteriaAPI.getIdCondition(subFormContext.getDeleteIds(), module))
-                            .andCondition(CriteriaAPI.getCondition(fieldMap.get(subFormContext.getFieldId()), record.getId()+"", NumberOperators.EQUALS));
-                    builder.markAsDelete();
+                    if (module.getTypeEnum() != FacilioModule.ModuleType.BASE_ENTITY) {
+                        DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<>()
+                                .module(module)
+                                .andCondition(CriteriaAPI.getIdCondition(subFormContext.getDeleteIds(), module))
+                                .andCondition(CriteriaAPI.getCondition(fieldMap.get(subFormContext.getFieldId()), record.getId()+"", NumberOperators.EQUALS));
+                        builder.delete();
+                    }
+                    //TODO call delete chain for base entity
                 }
             }
         }
