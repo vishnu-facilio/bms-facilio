@@ -470,10 +470,6 @@ CREATE TABLE IF NOT EXISTS Secret_File (
 -- Add entry in Jobs for workorderemail parser
 INSERT INTO Jobs (ORGID, JOBID, JOBNAME, IS_ACTIVE, IS_PERIODIC, PERIOD, NEXT_EXECUTION_TIME, EXECUTOR_NAME) VALUES (-1, 1, 'WorkOrderRequestEmailParser', true, true, 60, UNIX_TIMESTAMP()+30,'priority');
 
---add entry for default app domain for development
-
-INSERT INTO App_Domain (DOMAIN, APP_DOMAIN_TYPE, APP_GROUP_TYPE, DOMAIN_TYPE) VALUES ('localhost', 1, 1, 1);
-
 CREATE TABLE IF NOT EXISTS Notification_Logger (
 	ID BIGINT AUTO_INCREMENT PRIMARY KEY,
 	ORGID BIGINT,
@@ -483,6 +479,9 @@ CREATE TABLE IF NOT EXISTS Notification_Logger (
 	THREAD_NAME  VARCHAR(200) NOT NULL,
 	CREATED_TIME BIGINT NOT NULL
 );
+
+--add entry for default app domain for development
+INSERT IGNORE INTO App_Domain (DOMAIN, APP_DOMAIN_TYPE, APP_GROUP_TYPE, DOMAIN_TYPE) VALUES ('${appDomain}', 1, 1, 1);
 
 CREATE TABLE IF NOT EXISTS Account_SSO (
 	ID BIGINT AUTO_INCREMENT PRIMARY KEY,
