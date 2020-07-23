@@ -77,7 +77,7 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             for(Map<String,Object> eachRecord : outlierData)
             {
                 LOGGER.info("each record outlier " + eachRecord.get("outlier").toString());
-                if(eachRecord.get("outlier").toString().equals("-1") )
+                if(!eachRecord.get("outlier").toString().equals("-1") )
                 {
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
