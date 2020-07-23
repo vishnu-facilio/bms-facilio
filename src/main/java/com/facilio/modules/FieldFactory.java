@@ -8686,6 +8686,8 @@ public class FieldFactory {
 		 fields.add(getField("isTimelineFilterEnabled","IS_TIMELINE_FILTER_ENABLED", module,FieldType.BOOLEAN));
 		 fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
 	     fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
+	     fields.add(getField("dateLabel", "DATE_LABEL", module, FieldType.STRING));
+	     
 		 		 
 		 return fields;
 	 }

@@ -21,6 +21,15 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private Boolean isTimelineFilterEnabled;
 	private long dateOperator;
 	private String dateValue;
+	private String dateLabel;
+	
+	
+	public String getDateLabel() {
+		return dateLabel;
+	}
+	public void setDateLabel(String dateLabel) {
+		this.dateLabel = dateLabel;
+	}
 	private List<DashboardUserFilterContext> dashboardUserFilters;
 	JSONObject widgetTimelineFilters;
 	
