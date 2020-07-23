@@ -10034,6 +10034,8 @@ INSERT INTO LookupFields (FIELDID, ORGID, LOOKUP_MODULE_ID) VALUES ((SELECT LAST
 --Tax application Preference
 INSERT INTO Preferences (ORGID, PREFERENCE_NAME, IS_ACTIVE, FORM_DATA) VALUES (${orgId}, 'taxApplication',true, '{"taxApplication" : 1}');
 
+--Discount application Preference
+INSERT INTO Preferences (ORGID, PREFERENCE_NAME, IS_ACTIVE, FORM_DATA) VALUES (${orgId}, 'discountApplication',true, '{"discountApplication" : 1}');
 
 -- Quotation Module Start ***
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED, STATE_FLOW_ENABLED) VALUES (${orgId}, 'quote', 'Quote', 'Quotation', @BASE_ENTITY_MODULE_TYPE, true, true);

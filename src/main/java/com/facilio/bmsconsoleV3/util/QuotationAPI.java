@@ -445,6 +445,7 @@ public class QuotationAPI {
     }
 
     public static Preference getTaxPref() {
+        //taxApplication == 1(line item level tax), 2(transaction level tax)
         FacilioForm form = new FacilioForm();
         List<FormSection> sections = new ArrayList<FormSection>();
         FormSection formSection = new FormSection();
@@ -458,6 +459,34 @@ public class QuotationAPI {
         form.setFields(fields);
         form.setLabelPosition(FacilioForm.LabelPosition.TOP);
         return new Preference("taxApplication", "Tax Application Preference", form, "Choose how the tax rates are to be applied.") {
+            @Override
+            public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+            }
+
+            @Override
+            public void disable(Long recordId, Long moduleId) throws Exception {
+            }
+
+        };
+
+    }
+
+    public static Preference getDiscountPref() {
+        //discountApplication == 1(before tax), 2(after tax)
+
+        FacilioForm form = new FacilioForm();
+        List<FormSection> sections = new ArrayList<FormSection>();
+        FormSection formSection = new FormSection();
+        formSection.setName("Discount Preference");
+        List<FormField> fields = new ArrayList<FormField>();
+        fields.add(new FormField("discountApplication", FacilioField.FieldDisplayType.SELECTBOX, "Apply Discount Before Tax/After Tax", FormField.Required.REQUIRED, 1, 1));
+
+        formSection.setFields(fields);
+        sections.add(formSection);
+        form.setSections(sections);
+        form.setFields(fields);
+        form.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        return new Preference("discountApplication", "Discount Application Preference", form, "Choose how the discounts are to be applied.") {
             @Override
             public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
             }

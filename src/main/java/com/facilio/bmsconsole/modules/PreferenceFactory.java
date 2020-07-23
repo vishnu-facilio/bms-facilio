@@ -35,6 +35,7 @@ public class PreferenceFactory {
 
 	private static void initializeOrgPrefMap() {
 		orgPrefMap.put("taxApplication", QuotationAPI.getTaxPref());
+		orgPrefMap.put("discountApplication", QuotationAPI.getDiscountPref());
 	}
 
 	private static void initializeModuleMap() {
