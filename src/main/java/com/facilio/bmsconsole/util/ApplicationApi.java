@@ -79,8 +79,6 @@ public class ApplicationApi {
         //temp handling for newapp and newtenant linkname
         if (appLinkName.equals("app")) {
             appLinkName = "newapp";
-        } else if (appLinkName.equals("tenant")) {
-            appLinkName = "newtenants";
         }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
@@ -99,8 +97,6 @@ public class ApplicationApi {
             //temp handling for newapp and newtenant linkname
             if (appLinkName.equals("app")) {
                 appLinkName = "newapp";
-            } else if (appLinkName.equals("tenant")) {
-                appLinkName = "newtenants";
             }
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
