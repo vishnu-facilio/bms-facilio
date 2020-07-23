@@ -141,13 +141,22 @@ public enum CardLayout {
 						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
 					}
 					if (cardContext.getCardFilters() != null && kpiContext.getDateField() != null && cardContext.getCardFilters().containsKey(kpiContext.getDateField().getName())) {
-						JSONObject dateFitler = (JSONObject) cardContext.getCardFilters().get(kpiContext.getDateField().getName());
-						JSONArray values = (JSONArray) dateFitler.get("value");
+						
+						JSONObject filterJson = (JSONObject) cardContext.getCardFilters();
+						
+						JSONObject dateFilter=(JSONObject) filterJson.get(kpiContext.getDateField().getName());
+						
+						JSONArray values = (JSONArray) dateFilter.get("value");
+						String dateFilterLabel=(String)dateFilter.get("label");
 						if (values.size() == 2) {
 							kpiContext.setDateOperator(DateOperators.BETWEEN);
 							kpiContext.setDateValue(values.get(0).toString() + "," + values.get(1).toString());
 							
-							period = DateTimeUtil.getFormattedTime(Long.parseLong(values.get(0).toString()), "dd-MMM-yyyy") + " to " + DateTimeUtil.getFormattedTime(Long.parseLong(values.get(1).toString()), "dd-MMM-yyyy"); 
+							period = DateTimeUtil.getFormattedTime(Long.parseLong(values.get(0).toString()), "dd-MMM-yyyy") + " to " + DateTimeUtil.getFormattedTime(Long.parseLong(values.get(1).toString()), "dd-MMM-yyyy");
+							if(dateFilterLabel!=null)//
+							{
+								period=dateFilterLabel;
+							}
 						}
 					}
 					

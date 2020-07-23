@@ -34,15 +34,18 @@ public class CardAction extends FacilioAction {
 		return this.cardId;
 	}
 	
-	private JSONObject cardFilters;
+	private String cardFilters;
 	
-	public JSONObject getCardFilters() {
+
+	
+	public String getCardFilters() {
 		return cardFilters;
 	}
-	public void setCardFilters(JSONObject cardFilters) {
+
+	public void setCardFilters(String cardFilters) {
 		this.cardFilters = cardFilters;
 	}
-	
+
 	public String getCardData() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.getExecuteCardWorkflowChain();

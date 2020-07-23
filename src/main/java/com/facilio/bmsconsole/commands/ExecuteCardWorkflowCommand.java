@@ -15,6 +15,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.util.FacilioUtil;
 
 public class ExecuteCardWorkflowCommand extends FacilioCommand {
 	
@@ -23,7 +24,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
 		Long cardId = (Long) context.get(FacilioConstants.ContextNames.CARD_ID);
-		JSONObject cardFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
+		String cardFilters = (String) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
 		
 		if (cardId != null && cardContext == null) {
 			
@@ -44,7 +45,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 			}
 		}
 		if (cardFilters != null) {
-			cardContext.setCardFilters(cardFilters);
+			cardContext.setCardFilters(FacilioUtil.parseJson(cardFilters));
 		}
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
