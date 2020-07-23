@@ -41,7 +41,17 @@ public class ScopeHandlerImpl extends ScopeHandler {
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL){
 				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
 				if(scopeFields != null) {
-					return scopeFields.getFields();
+					Collection<FacilioField> fields = scopeFields.getFields();
+
+					//can be removed once siteid is added as a field entry
+					if(FieldUtil.isSiteIdFieldPresent(module, true)) {
+						if (fields == null) {
+							fields = new ArrayList<>();
+						}
+						fields.add((FieldFactory.getSiteIdField(module)));
+					}
+
+					return fields;
 				}
 			}
 			else {
