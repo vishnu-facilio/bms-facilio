@@ -16,6 +16,9 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -1514,25 +1517,28 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			LOGGER.info("MAIL_TO_CREATEWO"+ currentRecord);
 			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
 
-			WorkOrderContext workorderContext = new WorkOrderContext();
+			V3WorkOrderContext workorderContext = new V3WorkOrderContext();
+			workorderContext = FieldUtil.getAsBeanFromJson(obj, V3WorkOrderContext.class);
 			workorderContext.setSendForApproval(true);
 			User requester = new User();
 			requester.setEmail(mailContext.getFrom());
-
 			workorderContext.setSubject(mailContext.getSubject());
+			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST.getIntVal());
 			if (mailContext.getContent() != null) {
 				workorderContext.setDescription(StringUtils.trim(mailContext.getContent()));
 			}
-			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			workorderContext.setSiteId(supportEmailContext.getSiteId());
-
 			workorderContext.setRequester(requester);
-			addWorkOrder(workorderContext, SourceType.EMAIL_REQUEST, null);
+			Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
+			if (mailContext.getAttachmentsList().size() > 0) {
+				attachments.put("ticketAttachments", mailContext.getAttachmentsList());
+				workorderContext.setSubForm(attachments);
+			}
+			addWorkOrder(workorderContext);
 
-			LOGGER.info("Added Workorder from Email Parser : "  );
+			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO: "  );
 		}
 		@Override
 		public boolean isTemplateNeeded()
@@ -1728,6 +1734,23 @@ public enum ActionType {
 
 		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(woContext);
+	}
+
+	private static void addWorkOrder (V3WorkOrderContext v3WorkOrderContext) throws Exception {
+		ModuleBaseWithCustomFields woContext = v3WorkOrderContext;
+		Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+		FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioContext createContext = createRecordChain.getContext();
+		createContext.put(FacilioConstants.ContextNames.REQUESTER, v3WorkOrderContext.getRequester());
+		createContext.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTER, v3WorkOrderContext.getRequester());
+		createContext.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
+		recordMap.put(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(woContext));
+		Constants.setRecordMap(createContext, recordMap);
+		Constants.setModuleName(createContext, FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule module = ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+		createContext.put(Constants.BEAN_CLASS, beanClass);
+		createRecordChain.execute();
 	}
 	
 	public static void addAlarm(BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {

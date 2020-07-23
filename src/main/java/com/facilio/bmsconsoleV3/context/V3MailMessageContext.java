@@ -245,8 +245,12 @@ public class V3MailMessageContext extends V3Context {
                     .getRecipients(Message.RecipientType.TO));
             mailContext.subject = message.getSubject();
             mailContext.contentType = message.getContentType();
-            mailContext.receivedDate = message.getReceivedDate().getTime();
-            mailContext.sentDate = message.getSentDate().getTime();
+            if (message.getReceivedDate() != null ) {
+                mailContext.receivedDate = message.getReceivedDate().getTime();
+            }
+            if (message.getSentDate() != null ) {
+                mailContext.sentDate = message.getSentDate().getTime();
+            }
             if (message.getRecipients(Message.RecipientType.CC) != null) {
                 mailContext.cc = message.getRecipients(Message.RecipientType.CC).toString();
             }
