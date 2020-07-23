@@ -1515,30 +1515,45 @@ public enum ActionType {
 	MAIL_TO_CREATEWO(32) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			LOGGER.info("MAIL_TO_CREATEWO"+ currentRecord);
+			LOGGER.info("MAIL_TO_CREATEWO === >"+ currentRecord);
+
 			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
-
-			V3WorkOrderContext workorderContext = new V3WorkOrderContext();
-			workorderContext = FieldUtil.getAsBeanFromJson(obj, V3WorkOrderContext.class);
-			workorderContext.setSendForApproval(true);
-			User requester = new User();
-			requester.setEmail(mailContext.getFrom());
-			workorderContext.setSubject(mailContext.getSubject());
-			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST.getIntVal());
-			if (mailContext.getContent() != null) {
-				workorderContext.setDescription(StringUtils.trim(mailContext.getContent()));
-			}
-			workorderContext.setSiteId(supportEmailContext.getSiteId());
-			workorderContext.setRequester(requester);
-			Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
+//
+//			V3WorkOrderContext workorderContext = new V3WorkOrderContext();
+//			workorderContext = FieldUtil.getAsBeanFromJson(obj, V3WorkOrderContext.class);
+//			workorderContext.setSendForApproval(true);
+//			User requester = new User();
+//			requester.setEmail(mailContext.getFrom());
+//			workorderContext.setSubject(mailContext.getSubject());
+//			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST.getIntVal());
+//			if (mailContext.getContent() != null) {
+//				workorderContext.setDescription(StringUtils.trim(mailContext.getContent()));
+//			}
+//			workorderContext.setSiteId(supportEmailContext.getSiteId());
+//			workorderContext.setRequester(requester);
+//			Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
+//			if (mailContext.getAttachmentsList().size() > 0) {
+//				attachments.put("ticketAttachments", mailContext.getAttachmentsList());
+//				workorderContext.setSubForm(attachments);
+//			}
+//			addWorkOrder(workorderContext);
+			WorkOrderContext workorderContext = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+			workorderContext.setSourceType(SourceType.EMAIL_REQUEST);
+			List<File> attachedFiles = new ArrayList<>();
+			List<String> attachedFilesFileName = new ArrayList<>();
+			List<String> attachedFilesContentType = new ArrayList<>();
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			if (mailContext.getAttachmentsList().size() > 0) {
-				attachments.put("ticketAttachments", mailContext.getAttachmentsList());
-				workorderContext.setSubForm(attachments);
+				List<Map<String, Object>> attachments = mailContext.getAttachmentsList();
+				for (Map<String, Object> attachment :attachments) {
+					attachedFiles.add((File) attachment.get("attachment"));
+					attachedFilesFileName.add((String) attachment.get("attachmentFileName"));
+					attachedFilesContentType.add((String) attachment.get("attachmentContentType"));
+				}
 			}
-			addWorkOrder(workorderContext);
-
-			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO: "  );
+			bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO : "  );
 		}
 		@Override
 		public boolean isTemplateNeeded()
@@ -1752,7 +1767,7 @@ public enum ActionType {
 		createContext.put(Constants.BEAN_CLASS, beanClass);
 		createRecordChain.execute();
 	}
-	
+
 	public static void addAlarm(BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 		context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);

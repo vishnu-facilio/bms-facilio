@@ -92,7 +92,7 @@ public class CustomMailMessageApi {
 
         FacilioContext context = chain.getContext();
 
-        context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singleton(mailMessage));
+        context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singletonList(mailMessage));
 
         chain.execute();
     }
