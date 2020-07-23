@@ -1134,9 +1134,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("vendorContact", "Permit Holder"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
-		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("expectedStartTime", "Valid From"));
 		columns.add(new ViewField("expectedEndTime", "Valid To"));
 		columns.add(new ViewField("moduleState", "Status"));
@@ -1148,9 +1146,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("vendorContact", "Permit Holder"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
-		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("expectedStartTime", "Valid From"));
 		columns.add(new ViewField("expectedEndTime", "Valid To"));
 
@@ -1163,8 +1159,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("expectedStartTime", "Valid From"));
 		columns.add(new ViewField("expectedEndTime", "Valid Till"));
-		columns.add(new ViewField("workType", "Work Type"));
-		columns.add(new ViewField("issuedToUser", "Permit Holder"));
 		
 		return columns;
 	}
@@ -1172,10 +1166,8 @@ public class ColumnFactory {
 	public static List<ViewField> getVendorWorkPermitColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Permit Name"));
-		columns.add(new ViewField("vendorContact", "Permit Holder"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("tenant", "Tenant"));
-		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("expectedStartTime", "Valid From"));
 		columns.add(new ViewField("expectedEndTime", "Valid To"));
 		columns.add(new ViewField("moduleState", "Status"));

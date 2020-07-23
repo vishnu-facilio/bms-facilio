@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
@@ -319,7 +320,9 @@ public class FormFactory {
 					}
 				});
 				sections.add(defaultSection);
-				sections.add(checklistSection);
+				if (CollectionUtils.isNotEmpty(checklistFields)) {
+					sections.add(checklistSection);
+				}
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
