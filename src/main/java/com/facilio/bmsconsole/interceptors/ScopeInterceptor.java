@@ -8,6 +8,7 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.audit.AuditData;
 import com.facilio.audit.DBAudit;
 import com.facilio.audit.FacilioAudit;
+import com.facilio.audit.FacilioAuditOrgList;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -45,21 +46,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
      */
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ScopeInterceptor.class);
-    private static final HashSet<Long> ORGID_LIST = new HashSet<>();
+    private static HashSet<Long> orgIdList = new HashSet<>();
 
     @Override
     public void init() {
         super.init();
-        ORGID_LIST.add(78L);
-        ORGID_LIST.add(146L);
-        ORGID_LIST.add(176L);
-        ORGID_LIST.add(183L);
-        ORGID_LIST.add(246L);
-        ORGID_LIST.add(155L);
-        ORGID_LIST.add(285L);
-        ORGID_LIST.add(320L);
-        ORGID_LIST.add(315L);
-        ORGID_LIST.add(316L);
+        orgIdList = FacilioAuditOrgList.getAuditOrgs();
     }
 
     @Override
@@ -316,7 +308,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     if (StringUtils.isNotEmpty(remoteIPAddress) && data != null) {
                         data.setRemoteIPAddress(remoteIPAddress);
                     }
-                    if (data != null && ORGID_LIST.contains(orgId)) {
+                    if (data != null && orgIdList.contains(orgId)) {
                         AuditData finalData = data;
                         FacilioService.runAsServiceWihReturn(() -> audit.add(finalData));
                         data.setId(finalData.getId());
@@ -327,7 +319,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     LOGGER.info("Exception from action classs " + e.getMessage());
                     throw e;
                 } finally {
-                    if (data != null && ORGID_LIST.contains(orgId)) {
+                    if (data != null && orgIdList.contains(orgId)) {
                         data.setEndTime(System.currentTimeMillis());
                         data.setStatus(status);
                         data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
