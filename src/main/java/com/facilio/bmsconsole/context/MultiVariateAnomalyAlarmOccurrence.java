@@ -111,9 +111,12 @@ public class MultiVariateAnomalyAlarmOccurrence extends AlarmOccurrenceContext{
 	public void setEndDate(long endDate) {
 		this.endDate = endDate;
 	}
-
+	
 	public Boolean getOutlier() {
-		return outlier.booleanValue();
+		if(outlier != null) {
+			return outlier.booleanValue();
+		}
+		return false;
 	}
 
 	public void setOutlier(Boolean outlier) {
