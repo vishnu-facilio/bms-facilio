@@ -2382,14 +2382,7 @@ public class FieldFactory {
         fields.add(getField("authenticationType", "AUTHENTICATION_TYPE", module, FieldType.ENUM));
         fields.add(getField("latestMessageUID", "LATEST_MESSAGE_UID", module, FieldType.NUMBER));
         fields.add(getField("uidValidaity", "UID_VALIDAITY", module, FieldType.NUMBER));
-        LookupField field4 = new LookupField();
-        field4.setName("workflowRule");
-        field4.setDataType(FieldType.LOOKUP);
-        field4.setColumnName("WORKFLOW_RULE_ID");
-        field4.setLookupModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE));
-        field4.setModule(module);
-        fields.add(field4);
-        // fields.add(getField("workflowRule", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("supportRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
 
         return fields;
     }
