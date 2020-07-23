@@ -135,6 +135,15 @@ public class WidgetCardContext extends DashboardWidgetContext {
 			this.cardDrilldown = (JSONObject) new JSONParser().parse(cardDrilldown);
 		}
 	}
+	
+	private JSONObject cardFilters;
+	
+	public JSONObject getCardFilters() {
+		return cardFilters;
+	}
+	public void setCardFilters(JSONObject cardFilters) {
+		this.cardFilters = cardFilters;
+	}
 
 	@Override
 	public JSONObject widgetJsonObject() {

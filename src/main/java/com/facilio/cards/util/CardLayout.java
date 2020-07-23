@@ -437,8 +437,13 @@ public enum CardLayout {
 			WorkflowContext workflow = new WorkflowContext();
 			workflow.setIsV2Script(true);
 			
+			JSONObject cardParams = cardContext.getCardParams();
+			if (cardContext.getCardFilters() != null) {
+				cardParams.put("filters", cardContext.getCardFilters());
+			}
+			
 			List<Object> paramsList = new ArrayList<Object>();
-			paramsList.add(cardContext.getCardParams());
+			paramsList.add(cardParams);
 			
 			workflow.setWorkflowV2String(cardLayoutScriptMap.get(this.name));
 			
