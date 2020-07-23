@@ -960,7 +960,9 @@ public class FormsAPI {
 		String formName = FormFactory.getDefaultFormName(module.getName(), formType);
 		FacilioForm form = FormsAPI.getFormFromDB(formName, module);
 		if (form == null) {
-			form = new FacilioForm(FormFactory.getDefaultForm(module.getName(), formType, onlyFields));
+			FacilioForm defaultForm = FormFactory.getDefaultForm(module.getName(), formType, onlyFields);
+			form = new FacilioForm(defaultForm);
+			form.setSections(defaultForm.getSections());
 		}
 		return form;
 	}

@@ -82,8 +82,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					form.setFields(fields);
 					setFields(form, modBean, fields, form.getModule().getName(), childModule, -1);
 				}
-				
-				if (form.getSections() != null) {
+				else if (form.getSections() != null) {
 					boolean isFirstSection = true;
 					int sequenceNumber = Collections.max(FormsAPI.getFormFieldsFromSections(form.getSections()), Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 					for(FormSection section: form.getSections()) {
@@ -96,6 +95,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 							FormsAPI.setFieldDetails(modBean, fields, formModuleName);
 						}
 					}
+					form.setFields(FormsAPI.getFormFieldsFromSections(form.getSections()));
 				}
 			}
 			else {

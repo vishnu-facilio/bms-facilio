@@ -106,6 +106,9 @@ public class FormTemplate extends Template {
 				jsonObj.put("formId", formId);
 			}
 			if (MapUtils.isNotEmpty(mappingJson)) {
+				if (jsonObj == null) {
+					jsonObj = new JSONObject();
+				}
 				jsonObj.putAll(mappingJson);
 			}
 		}
