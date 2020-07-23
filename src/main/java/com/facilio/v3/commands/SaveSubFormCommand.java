@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.*;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,6 +22,8 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
+
+import javax.validation.constraints.NotNull;
 
 public class SaveSubFormCommand extends FacilioCommand {
 
@@ -60,14 +64,27 @@ public class SaveSubFormCommand extends FacilioCommand {
         return false;
     }
 
+    /*
+    * Finds lookup field relation in child module
+    *  if parent module is workorder (workorder extends ticket) and child module is ticketattachment,
+    *  the look up is present for ticket module in ticketattachment.
+    */
+    private LookupField findLookupFieldInChildModule(@NotNull FacilioModule parentModule, @NotNull Map<String, LookupField> childLookupFields) throws Exception {
+        LookupField lookupField = childLookupFields.get(parentModule.getName());
+        if (lookupField == null) {
+            FacilioModule extendModule = parentModule.getExtendModule();
+            if (extendModule == null) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR);
+            }
+            return findLookupFieldInChildModule(extendModule, childLookupFields);
+        }
+        return lookupField;
+    }
+
     private List<ModuleBaseWithCustomFields> insert(String mainModuleName, String moduleName, List<Map<String, Object>> subForm, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         FacilioModule mainModule = modBean.getModule(mainModuleName);
-        FacilioModule extendedModule = null;
-        if(mainModule != null) {
-            extendedModule = mainModule.getExtendModule();
-        }
 
         List<FacilioField> fields = modBean.getAllFields(moduleName);
 
@@ -89,23 +106,18 @@ public class SaveSubFormCommand extends FacilioCommand {
             }
         }
 
-        List<Map<String, Object>> maps = subForm;
         List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
         Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
-
-        Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
-        LookupField lookupField = allLookupFields.get(mainModuleName);
-
-        if(lookupField == null && extendedModule != null){
-            lookupField = allLookupFields.get(extendedModule.getName());
+        LookupField lookupField;
+        try {
+            lookupField = findLookupFieldInChildModule(mainModule, getAllLookupFields(modBean, module));
+        } catch (RESTException ex) {
+            throw new RESTException(ex.getErrorCode(), "There is no relationship between " + mainModuleName + " and " + moduleName);
         }
 
-        if(lookupField == null) {
-            throw new IllegalArgumentException("Invalid lookup config");
-        }
-        for (Map<String, Object> map : maps) {
+        for (Map<String, Object> map : subForm) {
             map.put(lookupField.getName(), parentObject);
             Map<FacilioField, File> fileMap = new HashMap<>();
             for (FacilioField f : fileFields) {
