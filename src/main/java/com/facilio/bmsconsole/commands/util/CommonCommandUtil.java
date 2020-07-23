@@ -484,9 +484,18 @@ public class CommonCommandUtil {
     
      //will be changed soon
     public static List<Long> getMySiteIds() throws Exception {
-    	
-    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) || (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() != AppDomain.AppDomainType.TENANT_PORTAL)) {
-	    	FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
+			List<SiteContext> sites = SpaceAPI.getAllSites();
+			List<Long> siteIds = new ArrayList<>();
+			if(CollectionUtils.isNotEmpty(sites)) {
+				for(SiteContext site : sites) {
+					siteIds.add(site.getSiteId());
+				}
+			}
+			return siteIds;
+		}
+		else {
+			FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
 			GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
 					.select(AccountConstants.getAccessbileSpaceFields())
 					.table(accessibleSpaceMod.getTableName())
@@ -504,21 +513,22 @@ public class CommonCommandUtil {
 			List<Long> toArray = new ArrayList<>(siteIds);
 			return toArray;
     	}
-    	else {
-    		List<SiteContext> sites = SpaceAPI.getAllSites();
-    		List<Long> siteIds = new ArrayList<>();
-    		if(CollectionUtils.isNotEmpty(sites)) {
-    			for(SiteContext site : sites) {
-    				siteIds.add(site.getSiteId());
-    			}
-    		}
-    	  return siteIds;	
-    	}
     }
     
     //will be removed soon..so please dont use this further
     public static List<BaseSpaceContext> getMySites() throws Exception {
-    	if(!AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) || (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() != AppDomain.AppDomainType.TENANT_PORTAL)) {
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
+			List<SiteContext> sites = SpaceAPI.getAllSites(false);
+			if(CollectionUtils.isNotEmpty(sites)) {
+				List<BaseSpaceContext> bsList = new ArrayList<BaseSpaceContext>();
+				for(SiteContext site : sites) {
+					bsList.add(site);
+				}
+				return bsList;
+			}
+			return Collections.emptyList();
+		}
+		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -563,18 +573,7 @@ public class CommonCommandUtil {
 			
 			return accessibleBaseSpace;
     	}
-    	else {
-    		List<SiteContext> sites = SpaceAPI.getAllSites(false);
-    		if(CollectionUtils.isNotEmpty(sites)) {
-    			List<BaseSpaceContext> bsList = new ArrayList<BaseSpaceContext>();
-    			for(SiteContext site : sites) {
-    				bsList.add(site);
-    			}
-    			return bsList;
-    		}
-    		return Collections.emptyList();
-    	}
-	}
+   }
     
     public static Map<String, String> getOrgInfo(String... names) throws Exception {
     	
