@@ -1891,8 +1891,8 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Permit Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATE, "Valid To", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid To", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 6, 1));
 		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "Contact", Required.OPTIONAL, "people",7, 1));
 		return fields;
