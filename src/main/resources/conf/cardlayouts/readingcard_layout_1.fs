@@ -22,8 +22,13 @@ Map cardLayout(Map params) {
 
             dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
   
-			dateNs = new NameSpace("date");
-  			period = dateNs.getFormattedTime(startTime,"dd-MMM-yyyy") + " to " + dateNs.getFormattedTime(startTime,"dd-MMM-yyyy");
+            if (params.filters.ttime.label != null) {
+                period = params.filters.ttime.label;
+            }
+            else {
+                dateNs = new NameSpace("date");
+  			    period = dateNs.getFormattedTime(startTime,"dd-MMM-yyyy") + " to " + dateNs.getFormattedTime(startTime,"dd-MMM-yyyy");
+            }
         }
         db = {
             criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
