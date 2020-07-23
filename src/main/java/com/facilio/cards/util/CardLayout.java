@@ -25,12 +25,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -130,6 +132,7 @@ public enum CardLayout {
 			
 			Object cardValue = null;
 			Object kpi = null;
+			String period = dateRange;
 			
 			if ("module".equalsIgnoreCase(kpiType)) {
 				try {
@@ -137,6 +140,17 @@ public enum CardLayout {
 					if (dateRange != null) {
 						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
 					}
+					if (cardContext.getCardFilters() != null && kpiContext.getDateField() != null && cardContext.getCardFilters().containsKey(kpiContext.getDateField().getName())) {
+						JSONObject dateFitler = (JSONObject) cardContext.getCardFilters().get(kpiContext.getDateField().getName());
+						JSONArray values = (JSONArray) dateFitler.get("value");
+						if (values.size() == 2) {
+							kpiContext.setDateOperator(DateOperators.BETWEEN);
+							kpiContext.setDateValue(values.get(0).toString() + "," + values.get(1).toString());
+							
+							period = DateTimeUtil.getFormattedTime(Long.parseLong(values.get(0).toString()), "dd-MMM-yyyy") + " to " + DateTimeUtil.getFormattedTime(Long.parseLong(values.get(1).toString()), "dd-MMM-yyyy"); 
+						}
+					}
+					
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 					kpi = KPIUtil.getKPI(kpiId);
 				} catch (Exception e) {
@@ -162,8 +176,8 @@ public enum CardLayout {
 			returnValue.put("title", title);
 			returnValue.put("value", jobj);
 			
-			if(dateRange != null) {
-			returnValue.put("period", dateRange);
+			if(period != null) {
+			returnValue.put("period", period);
 			}
 			
 			return returnValue;

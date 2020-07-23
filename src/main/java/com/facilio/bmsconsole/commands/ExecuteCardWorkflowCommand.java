@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.cards.util.CardLayout;
@@ -22,6 +23,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
 		Long cardId = (Long) context.get(FacilioConstants.ContextNames.CARD_ID);
+		JSONObject cardFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
 		
 		if (cardId != null && cardContext == null) {
 			
@@ -40,6 +42,9 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 			else {
 				throw new IllegalArgumentException("No such card found with the given id.");
 			}
+		}
+		if (cardFilters != null) {
+			cardContext.setCardFilters(cardFilters);
 		}
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());

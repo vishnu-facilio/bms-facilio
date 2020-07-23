@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
@@ -32,11 +34,21 @@ public class CardAction extends FacilioAction {
 		return this.cardId;
 	}
 	
+	private JSONObject cardFilters;
+	
+	public JSONObject getCardFilters() {
+		return cardFilters;
+	}
+	public void setCardFilters(JSONObject cardFilters) {
+		this.cardFilters = cardFilters;
+	}
+	
 	public String getCardData() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.getExecuteCardWorkflowChain();
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
+		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, cardFilters);
 		
 		chain.execute();
 			
