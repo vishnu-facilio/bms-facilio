@@ -27,7 +27,7 @@ import org.json.simple.parser.JSONParser;
 
 public class MultivariateAnomalyEventJob extends FacilioJob
 {
-   private static final Logger LOGGER = Logger.getLogger(AddAnomalyEventJob.class.getName());
+   private static final Logger LOGGER = Logger.getLogger(MultivariateAnomalyEventJob.class.getName());
 
 
 	@Override
@@ -82,7 +82,7 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
                     List<FacilioField> ratioFields = modBean.getAllFields(ratioModule.getName());
-                    List<Map<String,Object>> propsRatioData = getData(ratioFields,ratioModule,startTime, startTime+10000,assetId);
+                    List<Map<String,Object>> propsRatioData = getData(ratioFields,ratioModule,startTime, startTime+interval,assetId);
                     LOGGER.info("ratioData " + propsRatioData.toString());
                     String causingVarFieldId = new String();
                     float maxValue = (float) 0.0;
