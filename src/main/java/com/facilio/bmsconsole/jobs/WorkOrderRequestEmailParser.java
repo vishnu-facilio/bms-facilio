@@ -67,15 +67,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				for(Map<String, Object> emailProp : emailProps) {
 					String s3Id = (String) emailProp.get("s3MessageId");
 					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
-//						if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-//							MimeMessage emailMsg = new MimeMessage(null, is);
-//							MimeMessageParser parser = new MimeMessageParser(emailMsg);
-//							parser.parse();
-//							SupportEmailContext supportEmail = getSupportEmail(parser);
-//							CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
-//						} else {
+
 							createWorkOrderRequest((long) emailProp.get("id"), is);
-						// }
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 //							createServiceRequest(rawEmail);
@@ -120,7 +113,10 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		long orgId = -1;
 		if(supportEmail != null) {
 			orgId = supportEmail.getOrgId();
-			if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
+			if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
+				CustomMailMessageApi.createRecordToMailModule(supportEmail, emailMsg);
+			}
+			else if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 				ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 				ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
 				User requester = new User();

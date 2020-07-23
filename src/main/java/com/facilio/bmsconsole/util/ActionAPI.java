@@ -612,7 +612,13 @@ public class ActionAPI {
 		FormTemplate formTemplate = new FormTemplate();
 		formTemplate.setFormId(((long) action.getTemplateJson().get("formId")));
 		formTemplate.setName((String) action.getTemplateJson().get("name"));
-		formTemplate.setMappingJson((JSONObject) action.getTemplateJson().get("mappingJson"));
+		Map mappingJson = (HashMap) action.getTemplateJson().get("mappingJson");
+		if (mappingJson != null) {
+			JSONObject json = new JSONObject();
+			json.putAll(mappingJson);
+			formTemplate.setMappingJson(json);
+		}
+		// formTemplate.setMappingJson((JSONObject) action.getTemplateJson().get("mappingJson"));
 		formTemplate.setSourceType(sourceType);
 		formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
 		action.setTemplate(formTemplate);

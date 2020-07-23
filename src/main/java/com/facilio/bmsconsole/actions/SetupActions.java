@@ -3,7 +3,12 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ActionAPI;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Organization;
@@ -15,11 +20,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.context.CalendarColorContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.EmailSettingContext;
-import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -352,12 +352,26 @@ public String importData() throws Exception {
 	
 	public String showEmailSettings() throws Exception {
 		FacilioContext context  = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CUSTOM_MAIL_MESSAGE);
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, WorkflowRuleContext.RuleType.MODULE_RULE.getIntVal());
 		FacilioChain emailSetting = FacilioChainFactory.getEmailSettingChain();
 		emailSetting.execute(context);
 		
 		setSetup(SetupLayout.getEmailSettingsLayout());
 		setEmailSetting((EmailSettingContext) context.get(FacilioConstants.ContextNames.EMAIL_SETTING));
 		setSupportEmails((List<SupportEmailContext>) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL_LIST));
+		if (supportEmails != null && supportEmails.size() > 0) {
+			List<Long> ruleIds = supportEmails.stream().map(SupportEmailContext::getSupportRuleId).filter(Objects::nonNull).collect(Collectors.toList());
+			if (ruleIds != null && ruleIds.size() > 0) {
+				Map<Long, WorkflowRuleContext> supportMailRule = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
+				for (Long ruleId : supportMailRule.keySet()) {
+					WorkflowRuleContext rule = supportMailRule.get(ruleId);
+					rule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId));
+				}
+				setSupportMailRules(supportMailRule);
+			}
+		}
+
 		return SUCCESS;
 	}
 	
@@ -542,5 +556,15 @@ public String importData() throws Exception {
 	public void setCalendarColor(CalendarColorContext calendarColor) {
 		this.calendarColor = calendarColor;
 	}
+
+	public Map<Long, WorkflowRuleContext> getSupportMailRules() {
+		return supportMailRules;
+	}
+
+	public void setSupportMailRules(Map<Long, WorkflowRuleContext> supportMailRules) {
+		this.supportMailRules = supportMailRules;
+	}
+
+	private Map<Long, WorkflowRuleContext> supportMailRules;
 	
 }

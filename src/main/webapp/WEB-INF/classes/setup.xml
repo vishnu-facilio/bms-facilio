@@ -485,7 +485,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="includeProperties">emailSetting.*,supportEmails.*</param>
+				<param name="includeProperties">emailSetting.*,supportEmails.*,supportMailRules.*</param>
 			</result>
 		</action>	
 	<!-- <action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">

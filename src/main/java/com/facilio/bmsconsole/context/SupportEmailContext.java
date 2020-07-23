@@ -67,7 +67,7 @@ public class SupportEmailContext implements  Serializable{
 		return "SupportEmailContext [id=" + id + ", orgId=" + orgId + ", replyName=" + replyName + ", actualEmail="
 				+ actualEmail + ", fwdEmail=" + fwdEmail + ", autoAssignGroupId=" + autoAssignGroupId
 				+ ", autoAssignGroupId =" + autoAssignGroupId + ", verified=" + verified + ", primarySupportMail="
-				+ primarySupportMail + ", isCustomMail=" + isCustomMail + ", workflowRule=" + workflowRule + "]";
+				+ primarySupportMail + ", isCustomMail=" + isCustomMail + ", workflowRuleId=" + supportRuleId + "]";
 	}
 
 	private boolean verified;
@@ -85,6 +85,16 @@ public class SupportEmailContext implements  Serializable{
 	public void setPrimarySupportMail(boolean primarySupportMail) {
 		this.primarySupportMail = primarySupportMail;
 	}
+
+	public Long getSupportRuleId() {
+		return supportRuleId;
+	}
+
+	public void setSupportRuleId(Long supportRuleId) {
+		this.supportRuleId = supportRuleId;
+	}
+
+	private Long supportRuleId;
 
 
 	public Boolean getIsCustomMail() {
@@ -196,15 +206,4 @@ public class SupportEmailContext implements  Serializable{
 	}
 
 	private long uidValidaity;
-
-
-	private Long workflowRule;
-	public Long getWorkflowRule() {
-		return workflowRule;
-	}
-	public void setWorkflowRuleContext(Long workflowRule) {
-		this.workflowRule = workflowRule;
-	}
-
-
 }

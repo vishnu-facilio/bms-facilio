@@ -90,9 +90,9 @@ public class FormTemplate extends Template {
 	@Override
 	public JSONObject getOriginalTemplate() throws Exception {
 		if (jsonObj == null) {
+			jsonObj = new JSONObject();
 			if (form != null) {
 				List<FormField> formFields = form.getFields();
-				jsonObj = new JSONObject();
 				for(FormField field: formFields) {
 					if (field.getValue() != null) {
 						boolean valueHandled = handleValue(jsonObj, field);
@@ -102,6 +102,8 @@ public class FormTemplate extends Template {
 					}
 				}
 				jsonObj.put("formId", form.getId());
+			} else if (formId > 0) {
+				jsonObj.put("formId", formId);
 			}
 			if (MapUtils.isNotEmpty(mappingJson)) {
 				jsonObj.putAll(mappingJson);
