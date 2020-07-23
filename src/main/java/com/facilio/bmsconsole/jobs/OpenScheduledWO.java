@@ -19,9 +19,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -29,7 +27,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -56,7 +53,8 @@ public class OpenScheduledWO extends FacilioJob {
                     .beanClass(WorkOrderContext.class)
                     .innerJoin("Resources")
                     .on("Resources.ID = Tickets.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)")
-                    .andCondition(CriteriaAPI.getIdCondition(woId, module));
+                    .andCondition(CriteriaAPI.getIdCondition(woId, module))
+                    .skipModuleCriteria();
             List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
             if (workOrderContexts == null || workOrderContexts.isEmpty()) {
                 return;
@@ -124,26 +122,15 @@ public class OpenScheduledWO extends FacilioJob {
             	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
             	wo.setTrigger(trigger);
             }
-            if ((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0)
-                    || (wo.getAssignmentGroup() != null && (wo.getAssignmentGroup().getId() > 0 || wo.getAssignmentGroup().getGroupId() > 0))) {
-                FacilioStatus status = TicketAPI.getStatus("Assigned");
-                wo.setStatus(status);
-            } else {
-                FacilioStatus status = TicketAPI.getStatus("Submitted");
-                wo.setStatus(status);
-            }
 
             wo.setJobStatus(WorkOrderContext.JobsStatus.COMPLETED);
             
-            long initialSiteId = wo.getSiteId(); 
-
             UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
             updateRecordBuilder.module(module)
                     .fields(Arrays.asList(fieldMap.get("status"), fieldMap.get("jobStatus")))
                     .andCondition(CriteriaAPI.getIdCondition(woId, module));
             updateRecordBuilder.update(wo);
             
-            long siteIdAfterUpdate = wo.getSiteId();
 
             FacilioContext context = new FacilioContext();
             
@@ -202,7 +189,6 @@ public class OpenScheduledWO extends FacilioJob {
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             
-            long siteIdBeforeWorkflow = wo.getSiteId();
             
             FacilioChain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
             c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
@@ -213,22 +199,6 @@ public class OpenScheduledWO extends FacilioJob {
 
             PreventiveMaintenanceAPI.schedulePostReminder(Arrays.asList(pm), wo.getResource().getId(), pmToWo, wo.getScheduledStart());
             
-            long newSiteId = wo.getSiteId();
-            long pmSiteId = pm.getSiteId();
-            if (newSiteId != initialSiteId || newSiteId != pmSiteId) {
-            		StringBuilder builder = new StringBuilder();
-            		builder.append("woId: ").append(woId)
-            		.append("\nInitial SiteId: ").append(initialSiteId)
-            		.append("\nSiteId After Status Update: ").append(siteIdAfterUpdate)
-            		.append("\nSiteId Before Workflow: ").append(siteIdBeforeWorkflow)
-            		.append("\nNew SiteId: ").append(newSiteId)
-            		.append("\nPm SiteId: ").append(pmSiteId);
-            		if (changeSets != null && !changeSets.isEmpty()) {
-            			builder.append(changeSets.toString());
-            		}
-            		CommonCommandUtil.emailException("OpenScheduledWO", "Workorder site different", builder.toString());
-                LOGGER.info("Workorder site different. " + builder.toString());
-            }
         } catch (Exception e) {
             CommonCommandUtil.emailException("OpenScheduledWO", ""+jc.getJobId(), e);
             LOGGER.error("WorkOrder Status Change failed: ", e);

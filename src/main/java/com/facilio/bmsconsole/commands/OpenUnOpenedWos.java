@@ -1,28 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.jobs.OpenScheduledWO;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class OpenUnOpenedWos extends FacilioCommand {
 
@@ -38,7 +36,6 @@ public class OpenUnOpenedWos extends FacilioCommand {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        FacilioStatus status = TicketAPI.getStatus("preopen");
         long maxTime = System.currentTimeMillis();
         long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 
@@ -52,11 +49,12 @@ public class OpenUnOpenedWos extends FacilioCommand {
         selectRecordsBuilder.select(fields)
                 .module(module)
                 .beanClass(WorkOrderContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), PMJobsContext.PMJobsStatus.ACTIVE.getValue() + "," + PMJobsContext.PMJobsStatus.SCHEDULED.getValue(), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN))
-                .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");
+                .andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
+                .skipModuleCriteria();
         if (limit != null && limit > 0) {
             selectRecordsBuilder.limit(limit);
         }

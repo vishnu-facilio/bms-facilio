@@ -312,7 +312,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 
 		if (oldValues == null) {
 			this.selectBuilder.select(allFields);
-			selectBuilder.skipPermission();
+			selectBuilder.skipPermission().skipModuleCriteria();
 			oldValues = selectBuilder.get();
 		}
 

@@ -179,6 +179,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 				.module(woModule)
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS))
+				.skipModuleCriteria();
 				;
 		Criteria criteria = new Criteria();
 		for(String metric: selectedMetrics) {

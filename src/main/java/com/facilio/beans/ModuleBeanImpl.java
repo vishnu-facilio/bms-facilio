@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -44,7 +45,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return DBConf.getInstance().getCurrentOrgId();
 	}
 	
-	private FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {
+	private FacilioModule getModuleFromRS(ResultSet rs) throws Exception {
 		FacilioModule module = null;
 		boolean isFirst = true;
 		FacilioModule prevModule = null;
@@ -77,6 +78,11 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			currentModule.setStateFlowEnabled(rs.getBoolean("STATE_FLOW_ENABLED"));
 			currentModule.setCustom(rs.getBoolean("IS_CUSTOM"));
+			Long criteriaId = rs.getLong("CRITERIA_ID");
+			if (criteriaId != null) {
+				Criteria criteria = CriteriaAPI.getCriteria(criteriaId);
+				currentModule.setCriteria(criteria);
+			}
 
 			if(isFirst) {
 				module = currentModule;
@@ -559,6 +565,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (module.getStateFlowEnabled() != null) {
 			joiner.add("STATE_FLOW_ENABLED = ?");
 			params.add(module.isStateFlowEnabled());
+		}
+		if (module.getCriteriaId() != -1) {
+			joiner.add("CRITERIA_ID = ?");
+			params.add(module.getCriteriaId());
 		}
 		
 		if (!params.isEmpty()) {

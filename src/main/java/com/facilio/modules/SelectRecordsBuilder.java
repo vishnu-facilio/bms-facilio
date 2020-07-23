@@ -51,6 +51,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private Collection<LookupField> lookupFields;
 	private int limit = -1;
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
+	private boolean skipModuleCriteria = false;
 
 	private boolean skipPermission;
 	private Collection<FacilioModule> joinModules;
@@ -88,6 +89,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (selectBuilder.aggrFields != null) {
 			this.aggrFields = new ArrayList<>(selectBuilder.aggrFields);
 		}
+		this.skipModuleCriteria = selectBuilder.skipModuleCriteria;
 	}
 	
 	@Override
@@ -270,6 +272,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public SelectRecordsBuilder<E> skipUnitConversion() {
 		this.builder.skipUnitConversion();
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> skipModuleCriteria() {
+		this.skipModuleCriteria = true;
 		return this;
 	}
 	
@@ -606,6 +613,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, isDeletedField);
 			builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 			handlePermissionAndScope();
+			if (module.getCriteria() != null && !skipModuleCriteria) {
+				builder.andCriteria(module.getCriteria());
+			}
 
 			builder.getJoinBuilder().append(joinBuilder.toString());
 			actualSelectFields = selectFields;

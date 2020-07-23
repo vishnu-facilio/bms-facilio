@@ -42,8 +42,6 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
 
-		FacilioStatus preopen = TicketAPI.getStatus("preopen");
-		long statusId = preopen.getId();
 
 		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<>();
 				selectBuilder.module(workorderModule)
@@ -57,7 +55,7 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 				selectBuilder
 				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("resource"), resourceId + "" , NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("pm"), pmId + "" , NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("status"), statusId+"", NumberOperators.NOT_EQUALS));
+				;
 
 		Map<Long, List<TaskContext>> taskMap = new HashMap<>();
 

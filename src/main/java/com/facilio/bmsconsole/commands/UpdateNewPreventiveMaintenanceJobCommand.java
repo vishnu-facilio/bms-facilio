@@ -41,7 +41,8 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 					.beanClass(WorkOrderContext.class)
 					.module(module)
 					.select(fields)
-					.andCustomWhere("WorkOrders.ID = ?", workorder.getId());
+					.andCustomWhere("WorkOrders.ID = ?", workorder.getId())
+					.skipModuleCriteria();
 			List<Map<String, Object>> pmProps = selectRecordsBuilder.getAsProps();
 			
 			WorkOrderContext newWo = new WorkOrderContext();
@@ -99,7 +100,8 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 					.beanClass(WorkOrderContext.class)
 					.module(module)
 					.select(fields)
-					.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0));
+					.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0))
+					.skipModuleCriteria();
 			List<Map<String, Object>> pmProps = selectRecordsBuilder.getAsProps();
 
 			Integer woCreationOffset = ((Integer) pmProps.get(0).get("woCreationOffset"));

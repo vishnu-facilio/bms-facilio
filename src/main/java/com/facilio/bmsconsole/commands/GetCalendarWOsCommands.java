@@ -36,6 +36,7 @@ public class GetCalendarWOsCommands extends FacilioCommand {
 		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																.module(module)
 																.andCondition(CriteriaAPI.getCondition(dateField, String.valueOf(startTime+","+endTime), DateOperators.BETWEEN))
+																.skipModuleCriteria();
 																;
 																
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);

@@ -51,7 +51,8 @@ public class GetWorkOrderCommand extends FacilioCommand {
 																.beanClass(WorkOrderContext.class)
 																.select(fields)
 																.andCustomWhere(module.getTableName()+".ID = ?", workOrderId)
-																.orderBy("ID");
+																.orderBy("ID")
+																.skipModuleCriteria();
 			
 			boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);

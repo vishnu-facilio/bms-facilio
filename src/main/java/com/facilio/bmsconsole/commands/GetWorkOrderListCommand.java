@@ -178,9 +178,9 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			{
 				selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
 			}
-			Boolean fetchAllTypes = (Boolean) context.get(ContextNames.WO_FETCH_ALL);
-			if (!isApproval && !isUpcomingView(view) && (fetchAllTypes == null || !fetchAllTypes)) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
+			boolean fetchAllTypes = (boolean) context.getOrDefault(ContextNames.WO_FETCH_ALL, false);
+			if (isApproval || isUpcomingView(view) || fetchAllTypes) {
+				selectBuilder.skipModuleCriteria();
 
 			}
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);

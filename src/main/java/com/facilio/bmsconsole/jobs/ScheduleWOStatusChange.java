@@ -24,10 +24,10 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -47,17 +47,17 @@ public class ScheduleWOStatusChange extends FacilioJob {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-            FacilioStatus status = TicketAPI.getStatus("preopen");
             long maxTime = jc.getNextExecutionTime()*1000; //Using next execution time because this can be independent of the period of the job
 
             SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
             selectRecordsBuilder.select(fields)
                     .module(module)
                     .beanClass(WorkOrderContext.class)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
-                    .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");
+                    .andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
+                    .skipModuleCriteria();
             List<WorkOrderContext> wos = selectRecordsBuilder.get();
 
             if (wos == null || wos.isEmpty()) {
@@ -92,13 +92,11 @@ public class ScheduleWOStatusChange extends FacilioJob {
     		
         	for(WorkOrderContext wo :wos) {
         		if(wo.getTrigger() != null && wo.getPm() != null && wo.getPm().getId() > 0) {
-        			long woSiteId = wo.getSiteId();
         			TicketAPI.loadRelatedModules(wo);
         			
         			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(Collections.singletonList(wo.getPm().getId()), null, null, null, null, false);
         			
         			PreventiveMaintenance pm = pms.get(0);
-        			long pmSiteId = pm.getSiteId();
         			
         			List<Map<String, Object>> props = PreventiveMaintenanceAPI.getTaskSectionTemplateTriggers(wo.getTrigger().getId());
         			
@@ -124,12 +122,9 @@ public class ScheduleWOStatusChange extends FacilioJob {
 
     					SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
     					
-    		            FacilioStatus status = TicketAPI.getStatus("preopen");
-    		            
     		            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
     					
     					selectRecordsBuilder.select(fields).module(module).beanClass(WorkOrderContext.class)
-    							 .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"),String.valueOf(status.getId()), NumberOperators.NOT_EQUALS))
     							 .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"),String.valueOf(executionTimeInSec), NumberOperators.GREATER_THAN_EQUAL))
     							 .andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"),String.valueOf(pm.getId()), NumberOperators.EQUALS))
     							 .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),String.valueOf(wo.getResource().getId()), NumberOperators.EQUALS))
@@ -152,16 +147,6 @@ public class ScheduleWOStatusChange extends FacilioJob {
     						compareAndRemoveTask(uniqueIdVsParentIdMap,uniqueIdVsParentIdMaptemp,uniqueIds);
     					}
     				}
-    				long newSiteId = wo.getSiteId();
-    	            if (newSiteId != woSiteId || newSiteId != pmSiteId) {
-    	            		StringBuilder builder = new StringBuilder();
-    	            		builder.append("woId: ").append(wo.getId())
-    	            		.append("\nInitial SiteId: ").append(woSiteId)
-    	            		.append("\nNew SiteId: ").append(newSiteId)
-    	            		.append("\nPm SiteId: ").append(pmSiteId);
-    	            		CommonCommandUtil.emailException("ScheduleWOStatusChange", "Workorder site different", builder.toString());
-    	                LOGGER.info("Workorder site different. " + builder.toString());
-    	            }
         		}
         	}
     	}

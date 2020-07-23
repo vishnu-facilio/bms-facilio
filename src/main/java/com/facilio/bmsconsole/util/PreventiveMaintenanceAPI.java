@@ -882,7 +882,8 @@ public class PreventiveMaintenanceAPI {
 				.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(WorkOrderContext.JobsStatus.COMPLETED.getValue()), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(isActive, CommonOperators.IS_NOT_EMPTY))
 				.orderBy(nextExecutionField.getColumnName())
-				.limit(1);
+				.limit(1)
+				.skipModuleCriteria();
 		if (onlyActive) {
 			selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(PMJobsStatus.IN_ACTIVE.getValue()), NumberOperators.NOT_EQUALS));
 		}
@@ -917,13 +918,11 @@ public class PreventiveMaintenanceAPI {
 			//jobStatusCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), 3+"", NumberOperators.EQUALS));
 			//jobStatusCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"),CommonOperators.IS_EMPTY));
 
-			FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 			SelectRecordsBuilder<WorkOrderContext> selectNewRecordsBuilder = new SelectRecordsBuilder<>();
 			selectNewRecordsBuilder.select(fields)
 					.module(module)
 					.beanClass(WorkOrderContext.class)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), pmId, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preOpenStatus.getId()), NumberOperators.NOT_EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), Long.toString(resource.getId()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), Long.toString(wo.getId()), NumberOperators.NOT_EQUALS))
 					.orderBy("CREATED_TIME desc")
@@ -955,7 +954,6 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static Map<Long, List<Map<String, Object>>> getPMScheduledWOsFromPMIds(long startTimeInSeconds, long endTimeInSeconds, Criteria filterCriteria) throws Exception {
-		FacilioStatus facilioStatus = TicketAPI.getStatus("preopen");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -968,9 +966,10 @@ public class PreventiveMaintenanceAPI {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(endTime), NumberOperators.LESS_THAN))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(facilioStatus.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
 				.andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
-				.orderBy("scheduledStart");
+				.orderBy("scheduledStart")
+				.skipModuleCriteria();
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		}
@@ -1018,7 +1017,8 @@ public class PreventiveMaintenanceAPI {
 		workOrderBuilder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
-				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
+				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module))
+				.skipModuleCriteria();
 		List<WorkOrderContext> workOrders = workOrderBuilder.get();
 
 		if (CollectionUtils.isEmpty(workOrders)) {
@@ -2669,7 +2669,8 @@ public class PreventiveMaintenanceAPI {
 							.select(Arrays.asList(fieldMap.get("createdTime")))
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), Arrays.asList(pmt.getPmId()),NumberOperators.EQUALS))
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), Arrays.asList(checkTime), NumberOperators.EQUALS))
-							.limit(1);
+							.limit(1)
+							.skipModuleCriteria();
 					List<WorkOrderContext> res = selectRecordsBuilder.get();
 
 					if (res == null || res.isEmpty()) {
@@ -3038,7 +3039,8 @@ public class PreventiveMaintenanceAPI {
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("trigger"), minTriggerId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("jobStatus"), 1+"", NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME desc")
-				.limit(1);
+				.limit(1)
+				.skipModuleCriteria();
 
 		List<WorkOrderContext> workOrderContexts = builder.get();
 
@@ -3469,7 +3471,8 @@ public class PreventiveMaintenanceAPI {
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("jobStatus"), 1+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), (endTime * 1000)+"", NumberOperators.GREATER_THAN_EQUAL))
 				.orderBy("CREATED_TIME desc")
-				.limit(1);
+				.limit(1)
+				.skipModuleCriteria();;
 
 		List<WorkOrderContext> workOrderContexts = builder.get();
 

@@ -118,6 +118,7 @@ public class WorkOrderAPI {
                                           .beanClass(WorkOrderContext.class)
                                           .select(fields)
                                           .andCondition(CriteriaAPI.getIdCondition(ticketIds, module))
+                                          .skipModuleCriteria()
                                           ;
       if (CollectionUtils.isNotEmpty(lookupFieldList)) {
     	  	List<LookupField> lookupFields = new ArrayList<>();
