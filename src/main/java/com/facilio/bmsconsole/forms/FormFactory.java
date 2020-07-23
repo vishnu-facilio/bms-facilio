@@ -273,8 +273,7 @@ public class FormFactory {
 				sections.add(billingSection);
 				sections.add(shippingSection);
 				sections.add(lineItemSection);
-			}
-			else if (moduleName.equals(FacilioConstants.ContextNames.QUOTE)) {
+			} else if (moduleName.equals(FacilioConstants.ContextNames.QUOTE)) {
 				List<FormSection> sections = new ArrayList<>();
 				List<FormField> defaultFields = new ArrayList<>();
 				List<FormField> billingAddressFields = new ArrayList<>();
@@ -290,14 +289,11 @@ public class FormFactory {
 				form.getFields().forEach(field -> {
 					if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_LINE_ITEMS) {
 						lineItemFields.add(field);
-					}
-					else if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_ADDRESS && field.getName().equals("billToAddress")) {
+					} else if (field.getDisplayTypeEnum() == FieldDisplayType.QUOTE_ADDRESS && field.getName().equals("billToAddress")) {
 						billingAddressFields.add(field);
-					}
-					else if (Arrays.asList("notes").contains(field.getName())) {
+					} else if (Arrays.asList("notes").contains(field.getName())) {
 						signatureFields.add(field);
-					}
-					else {
+					} else {
 						defaultFields.add(field);
 					}
 				});
@@ -306,6 +302,24 @@ public class FormFactory {
 				sections.add(billingSection);
 				sections.add(lineItemSection);
 				sections.add(notesSection);
+			} else if (moduleName.equals(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> checklistFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("PERMIT INFORMATION", 1, defaultFields, true);
+				FormSection checklistSection = new FormSection("CHECKLIST", 2, checklistFields, true);
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.PERMIT_CHECKLIST) {
+						checklistFields.add(field);
+					} else {
+						defaultFields.add(field);
+					}
+				});
+				sections.add(defaultSection);
+				sections.add(checklistSection);
 			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
@@ -1835,7 +1849,7 @@ public class FormFactory {
 		form.setDisplayName("WORK PERMIT");
 		form.setName("default_workpermit_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWorkPermitFormFields());
 		form.setFormType(FormType.WEB);
 		return form;
@@ -1856,31 +1870,15 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-//		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
-//		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
-		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.LOOKUP_SIMPLE, "Permit Holder", Required.OPTIONAL, "user", 3, 2);
-		issuedtoField.setHideField(true);
-		fields.add(issuedtoField);
-	
-		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
-		ticketField.setHideField(true);
-		fields.add(ticketField);
-		FormField siteField = new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL,"site", 3, 2);
-		siteField.setHideField(true);
-		fields.add(siteField);
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL, "site", 3, 2));
+		fields.add(new FormField("space", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "basespace", 3, 3));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 4, 2));
+		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "Contact", Required.OPTIONAL, "people", 4, 3));
+		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.REQUIRED, 5, 2));
+		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid To", Required.REQUIRED, 5, 3));
+		fields.add(new FormField("workPermitType", FieldDisplayType.LOOKUP_SIMPLE, "Permit Type", Required.OPTIONAL, "workPermitType", 6, 1));
 
-		FormField spaceField = new FormField("space", FieldDisplayType.LOOKUP_SIMPLE, "Space", Required.OPTIONAL,"basespace", 3, 2);
-		spaceField.setHideField(true);
-		fields.add(spaceField);
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("permitType", FieldDisplayType.SELECTBOX, "Permit Type", Required.OPTIONAL,7, 1));
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 8, 2);
-		fields.add(vendorField);
-		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "contact",9, 1));
-
-		//fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",10, 1));
-		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 14, 1));
-		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATE, "Valid To", Required.OPTIONAL, 15, 1));
+		fields.add(new FormField("checklist", FieldDisplayType.PERMIT_CHECKLIST, "Checklist", Required.OPTIONAL, 7, 1));
 	
 		return fields;
 	}
@@ -1891,9 +1889,8 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATE, "Valid To", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 6, 1));
-		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Permit Holder", Required.OPTIONAL, "contact",7, 1));
+		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "Contact", Required.OPTIONAL, "people",7, 1));
 		return fields;
 	}
 

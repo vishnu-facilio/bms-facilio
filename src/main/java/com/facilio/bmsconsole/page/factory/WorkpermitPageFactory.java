@@ -19,10 +19,13 @@ public class WorkpermitPageFactory extends PageFactory {
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 75 || AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 343 || AccountUtil.getCurrentOrg().getOrgId() == 1) {
-			return getNewWorkPermitPage(workpermit);
+		if (AccountUtil.getCurrentUser().isPortalUser()) {
+			return getWorkPermitPortalPage(workpermit);
 		}
+		return getMainAppWorkPermitPage(workpermit);
+	}
 
+	private static Page getWorkPermitPortalPage(WorkPermitContext workpermit) throws Exception {
 		Page page = new Page();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(workpermit.getModuleId());
@@ -32,16 +35,7 @@ public class WorkpermitPageFactory extends PageFactory {
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		if (AccountUtil.getCurrentUser().isPortalUser()) {
-			addPortalDetailsWidget(tab1Sec1);
-		} else {
-			addSecondaryDetailsWidget(tab1Sec1);
-		}
-		if (workpermit.isRecurring()) {
-			Section tab1Sec2 = page.new Section("Recurring Info");
-			tab1.addSection(tab1Sec2);
-			addRecurringInfoWidget(tab1Sec2);
-		}
+		addPortalDetailsWidget(tab1Sec1);
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
 		addRelatedListWidgets(tab1Sec3, module.getModuleId());
@@ -50,7 +44,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		return page;
 	}
 
-	public static Page getNewWorkPermitPage(WorkPermitContext record) throws Exception {
+	public static Page getMainAppWorkPermitPage(WorkPermitContext record) throws Exception {
 		Page page = new Page();
 
 		Page.Tab tab1 = page.new Tab("summary");
@@ -88,20 +82,6 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab4Sec1.addWidget(activityWidget);
 
 		return page;
-	}
-
-
-
-	private static void addSecondaryDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 5);
-		section.addWidget(detailsWidget);
-	}
-
-	private static void addRecurringInfoWidget(Section section) {
-		PageWidget recurringInfoWidget = new PageWidget(WidgetType.RECURRING_INFO, "recurringInfo");
-		recurringInfoWidget.addToLayoutParams(section, 24, 5);
-		section.addWidget(recurringInfoWidget);
 	}
 
 	private static void addPortalDetailsWidget(Section section) {
