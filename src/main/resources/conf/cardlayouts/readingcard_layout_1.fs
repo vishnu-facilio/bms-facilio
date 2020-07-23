@@ -14,7 +14,7 @@ Map cardLayout(Map params) {
             dateRangeObj = date.getDateRange("Current Month");
             period = "Last Value";
         }
-        if (params.filters != null && params.filters.ttime != null) {
+        if (params.filters != null && params.filters.ttime != null && params.filters.ttime.value != null && params.filters.ttime.value.size() == 2) {
             startTimeStr = params.filters.ttime.value[0];
             endTimeStr = params.filters.ttime.value[1];
             startTime = new NameSpace("number").longValue(startTimeStr);
