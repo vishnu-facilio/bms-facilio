@@ -202,6 +202,8 @@ public class TransactionChainFactoryV3 {
         });
         c.addCommand(getWorkOrderWorkflowsChainV3(true));
         c.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
+        //to be removed once all attachments are handled as sub module
+        c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
 
         return c;

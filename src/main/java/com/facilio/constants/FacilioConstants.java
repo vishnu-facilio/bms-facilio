@@ -1961,6 +1961,7 @@ public class FacilioConstants {
 
 			classMap.put(ContextNames.CUSTOM_MAIL_MESSAGE, V3MailMessageContext.class);
 			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
+			classMap.put(ContextNames.TICKET_ATTACHMENTS, AttachmentV3Context.class);
 
 			return classMap;
 		}

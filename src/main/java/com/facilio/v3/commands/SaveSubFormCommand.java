@@ -63,6 +63,12 @@ public class SaveSubFormCommand extends FacilioCommand {
     private List<ModuleBaseWithCustomFields> insert(String mainModuleName, String moduleName, List<Map<String, Object>> subForm, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
+        FacilioModule mainModule = modBean.getModule(mainModuleName);
+        FacilioModule extendedModule = null;
+        if(mainModule != null) {
+            extendedModule = mainModule.getExtendModule();
+        }
+
         List<FacilioField> fields = modBean.getAllFields(moduleName);
 
         InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
@@ -92,6 +98,13 @@ public class SaveSubFormCommand extends FacilioCommand {
         Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
         LookupField lookupField = allLookupFields.get(mainModuleName);
 
+        if(lookupField == null && extendedModule != null){
+            lookupField = allLookupFields.get(extendedModule.getName());
+        }
+
+        if(lookupField == null) {
+            throw new IllegalArgumentException("Invalid lookup config");
+        }
         for (Map<String, Object> map : maps) {
             map.put(lookupField.getName(), parentObject);
             Map<FacilioField, File> fileMap = new HashMap<>();

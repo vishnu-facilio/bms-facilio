@@ -95,13 +95,13 @@ public class AttachmentV3Context extends V3Context {
     private  String attachmentContentType;
 
 
-    private ModuleBaseWithCustomFields parentId;
+    private ModuleBaseWithCustomFields parent;
 
-    public ModuleBaseWithCustomFields getParentId() {
-        return parentId;
+    public ModuleBaseWithCustomFields getParent() {
+        return parent;
     }
-    public void setParentId(ModuleBaseWithCustomFields parentId) {
-        this.parentId = parentId;
+    public void setParentId(ModuleBaseWithCustomFields parent) {
+        this.parent = parent;
     }
 
 }
