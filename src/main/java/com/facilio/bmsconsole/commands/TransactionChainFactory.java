@@ -40,6 +40,7 @@ import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.mv.command.*;
+import com.facilio.v3.util.PushDataToESCommand;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 
@@ -316,6 +317,7 @@ public class TransactionChainFactory {
 			c.addCommand(new FacilioCommand() {
 				@Override
 				public boolean executeCommand(Context context) throws Exception {
+					context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 					context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
 					return false;
 				}
@@ -323,6 +325,7 @@ public class TransactionChainFactory {
 			c.addCommand(getWorkOrderWorkflowsChain(true));
 			c.addCommand(new AddOrUpdateSLABreachJobCommand(true));
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new PushDataToESCommand());
 			return c;
 		}
 
@@ -798,6 +801,7 @@ public class TransactionChainFactory {
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new PushDataToESCommand());
 			return c;
 		}
 		
