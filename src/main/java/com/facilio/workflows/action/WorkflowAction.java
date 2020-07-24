@@ -27,6 +27,25 @@ public class WorkflowAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	String nameSpace;
+	String functionName;
+
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	public void setNameSpace(String nameSpace) {
+		this.nameSpace = nameSpace;
+	}
+
+	public String getFunctionName() {
+		return functionName;
+	}
+
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
+	}
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
 	
@@ -158,6 +177,11 @@ public class WorkflowAction extends FacilioAction {
 	public String runWorkflow() throws Exception {
 		FacilioContext context = new FacilioContext();
 		try {
+			if(workflow == null) {
+				if(nameSpace != null && functionName != null) {
+					workflow = UserFunctionAPI.getWorkflowFunction(nameSpace, functionName);
+				}
+			}
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
 			
