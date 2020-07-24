@@ -1119,7 +1119,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if(appDomainObj != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", appDomainObj.getIdentifier(), StringOperators.IS));
 				if(appDomainObj.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM && appDomainObj.getOrgId() > 0){
-					selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(appDomainObj.getOrgId()), StringOperators.IS));
+					//this check can be removed later..adding it for sutherland demo(894 is the custom domain id for org 343 in production)
+					if(!FacilioProperties.isProduction() || appDomainObj.getId() != 894l) {
+						selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(appDomainObj.getOrgId()), StringOperators.IS));
+					}
 				}
 			}
 

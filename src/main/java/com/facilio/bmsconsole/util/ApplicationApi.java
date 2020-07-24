@@ -515,9 +515,10 @@ public class ApplicationApi {
         Map<Long, Map<String, Object>> moduleScoping = new HashMap<Long, Map<String, Object>>();
         if (CollectionUtils.isNotEmpty(props)) {
             List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
+            Map<String, Object> computedValues = new HashMap<>();
             for (ScopingConfigContext scopingConfig : list) {
                 Map<String, Object> scopingfields = null;
-                computeValueForScopingField(scopingConfig);
+                computeValueForScopingField(scopingConfig, computedValues);
                 if (moduleScoping.containsKey(scopingConfig.getModuleId())) {
                     scopingfields = moduleScoping.get(scopingConfig.getModuleId());
                 } else {
@@ -531,7 +532,7 @@ public class ApplicationApi {
         return null;
     }
 
-    private static void computeValueForScopingField(ScopingConfigContext sc) throws Exception {
+    private static void computeValueForScopingField(ScopingConfigContext sc, Map<String, Object> computedValues) throws Exception {
         if (sc != null) {
             if (StringUtils.isNotEmpty(sc.getValue())) {
                 return;
@@ -539,10 +540,16 @@ public class ApplicationApi {
             if (StringUtils.isEmpty(sc.getFieldValueGenerator())) {
                 throw new IllegalArgumentException("Scoping field --> " + sc.getFieldName() + " must either have avlue or value generator associated");
             }
-            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
-            ValueGenerator valueGenerator = classObject.newInstance();
-            if (AccountUtil.getCurrentUser().getAppDomain() != null) {
-                sc.setValue(valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
+            if(computedValues.containsKey(sc.getFieldValueGenerator())){
+                sc.setValue((String) computedValues.get(sc.getFieldValueGenerator()));
+            }
+            else {
+                Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
+                ValueGenerator valueGenerator = classObject.newInstance();
+                if (AccountUtil.getCurrentUser().getAppDomain() != null) {
+                    sc.setValue(valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
+                    computedValues.put(sc.getFieldValueGenerator(), sc.getValue());
+                }
             }
 
         }
