@@ -35,11 +35,11 @@ public class BillAlertPageFactory extends PageFactory {
         }
 		
         PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.BILL_LIST);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 3);
         tab1Sec1.addWidget(previewWidget);
         
         PageWidget billDetails= new PageWidget(PageWidget.WidgetType.BILL_ALERT_DETAILS);
-        billDetails.addToLayoutParams(tab1Sec1, 24, 8);
+        billDetails.addToLayoutParams(tab1Sec1, 24, 5);
         tab1Sec1.addWidget(billDetails);
         
 
@@ -50,7 +50,7 @@ public class BillAlertPageFactory extends PageFactory {
          tab1Sec1.addWidget(commentWidget);
          
          PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
+         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 4);
          attachmentWidget.setTitle("Attachments");
          tab1Sec1.addWidget(attachmentWidget);
 		return page;
