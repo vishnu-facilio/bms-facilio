@@ -517,7 +517,7 @@ public class CommonCommandUtil {
     
     //will be removed soon..so please dont use this further
     public static List<BaseSpaceContext> getMySites() throws Exception {
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.TENANT_PORTAL) {
 			List<SiteContext> sites = SpaceAPI.getAllSites(false);
 			if(CollectionUtils.isNotEmpty(sites)) {
 				List<BaseSpaceContext> bsList = new ArrayList<BaseSpaceContext>();
