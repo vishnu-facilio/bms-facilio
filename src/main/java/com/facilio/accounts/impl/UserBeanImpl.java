@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -282,9 +283,9 @@ public class UserBeanImpl implements UserBean {
 		addBrandPlaceHolders("brandUrl", placeholders);
 		AppDomain appDomainObj = user.getAppDomain();
 		if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-			String inviteLink = getUserLink(user, "/invitation/", appDomainObj.getDomain());
+			String inviteLink = getUserLink(user, "/invitation/", appDomainObj);
 			if (registration) {
-				inviteLink = getUserLink(user, "/emailregistration/", appDomainObj.getDomain());
+				inviteLink = getUserLink(user, "/emailregistration/", appDomainObj);
 			}
 			placeholders.put("invitelink", inviteLink);
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
@@ -296,7 +297,7 @@ public class UserBeanImpl implements UserBean {
 				AccountEmailTemplate.ADDED_TO_APP_EMAIL.send(placeholders, true);
 			}
 		} else {
-			String inviteLink = getUserLink(user, "/invitation/", appDomainObj.getDomain());
+			String inviteLink = getUserLink(user, "/invitation/", appDomainObj);
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			
 			placeholders.put("invitelink", inviteLink);
@@ -921,7 +922,8 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean sendResetPasswordLinkv2(User user, String appDomain) throws Exception {
-		String inviteLink = getUserLink(user, "/fconfirm_reset_password/", appDomain);
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		String inviteLink = getUserLink(user, "/fconfirm_reset_password/", appDomainObj);
 		Map<String, Object> placeholders = new HashMap<>();
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("toUser", user);
@@ -1017,7 +1019,7 @@ public class UserBeanImpl implements UserBean {
 
 	private void sendEmailRegistration(User user) throws Exception {
 
-		String inviteLink = getUserLink(user, "/emailregistration/", user.getAppDomain().getDomain());
+		String inviteLink = getUserLink(user, "/emailregistration/", user.getAppDomain());
 		Map<String, Object> placeholders = new HashMap<>();
 		placeholders.put("toUser",user);
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
@@ -1043,22 +1045,16 @@ public class UserBeanImpl implements UserBean {
 
 	}
 	
-	private String getUserLink(User user, String url, String appDomain) throws Exception {
+	private String getUserLink(User user, String url, AppDomain appDomainObj) throws Exception {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
-		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
-		
-		if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
-			try {
-				hostname = "https://" + appDomainObj.getDomain() + "/service";
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
+		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
+			hostname = "https://" + appDomainObj.getDomain();
+			if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+				hostname = hostname + "/service";
+			} else {
+				hostname = hostname + "/app";
 			}
-
-		} else {
-			// hostname="https://app."+user.getServerName();
-			return FacilioProperties.getConfig("clientapp.url") + "/app" + url + inviteToken;
 		}
 		return hostname + url + inviteToken;
 	}
