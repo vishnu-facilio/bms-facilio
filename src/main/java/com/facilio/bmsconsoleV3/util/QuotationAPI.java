@@ -71,6 +71,7 @@ public class QuotationAPI {
         */
         Double totalTaxAmount = 0.0;
         Double lineItemsSubtotal = 0.0;
+        Double quotationTotalCost = 0.0;
         Long taxMode = getTaxMode();
         Long discountMode = getDiscountMode();
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
@@ -81,17 +82,18 @@ public class QuotationAPI {
             if (CollectionUtils.isNotEmpty(taxList)) {
                 taxList.forEach(tax -> taxIdVsRateMap.put(tax.getId(), tax.getRate()));
             }
+
             for (QuotationLineItemsContext lineItem : lineItems) {
                 if (lineItem.getQuantity() == null || lineItem.getQuantity() < 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be negative or empty for Line Item");
                 } else if (lineItem.getUnitPrice() == null || lineItem.getUnitPrice() < 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unit Price cannot be negative or empty for Line Item");
                 } else {
-                    Double lineItemCost = lineItem.getQuantity() * lineItem.getUnitPrice();
                     Double taxRate = 0d;
                     Double taxAmount = 0d;
+                    Double lineItemCost = lineItem.getQuantity() * lineItem.getUnitPrice();
                     lineItem.setCost(lineItemCost);
-                    if (taxMode != null && taxMode == 1 && lookupValueIsNotEmpty(lineItem.getTax())) {
+                    if (Objects.equals(taxMode, 1l) && Objects.equals(discountMode, 2l) && lookupValueIsNotEmpty(lineItem.getTax())) {
                         taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
                         taxAmount = taxRate * lineItem.getCost() / 100;
                     }
@@ -100,34 +102,47 @@ public class QuotationAPI {
                     lineItemsSubtotal += lineItemCost;
                 }
             }
-            quotation.setTotalTaxAmount(totalTaxAmount);
-        }
-        if (Objects.equals(discountMode,2l) && Objects.equals(taxMode,2l)) {
-            if (lookupValueIsNotEmpty(quotation.getTax())) {
-                TaxContext tax = getTaxDetails(quotation.getTax().getId());
-                totalTaxAmount = (lineItemsSubtotal * tax.getRate()) / 100;
-                quotation.setTotalTaxAmount(totalTaxAmount);
+            if (Objects.equals(discountMode, 2l) && Objects.equals(taxMode, 2l)) {
+                if (lookupValueIsNotEmpty(quotation.getTax())) {
+                    TaxContext tax = getTaxDetails(quotation.getTax().getId());
+                    totalTaxAmount = (lineItemsSubtotal * tax.getRate()) / 100;
+                    quotation.setTotalTaxAmount(totalTaxAmount);
+                }
             }
-        }
 
-        quotation.setSubTotal(lineItemsSubtotal);
-        Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
-        if (quotation.getDiscountPercentage() != null) {
-            Double discountAmount = (quotationTotalCost * quotation.getDiscountPercentage() / 100);
-            quotation.setDiscountAmount(discountAmount);
-            quotationTotalCost = quotationTotalCost - discountAmount;
-        }
-        else if (quotation.getDiscountAmount() != null) {
-            quotationTotalCost -= quotation.getDiscountAmount();
-        }
+            quotation.setSubTotal(lineItemsSubtotal);
+            quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
+            if (quotation.getDiscountPercentage() != null) {
+                Double discountAmount = (quotationTotalCost * quotation.getDiscountPercentage() / 100);
+                quotation.setDiscountAmount(discountAmount);
+                quotationTotalCost = quotationTotalCost - discountAmount;
+            } else if (quotation.getDiscountAmount() != null) {
+                quotationTotalCost -= quotation.getDiscountAmount();
+            }
 
-        if (Objects.equals(discountMode,1l) && Objects.equals(taxMode,2l)) {
-            if (lookupValueIsNotEmpty(quotation.getTax())) {
-                TaxContext tax = getTaxDetails(quotation.getTax().getId());
-                totalTaxAmount = (quotationTotalCost * tax.getRate()) / 100;
-                quotation.setTotalTaxAmount(totalTaxAmount);
+            if (Objects.equals(discountMode, 1l) && Objects.equals(taxMode, 2l)) {
+                if (lookupValueIsNotEmpty(quotation.getTax())) {
+                    TaxContext tax = getTaxDetails(quotation.getTax().getId());
+                    totalTaxAmount = (quotationTotalCost * tax.getRate()) / 100;
+                    quotation.setTotalTaxAmount(totalTaxAmount);
+                    quotationTotalCost += totalTaxAmount;
+                }
+            }
+            if (Objects.equals(discountMode, 1l) && Objects.equals(taxMode, 1l)) {
+                for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
+                    Double taxRate;
+                    Double taxAmount = 0d;
+                    if (lookupValueIsNotEmpty(lineItem.getTax())) {
+                        Double relativeLineItemCost = relativeLineItemCost(lineItem, lineItemsSubtotal, quotation.getDiscountAmount());
+                        taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
+                        taxAmount = Math.round(((taxRate * relativeLineItemCost) / 100) * 100.0) / 100.0;
+                    }
+                    lineItem.setTaxAmount(taxAmount);
+                    totalTaxAmount += taxAmount;
+                }
                 quotationTotalCost += totalTaxAmount;
             }
+            quotation.setTotalTaxAmount(totalTaxAmount);
         }
 
         if (quotation.getShippingCharges() != null) {
@@ -140,6 +155,19 @@ public class QuotationAPI {
             quotationTotalCost += quotation.getAdjustmentsCost();
         }
         quotation.setTotalCost(quotationTotalCost);
+    }
+
+    private static Double relativeLineItemCost(QuotationLineItemsContext lineItem, Double subTotal,Double discountAmount) throws Exception {
+        if (lineItem.getUnitPrice() != null && lineItem.getQuantity() != null) {
+            Double lineItemCost = (lineItem.getUnitPrice() * lineItem.getQuantity());
+            if (Objects.equals(getDiscountMode(), 1l) && subTotal != null && discountAmount != null) {
+                Double subTotalAfterDiscount = subTotal - discountAmount;
+                return subTotalAfterDiscount *(lineItemCost/subTotal);
+            } else if (Objects.equals(getDiscountMode(), 2l)) {
+                return lineItemCost;
+            }
+        }
+        return 0d;
     }
 
     public static void setLineItems(QuotationContext quotation) throws Exception {
@@ -346,15 +374,16 @@ public class QuotationAPI {
         Long taxMode = getTaxMode();
         if (taxMode  != null && taxMode == 1 && CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
+                Double relativeLineItemCost = relativeLineItemCost(lineItem, quotation.getSubTotal(), quotation.getDiscountAmount());
                 if (lookupValueIsNotEmpty(lineItem.getTax())) {
                     if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
-                        Double taxAmount = getTaxAmount(lineItem.getCost(), lineItem.getTax().getRate());
+                        Double taxAmount = getTaxAmount(relativeLineItemCost, lineItem.getTax().getRate());
                         setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
                     } else if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
                         List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
                         for (TaxGroupContext taxGroup : taxGroups) {
                             if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
-                                Double taxAmount = getTaxAmount(lineItem.getCost(), taxGroup.getChildTax().getRate());
+                                Double taxAmount = getTaxAmount(relativeLineItemCost, taxGroup.getChildTax().getRate());
                                 setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
                             }
                         }
