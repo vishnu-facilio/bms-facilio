@@ -81,7 +81,7 @@
     <title>
     		<% if(isBuildingstalk) {%>
     			BuildingsTalk
-    		<% else if(isSutherland) {%>
+    		<% } else if(isSutherland) {%>
     			Sutherland
     		<%} else { %>
     			Facilio
@@ -90,7 +90,7 @@
 
 <% if(isBuildingstalk) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon">
-<% else if(isSutherland) {%>
+<% } else if(isSutherland) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/sutherland.ico" type="image/x-icon">
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
