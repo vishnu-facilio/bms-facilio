@@ -60,14 +60,13 @@ public class MultivariateAnomalyEventJob extends FacilioJob
         org.json.simple.JSONObject varFieldId = (org.json.simple.JSONObject) parser.parse(varFieldIdStr);
 
         List<MultiVariateAnomalyEvent> eventList = new LinkedList<MultiVariateAnomalyEvent>();
-        JSONObject listOfVarFieldId = new JSONObject();
-        JSONObject neighbourCount = new JSONObject();
-        JSONObject listOfVarRatioFields = new JSONObject();
-
-
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         while(startTime<=endTime)
         {
+            JSONObject listOfVarFieldId = new JSONObject();
+            JSONObject neighbourCount = new JSONObject();
+            JSONObject listOfVarRatioFields = new JSONObject();
+
         	long outlierModuleId = Long.parseLong(props.get("outlierModuleId").toString());
             FacilioModule outlierModule = modBean.getModule(outlierModuleId);
             List<FacilioField> outlierFields = modBean.getAllFields(outlierModule.getName());
