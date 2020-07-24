@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -65,8 +66,11 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				if (currentOrgDomain == null) {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
-				if(appDomain.getOrgId() > 0) {
-					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
+				if(appDomain != null && appDomain.getOrgId() > 0) {
+					//this check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production)
+					if(!FacilioProperties.isProduction() || appDomain.getId() != 894l) {
+						organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
+					}
 				}
 				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
