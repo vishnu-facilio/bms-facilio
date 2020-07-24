@@ -72,6 +72,7 @@ public class QuotationAPI {
         Double totalTaxAmount = 0.0;
         Double lineItemsSubtotal = 0.0;
         Long taxMode = getTaxMode();
+        Long discountMode = getDiscountMode();
         if (CollectionUtils.isNotEmpty(quotation.getLineItems())) {
             List<QuotationLineItemsContext> lineItems = quotation.getLineItems();
             List<Long> uniqueTaxIds = lineItems.stream().filter(lineItem -> lookupValueIsNotEmpty(lineItem.getTax())).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
@@ -99,17 +100,17 @@ public class QuotationAPI {
                     lineItemsSubtotal += lineItemCost;
                 }
             }
+            quotation.setTotalTaxAmount(totalTaxAmount);
         }
-
-        if (taxMode != null && taxMode == 2) {
+        if (Objects.equals(discountMode,2l) && Objects.equals(taxMode,2l)) {
             if (lookupValueIsNotEmpty(quotation.getTax())) {
                 TaxContext tax = getTaxDetails(quotation.getTax().getId());
                 totalTaxAmount = (lineItemsSubtotal * tax.getRate()) / 100;
+                quotation.setTotalTaxAmount(totalTaxAmount);
             }
         }
 
         quotation.setSubTotal(lineItemsSubtotal);
-        quotation.setTotalTaxAmount(totalTaxAmount);
         Double quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
         if (quotation.getDiscountPercentage() != null) {
             Double discountAmount = (quotationTotalCost * quotation.getDiscountPercentage() / 100);
@@ -119,6 +120,16 @@ public class QuotationAPI {
         else if (quotation.getDiscountAmount() != null) {
             quotationTotalCost -= quotation.getDiscountAmount();
         }
+
+        if (Objects.equals(discountMode,1l) && Objects.equals(taxMode,2l)) {
+            if (lookupValueIsNotEmpty(quotation.getTax())) {
+                TaxContext tax = getTaxDetails(quotation.getTax().getId());
+                totalTaxAmount = (quotationTotalCost * tax.getRate()) / 100;
+                quotation.setTotalTaxAmount(totalTaxAmount);
+                quotationTotalCost += totalTaxAmount;
+            }
+        }
+
         if (quotation.getShippingCharges() != null) {
             quotationTotalCost += quotation.getShippingCharges();
         }
@@ -515,5 +526,23 @@ public class QuotationAPI {
             }
         }
         return taxMode;
+    }
+
+    public static Long getDiscountMode () throws Exception {
+        JSONObject orgPreference = PreferenceAPI.getEnabledOrgPreferences();
+        Long discountMode = 0l;
+        if (orgPreference != null && orgPreference.containsKey("discountApplication")) {
+            Map<String, Object> prefMeta = (Map<String, Object>) orgPreference.get("discountApplication");
+            String formDataString = (String) prefMeta.get("formData");
+            JSONObject prefFormData = new JSONObject();
+            if (StringUtils.isNotEmpty(formDataString)) {
+                JSONParser parser = new JSONParser();
+                prefFormData = (JSONObject)parser.parse(formDataString);
+            }
+            if (prefFormData.containsKey("discountApplication") && prefFormData.get("discountApplication") != null) {
+                discountMode = (Long) prefFormData.get("discountApplication");
+            }
+        }
+        return discountMode;
     }
 }
