@@ -366,9 +366,13 @@ public class QuotationAPI {
                 setTaxAmountInMap(taxSplitUp, quotation.getTax(), quotation.getTotalTaxAmount());
             } else if (quotation.getTax().getType() != null && quotation.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
                 List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(quotation.getTax().getId()));
+                Double total = quotation.getSubTotal();
+                if (Objects.equals(getDiscountMode(), 1l) && quotation.getDiscountAmount() != null) {
+                    total -= quotation.getDiscountAmount();
+                }
                 for (TaxGroupContext taxGroup : taxGroups) {
                     if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
-                        Double taxAmount = getTaxAmount(quotation.getSubTotal(), taxGroup.getChildTax().getRate());
+                        Double taxAmount = getTaxAmount(total, taxGroup.getChildTax().getRate());
                         setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
                     }
                 }
