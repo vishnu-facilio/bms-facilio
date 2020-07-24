@@ -109,7 +109,7 @@ public class ServerInfo extends TimerTask {
             }
         } catch (Exception e) {
             hostname = "-1";
-            LOGGER.error("Unable to set IP ");
+            LOGGER.error("Unable to set IP ", e);
         }
     }
 
