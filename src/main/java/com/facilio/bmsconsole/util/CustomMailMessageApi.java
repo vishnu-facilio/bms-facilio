@@ -92,6 +92,7 @@ public class CustomMailMessageApi {
 
         FacilioContext context = chain.getContext();
 
+        context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportMail);
         context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singletonList(mailMessage));
 
         chain.execute();
