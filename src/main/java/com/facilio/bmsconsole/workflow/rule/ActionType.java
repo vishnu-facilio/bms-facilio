@@ -1540,6 +1540,7 @@ public enum ActionType {
 //			addWorkOrder(workorderContext);
 			WorkOrderContext workorderContext = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 			workorderContext.setSourceType(SourceType.EMAIL_REQUEST);
+			workorderContext.setSiteId(supportEmailContext.getSiteId());
 			List<File> attachedFiles = new ArrayList<>();
 			List<String> attachedFilesFileName = new ArrayList<>();
 			List<String> attachedFilesContentType = new ArrayList<>();
