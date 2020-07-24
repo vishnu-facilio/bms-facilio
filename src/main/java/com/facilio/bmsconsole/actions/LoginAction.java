@@ -228,12 +228,6 @@ public class LoginAction extends FacilioAction {
 			return SUCCESS;
 		}
 
-		HttpSession session = request.getSession();
-		session.invalidate();
-		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
-		FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
-		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
-		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 		setResult("message", "success");
 		return SUCCESS;
 	}
