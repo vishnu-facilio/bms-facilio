@@ -55,6 +55,18 @@
 
 	boolean isBuildingstalk = (request.getServerName().endsWith("buildingsoncloud.com")  || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )));
 	
+	boolean isSutherland = request.getServerName().contains("sutherlandglobal.com");
+	
+	if (isSutherland) {
+		copyrightInfo.put("name", "Sutherland Global Services, Inc");
+		copyrightInfo.put("year", "2020");
+		
+		rebrandInfo.put("brandName", "Sutherland");
+		rebrandInfo.put("name", "Sutherland");
+		rebrandInfo.put("domain", "sutherlandglobal.com");
+		rebrandInfo.put("copyright", copyrightInfo);
+	}
+	
 	String userAgent = request.getHeader("User-Agent");
 	boolean isWindows = (userAgent != null && userAgent.indexOf("Windows") >= 0) ? true : false;
 %>
@@ -69,6 +81,8 @@
     <title>
     		<% if(isBuildingstalk) {%>
     			BuildingsTalk
+    		<% else if(isSutherland) {%>
+    			Sutherland
     		<%} else { %>
     			Facilio
     		<%} %>
@@ -76,6 +90,8 @@
 
 <% if(isBuildingstalk) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon">
+<% else if(isSutherland) {%>
+	<link rel="icon" href="<%=staticUrl%>/statics/sutherland.ico" type="image/x-icon">
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
 <% }%>

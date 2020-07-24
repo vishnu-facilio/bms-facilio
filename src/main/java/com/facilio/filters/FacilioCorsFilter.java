@@ -245,8 +245,7 @@ public class FacilioCorsFilter implements Filter {
                 requestType = NO_CORS;
             }
         } else {
-        	String orgId = request.getHeader("X-Org-Id");
-            if(isAllowedOrigin(originHeader) || request.getRequestURI().contains("/sso/") || "350".equals(orgId)) {
+        	if(isAllowedOrigin(originHeader) || request.getRequestURI().contains("/sso/")) {
                 String requestMethod = request.getMethod();
                 if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
                     String accessMethod = request.getHeader("Access-Control-Request-Method");
