@@ -647,7 +647,14 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String addModuleData() throws Exception {
-		FacilioContext context = new FacilioContext();
+		addModuleDataCommon();
+		return moduleDataDetails();
+	}
+	
+	private void addModuleDataCommon() throws Exception {
+		
+		FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+		FacilioContext context = addModuleDataChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 
 		setModuleData();
@@ -658,11 +665,23 @@ public class ModuleAction extends FacilioAction {
 		// TODO.... Temporary. Will be changed to counter field soon
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, getWithLocalId());
 		
-		FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
-		addModuleDataChain.execute(context);
+		addModuleDataChain.execute();
 		
 		setId(moduleData.getId());
-		return moduleDataDetails();
+	}
+	
+	public String addBulkModuleData() throws Exception {
+		
+		if(bulkModuleDataList != null && !bulkModuleDataList.isEmpty()) {
+			
+			for(CustomModuleData moduleData1 : bulkModuleDataList) {
+				
+				moduleData = moduleData1;
+				addModuleDataCommon();
+			}
+		}
+		
+		return SUCCESS;
 	}
 
 	private String moduleDataString;
@@ -875,6 +894,16 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setModuleDatas(List<ModuleBaseWithCustomFields> moduleDatas) {
 		this.moduleDatas = moduleDatas;
+	}
+	
+	private List<CustomModuleData> bulkModuleDataList;
+
+	public List<CustomModuleData> getBulkModuleDataList() {
+		return bulkModuleDataList;
+	}
+
+	public void setBulkModuleDataList(List<CustomModuleData> bulkModuleDataList) {
+		this.bulkModuleDataList = bulkModuleDataList;
 	}
 
 	private CustomModuleData moduleData;

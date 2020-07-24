@@ -2362,6 +2362,11 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="addModuleData">
 		</action>
+		
+		<action name="bulkAdd"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addBulkModuleData">
+		</action>
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
