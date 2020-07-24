@@ -77,7 +77,7 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             for(Map<String,Object> eachRecord : outlierData)
             {
                 LOGGER.info("each record outlier " + eachRecord.get("outlier").toString());
-                if(!eachRecord.get("outlier").toString().equals("-1") )
+                if(eachRecord.get("outlier").toString().equals("-1") )
                 {
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
@@ -85,13 +85,13 @@ public class MultivariateAnomalyEventJob extends FacilioJob
                     List<Map<String,Object>> propsRatioData = getData(ratioFields,ratioModule,startTime, startTime+interval,assetId);
                     LOGGER.info("ratioData " + propsRatioData.toString());
                     String causingVarFieldId = new String();
-                    float maxValue = (float) 0.0;
+                    Double maxValue = 0.0;
                     for(Object key : varFieldId.keySet())
                     {
                         if(key.toString().contains("ratio"))
                         {
                             LOGGER.info("listOfVarRatioFields "+ key.toString());
-                            float currentValue = (float)propsRatioData.get(0).get(key);
+                            Double currentValue = (Double) propsRatioData.get(0).get(key);
                             listOfVarRatioFields.put(varFieldId.get(key).toString(),currentValue);
                             if(currentValue >= maxValue)
                             {
