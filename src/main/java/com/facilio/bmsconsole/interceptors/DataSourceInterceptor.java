@@ -66,11 +66,9 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				if (currentOrgDomain == null) {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
-				if(appDomain != null && appDomain.getOrgId() > 0) {
-					//this check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production)
-					if(!FacilioProperties.isProduction() || appDomain.getId() != 894l) {
-						organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
-					}
+				//the third check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production)
+				if(appDomain != null && appDomain.getOrgId() > 0 && (!FacilioProperties.isProduction() || appDomain.getId() != 894l)) {
+					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				}
 				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
