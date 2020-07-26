@@ -132,7 +132,7 @@ public class OrgBeanImpl implements OrgBean {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
 			}
 			
-			appId = ApplicationApi.getApplicationForLinkName("newapp").getId();
+			appId = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId();
 		}
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));

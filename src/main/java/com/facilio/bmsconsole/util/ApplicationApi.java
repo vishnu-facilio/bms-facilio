@@ -78,7 +78,10 @@ public class ApplicationApi {
     public static ApplicationContext getApplicationForLinkName(String appLinkName) throws Exception {
         //temp handling for newapp and newtenant linkname
         if (appLinkName.equals("app")) {
-            appLinkName = "newapp";
+            appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+        }
+        else if (appLinkName.equals("newtenants")) {
+            appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
         }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
@@ -96,7 +99,10 @@ public class ApplicationApi {
         if (StringUtils.isNotEmpty(appLinkName)) {
             //temp handling for newapp and newtenant linkname
             if (appLinkName.equals("app")) {
-                appLinkName = "newapp";
+                appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+            }
+            else if (appLinkName.equals("newtenants")) {
+                appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
             }
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
