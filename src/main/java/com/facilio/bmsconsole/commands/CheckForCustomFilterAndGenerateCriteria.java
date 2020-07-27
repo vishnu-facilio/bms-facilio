@@ -16,16 +16,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 
-public class CheckForCustomFilterAndGenerateCriteria implements Command {
+public class CheckForCustomFilterAndGenerateCriteria extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<Long> filterIds = (List<Long>) context.get(FacilioConstants.ContextNames.FILTER_IDS);
+		Long filterId = (Long) context.get(FacilioConstants.ContextNames.FILTER_IDS);
 		
-		if (filterIds != null && filterIds.size() > 0) {
-			Long filterId = filterIds.get(0);
-			
+		if (filterId != null && filterId > 0) {			
 			CustomFilterContext customFilter = FiltersAPI.getCustomFilter(filterId);
 
 				if (customFilter.getCriteriaId() > 0) {

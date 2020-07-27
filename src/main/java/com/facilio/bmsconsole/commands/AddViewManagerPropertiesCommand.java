@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.CustomFilterContext;
 import com.facilio.bmsconsole.context.QuickFilterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -67,6 +68,8 @@ public class AddViewManagerPropertiesCommand extends FacilioCommand {
 			List<Map<String, Object>> customFiltersPropList = new ArrayList<Map<String,Object>>();
 			
 			for (CustomFilterContext customFilter : customFilters) {
+				Long criteriaId = CriteriaAPI.addCriteria(customFilter.getCriteria(), AccountUtil.getCurrentOrg().getId());
+				customFilter.setCriteriaId(criteriaId);
 				Map<String, Object> props = FieldUtil.getAsProperties(customFilter);
 				customFiltersPropList.add(props);
 			}

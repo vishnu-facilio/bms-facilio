@@ -617,14 +617,14 @@ public class ModuleAction extends FacilioAction {
 		this.clientCriteria = clientCriteria;
 	}
 	
-	List<Long> filterIds;
+	Long filterId;
 
-	public List<Long> getFilterIds() {
-		return filterIds;
+	public Long getFilterId() {
+		return filterId;
 	}
 
-	public void setFilterIds(List<Long> filterIds) {
-		this.filterIds = filterIds;
+	public void setFilterId(Long filterId) {
+		this.filterId = filterId;
 	}
 
 	public String getModuleDataList() throws Exception {
@@ -633,7 +633,7 @@ public class ModuleAction extends FacilioAction {
 		constructListContext(context);
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
- 		context.put(FacilioConstants.ContextNames.FILTER_IDS, filterIds);
+ 		context.put(FacilioConstants.ContextNames.FILTER_IDS, filterId);
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
 		

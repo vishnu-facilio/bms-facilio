@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CustomFilterContext;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -97,23 +98,18 @@ public class FiltersAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = ModuleFactory.getCustomFiltersModule();
 			
-			SelectRecordsBuilder<CustomFilterContext> selectBuilder = new SelectRecordsBuilder<CustomFilterContext>()
-					.moduleName(module.getName())
-					.beanClass(CustomFilterContext.class)
-					.select(modBean.getAllFields(module.getName()))
-					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getIdCondition(filterId, module));
-			
-			List<CustomFilterContext> customFilters = selectBuilder.get();
-			customFilter = new CustomFilterContext();
-			
-			if(customFilters != null && !customFilters.isEmpty()) {
-				customFilter = customFilters.get(0);
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+	                .table(module.getTableName())
+	                .select(FieldFactory.getCustomFilterFields())
+	                .andCondition(CriteriaAPI.getIdCondition(filterId,module));
+	        Map<String, Object> map = selectRecordBuilder.fetchFirst();
+	        
+	         customFilter = FieldUtil.getAsBeanFromMap(map, CustomFilterContext.class);
+	        			
 				if (customFilter.getCriteriaId() > 0) {
 					Criteria customFilterCriteria = CriteriaAPI.getCriteria(customFilter.getCriteriaId());
 					customFilter.setCriteria(customFilterCriteria);
 				}
-			}
 			
 		}
 		
