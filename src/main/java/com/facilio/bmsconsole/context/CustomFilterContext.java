@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class ViewFilterContext extends ModuleBaseWithCustomFields{
+public class CustomFilterContext extends ModuleBaseWithCustomFields{
 
 	private String name;
 	

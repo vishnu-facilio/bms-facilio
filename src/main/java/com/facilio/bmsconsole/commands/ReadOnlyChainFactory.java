@@ -133,6 +133,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new CheckForCustomFilterAndGenerateCriteria());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -865,11 +866,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain getViewFiltersList() {
+	public static FacilioChain getCustomFiltersList() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new GetViewFiltersListCommand());
+		c.addCommand(new GetCustomFiltersListCommand());
 		c.addCommand(new GenerateFilterFromCriteriaCommand());
-		c.addCommand(new ConstructViewFiltersListCommand());
+		c.addCommand(new ConstructCustomFiltersListCommand());
 		return c;
 	}
 

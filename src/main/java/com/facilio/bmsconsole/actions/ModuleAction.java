@@ -616,6 +616,16 @@ public class ModuleAction extends FacilioAction {
 	public void setClientCriteria(String clientCriteria) {
 		this.clientCriteria = clientCriteria;
 	}
+	
+	List<Long> filterIds;
+
+	public List<Long> getFilterIds() {
+		return filterIds;
+	}
+
+	public void setFilterIds(List<Long> filterIds) {
+		this.filterIds = filterIds;
+	}
 
 	public String getModuleDataList() throws Exception {
 		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
@@ -623,6 +633,7 @@ public class ModuleAction extends FacilioAction {
 		constructListContext(context);
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+ 		context.put(FacilioConstants.ContextNames.FILTER_IDS, filterIds);
  		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
  		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
 		

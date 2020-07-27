@@ -83,6 +83,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		Criteria customFilterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.CUSTOM_FILTER_CRITERIA);
 		// TODO change this as excludeparentcriteria and include parent criteria by default
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
 		if (includeParentCriteria == null) {
@@ -91,6 +92,11 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		} 
+		
+		if (customFilterCriteria != null) {
+			builder.andCriteria(customFilterCriteria);
+		}
+		
 		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			builder.andCriteria(view.getCriteria());
 		}

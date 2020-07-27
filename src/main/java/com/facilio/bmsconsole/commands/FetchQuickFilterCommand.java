@@ -8,9 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.bmsconsole.context.ViewFilterContext;
-import com.facilio.bmsconsole.workflow.rule.ValidationContext;
+import com.facilio.bmsconsole.context.QuickFilterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -20,31 +18,28 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class GetViewFiltersListCommand extends FacilioCommand {
+public class FetchQuickFilterCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		
 		Long viewId =  (Long) context.get(FacilioConstants.ContextNames.VIEWID);
-		if (viewId > -1) {
+		
+		if (viewId > 0) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(FieldFactory.getViewFiltersFields())
-					.table(ModuleFactory.getViewFiltersModule().getTableName())
+					.select(FieldFactory.getQuickFilterFields())
+					.table(ModuleFactory.getQuickFilterModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("VIEWID","viewId",String.valueOf(viewId), NumberOperators.EQUALS));
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			if (props != null && !props.isEmpty()) {
-				
-				List<ViewFilterContext> viewFilters = new ArrayList<>();
+				List<QuickFilterContext> quickFilters = new ArrayList<>();
 				for(Map<String, Object> prop : props) {
-					ViewFilterContext viewFilter = FieldUtil.getAsBeanFromMap(prop, ViewFilterContext.class);
-					viewFilters.add(viewFilter);
+					QuickFilterContext quickFilter = FieldUtil.getAsBeanFromMap(prop, QuickFilterContext.class);
+					quickFilters.add(quickFilter);
 				}
-				
-				List<Long> criteriaIds = viewFilters.stream().map(a -> a.getCriteriaId()).collect(Collectors.toList());
-				Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-				context.put(FacilioConstants.ContextNames.CRITERIA_MAP, criteriaMap);
-				context.put(FacilioConstants.ContextNames.VIEW_FILTERS_LIST, viewFilters);
+				context.put(FacilioConstants.ContextNames.QUICK_FILTER_CONTEXT, quickFilters);
 			}
 		}
 		return false;

@@ -2585,20 +2585,38 @@
 		</action>
 	</package>
 	
-	<package name="viewFilterApiv2" namespace="/api/v2/view/filter"
+	<package name="customFilterApiv2" namespace="/api/v2/view/filter"
 		extends="v2Api">
-		<action name="addFilter"
-			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="addViewFilter">
+		<action name="addCustomFilter"
+			class="com.facilio.bmsconsole.actions.CustomFilterAction" method="addCustomFilter">
 			<param name="permission">CREATE</param>
 		</action>
-		<action name="updateFilter"
-			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="updateViewFilter">
+		<action name="updateCustomFilter"
+			class="com.facilio.bmsconsole.actions.CustomFilterAction" method="updateCustomFilter">
 		</action>
-		<action name="deleteFilter"
-			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="deleteViewFilter">
+		<action name="deleteCustomFilter"
+			class="com.facilio.bmsconsole.actions.CustomFilterAction" method="deleteCustomFilter">
 		</action>
-		<action name="getFilter"
-			class="com.facilio.bmsconsole.actions.ViewFilterAction" method="getViewFilters">
+		<action name="getCustomFilter"
+			class="com.facilio.bmsconsole.actions.CustomFilterAction" method="getCustomFilters">
+		</action> 
+
+	</package>
+	
+	<package name="quickFilterApiv2" namespace="/api/v2/quick/filter"
+		extends="v2Api">
+		<action name="addViewManagerProperties"
+			class="com.facilio.bmsconsole.actions.QuickFilterAction" method="addProperties">
+			<param name="permission">CREATE</param>
+		</action>
+<!-- 		<action name="updateQuickFilter"
+			class="com.facilio.bmsconsole.actions.QuickFilterAction" method="updateQuickFilter">
+		</action> -->
+		<action name="deleteQuickFilter"
+			class="com.facilio.bmsconsole.actions.QuickFilterAction" method="deleteQuickFilter">
+		</action>
+		<action name="getQuickFilter"
+			class="com.facilio.bmsconsole.actions.QuickFilterAction" method="getQuickFiltersList">
 		</action> 
 
 	</package>

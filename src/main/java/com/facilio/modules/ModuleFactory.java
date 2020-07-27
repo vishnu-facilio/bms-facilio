@@ -1646,13 +1646,22 @@ public class ModuleFactory {
 		viewSortColumnsModule.setTableName("View_Sort_Columns");
 		return viewSortColumnsModule;
 	}
+
 	
-	public static FacilioModule getViewFiltersModule() {
-		FacilioModule viewFiltersModule = new FacilioModule();
-		viewFiltersModule.setName("viewFilters");
-		viewFiltersModule.setDisplayName("View Filters");
-		viewFiltersModule.setTableName("View_Filters");
-		return viewFiltersModule;
+	public static FacilioModule getCustomFiltersModule() {
+		FacilioModule customFiltersModule = new FacilioModule();
+		customFiltersModule.setName("customFilters");
+		customFiltersModule.setDisplayName("Custom Filters");
+		customFiltersModule.setTableName("Custom_Filters");
+		return customFiltersModule;
+	}
+	
+	public static FacilioModule getQuickFilterModule() {
+		FacilioModule quickFiltersModule = new FacilioModule();
+		quickFiltersModule.setName("quickFilters");
+		quickFiltersModule.setDisplayName("Quick Filters");
+		quickFiltersModule.setTableName("Quick_Filters");
+		return quickFiltersModule;
 	}
 
 	public static FacilioModule getTaskInputOptionModule() {

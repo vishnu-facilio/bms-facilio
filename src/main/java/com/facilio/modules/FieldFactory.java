@@ -5455,8 +5455,8 @@ public class FieldFactory {
         return fields;
     }
     
-    public static List<FacilioField> getViewFiltersFields() {
-        FacilioModule module = ModuleFactory.getViewFiltersModule();
+    public static List<FacilioField> getCustomFilterFields() {
+        FacilioModule module = ModuleFactory.getCustomFiltersModule();
         List<FacilioField> fields = new ArrayList<>();
 
         FacilioField id = new FacilioField();
@@ -5487,6 +5487,37 @@ public class FieldFactory {
         criteriaId.setModule(module);
         fields.add(criteriaId);
 
+        return fields;
+    }
+
+    
+    public static List<FacilioField> getQuickFilterFields() {
+        FacilioModule module = ModuleFactory.getQuickFilterModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField id = new FacilioField();
+        id.setName("id");
+        id.setDataType(FieldType.NUMBER);
+        id.setColumnName("ID");
+        id.setModule(module);
+        fields.add(id);
+
+        FacilioField view = new FacilioField();
+        view.setName("viewId");
+        view.setDataType(FieldType.NUMBER);
+        view.setColumnName("VIEWID");
+        view.setModule(module);
+        fields.add(view);
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+        
+        FacilioField fieldName = new FacilioField();
+        fieldName.setName("fieldName");
+        fieldName.setDataType(FieldType.STRING);
+        fieldName.setColumnName("FIELDNAME");
+        fieldName.setModule(module);
+        fields.add(fieldName);
+        
         return fields;
     }
 

@@ -4078,26 +4078,49 @@ public class TransactionChainFactory {
 	    }
 	    
 	    
-	    public static FacilioChain addViewFilterChain()
+	    public static FacilioChain addCustomFilterChain()
 	    {
 	    	FacilioChain c=getDefaultChain();
 	    	c.addCommand(new GenerateCriteriaFromFilterCommand());
-	    	c.addCommand(new AddViewFilterCommand());
+	    	c.addCommand(new AddCustomFilterCommand());
 	    	return c;
 	    }
 	    
-	    public static FacilioChain updateViewFilterChain()
+	    public static FacilioChain updateCustomFilterChain()
 	    {
 	    	FacilioChain c=getDefaultChain();
 	    	c.addCommand(new GenerateCriteriaFromFilterCommand());
-	    	c.addCommand(new updateViewFilterCommand());
+	    	c.addCommand(new UpdateCustomFilterCommand());
 	    	return c;
 	    }
 	    
-	    public static FacilioChain deleteViewFilterChain()
+	    public static FacilioChain deleteCustomFilterChain()
 	    {
 	    	FacilioChain c=getDefaultChain();
-	    	c.addCommand(new deleteViewFilterCommand());
+	    	c.addCommand(new DeleteCustomFilterCommand());
+	    	return c;
+	    }
+    
+	    public static FacilioChain addViewManagerPropertiesChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new DeleteQuickFiltersCommand());
+	    	c.addCommand(new DeleteAllCustomFiltersCommand());
+	    	c.addCommand(new AddViewManagerPropertiesCommand());
+	    	return c;
+	    }
+	    
+	    public static FacilioChain fetchQuickFilterChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new FetchQuickFilterCommand());
+	    	return c;
+	    }
+	    
+	    public static FacilioChain deleteQuickFilterChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new DeleteQuickFiltersCommand());
 	    	return c;
 	    }
 
