@@ -1,6 +1,5 @@
 package com.facilio.services.email;
 
-import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
@@ -35,7 +34,8 @@ public class ImapsClient {
             try {
                 store = session.getStore("imaps");
                 store.connect(mailDetails.getMailServer(), mailDetails.getPort(), mailDetails.getUserName(), mailDetails.getPassword());
-            } catch (MessagingException e) {
+            } catch (MessagingException ex) {
+                ex.printStackTrace();
             }
 
         }
