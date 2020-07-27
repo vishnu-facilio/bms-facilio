@@ -9,7 +9,8 @@
 	<constant name="struts.devMode" value="false" />
 	<constant name="struts.custom.i18n.resources" value="facilioprops" />
 	<constant name="struts.action.excludePattern" value="/websocket/.*" />
-	<constant name="struts.multipart.maxSize" value="15000000" />
+	<!-- <constant name="struts.multipart.maxSize" value="15000000" /> -->
+	<constant name="struts.multipart.maxSize" value="104857600" />
 	<constant name="struts.mapper.alwaysSelectFullNamespace" value="true" />
 
 	<include file="baseapiv1.xml" />
