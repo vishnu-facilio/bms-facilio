@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.File;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,10 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.fs.FileInfo;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -1546,11 +1551,17 @@ public enum ActionType {
 			List<String> attachedFilesContentType = new ArrayList<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			if (mailContext.getAttachmentsList().size() > 0) {
-				List<Map<String, Object>> attachments = mailContext.getAttachmentsList();
-				for (Map<String, Object> attachment :attachments) {
-					attachedFiles.add((File) attachment.get("attachment"));
-					attachedFilesFileName.add((String) attachment.get("attachmentFileName"));
-					attachedFilesContentType.add((String) attachment.get("attachmentContentType"));
+				List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(mailContext.getId(), FacilioConstants.ContextNames.MAIL_ATTACHMENT);
+				for (AttachmentV3Context attachment :attachments) {
+					FileStore fs = FacilioFactory.getFileStore();
+					Long fileId = attachment.getAttachmentId();
+					FileInfo fileInfo = fs.getFileInfo(fileId, true);
+					InputStream downloadStream = fs.readFile(fileInfo);
+					File file = File.createTempFile(attachment.getAttachmentFileName(), "");
+					FileUtils.copyInputStreamToFile(downloadStream, file);
+					attachedFiles.add(file);
+					attachedFilesFileName.add(attachment.getAttachmentFileName());
+					attachedFilesContentType.add(attachment.getAttachmentContentType());
 				}
 			}
 			bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
