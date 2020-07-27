@@ -50,7 +50,7 @@ public class BillAlertPageFactory extends PageFactory {
          tab1Sec1.addWidget(commentWidget);
          
          PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 4);
+         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
          attachmentWidget.setTitle("Attachments");
          tab1Sec1.addWidget(attachmentWidget);
 		return page;

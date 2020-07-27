@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,75 +33,164 @@ public class VendorPageFactory extends PageFactory{
 	public static Page getVendorPage(VendorContext vendor) throws Exception {
 		Page page = new Page();
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(vendor.getModuleId());
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
+	
+			
+			Tab tab1 = page.new Tab("summary");
+			page.addTab(tab1);
+			
+			Section tab1Sec1 = page.new Section();
+			Section tab1Sec2 = page.new Section("TARIFFS");
 
-		Tab tab1 = page.new Tab("summary");
-		page.addTab(tab1);
-
-		Section tab1Sec1 = page.new Section();
-		tab1.addSection(tab1Sec1);
-//		addPrimaryDetailsWidget(tab1Sec1);
-		addSecondaryDetailsWidget(tab1Sec1);
-		if(vendor.getAddress()!=null) {
-			Section tab1Sec2 = page.new Section();
+			tab1.addSection(tab1Sec1);
 			tab1.addSection(tab1Sec2);
-			addAddressInfoWidget(tab1Sec2);
-		}
-		
-		Section tab1Sec3 = page.new Section();
-		tab1.addSection(tab1Sec3);
-		
-		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
-		subModuleGroup.addToLayoutParams(tab1Sec3, 24, 8);
-		subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
-		tab1Sec3.addWidget(subModuleGroup);
-		
-		PageWidget notesWidget = new PageWidget();
-		notesWidget.setWidgetType(WidgetType.COMMENT);
-		subModuleGroup.addToWidget(notesWidget);
-		
-		
-		Tab tab2 = page.new Tab("related list");
-		page.addTab(tab2);
 
-
-		Section tab2Sec1 ;
-//		addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-			tab2Sec1 = page.new Section();
+		
+			PageWidget cards= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS);
+			cards.addToLayoutParams(tab1Sec1, 24, 4);
+			tab1Sec2.addWidget(cards);
+			
+			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY);
+			electriycity.addToLayoutParams(tab1Sec2, 24, 4);
+			tab1Sec2.addWidget(electriycity);
+			
+			PageWidget water= new PageWidget(PageWidget.WidgetType.SUPPLIER_WATER);
+			water.addToLayoutParams(tab1Sec2, 24, 4);
+			tab1Sec2.addWidget(water);
+			
+			PageWidget seawage= new PageWidget(PageWidget.WidgetType.SUPPLIER_SEAWAGE);
+			seawage.addToLayoutParams(tab1Sec2, 24, 4);
+			tab1Sec2.addWidget(seawage);
+			
+			PageWidget details= new PageWidget(PageWidget.WidgetType.SUPPLIER_DETAILS);
+			details.addToLayoutParams(tab1Sec2, 24, 4);
+			tab1Sec2.addWidget(details);
+			
+			Section tab1Sec3 = page.new Section();
+			tab1.addSection(tab1Sec3);
+			
+			PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
+			subModuleGroup.addToLayoutParams(tab1Sec3, 24, 8);
+			subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
+			tab1Sec3.addWidget(subModuleGroup);
+			
+			PageWidget notesWidget = new PageWidget();
+			notesWidget.setWidgetType(WidgetType.COMMENT);
+			subModuleGroup.addToWidget(notesWidget);
+			
+			PageWidget attachmentWidget = new PageWidget();
+			attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
+			subModuleGroup.addToWidget(attachmentWidget);
+	
+			
+			
+			Page.Tab tab2 = page.new Tab("ACTIVE PAYMENTS");
+			page.addTab(tab2);
+			Page.Section tab2Sec1 = page.new Section();
 			tab2.addSection(tab2Sec1);
-			addRelatedListWidget(tab2Sec1, "vendorcontact", vendor.getModuleId());
-		} else {
-			tab2Sec1 = page.new Section();
-			tab2.addSection(tab2Sec1);
-			addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
+			
+			PageWidget payments= new PageWidget(PageWidget.WidgetType.SUPPLIER_ACTIVE_PAYMENTS);
+			payments.addToLayoutParams(tab2Sec1, 24, 24);
+			tab2Sec1.addWidget(payments);
+
+			
+			
+			Page.Tab tab3 = page.new Tab("TRANSACTIONS");
+			page.addTab(tab3);
+			Page.Section tab3Sec1 = page.new Section();
+			tab3.addSection(tab3Sec1);
+			
+			PageWidget transaction= new PageWidget(PageWidget.WidgetType.SUPPLIER_TRANSACTIONS);
+			transaction.addToLayoutParams(tab3Sec1, 24, 24);
+			tab3Sec1.addWidget(transaction);
+			
+			
+			
+			Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
+			page.addTab(tab4);
+			Page.Section tab4Sec1 = page.new Section();
+			tab4.addSection(tab4Sec1);
+			
+			
+			PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.SUPPLIER_CANCELLED_PAYMENTS);
+			cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
+			tab4Sec1.addWidget(cancelPayments);
+			
 		}
+		else {
 
-		Section tab2Sec2 = page.new Section();
-		tab2.addSection(tab2Sec2);
-		addRelatedListWidget(tab2Sec2, "vendorDocuments", vendor.getModuleId());
-		
-		Section tab2Sec3 = page.new Section();
-		tab2.addSection(tab2Sec3);
-		addRelatedListWidget(tab2Sec3, "insurance", vendor.getModuleId());
-		
-		if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(vendor.getModuleId());
 
-			Section tab2Sec4 = page.new Section();
-			tab2.addSection(tab2Sec4);
-			addRelatedListWidget(tab2Sec4, "workorder", vendor.getModuleId());
+			Tab tab1 = page.new Tab("summary");
+			page.addTab(tab1);
+
+			Section tab1Sec1 = page.new Section();
+			tab1.addSection(tab1Sec1);
+//			addPrimaryDetailsWidget(tab1Sec1);
+			addSecondaryDetailsWidget(tab1Sec1);
+			if(vendor.getAddress()!=null) {
+				Section tab1Sec2 = page.new Section();
+				tab1.addSection(tab1Sec2);
+				addAddressInfoWidget(tab1Sec2);
+			}
 			
-			Section tab2Sec5 = page.new Section();
-			tab2.addSection(tab2Sec5);
-			addRelatedListWidget(tab2Sec5, "purchaseorder", vendor.getModuleId());
+			Section tab1Sec3 = page.new Section();
+			tab1.addSection(tab1Sec3);
 			
-			Section tab2Sec6 = page.new Section();
-			tab2.addSection(tab2Sec6);
-			addRelatedListWidget(tab2Sec6, "contracts", vendor.getModuleId());
+			PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
+			subModuleGroup.addToLayoutParams(tab1Sec3, 24, 8);
+			subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
+			tab1Sec3.addWidget(subModuleGroup);
 			
+			PageWidget notesWidget = new PageWidget();
+			notesWidget.setWidgetType(WidgetType.COMMENT);
+			subModuleGroup.addToWidget(notesWidget);
+			
+			
+			Tab tab2 = page.new Tab("related list");
+			page.addTab(tab2);
+
+
+			Section tab2Sec1 ;
+//			addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+				tab2Sec1 = page.new Section();
+				tab2.addSection(tab2Sec1);
+				addRelatedListWidget(tab2Sec1, "vendorcontact", vendor.getModuleId());
+			} else {
+				tab2Sec1 = page.new Section();
+				tab2.addSection(tab2Sec1);
+				addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
+			}
+
+			Section tab2Sec2 = page.new Section();
+			tab2.addSection(tab2Sec2);
+			addRelatedListWidget(tab2Sec2, "vendorDocuments", vendor.getModuleId());
+			
+			Section tab2Sec3 = page.new Section();
+			tab2.addSection(tab2Sec3);
+			addRelatedListWidget(tab2Sec3, "insurance", vendor.getModuleId());
+			
+			if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+
+				Section tab2Sec4 = page.new Section();
+				tab2.addSection(tab2Sec4);
+				addRelatedListWidget(tab2Sec4, "workorder", vendor.getModuleId());
+				
+				Section tab2Sec5 = page.new Section();
+				tab2.addSection(tab2Sec5);
+				addRelatedListWidget(tab2Sec5, "purchaseorder", vendor.getModuleId());
+				
+				Section tab2Sec6 = page.new Section();
+				tab2.addSection(tab2Sec6);
+				addRelatedListWidget(tab2Sec6, "contracts", vendor.getModuleId());
+				
+			}
 		}
 		return page;
+
+		
 	}
 
 	private static void addPrimaryDetailsWidget(Section section) {

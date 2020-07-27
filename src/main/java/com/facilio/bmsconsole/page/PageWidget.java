@@ -254,6 +254,16 @@ public class PageWidget {
 		BILL_LIST("billList"),
 		BILL_ALERT_DETAILS("billAlertDetails"),
 		INVOICE_DETAILS("invoiceDetails"),
+		SUPPLIER_ACTIVE_PAYMENTS("supplierActivePayment"),
+		SUPPLIER_TRANSACTIONS("supplierTransaction"),
+		SUPPLIER_CANCELLED_PAYMENTS("supplierCancelledPayments"),
+		SUPPLIER_CARDS("supplierCards"),
+		SUPPLIER_ELECTRYCITY("supplierElectrycity"),
+		SUPPLIER_WATER("supplierWater"),
+		SUPPLIER_SEAWAGE("supplierSeawage"),
+		SUPPLIER_DETAILS("supplierDetails"),
+
+		
 
 		
 		CONNNECTED_APP("connectedApp")
