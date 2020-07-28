@@ -361,6 +361,7 @@ public class QuotationContext extends V3Context {
         QuotationContext newQuote = FieldUtil.cloneBean(this, QuotationContext.class);
         newQuote.setId(-1);
         newQuote.setRevisionNumber(this.getRevisionNumber() + 1);
+        newQuote.setParentId(this.getParentId());
         newQuote.setIsQuotationRevised(false);
         newQuote.setRevisionHistoryAvailable(true);
         return newQuote;

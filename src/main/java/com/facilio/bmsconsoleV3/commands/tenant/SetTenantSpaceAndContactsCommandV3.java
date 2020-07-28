@@ -29,7 +29,7 @@ public class SetTenantSpaceAndContactsCommandV3 extends FacilioCommand {
                     tenant.setSpaces(spaces);
                 }
                 if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-                    List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false);
+                    List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
                     tenant.setPeopleTenantContacts(tenantContacts);
                 } else {
                     List<V3ContactsContext> tenantcontacts = V3TenantsAPI.getTenantContacts(tenant.getId());

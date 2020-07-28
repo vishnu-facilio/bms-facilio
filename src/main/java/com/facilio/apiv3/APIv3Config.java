@@ -10,12 +10,12 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -115,7 +115,7 @@ public class APIv3Config {
                 .afterFetch(new QuotationFillDetailsCommand())
 
                 .list()
-                .beforeFetch(new QuotationFillLookupFields())
+                .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
                 .showStateFlowList()
 
                 .build();
@@ -482,6 +482,24 @@ public class APIv3Config {
 
                 .update()
 
+                .build();
+    }
+
+    @Module("announcement")
+    public static Supplier<V3Config> getAnnouncement() {
+        return () -> new V3Config(AnnouncementContext.class)
+                .create()
+                .afterSave(new UpdateAnnouncementAttachmentsParentIdCommandV3())
+                .update()
+                    .afterTransaction(TransactionChainFactoryV3.getUpdateAnnouncementAfterSaveChain())
+                .build();
+    }
+
+    @Module("peopleannouncement")
+    public static Supplier<V3Config> getPeopleAnnouncement() {
+        return () -> new V3Config(PeopleAnnouncementContext.class)
+                .create()
+                .update()
                 .build();
     }
 

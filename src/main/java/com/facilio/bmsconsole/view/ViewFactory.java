@@ -4949,7 +4949,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
-		allView.setCriteria(getContractListCriteria());
+		//allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
@@ -4966,7 +4966,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
-		allView.setCriteria(getContractListCriteria());
+		//allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
@@ -4984,7 +4984,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
-		allView.setCriteria(getContractListCriteria());
+		//allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
@@ -5001,7 +5001,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
-		allView.setCriteria(getContractListCriteria());
+		//allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
@@ -5903,7 +5903,7 @@ public class ViewFactory {
 		return allView;
 	}
 
-	private static Criteria getContractListCriteria() {
+	public static Criteria getContractListCriteria() {
 
 		FacilioField statusField = new FacilioField();
 		statusField.setName("status");
@@ -7284,24 +7284,11 @@ public class ViewFactory {
 
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("parentId", "PARENT_ID", FieldType.NUMBER), false));
 
-		Criteria nonRevisedCriteria = new Criteria();
-		//revisedCriteria.addAndCondition(getNonRevisedModuleStatusQuotationCriteria());
-		Condition nonRevisedCondition = new Condition();
-		nonRevisedCondition.setColumnName("IS_QUOTATION_REVISED");
-		nonRevisedCondition.setFieldName("isQuotationRevised");
-		nonRevisedCondition.setOperator(BooleanOperators.IS);
-		nonRevisedCondition.setField(FieldFactory.getField("isQuotationRevised", "IS_QUOTATION_REVISED", module, FieldType.BOOLEAN));
-		nonRevisedCondition.setValue(String.valueOf(false));
-
-		nonRevisedCriteria.addAndCondition(nonRevisedCondition);
-
-
 		FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Quotes");
         allView.setModuleName(module.getName());
         allView.setSortFields(sortFields);
-        allView.setCriteria(nonRevisedCriteria);
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 

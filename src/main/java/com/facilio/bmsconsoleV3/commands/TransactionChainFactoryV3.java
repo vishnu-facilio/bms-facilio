@@ -5,6 +5,9 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.commands.announcement.CancelParentChildAnnouncementsCommandV3;
+import com.facilio.bmsconsoleV3.commands.announcement.PublishAnnouncementCommandV3;
+import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
@@ -320,4 +323,13 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new AddClientUserCommandV3());
 		return c;
 	}
+
+	public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+	    c.addCommand(new UpdateAnnouncementAttachmentsParentIdCommandV3());
+        c.addCommand(new PublishAnnouncementCommandV3());
+        c.addCommand(new CancelParentChildAnnouncementsCommandV3());
+        return c;
+
+    }
 }

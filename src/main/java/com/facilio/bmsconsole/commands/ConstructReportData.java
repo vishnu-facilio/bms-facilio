@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import org.apache.commons.chain.Context;
@@ -283,6 +286,24 @@ public class ConstructReportData extends FacilioCommand {
 					dataPointContext.setOtherCriteria(c);
 				}
 			}
+		}
+		else if(module.getName().equals(FacilioConstants.ContextNames.QUOTE)) {
+
+			Criteria nonRevisedCriteria = new Criteria();
+			Condition nonRevisedCondition = new Condition();
+			nonRevisedCondition.setColumnName("IS_QUOTATION_REVISED");
+			nonRevisedCondition.setFieldName("isQuotationRevised");
+			nonRevisedCondition.setOperator(BooleanOperators.IS);
+			nonRevisedCondition.setField(FieldFactory.getField("isQuotationRevised", "IS_QUOTATION_REVISED", module, FieldType.BOOLEAN));
+			nonRevisedCondition.setValue(String.valueOf(false));
+
+			nonRevisedCriteria.addAndCondition(nonRevisedCondition);
+			dataPointContext.setOtherCriteria(nonRevisedCriteria);
+		}
+		else if(module.getName().equals(FacilioConstants.ContextNames.PURCHASE_CONTRACTS) || module.getName().equals(FacilioConstants.ContextNames.LABOUR_CONTRACTS) ||
+		module.getName().equals(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS) || module.getName().equals(FacilioConstants.ContextNames.WARRANTY_CONTRACTS) ||
+		module.getName().equals(FacilioConstants.ContextNames.CONTRACTS)) {
+			dataPointContext.setOtherCriteria(ViewFactory.getContractListCriteria());
 		}
 
 		if (havingJSON != null) {

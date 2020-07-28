@@ -58,6 +58,7 @@ public class ReviseQuotationCommand extends FacilioCommand {
                         info.put("quotationId", quotation.getId());
                         CommonCommandUtil.addActivityToContext(quotation.getId(), -1, QuotationActivityType.REVISE_QUOTATION, info,(FacilioContext) context);
                         QuotationContext revisedQuotation = quotation.clone();
+                        revisedQuotation.setParentId(exitingQuotation.getParentId());
                         revisedQuoteList.add(revisedQuotation);
                     } else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only Quotation in sent status can be revised");

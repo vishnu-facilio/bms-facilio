@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -48,6 +50,12 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getQuoteBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddDefaultCriteriaForQuoteFetchCommandV3());
+        c.addCommand(new QuotationFillLookupFields());
+        return c;
+    }
 
 
 }

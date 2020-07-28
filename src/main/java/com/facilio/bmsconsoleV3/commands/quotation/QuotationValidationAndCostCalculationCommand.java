@@ -50,7 +50,7 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                 else if(QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
                     quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
                     if(quotation.getContact() == null) {
-                        List<V3TenantContactContext> tenantContacts =  V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), true);
+                        List<V3TenantContactContext> tenantContacts =  V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), true, false);
                         if(CollectionUtils.isNotEmpty(tenantContacts)) {
                             quotation.setContact(tenantContacts.get(0));
                         }

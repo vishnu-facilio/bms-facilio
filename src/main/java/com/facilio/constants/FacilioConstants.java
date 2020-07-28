@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsoleV3.context.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
@@ -1705,6 +1706,13 @@ public class FacilioConstants {
 		public static final String MESSAGES = "messages";
 		public static final String MAIL_ATTACHMENT = "mailAttachments";
 
+		public static final String ANNOUNCEMENT = "announcement";
+		public static final String ANNOUNCEMENT_ATTACHMENTS = "announcementattachments";
+		public static final String ANNOUNCEMENT_NOTES = "announcementnotes";
+		public static final String PEOPLE_ANNOUNCEMENTS = "peopleannouncement";
+		public static final String ANNOUNCEMENTS_SHARING_INFO = "announcementsharing";
+
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1975,6 +1983,9 @@ public class FacilioConstants {
 			classMap.put(ContextNames.CUSTOM_MAIL_MESSAGE, V3MailMessageContext.class);
 			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
 			classMap.put(ContextNames.TICKET_ATTACHMENTS, AttachmentV3Context.class);
+
+			classMap.put(ContextNames.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(ContextNames.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
 
 			return classMap;
 		}

@@ -32,7 +32,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
                 if(quotation.getCustomerType() != null) {
                     if (quotation.getCustomerTypeEnum() == QuotationContext.CustomerType.TENANT) {
                         if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
-                            List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), false);
+                            List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), false, false);
                             if (CollectionUtils.isNotEmpty(tenantContacts)) {
                                 quotation.getTenant().setPeopleTenantContacts(tenantContacts);
                             }

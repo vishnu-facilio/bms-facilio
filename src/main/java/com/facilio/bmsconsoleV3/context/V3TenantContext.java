@@ -319,4 +319,13 @@ public class V3TenantContext extends V3Context {
 
     private LocationContext address;
 
+    private BuildingContext building;
+
+    public BuildingContext getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(BuildingContext building) {
+        this.building = building;
+    }
 }

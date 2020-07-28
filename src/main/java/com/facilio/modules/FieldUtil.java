@@ -449,8 +449,9 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.HAZARD,
 					FacilioConstants.ContextNames.PRECAUTION,
                     FacilioConstants.ContextNames.SERVICE_REQUEST,
-                    FacilioConstants.ContextNames.QUOTE
-			))
+                    FacilioConstants.ContextNames.QUOTE,
+					FacilioConstants.ContextNames.ANNOUNCEMENT
+				))
 			);
 
 

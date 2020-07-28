@@ -71,7 +71,9 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.EMPLOYEE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.QUOTE);
-		
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ANNOUNCEMENT);
+
+
 		return modulesWithLocalId;
 	}
 	

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -23,6 +24,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -47,7 +49,7 @@ public class V3PeopleAPI {
         return records;
     }
 
-    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact) throws Exception {
+    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -60,6 +62,10 @@ public class V3PeopleAPI {
         ;
         if(fetchOnlyPrimaryContact) {
             builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
+        }
+
+        if(fetchOnlyWithAccess) {
+            builder.andCondition(CriteriaAPI.getCondition("TENANT_PORTAL_ACCESS", "isTenantPortalAccess", "true", BooleanOperators.IS));
         }
         List<V3TenantContactContext> records = builder.get();
         return records;
@@ -212,8 +218,25 @@ public class V3PeopleAPI {
 
     }
 
+    public static long getPeopleIdForUser(long ouId) throws Exception {
+        List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table("ORG_Users")
+                ;
+        selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> list = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(list)) {
+            if(list.get(0).get("peopleId") != null) {
+                return (long)list.get(0).get("peopleId");
+            }
+        }
+        return -1;
+    }
+
     public static V3TenantContext getTenantForUser(long ouId) throws Exception {
-        long pplId = PeopleAPI.getPeopleIdForUser(ouId);
+        long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
         if(pplId <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
         }
