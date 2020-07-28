@@ -8757,6 +8757,17 @@ public class FieldFactory {
 		 		 
 		 return fields;
 	 }
+
+	 public static List<FacilioField> getESSyncContextFields() {
+         FacilioModule module = ModuleFactory.getESSyncContextModule();
+         List<FacilioField> fields = new ArrayList<>();
+         fields.add(FieldFactory.getIdField(module));
+         fields.add(getField("syncModuleId", "SYNC_MODULE_ID", module, FieldType.NUMBER));
+         fields.add(getField("syncing", "SYNCING", module, FieldType.BOOLEAN));
+         fields.add(getField("lastSyncRecordId", "LAST_SYNC_RECORD_ID", module, FieldType.NUMBER));
+
+         return fields;
+     }
 	 
 	 public static List<FacilioField>  getDashboardUserFilterFields()
 	 {

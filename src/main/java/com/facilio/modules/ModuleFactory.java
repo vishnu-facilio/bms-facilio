@@ -3920,6 +3920,14 @@ public class ModuleFactory {
 		return module;
 		
 	}
+
+	public static FacilioModule getESSyncContextModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("syncToES");
+		module.setDisplayName("Sync To ES");
+		module.setTableName("Sync_To_ES");
+		return module;
+	}
 	
 	public static FacilioModule getDashboardUserFilterModule()
 	{	

@@ -1,5 +1,6 @@
-package com.facilio.v3.util;
+package com.facilio.elasticsearch.command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -63,7 +64,8 @@ public class PushDataToESCommand extends FacilioCommand {
             for (JSONObject object : objectsToBeAdded) {
                 JSONObject json = new JSONObject();
                 JSONObject indexJson = new JSONObject();
-                indexJson.put("_id", module.getModuleId() + "_" + object.get("id"));
+                String id = AccountUtil.getCurrentOrg().getOrgId() + "_" + module.getModuleId() + "_" + object.get("id");
+                indexJson.put("_id", id);
                 json.put("index", indexJson);
                 bodyContent.append(json.toString());
                 bodyContent.append("\n");
