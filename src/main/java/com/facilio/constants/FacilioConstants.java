@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsoleV3.context.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
@@ -1986,6 +1987,7 @@ public class FacilioConstants {
 
 			classMap.put(ContextNames.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(ContextNames.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
+			classMap.put(ContextNames.ANNOUNCEMENT, AnnouncementContext.class);
 
 			return classMap;
 		}
