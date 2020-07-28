@@ -64,10 +64,13 @@ public class QuotationAPI {
     }
 
     public static void calculateQuotationCost(QuotationContext quotation) throws Exception {
-        /* Calculates the Total Cost and Tax Amount for Line Items
-            Line item Cost = Unit Price * Qty
-            Tax Amount = Total Cost * Tax Rate(%)
-            Total Cost = LineItemCostTotal + Tax Amount + Shipping + Misc charges + Adjustments - Discount Amount
+        /*
+        Tax Modes ==>    1 = Line Item Level
+                         2 = Transaction Level
+        Discount Modes => 1 = Before Tax
+                          2 = After Tax
+        Based on these these two preferences there will be 4 different types of calculations
+       
         */
         Double totalTaxAmount = 0.0;
         Double lineItemsSubtotal = 0.0;

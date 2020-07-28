@@ -5611,21 +5611,6 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain updateWorkPermitChecklistChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new GenericUpdateListModuleDataCommand());
-		c.addCommand(new UpdateWorkPermitCommand());
-		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY));
-		c.addCommand(new SetWorkPermitRecordCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
-		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
-
-		return c;
-	}
-
 	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddOrUpdateDashboardFilterCommand());
