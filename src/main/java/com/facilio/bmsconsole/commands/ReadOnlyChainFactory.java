@@ -865,7 +865,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetFormRulesMapListCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getCustomFiltersList() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetCustomFiltersListCommand());
@@ -2472,6 +2472,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetApprovalModuleDataListCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GetLookupFieldsFromViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
