@@ -651,7 +651,6 @@ public class TaskAction extends FacilioAction {
 		// TODO Auto-generated method stub
 		try {
 		if (this.recordId > 0 && getViewName() == null) {
-			try {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
 
@@ -662,9 +661,6 @@ public class TaskAction extends FacilioAction {
 				setPreRequests((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
 				setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 				setPreRequestSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));	
-			} catch (Exception e) {
-				log.info("Exception occurred ", e);
-			}
 		}
 		}
 		catch (Exception e) {
