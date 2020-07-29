@@ -64,7 +64,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
 		//MachineStalk to be done from 18thWeek to 25th in firstcut.
-		for(int currentWeek = 32; currentWeek <= 37; currentWeek++) 
+		for(int currentWeek = 38; currentWeek <= 43; currentWeek++) 
 		{	
 			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
 			ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
