@@ -320,7 +320,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 			
-			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString)) {
+			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString) && module.getTypeEnum() == ModuleType.READING) {
 				FacilioModule parentModule = ReadingsAPI.getParentModuleRelFromChildModule(module);
 				if(parentModule != null) {
 					List<Map<String, Object>> rec = QueryUtil.fetchRecord(parentModule.getName(), Long.parseLong(parentIdString));

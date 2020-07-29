@@ -32,6 +32,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.time.DateTimeUtil;
@@ -327,7 +328,7 @@ public class ExpressionContext implements WorkflowExpression {
 				}
 			}
 			
-			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString)) {
+			if(parentIdString != null && FacilioUtil.isNumeric(parentIdString) && module.getTypeEnum() == ModuleType.READING) {
 				FacilioModule parentModule = ReadingsAPI.getParentModuleRelFromChildModule(module);
 				if(parentModule != null) {
 					List<Map<String, Object>> rec = QueryUtil.fetchRecord(parentModule.getName(), Long.parseLong(parentIdString));
