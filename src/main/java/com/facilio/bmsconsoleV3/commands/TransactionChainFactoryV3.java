@@ -14,6 +14,7 @@ import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAcce
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
@@ -332,4 +333,13 @@ public class TransactionChainFactoryV3 {
         return c;
 
     }
+	
+	public static FacilioChain getAddPurchaseRequestAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); //update purchase request total cost
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		return c;
+	}
 }

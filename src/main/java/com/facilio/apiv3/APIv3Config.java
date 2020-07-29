@@ -5,9 +5,11 @@ import com.facilio.apiv3.sample.*;
 import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
 import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.ForkChainToInstantJobCommand;
 import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
@@ -23,6 +25,11 @@ import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillUpdatePurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
@@ -42,6 +49,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
@@ -202,6 +210,24 @@ public class APIv3Config {
                     .beforeFetch(new LoadClientLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadClientLookupCommandV3())
+                .build();
+    }
+    
+    @Module("purchaserequest")
+    public static Supplier<V3Config> getPurchaseRequest() {
+        return () -> new V3Config(V3PurchaseRequestContext.class)
+                .create()
+            		.beforeSave(new PreFillAddPurchaseRequestCommand())
+                    .afterSave(TransactionChainFactoryV3.getAddPurchaseRequestAfterSaveChain())
+                .update()
+                	.beforeSave(new PreFillUpdatePurchaseRequestCommand())
+                	.afterSave(new ForkChainToInstantJobCommand()
+        					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)))
+                .list()
+                    .beforeFetch(new LoadPurchaseRequestListLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadPurchaseRequestSummaryLookupCommandV3())
+                    .afterFetch(new FetchPurchaseRequestDetailsCommandV3())
                 .build();
     }
     

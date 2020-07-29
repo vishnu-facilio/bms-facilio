@@ -12,7 +12,7 @@ public class V3PurchaseRequestLineItemContext extends V3Context {
 	
 	private static final long serialVersionUID = 1L;
 
-	private Long prid;
+	private V3PurchaseRequestContext prid;
 	private InventoryType inventoryType;
 	private V3ItemTypesContext itemType;
 	private V3ToolTypesContext toolType;
@@ -22,10 +22,10 @@ public class V3PurchaseRequestLineItemContext extends V3Context {
 	public String remarks;
 	private ServiceContext service;
 	
-	public Long getPrid() {
+	public V3PurchaseRequestContext getPrid() {
 		return prid;
 	}
-	public void setPrid(Long prid) {
+	public void setPrid(V3PurchaseRequestContext prid) {
 		this.prid = prid;
 	}
 	public V3ItemTypesContext getItemType() {
