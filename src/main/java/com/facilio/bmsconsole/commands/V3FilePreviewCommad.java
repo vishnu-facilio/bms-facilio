@@ -42,7 +42,7 @@ public class V3FilePreviewCommad extends FacilioCommand {
 						if (fileID > 0) {
 							FileStore fs = FacilioFactory.getFileStore();
 							FileInfo fileInfo;
-							fileInfo = fs.getFileInfo(namespace, fileID);
+							fileInfo = namespace == null ? fs.getFileInfo(fileID) : fs.getFileInfo(namespace, fileID);
 //							if (width > 0 || height > 0) {
 //								if (height < 0) {
 //									fileInfo = fs.getResizedFileInfo(fileID, width, width);
