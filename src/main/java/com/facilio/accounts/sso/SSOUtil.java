@@ -27,7 +27,12 @@ public class SSOUtil {
 			if (request != null) {
 				AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 				if (appDomain != null) {
-					return "https://" + appDomain.getDomain();
+					StringBuilder appUrl = new StringBuilder("https://")
+											.append(appDomain.getDomain());
+					if (request.getServerPort() != 80) {
+						appUrl.append(":").append(request.getServerPort());
+					}
+					return appUrl.toString();
 				}
 			}
 		}
