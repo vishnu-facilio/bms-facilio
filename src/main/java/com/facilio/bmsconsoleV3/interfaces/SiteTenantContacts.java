@@ -16,26 +16,29 @@ import java.util.List;
 public class SiteTenantContacts implements AnnouncementSharedPeople{
     @Override
     public List<V3PeopleContext> getPeople(Long id) throws Exception {
-        if(id != null){
-            List<BuildingContext> buildings = SpaceAPI.getSiteBuildings(id);
-            if(CollectionUtils.isEmpty(buildings)) {
-                return null;
-            }
-            List<V3PeopleContext> users = new ArrayList<>();
-            for(BuildingContext building : buildings) {
-                List<V3TenantContext> tenants = AnnouncementAPI.getBuildingTenants(building.getId());
-                if(CollectionUtils.isEmpty(tenants)) {
-                    continue;
-                }
-                for (V3TenantContext tenant : tenants) {
-                    List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        users.addAll(list);
-                    }
-                }
-            }
-            return users;
+        List<BuildingContext> buildings = new ArrayList<>();
+        if(id == null) {
+             buildings = SpaceAPI.getAllBuildings();
         }
-        return null;
-    }
+        else {
+            buildings = SpaceAPI.getSiteBuildings(id);
+        }
+        if(CollectionUtils.isEmpty(buildings)) {
+            return null;
+        }
+        List<V3PeopleContext> users = new ArrayList<>();
+        for(BuildingContext building : buildings) {
+            List<V3TenantContext> tenants = AnnouncementAPI.getBuildingTenants(building.getId());
+            if(CollectionUtils.isEmpty(tenants)) {
+                continue;
+            }
+            for (V3TenantContext tenant : tenants) {
+                List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    users.addAll(list);
+                }
+            }
+        }
+        return users;
+      }
 }

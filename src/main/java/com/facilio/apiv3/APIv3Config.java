@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.announcement.ChangeAnnouncementReadStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -529,6 +530,8 @@ public class APIv3Config {
         return () -> new V3Config(PeopleAnnouncementContext.class)
                 .create()
                 .update()
+                .summary()
+                     .beforeFetch(new ChangeAnnouncementReadStatusCommandV3())
                 .build();
     }
 
