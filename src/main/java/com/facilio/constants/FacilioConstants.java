@@ -27,10 +27,10 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
-import com.facilio.bmsconsoleV3.context.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
@@ -1712,6 +1712,8 @@ public class FacilioConstants {
 		public static final String ANNOUNCEMENT_NOTES = "announcementnotes";
 		public static final String PEOPLE_ANNOUNCEMENTS = "peopleannouncement";
 		public static final String ANNOUNCEMENTS_SHARING_INFO = "announcementsharing";
+		public static final String ANNOUNCEMENTS = "announcements";
+		public static final String ANNOUNCEMENT_ACTION = "announcementaction";
 
 
 		public static class WorkPermit {

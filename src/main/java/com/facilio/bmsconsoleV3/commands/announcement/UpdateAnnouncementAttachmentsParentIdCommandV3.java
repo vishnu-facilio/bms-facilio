@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.commands.announcement;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsoleV3.context.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;

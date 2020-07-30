@@ -14,4 +14,5 @@
 	<job name="ImportReadingLogJob" classname='com.facilio.bmsconsole.instant.jobs.ImportReadingLogJob' transactionTimeout= '3600' />
 	<job name="GenericImportDataLogJob" classname='com.facilio.bmsconsole.jobs.GenericImportDataLogJob' transactionTimeout= '3600' />
 	<job name="ReadingImportPointsDataJob" classname='com.facilio.bmsconsole.instant.jobs.ReadingImportPointsDataJob' transactionTimeout= '3600' />
+    <job name="AddOrUpdateChildAnnouncementsJob" classname='com.facilio.bmsconsole.instant.jobs.AddOrUpdateChildAnnouncementsJob' transactionTimeout= '3600' />
 </instantjob>

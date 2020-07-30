@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.announcement;
 
 import com.facilio.v3.context.V3Context;
 

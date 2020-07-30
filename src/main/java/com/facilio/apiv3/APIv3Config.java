@@ -50,6 +50,8 @@ import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetc
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
@@ -517,6 +519,7 @@ public class APIv3Config {
                 .create()
                 .afterSave(new UpdateAnnouncementAttachmentsParentIdCommandV3())
                 .update()
+                    .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
                     .afterTransaction(TransactionChainFactoryV3.getUpdateAnnouncementAfterSaveChain())
                 .build();
     }

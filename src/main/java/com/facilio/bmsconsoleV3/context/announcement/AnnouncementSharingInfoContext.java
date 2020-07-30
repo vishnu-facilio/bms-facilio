@@ -1,10 +1,7 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.announcement;
 
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
-
-import java.io.Serializable;
 
 public class AnnouncementSharingInfoContext extends V3Context {
 
@@ -13,7 +10,9 @@ public class AnnouncementSharingInfoContext extends V3Context {
 
 
     public enum SharingType implements FacilioEnum {
-        BUILDING("Building");
+        BUILDING("Building"),
+        SITE("Site")
+        ;
 
         private String name;
 

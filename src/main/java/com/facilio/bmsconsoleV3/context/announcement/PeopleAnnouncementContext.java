@@ -1,4 +1,6 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.announcement;
+
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 
 public class PeopleAnnouncementContext extends AnnouncementContext {
 

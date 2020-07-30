@@ -101,4 +101,4 @@ enums:
     enumClassName: com.facilio.bmsconsole.context.DashboardUserFilterContext$OptionType
 
   - name: SharingType
-    enumClassName: com.facilio.bmsconsoleV3.context.AnnouncementSharingInfoContext$SharingType
+    enumClassName: com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext$SharingType
