@@ -883,6 +883,14 @@
 		<action name="addGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2addGroup">
 		</action>
+		
+		<action name="updateGroup"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2UpdateGroup">
+		</action>
+		
+		<action name="deleteGroup"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2deleteGroup">
+		</action>
 	</package>
 
 	<package name="viewListApiV2" namespace="/api/v2/views/module"

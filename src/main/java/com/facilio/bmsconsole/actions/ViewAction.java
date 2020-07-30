@@ -260,6 +260,30 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2UpdateGroup() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.updateViewGroupChain();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
+		chain.execute();
+		
+		
+		setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
+		return SUCCESS;
+	}
+
+	public String v2deleteGroup() throws Exception {
+	
+	FacilioChain chain = TransactionChainFactory.deleteViewGroupChain();
+	Context context = chain.getContext();
+	context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
+	chain.execute();
+	
+	
+	setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
+	return SUCCESS;
+}
+	
 	public String v2editView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
