@@ -3886,6 +3886,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getPeopleAnnouncementModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("peopleannouncement");
+		module.setDisplayName("People Announcements");
+		module.setTableName("People_Announcements");
+		return module;
+	}
+
 	public static FacilioModule getInboundConnectionsModule(){
 		FacilioModule module = new FacilioModule();
 		module.setName("inboundConnections");
