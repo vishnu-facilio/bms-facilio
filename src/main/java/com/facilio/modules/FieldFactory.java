@@ -3430,6 +3430,27 @@ public class FieldFactory {
         return fields;
 
     }
+    
+    
+    public static List<FacilioField> getViewGroupFields() {
+        FacilioModule module = ModuleFactory.getViewGroupsModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNameField(module));
+
+        FacilioField displayName = new FacilioField();
+        displayName.setName("displayName");
+        displayName.setDataType(FieldType.STRING);
+        displayName.setColumnName("DISPLAY_NAME");
+        displayName.setModule(module);
+        fields.add(displayName);
+
+        fields.add(getModuleIdField(module));
+        
+        return fields;
+
+    }
 
     public static List<FacilioField> getViewFields() {
         FacilioModule module = ModuleFactory.getViewsModule();
@@ -3461,6 +3482,13 @@ public class FieldFactory {
         criteria.setColumnName("CRITERIAID");
         criteria.setModule(module);
         fields.add(criteria);
+        
+        FacilioField group = new FacilioField();
+        group.setName("groupId");
+        group.setDataType(FieldType.NUMBER);
+        group.setColumnName("GROUPID");
+        group.setModule(module);
+        fields.add(group);
 
         FacilioField isDefault = new FacilioField();
         isDefault.setName("isDefault");

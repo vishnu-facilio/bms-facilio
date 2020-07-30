@@ -1016,6 +1016,7 @@ public class FacilioConstants {
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
+		public static final String VIEW_GROUP = "viewGroup";
 		public static final String CUSTOM_FILTER = "customFilter";
 		public static final String CUSTOM_FILTER_CONTEXT = "customFilterContext";
 		public static final String CUSTOM_FILTERS_LIST = "customFiltersList";

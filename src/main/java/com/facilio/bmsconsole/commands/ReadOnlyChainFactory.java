@@ -879,6 +879,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ConstructCustomFiltersListCommand());
 		return c;
 	}
+	
+	public static FacilioChain getViewGroupsList() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetViewGroupsListCommand());
+		return c;
+	}
 
 
 	public static FacilioChain getPurchaseRequestListChain() {

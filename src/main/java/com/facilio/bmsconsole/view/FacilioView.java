@@ -29,6 +29,7 @@ public class FacilioView {
 		this.type = view.type;
 		this.viewSharing = view.viewSharing;
 		this.moduleId = view.moduleId;
+		this.groupId = view.groupId;
 		this.moduleName = view.moduleName;
 		this.criteriaId = view.criteriaId;
 		if (view.criteria != null) {
@@ -115,6 +116,16 @@ public class FacilioView {
 		this.type = type;
 	}
 	
+	private long groupId = -1;
+	
+	public long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+	}
+
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

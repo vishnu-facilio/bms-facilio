@@ -1044,6 +1044,14 @@ public class ModuleFactory {
 		conditionModule.setTableName("Conditions");
 		return conditionModule;
 	}
+	
+	public static FacilioModule getViewGroupsModule() {
+		FacilioModule viewsModule = new FacilioModule();
+		viewsModule.setName("viewGroups");
+		viewsModule.setDisplayName("View Groups");
+		viewsModule.setTableName("View_Groups");
+		return viewsModule;
+	}
 
 	public static FacilioModule getViewsModule() {
 		FacilioModule viewsModule = new FacilioModule();

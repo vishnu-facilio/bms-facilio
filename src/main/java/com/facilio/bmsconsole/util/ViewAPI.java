@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
@@ -41,6 +42,30 @@ public class ViewAPI {
 	
 	public static List<FacilioView> getAllViews(String moduleName) throws Exception {
 		return getAllViews(-1, moduleName);
+	}
+	
+	public static List<ViewGroups> getAllGroups(long moduleId) throws Exception {
+		
+		List<ViewGroups> viewGroups = new ArrayList<>();
+		if (moduleId > -1) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getViewGroupFields())
+					.table(ModuleFactory.getViewGroupsModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("MODULEID","moduleId",String.valueOf(moduleId), NumberOperators.EQUALS));
+			List<Map<String, Object>> props = selectBuilder.get();
+			
+			if (props != null && !props.isEmpty()) {
+				
+				for(Map<String, Object> prop : props) {
+					ViewGroups viewGroup = FieldUtil.getAsBeanFromMap(prop, ViewGroups.class);
+					viewGroups.add(viewGroup);
+				}
+			}
+		}
+		
+		return viewGroups;
+		
+		
 	}
 
 	public static List<FacilioView> getAllViews(long moduleId, String... moduleName) throws Exception {

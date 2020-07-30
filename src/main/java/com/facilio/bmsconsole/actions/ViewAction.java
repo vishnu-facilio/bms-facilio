@@ -1,15 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -175,6 +179,27 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2viewGroups() throws Exception{
+		
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
+			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		}
+		
+		FacilioChain chain = ReadOnlyChainFactory.getViewGroupsList();
+		
+		Context context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
+		
+		chain.execute();
+		
+		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
+		setResult("groupViews", (List<ViewGroups>) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
+		
+		return SUCCESS;
+	}
+	
 	public String v2getViewDetail() throws Exception
 	{
 	getViewDetail();
@@ -220,6 +245,18 @@ public class ViewAction extends FacilioAction {
 		
 		this.viewId = view.getId();
 		
+		return SUCCESS;
+	}
+	
+	public String v2addGroup() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.addViewGroupChain();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
+		chain.execute();
+		
+		
+		setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
 		return SUCCESS;
 	}
 	
@@ -342,8 +379,18 @@ public class ViewAction extends FacilioAction {
 	public void setGroupStatus(Boolean groupStatus) {
 		this.groupStatus = groupStatus;
 	}
+	
+	private ViewGroups viewGroup;
 
 	
+	public ViewGroups getViewGroup() {
+		return viewGroup;
+	}
+	public void setViewGroup(ViewGroups viewGroup) {
+		this.viewGroup = viewGroup;
+	}
+
+
 	private FacilioView view;
 	public FacilioView getView() {
 		return view;
