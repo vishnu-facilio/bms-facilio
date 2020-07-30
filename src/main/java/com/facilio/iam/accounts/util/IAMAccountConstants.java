@@ -263,6 +263,13 @@ public class IAMAccountConstants {
 			businessHourField.setModule(module);
 			fields.add(businessHourField);
 
+			FacilioField language = new FacilioField();
+			language.setName("language");
+			language.setDataType(FieldType.STRING);
+			language.setColumnName("LANGUAGE");
+			language.setModule(module);
+			fields.add(language);
+
 			return fields;
 		}
 

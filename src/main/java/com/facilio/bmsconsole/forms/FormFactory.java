@@ -364,6 +364,7 @@ public class FormFactory {
 		List<FacilioForm> toolTypesFormsList = Arrays.asList(getTooltypesForm());
 		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
 		List<FacilioForm> serviceFormsList = Arrays.asList(getServiceForm());
+		List<FacilioForm> announcementFormsList = Arrays.asList(getAnnouncementForm());
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> workPermitTypeForm = Arrays.asList(getWorkPermitTypeForm());
@@ -406,6 +407,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, getFormMap(workPermitTypeChecklistCategoryForm))
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
 				.put(FacilioConstants.ContextNames.SERVICE, getFormMap(serviceFormsList))
+				.put(FacilioConstants.ContextNames.ANNOUNCEMENT, getFormMap(announcementFormsList))
 				.build();
 	}
 	
@@ -2126,6 +2128,18 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+
+	private static FacilioForm getAnnouncementForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Announcement");
+		form.setName("default_announcement_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getAnnouncementFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	private static List<FormField> getQuotationFormFields() {
 
 
@@ -2192,6 +2206,19 @@ public class FormFactory {
 		fields.add(new FormField("item", FieldDisplayType.TEXTBOX, "Item", Required.REQUIRED, 1, 1));
 		form.setFields(fields);
 		return form;
+	}
+
+	private static List<FormField> getAnnouncementFormFields() {
+
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("longDescription", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2));
+		fields.add(new FormField("sharingInfo", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+
+		return fields;
 	}
 
 }

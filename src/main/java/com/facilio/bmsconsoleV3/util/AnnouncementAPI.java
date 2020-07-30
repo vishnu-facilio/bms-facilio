@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.interfaces.BuildingTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
 import com.facilio.chain.FacilioChain;
@@ -20,6 +22,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -122,10 +125,10 @@ public class AnnouncementAPI {
                 List<V3PeopleContext> ppl = new ArrayList<>();
                 //handling only for building sharing type for now.. can be supported for others as well
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
-                     ppl = new BuildingTenantContacts().getPeople(sharingInfo.getSharedTo());
+                     ppl = new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.SITE) {
-                    ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedTo());
+                    ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
 
                 if(CollectionUtils.isNotEmpty(ppl)){
@@ -143,5 +146,25 @@ public class AnnouncementAPI {
             }
         }
 
+    }
+
+    public static void setSharingInfo(AnnouncementContext announcement) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String sharingModName = FacilioConstants.ContextNames.ANNOUNCEMENTS_SHARING_INFO;
+        List<FacilioField> fields = modBean.getAllFields(sharingModName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
+
+        SelectRecordsBuilder<AnnouncementSharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
+                .moduleName(sharingModName)
+                .select(fields)
+                .beanClass(AnnouncementSharingInfoContext.class)
+                .fetchSupplements(fetchSupplementsList)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("announcement"), String.valueOf(announcement.getId()), NumberOperators.EQUALS));
+        List<AnnouncementSharingInfoContext> list = builder.get();
+        if (CollectionUtils.isNotEmpty(list)) {
+            announcement.setSharingInfo(list);
+        }
     }
 }
