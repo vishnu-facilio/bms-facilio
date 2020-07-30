@@ -8,9 +8,14 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.context.SyncContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SyncUtil {
 
@@ -50,5 +55,27 @@ public class SyncUtil {
                     .andCondition(CriteriaAPI.getIdCondition(syncContext.getId(), ModuleFactory.getESSyncContextModule()));
             builder.update(FieldUtil.getAsProperties(syncContext));
         }
+    }
+
+    public static List<SyncContext> getAllSync() throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getESSyncContextModule().getTableName())
+                .select(FieldFactory.getESSyncContextFields());
+        List<SyncContext> syncContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), SyncContext.class);
+        if (CollectionUtils.isNotEmpty(syncContexts)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            for (SyncContext syncContext : syncContexts) {
+                syncContext.setSyncModule(modBean.getModule(syncContext.getSyncModuleId()));
+            }
+        }
+        return syncContexts;
+    }
+
+    public static List<FacilioModule> getModulesToSearch() throws Exception {
+        List<SyncContext> allSync = getAllSync();
+        if (CollectionUtils.isNotEmpty(allSync)) {
+            return allSync.stream().map(SyncContext::getSyncModule).collect(Collectors.toList());
+        }
+        return null;
     }
 }

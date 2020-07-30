@@ -340,6 +340,8 @@
 	<package name="globalSearch" namespace="/api/v2/gs" extends="v2Api">
 		<action name="invokeSync"
 				class="com.facilio.elasticsearch.action.SyncAction" method="invokeSync" />
+		<action name="removeSync"
+				class="com.facilio.elasticsearch.action.SyncAction" method="removeSync" />
 	</package>
 
 	<package name="stateFlow" namespace="/api/v2/stateflow"

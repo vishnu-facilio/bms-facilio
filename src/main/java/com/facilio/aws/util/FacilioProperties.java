@@ -94,6 +94,9 @@ public class FacilioProperties {
     private static String occupantAppDomain;
     private static String vendorAppDomain;
 
+    private static String esDomain;
+    private static String esIndex;
+
     static {
         loadProperties();
     }
@@ -162,6 +165,9 @@ public class FacilioProperties {
                 clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
                 vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
                 occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+
+                esDomain = PROPERTIES.getProperty("es.domain");
+                esIndex = PROPERTIES.getProperty("es.index");
 
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
@@ -342,6 +348,14 @@ public class FacilioProperties {
 
     public static String getDomain() {
         return domain;
+    }
+
+    public static String getEsDomain() {
+        return esDomain;
+    }
+
+    public static String getEsIndex() {
+        return esIndex;
     }
 
     public static HashMap<String, String> getPassword(String secretKey) {

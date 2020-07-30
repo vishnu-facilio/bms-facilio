@@ -1,23 +1,19 @@
 package com.facilio.elasticsearch.command;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.elasticsearch.util.ESUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.FacilioHttpUtils;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,33 +48,8 @@ public class PushDataToESCommand extends FacilioCommand {
                 objectsToBeAdded.add(map);
             }
 
-            addDataToES(module, objectsToBeAdded);
+            ESUtil.addData(module, objectsToBeAdded);
         }
         return false;
-    }
-
-    private void addDataToES(FacilioModule module, List<JSONObject> objectsToBeAdded) {
-        try {
-            String url = "http://localhost:9200/facilio/_bulk";
-            StringBuilder bodyContent = new StringBuilder();
-            for (JSONObject object : objectsToBeAdded) {
-                JSONObject json = new JSONObject();
-                JSONObject indexJson = new JSONObject();
-                String id = AccountUtil.getCurrentOrg().getOrgId() + "_" + module.getModuleId() + "_" + object.get("id");
-                indexJson.put("_id", id);
-                json.put("index", indexJson);
-                bodyContent.append(json.toString());
-                bodyContent.append("\n");
-                bodyContent.append(object.toString());
-                bodyContent.append("\n");
-            }
-
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Content-Type", "application/json");
-            String s = FacilioHttpUtils.doHttpPost(url, headers, null, bodyContent.toString());
-            System.out.println("Response: " + s);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 }

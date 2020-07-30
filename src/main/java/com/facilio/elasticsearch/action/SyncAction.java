@@ -17,10 +17,24 @@ public class SyncAction extends FacilioAction {
     }
 
     public String invokeSync() throws Exception {
-        FacilioChain chain = SyncChainFactory.getSyncChain();
+        FacilioChain chain = SyncChainFactory.getInvokeSyncChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         chain.execute();
+        return SUCCESS;
+    }
+
+    public String removeSync() throws Exception {
+        FacilioChain chain = SyncChainFactory.getRemoveSyncChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+
+        return SUCCESS;
+    }
+
+    public String search() throws Exception {
+
         return SUCCESS;
     }
 }
