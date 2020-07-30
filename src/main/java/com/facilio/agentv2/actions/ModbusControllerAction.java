@@ -1,18 +1,20 @@
 package com.facilio.agentv2.actions;
 
+import java.net.HttpURLConnection;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
-import java.net.HttpURLConnection;
 
 public class ModbusControllerAction extends AgentIdAction {
 
@@ -25,8 +27,6 @@ public class ModbusControllerAction extends AgentIdAction {
 
     @Size(max = 15)
     private String ip;
-    @NotNull
-    @Positive
 
     private Long netwokId;
     
