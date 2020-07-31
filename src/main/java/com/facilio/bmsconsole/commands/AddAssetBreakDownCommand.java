@@ -105,6 +105,7 @@ public class AddAssetBreakDownCommand extends FacilioCommand {
 				assetBreakdown.setTotime(assetBDSourceDetails.getTotime());
 				assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBDSourceDetails.getFromtime(), assetBDSourceDetails.getTotime()));
 			}
+			assetBreakdown.setData(assetBDSourceDetails.getData());
 			updateAssetBetweenFailureTime(assetBreakdownModule, assetBreakdownFields, assetBreakdown);
 			assetBreakdown.setCondition(assetBDSourceDetails.getCondition());
 			
