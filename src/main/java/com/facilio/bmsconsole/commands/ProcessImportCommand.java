@@ -107,7 +107,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						props.putAll(bimDefaultValuesMap);
 					}
 
-					if (ImportAPI.isResourceExtendedModule(importProcessContext.getModule())) {
+					if (importProcessContext.getModule() != null && ImportAPI.isResourceExtendedModule(importProcessContext.getModule())) {
 						// Setting Source Type and Source Id here for Resource extended Module
 						props.put(FacilioConstants.ContextNames.SOURCE_TYPE, SourceType.IMPORT.getIndex());
 						props.put(FacilioConstants.ContextNames.SOURCE_ID, importProcessContext.getId());
