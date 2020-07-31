@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.CustomMailMessageApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.UpdateChangeSet;
+import com.facilio.service.FacilioService;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
@@ -17,7 +18,8 @@ public class UpdateLatestMessageUIDCommandV3 extends FacilioCommand {
         Map<Long, List<UpdateChangeSet>> changeSet = Constants.getModuleChangeSets(context);
         SupportEmailContext updateSupportEmail = (SupportEmailContext) context.getOrDefault(FacilioConstants.ContextNames.SUPPORT_EMAIL, null);
         if (updateSupportEmail != null) {
-            CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId());
+            // CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId());
+            FacilioService.runAsService(() -> CustomMailMessageApi.updateLatestMailUID(updateSupportEmail, updateSupportEmail.getId()));
         }
         return false;
     }

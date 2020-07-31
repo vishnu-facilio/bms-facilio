@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.ModuleFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -156,12 +158,14 @@ public class SupportEmailAPI {
 	}
 
 
-	public static List<SupportEmailContext> getImapsEmailsOfOrg() throws Exception {
+	public static List<SupportEmailContext> getImapsEmailsOfOrg(long orgId) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSupportEmailFields())
 				.table(ModuleFactory.getSupportEmailsModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("IS_CUSTOM_MAIL", "isCustomMail", String.valueOf(true), BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition("IS_CUSTOM_MAIL", "isCustomMail", String.valueOf(true), BooleanOperators.IS))
+				.andCustomWhere("ORGID = ?", orgId);
+				;
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<SupportEmailContext> imapsMails = new ArrayList<SupportEmailContext>();
