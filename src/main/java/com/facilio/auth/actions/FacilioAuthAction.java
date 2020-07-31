@@ -343,7 +343,8 @@ public class FacilioAuthAction extends FacilioAction {
 
 		boolean portalUser = false;
 		HttpServletRequest request = ServletActionContext.getRequest();
-		
+		HttpServletResponse resp = ServletActionContext.getResponse();
+
 
 		if (getUsername() != null && getPassword() != null) {
 			try {
@@ -373,6 +374,9 @@ public class FacilioAuthAction extends FacilioAction {
 							ipAddress);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
+
+				//deleting .facilio.com cookie(temp handling)
+				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 
 				addAuthCookies(authtoken, portalUser, false, request);
 
@@ -686,25 +690,24 @@ public class FacilioAuthAction extends FacilioAction {
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
-		setCookieProperties(cookie, request.getServerName(), true);
+		setCookieProperties(cookie,true);
 		response.addCookie(cookie);
 
 		//temp handling. will be removed once service portal xml files are removed.
 		if(portalUser) {
 			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
-			setCookieProperties(portalCookie, request.getServerName(), true);
+			setCookieProperties(portalCookie, true);
 			response.addCookie(portalCookie);
 		}
 	}
 
-	private void setCookieProperties(Cookie cookie, String parentdomain, boolean authModel) {
+	private void setCookieProperties(Cookie cookie, boolean authModel) {
 		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		cookie.setPath("/");
 		cookie.setHttpOnly(authModel);
 		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 			cookie.setSecure(true);
 		}
-		cookie.setDomain(parentdomain);
 	}
 	public String validateInviteLink() throws Exception {
 
@@ -1170,9 +1173,9 @@ public class FacilioAuthAction extends FacilioAction {
 							)) {
 						HttpSession session = request.getSession();
 						session.invalidate();
-						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", request.getServerName());
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
 						if(portalUser) {
-							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", request.getServerName());
+							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
 						}
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);

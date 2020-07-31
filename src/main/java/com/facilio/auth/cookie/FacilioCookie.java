@@ -52,7 +52,7 @@ public class FacilioCookie {
     	String csrfToken = AwsUtil.generateCSRFToken();
     	
     	Cookie cookie = new Cookie(CSRF_TOKEN_COOKIE, csrfToken);
-    	cookie.setDomain(request.getServerName());
+    	//cookie.setDomain(request.getServerName());
         cookie.setPath("/");
         if (!FacilioProperties.isDevelopment()) {
         	cookie.setSecure(true);
