@@ -4204,9 +4204,9 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateVisitorFromVisitsCommand());
 			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new AddAttachmentCommand());
-			c.addCommand(new AttachmentContextCommand());
-			c.addCommand(new AddAttachmentRelationshipCommand());
+//			c.addCommand(new AddAttachmentCommand());
+//			c.addCommand(new AttachmentContextCommand());
+//			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
