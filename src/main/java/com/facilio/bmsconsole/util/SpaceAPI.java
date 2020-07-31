@@ -5,6 +5,7 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -214,13 +215,15 @@ public class SpaceAPI {
 		
 	}
 	
-	public static Long addDependentSpace(String spaceName, Long parentSpaceId) throws Exception {
+	public static Long addDependentSpace(String spaceName, Long parentSpaceId, Long importId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		
 		SpaceContext spaceContext = new SpaceContext();
 		spaceContext.setName(spaceName);
+		spaceContext.setSourceType(SourceType.IMPORT.getIndex());
+		spaceContext.setSourceId(importId);
 		SpaceContext parentSpace = SpaceAPI.getSpace(parentSpaceId);
 		
 		if(parentSpace.getSpaceId1() != -1) {

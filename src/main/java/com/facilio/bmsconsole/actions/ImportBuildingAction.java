@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -16,6 +14,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class ImportBuildingAction {
 	
@@ -31,13 +32,15 @@ public class ImportBuildingAction {
 	
 	private HashMap<String, ImportSiteAction> building = null;
 	
-	public Long addBuilding(String buildingName, Long siteId) throws Exception
+	public Long addBuilding(String buildingName, Long siteId, Long importId) throws Exception
 	{			
 			BuildingContext building = new BuildingContext();
 			building.setSpaceType(SpaceType.BUILDING);
 			building.setName(buildingName);
 			building.setSiteId(siteId);
-			
+			building.setSourceType(SourceType.IMPORT.getIndex());
+			building.setSourceId(importId);
+
 		
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
@@ -49,13 +52,8 @@ public class ImportBuildingAction {
 
 															
 			long id = builder.insert(building);
-			
-			System.out.println("-------------> building : "+ buildingName+" Site ID "+ siteId);
-			
-			System.out.println("building created with the following Id :"+id);
-		    //	building.setId(id);
+
 			SpaceAPI.updateHelperFields(building);
-			// context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 				
 		return id;
 		

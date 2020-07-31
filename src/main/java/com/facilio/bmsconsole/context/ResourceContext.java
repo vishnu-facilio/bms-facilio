@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -171,4 +172,36 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 			return null;
 		}
 	}
+
+	private SourceType sourceType;
+
+	public SourceType getSourceTypeEnum() {
+		return sourceType;
+	}
+
+	public int getSourceType() {
+		if (sourceType != null) {
+			return sourceType.getIndex();
+		}
+		return -1;
+	}
+
+	public void setSourceType(int sourceType) {
+		this.sourceType = SourceType.valueOf(sourceType);
+	}
+
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(long sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	private long sourceId = -1;
+
 }

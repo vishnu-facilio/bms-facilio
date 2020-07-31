@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -38,13 +39,15 @@ public class ImportSpaceAction {
     private HashMap<String, ImportBuildingAction> space = null;
 	
 	
-    public Long addSpace(String spaceName, Long siteId , Long buildingId) throws Exception
+    public Long addSpace(String spaceName, Long siteId , Long buildingId, Long importId) throws Exception
 	{
 		SpaceContext space = new SpaceContext();
 		
 		space.setSpaceType(SpaceType.SPACE);
 		space.setName(spaceName);
 		space.setSiteId(siteId);
+		space.setSourceType(SourceType.IMPORT.getIndex());
+		space.setSourceId(importId);
 		if(buildingId != null) {
 			space.setBuildingId(buildingId);
 		}
@@ -65,7 +68,7 @@ public class ImportSpaceAction {
 	}
     
     
-    public Long addSpace(String spaceName, Long siteId, Long buildingId , Long floorId) throws Exception
+    public Long addSpace(String spaceName, Long siteId, Long buildingId , Long floorId, Long importId) throws Exception
 	{
 		SpaceContext space = new SpaceContext();
 		
@@ -74,6 +77,8 @@ public class ImportSpaceAction {
 		space.setSiteId(siteId);
 		space.setBuildingId(buildingId);
 		space.setFloorId(floorId);
+		space.setSourceType(SourceType.IMPORT.getIndex());
+		space.setSourceId(importId);
 		
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

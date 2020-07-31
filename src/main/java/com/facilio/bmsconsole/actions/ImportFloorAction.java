@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,6 +13,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class ImportFloorAction {
 	private String name;
@@ -33,7 +34,7 @@ public class ImportFloorAction {
 	private String siteName = null;
 	private Long siteId = null;
 	
-	public Long addFloor(String floorName, Long siteId , Long buildingId) throws Exception
+	public Long addFloor(String floorName, Long siteId , Long buildingId, Long importId) throws Exception
 	{
 		FloorContext floor = new FloorContext();
 		
@@ -41,7 +42,8 @@ public class ImportFloorAction {
 		floor.setName(floorName);
 		floor.setSiteId(siteId);
 		floor.setBuildingId(buildingId);
-		
+		floor.setSourceType(SourceType.IMPORT.getIndex());
+		floor.setSourceId(importId);
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
@@ -52,11 +54,7 @@ public class ImportFloorAction {
 				.fields(modBean.getAllFields(module.getName()));
 		
 		long id = builder.insert(floor);
-		
-		System.out.println("-------------> floor : "+ floorName+" Site ID "+ siteId);
-		
-		System.out.println("floor created with the following Id :"+id);
-	    //	building.setId(id);
+
 		SpaceAPI.updateHelperFields(floor);
 		return id;
 		

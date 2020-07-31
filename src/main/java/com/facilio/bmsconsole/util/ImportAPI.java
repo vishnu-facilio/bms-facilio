@@ -430,7 +430,7 @@ public class ImportAPI {
 			 }
 			 if(buildingId == null)
 			 {
-				 buildingId = buildingMeta.addBuilding(buildingName, siteId);
+				 buildingId = buildingMeta.addBuilding(buildingName, siteId, importProcessContext.getId());
 			 }
 			 
 			 if(buildingId != null) {
@@ -456,7 +456,7 @@ public class ImportAPI {
 			}
 		    if(floorId == null)
 		    {
-		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
+		    	floorId = floorMeta.addFloor(floorName, siteId, buildingId, importProcessContext.getId());
 		    }
 		    if(floorId != null) {
 				 spaceId = floorId;
@@ -478,7 +478,7 @@ public class ImportAPI {
 			if(spaceId == null) {
 				 if (floorName == null)
 				 {
-					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
+					 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, importProcessContext.getId());
 				 }
 				 else
 				 {
@@ -495,7 +495,7 @@ public class ImportAPI {
 						spaceId = tempSpaceId;
 					}
 					else {
-						spaceId = SpaceAPI.addDependentSpace(additionalSpace, spaceId);
+						spaceId = SpaceAPI.addDependentSpace(additionalSpace, spaceId,importProcessContext.getId());
 					}
 				}
 		}
