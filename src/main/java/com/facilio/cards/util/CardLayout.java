@@ -322,10 +322,12 @@ public enum CardLayout {
 				});
 				if (StringUtils.isNotEmpty(subModuleName)) {
 						FacilioModule subModule = modBean.getModule(subModuleName);
-						Class className = FacilioConstants.ContextNames.getClassFromModule(subModule);
-						if (className == null) {
-							className = AttachmentContext.class;
-						}
+//						Class className = FacilioConstants.ContextNames.getClassFromModule(subModule);
+//						if (className == null) {
+//							className = AttachmentContext.class;
+//						}
+					// TODO remove this temp hardcoding class name. Remove once v3 related changes is fixed
+						Class className = AttachmentContext.class;
 						List<FacilioField> subModuleFields = modBean.getAllFields(subModuleName);
 						FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
 						List<FacilioField> fileFields = FieldFactory.getFileFields(namespaceConfig.getTableName());
