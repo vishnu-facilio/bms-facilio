@@ -377,6 +377,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				//deleting .facilio.com cookie(temp handling)
 				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
 				addAuthCookies(authtoken, portalUser, false, request);
 
