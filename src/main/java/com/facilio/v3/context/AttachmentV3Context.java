@@ -100,7 +100,7 @@ public class AttachmentV3Context extends V3Context {
     public ModuleBaseWithCustomFields getParent() {
         return parent;
     }
-    public void setParentId(ModuleBaseWithCustomFields parent) {
+    public void setParent(ModuleBaseWithCustomFields parent) {
         this.parent = parent;
     }
 
