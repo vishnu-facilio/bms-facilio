@@ -211,6 +211,11 @@ public class LoginAction extends FacilioAction {
 						if(portalUser) {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
 						}
+
+						//deleting .facilio.com cookie(temp handling)
+						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 						
