@@ -233,13 +233,14 @@ public class SAMLServiceProvider {
 	
 	private Document parseResponse(String encodedResponse, String method) throws Exception {
 		
-		InputStream xmlIns = decodeAndInflate(encodedResponse, method);
-		
-		DocumentBuilderFactory factory = DocumentBuilderFactory
-				.newInstance();
-		factory.setNamespaceAware(true);
+		try (InputStream xmlIns = decodeAndInflate(encodedResponse, method);) {
 
-		return factory.newDocumentBuilder().parse(xmlIns);
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
+			factory.setNamespaceAware(true);
+
+			return factory.newDocumentBuilder().parse(xmlIns);
+		}
 	}
 	
 	private SAMLResponse validate(Document document) throws Exception {
