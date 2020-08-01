@@ -8,10 +8,12 @@ import org.json.simple.JSONObject;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
+	private FacilioField field;
 	public static enum ComponentType implements FacilioEnum {
 		 SINGLE_SELECT("Select option"),MULTI_SELECT("Multiple options");
 
@@ -253,6 +255,14 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	public void setSelectedOptions(List<Long> selectedOptions) {
 		this.filterPojo.setSelectedOptions(selectedOptions); 
+	}
+
+	public FacilioField getField() {
+		return field;
+	}
+
+	public void setField(FacilioField field) {
+		this.field = field;
 	}
 
 }

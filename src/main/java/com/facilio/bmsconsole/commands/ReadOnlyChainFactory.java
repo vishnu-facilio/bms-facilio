@@ -2554,7 +2554,8 @@ public class ReadOnlyChainFactory {
 	{
 		FacilioChain chain=getDefaultChain();
 		chain.addCommand(new FetchDashboardFilterCommand());
-		chain.addCommand(new GetDashboardFilterToWidgetMapping());
+		chain.addCommand(new GetDbTimeLineFilterToWidgetMapping());
+//		chain.addCommand(new GetDbUserFilterToWidgetMapping());
 		return chain;
 	}
 }

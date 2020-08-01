@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
 
-public class GetDashboardFilterToWidgetMapping extends FacilioCommand {
+public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

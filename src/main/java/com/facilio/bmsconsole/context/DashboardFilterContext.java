@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private long dateOperator;
 	private String dateValue;
 	private String dateLabel;
+	private Map<Long,List<Long>> filterWidgetMapping;
 	
 	
 	public String getDateLabel() {
@@ -75,6 +77,12 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	}
 	public void setIsTimelineFilterEnabled(Boolean isTimelineFilterEnabled) {
 		this.isTimelineFilterEnabled = isTimelineFilterEnabled;
+	}
+	public Map<Long,List<Long>> getFilterWidgetMapping() {
+		return filterWidgetMapping;
+	}
+	public void setFilterWidgetMapping(Map<Long,List<Long>> filterWidgetMapping) {
+		this.filterWidgetMapping = filterWidgetMapping;
 	}
 	
 

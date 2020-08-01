@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -12,6 +14,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -65,7 +68,13 @@ public class DashboardFilterUtil {
 		List<Map<String,Object>> records= builder.get();
 				if(records!=null&& !records.isEmpty())
 				{
-					return FieldUtil.getAsBeanListFromMapList(records, DashboardUserFilterContext.class);
+					List<DashboardUserFilterContext> dashboardUserFilters= FieldUtil.getAsBeanListFromMapList(records, DashboardUserFilterContext.class);
+					for (DashboardUserFilterContext filter : dashboardUserFilters) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						filter.setField(modBean.getField(filter.getFieldId()));
+						
+					}
+					 return dashboardUserFilters;
 				}
 				return null;
 	}
