@@ -266,6 +266,8 @@ public class PageWidget {
 		SUPPLIER_WATER("supplierWater"),
 		SUPPLIER_SEAWAGE("supplierSeawage"),
 		SUPPLIER_DETAILS("supplierDetails"),
+		TARIFF_DETAILS("tariffDetails"),
+		TARIFF_INFORMATION("tariffInformation"),
 
 		
 

@@ -122,6 +122,8 @@ public class PageFactory {
 				return BillAlertPageFactory.getBillAlertPage((ModuleBaseWithCustomFields) record, module);
 			case ContextNames.BILL_INVOICE:
 				return BillInvoicePageFactory.getBillInvoicePage((ModuleBaseWithCustomFields) record, module);
+			case ContextNames.BILL_TARIFF:
+				return BillTariffPageFactory.getBillTariffPage((ModuleBaseWithCustomFields) record, module);
 			default:
 				return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record, module);	
 			}

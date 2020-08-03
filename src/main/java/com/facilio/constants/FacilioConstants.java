@@ -1730,6 +1730,7 @@ public class FacilioConstants {
 		// etisalat changes
         public static final String BILL_ALERT = "custom_alert";
         public static final String BILL_INVOICE = "custom_invoices";
+        public static final String BILL_TARIFF = "custom_tariffinfo";
         //
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
