@@ -2,6 +2,7 @@ package com.facilio.elasticsearch;
 
 import com.facilio.chain.FacilioChain;
 import com.facilio.elasticsearch.command.ConstructESSearchCommand;
+import com.facilio.elasticsearch.command.ListSyncModulesChain;
 import com.facilio.elasticsearch.command.RemoveSyncFromESCommand;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.elasticsearch.job.SyncDataToESCommand;
@@ -30,6 +31,12 @@ public class SyncChainFactory {
     public static FacilioChain getRemoveSyncChain() {
         FacilioChain chain = getTransactionChain();
         chain.addCommand(new RemoveSyncFromESCommand());
+        return chain;
+    }
+
+    public static FacilioChain getListModuleChain() {
+        FacilioChain chain = getReadChain();
+        chain.addCommand(new ListSyncModulesChain());
         return chain;
     }
 }

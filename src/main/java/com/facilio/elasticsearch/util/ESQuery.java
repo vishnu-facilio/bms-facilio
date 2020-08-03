@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 public class ESQuery {
     private JSONObject query = new JSONObject();
     private JSONArray array = new JSONArray();
+    private Integer size;
 
     private JSONArray filters = new JSONArray();
 
@@ -23,6 +24,10 @@ public class ESQuery {
         query.put("bool", json);
     }
 
+    private void setSize(int size) {
+        this.size = size;
+    }
+
     public void addQuery(JSONObject match) {
         array.add(match);
     }
@@ -34,6 +39,10 @@ public class ESQuery {
     public JSONObject getQuery() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("query", query);
+
+        if (size != null) {
+            jsonObject.put("size", size);
+        }
         return jsonObject;
     }
 
@@ -48,6 +57,7 @@ public class ESQuery {
         public ESQueryBuilder addQueryString(String value) {
             JSONObject jsonObject = getQueryObject("query_string", "query", "*" + value + "*");
             query.addQuery(jsonObject);
+            setSize(1000);
             return this;
         }
 
@@ -65,6 +75,11 @@ public class ESQuery {
 
         public ESQueryBuilder addFilter(JSONObject filter) {
             query.addFilter(filter);
+            return this;
+        }
+
+        public ESQueryBuilder setSize(int size) {
+            query.setSize(size);
             return this;
         }
 

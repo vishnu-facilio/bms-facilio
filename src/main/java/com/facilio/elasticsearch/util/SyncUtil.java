@@ -1,6 +1,7 @@
 package com.facilio.elasticsearch.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -46,7 +47,8 @@ public class SyncUtil {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getESSyncContextModule().getTableName())
                     .fields(FieldFactory.getESSyncContextFields());
-            builder.insert(FieldUtil.getAsProperties(syncContext));
+            long id = builder.insert(FieldUtil.getAsProperties(syncContext));
+            syncContext.setId(id);
         }
         else {
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -77,5 +79,16 @@ public class SyncUtil {
             return allSync.stream().map(SyncContext::getSyncModule).collect(Collectors.toList());
         }
         return null;
+    }
+
+    public static void deleteSyncContext(Long id) throws Exception {
+        if (id == null) {
+            return;
+        }
+
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getESSyncContextModule().getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getESSyncContextModule()));
+        builder.delete();
     }
 }

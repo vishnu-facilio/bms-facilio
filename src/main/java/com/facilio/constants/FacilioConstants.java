@@ -919,6 +919,7 @@ public class FacilioConstants {
 		public static final String FILTER_CRITERIA = "filterCriteria";
 		public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
 		public static final String SEARCH = "search";
+		public static final String SEARCH_RESULT = "searchResult";
 		public static final String SEARCH_CRITERIA = "searchCriteria";
 		public static final String SORTING = "sorting";
 		public static final String OVERRIDE_SORTING = "overrideSorting";

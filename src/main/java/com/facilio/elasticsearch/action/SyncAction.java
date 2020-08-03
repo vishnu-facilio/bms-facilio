@@ -33,8 +33,22 @@ public class SyncAction extends FacilioAction {
         return SUCCESS;
     }
 
-    public String search() throws Exception {
+    public String listModules() throws Exception {
+        FacilioChain chain = SyncChainFactory.getListModuleChain();
+        FacilioContext context = chain.getContext();
+        chain.execute();
 
+        setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        return SUCCESS;
+    }
+
+    public String search() throws Exception {
+        FacilioChain chain = SyncChainFactory.getSearchChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SEARCH_RESULT, context.get(FacilioConstants.ContextNames.SEARCH_RESULT));
         return SUCCESS;
     }
 }

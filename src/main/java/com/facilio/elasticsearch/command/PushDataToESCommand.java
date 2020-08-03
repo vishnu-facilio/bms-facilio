@@ -29,22 +29,9 @@ public class PushDataToESCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule module = modBean.getModule(moduleName);
-
-            List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            Map<String, FacilioField> fieldsToSearchMap = FieldFactory.getAsMap(allFields.stream().filter(field -> {
-                if (field.getDataTypeEnum() == FieldType.STRING || field.getDataTypeEnum() == FieldType.NUMBER) {
-                    return true;
-                }
-                return false;
-            }).collect(Collectors.toList()));
-
-            List<FacilioField> restrictedFields = allFields.stream().filter(field -> !fieldsToSearchMap.containsKey(field.getName())).collect(Collectors.toList());
             List<JSONObject> objectsToBeAdded = new ArrayList<>();
             for (ModuleBaseWithCustomFields record : list) {
                 JSONObject map = FieldUtil.getAsJSON(record);
-                for (FacilioField field : restrictedFields) {
-                    map.remove(field.getName());
-                }
                 objectsToBeAdded.add(map);
             }
 

@@ -342,6 +342,10 @@
 				class="com.facilio.elasticsearch.action.SyncAction" method="invokeSync" />
 		<action name="removeSync"
 				class="com.facilio.elasticsearch.action.SyncAction" method="removeSync" />
+		<action name="listModules"
+				class="com.facilio.elasticsearch.action.SyncAction" method="listModules" />
+		<action name="search"
+				class="com.facilio.elasticsearch.action.SyncAction" method="search" />
 	</package>
 
 	<package name="stateFlow" namespace="/api/v2/stateflow"

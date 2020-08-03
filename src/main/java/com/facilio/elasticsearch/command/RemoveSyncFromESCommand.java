@@ -27,6 +27,7 @@ public class RemoveSyncFromESCommand extends FacilioCommand {
         }
 
         ESUtil.deleteDataOfModule(syncContext.getSyncModuleId());
+        SyncUtil.deleteSyncContext(syncContext.getId());
 
         return false;
     }
