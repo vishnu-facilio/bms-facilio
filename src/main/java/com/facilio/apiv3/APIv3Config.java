@@ -379,6 +379,42 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+    
+    @Module("visitorlog")
+    public static Supplier<V3Config> getVisitorLog() {
+        return () -> new V3Config(VisitorLogContextV3.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
+                .update()
+                   .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLoggingBeforeFetchOnListChain())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                .build();
+    }
+    
+    @Module("invitevisitor")
+    public static Supplier<V3Config> getInviteVisitor() {
+        return () -> new V3Config(InviteVisitorContextV3.class)
+                .create()
+                    .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
+                .update()
+                   .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnUpdateChain())
+                .list()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLoggingBeforeFetchOnListChain())
+                    .showStateFlowList()
+                .summary()
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                .build();
+    }
 
     @Module("visitorlogging")
     public static Supplier<V3Config> getVisitorLogging() {

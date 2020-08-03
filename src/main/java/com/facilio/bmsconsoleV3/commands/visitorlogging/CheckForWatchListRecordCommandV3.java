@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
+import com.facilio.bmsconsoleV3.context.V3WatchListContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -27,8 +29,9 @@ public class CheckForWatchListRecordCommandV3 extends FacilioCommand {
                 if(visitor != null) {
                     if(visitor.getId() > 0) {
                         visitor = V3VisitorManagementAPI.getVisitor(visitor.getId(), null);
-                    }
-                    WatchListContext watchListRecord = VisitorManagementAPI.getBlockedWatchListRecordForPhoneNumber(visitor.getPhone(), visitor.getEmail());
+                    } 
+                    
+                    V3WatchListContext watchListRecord = V3VisitorManagementAPI.getBlockedWatchListRecordForPhoneNumber(visitor.getPhone(), visitor.getEmail());
                     if(watchListRecord != null) {
                         if(watchListRecord.isVip()) {
                             vLog.setIsVip(true);
@@ -36,7 +39,7 @@ public class CheckForWatchListRecordCommandV3 extends FacilioCommand {
                         else if(watchListRecord.isBlocked()) {
                             vLog.setIsBlocked(true);
                         }
-                    }
+                    }    			
                 }
             }
         }
