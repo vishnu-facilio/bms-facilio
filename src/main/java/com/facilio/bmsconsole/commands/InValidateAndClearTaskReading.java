@@ -86,45 +86,47 @@ public class InValidateAndClearTaskReading extends FacilioCommand {
 										currentInputValue = currentTask.getInputValue();
 										currentInputTime = currentTask.getInputTime();
 									
-										if((currentInputValue.equals("-1") || StringUtils.isEmpty(currentInputValue)) && taskContext.getReadingDataId() != -1)  //past case and empty string
-										{ 
-											context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, false);
-											context.put(FacilioConstants.ContextNames.IGNORE_SPL_NULL_HANDLING, true);
-											currentTask.setInputValue("");
-											String deltaFieldName = numberField.getName()+"Delta";
-		
-											Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-											if (readingMap != null && !readingMap.isEmpty()) {	
-												List<ReadingContext> readings = readingMap.get(numberField.getModule().getName());
-												for(ReadingContext reading: readings) {
-													if(reading.getId() == taskContext.getReadingDataId() && reading.getParentId() == taskContext.getResource().getId()) {
-														reading.addReading(numberField.getName(), null);
-														reading.addReading(deltaFieldName, null);
-														if(rdm.getReadingDataId()!= -1 && taskContext.getReadingDataId() == rdm.getReadingDataId()) {
-															rdm.setValue(null);
-															//current value update case
+										if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) {
+											if((currentInputValue.equals("-1") || StringUtils.isEmpty(currentInputValue)) && taskContext.getReadingDataId() != -1)  //past case and empty string
+											{ 
+												context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, false);
+												context.put(FacilioConstants.ContextNames.IGNORE_SPL_NULL_HANDLING, true);
+												currentTask.setInputValue("");
+												String deltaFieldName = numberField.getName()+"Delta";
+			
+												Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+												if (readingMap != null && !readingMap.isEmpty()) {	
+													List<ReadingContext> readings = readingMap.get(numberField.getModule().getName());
+													for(ReadingContext reading: readings) {
+														if(reading.getId() == taskContext.getReadingDataId() && reading.getParentId() == taskContext.getResource().getId()) {
+															reading.addReading(numberField.getName(), null);
+															reading.addReading(deltaFieldName, null);
+															if(rdm.getReadingDataId()!= -1 && taskContext.getReadingDataId() == rdm.getReadingDataId()) {
+																rdm.setValue(null);
+																//current value update case
+															}
 														}
-													}
-												}							
-											}
+													}							
+												}
+												
+												Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+												if (recordMap != null && !recordMap.isEmpty()) {	
+													List records = readingMap.get(numberField.getModule().getName());
+													for(Object record: records) {
+														Map<String, Object> recordData = FieldUtil.getAsProperties(record);
+														if(recordData != null && (long)recordData.get(FacilioConstants.ContextNames.ID) == taskContext.getReadingDataId()) {
+															recordData.put(numberField.getName(), null);
+															recordData.put(deltaFieldName, null);
+															if(rdm.getReadingDataId()!= -1 && taskContext.getReadingDataId() == rdm.getReadingDataId()) {
+																rdm.setValue(null);
+																//current value update case
+															}
+														}
+													}							
+												}
 											
-											Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-											if (recordMap != null && !recordMap.isEmpty()) {	
-												List records = readingMap.get(numberField.getModule().getName());
-												for(Object record: records) {
-													Map<String, Object> recordData = FieldUtil.getAsProperties(record);
-													if(recordData != null && (long)recordData.get(FacilioConstants.ContextNames.ID) == taskContext.getReadingDataId()) {
-														recordData.put(numberField.getName(), null);
-														recordData.put(deltaFieldName, null);
-														if(rdm.getReadingDataId()!= -1 && taskContext.getReadingDataId() == rdm.getReadingDataId()) {
-															rdm.setValue(null);
-															//current value update case
-														}
-													}
-												}							
 											}
-										
-										}
+										}								
 									}
 								}
 								break;
