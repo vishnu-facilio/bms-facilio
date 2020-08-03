@@ -276,7 +276,7 @@ public class PageWidget {
 		UTILITY_TRANSACTIONS("utilityTransactions"),
 		UTILITY_ALL_ACTIVITIES("utilityAllActivities"),
 		
-
+		BILL_SITE_DETAILS("billSiteDetails"),
 		
 
 		

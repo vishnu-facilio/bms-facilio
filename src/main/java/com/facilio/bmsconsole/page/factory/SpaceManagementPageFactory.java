@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -26,30 +28,64 @@ public class SpaceManagementPageFactory extends PageFactory {
 	public static Page getSitePage(SiteContext site, FacilioModule module) throws Exception {
         Page page = new Page();
 
-        Tab tab1 = page.new Tab("summary");
-        page.addTab(tab1);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
+		      Tab tab1 = page.new Tab("summary");
+		        page.addTab(tab1);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        Section tab1Sec1 = page.new Section();
-        tab1.addSection(tab1Sec1);
-        addSecondaryDetailsWidget(tab1Sec1);
-		addWeatherWidget(tab1Sec1);
-        int energyCardHeight = 4;
-        addEnergyWidget(tab1Sec1, energyCardHeight);
-        int yPos = tab1Sec1.getLatestY() + energyCardHeight;
-        addOperatingHoursWidget(tab1Sec1);
-        addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
-        
-        Section tab1Sec2 = page.new Section();
-        addBuildingsWidget(site.getId(), tab1Sec2,modBean);
-        tab1.addSection(tab1Sec2);
-		Section tab1Sec3 = page.new Section("siteSpaces");
-		addSpacesWidget(tab1Sec3,modBean);
-		tab1.addSection(tab1Sec3);
-		Section tab1Sec4 = page.new Section("spaceReadings");
-        tab1.addSection(tab1Sec4);
-		addReadingWidget(tab1Sec4);
-		addCommonSubModuleWidget(tab1Sec4, module, site);
+		        Section tab1Sec1 = page.new Section();
+		        tab1.addSection(tab1Sec1);
+
+				
+				PageWidget cards= new PageWidget(PageWidget.WidgetType.BILL_SITE_DETAILS);
+				cards.addToLayoutParams(tab1Sec1, 24, 4);
+				tab1Sec1.addWidget(cards);
+				
+				PageWidget electriycity= new PageWidget(PageWidget.WidgetType.UTILITY_CONNECTIONS);
+				electriycity.addToLayoutParams(tab1Sec1, 24, 10);
+				tab1Sec1.addWidget(electriycity);
+				
+		        int energyCardHeight = 4;
+		        int yPos = tab1Sec1.getLatestY() + energyCardHeight;
+		        addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+		        
+		        Section tab1Sec2 = page.new Section();
+		        addBuildingsWidget(site.getId(), tab1Sec2,modBean);
+		        tab1.addSection(tab1Sec2);
+				Section tab1Sec3 = page.new Section("siteSpaces");
+				addSpacesWidget(tab1Sec3,modBean);
+				tab1.addSection(tab1Sec3);
+				Section tab1Sec4 = page.new Section("spaceReadings");
+		        tab1.addSection(tab1Sec4);
+				addReadingWidget(tab1Sec4);
+				addCommonSubModuleWidget(tab1Sec4, module, site);
+		}
+		else {
+		      Tab tab1 = page.new Tab("summary");
+		        page.addTab(tab1);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		        Section tab1Sec1 = page.new Section();
+		        tab1.addSection(tab1Sec1);
+		        addSecondaryDetailsWidget(tab1Sec1);
+				addWeatherWidget(tab1Sec1);
+		        int energyCardHeight = 4;
+		        addEnergyWidget(tab1Sec1, energyCardHeight);
+		        int yPos = tab1Sec1.getLatestY() + energyCardHeight;
+		        addOperatingHoursWidget(tab1Sec1);
+		        addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+		        
+		        Section tab1Sec2 = page.new Section();
+		        addBuildingsWidget(site.getId(), tab1Sec2,modBean);
+		        tab1.addSection(tab1Sec2);
+				Section tab1Sec3 = page.new Section("siteSpaces");
+				addSpacesWidget(tab1Sec3,modBean);
+				tab1.addSection(tab1Sec3);
+				Section tab1Sec4 = page.new Section("spaceReadings");
+		        tab1.addSection(tab1Sec4);
+				addReadingWidget(tab1Sec4);
+				addCommonSubModuleWidget(tab1Sec4, module, site);
+		}
 
         return page;
     }
