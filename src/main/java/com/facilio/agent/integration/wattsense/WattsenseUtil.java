@@ -88,15 +88,15 @@ public class WattsenseUtil
                 LOGGER.info("Authentication params not proper");
                 return false;
             }
-            Wattsense wattsense = new Wattsense();
-            wattsense.setUserName(username);
+            WattsenseClient wattsenseClient = new WattsenseClient();
+            wattsenseClient.setUserName(username);
 
             if (authenticate(username,password)) { // if status is 200 proceed
                 String wattClientId = AgentIntegrationKeys.CLIENT_ID_TAG + "-" + Objects.requireNonNull(AccountUtil.getCurrentOrg()).getDomain();
                 LOGGER.info("wattsense client id generated - " + wattClientId);
-                wattsense.setClientId(wattClientId);
-                wattsense.setAuthStringEncoded(getEncodedBasicAuthString(username, password));
-                return integrateWattsense(wattsense);
+                wattsenseClient.setClientId(wattClientId);
+                wattsenseClient.setAuthStringEncoded(getEncodedBasicAuthString(username, password));
+                return integrateWattsense(wattsenseClient);
             }
         }catch (Exception e){
             LOGGER.info("Exception while authentication ",e);
@@ -111,51 +111,51 @@ public class WattsenseUtil
         return authStringEncoded;
     }
 
-    private static boolean integrateWattsense(Wattsense wattsense) throws Exception {
-        LOGGER.info(" iamcvijaylogs wattsense clientId "+wattsense.getClientId());
-        String userName = wattsense.getUserName();
-        String authStringEncoded = wattsense.getAuthStringEncoded();
+    private static boolean integrateWattsense(WattsenseClient wattsenseClient) throws Exception {
+        LOGGER.info(" iamcvijaylogs wattsense clientId "+ wattsenseClient.getClientId());
+        String userName = wattsenseClient.getUserName();
+        String authStringEncoded = wattsenseClient.getAuthStringEncoded();
         LOGGER.info("wattsense authStrEnc");
         long wattIntegrationCount = AgentApiV2.getWattsenseAgentCount();
-        String clientId = wattsense.getClientId();
+        String clientId = wattsenseClient.getClientId();
         if( wattIntegrationCount > 0) {
-            wattsense.setClientId(clientId); //naming starts with 0
+            wattsenseClient.setClientId(clientId); //naming starts with 0
             if(wattIntegrationCount > 1){
-                wattsense.setClientId(clientId+"-" + (wattIntegrationCount - 1)); //naming starts with 0
+                wattsenseClient.setClientId(clientId+"-" + (wattIntegrationCount - 1)); //naming starts with 0
             }
             if (AgentApiV2.getWattsenseAgent() != null) {
-                wattsense = WattsenseApi.getWattsense(wattsense.getClientId()); // getting the last added wattsense connection
-                wattsense.setAuthStringEncoded(authStringEncoded);
-                wattsense.setUserName(userName);
-                if (  INTEGRATION_DONE.equals(wattsense.getIntegrationStatus()) ) {
-                    wattsense.setClientId(clientId +"-"+ wattIntegrationCount);
-                } else if (  CERT_ID_GENERATED.equals(wattsense.getIntegrationStatus()) ) {
-                    return createMqttConnection(wattsense);
-                } else if (  MQTT_ID_GENERATED.equals(wattsense.getIntegrationStatus()) ) {
-                    return initiateMQTTConnection(wattsense);
-                } else if (NOT_INTEGRATED.equals(wattsense.getIntegrationStatus())) {
-                    return createCertificateStoreId(wattsense);
+                wattsenseClient = WattsenseApi.getWattsense(wattsenseClient.getClientId()); // getting the last added wattsense connection
+                wattsenseClient.setAuthStringEncoded(authStringEncoded);
+                wattsenseClient.setUserName(userName);
+                if (  INTEGRATION_DONE.equals(wattsenseClient.getIntegrationStatus()) ) {
+                    wattsenseClient.setClientId(clientId +"-"+ wattIntegrationCount);
+                } else if (  CERT_ID_GENERATED.equals(wattsenseClient.getIntegrationStatus()) ) {
+                    return createMqttConnection(wattsenseClient);
+                } else if (  MQTT_ID_GENERATED.equals(wattsenseClient.getIntegrationStatus()) ) {
+                    return initiateMQTTConnection(wattsenseClient);
+                } else if (NOT_INTEGRATED.equals(wattsenseClient.getIntegrationStatus())) {
+                    return createCertificateStoreId(wattsenseClient);
                 }
 
             }
         } // no else because
         FacilioAgent agent = new FacilioAgent();
-        agent.setName(wattsense.getClientId());
+        agent.setName(wattsenseClient.getClientId());
         agent.setConnected(Boolean.FALSE);
         agent.setInterval(15L);
         agent.setType(AgentType.Wattsense.getLabel());
         AgentApiV2.addAgent(agent);
-        wattsense.setIntegrationStatus(NOT_INTEGRATED);
-        WattsenseApi.updateWattsenseIntegration(wattsense);
-        return createCertificateStoreId(wattsense); //create certificate store id
+        wattsenseClient.setIntegrationStatus(NOT_INTEGRATED);
+        WattsenseApi.updateWattsenseIntegration(wattsenseClient);
+        return createCertificateStoreId(wattsenseClient); //create certificate store id
         }
 
 
-    private static boolean createCertificateStoreId(Wattsense wattsense){
+    private static boolean createCertificateStoreId(WattsenseClient wattsenseClient){
         String certificateStoreId = null;
         MultipartHttpPost multipart = null;
         try {
-           multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
+           multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8", wattsenseClient.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
             /*if(DownloadCertFile.checkForCertificates(AgentType.Wattsense.getLabel())) {
@@ -191,7 +191,7 @@ public class WattsenseUtil
             JSONObject certificateStoreResponse = (JSONObject) parser.parse(response);
             if(certificateStoreResponse.containsKey(AgentIntegrationKeys.CERTIFICATE_STORE_ID)){
                 certificateStoreId = (String) certificateStoreResponse.get(AgentIntegrationKeys.CERTIFICATE_STORE_ID);
-                wattsense.setCertificateStoreId(certificateStoreId);
+                wattsenseClient.setCertificateStoreId(certificateStoreId);
               /*  if(makeWattsenseEntry(AgentIntegrationKeys.CERTIFICATE_STORE_ID,certificateStoreId,wattsense) && updateStatus(wattsense,CERT_ID_GENERATED.toString())){
                     if(createMqttConnection(wattsense)){
                         return true;
@@ -207,14 +207,14 @@ public class WattsenseUtil
         return false;
     }
 
-    private static boolean createMqttConnection(Wattsense wattsense){
+    private static boolean createMqttConnection(WattsenseClient wattsenseClient){
         // get
-        if(wattsense.getCertificateStoreId() == null){
+        if(wattsenseClient.getCertificateStoreId() == null){
             return false;
         }
         HttpPost post = new HttpPost(AgentIntegrationUtil.getMqttConnectionApi());
-        post.addHeader(HttpHeaders.AUTHORIZATION,  wattsense.getAuthStringEncoded());
-        String connectorJsonStr = getConnectorJSON(wattsense);
+        post.addHeader(HttpHeaders.AUTHORIZATION,  wattsenseClient.getAuthStringEncoded());
+        String connectorJsonStr = getConnectorJSON(wattsenseClient);
         try {
             StringEntity entity = new StringEntity(connectorJsonStr);
             post.setHeader(HttpHeaders.CONTENT_TYPE,ContentType.APPLICATION_JSON.getMimeType());
@@ -237,7 +237,7 @@ public class WattsenseUtil
                 jsonObject = (JSONObject) parser.parse(result);
                 if(jsonObject.containsKey(AgentIntegrationKeys.ID)){
                     String mqttConId = (String) jsonObject.get(AgentIntegrationKeys.ID);
-                    wattsense.setMqttConnectionId(mqttConId);
+                    wattsenseClient.setMqttConnectionId(mqttConId);
                    /* if(makeWattsenseEntry(AgentIntegrationKeys.MQTT_ID,mqttConId,wattsense) && updateStatus(wattsense,MQTT_ID_GENERATED.toString())) {
                         if (initiateMQTTConnection(wattsense)) {
                             return true;
@@ -254,14 +254,14 @@ public class WattsenseUtil
         return false;
     }
 
-    private static boolean initiateMQTTConnection(Wattsense wattsense){
-        HttpPut put = new HttpPut(AgentIntegrationUtil.getMqttConnectionApi()+wattsense.getMqttConnectionId()+ AgentIntegrationUtil.getInitiateMqttApi());
-        put.addHeader(HttpHeaders.AUTHORIZATION,  wattsense.getAuthStringEncoded());
+    private static boolean initiateMQTTConnection(WattsenseClient wattsenseClient){
+        HttpPut put = new HttpPut(AgentIntegrationUtil.getMqttConnectionApi()+ wattsenseClient.getMqttConnectionId()+ AgentIntegrationUtil.getInitiateMqttApi());
+        put.addHeader(HttpHeaders.AUTHORIZATION,  wattsenseClient.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(put);
             String result = getResponseString(response);
             if(response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK || response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_CREATED){
-                if(updateStatus(wattsense, INTEGRATION_DONE.toString())) {
+                if(updateStatus(wattsenseClient, INTEGRATION_DONE.toString())) {
                     return true;
                 }
             }
@@ -271,9 +271,9 @@ public class WattsenseUtil
         return false;
     }
 
-    private static boolean deleteCertificateStore(Wattsense wattsense){
-        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteCertificateStoreApi()+"/"+wattsense.getCertificateStoreId());
-        delete.addHeader(HttpHeaders.AUTHORIZATION,wattsense.getAuthStringEncoded());
+    private static boolean deleteCertificateStore(WattsenseClient wattsenseClient){
+        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteCertificateStoreApi()+"/"+ wattsenseClient.getCertificateStoreId());
+        delete.addHeader(HttpHeaders.AUTHORIZATION, wattsenseClient.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(delete);
             int status = response.getStatusLine().getStatusCode();
@@ -287,9 +287,9 @@ public class WattsenseUtil
         return false;
     }
 
-    private static  boolean deleteMqttConnection(Wattsense wattsense){
-        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteMqttConnectionApi()+"/"+wattsense.getCertificateStoreId());
-        delete.addHeader(HttpHeaders.AUTHORIZATION, wattsense.getAuthStringEncoded());
+    private static  boolean deleteMqttConnection(WattsenseClient wattsenseClient){
+        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteMqttConnectionApi()+"/"+ wattsenseClient.getCertificateStoreId());
+        delete.addHeader(HttpHeaders.AUTHORIZATION, wattsenseClient.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(delete);
             int status = response.getStatusLine().getStatusCode();
@@ -303,7 +303,7 @@ public class WattsenseUtil
         return false;
     }
 
-    private static String getResponseString(HttpResponse response){
+    public static String getResponseString(HttpResponse response){
         HttpEntity ent = response.getEntity();
         InputStream is = null;
         try {
@@ -336,8 +336,8 @@ public class WattsenseUtil
     }
 
 
-    private static String getConnectorJSON(Wattsense wattsense){
-        String wattClientId = wattsense.getClientId();
+    private static String getConnectorJSON(WattsenseClient wattsenseClient){
+        String wattClientId = wattsenseClient.getClientId();
         JSONObject mqttConnJson = new JSONObject();
         mqttConnJson.put(AgentIntegrationKeys.NAME, wattClientId);
         JSONObject brokerConfig = new JSONObject();
@@ -345,7 +345,7 @@ public class WattsenseUtil
         brokerConfig.put(AgentIntegrationKeys.CLIENT_ID, wattClientId);
         brokerConfig.put("brokerType","AWS");
         JSONObject certificateStore = new JSONObject();
-        certificateStore.put(AgentIntegrationKeys.CERTIFICATE_STORE_ID,wattsense.getCertificateStoreId());
+        certificateStore.put(AgentIntegrationKeys.CERTIFICATE_STORE_ID, wattsenseClient.getCertificateStoreId());
         brokerConfig.put("certificateAuthentication",certificateStore);
         mqttConnJson.put("brokerConfig",brokerConfig);
         mqttConnJson.put("description",AccountUtil.getCurrentOrg().getDomain()+"_Wattsense_MQTT");
@@ -367,7 +367,7 @@ public class WattsenseUtil
         return mqttConnJson.toString();
     }
 
-    private static boolean updateStatus(Wattsense wattsense,String status){ // working good
+    private static boolean updateStatus(WattsenseClient wattsenseClient, String status){ // working good
         FacilioChain chain = TransactionChainFactory.updateWattStatusChain();
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWattsenseIntegrationField());
         FacilioContext context = new FacilioContext();
@@ -377,7 +377,7 @@ public class WattsenseUtil
        /* toUpdate.put(AgentIntegrationKeys.PROP_KEY, AgentIntegrationKeys.INTEGRATION_STATUS);
         toUpdate.put(AgentIntegrationKeys.PROP_VALUE,status);*/
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME),wattsense.getClientId(),StringOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.NAME), wattsenseClient.getClientId(),StringOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.INTEGRATION_TYPE), String.valueOf(AgentType.Wattsense.getKey()),NumberOperators.EQUALS));
        // criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentIntegrationKeys.PROP_KEY), AgentIntegrationKeys.INTEGRATION_STATUS,StringOperators.IS));
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
@@ -412,11 +412,11 @@ public class WattsenseUtil
     }
 
     public static boolean deleteIntegration(String clientId,String userName, String password) {
-        Wattsense wattsense = null;//getWattsense(clientId);
+        WattsenseClient wattsenseClient = null;//getWattsense(clientId);
         String authString = getEncodedBasicAuthString(userName,password);
-        wattsense.setAuthStringEncoded(authString);
-        if(deleteMqttConnection(wattsense)){
-            if(deleteCertificateStore(wattsense)){
+        wattsenseClient.setAuthStringEncoded(authString);
+        if(deleteMqttConnection(wattsenseClient)){
+            if(deleteCertificateStore(wattsenseClient)){
                 LOGGER.info(" deleted certificate ");
                     if(deleteWattsense(clientId)){
                         return true;
@@ -452,13 +452,13 @@ public class WattsenseUtil
         return false;
     }
 
-    public static Wattsense getWattsenseFromList(List<Map<String, Object>> rows){
-        Wattsense wattsense = new Wattsense();
+    public static WattsenseClient getWattsenseFromList(List<Map<String, Object>> rows){
+        WattsenseClient wattsenseClient = new WattsenseClient();
         if(rows.isEmpty()){
-            return wattsense;
+            return wattsenseClient;
         }
         String clientId = (String) rows.get(0).get(AgentIntegrationKeys.NAME);
-        wattsense.setClientId(clientId);
+        wattsenseClient.setClientId(clientId);
        /* for(Map<String, Object> row:rows){
             String key = (String) row.get(AgentIntegrationKeys.PROP_KEY);
             Object value = row.get(AgentIntegrationKeys.PROP_VALUE);
@@ -476,13 +476,13 @@ public class WattsenseUtil
                 wattsense.setDeletedTime(value.toString());
             }*/
       //  }
-        LOGGER.info(wattsense.getClientId()+" "+wattsense.getCertificateStoreId()+" "+wattsense.getType());
-        return wattsense;
+        LOGGER.info(wattsenseClient.getClientId()+" "+ wattsenseClient.getCertificateStoreId()+" "+ wattsenseClient.getType());
+        return wattsenseClient;
 
     }
 
     public static List<Map<String, Object>> getWattsenseList(List<Map<String, Object>> rows) {
-        Map<String,Wattsense> wattsenseMap =  new HashMap<>();
+        Map<String, WattsenseClient> wattsenseMap =  new HashMap<>();
      /*   for(Map<String,Object> row:rows){
             Wattsense wattsense;
             String clientId = (String) row.get(AgentIntegrationKeys.NAME);

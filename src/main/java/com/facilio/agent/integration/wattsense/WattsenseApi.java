@@ -21,42 +21,42 @@ public class WattsenseApi
 {
     private static final Logger LOGGER = LogManager.getLogger(WattsenseApi.class.getName());
 
-    public static void addWattsenseApi(Wattsense wattsense) throws Exception {
+    public static void addWattsenseApi(WattsenseClient wattsenseClient) throws Exception {
         GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder().table(AgentIntegrationKeys.TABLE_NAME)
                 .fields(FieldFactory.getWattsenseIntegrationField());
-        long id = insertRecordBuilder.insert((Map<String, Object>) FieldUtil.getAsProperties(wattsense));
+        long id = insertRecordBuilder.insert((Map<String, Object>) FieldUtil.getAsProperties(wattsenseClient));
         if(id>0){
-            wattsense.setId(id);
+            wattsenseClient.setId(id);
         }
     }
 
-    public static Wattsense getWattsense(String name) throws Exception {
+    public static WattsenseClient getWattsense(String name) throws Exception {
         Criteria criteria = new Criteria();
         FacilioModule agentIntegrationModule = ModuleFactory.getWattsenseIntegrationModule();
         FieldFactory.getAsMap(FieldFactory.getWattsenseIntegrationField());
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(agentIntegrationModule), name, StringOperators.IS));
-        List<Wattsense> wattsenseList = getWattsense(criteria);
-        if(wattsenseList != null &&  ( ! wattsenseList.isEmpty())){
-            return wattsenseList.get(0);
+        List<WattsenseClient> wattsenseClientList = getWattsense(criteria);
+        if(wattsenseClientList != null &&  ( ! wattsenseClientList.isEmpty())){
+            return wattsenseClientList.get(0);
         }
         return null;
     }
 
-    public static void updateWattsenseIntegration(Wattsense wattsense)throws Exception{
+    public static void updateWattsenseIntegration(WattsenseClient wattsenseClient)throws Exception{
         FacilioModule agentIntegrationModule = ModuleFactory.getWattsenseIntegrationModule();
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(agentIntegrationModule.getTableName())
                 .fields(FieldFactory.getWattsenseIntegrationField())
-                .andCondition(CriteriaAPI.getIdCondition(wattsense.getClientId(),agentIntegrationModule));
-                updateRecordBuilder.update(FieldUtil.getAsProperties(wattsense));
+                .andCondition(CriteriaAPI.getIdCondition(wattsenseClient.getClientId(),agentIntegrationModule));
+                updateRecordBuilder.update(FieldUtil.getAsProperties(wattsenseClient));
     }
 
-    public static List<Wattsense> getWattsense(Criteria criteria) throws Exception {
+    public static List<WattsenseClient> getWattsense(Criteria criteria) throws Exception {
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(AgentIntegrationKeys.TABLE_NAME)
                 .select(FieldFactory.getWattsenseIntegrationField())
                 .andCriteria(criteria);
         List<Map<String, Object>> maps = genericSelectRecordBuilder.get();
-        return FieldUtil.getAsBeanListFromMapList(maps,Wattsense.class);
+        return FieldUtil.getAsBeanListFromMapList(maps, WattsenseClient.class);
     }
 }

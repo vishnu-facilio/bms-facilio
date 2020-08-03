@@ -32,6 +32,8 @@ public abstract class Controller extends AssetContext {
     @JsonInclude
     private String name;
 
+    private String displayName;
+
     @JsonInclude
     private long dataInterval;
 
@@ -76,9 +78,9 @@ public abstract class Controller extends AssetContext {
     }
 
     private final long DEFAULT_DATA_INTERVAL = 900000;
+
     //private final boolean DEFAULT_ACTIVE = true;
     //private final int DEFAULT_AVAIL_POINTS = 0;
-
     public Controller() {
         dataInterval = DEFAULT_DATA_INTERVAL;
     /*    active = DEFAULT_ACTIVE;
@@ -109,6 +111,14 @@ public abstract class Controller extends AssetContext {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public long getDataInterval() {

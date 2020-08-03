@@ -13,7 +13,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 
 public class AgentIntegrationDeleteCommand extends FacilioCommand {
-    private static final Logger LOGGER = LogManager.getLogger(Wattsense.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AgentIntegrationDeleteCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
