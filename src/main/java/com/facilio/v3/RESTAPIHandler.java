@@ -3,6 +3,7 @@ package com.facilio.v3;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -216,6 +217,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setBodyParams(context, bodyParams);
 //        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
         context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
         context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
