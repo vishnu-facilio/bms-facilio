@@ -105,6 +105,31 @@ public class VendorPageFactory extends PageFactory{
 			tab3Sec1.addWidget(transaction);
 			
 			
+			Page.Tab tab5 = page.new Tab("ARREARS");
+			page.addTab(tab5);
+			Page.Section tab5Sec1 = page.new Section();
+			tab5.addSection(tab5Sec1);
+			
+			PageWidget outstanding = new PageWidget(PageWidget.WidgetType.ARREARS);
+			outstanding.addToLayoutParams(tab5Sec1, 8, 6);
+			tab5Sec1.addWidget(outstanding);
+			
+			PageWidget underreview = new PageWidget(PageWidget.WidgetType.UNDER_REVIEW);
+			underreview.addToLayoutParams(tab5Sec1, 16, 6);
+			tab5Sec1.addWidget(underreview);
+			
+			Page.Section tab5Sec2 = page.new Section();
+			tab5.addSection(tab5Sec2);
+			
+			PageWidget detailTable = new PageWidget(PageWidget.WidgetType.DETAILS_TABLE);
+			detailTable.addToLayoutParams(tab5Sec2, 24, 8);
+			tab5Sec2.addWidget(detailTable);
+			
+			PageWidget detailtabs = new PageWidget(PageWidget.WidgetType.DETAILS_TAB);
+			detailtabs.addToLayoutParams(tab5Sec2, 24, 8);
+			tab5Sec2.addWidget(detailtabs);
+			
+			
 			
 			Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
 			page.addTab(tab4);
