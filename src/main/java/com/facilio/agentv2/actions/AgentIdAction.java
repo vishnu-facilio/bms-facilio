@@ -91,7 +91,7 @@ public class AgentIdAction extends AgentActionV2 {
 		this.count = count;
 	}
 
-	public String getdeviceOrControllersData() {
+	public String getDeviceOrControllersData() {
 
 		try {
 			List<Map<String, Object>> data = new ArrayList<>();
@@ -134,48 +134,6 @@ public class AgentIdAction extends AgentActionV2 {
 		return SUCCESS;
 	}
 
-	public String devices() {
-        try {
-        	FacilioContext context = new FacilioContext();
-        	context.put(AgentConstants.AGENT_ID, getAgentId());
-        	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-        	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
-			setResult(AgentConstants.DATA, devices);
-        	 ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting devices ", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-	
-    public String devicesCount() {
-        try {
-        	FacilioContext context = new FacilioContext();
-            context.put(AgentConstants.AGENT_ID, getAgentId());
-            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-            context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-            List<Map<String, Object>> devices = FieldDeviceApi.getDevices( context);
-            long count = 0;
-            if (CollectionUtils.isNotEmpty(devices)) {
-                count =(long) devices.get(0).get(AgentConstants.ID);
-            }
-            
-            setResult(AgentConstants.DATA, count);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting devices ", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
-
     public String pingAgent() throws Exception {
         try {
         	LOGGER.info(" ping agent " + getAgentId());
@@ -215,24 +173,6 @@ public class AgentIdAction extends AgentActionV2 {
 
     }
 
-    public String getControllerCount() {
-        try {
-        	FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-            setResult(AgentConstants.RESULT, SUCCESS);
-            setResult(AgentConstants.DATA, ControllerApiV2.getControllersCount(context));
-            ok();
-            return SUCCESS;
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting controller count for agentId->" + getAgentId());
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-
   /*  public String getControllers() {
         JSONArray controllerArray = new JSONArray();
         try {
@@ -267,25 +207,6 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 */
-
-    public String getControllers() {
-        try {
-			FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(context);
-            setResult(AgentConstants.DATA, controllers);
-            ok();
-        } catch (Exception e) {
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-            LOGGER.info("exception while fetching controller data fro agent " + agentId + " ", e);
-        }
-        return SUCCESS;
-    }
-
 
     public String countAgentDevices() {
         try {
