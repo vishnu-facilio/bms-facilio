@@ -43,7 +43,14 @@ public class ReportExportUtil {
 	
 	public static String exportPdf(FacilioModule module, FileFormat fileFormat, ReportContext report, Boolean isS3Url, String fileName, Context context) throws Exception {
 		long reportId = report.getId();
-		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
+		StringBuilder url = new StringBuilder();
+		if (FacilioProperties.isDevelopment()) {
+			url.append("http://"+ FacilioProperties.getAppDomain());
+		}
+		else {
+			url.append(FacilioProperties.getConfig("clientapp.url"));
+		}
+		url.append("/app/");
 		String moduleName = module.getName();
 		
 		if (report.getTypeEnum() == ReportType.READING_REPORT) {

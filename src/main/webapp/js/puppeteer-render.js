@@ -16,26 +16,14 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 
     var cookies = [
         {
-            name:'fc.idToken.facilio',
-            value: token,
-            domain: domain,
-            path: '/'
-        },
-        {
             name: 'fc.overrideSession',
             value: 'true',
             domain: domain,
             path: '/'
         },
         {
-            name:'fc.idToken',
-            value: encodeURIComponent('facilio ' + token),
-            domain: domain,
-            path: '/'
-        },
-        {
-            name:'fc.authtype',
-            value: authType,
+            name:'fc.loggedIn',
+            value: 'true',
             domain: domain,
             path: '/'
         }
@@ -60,6 +48,7 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
         await page.setViewport(size);
         
         let headers = {
+        		'Authorization': token,
 	        'X-Is-Export': 'true',
 	        'X-Device-Type': 'puppeteer',
 	        	'X-Current-Org': info.orgDomain,
@@ -84,7 +73,28 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
         }
         
         if (isPdf) {
-        		await page.pdf({path: output, format: 'A4'});
+        		let config = {path: output, format: 'A4'};
+        		if (info.showFooter) {
+        			var cssb = [];
+        			cssb.push('<style>');
+        			if (info.footerStyle) {
+        				cssb.push(info.footerStyle);
+        			}
+        			else {
+        				cssb.push('h1 {font-size:10px; margin-left:30px;}');
+        			}
+        			cssb.push('</style>');
+        			var css = cssb.join('');
+        			
+        			config.displayHeaderFooter = true;
+        			if (info.footerHtml) {
+        				config.footerTemplate = css + info.footerHtml;
+        			}
+        			else {
+        				config.footerTemplate = css + '<h1>Page <span class="pageNumber"></span> of <span class="totalPages"></span></h1>';
+        			}
+        		}
+        		await page.pdf(config);
         }
         else {
         		if (info.printableArea) {

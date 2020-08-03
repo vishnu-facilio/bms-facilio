@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.util.FacilioUtil;
 
 public class PdfAction extends FacilioAction {
 
@@ -40,11 +39,6 @@ public class PdfAction extends FacilioAction {
 
     public String createPdf() throws Exception {
     	
-    		JSONObject additionalInfo = null;
-    		if (additionalInfoStr != null) {
-    			additionalInfo = FacilioUtil.parseJson(additionalInfoStr);
-    		}
-    	
         String fileUrl = PdfUtil.exportUrlAsPdf(getUrl(), false, "download-"+System.currentTimeMillis(), additionalInfo, fileFormat != null ? fileFormat : FileFormat.PDF);
         setResult("fileUrl", fileUrl);
         return SUCCESS;
@@ -71,11 +65,11 @@ public class PdfAction extends FacilioAction {
 		this.htmlContent = htmlContent;
 	}
 
-	private String additionalInfoStr;
-	public String getAdditionalInfoStr() {
-		return additionalInfoStr;
+	private JSONObject additionalInfo;
+	public JSONObject getAdditionalInfo() {
+		return additionalInfo;
 	}
-	public void setAdditionalInfoStr(String additionalInfoStr) {
-		this.additionalInfoStr = additionalInfoStr;
+	public void setAdditionalInfo(JSONObject additionalInfo) {
+		this.additionalInfo = additionalInfo;
 	}
 }
