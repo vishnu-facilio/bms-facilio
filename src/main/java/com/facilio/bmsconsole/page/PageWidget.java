@@ -268,6 +268,14 @@ public class PageWidget {
 		SUPPLIER_DETAILS("supplierDetails"),
 		TARIFF_DETAILS("tariffDetails"),
 		TARIFF_INFORMATION("tariffInformation"),
+		
+		UTILITY_DETAILS("utilityDetails"),
+		UTILITY_CONNECTIONS("utilityConnections"),
+		UTILITY_ACTIVITY_PAYMENT("utilityActivePayments"),
+		UTILITY_CANCEL_PAYMENT("utilityCancelPayments"),
+		UTILITY_TRANSACTIONS("utilityTransactions"),
+		UTILITY_ALL_ACTIVITIES("utilityAllActivities"),
+		
 
 		
 

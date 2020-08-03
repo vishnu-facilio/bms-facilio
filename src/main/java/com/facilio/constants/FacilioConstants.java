@@ -1731,6 +1731,7 @@ public class FacilioConstants {
         public static final String BILL_ALERT = "custom_alert";
         public static final String BILL_INVOICE = "custom_invoices";
         public static final String BILL_TARIFF = "custom_tariffinfo";
+        public static final String BILL_UTILITY = "custom_utilityaccounts_1";
         //
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

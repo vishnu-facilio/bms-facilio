@@ -40,9 +40,10 @@ public class VendorPageFactory extends PageFactory{
 			page.addTab(tab1);
 			
 			Section tab1Sec1 = page.new Section();
-			Section tab1Sec2 = page.new Section("TARIFFS");
 
 			tab1.addSection(tab1Sec1);
+			Section tab1Sec2 = page.new Section("TARIFFS");
+
 			tab1.addSection(tab1Sec2);
 
 		
@@ -94,15 +95,18 @@ public class VendorPageFactory extends PageFactory{
 			tab2Sec1.addWidget(payments);
 
 			
+			Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
+			page.addTab(tab4);
+			Page.Section tab4Sec1 = page.new Section();
+			tab4.addSection(tab4Sec1);
 			
-			Page.Tab tab3 = page.new Tab("TRANSACTIONS");
-			page.addTab(tab3);
-			Page.Section tab3Sec1 = page.new Section();
-			tab3.addSection(tab3Sec1);
 			
-			PageWidget transaction= new PageWidget(PageWidget.WidgetType.SUPPLIER_TRANSACTIONS);
-			transaction.addToLayoutParams(tab3Sec1, 24, 24);
-			tab3Sec1.addWidget(transaction);
+			PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.SUPPLIER_CANCELLED_PAYMENTS);
+			cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
+			tab4Sec1.addWidget(cancelPayments);
+			
+			
+	
 			
 			
 			Page.Tab tab5 = page.new Tab("ARREARS");
@@ -130,16 +134,18 @@ public class VendorPageFactory extends PageFactory{
 			tab5Sec2.addWidget(detailtabs);
 			
 			
+			Page.Tab tab3 = page.new Tab("TRANSACTIONS");
+			page.addTab(tab3);
+			Page.Section tab3Sec1 = page.new Section();
+			tab3.addSection(tab3Sec1);
 			
-			Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
-			page.addTab(tab4);
-			Page.Section tab4Sec1 = page.new Section();
-			tab4.addSection(tab4Sec1);
+			PageWidget transaction= new PageWidget(PageWidget.WidgetType.SUPPLIER_TRANSACTIONS);
+			transaction.addToLayoutParams(tab3Sec1, 24, 24);
+			tab3Sec1.addWidget(transaction);
 			
 			
-			PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.SUPPLIER_CANCELLED_PAYMENTS);
-			cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
-			tab4Sec1.addWidget(cancelPayments);
+			
+
 			
 		}
 		else {

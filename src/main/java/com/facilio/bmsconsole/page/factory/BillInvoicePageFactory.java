@@ -38,11 +38,17 @@ public class BillInvoicePageFactory extends PageFactory {
         PageWidget billDetails= new PageWidget(PageWidget.WidgetType.INVOICE_DETAILS);
         billDetails.addToLayoutParams(tab1Sec1, 24, 24);
         tab1Sec1.addWidget(billDetails);
+        
+    	Tab tab2 = page.new Tab("Attachments");
+		page.addTab(tab2);
+		
+		Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
          
          PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
+         attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
          attachmentWidget.setTitle("Attachments");
-         tab1Sec1.addWidget(attachmentWidget);
+         tab2Sec1.addWidget(attachmentWidget);
 		return page;
 	}
 }
