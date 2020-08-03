@@ -20,12 +20,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GenerateQrInviteUrlCommandV3 extends FacilioCommand {
+public class GenerateQrInviteUrlCommandV3 extends FacilioCommand implements Serializable {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);

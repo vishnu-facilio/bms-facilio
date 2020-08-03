@@ -117,7 +117,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new VisitorFaceRecognitionCommand())
+                .addCommand(new VisitorFaceRecognitionCommandV3())
         );
         return c;
     }

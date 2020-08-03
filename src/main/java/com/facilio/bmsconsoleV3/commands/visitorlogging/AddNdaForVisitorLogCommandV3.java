@@ -11,10 +11,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class AddNdaForVisitorLogCommandV3 extends FacilioCommand {
+public class AddNdaForVisitorLogCommandV3 extends FacilioCommand implements Serializable {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
