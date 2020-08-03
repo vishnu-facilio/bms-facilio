@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -62,7 +63,7 @@ public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 					switch(taskContext.getInputTypeEnum()) {
 						case READING:
 							if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) {
-								if(currentTask.getInputValue() != null) {
+								if(currentTask.getInputValue() != null && StringUtils.isNotEmpty(currentTask.getInputValue())) {
 									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 									Double currentTaskValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 									Double convertedInputReading;

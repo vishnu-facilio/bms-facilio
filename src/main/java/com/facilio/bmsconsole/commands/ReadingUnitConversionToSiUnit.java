@@ -41,11 +41,13 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 								
 								Object value = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);
 								
-								reading.addReading(readingNumberField.getName(), value);
-								context.put(FacilioConstants.ContextNames.READING, reading);
-								
-								currentTask.setInputValue(String.valueOf(value));
-								context.put(FacilioConstants.ContextNames.TASK, currentTask);									
+								if(value != null) {
+									reading.addReading(readingNumberField.getName(), value);
+									context.put(FacilioConstants.ContextNames.READING, reading);
+									
+									currentTask.setInputValue(String.valueOf(value));
+									context.put(FacilioConstants.ContextNames.TASK, currentTask);								
+								}										
 							}
 						}
 						break;		

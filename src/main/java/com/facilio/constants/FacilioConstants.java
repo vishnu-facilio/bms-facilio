@@ -1113,7 +1113,7 @@ public class FacilioConstants {
 		public static final String IS_FETCH_RDM_FROM_UI="isFetchRDMFromUI";
 		public static final String RESET_COUNTER_META_LIST="ResetCounterMetaList";
 		public static final String RESET_COUNTER_META="resetcountermeta";
-		
+		public static final String IGNORE_SPL_NULL_HANDLING="ignoreSplNullHandling";
 		
 		public static final String CONTROL_GROUP = ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT;
 		

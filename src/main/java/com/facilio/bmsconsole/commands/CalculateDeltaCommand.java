@@ -37,6 +37,8 @@ public class CalculateDeltaCommand extends FacilioCommand {
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = (Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+			Boolean ignoreSplNullHandling = (Boolean) context.get(FacilioConstants.ContextNames.IGNORE_SPL_NULL_HANDLING);
+			ignoreSplNullHandling = ignoreSplNullHandling == null ? Boolean.FALSE : ignoreSplNullHandling;
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 			for (Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
@@ -100,9 +102,9 @@ public class CalculateDeltaCommand extends FacilioCommand {
 								if (reading.getId() != -1) {
 									ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, fields, reading.getId());
 									if(readingBeforeUpdate.getTtime()!=reading.getTtime()){
-										ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,fields,readingBeforeUpdate,false,reading.getTtime(),false,rdmMap);
+										ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,fields,readingBeforeUpdate,false,reading.getTtime(),false,rdmMap,ignoreSplNullHandling);
 									}
-									ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, reading, true,reading.getTtime(),false,rdmMap);
+									ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, reading, true,reading.getTtime(),false,rdmMap,ignoreSplNullHandling);
 								}
 							}
 						}

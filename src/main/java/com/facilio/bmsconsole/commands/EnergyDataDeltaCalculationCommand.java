@@ -45,6 +45,10 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 		if(metaMap==null || metaMap.isEmpty()) {
 			return false;
 		}
+		
+		Boolean ignoreSplNullHandling = (Boolean) context.get(FacilioConstants.ContextNames.IGNORE_SPL_NULL_HANDLING);
+		ignoreSplNullHandling = ignoreSplNullHandling == null ? Boolean.FALSE : ignoreSplNullHandling;
+		
 		LOGGER.debug("Inside DeltaCommand####### lastReadingMap "+metaMap);
 
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
@@ -91,9 +95,9 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 					if (reading.getId() != -1) {
 						ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, allFields, reading.getId());
 						if (readingBeforeUpdate.getTtime() != reading.getTtime()){//If reading date changed
-							ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,allFields,readingBeforeUpdate,false,reading.getTtime(),true,metaMap);
+							ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,allFields,readingBeforeUpdate,false,reading.getTtime(),true,metaMap, ignoreSplNullHandling);
 						}
-						ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, allFields, reading, true,reading.getTtime(),true,metaMap);
+						ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, allFields, reading, true,reading.getTtime(),true,metaMap, ignoreSplNullHandling);
 					}
 				}
 			}

@@ -48,6 +48,9 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 			adjustTime = true;
 		}
 		
+		Boolean ignoreSplNullHandling = (Boolean) context.get(FacilioConstants.ContextNames.IGNORE_SPL_NULL_HANDLING);
+		ignoreSplNullHandling = ignoreSplNullHandling == null ? Boolean.FALSE : ignoreSplNullHandling;  
+
 		SourceType sourceType = (SourceType) context.get(FacilioConstants.ContextNames.READINGS_SOURCE);
 //		if (AccountUtil.getCurrentOrg().getId() == 134) {
 //			LOGGER.info("Adding readings from source : "+sourceType);
@@ -67,7 +70,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> fields= bean.getAllFields(moduleName);
 				FacilioModule module = bean.getModule(moduleName);
-				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, currentReadingMap, adjustTime, updateLastReading, sourceType);
+				List<ReadingContext> readingsToBeAdded = addDefaultPropsAndGetReadingsToBeAdded(module, fields, readings, lastReadingMap, currentReadingMap, adjustTime, updateLastReading, sourceType, ignoreSplNullHandling);
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, currentReadingMap, updateLastReading);
 			}
 			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
@@ -79,7 +82,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean adjustTime, boolean updateLastReading, SourceType sourceType) throws Exception {
+	private List<ReadingContext> addDefaultPropsAndGetReadingsToBeAdded(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings, Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean adjustTime, boolean updateLastReading, SourceType sourceType, boolean ignoreSplNullHandling) throws Exception {
 		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
 		Iterator<ReadingContext> itr = readings.iterator();
 		while (itr.hasNext()) {
@@ -103,7 +106,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 				}
 				else {
 					reading.setNewReading(false);
-					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading);
+					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading, ignoreSplNullHandling);
 				}
 				reading.setSourceType(sourceType);
 			}
@@ -146,13 +149,16 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 	}
 	
 	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading,
-			Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading) throws Exception {
+			Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading, boolean ignoreSplNullHandling) throws Exception {
 		System.err.println( Thread.currentThread().getName()+"Inside updateReadings in  AddorUpdateCommand#######  "+reading);
 
 		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
 																	.andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
+		if(ignoreSplNullHandling) {
+			updateBuilder.ignoreSplNullHandling();		
+		}
 		updateBuilder.update(reading);
 		if (isUpdateLastReading) {
 			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,Collections.singletonList(reading),metaMap);

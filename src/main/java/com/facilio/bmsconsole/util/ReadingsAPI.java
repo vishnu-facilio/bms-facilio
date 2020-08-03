@@ -1415,7 +1415,7 @@ public class ReadingsAPI {
 		return fieldValidation;
 	}
 	
-	public static void updateDeltaForCurrentAndNextRecords(FacilioModule module,List<FacilioField> fields,ReadingContext reading,boolean currentReadingUpdate,Long curReadingTime,boolean isEnergyModule,Map<String, ReadingDataMeta> rdmMap)throws Exception{
+	public static void updateDeltaForCurrentAndNextRecords(FacilioModule module,List<FacilioField> fields,ReadingContext reading,boolean currentReadingUpdate,Long curReadingTime,boolean isEnergyModule,Map<String, ReadingDataMeta> rdmMap, boolean ignoreSplNullHandling)throws Exception{
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		ReadingContext lastReading,nextReading;
 		for(Map.Entry<String, Object> readingEntry:reading.getReadings().entrySet()){
@@ -1438,14 +1438,14 @@ public class ReadingsAPI {
 				
 				nextReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
 				
-				if (!currentReadingUpdate && ((lastReading!=null&&lastReading.getTtime() > curReadingTime) || (nextReading!=null&&nextReading.getTtime() < curReadingTime))) {
+				if ((!currentReadingUpdate && ((lastReading!=null&&lastReading.getTtime() > curReadingTime) || (nextReading!=null&&nextReading.getTtime() < curReadingTime))) || ignoreSplNullHandling) {
 					//Delta calculation for next reading, If given date is not between last reading date and next reading date
 					calculateDeltaBtwReadingsAndUpdate(module,fields,field,lastReading,nextReading);
 					if (nextReading != null && rdm != null && nextReading.getId() == rdm.getReadingDataId()) {//Updating delta value in RDM.If Next reading is latest Reading
 						updateReadingDataMeta(module, fields,reading,field.getName()+"Delta");
 					}
 				}
-				if (currentReadingUpdate) {
+				if (currentReadingUpdate && !ignoreSplNullHandling) {
 					calculateDeltaBtwReadingsAndUpdate(module, fields, field, lastReading, reading);
 					calculateDeltaBtwReadingsAndUpdate(module, fields, field, reading, nextReading);
 					if (nextReading != null && nextReading.getId() == rdm.getReadingDataId()) {//Updating delta value in RDM.If Next reading is latest Reading
