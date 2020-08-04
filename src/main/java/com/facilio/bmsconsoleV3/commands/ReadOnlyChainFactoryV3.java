@@ -23,6 +23,13 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new LoadVisitorLoggingLookupCommandV3());
         return c;
     }
+    
+    public static FacilioChain getInviteVisitorLogBeforeFetchOnListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetInviteConditionForVisitsListCommandV3());
+        c.addCommand(new LoadVisitorLoggingLookupCommandV3());
+        return c;
+    }
 
     public static FacilioChain getTenantsAfterFetchOnListChain() {
         FacilioChain c = getDefaultChain();

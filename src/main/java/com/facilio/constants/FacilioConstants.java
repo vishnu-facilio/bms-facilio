@@ -1625,8 +1625,11 @@ public class FacilioConstants {
 		public static final String IS_EDIT = "isEdit";
 		public static final String PHONE_NUMBER = "phoneNumber";
 		public static final String PASSCODE = "passCode";
-		
-		
+		public static final String VISITOR_LOG_RECORDS = "visitorlogrecords";
+		public static final String BASE_VISIT = "basevisit";
+		public static final String VISITOR_LOG = "visitorlog";
+		public static final String INVITE_VISITOR = "invitevisitor";
+
 		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
 		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 

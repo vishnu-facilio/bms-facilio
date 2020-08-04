@@ -384,17 +384,16 @@ public class APIv3Config {
     public static Supplier<V3Config> getVisitorLog() {
         return () -> new V3Config(VisitorLogContextV3.class)
                 .create()
-                    .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnCreateChain())
-                    .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnCreateChain())
+                    .beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnCreateChain())
+                    .afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnCreateChain())
                 .update()
-                   .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnUpdateChain())
-                   .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnUpdateChain())
+                   .beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnUpdateChain())
+                   .afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnUpdateChain())
                 .list()
-                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLoggingBeforeFetchOnListChain())
+                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
-                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
                 .build();
     }
     
@@ -408,7 +407,7 @@ public class APIv3Config {
                    .beforeSave(TransactionChainFactoryV3.getVisitorLoggingBeforeSaveOnUpdateChain())
                    .afterTransaction(TransactionChainFactoryV3.getVisitorLoggingAfterSaveOnUpdateChain())
                 .list()
-                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLoggingBeforeFetchOnListChain())
+                    .beforeFetch(ReadOnlyChainFactoryV3.getInviteVisitorLogBeforeFetchOnListChain())
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
