@@ -186,6 +186,28 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
+	},
+	TO_STRING(10, "toString") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			if(objects[0] instanceof Map) {
+				org.json.JSONObject json = new org.json.JSONObject((Map)objects[0]);
+				return json.toString();
+			}
+			String string = (String) objects[0];
+			
+			return FacilioUtil.parseJson(string).toJSONString();
+			
+		}
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
 	}
 		
 	;

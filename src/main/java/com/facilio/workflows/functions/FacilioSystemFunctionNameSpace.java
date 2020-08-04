@@ -22,7 +22,7 @@ public enum FacilioSystemFunctionNameSpace {
 	SYSTEM(14, "system"), //For internal purpose only. Should never be exposed for Users
 	ASSET(15, "asset"),							//check
 	WORKORDER(16, "workorder"),					//check
-	CONSUMPTION(17, "consumption"),
+	CONSUMPTION(17, "consumption"),				// internal
 	ML(18,"ml"),
 	NOTIFICATION(19,"notification"),
 	DATE_RANGE(20,"dateRange"),

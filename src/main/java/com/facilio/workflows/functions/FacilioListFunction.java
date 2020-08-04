@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 
@@ -296,6 +297,31 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			if(objects.length <= 0) {
 				throw new FunctionParamException("Required Object is null");
 			}
+		}
+	},
+	ALL_MATCH(15,"allMatch") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return false;
+			}
+			
+			List<Object> list = (List<Object>) objects[0];
+			boolean allEqual = list.isEmpty() || list.stream().allMatch(list.get(0)::equals);
+
+			return allEqual;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+//			else if(!(objects[0] instanceof List)) {
+//				throw new FunctionParamException("Required Object is not of type List");
+//			}
 		}
 	},
 	;
