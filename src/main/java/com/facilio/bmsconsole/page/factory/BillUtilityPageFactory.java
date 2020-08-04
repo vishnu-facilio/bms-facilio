@@ -17,9 +17,8 @@ public class BillUtilityPageFactory extends PageFactory {
 		page.addTab(tab1);
 		
 		Section tab1Sec1 = page.new Section();
-	
+		tab1.addSection(tab1Sec1);
 
-		
 		PageWidget cards= new PageWidget(PageWidget.WidgetType.UTILITY_DETAILS);
 		cards.addToLayoutParams(tab1Sec1, 24, 4);
 		tab1Sec1.addWidget(cards);
