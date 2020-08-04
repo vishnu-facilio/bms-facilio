@@ -126,7 +126,6 @@ public class APIv3Config {
 
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
-                .showStateFlowList()
 
                 .build();
     }
@@ -466,7 +465,6 @@ public class APIv3Config {
 
                 .list()
                 .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
-                .showStateFlowList()
 
                 .summary()
                 .beforeFetch(new LoadWorkPermitLookUpsCommandV3())
