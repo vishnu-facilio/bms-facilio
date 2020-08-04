@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.services.FacilioHttpUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,8 +21,19 @@ import java.util.Map;
 
 public class ESUtil {
 
-    private static String constructESUrl() {
-        String url = FacilioProperties.getEsDomain() + "/" + FacilioProperties.getEsIndex();
+    public static class ESException extends Exception {
+        public ESException(String message) {
+            super(message);
+        }
+    }
+
+    private static String constructESUrl() throws ESException {
+        String esDomain = FacilioProperties.getEsDomain();
+        String esIndex = FacilioProperties.getEsIndex();
+        if (StringUtils.isEmpty(esDomain) || StringUtils.isEmpty(esIndex)) {
+            throw new ESException("ES not configured");
+        }
+        String url = esDomain + "/" + esIndex;
         return url;
     }
 
@@ -49,7 +61,10 @@ public class ESUtil {
 
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, bodyContent.toString());
             System.out.println("Response: " + s);
-        } catch (IOException ex) {
+        } catch (ESException ex) {
+            // not configured
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -90,7 +105,9 @@ public class ESUtil {
             String url = constructESUrl() + "/_bulk";
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, bodyContent.toString());
             System.out.println("Response: " + s);
-        } catch (IOException ex) {
+        }
+        catch (ESException ex) {}
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -108,33 +125,41 @@ public class ESUtil {
 
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, query.toString());
             System.out.println("Response: " + s);
-        } catch (IOException ex) {
+        }
+        catch (ESException ex) {}
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public static Map<Long, List<Long>> query(String search) throws Exception {
-        String url = constructESUrl() + "/_search";
+        try {
+            String url = constructESUrl() + "/_search";
 
-        String collapseField = "moduleId";
+            String collapseField = "moduleId";
 
-        JSONObject queryBody = new ESQuery.ESQueryBuilder(true)
-                .addQueryString(search)
-                .build();
-        JSONObject collapseJSON = new JSONObjectBuilder()
-                .put("field", "moduleId")
-                .put("inner_hits", new JSONObjectBuilder()
-                        .put("_source", new JSONArrayBuilder().add("id").add("moduleId").build() )
-                        .put("name", collapseField)
-                        .put("size", 5)
-                        .build()
-                )
-                .build();
-//        JSONBuilder.put(collapseJSON, "field", )
-        queryBody.put("collapse", collapseJSON);
+            JSONObject queryBody = new ESQuery.ESQueryBuilder(true)
+                    .addQueryString(search)
+                    .build();
+            JSONObject collapseJSON = new JSONObjectBuilder()
+                    .put("field", "moduleId")
+                    .put("inner_hits", new JSONObjectBuilder()
+                            .put("_source", new JSONArrayBuilder().add("id").add("moduleId").build() )
+                            .put("name", collapseField)
+                            .put("size", 5)
+                            .build()
+                    )
+                    .build();
 
-        String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, queryBody.toString());
-        return getResultFromSearch(s, collapseField);
+            queryBody.put("collapse", collapseJSON);
+            String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, queryBody.toString());
+            return getResultFromSearch(s, collapseField);
+        }
+        catch (ESException ex) {}
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     private static Map<Long, List<Long>> getResultFromSearch(String resultString, String collapseField) throws Exception {
