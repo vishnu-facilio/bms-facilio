@@ -233,6 +233,10 @@ public class IAMUserUtil {
 	public static Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
 	}
+
+	public static Map<String, Object> getLoginModes(String userName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getLoginModes(userName));
+	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().disableUser(orgId, userId));

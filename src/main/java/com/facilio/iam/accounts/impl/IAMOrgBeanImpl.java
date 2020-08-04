@@ -1,13 +1,10 @@
 package com.facilio.iam.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -368,22 +365,36 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	@Override
 	public AccountSSO getAccountSSO(long orgId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getAccountSSOFields())
-				.table(IAMAccountConstants.getAccountSSOModule().getTableName())
-				.innerJoin("Organizations")
-   				.on("Account_SSO.ORGID = Organizations.ORGID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_SSO.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
+
+
+
+		List<Map<String, Object>> props = getAccountSSODetails(Collections.singletonList(orgId));
 		if (props != null && !props.isEmpty()) {
 			AccountSSO sso = FieldUtil.getAsBeanFromMap(props.get(0), AccountSSO.class);
 			return sso;
 		}
 		return null;
+	}
+
+	private List<Map<String, Object>> getAccountSSODetails(List<Long> orgIds) throws Exception{
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAccountSSOFields())
+				.table(IAMAccountConstants.getAccountSSOModule().getTableName())
+				.innerJoin("Organizations")
+				.on("Account_SSO.ORGID = Organizations.ORGID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_SSO.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		return selectBuilder.get();
+	}
+
+	@Override
+	public List<AccountSSO> getAccountSSO(List<Long> orgIds) throws Exception {
+		List<Map<String, Object>> accountSSODetails = getAccountSSODetails(orgIds);
+		if (CollectionUtils.isEmpty(accountSSODetails)) {
+			return Collections.emptyList();
+		}
+		return accountSSODetails.stream().map(i -> FieldUtil.getAsBeanFromMap(i, AccountSSO.class)).collect(Collectors.toList());
 	}
 
 	@Override

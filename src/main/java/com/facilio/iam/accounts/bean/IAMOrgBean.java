@@ -37,6 +37,8 @@ public interface IAMOrgBean {
  	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;
 	
 	public AccountSSO getAccountSSO(long orgId) throws Exception;
+
+	public List<AccountSSO> getAccountSSO(List<Long> orgIds) throws Exception;
 	
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 	

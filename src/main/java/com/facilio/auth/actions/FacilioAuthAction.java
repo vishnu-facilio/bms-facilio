@@ -339,6 +339,17 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String lookup() {
+		String username = getUsername();
+		try {
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username);
+			setJsonresponse(loginModes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return SUCCESS;
+	}
+
 	public String validateLoginv3() {
 
 		boolean portalUser = false;

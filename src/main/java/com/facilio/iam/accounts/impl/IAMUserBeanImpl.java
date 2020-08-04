@@ -15,6 +15,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -500,6 +501,47 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public Map<String, Object> getLoginModes(String userName) throws Exception {
+		if (StringUtils.isEmpty(userName)) {
+			throw new IllegalArgumentException("user name is missing");
+		}
+
+		final List<Map<String, Object>> userForUsername = getUserData(userName, -1L, null);
+		final long userPresent = 1;
+		final long userNotPresent = 2;
+		final Map<String, Object> result = new HashMap<>();
+
+		if (CollectionUtils.isEmpty(userForUsername)) {
+			result.put("code", userNotPresent);
+			result.put("message", "user not present");
+			return result;
+		}
+
+		result.put("code", userPresent);
+		result.put("message", "user present");
+
+		List<Long> orgIds = new ArrayList<>();
+		userForUsername.forEach(i -> orgIds.add((long) i.get("orgId")));
+
+		List<String> loginModes = new ArrayList<>();
+		loginModes.add("password");
+		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
+		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
+			loginModes.add("SAML");
+		}
+
+		result.put("loginModes", loginModes);
+
+		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+		result.put("digest", jwt);
+
+		long uid = (Long) userForUsername.get(0).get("uid");
+		insertTokenIntoSession(uid, null, jwt, IAMAccountConstants.SessionType.DIGEST_SESSION);
+
+		return result;
+	}
+
+	@Override
 	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
 		TransactionManager transactionManager = null;
 		try {
@@ -645,6 +687,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String tokenKey = orgId + "-" + uid ;
 		String jwt = createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
 
+		insertTokenIntoSession(uid, sessionInfo, jwt, IAMAccountConstants.SessionType.PERMALINK_SESSION);
+
+		return jwt;
+	}
+
+	private long insertTokenIntoSession(long uid, JSONObject sessionInfo, String jwt, IAMAccountConstants.SessionType sessionType) throws SQLException {
 		List<FacilioField> fields = IAMAccountConstants.getUserSessionFields();
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -653,17 +701,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);
-		props.put("sessionType", IAMAccountConstants.SessionType.PERMALINK_SESSION.getValue());
+		props.put("sessionType", sessionType.getValue());
 		props.put("token", jwt);
 		props.put("startTime", System.currentTimeMillis());
 		props.put("isActive", true);
-		props.put("sessionInfo", sessionInfo.toJSONString());
+		if (sessionInfo != null) {
+			props.put("sessionInfo", sessionInfo.toJSONString());
+		} else {
+			props.put("sessionInfo", null);
+		}
 
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		long sessionId = (Long) props.get("id");
-
-		return jwt;
+		return (Long) props.get("id");
 	}
 
 	@Override
@@ -1465,10 +1515,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public Map<String, Object> getUserForUsername(String username, long orgId, String identifier) throws Exception {
 		// TODO Auto-generated method stub
+		List<Map<String, Object>> list = getUserData(username, orgId, identifier);
+		if(CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	
+	}
+
+	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
-		
+
 		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
 
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
@@ -1478,21 +1537,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(StringUtils.isNotEmpty(identifier)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", identifier, StringOperators.IS));
 		}
-		
-	
+
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
-		
+
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
-		List<Map<String, Object>> list = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(list)) {
-			return list.get(0);
-		}
-		return null;
-	
+		return selectBuilder.get();
 	}
-	
+
 	private long addAppDomain(AppDomain appDomain) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAppDomainFields());

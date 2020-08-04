@@ -132,4 +132,6 @@ public interface IAMUserBean {
 			String ipAddress, boolean startUserSession, String appDomain) throws Exception;
 
 	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
+
+	public Map<String, Object> getLoginModes(String userName) throws Exception;
 }

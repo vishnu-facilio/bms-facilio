@@ -64,6 +64,10 @@ public class IAMOrgUtil {
 	public static AccountSSO getAccountSSO(long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgId));
 	}
+
+	public static List<AccountSSO> getAccountSSO(List<Long> orgIds) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgIds));
+	}
 	
 	public static AccountSSO getAccountSSO(String orgDomain) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getAccountSSO(orgDomain));
