@@ -33,11 +33,11 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 			
 			List<Long> dashboardUserFilterRelIds=new ArrayList<>();
 			
-			List<DashboardUserFilterContext> currentDasboardUserFilters=dashboardFilterContext.getDashboardUserFilters();
-			if(currentDasboardUserFilters!=null)
+			List<DashboardUserFilterContext> currentDashboardUserFilters=dashboardFilterContext.getDashboardUserFilters();
+			if(currentDashboardUserFilters!=null)
 			{
 				
-				for(DashboardUserFilterContext dashboardUserFilterRel:currentDasboardUserFilters)
+				for(DashboardUserFilterContext dashboardUserFilterRel:currentDashboardUserFilters)
 				{
 					dashboardUserFilterRel.setDashboardFilterId(dashboardFilterContext.getId());
 					
