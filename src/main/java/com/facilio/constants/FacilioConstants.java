@@ -2088,6 +2088,9 @@ public class FacilioConstants {
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);
 			classMap.put(VISITOR_INVITE_REL, InviteVisitorRelContext.class);
 			classMap.put(VISITOR_TYPE,VisitorTypeContext.class);
+			classMap.put(BASE_VISIT, BaseVisitContextV3.class);
+			classMap.put(VISITOR_LOG, VisitorLogContextV3.class);
+			classMap.put(INVITE_VISITOR, InviteVisitorContextV3.class);
 			
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 

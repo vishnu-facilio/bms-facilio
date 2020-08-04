@@ -161,7 +161,7 @@ public class V3VisitorManagementAPI {
 
         }
         if(currentLogId > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(currentLogId), NumberOperators.NOT_EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition("VisitorLog.ID", "id", String.valueOf(currentLogId), NumberOperators.NOT_EQUALS));
         }
 
         VisitorLogContextV3 records = builder.fetchFirst();
