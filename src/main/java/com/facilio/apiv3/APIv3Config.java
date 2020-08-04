@@ -508,7 +508,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getCustomMailMessages() {
         return () -> new V3Config(V3MailMessageContext.class)
                 .create()
-                .afterSave(new UpdateLatestMessageUIDCommandV3())
+                .afterTransaction(new UpdateLatestMessageUIDCommandV3())
 
                 .update()
 

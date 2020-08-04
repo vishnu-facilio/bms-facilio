@@ -8,14 +8,17 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.sun.mail.imap.IMAPFolder;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import javax.mail.*;
 import javax.mail.search.*;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 
-public class ImapsClient {
+public class ImapsClient implements AutoCloseable {
     private Session session;
     private Store store;
     private Folder folder;
@@ -29,7 +32,6 @@ public class ImapsClient {
             properties.setProperty("mail.store.protocol", "imaps");
             properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             properties.setProperty("mail.imap.socketFactory.fallback", "false");
-
             Session session = Session.getDefaultInstance(properties, null);
             try {
                 store = session.getStore("imaps");
@@ -143,4 +145,9 @@ public class ImapsClient {
         }
     }
 
+    @Override
+    public void close() throws MessagingException {
+        store.close();
+        log.log(Level.INFO, "Closing ImapClient ");
+    }
 }

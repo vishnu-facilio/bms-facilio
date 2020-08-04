@@ -20,13 +20,14 @@ public class ImapJob extends FacilioJob {
         if (CollectionUtils.isNotEmpty(imapEmails)) {
             for (SupportEmailContext imapMail : imapEmails) {
                 long latestUID = imapMail.getLatestMessageUID();
-                ImapsClient mailService = new ImapsClient(imapMail);
-                if (latestUID > 0) {
-                    // fetch mail which is greater than messageUID
-                    mailService.getMessageGtUID(latestUID);
-                } else {
-                    // fetch today's Mail n days
-                    mailService.getNDaysMails(1);
+                try ( ImapsClient mailService = new ImapsClient(imapMail)){
+                    if (latestUID > 0) {
+                        // fetch mail which is greater than messageUID
+                        mailService.getMessageGtUID(latestUID);
+                    } else {
+                        // fetch today's Mail n days
+                        mailService.getNDaysMails(1);
+                    }
                 }
 
             }
