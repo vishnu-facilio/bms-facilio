@@ -32,6 +32,8 @@ import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationSharingContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1726,6 +1728,11 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+		public static class Tenant {
+			public static final String NEWS_AND_INFORMATION = "newsandinformation";
+			public static final String NEWS_AND_INFORMATION_ATTACHMENTS = "newsandinformationattachments";
+			public static final String NEWS_AND_INFORMATION_SHARING = "newsandinformationsharing";
+		}
 		
 		// etisalat changes
         public static final String BILL_ALERT = "custom_alert";
@@ -1992,6 +1999,10 @@ public class FacilioConstants {
 			classMap.put(ContextNames.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(ContextNames.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
 			classMap.put(ContextNames.ANNOUNCEMENT, AnnouncementContext.class);
+
+			classMap.put(Tenant.NEWS_AND_INFORMATION, NewsAndInformationContext.class);
+			classMap.put(Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Tenant.NEWS_AND_INFORMATION_SHARING, NewsAndInformationSharingContext.class);
 
 			return classMap;
 		}
