@@ -682,8 +682,16 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
   	}
 	
+	public String getAssetsWithReadings() throws Exception {
+		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+		assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, categoryIds, assetIds, fieldIds, search, pagination, fetchOnlyAssets != null && fetchOnlyAssets, fetchOnlyReadings != null && fetchOnlyReadings, fetchOnlyAssetReadingMap != null && fetchOnlyAssetReadingMap, getCount());
+		return SUCCESS;
+  	}
+	
 	public String getReadingsWithAssetsForSpecificCategories() throws Exception {
-			assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds);
+		assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds);
 		return SUCCESS;
   	}
 	
@@ -699,7 +707,47 @@ public class AssetAction extends FacilioAction {
 	public void setFieldsNotRequired(Boolean fieldsNotRequired) {
 		this.fieldsNotRequired = fieldsNotRequired;
 	}
+	
+	private Boolean fetchOnlyAssets;
+	public Boolean getFetchOnlyAssets() {
+		return fetchOnlyAssets;
+	}
+	public void setFetchOnlyAssets(Boolean fetchOnlyAssets) {
+		this.fetchOnlyAssets = fetchOnlyAssets;
+	}
+	
+	private Boolean fetchOnlyReadings;
+	public Boolean getFetchOnlyReadings() {
+		return fetchOnlyReadings;
+	}
+	public void setFetchOnlyReadings(Boolean fetchOnlyReadings) {
+		this.fetchOnlyReadings = fetchOnlyReadings;
+	}
+	
+	private Boolean fetchOnlyAssetReadingMap;
+	public Boolean getFetchOnlyAssetReadingMap() {
+		return fetchOnlyAssetReadingMap;
+	}
+	public void setFetchOnlyAssetReadingMap(Boolean fetchOnlyAssetReadingMap) {
+		this.fetchOnlyAssetReadingMap = fetchOnlyAssetReadingMap;
+	}
+	
+	private List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
 
+	private List<Long> fieldIds;
+	public List<Long> getFieldIds() {
+		return fieldIds;
+	}
+	public void setFieldIds(List<Long> fieldIds) {
+		this.fieldIds = fieldIds;
+	}
+	
 	private List<Long> buildingIds;
 	public List<Long> getBuildingIds() {
 		return buildingIds;
