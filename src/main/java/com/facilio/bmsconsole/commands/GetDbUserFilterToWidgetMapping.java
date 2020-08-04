@@ -4,22 +4,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
@@ -34,40 +38,58 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 		DashboardFilterContext dbFilter=(DashboardFilterContext) context.get(FacilioConstants.ContextNames.DASHBOARD_FILTER);
 		if(dbFilter!=null&&dbFilter.getDashboardUserFilters()!=null) {
 			
-			List<DashboardUserFilterContext> userFilters=dbFilter.getDashboardUserFilters(); 
+			List<DashboardUserFilterContext> userFilters=dbFilter.getDashboardUserFilters();
+			 DashboardContext dashboard=(DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
+			 
+			 DashboardTabContext dashboardTab=(DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
+			 
+			 List<DashboardWidgetContext> widgets=new ArrayList<>();
+			 if(dashboard!=null)
+			 {
+				 	widgets=dashboard.getDashboardWidgets();
+			 }
+			 else if(dashboardTab!=null)
+			 {
+				 widgets=dashboardTab.getDashboardWidgets();
+			 }
+			 else {
+				 throw new Exception("NO dashboard or dashboard tab");
+			 }
+			 
 			//for each  filter , check which widgets have the same module as the filter.
 			 for (DashboardUserFilterContext filter : userFilters) {
 				 List<Long> widgetIdList=new ArrayList<Long>();
 				 
 				
-				 
-				 DashboardContext dashboard=(DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
-				 
-				 DashboardTabContext dashboardTab=(DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
-				 
-				 List<DashboardWidgetContext> widgets=new ArrayList<>();
-				 if(dashboard!=null)
-				 {
-					 	widgets=dashboard.getDashboardWidgets();
-				 }
-				 else if(dashboardTab!=null)
-				 {
-					 widgets=dashboardTab.getDashboardWidgets();
-				 }
-				 else {
-					 throw new Exception("NO dashboard or dashboard tab");
-				 }
-				 
+				 			
 				 
 				 if(widgets!=null)
 				 {
 					 
 					 for (DashboardWidgetContext widget : widgets) {
 					
-						 long moduleId=getModuleIdFromWidget(widget);
-						 	if(moduleId==filter.getField().getModuleId())
+						 long widgetModuleId=getModuleIdFromWidget(widget);
+						 //must check if widget module is either same as filter module or one of its children
+						 //Ex , ticketCategory field has module='ticket' but report_chart corresponding to workorders has module='workorder'
+						 
+						 FacilioModule  filterModule=filter.getField().getModule();
+						 						
+						 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						 
+						 List<FacilioModule> filterChildModules=modBean.getChildModules(filterModule);
+						 
+						 List<Long> filterChildModuleIds=new ArrayList<Long>();
+						 
+						 if(filterChildModules!=null)
+						 {
+							  filterChildModuleIds=filterChildModules.stream().map((FacilioModule module)-> {return module.getModuleId();}).collect(Collectors.toList());
+						 }
+						 
+						 if(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId))
+						 	
 						 	{
-						 		widgetIdList.add(moduleId);
+						 		
+						 		widgetIdList.add(widget.getId());
 						 		
 						 	}
 					}
