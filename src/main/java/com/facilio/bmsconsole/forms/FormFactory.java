@@ -2216,7 +2216,7 @@ public class FormFactory {
 		fields.add(new FormField("longDescription", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2));
-		fields.add(new FormField("sharingInfo", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
 
 		return fields;
 	}

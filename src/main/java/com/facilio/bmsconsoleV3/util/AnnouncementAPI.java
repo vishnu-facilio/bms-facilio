@@ -117,11 +117,11 @@ public class AnnouncementAPI {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
-        announcement.setSharingInfo(getSharingInfo(announcement.getId()));
+        announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
 
-        if(CollectionUtils.isNotEmpty(announcement.getSharingInfo())) {
+        if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
-            for(AnnouncementSharingInfoContext sharingInfo : announcement.getSharingInfo()){
+            for(AnnouncementSharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
                 List<V3PeopleContext> ppl = new ArrayList<>();
                 //handling only for building sharing type for now.. can be supported for others as well
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
@@ -164,7 +164,7 @@ public class AnnouncementAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("announcement"), String.valueOf(announcement.getId()), NumberOperators.EQUALS));
         List<AnnouncementSharingInfoContext> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
-            announcement.setSharingInfo(list);
+            announcement.setAnnouncementsharing(list);
         }
     }
 }

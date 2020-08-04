@@ -47,14 +47,14 @@ public class AnnouncementContext extends V3Context {
         this.expiryDate = expiryDate;
     }
 
-    private List<AnnouncementSharingInfoContext> sharingInfo;
+    private List<AnnouncementSharingInfoContext> announcementsharing;
 
-    public List<AnnouncementSharingInfoContext> getSharingInfo() {
-        return sharingInfo;
+    public List<AnnouncementSharingInfoContext> getAnnouncementsharing() {
+        return announcementsharing;
     }
 
-    public void setSharingInfo(List<AnnouncementSharingInfoContext> sharingInfo) {
-        this.sharingInfo = sharingInfo;
+    public void setAnnouncementsharing(List<AnnouncementSharingInfoContext> announcementsharing) {
+        this.announcementsharing = announcementsharing;
     }
 
     public Integer getCategory() {

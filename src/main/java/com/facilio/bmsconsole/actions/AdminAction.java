@@ -155,8 +155,17 @@ public class AdminAction extends ActionSupport {
 					summodule += flicensevalue;
 				}
 			}
-
 			try {
+				//temp handling for enabling people contacts license
+				if(((summodule & AccountUtil.FeatureLicense.INVENTORY.getLicense()) == AccountUtil.FeatureLicense.INVENTORY.getLicense()) ||
+						((summodule & AccountUtil.FeatureLicense.CLIENT.getLicense()) == AccountUtil.FeatureLicense.CLIENT.getLicense()) ||
+						((summodule & AccountUtil.FeatureLicense.TENANTS.getLicense()) == AccountUtil.FeatureLicense.TENANTS.getLicense()) ||
+						((summodule & AccountUtil.FeatureLicense.PEOPLE.getLicense()) == AccountUtil.FeatureLicense.PEOPLE.getLicense())
+				){
+					if((summodule & AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense()) == 0) {
+						summodule += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+					}
+				}
 				long licence = AccountUtil.getTransactionalOrgBean(Long.parseLong(orgidstring)).addLicence(summodule);
 				System.out.println("##########@@@@@@@@@@@@@" + licence);
 			} catch (Exception e) {
