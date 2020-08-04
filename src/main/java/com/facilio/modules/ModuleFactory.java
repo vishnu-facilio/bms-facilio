@@ -107,6 +107,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorInviteModule());
 		moduleMap.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceModule());
 		moduleMap.put(ContextNames.VISITOR_LOGGING, getVisitorLogModule());
+		moduleMap.put(ContextNames.VISITOR_LOG, getVisitorLogModule());
 		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
         moduleMap.put(ContextNames.CONTACT, getContactModule());
 		moduleMap.put(ContextNames.WorkPermit.WORKPERMIT, getWorkPermitModule());
@@ -3447,7 +3448,16 @@ public class ModuleFactory {
 		module.setTableName("Visitor_Logging");
 		return module;
 	}
-
+	
+	public static FacilioModule getVisitorLogCheckInModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.VISITOR_LOG);
+		module.setDisplayName("Visits");
+		module.setTableName("VisitorLog");
+		return module;
+	}
+	
 	public static FacilioModule getVisitorInviteModule()
 	{
 		FacilioModule module=new FacilioModule();

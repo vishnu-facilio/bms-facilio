@@ -643,6 +643,14 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("todayvisits", getVisitorsLogCheckedInTodayView().setOrder(order++));
+		views.put("current", getVisitorsLogCheckedInCurrentlyView().setOrder(order++));
+		views.put("pending", getPendingVisitLogsView().setOrder(order++));
+		views.put("all", getAllVisitorCheckInLogsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOG, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("invite_today", getTodayVisitorInvitesView().setOrder(order++));
 		views.put("invite_pending", getPendingVisitorInvitesView().setOrder(order++));
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
@@ -6452,6 +6460,27 @@ public class ViewFactory {
 
 		return allView;
 	}
+	
+	private static FacilioView getAllVisitorCheckInLogsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Visits");
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLogCheckInModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
 
 	private static FacilioView getTenantPortalAllVisitorLogsView() {
 
@@ -6895,6 +6924,34 @@ public class ViewFactory {
 
 		return view;
 	}
+	
+	private static FacilioView getPendingVisitLogsView() {
+
+		FacilioView view = new FacilioView();
+		view.setName("pending");
+		view.setDisplayName("Pending Approval");
+		Criteria criteria = new Criteria();
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLogCheckInModule();
+		FacilioField hostApprovalField = FieldFactory.getField("approvalNeeded", "IS_APPROVAL_NEEDED", visitorLoggingModule,FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(hostApprovalField, String.valueOf(true),BooleanOperators.IS));
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
+		view.setCriteria(criteria);
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLogCheckInModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedtime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return view;
+	}
 
 	private static FacilioView getAllContactView() {
 
@@ -6970,6 +7027,22 @@ public class ViewFactory {
 
 		return view;
 	}
+	
+	private static FacilioView getVisitorsLogCheckedInTodayView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLogCheckInModule();
+		FacilioView view = new FacilioView();
+		view.setName("todayvisits");
+		view.setDisplayName("Today Visits");
+		Criteria criteria = new Criteria();
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, DateOperators.TODAY));
+		view.setCriteria(criteria);
+		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return view;
+	}
+
 
 	private static FacilioView getTodayVisitorInvitesView() {
 
@@ -6994,6 +7067,26 @@ public class ViewFactory {
 	private static FacilioView  getVisitorsCheckedInCurrentlyView() {
 
 		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioView view = new FacilioView();
+		view.setName("current");
+		view.setDisplayName("Currently Checked-in");
+		Criteria criteria = new Criteria();
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		FacilioField checkOutTime = FieldFactory.getField("checkOutTime", "CHECKOUT_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkOutTime, CommonOperators.IS_EMPTY));
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_NOT_EMPTY));
+
+		view.setCriteria(criteria);
+		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return view;
+	}
+	
+	private static FacilioView getVisitorsLogCheckedInCurrentlyView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLogCheckInModule();
 		FacilioView view = new FacilioView();
 		view.setName("current");
 		view.setDisplayName("Currently Checked-in");
