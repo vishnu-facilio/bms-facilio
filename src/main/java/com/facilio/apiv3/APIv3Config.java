@@ -2,15 +2,12 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.apiv3.sample.*;
-import com.facilio.bmsconsole.commands.AssetDepreciationFetchAssetDetailsCommand;
-import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
-import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
-import com.facilio.bmsconsole.commands.ForkChainToInstantJobCommand;
-import com.facilio.bmsconsole.commands.ValidateAssetDepreciationCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.ChangeAnnouncementReadStatusCommandV3;
@@ -26,6 +23,7 @@ import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCom
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.AddPeopleAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestListLookupCommandV3;
@@ -519,6 +517,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getAnnouncement() {
         return () -> new V3Config(AnnouncementContext.class)
                 .create()
+                .beforeSave(new SetLocalIdCommandV3())
                 .afterSave(new UpdateAnnouncementAttachmentsParentIdCommandV3())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
@@ -534,7 +533,6 @@ public class APIv3Config {
                 .create()
                 .update()
                 .summary()
-                     .beforeFetch(new ChangeAnnouncementReadStatusCommandV3())
                 .build();
     }
 

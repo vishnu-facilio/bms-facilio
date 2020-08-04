@@ -95,5 +95,13 @@ public class AnnouncementContext extends V3Context {
         return false;
     }
 
+    private Long readCount;
 
+    public Long getReadCount() {
+        return readCount;
+    }
+
+    public void setReadCount(Long readCount) {
+        this.readCount = readCount;
+    }
 }

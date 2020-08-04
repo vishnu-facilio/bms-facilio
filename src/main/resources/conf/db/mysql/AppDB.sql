@@ -17078,6 +17078,7 @@ CREATE TABLE IF NOT EXISTS Announcements
     STATE_FLOW_ID              BIGINT,
     APPROVAL_FLOW_ID           BIGINT,
     APPROVAL_STATE             BIGINT,
+    READ_COUNT          BIGINT,
     STRING_CF1          VARCHAR(50),
     STRING_CF2          VARCHAR(50),
     STRING_CF3          VARCHAR(50),
