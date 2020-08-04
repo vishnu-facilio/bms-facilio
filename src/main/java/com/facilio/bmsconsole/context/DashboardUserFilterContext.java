@@ -13,6 +13,21 @@ import com.facilio.util.FacilioUtil;
 
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
+
+	
+	// default values is type string to handle  ,'all' ,'others' cases
+		
+	
+	public String[] getDefaultValues() {
+		return this.filterPojo.getDefaultValues();
+	}
+
+	public void setDefaultValues(String[] defaultValues) {
+		this.filterPojo.setDefaultValues(defaultValues);
+	}
+
+
+
 	private FacilioField field;
 	public static enum ComponentType implements FacilioEnum {
 		 SINGLE_SELECT("Select option"),MULTI_SELECT("Multiple options");
@@ -72,6 +87,16 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	}
 
 	public static class DashboardUserFilter {
+
+		private String[] defaultValues;
+		
+		public String[] getDefaultValues() {
+			return defaultValues;
+		}
+
+		public void setDefaultValues(String[] defaultValues) {
+			this.defaultValues = defaultValues;
+		}
 
 		ComponentType componentType;
 
