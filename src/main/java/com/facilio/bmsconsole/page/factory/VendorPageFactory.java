@@ -48,8 +48,12 @@ public class VendorPageFactory extends PageFactory{
 
 		
 			PageWidget cards= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS);
-			cards.addToLayoutParams(tab1Sec1, 24, 4);
+			cards.addToLayoutParams(tab1Sec1, 10, 4);
 			tab1Sec2.addWidget(cards);
+			
+			PageWidget cards2= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS2);
+			cards2.addToLayoutParams(tab1Sec1, 14, 4);
+			tab1Sec2.addWidget(cards2);
 			
 			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY);
 			electriycity.addToLayoutParams(tab1Sec2, 24, 4);
@@ -115,11 +119,11 @@ public class VendorPageFactory extends PageFactory{
 			tab5.addSection(tab5Sec1);
 			
 			PageWidget outstanding = new PageWidget(PageWidget.WidgetType.ARREARS);
-			outstanding.addToLayoutParams(tab5Sec1, 8, 6);
+			outstanding.addToLayoutParams(tab5Sec1, 10, 4);
 			tab5Sec1.addWidget(outstanding);
 			
 			PageWidget underreview = new PageWidget(PageWidget.WidgetType.UNDER_REVIEW);
-			underreview.addToLayoutParams(tab5Sec1, 16, 6);
+			underreview.addToLayoutParams(tab5Sec1, 14, 4);
 			tab5Sec1.addWidget(underreview);
 			
 			Page.Section tab5Sec2 = page.new Section();

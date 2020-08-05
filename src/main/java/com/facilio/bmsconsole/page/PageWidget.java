@@ -262,6 +262,7 @@ public class PageWidget {
 		DETAILS_TAB("detailsTab"),
 		SUPPLIER_CANCELLED_PAYMENTS("supplierCancelledPayments"),
 		SUPPLIER_CARDS("supplierCards"),
+		SUPPLIER_CARDS2("supplierCards2"),
 		SUPPLIER_ELECTRYCITY("supplierElectrycity"),
 		SUPPLIER_WATER("supplierWater"),
 		SUPPLIER_SEAWAGE("supplierSeawage"),
