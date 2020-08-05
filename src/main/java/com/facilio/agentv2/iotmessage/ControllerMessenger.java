@@ -104,20 +104,9 @@ public class ControllerMessenger {
                     }
                     object.put(AgentConstants.POINTS, pointsData);
                     break;
+                case SUBSCRIBE:
                 case CONFIGURE:
                 case REMOVE:
-                case SUBSCRIBE:
-//                	 JSONArray pointsList = new JSONArray();
-//                	 points.forEach(p ->{
-//             			
-//             			JSONObject ObjetMap = new JSONObject();
-//             			ObjetMap.putAll((Map) p);
-//             			ObjetMap.putAll(p.getThresholdJSON());
-//             			ObjetMap.remove(AgentConstants.THRESHOLD_JSON);
-//             			pointsList.add(ObjetMap);
-//             		});
-//                     object.put(AgentConstants.POINTS, pointsList);
-//                     break;
                 case UNSUBSCRIBE:
                 case GET:
                     object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));

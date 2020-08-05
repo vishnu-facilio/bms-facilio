@@ -1,24 +1,32 @@
 package com.facilio.agentv2.iotmessage;
 
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class MessengerUtil
 {
 
-    public static JSONArray getPointsData(List<Point> points){
-        JSONArray array = new JSONArray();
-        points.forEach(point -> array.add(point.getChildJSON()));
-        return array;
-    }
+	public static JSONArray getPointsData(List<Point> points){
+		JSONArray array = new JSONArray();
+		points.forEach(point ->{
+			array.add(point.getChildJSON());
+			 if((point.getThresholdJSON() != null) && (!point.getThresholdJSON().isEmpty())){
+				 JSONObject thresholdJSON = new JSONObject();
+				 thresholdJSON.putAll(point.getThresholdJSON());
+				 array.add(thresholdJSON);
+			 }		 
+		});
+		return array;
+	}
 
     static IotMessage getMessageObject(JSONObject message, FacilioCommand command) {
         IotMessage msg = new IotMessage();
