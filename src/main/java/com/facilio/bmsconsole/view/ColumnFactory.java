@@ -205,7 +205,10 @@ public class ColumnFactory {
 
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
-		
+
+		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
+
+
 		return columnMap;
 	}
 	
@@ -1488,6 +1491,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("shortDesc", "Short Description", "terms"));
 		columns.add(new ViewField("longDesc", "Long Description", "terms"));
 
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultAnnouncementColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("longDescription", "Description"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("expiryDate", "Expiry Date"));
 		return columns;
 	}
 }
