@@ -46,6 +46,14 @@ public class WorkflowAction extends FacilioAction {
 	public void setFunctionName(String functionName) {
 		this.functionName = functionName;
 	}
+	
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
 	
@@ -180,6 +188,9 @@ public class WorkflowAction extends FacilioAction {
 			if(workflow == null) {
 				if(nameSpace != null && functionName != null) {
 					workflow = UserFunctionAPI.getWorkflowFunction(nameSpace, functionName);
+				}
+				else if (workflowId != -1) {
+					workflow = WorkflowUtil.getWorkflowContext(workflowId);
 				}
 			}
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);

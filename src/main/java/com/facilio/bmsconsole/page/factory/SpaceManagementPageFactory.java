@@ -272,6 +272,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 		PageWidget pageWidget = new PageWidget(WidgetType.SPACE_PRIMARY_READINGS);
 		pageWidget.addToLayoutParams(section,24,3);
 		section.addWidget(pageWidget);
+		if (AccountUtil.getCurrentOrg().getOrgId() == 343) {
+			pageWidget.addToWidgetParams("workflowId", 56556);
+		}
 
 	}
 	private static void addSpaceOccupancyWidget(Section section, int height) {

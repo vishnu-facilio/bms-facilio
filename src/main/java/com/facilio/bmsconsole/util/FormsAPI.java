@@ -802,12 +802,15 @@ public class FormsAPI {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
+			boolean hasSite = false;
 			for (FormField field : form.getFields()) {
 				if (field.getField() != null) {
 					if (field.getField().getName().equals("photo")) {
 						hasPhoto = true;
-						break;
 					}
+				}
+				else if (field.getName().equals("siteId")) {
+					hasSite = true;
 				}
 			}
 			if (!hasPhoto) {
@@ -815,6 +818,9 @@ public class FormsAPI {
 				if (photoField != null) {
 					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));					
 				}
+			}
+			if (!hasSite) {
+				defaultFields.add(FormFactory.getSiteField());
 			}
 		}
 	}

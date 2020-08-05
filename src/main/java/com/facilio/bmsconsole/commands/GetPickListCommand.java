@@ -85,7 +85,7 @@ public class GetPickListCommand extends FacilioCommand {
 						
 						List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 						if (CollectionUtils.isNotEmpty(defaultIds)) {
-							orderBy = "FIELD(ID," + StringUtils.join(defaultIds, ",") +") desc, " + orderBy;
+							orderBy = "FIELD(" + module.getTableName() + ".ID," + StringUtils.join(defaultIds, ",") +") desc, " + orderBy;
 						}
 					}
 				}
