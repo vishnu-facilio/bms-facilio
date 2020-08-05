@@ -641,5 +641,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		return null;
 	}
+	@Override
+	public Long getId(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		FacilioModule module = (FacilioModule) objects.get(0);
+		return module.getModuleId();
+	}
 
 }

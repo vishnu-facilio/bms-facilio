@@ -14,4 +14,5 @@ public interface FacilioModuleFunction {
 	public String export(Map<String,Object> globalParams,List<Object> objects) throws Exception;
 	public Map<String, Object> asMap(Map<String,Object> globalParams,List<Object> objects) throws Exception;
 	public Criteria getViewCriteria(Map<String,Object> globalParams,List<Object> objects) throws Exception;
+	public Long getId(Map<String,Object> globalParams,List<Object> objects) throws Exception;
 }
