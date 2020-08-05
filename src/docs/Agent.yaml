@@ -1,20 +1,16 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
-  version: "0.2.0"
+  version: 0.2.0
   title: Facilio
   description: API Requests of Facilio
-  #termsOfService: https://facilio.com/terms/
   contact:
     name: Facilio
     email: developers@facilio.com
-    url: https://facilio.com
-  #license:
-  #  name:
-
+    url: 'https://facilio.com'
 servers:
-  - url: https://api.facilio.in/api
+  - url: 'https://api.facilio.in/api'
     description: Stage server
-  - url: https://api.facilio.com/api
+  - url: 'https://api.facilio.com/api'
     description: Production server
 security:
   - BearerAuth: []
@@ -27,15 +23,14 @@ paths:
         - agent
       requestBody:
         content:
-          'application/json':
+          application/json:
             schema:
               properties:
                 agentName:
                   description: Name of the agent to be added
                   type: string
                   pattern: '^[a-zA-Z0-9\-_]+$'
-                  example:
-                    'Facilio'
+                  example: Facilio
                 dataInterval:
                   description: Data interval at which the agent will publish data
                   type: integer
@@ -43,7 +38,6 @@ paths:
                   multipleOf: 5
                   minimum: 10
                   example: 15
-
                 siteId:
                   description: Id of the site where the agent is running
                   type: number
@@ -52,9 +46,8 @@ paths:
                 - agentName
                 - dataInterval
                 - siteId
-
       responses:
-        200:
+        '200':
           description: A list of agents.
           content:
             application/json:
@@ -63,18 +56,17 @@ paths:
                 properties:
                   responseCode:
                     type: integer
-                    enum: [200]
+                    enum:
+                      - 200
                   result:
                     type: object
                     properties:
                       result:
                         type: string
-                        enum: [success]
+                        enum:
+                          - success
                       data:
                         type: number
-
-
-
   /v2/agent/edit:
     post:
       description: Edit an existing agent in Facilio
@@ -83,7 +75,7 @@ paths:
         - agent
       requestBody:
         content:
-          'application/json':
+          application/json:
             schema:
               properties:
                 agentId:
@@ -105,20 +97,16 @@ paths:
                 toUpdate:
                   interval: 15
                   writable: true
-
               required:
                 - agentId
                 - toUpdate
-
       responses:
-        200:
+        '200':
           description: Result of edit action
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgentStandardResponse'
-
-
   /v2/agent/delete:
     post:
       description: Delete an existing agent in Facilio
@@ -127,7 +115,7 @@ paths:
         - agent
       requestBody:
         content:
-          'application/json':
+          application/json:
             schema:
               properties:
                 recordIds:
@@ -138,15 +126,13 @@ paths:
                     format: int64
               required:
                 - recordIds
-
       responses:
-        200:
+        '200':
           description: Result of api
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgentStandardResponse'
-
   /v2/agent/list:
     get:
       description: Get list of all available agents
@@ -154,7 +140,7 @@ paths:
       tags:
         - agent
       responses:
-        200:
+        '200':
           description: List of avaiable agents
           content:
             application/json:
@@ -163,19 +149,19 @@ paths:
                 properties:
                   responseCode:
                     type: integer
-                    enum: [200]
+                    enum:
+                      - 200
                   result:
                     type: object
                     properties:
                       result:
                         type: string
-                        enum: [success]
+                        enum:
+                          - success
                       data:
                         type: array
                         items:
                           $ref: '#/components/schemas/Agent'
-
-
   /api/v2/agent/overview:
     get:
       tags:
@@ -183,13 +169,12 @@ paths:
       description: Get the overview of overall agents
       operationId: agentOverview
       responses:
-        200:
+        '200':
           description: Overview of all agents
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgentOverview'
-
   /v2/agent/get:
     get:
       tags:
@@ -199,7 +184,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/getAgentById'
       responses:
-        200:
+        '200':
           description: List of avaiable agents
           content:
             application/json:
@@ -208,23 +193,24 @@ paths:
                 properties:
                   responseCode:
                     type: integer
-                    enum: [200]
+                    enum:
+                      - 200
                   result:
                     type: object
                     properties:
                       result:
                         type: string
-                        enum: [success]
+                        enum:
+                          - success
                       data:
                         $ref: '#/components/schemas/Agent'
-
   /v2/agent/count:
     get:
       tags:
         - agent
       description: Returns the number of agents available
       responses:
-        200:
+        '200':
           description: A list of agents.
           content:
             application/json:
@@ -233,16 +219,17 @@ paths:
                 properties:
                   responseCode:
                     type: integer
-                    enum: [200]
+                    enum:
+                      - 200
                   result:
                     type: object
                     properties:
                       result:
                         type: string
-                        enum: [success]
+                        enum:
+                          - success
                       data:
                         type: number
-
   /v2/agent/ping:
     get:
       tags:
@@ -252,13 +239,76 @@ paths:
       parameters:
         - $ref: '#/components/parameters/getAgentById'
       responses:
-        200:
+        '200':
           description: Result of api
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgentStandardResponse'
-
+  /v2/device/getlist:
+    get:
+      tags:
+        - device
+      description: >-
+        get Controller or Device list based on the configured param value.
+        true--> configured,false -->unconfigured
+      operationId: getAgentDeviceOrController
+      parameters:
+        - $ref: '#/components/parameters/getAgentById'
+        - $ref: '#/components/parameters/configured'
+        - $ref: '#/components/parameters/controllerType'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum:
+                      - 200
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum:
+                          - success
+                      data:
+                        $ref: '#/components/schemas/DeviceAndControllerList'
+                        
+  /v2/device/getFilter:
+    get:
+      tags:
+        - device      
+      description: Get device list for specific agent Id.
+      parameters:
+        - $ref:  '#/components/parameters/getAgentById'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum:
+                      - 200
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum:
+                          - success
+                      data:
+                        $ref: '#/components/schemas/GetDeviceListByAgentId'  
+                            
 
 components:
   securitySchemes:
@@ -268,7 +318,6 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
-
   parameters:
     getAgentById:
       in: query
@@ -279,7 +328,25 @@ components:
         type: number
         minimum: 1
         example: 6321
-
+    configured:
+      in: query
+      description: value of configured
+      name: configured
+      required: true
+      schema:
+        type: boolean
+        enum:
+          - true
+          - false
+    controllerType:
+      in: query
+      description: value of controllerType
+      name: controllerType
+      required: true
+      schema:
+        type: number
+        minimum: 0
+        example: 1
     limit:
       in: query
       description: limit result size
@@ -288,7 +355,6 @@ components:
         type: number
         minimum: 1
         example: 25
-
     page:
       in: query
       description: Page number
@@ -309,7 +375,6 @@ components:
             perPage: 30
           fifty:
             perPage: 50
-
     fetchCount:
       in: query
       description: items to fetcch
@@ -318,22 +383,31 @@ components:
         type: number
         minimum: 1
         example: 50
-
+    count:
+      in: query
+      description: items to fetcch
+      name: fetchCount
+      required: false
+      schema:
+        type: boolean
+        enum:
+          - true
+          - false
   schemas:
-
     AgentStandardResponse:
-        type: object
-        properties:
-          responseCode:
-            type: integer
-            enum: [200]
-          result:
-            type: object
-            properties:
-              result:
-                type: string
-                enum: [success]
-
+      type: object
+      properties:
+        responseCode:
+          type: integer
+          enum:
+            - 200
+        result:
+          type: object
+          properties:
+            result:
+              type: string
+              enum:
+                - success
     Agent:
       type: object
       properties:
@@ -369,7 +443,6 @@ components:
           type: number
         state:
           type: integer
-
     AgentOverview:
       type: object
       properties:
@@ -415,4 +488,103 @@ components:
                     subscribedCount:
                       type: integer
                       format: int32
-
+                      
+    DeviceAndControllerList:
+      type: object
+      properties:
+        responseCode:
+          type: number
+          format: int32
+        result:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                active:
+                  type: boolean
+                agentId:
+                  type: integer
+                  format: int32
+                availablePoints:
+                  type: integer
+                  format: int32
+                confInProgress:
+                  type: integer
+                  format: int32
+                configured:
+                  type: integer
+                  format: int32
+                controller:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int32
+                    instanceNumber:
+                      type: integer
+                      format: int32
+                    ipAddress:
+                      type: string
+                    networkNumber:
+                      type: integer
+                      format: int32
+                controllerType:
+                  type: integer
+                  format: int32
+                createdTime:
+                  type: integer
+                  format: int64
+                dataInterval:
+                  type: integer
+                deviceId:
+                  type: integer
+                id:
+                  type: integer
+                instanceNumber:
+                  type: integer
+                ipAddress:
+                  type: string
+                lastModifiedTime:
+                  type: integer
+                  format: int32
+                name:
+                  type: string
+                networkNumber:
+                  type: integer
+                  format: int32
+                orgId:
+                  type: integer
+                points:
+                  type: integer
+                subsInProgress:
+                  type: integer
+                subscribed:
+                  type: integer
+                writable:
+                  type: boolean
+    
+    GetDeviceListByAgentId:
+      type: object
+      properties:
+        responseCode:
+          type: number
+          format: int32
+        result:
+          type: object
+          properties:
+            data:
+              type: object 
+              properties:
+                controllerType:
+                  type: integer
+                  format: int32
+                id:
+                  type: integer
+                  format: int32
+                name:
+                  type: string
+                orgId:
+                  type: integer
+                  format: int32      
+                          
