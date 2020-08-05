@@ -212,6 +212,10 @@ public class IAMUserUtil {
        return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(username, password, appDomainName, userAgent, userType, ipAddress, startUserSession));
 		
 	}
+
+	public static String getEmailFromDigest(String digest) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEmailFromDigest(digest));
+	}
 	
 	public static IAMAccount verifiyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType)
 			throws Exception {

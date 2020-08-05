@@ -80,6 +80,8 @@ public interface IAMUserBean {
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception ;
 
+    String getEmailFromDigest(String digest) throws Exception;
+
     public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception;
     
     public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String userType) throws Exception;

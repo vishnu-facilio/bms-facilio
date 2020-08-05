@@ -1124,6 +1124,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			
 	}
 
+
+
 	@Override
 	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
 			String userAgent, String userType, String ipAddress, boolean startUserSession) throws Exception {
@@ -1141,8 +1143,39 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
 	}
-	
-	
+
+	@Override
+	public String getEmailFromDigest(String digest) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("UserSessions");
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", digest, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("SESSION_TYPE", "sessionType", IAMAccountConstants.SessionType.DIGEST_SESSION.getValue()+"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			throw new AccountException(ErrorCode.INVALID_DIGEST, "Digest has expired");
+		}
+
+		Map<String, Object> prop = props.get(0);
+
+		DecodedJWT decodedJWT = validateJWT(digest, "auth0");
+		String[] split = decodedJWT.getSubject().split(JWT_DELIMITER);
+		String email = split[0];
+
+		long createdTime = (long) prop.get("startTime");
+		long currentTime = System.currentTimeMillis();
+
+		if (currentTime > (createdTime + (15 * 60 * 1000))) {
+			throw new AccountException(ErrorCode.INVALID_DIGEST, "Digest has expired");
+		}
+
+		return email;
+	}
+
+
 	@Override
 	public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception {
 		try {

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.iam.accounts.util.IAMUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -347,6 +348,31 @@ public class FacilioAuthAction extends FacilioAction {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return SUCCESS;
+	}
+
+	private String digest;
+
+	public String loginWithPasswordAndDigest()  {
+		String digest = getDigest();
+		String emailFromDigest = null;
+		try {
+			emailFromDigest = IAMUserUtil.getEmailFromDigest(digest);
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			setJsonresponse("errorcode", "2");
+			return ERROR;
+		}
+		setUsername(emailFromDigest);
+		validateLoginv3();
 		return SUCCESS;
 	}
 
@@ -1202,4 +1228,11 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String getDigest() {
+		return digest;
+	}
+
+	public void setDigest(String digest) {
+		this.digest = digest;
+	}
 }
