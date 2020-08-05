@@ -82,9 +82,9 @@ Map floorPlanMode(Map params) {
                 valueMap["unit"] = setpointMap.get("unit");
                 valueMap["dataType"] = setpointMap.get("dataTypeEnum");
                 resultData[assetId] = valueMap;
-                resultAssets.add(resultData);
               }
             }
+            resultAssets.add(resultData);
             val1 = avgValue1 / assetIds.size(); // setpoint temperature avg value
             val2 = avgValue2 / assetIds.size(); // space temperature avg value
         }
@@ -101,9 +101,9 @@ Map floorPlanMode(Map params) {
                 valueMap["unit"] = returnAirTempMap.get("unit");
                 valueMap["dataType"] = returnAirTempMap.get("dataTypeEnum");
                 resultData[cassetId] = valueMap;
-                resultAssets.add(resultData);
               }
             }
+            resultAssets.add(resultData);
             val3 = avgValue3 / cscassetIds.size();
         }
         val4 = 0;
@@ -123,9 +123,9 @@ Map floorPlanMode(Map params) {
                 valueMap["unit"] = sensorMapTemp.get("unit");
                 valueMap["dataType"] = sensorMapTemp.get("dataTypeEnum");
                 resultData[ass] = valueMap;
-                resultAssets.add(resultData);
               }
             }
+             resultAssets.add(resultData);
             val4 = avgValue4 / rassetIds.size();
             val4 = math().ceil(val4);
         }
