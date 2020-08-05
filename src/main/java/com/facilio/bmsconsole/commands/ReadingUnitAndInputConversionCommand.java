@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -21,6 +13,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 
@@ -54,7 +53,7 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 										if(readingDataMeta==null) {
 											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
-										if(readingDataMeta.getUnitEnum() != null) {
+										if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
 											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 											readingData.put(fieldName, value);
 										}

@@ -716,7 +716,7 @@ public class ImportAPI {
 		case "week":
 		case "day":
 		case "hour": {
-			return true;
+			return false;
 		}
 		}
 		return false;
