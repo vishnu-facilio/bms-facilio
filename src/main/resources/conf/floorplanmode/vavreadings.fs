@@ -2,9 +2,10 @@ Map floorPlanMode(Map params) {
     floorId = params.floorId;
     spaceIds = params.spaceId;
     
-    
-    assetCategoryId = 11692;
-    assetCategoryId2 = 11693;
+    vavcategoryid = 11692;
+    csucatid = 11693;
+  	sensorCatid = 11766;
+  	
     readingModule = "spacetemperature";
     readingFieldName = "setpoint";
     readingFieldName2 = "spacetemperature";
@@ -16,6 +17,7 @@ Map floorPlanMode(Map params) {
     readigModule4 = "temperture";
     readigModule5 = "temperture";
 
+  	
 
 
     setPointObj = new NameSpace("module").getField(readingFieldName, readingModule);
@@ -31,20 +33,24 @@ Map floorPlanMode(Map params) {
     fieldId4 = temperture.id();
 
     fieldMapInfo = temperture.asMap();
+  	setpointMap = setPointObj.asMap();
+   	returnAirTempMap = returnAirTemp.asMap();
+  	sensorMapTemp = temperture.asMap();
+
     areas = [];
     for each index, spaceId in spaceIds {
 
         assetModule = Module("asset");
         db = {
-            criteria: [space == spaceId && category == 11692],
+            criteria: [space == spaceId && category == vavcategoryid],
             field: "id"
         };
         db1 = {
-            criteria: [space == spaceId && category == 11693],
+            criteria: [space == spaceId && category == csucatid],
             field: "id"
         };
         db2 = {
-            criteria: [space == spaceId && category == 11766],
+            criteria: [space == spaceId && category == sensorCatid],
             field: "id"
         };
         assetIds = assetModule.fetch(db);
@@ -57,6 +63,8 @@ Map floorPlanMode(Map params) {
         val1 = 0;
         val2 = 0;
         val3 = 0;
+      	resultAssets = [];
+      	resultData = {};
         if (assetIds != null) {
             avgValue1 = 0;
             avgValue2 = 0;
@@ -68,6 +76,14 @@ Map floorPlanMode(Map params) {
                 enumMap2 = Reading(fieldId2, assetId).getEnumMap();
                 avgValue1 = avgValue1 + readingValue;
                 avgValue2 = avgValue2 + readingValue2;
+              valueMap = {};
+              if (setpointMap != null) {
+                valueMap["value"] = readingValue;
+                valueMap["unit"] = setpointMap.get("unit");
+                valueMap["dataType"] = setpointMap.get("dataTypeEnum");
+                resultData[assetId] = valueMap;
+                resultAssets.add(resultData);
+              }
             }
             val1 = avgValue1 / assetIds.size(); // setpoint temperature avg value
             val2 = avgValue2 / assetIds.size(); // space temperature avg value
@@ -75,9 +91,18 @@ Map floorPlanMode(Map params) {
         if (cscassetIds != null) {
             avgValue3 = 0;
             for each idx, cassetId in cscassetIds {
+                        resultData = {};
                 creadingValue = Reading(fieldId3, cassetId).getLastValue();
                 cenumMap = Reading(fieldId3, cassetId).getEnumMap();
                 avgValue3 = avgValue3 + creadingValue;
+                 valueMap = {};
+                 if (returnAirTempMap != null) {
+                valueMap["value"] = creadingValue;
+                valueMap["unit"] = returnAirTempMap.get("unit");
+                valueMap["dataType"] = returnAirTempMap.get("dataTypeEnum");
+                resultData[cassetId] = valueMap;
+                resultAssets.add(resultData);
+              }
             }
             val3 = avgValue3 / cscassetIds.size();
         }
@@ -86,16 +111,24 @@ Map floorPlanMode(Map params) {
 
         rreadingValue = null;
         if (rassetIds != null) {
+          resultData = {};
             avgValue4 = 0;
             for each dx, ass in rassetIds {
                 rreadingValue = Reading(fieldId4, ass).getLastValue();
                 enumMap3 = Reading(fieldId4, ass).getEnumMap();
                 avgValue4 = avgValue4 + rreadingValue;
+                       valueMap = {};
+                 if (sensorMapTemp != null) {
+                valueMap["value"] = rreadingValue;
+                valueMap["unit"] = sensorMapTemp.get("unit");
+                valueMap["dataType"] = sensorMapTemp.get("dataTypeEnum");
+                resultData[ass] = valueMap;
+                resultAssets.add(resultData);
+              }
             }
             val4 = avgValue4 / rassetIds.size();
             val4 = math().ceil(val4);
         }
-
         unitData = "";
         comp1 = val2;
         if (assetIds != null && cscassetIds != null && cscassetIds.size() > 0 && assetIds.size() > 0) {
@@ -147,6 +180,7 @@ Map floorPlanMode(Map params) {
             area.styles = styles;
         }
         area.spaceId = spaceId;
+      	area.assets = resultAssets;
         areas.add(area);
     }
     result = {};
