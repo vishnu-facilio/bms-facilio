@@ -327,7 +327,7 @@ public class ModbusImportUtils {
             int nameIndex = -1;
             int dataTypeIndex = -1;
             int registerNumberIndex = -1;
-            int functionCodeIndex = -1;
+            int registerTypeIndex = -1;
             for (int i = 0; i < firstRow.getPhysicalNumberOfCells(); i++) {
                 Cell cell = firstRow.getCell(i);
                 Objects.requireNonNull(cell, "theres no cell in first row");
@@ -338,8 +338,8 @@ public class ModbusImportUtils {
                         dataTypeIndex = i;
                     } else if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.REGISTER_NUMBER)) {
                         registerNumberIndex = i;
-                    } else if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.FUNCTION_CODE)) {
-                        functionCodeIndex = i;
+                    } else if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.REGISTER_TYPE)) {
+                        registerTypeIndex = i;
                     }
                 } else {
                     throw new Exception("FirstRow must be heading row");
@@ -354,26 +354,26 @@ public class ModbusImportUtils {
             if (registerNumberIndex < 0) {
                 throw new Exception(" register number missing from sheet");
             }
-            if (functionCodeIndex < 0) {
+            if (registerTypeIndex < 0) {
                 throw new Exception(" function code missing from sheet");
             }
 
             sheet.removeRow(firstRow);
-            LOGGER.info("header index " + nameIndex + " dataTypeIndex " + dataTypeIndex + " registerNumberIndex " + registerNumberIndex + " functionCodeIndex " + functionCodeIndex);
+            LOGGER.info("header index " + nameIndex + " dataTypeIndex " + dataTypeIndex + " registerNumberIndex " + registerNumberIndex + " functionCodeIndex " + registerTypeIndex);
             Iterator<Row> rowIterator = sheet.rowIterator();
             List<Point> points = new ArrayList<>();
             for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                 String name;
                 Long registerNumber;
                 Long dataType;
-                Long functionCode;
+                Long registerType;
                 Row row = rowIterator.next();
                 registerNumber = ((Number) row.getCell(registerNumberIndex).getNumericCellValue()).longValue();
                 dataType = ((Number) row.getCell(dataTypeIndex).getNumericCellValue()).longValue();
-                functionCode = ((Number) row.getCell(functionCodeIndex).getNumericCellValue()).longValue();
+                registerType = ((Number) row.getCell(registerTypeIndex).getNumericCellValue()).longValue();
                 name = row.getCell(nameIndex).getStringCellValue();
                 ModbusTcpPointContext pointContext = new ModbusTcpPointContext(controller.getAgentId(), controller.getId());
-                pointContext.setFunctionCode(functionCode);
+                pointContext.setRegisterType(registerType);
                 pointContext.setModbusDataType(dataType);
                 pointContext.setRegisterNumber(registerNumber);
                 pointContext.setName(name);

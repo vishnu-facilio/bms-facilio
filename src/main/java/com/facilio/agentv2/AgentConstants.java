@@ -33,7 +33,7 @@ public class AgentConstants
     public static final String SLAVE_ID = "slaveId";
     public static final String IP_ADDRESS = "ipAddress";
     public static final String NETWORK_ID = "networkId";
-    public static final String FUNCTION_CODE = "functionCode";
+    public static final String REGISTER_TYPE = "registerType";
     public static final String MODBUS_DATA_TYPE = "modbusDataType";
     public static final String REGISTER_NUMBER = "registerNumber";
     public static final String DATA_TYPE = "dataType";

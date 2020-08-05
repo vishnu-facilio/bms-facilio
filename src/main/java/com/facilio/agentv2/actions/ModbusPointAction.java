@@ -3,8 +3,6 @@ package com.facilio.agentv2.actions;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
@@ -24,7 +22,7 @@ public class ModbusPointAction extends DeviceIdActions {
     private Long registerNumber;
     @NotNull
     @Min(0)
-    private Long functionCode;
+    private Long registerType;
     @NotNull
     @Min(0)
     private Long modbusDataType;
@@ -60,12 +58,12 @@ public class ModbusPointAction extends DeviceIdActions {
         this.registerNumber = registerNumber;
     }
 
-    public Long getFunctionCode() {
-        return functionCode;
+    public Long getRegisterType() {
+        return registerType;
     }
 
-    public void setFunctionCode(Long functionCode) {
-        this.functionCode = functionCode;
+    public void setRegisterType(Long registerType) {
+        this.registerType = registerType;
     }
 
     public Long getModbusDataType() {
@@ -86,7 +84,7 @@ public class ModbusPointAction extends DeviceIdActions {
                 Controller controller = getControllerRequest.ofType(FacilioControllerType.MODBUS_IP).getController();
                 Objects.requireNonNull(controller,"controller can't be null");
                 ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext( -1,controller.getId());
-                tcpPointContext.setFunctionCode(functionCode);
+                tcpPointContext.setRegisterType(registerType);
                 tcpPointContext.setModbusDataType(modbusDataType);
                 tcpPointContext.setRegisterNumber(registerNumber);
                 tcpPointContext.setName(name);
@@ -97,7 +95,7 @@ public class ModbusPointAction extends DeviceIdActions {
                 Controller controller = getControllerRequest.ofType(FacilioControllerType.MODBUS_RTU).getController();
                 Objects.requireNonNull(controller,"controller can't be null");
                 ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(-1, controller.getId());
-                rtuPointContext.setFunctionCode(functionCode);
+                rtuPointContext.setRegisterType(registerType);
                 rtuPointContext.setModbusDataType(modbusDataType);
                 rtuPointContext.setRegisterNumber(registerNumber);
                 rtuPointContext.setName(name);

@@ -23,15 +23,15 @@ public class ModbusTcpPointContext extends Point {
 
 
     private long registerNumber = -1;
-    private long functionCode = -1;
+    private long registerType = -1;
     @NotNull
     private Long modbusDataType ;
 
     public long getRegisterNumber() { return registerNumber; }
     public void setRegisterNumber(long registerNumber) { this.registerNumber = registerNumber; }
 
-    public long getFunctionCode() { return functionCode; }
-    public void setFunctionCode(long functionCode) { this.functionCode = functionCode; }
+    public long getRegisterType() { return registerType; }
+    public void setRegisterType(long registerType) { this.registerType = registerType; }
 
     public Long getModbusDataType() { return modbusDataType; }
     public void setModbusDataType(Long modbusDataType) { this.modbusDataType = modbusDataType; }
@@ -45,7 +45,7 @@ public class ModbusTcpPointContext extends Point {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
-        if(containsValueCheck(AgentConstants.FUNCTION_CODE,pointMap)
+        if(containsValueCheck(AgentConstants.REGISTER_TYPE,pointMap)
                 && containsValueCheck(AgentConstants.MODBUS_DATA_TYPE,pointMap)
                 && containsValueCheck(AgentConstants.REGISTER_NUMBER,pointMap)){
            /* ModbusTcpPoint point = new ModbusTcpPoint(agentId,controllerId);
@@ -57,7 +57,7 @@ public class ModbusTcpPointContext extends Point {
             jsonObject.putAll(pointMap);
             return FieldUtil.getAsBeanFromJson(jsonObject, ModbusTcpPointContext.class);
         }
-        throw new Exception(" Mandatory fields like "+AgentConstants.REGISTER_NUMBER+" , "+AgentConstants.MODBUS_DATA_TYPE+" , "+AgentConstants.FUNCTION_CODE+" might be missing form input params -> "+pointMap);
+        throw new Exception(" Mandatory fields like "+AgentConstants.REGISTER_NUMBER+" , "+AgentConstants.MODBUS_DATA_TYPE+" , "+AgentConstants.REGISTER_TYPE +" might be missing form input params -> "+pointMap);
     }
 
 
@@ -67,7 +67,7 @@ public class ModbusTcpPointContext extends Point {
         object.put(AgentConstants.ID,getId());
         object.put(AgentConstants.DEVICE_ID,getDeviceId());
         object.put(AgentConstants.REGISTER_NUMBER, getRegisterNumber());
-        object.put(AgentConstants.FUNCTION_CODE,getFunctionCode());
+        object.put(AgentConstants.REGISTER_TYPE, getRegisterType());
         object.put(AgentConstants.MODBUS_DATA_TYPE, getModbusDataType());
         return object;
     }

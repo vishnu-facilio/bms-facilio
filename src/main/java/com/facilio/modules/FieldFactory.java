@@ -6338,7 +6338,7 @@ public class FieldFactory {
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.REGISTER_TYPE, "REGISTER_TYPE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
         return fields;
     }
@@ -6373,7 +6373,7 @@ public class FieldFactory {
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.REGISTER_TYPE, "REGISTER_TYPE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
 
         return fields;
