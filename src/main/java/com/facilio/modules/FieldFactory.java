@@ -8810,6 +8810,7 @@ public class FieldFactory {
 		 List<FacilioField> fields =new ArrayList<>();
 		 fields.add(getIdField(module));
 		 fields.add(getField("dashboardFilterId", "DASHBOARD_FILTER_ID", module, FieldType.NUMBER));
+		 fields.add(getField("order", "FILTER_ORDER", module, FieldType.NUMBER));
 		 fields.add(getField("dashboardUserFilterJson","DASHBOARD_USER_FILTER_JSON", module,FieldType.STRING));
 		 		     				 
 		 return fields;

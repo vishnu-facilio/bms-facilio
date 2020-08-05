@@ -107,7 +107,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 		OptionType optionType;
 
-		int order;
+		
 
 		List<Long> selectedOptions;
 
@@ -131,9 +131,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 			return optionType;
 		}
 
-		public int getOrder() {
-			return order;
-		}
+
 
 		public List<Long> getSelectedOptions() {
 			return selectedOptions;
@@ -159,9 +157,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 			this.optionType = optionType;
 		}
 
-		public void setOrder(int order) {
-			this.order = order;
-		}
+
 
 		public void setSelectedOptions(List<Long> selectedOptions) {
 			this.selectedOptions = selectedOptions;
@@ -177,7 +173,17 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	// to do , serialize and deserialize context fields to json , than via POJO
 	private DashboardUserFilter filterPojo = new DashboardUserFilter();
 
+	private int order;
 	
+	
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
 	public int getComponentType() {
 
 		if (this.filterPojo.getComponentType() != null) {
@@ -226,9 +232,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	
 
-	public int getOrder() {
-		return this.filterPojo.getOrder();
-	}
+
 
 	public List<Long> getSelectedOptions() {
 		return this.filterPojo.getSelectedOptions();
@@ -274,9 +278,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 
 
-	public void setOrder(int order) {
-		this.filterPojo.setOrder(order);
-	}
+
 
 	public void setSelectedOptions(List<Long> selectedOptions) {
 		this.filterPojo.setSelectedOptions(selectedOptions); 
