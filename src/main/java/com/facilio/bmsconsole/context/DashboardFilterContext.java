@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -23,9 +22,16 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private long dateOperator;
 	private String dateValue;
 	private String dateLabel;
-	private Map<Long,List<Long>> filterWidgetMapping;
+	private Map<Long,List<Long>> widgetUserFiltersMap;
 	
 	
+
+	public Map<Long, List<Long>> getWidgetUserFiltersMap() {
+		return widgetUserFiltersMap;
+	}
+	public void setWidgetUserFiltersMap(Map<Long, List<Long>> widgetUserFiltersMap) {
+		this.widgetUserFiltersMap = widgetUserFiltersMap;
+	}
 	public String getDateLabel() {
 		return dateLabel;
 	}
@@ -33,14 +39,16 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 		this.dateLabel = dateLabel;
 	}
 	private List<DashboardUserFilterContext> dashboardUserFilters;
-	JSONObject widgetTimelineFilters;
+	Map<Long, Map<String,String>> widgetTimelineFilterMap;
+	
+
 	
 	
-	public JSONObject getWidgetTimelineFilters() {
-		return widgetTimelineFilters;
+	public Map<Long, Map<String, String>> getWidgetTimelineFilterMap() {
+		return widgetTimelineFilterMap;
 	}
-	public void setWidgetTimelineFilters(JSONObject widgetTimelineFilters) {
-		this.widgetTimelineFilters = widgetTimelineFilters;
+	public void setWidgetTimelineFilterMap(Map<Long, Map<String, String>> widgetTimelineFilterMap) {
+		this.widgetTimelineFilterMap = widgetTimelineFilterMap;
 	}
 	public long getDashboardId() {
 		return dashboardId;
@@ -78,12 +86,7 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	public void setIsTimelineFilterEnabled(Boolean isTimelineFilterEnabled) {
 		this.isTimelineFilterEnabled = isTimelineFilterEnabled;
 	}
-	public Map<Long,List<Long>> getFilterWidgetMapping() {
-		return filterWidgetMapping;
-	}
-	public void setFilterWidgetMapping(Map<Long,List<Long>> filterWidgetMapping) {
-		this.filterWidgetMapping = filterWidgetMapping;
-	}
+	
 	
 
 }

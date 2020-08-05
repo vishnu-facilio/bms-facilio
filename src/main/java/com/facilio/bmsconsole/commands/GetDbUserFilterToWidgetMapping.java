@@ -33,12 +33,13 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-			Map<Long, List<Long>> userFilterToWidgetListMap=new HashMap<>();
+			Map<Long, List<Long>> widgetUserFiltersMap=new HashMap<>();
 			
 		DashboardFilterContext dbFilter=(DashboardFilterContext) context.get(FacilioConstants.ContextNames.DASHBOARD_FILTER);
-		if(dbFilter!=null&&dbFilter.getDashboardUserFilters()!=null) {
+		if(dbFilter!=null) {
 			
 			List<DashboardUserFilterContext> userFilters=dbFilter.getDashboardUserFilters();
+			
 			 DashboardContext dashboard=(DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 			 
 			 DashboardTabContext dashboardTab=(DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
@@ -57,48 +58,71 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 			 }
 			 
 			//for each  filter , check which widgets have the same module as the filter.
-			 for (DashboardUserFilterContext filter : userFilters) {
-				 List<Long> widgetIdList=new ArrayList<Long>();
+			 
+				 
+				 
 				 
 				
 				 			
 				 
-				 if(widgets!=null)
+				 if(widgets!=null&&userFilters!=null)
 				 {
 					 
 					 for (DashboardWidgetContext widget : widgets) {
 					
+						 long widgetId=widget.getId();
+						 
 						 long widgetModuleId=getModuleIdFromWidget(widget);
-						 //must check if widget module is either same as filter module or one of its children
-						 //Ex , ticketCategory field has module='ticket' but report_chart corresponding to workorders has module='workorder'
+
 						 
-						 FacilioModule  filterModule=filter.getField().getModule();
-						 						
-						 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						 
-						 List<FacilioModule> filterChildModules=modBean.getChildModules(filterModule);
 						 
-						 List<Long> filterChildModuleIds=new ArrayList<Long>();
-						 
-						 if(filterChildModules!=null)
+						 for(DashboardUserFilterContext filter:userFilters)
 						 {
-							  filterChildModuleIds=filterChildModules.stream().map((FacilioModule module)-> {return module.getModuleId();}).collect(Collectors.toList());
+							 
+							 
+							 							 
+							 FacilioModule  filterModule=filter.getField().getModule();
+							 						
+							 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							 
+							 List<FacilioModule> filterChildModules=modBean.getChildModules(filterModule);
+							 
+							 List<Long> filterChildModuleIds=new ArrayList<Long>();
+							 
+							 if(filterChildModules!=null)
+							 {
+								  filterChildModuleIds=filterChildModules.stream().map((FacilioModule module)-> {return module.getModuleId();}).collect(Collectors.toList());
+							 }
+							 
+							 
+							 //must check if widget module is either same as filter module or one of its children
+							 //Ex , ticketCategory field has module='ticket' but report_chart corresponding to workorders has module='workorder'
+							 if(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId))
+							 	
+							 	{
+							 	
+								 
+								 if(!widgetUserFiltersMap.containsKey(widgetId))
+								 {
+									 widgetUserFiltersMap.put(widgetId,new ArrayList<Long>());
+								 }
+								 widgetUserFiltersMap.get(widgetId).add(filter.getId());
+								 
+							 		
+							 	}
 						 }
 						 
-						 if(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId))
-						 	
-						 	{
-						 		
-						 		widgetIdList.add(widget.getId());
-						 		
-						 	}
+						 
 					}
 				 }
 				 
 				 
-				 userFilterToWidgetListMap.put(filter.getId(),widgetIdList);
-				 dbFilter.setFilterWidgetMapping(userFilterToWidgetListMap);
-			}
+				 
+				 
+				 
+				 dbFilter.setWidgetUserFiltersMap(widgetUserFiltersMap);
+			
 			
 			 
 			
