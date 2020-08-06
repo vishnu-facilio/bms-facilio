@@ -887,7 +887,9 @@ public class ReportFactoryFields {
 						&& (field.getDataTypeEnum() == FieldType.ENUM 
 						|| field.getDataTypeEnum() == FieldType.LOOKUP
 						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 
-						|| field.getDataTypeEnum() == FieldType.BOOLEAN) 
+						|| field.getDataTypeEnum() == FieldType.BOOLEAN
+						||(field.getDataTypeEnum() == FieldType.STRING 
+						&& AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))) 
 						|| field.isMainField()
 					) {
 					
