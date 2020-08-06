@@ -10,7 +10,6 @@ import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.announcement.ChangeAnnouncementReadStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -23,13 +22,8 @@ import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCom
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.AddPeopleAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestListLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillUpdatePurchaseRequestCommand;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
@@ -49,11 +43,14 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -529,6 +526,33 @@ public class APIv3Config {
     public static Supplier<V3Config> getPeopleAnnouncement() {
         return () -> new V3Config(PeopleAnnouncementContext.class)
                 .create()
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("newsandinformation")
+    public static Supplier<V3Config> getNewsAndInformation() {
+        return () -> new V3Config(NewsAndInformationContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("neighbourhood")
+    public static Supplier<V3Config> getNeighbourhood() {
+        return () -> new V3Config(NeighbourhoodContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("dealsandoffers")
+    public static Supplier<V3Config> getDealsAndOffers() {
+        return () -> new V3Config(DealsAndOffersContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
                 .summary()
                 .build();

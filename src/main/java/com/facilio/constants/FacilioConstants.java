@@ -32,6 +32,8 @@ import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersSharingContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodSharingContext;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationSharingContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -1733,6 +1735,12 @@ public class FacilioConstants {
 			public static final String NEWS_AND_INFORMATION = "newsandinformation";
 			public static final String NEWS_AND_INFORMATION_ATTACHMENTS = "newsandinformationattachments";
 			public static final String NEWS_AND_INFORMATION_SHARING = "newsandinformationsharing";
+			public static final String NEIGHBOURHOOD = "neighbourhood";
+			public static final String NEIGHBOURHOOD_ATTACHMENTS = "neighbourhoodattachments";
+			public static final String NEIGHBOURHOOD_SHARING = "neighbourhoodsharing";
+			public static final String DEALS_AND_OFFERS = "dealsandoffers";
+			public static final String DEALS_AND_OFFERS_ATTACHMENTS = "dealsandoffersattachments";
+			public static final String DEALS_AND_OFFERS_SHARING = "dealsandofferssharing";
 		}
 		
 		// etisalat changes
@@ -2000,10 +2008,13 @@ public class FacilioConstants {
 			classMap.put(ContextNames.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(ContextNames.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
 			classMap.put(ContextNames.ANNOUNCEMENT, AnnouncementContext.class);
-
 			classMap.put(Tenant.NEWS_AND_INFORMATION, NewsAndInformationContext.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_SHARING, NewsAndInformationSharingContext.class);
+			classMap.put(Tenant.DEALS_AND_OFFERS_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Tenant.NEIGHBOURHOOD_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Tenant.DEALS_AND_OFFERS_SHARING, DealsAndOffersSharingContext.class);
+			classMap.put(Tenant.NEIGHBOURHOOD_SHARING, NeighbourhoodSharingContext.class);
 
 			return classMap;
 		}
