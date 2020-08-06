@@ -7,7 +7,6 @@ public class PeopleAnnouncementContext extends AnnouncementContext {
     private V3PeopleContext people;
     private Boolean isRead;
     private Long parentId;
-    private Boolean isCancelled;
 
     public Boolean getIsRead() {
         return isRead;
@@ -40,18 +39,5 @@ public class PeopleAnnouncementContext extends AnnouncementContext {
         this.parentId = parentId;
     }
 
-    public Boolean getCancelled() {
-        return isCancelled;
-    }
 
-    public void setCancelled(Boolean cancelled) {
-        isCancelled = cancelled;
-    }
-
-    public Boolean isCancelled() {
-        if (isCancelled != null) {
-            return isCancelled.booleanValue();
-        }
-        return false;
-    }
 }

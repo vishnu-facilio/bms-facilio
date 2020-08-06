@@ -14,13 +14,13 @@ public class BuildingTenantContacts implements CommunitySharedPeople {
     @Override
     public List<V3PeopleContext> getPeople(Long id) throws Exception{
         if(id != null){
-          List<V3TenantContext> tenants = AnnouncementAPI.getBuildingTenants(id);
-          if(CollectionUtils.isEmpty(tenants)) {
+          List<Long> tenantIds = AnnouncementAPI.getBuildingTenants(id);
+          if(CollectionUtils.isEmpty(tenantIds)) {
               return null;
           }
           List<V3PeopleContext> users = new ArrayList<>();
-          for(V3TenantContext tenant : tenants) {
-              List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenant.getId(), false, true);
+          for(Long tenantId : tenantIds) {
+              List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenantId, false, true);
               if(CollectionUtils.isNotEmpty(list)) {
                   users.addAll(list);
               }

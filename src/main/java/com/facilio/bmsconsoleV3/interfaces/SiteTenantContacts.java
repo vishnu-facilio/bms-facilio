@@ -27,12 +27,12 @@ public class SiteTenantContacts implements CommunitySharedPeople {
         }
         List<V3PeopleContext> users = new ArrayList<>();
         for(BuildingContext building : buildings) {
-            List<V3TenantContext> tenants = AnnouncementAPI.getBuildingTenants(building.getId());
-            if(CollectionUtils.isEmpty(tenants)) {
+            List<Long> tenantIds = AnnouncementAPI.getBuildingTenants(building.getId());
+            if(CollectionUtils.isEmpty(tenantIds)) {
                 continue;
             }
-            for (V3TenantContext tenant : tenants) {
-                List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenant.getId(), false, true);
+            for (Long tenantId : tenantIds) {
+                List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenantId, false, true);
                 if (CollectionUtils.isNotEmpty(list)) {
                     users.addAll(list);
                 }

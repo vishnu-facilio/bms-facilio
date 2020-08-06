@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
@@ -14,6 +15,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -35,18 +37,29 @@ import java.util.*;
 
 public class AnnouncementAPI {
 
-    public static List<V3TenantContext> getBuildingTenants(Long buildingId) throws Exception {
+    public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-        Map<String, FacilioField> tenantFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
-        SelectRecordsBuilder<V3TenantContext> builder = new SelectRecordsBuilder<V3TenantContext>()
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+        Map<String, FacilioField> tenantUnitFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        SelectRecordsBuilder<TenantUnitSpaceContext> builder = new SelectRecordsBuilder<TenantUnitSpaceContext>()
                 .module(module)
-                .beanClass(V3TenantContext.class)
+                .beanClass(TenantUnitSpaceContext.class)
                 .select(modBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getCondition(tenantFieldMap.get("building"), String.valueOf(buildingId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(tenantUnitFieldMap.get("building"), String.valueOf(buildingId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(tenantUnitFieldMap.get("isOccupied"), "true", BooleanOperators.IS))
                 ;
 
-        return builder.get();
+        List<TenantUnitSpaceContext> tenantUnits = builder.get();
+        if(CollectionUtils.isNotEmpty(tenantUnits)){
+            List<Long> tenantIds = new ArrayList<>();
+            for(TenantUnitSpaceContext tu : tenantUnits){
+                if(tu.getTenant() != null) {
+                    tenantIds.add(tu.getTenant().getId());
+                }
+            }
+            return tenantIds;
+        }
+        return null;
     }
 
     public static List<V3TenantContext> getSiteTenants(Long siteId) throws Exception {
