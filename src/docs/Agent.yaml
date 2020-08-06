@@ -308,7 +308,63 @@ paths:
                           - success
                       data:
                         $ref: '#/components/schemas/GetDeviceListByAgentId'  
-                            
+  /v2/agent/version:
+    get:
+      tags:
+        - agent
+      description: Get latest version of the agent.
+      parameters:
+        - $ref: '#/components/parameters/latestVersion'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  responseCode:
+                    type: integer
+                    enum:
+                      - 200
+                  result:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        enum:
+                          - success
+                      data:
+                        $ref: '#/components/schemas/GetLatestAgentVersion'   
+                                                                         
+  /v2/agent/upgradeAgent:
+    post:
+      tags:
+        - agent
+      description: upgrade latest version of the agent.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                agentId:
+                  description: Id of the agent to be upgrade
+                  type: integer
+                  format: int32
+                versionId: 
+                  description: latest version Id to be upgrade
+                  type: integer
+                  format: int32
+              required:
+                - agentId
+                - versionId    
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentStandardResponse'                                   
 
 components:
   securitySchemes:
@@ -393,6 +449,15 @@ components:
         enum:
           - true
           - false
+    latestVersion:
+      in: query
+      description: versions to fetch
+      name: latestVersion
+      required: true
+      schema: 
+        type: boolean
+        default: true
+              
   schemas:
     AgentStandardResponse:
       type: object
@@ -493,7 +558,7 @@ components:
       type: object
       properties:
         responseCode:
-          type: number
+          type: integer
           format: int32
         result:
           type: object
@@ -568,7 +633,7 @@ components:
       type: object
       properties:
         responseCode:
-          type: number
+          type: integer
           format: int32
         result:
           type: object
@@ -586,5 +651,32 @@ components:
                   type: string
                 orgId:
                   type: integer
-                  format: int32      
-                          
+                  format: int32 
+                       
+    GetLatestAgentVersion:    
+      type: object
+      properties:
+        responseCode:
+          type: integer
+          format: int32
+        result:
+          type: object
+          properties:
+            data:
+              type: object 
+              properties:
+                createdBy:
+                  type: string
+                id:
+                  type: integer
+                  format: int32
+                description:
+                  type: string
+                url:
+                  type: string
+                createdTime:
+                  type: integer
+                  format: int64
+                version:
+                  type: string
+                        
