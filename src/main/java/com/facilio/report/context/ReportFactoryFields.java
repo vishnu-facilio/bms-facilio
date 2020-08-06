@@ -859,7 +859,7 @@ public class ReportFactoryFields {
 					}
 				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 					addFieldInList(dimensionFieldMap, "time", field);
-				} else if(field.getDataTypeEnum() != FieldType.FILE && field.getDataTypeEnum() != FieldType.STRING){
+				} else if(field.getDataTypeEnum() != FieldType.FILE && (field.getDataTypeEnum() != FieldType.STRING || AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))){
 					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
 				} else if(field.isMainField()) {
 					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
