@@ -16,6 +16,7 @@ import javax.transaction.TransactionManager;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -528,6 +529,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
 		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
 			loginModes.add("SAML");
+			AccountSSO accountSSO = accountSSODetails.get(0);
+
+			// should handle for multiple saml
+			long orgId = accountSSO.getOrgId();
+			String domainLoginURL = SSOUtil.getDomainLoginURL(orgId);
+			result.put("SSOURL", domainLoginURL);
 		}
 
 		result.put("loginModes", loginModes);
