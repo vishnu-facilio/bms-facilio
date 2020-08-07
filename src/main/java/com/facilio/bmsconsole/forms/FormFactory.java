@@ -2260,8 +2260,10 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		form.setFields(fields);
 
 		return form;

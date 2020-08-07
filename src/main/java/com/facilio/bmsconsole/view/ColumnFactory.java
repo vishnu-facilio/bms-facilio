@@ -198,6 +198,13 @@ public class ColumnFactory {
 		columnMap.put("quote-default", getDefaultQuotationColumns());
 		columnMap.put("quoteterms-default", getDefaultQuotationTermsColumns());
 
+		// Community Features
+		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
+		columnMap.put("neighbourhood-default", getDefaultNeighbourhoodColumns());
+		columnMap.put("dealsandoffers-default", getDefaultDealsAndOffersColumns());
+		columnMap.put("newsandinformation-default", getDefaultNewsAndInformationColumns());
+
+
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -206,7 +213,6 @@ public class ColumnFactory {
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
 
-		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 
 
 		return columnMap;
@@ -1503,4 +1509,35 @@ public class ColumnFactory {
 		columns.add(new ViewField("expiryDate", "Expiry Date"));
 		return columns;
 	}
+
+	private static List<ViewField> getDefaultDealsAndOffersColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("expiryDate", "Expiry Date"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultNeighbourhoodColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("location", "Location"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultNewsAndInformationColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("description", "Description"));
+
+		return columns;
+	}
+
 }
