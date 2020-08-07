@@ -400,6 +400,7 @@ public class ActionAPI {
 							case CHANGE_STATE:
 								setDefaultTemplate(action, rule);
 								break;
+							case MAIL_TO_CUSTOM_MODULE_RECORD:
 							case MAIL_TO_CREATEWO:
 								setFormTemplate(action, SourceType.EMAIL_REQUEST);
 								break;

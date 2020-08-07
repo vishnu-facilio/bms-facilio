@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
@@ -1571,6 +1572,29 @@ public enum ActionType {
 		public boolean isTemplateNeeded()
 		{
 			return false;
+		}
+	} ,
+	MAIL_TO_CUSTOM_MODULE_RECORD(33) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			long formId = (long) obj.get("formId");
+			if (formId > -1) {
+				FacilioForm form = FormsAPI.getFormFromDB(formId);
+				String moduleName = form.getModule().getName();
+				Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+				obj.put("sourceType", 2);
+				ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
+				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+				FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(moduleName);
+				FacilioContext createContext = createRecordChain.getContext();
+				recordMap.put(moduleName, Collections.singletonList(record));
+				Constants.setRecordMap(createContext, recordMap);
+				Constants.setModuleName(createContext, moduleName);
+				FacilioModule module = ChainUtil.getModule(moduleName);
+				Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+				createContext.put(Constants.BEAN_CLASS, beanClass);
+				createRecordChain.execute();
+			}
 		}
 	}
 	
