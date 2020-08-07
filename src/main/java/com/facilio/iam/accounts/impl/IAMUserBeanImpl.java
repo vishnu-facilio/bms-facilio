@@ -533,7 +533,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 			// should handle for multiple saml
 			long orgId = accountSSO.getOrgId();
-			String domainLoginURL = SSOUtil.getDomainLoginURL(orgId);
+			String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
 			result.put("SSOURL", domainLoginURL);
 		}
 
