@@ -1,5 +1,7 @@
 package com.facilio.workflows.functions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			double value = (double) objects[0];
+			Double value = (double) objects[0];
 			return Math.abs(value);
 		};
 		
@@ -113,6 +115,28 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 			}
 		}
 	},
+	SET_PRECISION(8, "setPrecision") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			double val = Double.parseDouble(objects[0].toString());
+			int precision = Integer.parseInt(objects[1].toString());
+			
+			Double truncatedDouble = BigDecimal.valueOf(val)
+				    .setScale(precision, RoundingMode.HALF_UP)
+				    .doubleValue();
+			
+			return truncatedDouble;
+		}
+		
+		private void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length < 2) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	}
 	;
 	
 	private Integer value;

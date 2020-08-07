@@ -43,6 +43,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -155,7 +156,8 @@ public class FormsAPI {
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
 		
 		long modid = form.getModuleId();
-		form.setModule(modBean.getModule(modid));
+		FacilioModule module = modBean.getModule(modid);
+		form.setModule(module);
 		fieldSelectBuilder
 				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(form.getId()), NumberOperators.EQUALS))
 				.orderBy("SEQUENCE_NUMBER, SPAN");
@@ -164,15 +166,9 @@ public class FormsAPI {
 		List<FormField> fields = new ArrayList<>();
 		for (Map<String, Object> p: fieldprops) {
 			FormField f = FieldUtil.getAsBeanFromMap(p, FormField.class);
+			FacilioField field = null;
 			if (f.getFieldId() != -1) {
-				FacilioField field =  modBean.getField(f.getFieldId());
-				f.setField(field);
-				if (field instanceof LookupField) {
-					FacilioModule lookupMod = ((LookupField) field).getLookupModule();
-					if (lookupMod != null) {
-						f.setLookupModuleName(lookupMod.getName());
-					}
-				}
+				field =  modBean.getField(f.getFieldId());
 				if (f.getName() == null) {
 					f.setName(field.getName());
 				}
@@ -211,12 +207,31 @@ public class FormsAPI {
 			else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
 				f.setName("utilityMeters");
 			}
+			
+			handleFormField(f, module.getName(), field);
 			fields.add(f);
 			if (f.getSectionId() != -1) {
 				sectionMap.get(f.getSectionId()).addField(f);
 			}
 		}
 		form.setFields(fields);
+	}
+	
+	private static void handleFormField(FormField formField, String moduleName, FacilioField field ) throws Exception {
+		if (formField.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ATTACHMENTS);
+			formField.setLookupModuleName(subModules.get(0).getName());
+		}
+		else if (field != null) {
+			formField.setField(field);
+			if (field instanceof LookupField) {
+				FacilioModule lookupMod = ((LookupField) field).getLookupModule();
+				if (lookupMod != null) {
+					formField.setLookupModuleName(lookupMod.getName());
+				}
+			}
+		}
 	}
 	
 	private static void setFormSections(FacilioForm form) throws Exception {
@@ -932,12 +947,9 @@ public class FormsAPI {
 			FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
 			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
 			if (field != null) {
-				mutatedField.setField(field);
 				mutatedField.setFieldId(field.getFieldId());
-				if (field instanceof LookupField) {
-					mutatedField.setLookupModuleName(((LookupField)field).getLookupModule().getName());
-				}
 			}
+			handleFormField(mutatedField, moduleName, field);
 			fields.set(i, mutatedField);
 		}
 	}
