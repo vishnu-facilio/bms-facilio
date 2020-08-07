@@ -365,6 +365,10 @@ public class FormFactory {
 		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
 		List<FacilioForm> serviceFormsList = Arrays.asList(getServiceForm());
 		List<FacilioForm> announcementFormsList = Arrays.asList(getAnnouncementForm());
+		List<FacilioForm> newsAndInformationFormsList = Arrays.asList(getNewsAndInformationForm());
+		List<FacilioForm> neighbourhoodFormsList = Arrays.asList(getNeighbourhoodForm());
+		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm());
+
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> workPermitTypeForm = Arrays.asList(getWorkPermitTypeForm());
@@ -408,6 +412,9 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
 				.put(FacilioConstants.ContextNames.SERVICE, getFormMap(serviceFormsList))
 				.put(FacilioConstants.ContextNames.ANNOUNCEMENT, getFormMap(announcementFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, getFormMap(neighbourhoodFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, getFormMap(newsAndInformationFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, getFormMap(dealsAndOffersFormsList))
 				.build();
 	}
 	
@@ -2218,6 +2225,66 @@ public class FormFactory {
 		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 
 		return fields;
+	}
+
+	private static FacilioForm getNewsAndInformationForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("News and Information");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("newsandinformationattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("newsandinformationsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+
+		form.setFields(fields);
+
+
+		return form;
+	}
+
+	private static FacilioForm getNeighbourhoodForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Neighbourhood");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
+	private static FacilioForm getDealsAndOffersForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Deals and Offers");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		form.setFields(fields);
+
+		return form;
 	}
 
 }

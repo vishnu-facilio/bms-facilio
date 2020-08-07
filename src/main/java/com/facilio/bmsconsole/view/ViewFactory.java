@@ -817,6 +817,21 @@ public class ViewFactory {
 		views.put("all", getAllPeopleAnnouncementView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllNewsAndInformationView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllDealsAndOffersView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllNeighbourhoodView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, views);
+
 		return viewsMap;
 	}
 
@@ -7407,6 +7422,56 @@ public class ViewFactory {
 
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
+
+		return allView;
+	}
+
+	private static FacilioView getAllDealsAndOffersView() {
+
+		FacilioModule module = ModuleFactory.getDealsAndOffersModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Deals and Offers");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return allView;
+	}
+
+	private static FacilioView getAllNeighbourhoodView() {
+
+		FacilioModule module = ModuleFactory.getNeighbourhoodModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Neighbourhood");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return allView;
+	}
+
+	private static FacilioView getAllNewsAndInformationView() {
+
+		FacilioModule module = ModuleFactory.getNewsAndInformationModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All News and Information");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}

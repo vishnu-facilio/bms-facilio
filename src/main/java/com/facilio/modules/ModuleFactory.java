@@ -130,6 +130,9 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.TENANT_UNIT_SPACE, getTenantUnitSpaceModule());
 		moduleMap.put(ContextNames.EMPLOYEE, getEmployeeModule());
 		moduleMap.put(ContextNames.QUOTE, getQuotationModule());
+		moduleMap.put(ContextNames.Tenant.NEWS_AND_INFORMATION, getNewsAndInformationModule());
+		moduleMap.put(ContextNames.Tenant.DEALS_AND_OFFERS, getDealsAndOffersModule());
+		moduleMap.put(ContextNames.Tenant.NEIGHBOURHOOD, getNeighbourhoodModule());
 
 		return moduleMap;
 	}
@@ -3938,4 +3941,30 @@ public class ModuleFactory {
 		return module;
 		
 	}
+
+	public static FacilioModule getNewsAndInformationModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Tenant.NEWS_AND_INFORMATION);
+		module.setDisplayName("News and Information");
+		module.setTableName("NewsAndInformation");
+		return module;
+	}
+	public static FacilioModule getDealsAndOffersModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Tenant.DEALS_AND_OFFERS);
+		module.setDisplayName("Deals and Offers");
+		module.setTableName("DealsAndOffers");
+		return module;
+	}
+	public static FacilioModule getNeighbourhoodModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Tenant.NEIGHBOURHOOD);
+		module.setDisplayName("Neighbourhood");
+		module.setTableName("Neighbourhood");
+		return module;
+	}
+
 }
