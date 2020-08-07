@@ -6,10 +6,11 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
 import java.util.List;
 
-public class V3VendorContext extends ModuleBaseWithCustomFields {
+public class V3VendorContext extends V3Context {
     private static final long serialVersionUID = 1L;
     private String name, email, phone, website, description;
     private Long ttime, modifiedTime;
