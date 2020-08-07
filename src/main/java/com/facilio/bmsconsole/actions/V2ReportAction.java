@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -1328,10 +1329,33 @@ public class V2ReportAction extends FacilioAction {
 		fields =  dataPoints.toJSONString();
 	}
 	
-	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
-			AlarmOccurrenceContext alarm) throws Exception {
+	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource, AlarmOccurrenceContext alarm) throws Exception {
 		JSONArray dataPoints = new JSONArray();
 		ResourceContext currentResource = resource;
+		
+		if(readingruleContext.getRuleMetrics() != null && !readingruleContext.getRuleMetrics().isEmpty()) {
+			
+			for(ReadingRuleMetricContext ruleMetric : readingruleContext.getRuleMetrics()) {
+				long resourceId = resource.getId();
+				if(ruleMetric.getResourceId() >0) {
+					resourceId = ruleMetric.getResourceId();
+				}
+				JSONObject dataPoint = new JSONObject();
+				
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", ruleMetric.getFieldId());
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resourceId));
+				
+				dataPoints.add(dataPoint);
+			}
+			
+			return dataPoints;
+		}
+		
 		if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
 			
 			Set readingMap = new HashSet();
