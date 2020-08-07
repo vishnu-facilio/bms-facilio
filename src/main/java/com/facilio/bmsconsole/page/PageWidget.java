@@ -281,8 +281,13 @@ public class PageWidget {
 		
 
 		
-		CONNNECTED_APP("connectedApp")
- 		;
+		CONNNECTED_APP("connectedApp"),
+		ANNOUNCEMENT_PRIMARY_DETAILS_WIDGET("announcementPrimaryDetailsWidget"),
+		ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET("announcementSecondaryDetailsWidget"),
+		ANNOUNCEMENT_ATTACHMENT("announcementAttachment"),
+		ANNOUNCEMENT_PUBLISH_TO("announcementPublishTo")
+
+		;
 		
 		private String name;
 		

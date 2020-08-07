@@ -4,6 +4,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -113,7 +114,10 @@ public class PageFactory {
 				return TenantUnitSpacePageFactory.getTenantUnitSpacePage((TenantUnitSpaceContext) record, module);
 			case ContextNames.QUOTE:
 				return QuotationPageFactory.getQuotationPage((QuotationContext) record, module);
-				
+			case ContextNames.ANNOUNCEMENT:
+				return AnnouncementPageFactory.getAnnouncementPage((AnnouncementContext) record, module);
+
+
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
