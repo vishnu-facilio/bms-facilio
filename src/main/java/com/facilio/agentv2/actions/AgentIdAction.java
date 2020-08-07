@@ -50,6 +50,16 @@ public class AgentIdAction extends AgentActionV2 {
 		this.name = name;
 	}
 	
+	private String querySearch;
+	
+	public String getQuerySearch() {
+		return querySearch;
+	}
+
+	public void setQuerySearch(String querySearch) {
+		this.querySearch = querySearch;
+	}
+
 	public Integer controllerType;
 	
 	public Integer getControllerType() {
@@ -97,7 +107,7 @@ public class AgentIdAction extends AgentActionV2 {
 			List<Map<String, Object>> data = new ArrayList<>();
 			FacilioContext context = new FacilioContext();
 			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.SEARCH_KEY, getName());
+			context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
 			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
 			context.put(AgentConstants.TYPE, type);
 			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());

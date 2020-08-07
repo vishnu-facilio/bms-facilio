@@ -258,6 +258,7 @@ paths:
         - $ref: '#/components/parameters/configured'
         - $ref: '#/components/parameters/controllerType'
         - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/querySearch'
       responses:
         '200':
           description: Result of api
@@ -457,6 +458,13 @@ components:
       schema: 
         type: boolean
         default: true
+    querySearch:
+      in: query
+      description: search device or controller 
+      name: name
+      required: false
+      schema: 
+        type: string
               
   schemas:
     AgentStandardResponse:
