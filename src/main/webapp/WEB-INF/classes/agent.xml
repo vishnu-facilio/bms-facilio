@@ -336,6 +336,9 @@
     </package>
 
     <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
+        <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
+        </action>
+        
         <action name="getlist" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceOrControllersData"> <!--DONEDONE-->
         </action>
         
@@ -348,6 +351,8 @@
         <!--<action name="agetDeviceCount" class="com.facilio.agentv2.actions.AgentIdAction" method="countAgentDevices">
         </action>
 -->
+        <action name="count" class="com.facilio.agentv2.actions.AgentIdAction" method="devicesCount">
+        </action>
 
         <!--
                 <action name="countType" class="com.facilio.agentv2.actions.AgentDeviceAction" method="countTypeDevice">
