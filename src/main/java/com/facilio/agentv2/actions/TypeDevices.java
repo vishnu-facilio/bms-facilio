@@ -11,6 +11,8 @@ import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -40,7 +42,18 @@ public class TypeDevices extends DeviceIdActions {
      * gets points for a device of a particular type.
      * @return
      */
-    public String listDeviceTypePoints(){
+    
+    private String querySearch;
+    
+    public String getQuerySearch() {
+		return querySearch;
+	}
+
+	public void setQuerySearch(String querySearch) {
+		this.querySearch = querySearch;
+	}
+
+	public String listDeviceTypePoints(){
         try{
             if(checkValue(getDeviceId()) && (getControllerType()>0)){
                 List<Point> points = new ArrayList<>();
@@ -69,11 +82,15 @@ public class TypeDevices extends DeviceIdActions {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.FIELD_ID), "NULL", CommonOperators.IS_NOT_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.POINT_TYPE), String.valueOf(getControllerType()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(getDeviceId()), NumberOperators.EQUALS));
+            
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .select(new HashSet<>())
                     .table(ModuleFactory.getPointModule().getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
+            if (StringUtils.isNotEmpty(querySearch)) {
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+    		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
             LOGGER.info(" count is "+result.get(0));
@@ -99,6 +116,9 @@ public class TypeDevices extends DeviceIdActions {
                     .table(ModuleFactory.getPointModule().getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
+            if (StringUtils.isNotEmpty(querySearch)) {
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+    		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
             LOGGER.info(" count is "+result.get(0));
@@ -124,6 +144,9 @@ public class TypeDevices extends DeviceIdActions {
                     .table(ModuleFactory.getPointModule().getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
+            if (StringUtils.isNotEmpty(querySearch)) {
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+    		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
             LOGGER.info(" count is "+result.get(0));
@@ -149,6 +172,9 @@ public class TypeDevices extends DeviceIdActions {
                     .table(ModuleFactory.getPointModule().getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
+            if (StringUtils.isNotEmpty(querySearch)) {
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+    		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
             LOGGER.info(" count is "+result.get(0));

@@ -156,6 +156,16 @@ public class AgentAction extends AgentActionV2 {
     }
 
     private Integer controllerType;
+    
+    private String querySearch;
+    
+    public String getQuerySearch() {
+		return querySearch;
+	}
+
+	public void setQuerySearch(String querySearch) {
+		this.querySearch = querySearch;
+	}
 
     public String listPoints() {
         JSONArray pointData = new JSONArray();
@@ -346,8 +356,8 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
-            if(StringUtils.isNotEmpty(getName())) {
-            	getPointRequest.setSerarchPointName(getName());
+            if(StringUtils.isNotEmpty(getQuerySearch())) {
+            	getPointRequest.setSerarchPointName(getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -373,8 +383,8 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
-            if(StringUtils.isNotEmpty(getName())) {
-            	getPointRequest.setSerarchPointName(getName());
+            if(StringUtils.isNotEmpty(getQuerySearch())) {
+            	getPointRequest.setSerarchPointName(getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -400,8 +410,8 @@ public class AgentAction extends AgentActionV2 {
             } else if ((controllerId != null) && (controllerId > 0)) {
                 getPointRequest.withControllerId(controllerId);
             }
-            if(StringUtils.isNotEmpty(getName())) {
-            	getPointRequest.setSerarchPointName(getName());
+            if(StringUtils.isNotEmpty(getQuerySearch())) {
+            	getPointRequest.setSerarchPointName(getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
@@ -428,8 +438,8 @@ public class AgentAction extends AgentActionV2 {
                 getPointRequest.withControllerId(controllerId);
             }
             
-            if(StringUtils.isNotEmpty(getName())) {
-            	getPointRequest.setSerarchPointName(getName());
+            if(StringUtils.isNotEmpty(getQuerySearch())) {
+            	getPointRequest.setSerarchPointName(getQuerySearch());
             }
             getPointRequest.pagination(constructListContext(new FacilioContext()));
             List<Map<String, Object>> points = getPointRequest.getPointsData();
