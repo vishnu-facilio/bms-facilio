@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.V3ContactsContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
@@ -53,10 +54,17 @@ public class AddNewVisitorWhileVisitorLogCommandV3 extends FacilioCommand {
                 }
                 else {
                     if(vL.getHost() == null) {
-                        V3ContactsContext tenantContact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-                        if(tenantContact != null){
-                            vL.setHost(tenantContact);
-                        }
+//                        V3ContactsContext tenantContact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+//                        if(tenantContact != null){
+//                            vL.setHost(tenantContact);
+//                        }
+                    	long tenantPeopleId = V3PeopleAPI.getPeopleIdForUser(vL.getRequestedBy().getId());
+                    	if(tenantPeopleId != -1l) {
+                    		V3PeopleContext tenantPeople = V3PeopleAPI.getPeopleById(tenantPeopleId);
+                    		if(tenantPeople != null) {
+                    			vL.setHost(tenantPeople);
+                    		}  		
+                    	}
                     }
                 }
                 if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {

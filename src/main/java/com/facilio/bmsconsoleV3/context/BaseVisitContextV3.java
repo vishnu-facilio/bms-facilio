@@ -14,7 +14,7 @@ public class BaseVisitContextV3 extends V3Context {
 	private static final long serialVersionUID = 1L;
 
 	private VisitorTypeContext visitorType;
-    private V3ContactsContext host;
+    private V3PeopleContext host;
     private V3VisitorContext visitor;
     private Integer purposeOfVisit;
     private String purposeOfVisitEnum;
@@ -51,12 +51,12 @@ public class BaseVisitContextV3 extends V3Context {
 	public void setVisitorType(VisitorTypeContext visitorType) {
 		this.visitorType = visitorType;
 	}
-	 
-	public V3ContactsContext getHost() {
+
+	public V3PeopleContext getHost() {
 		return host;
 	}
 
-	public void setHost(V3ContactsContext host) {
+	public void setHost(V3PeopleContext host) {
 		this.host = host;
 	}
 

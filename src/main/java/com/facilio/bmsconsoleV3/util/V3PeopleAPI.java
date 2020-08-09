@@ -165,6 +165,24 @@ public class V3PeopleAPI {
         V3PeopleContext records = builder.fetchFirst();
         return records;
     }
+    
+    public static V3PeopleContext getPeopleById(Long id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .beanClass(V3PeopleContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
+
+        if(id != null && id != -1l) {
+        	V3PeopleContext record = builder.fetchFirst();
+            return record;
+        }
+
+        return null;
+    }
 
     public static int unMarkPrimaryContact(V3PeopleContext person, long parentId) throws Exception{
 
