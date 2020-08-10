@@ -75,7 +75,7 @@ public class AggregationJob extends FacilioJob {
             // continue next cycle
             lastSync = nextSync;
         }
-        updateLastSyncTime(aggregationMeta.getId(), lastSync);
+        AggregationAPI.updateLastSyncTime(aggregationMeta.getId(), lastSync);
     }
 
     public static void calculateAggregation(FacilioModule module, FacilioField parentIdField, FacilioField ttimeField,
@@ -157,15 +157,5 @@ public class AggregationJob extends FacilioJob {
 
             insertBuilder.save();
         }
-    }
-
-    private void updateLastSyncTime(Long id, Long lastSync) throws SQLException {
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getAggregationMetaModule().getTableName())
-                .fields(Collections.singletonList(FieldFactory.getField("lastSync", "LAST_SYNC", FieldType.DATE_TIME)))
-                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getAggregationMetaModule()));
-        Map<String, Object> map = new HashMap<>();
-        map.put("lastSync", lastSync);
-        builder.update(map);
     }
 }

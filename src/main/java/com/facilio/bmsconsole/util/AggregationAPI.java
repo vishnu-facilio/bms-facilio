@@ -5,23 +5,24 @@ import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
 import com.facilio.bmsconsole.context.AggregationMetaContext;
 import com.facilio.bmsconsole.jobs.AggregationJob;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AggregationAPI {
+
+    private static final long MAX_DIFFERENCE = 1000 * 60 * 60 * 24 * 30;
 
     public static AggregationMetaContext getAggregationMeta(Long id, boolean withColumn) throws Exception {
         List<AggregationMetaContext> metaList = getAggregationMetaContext(Collections.singletonList(id), withColumn);
@@ -169,6 +170,16 @@ public class AggregationAPI {
         }
     }
 
+    public static void updateLastSyncTime(Long id, Long lastSync) throws SQLException {
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getAggregationMetaModule().getTableName())
+                .fields(Collections.singletonList(FieldFactory.getField("lastSync", "LAST_SYNC", FieldType.DATE_TIME)))
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getAggregationMetaModule()));
+        Map<String, Object> map = new HashMap<>();
+        map.put("lastSync", lastSync);
+        builder.update(map);
+    }
+
     public static void aggregateData(FacilioModule module, List<Long> parentIds, Long startTime, Long endTime) throws Exception {
         if (module == null) {
             throw new IllegalArgumentException("Invalid module");
@@ -178,17 +189,30 @@ public class AggregationAPI {
             throw new IllegalArgumentException("Invalid time");
         }
 
+        if (startTime > endTime) {
+            throw new IllegalArgumentException("Start time cannot be greater than end time");
+        }
+
+        long diff = (endTime - startTime);
         List<AggregationMetaContext> aggregationMetaList = getAggregationMetaOfModule(module);
         if (CollectionUtils.isNotEmpty(aggregationMetaList)) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            for (AggregationMetaContext aggregationMeta : aggregationMetaList) {
-                FacilioField parentIdField = modBean.getField("parentId", module.getName());
-                FacilioField ttimeField = modBean.getField("ttime", module.getName());
-                AggregationMetaContext.FrequencyType frequencyType = aggregationMeta.getFrequencyTypeEnum();
-                startTime = frequencyType.getAggregatedTime(startTime);
-                endTime = frequencyType.getNextSyncTime(
-                        frequencyType.getAggregatedTime(endTime));
-                AggregationJob.calculateAggregation(module, parentIdField, ttimeField, aggregationMeta, startTime, endTime, parentIds);
+            if (diff < MAX_DIFFERENCE) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                for (AggregationMetaContext aggregationMeta : aggregationMetaList) {
+                    FacilioField parentIdField = modBean.getField("parentId", module.getName());
+                    FacilioField ttimeField = modBean.getField("ttime", module.getName());
+                    AggregationMetaContext.FrequencyType frequencyType = aggregationMeta.getFrequencyTypeEnum();
+                    startTime = frequencyType.getAggregatedTime(startTime);
+                    endTime = frequencyType.getNextSyncTime(
+                            frequencyType.getAggregatedTime(endTime));
+                    AggregationJob.calculateAggregation(module, parentIdField, ttimeField, aggregationMeta, startTime, endTime, parentIds);
+                }
+            }
+            else {
+                for (AggregationMetaContext aggregationMeta : aggregationMetaList) {
+                    aggregationMeta.setLastSync(startTime);
+                    updateLastSyncTime(aggregationMeta.getId(), startTime);
+                }
             }
         }
     }
