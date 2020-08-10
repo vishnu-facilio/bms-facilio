@@ -192,7 +192,7 @@ public class FieldFactory {
             newAlarmsFieldsInclude.add("subject");
             newAlarmsFieldsInclude.add("acknowledged");
             newAlarmsFieldsInclude.add("acknowledgedBy");
-            newAlarmsFieldsInclude.add("Severity");
+            newAlarmsFieldsInclude.add("severity");
             newAlarmsFieldsInclude.add("acknowledgedTime");
             newAlarmsFieldsInclude.add("lastClearedTime");
             newAlarmsFieldsInclude.add("lastCreatedTime");
@@ -200,13 +200,14 @@ public class FieldFactory {
             newAlarmsFieldsInclude.add("resource");
             newAlarmsFieldsInclude.add("rule");
             newAlarmsFieldsInclude.add("readingAlarmCategory");
+            newAlarmsFieldsInclude.add("faultType");
         }
 
         public static List<String> newOpAlarmsFieldsInclude = new ArrayList<String>();
 
         static {
             newOpAlarmsFieldsInclude.add("subject");
-            newOpAlarmsFieldsInclude.add("Severity");
+            newOpAlarmsFieldsInclude.add("severity");
             newOpAlarmsFieldsInclude.add("lastClearedTime");
             newOpAlarmsFieldsInclude.add("lastCreatedTime");
             newOpAlarmsFieldsInclude.add("lastOccurredTime");
