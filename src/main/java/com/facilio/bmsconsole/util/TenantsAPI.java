@@ -1226,4 +1226,18 @@ public class TenantsAPI {
 			}
 		}
 	}
+
+	public static List<TenantUnitSpaceContext> getTenantUnitsForTenant(long tenantId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_UNIT_SPACE);
+		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		SelectRecordsBuilder<TenantUnitSpaceContext> builder = new SelectRecordsBuilder<TenantUnitSpaceContext>()
+				.module(module)
+				.beanClass(TenantUnitSpaceContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), PickListOperators.IS))
+				;
+		return builder.get();
+
+	}
 }

@@ -540,7 +540,7 @@ public class ApplicationApi {
 
     private static void computeValueForScopingField(ScopingConfigContext sc, Map<String, Object> computedValues) throws Exception {
         if (sc != null) {
-            if (StringUtils.isNotEmpty(sc.getValue())) {
+            if (sc.getValue() != null) {
                 return;
             }
             if (StringUtils.isEmpty(sc.getFieldValueGenerator())) {

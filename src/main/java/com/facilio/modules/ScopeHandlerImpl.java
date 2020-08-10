@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -180,20 +181,41 @@ public class ScopeHandlerImpl extends ScopeHandler {
 					 Map.Entry<String, Object> entry = itr.next(); 
 		             String fieldName = entry.getKey();
 		             ScopingConfigContext obj = (ScopingConfigContext) entry.getValue();
-		             FacilioField field = RecordAPI.getField(fieldName, module.getName());
-		             if(field != null) {
-			             fields.add(field);
-			             if(!isInsert) {
-			            	 if(criteria == null) {
-			            		 criteria = new Criteria();
-			            	 }
-			            	 String value = obj.getValue();
-			            	  if(StringUtils.isNotEmpty(value)) {
-					             Condition condition = CriteriaAPI.getCondition(field, value, obj.getOperator());
-					             criteria.addAndCondition(condition);
-			            	 }
-			             }
-		             }
+		             if(StringUtils.isNotEmpty(fieldName)) {
+		             	FacilioField field = null;
+					 	if(fieldName.contains(".")) {
+							String[] moduleField = fieldName.split("\\.");
+							if (moduleField.length > 1) {
+								field = RecordAPI.getField(moduleField[1], moduleField[0]);
+							}
+						}
+		             	else {
+		             		field = RecordAPI.getField(fieldName, module.getName());
+		             		if(field != null) {
+								fields.add(field);
+							}
+						}
+						 if (field != null) {
+							 if (!isInsert) {
+								 if (criteria == null) {
+									 criteria = new Criteria();
+								 }
+								 Object value = obj.getValue();
+								 Condition condition = null;
+								 if (value != null) {
+								 	if(value instanceof  String) {
+								 	  condition = CriteriaAPI.getCondition(field, String.valueOf(value) , obj.getOperator());
+									}
+								 	else {
+								 		condition = CriteriaAPI.getCondition(field, (Criteria)value , obj.getOperator());
+									}
+								 	if(condition != null) {
+										criteria.addAndCondition(condition);
+									}
+								 }
+							 }
+						 }
+					 }
 		        }
 			}
     	}

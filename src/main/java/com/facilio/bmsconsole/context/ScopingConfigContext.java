@@ -48,11 +48,11 @@ public class ScopingConfigContext implements Serializable{
 	}
 	
 	
-	private String value;
-	public String getValue() {
+	private Object value;
+	public Object getValue() {
 		return value;
 	}
-	public void setValue(String value) {
+	public void setValue(Object value) {
 		this.value = value;
 	}
 	
