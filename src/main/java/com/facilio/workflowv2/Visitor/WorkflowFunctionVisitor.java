@@ -22,6 +22,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
+import com.facilio.util.ArithmeticUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldType;
@@ -811,9 +812,9 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.MULT:
-                return new Value(left.asDouble() * right.asDouble());
+                return new Value(ArithmeticUtil.multiply(left.asString(), right.asString()));
             case WorkflowV2Parser.DIV:
-                return new Value(left.asDouble() / right.asDouble());
+                return new Value(ArithmeticUtil.divide(left.asString(), right.asString()));
             case WorkflowV2Parser.MOD:
                 return new Value(left.asDouble() % right.asDouble());
             default:
@@ -835,10 +836,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
                 return left.isNumber() && right.isNumber() ?
-                        new Value(left.asDouble() + right.asDouble()) :
+                        new Value(ArithmeticUtil.add(left.asString(), right.asString())) :
                         new Value(left.asString() + right.asString());
             case WorkflowV2Parser.MINUS:
-                return new Value(left.asDouble() - right.asDouble());
+                return new Value(ArithmeticUtil.subtract(left.asString(), right.asString()));
             default:
                 throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
         }
