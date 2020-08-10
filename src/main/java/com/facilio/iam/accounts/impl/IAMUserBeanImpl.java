@@ -524,8 +524,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<Long> orgIds = new ArrayList<>();
 		userForUsername.forEach(i -> orgIds.add((long) i.get("orgId")));
 
+		boolean hasPassword = hasPassword(userName);
+		if (orgIds.size() == 1) {
+			Organization org = IAMOrgUtil.getOrg(orgIds.get(0));
+			result.put("logo_url", org.getLogoUrl());
+		}
+
 		List<String> loginModes = new ArrayList<>();
-		loginModes.add("password");
+		if (hasPassword) {
+			loginModes.add("password");
+		}
+
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
 		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
 			loginModes.add("SAML");
@@ -1561,6 +1570,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 	
+	}
+
+	private boolean hasPassword(String userName) throws Exception {
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		FacilioField password = new FacilioField();
+		password.setName("password");
+		password.setDataType(FieldType.BOOLEAN);
+		password.setColumnName("PASSWORD IS NOT NULL");
+		password.setModule(IAMAccountConstants.getAccountsUserModule());
+		fields.add(password);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_Users")
+				.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", userName, StringOperators.IS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		return (Boolean) props.get(0).get("password");
 	}
 
 	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
