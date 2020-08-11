@@ -34,7 +34,7 @@ public class GetViewListCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
  		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = null;
+		FacilioModule moduleObj = modBean.getModule(moduleName);
 		
 		List<FacilioView> dbViews = null;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -46,7 +46,6 @@ public class GetViewListCommand extends FacilioCommand {
 					dbViews = ViewAPI.getAllViews(modBean.getModule(ContextNames.NEW_READING_ALARM).getModuleId());
 				}
 				else {
-					moduleObj = modBean.getModule(moduleName);
 					dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 				}
 			}
@@ -145,16 +144,24 @@ public class GetViewListCommand extends FacilioCommand {
 				else {
 					groupViews = new ArrayList<>();
 					Map<String, Object> groupDetails = new HashMap<>();
-					groupDetails.put("name", "systemviews");
-					groupDetails.put("displayName", "System Views");
-					groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
-					groupViews.add(groupDetails);
-					if (!customViews.isEmpty() ) {
-						groupDetails = new HashMap<>();
-						groupDetails.put("name", "customviews");
-						groupDetails.put("displayName", "Custom Views");
-						groupDetails.put("views", customViews);
+					if (moduleObj.isCustom()) {
+						groupDetails.put("name", "allViews");
+						groupDetails.put("displayName", "All Views");
+						groupDetails.put("views", allViews);
 						groupViews.add(groupDetails);
+					}
+					else {
+						groupDetails.put("name", "systemviews");
+						groupDetails.put("displayName", "System Views");
+						groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
+						groupViews.add(groupDetails);
+						if (!customViews.isEmpty() ) {
+							groupDetails = new HashMap<>();
+							groupDetails.put("name", "customviews");
+							groupDetails.put("displayName", "Custom Views");
+							groupDetails.put("views", customViews);
+							groupViews.add(groupDetails);
+						}
 					}
 				}
 				
