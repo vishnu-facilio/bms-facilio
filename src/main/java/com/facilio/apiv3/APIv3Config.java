@@ -48,9 +48,7 @@ import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -552,6 +550,24 @@ public class APIv3Config {
     @Module("dealsandoffers")
     public static Supplier<V3Config> getDealsAndOffers() {
         return () -> new V3Config(DealsAndOffersContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("contactdirectory")
+    public static Supplier<V3Config> getContactDirectory() {
+        return () -> new V3Config(ContactDirectoryContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("admindocuments")
+    public static Supplier<V3Config> getAdminDocuments() {
+        return () -> new V3Config(AdminDocumentsContext.class)
                 .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
                 .summary()

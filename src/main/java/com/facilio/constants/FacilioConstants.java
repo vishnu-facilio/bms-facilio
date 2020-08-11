@@ -32,10 +32,7 @@ import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersSharingContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodSharingContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext;
-import com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationSharingContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1735,12 +1732,25 @@ public class FacilioConstants {
 			public static final String NEWS_AND_INFORMATION = "newsandinformation";
 			public static final String NEWS_AND_INFORMATION_ATTACHMENTS = "newsandinformationattachments";
 			public static final String NEWS_AND_INFORMATION_SHARING = "newsandinformationsharing";
+
 			public static final String NEIGHBOURHOOD = "neighbourhood";
 			public static final String NEIGHBOURHOOD_ATTACHMENTS = "neighbourhoodattachments";
+			public static final String NEIGHBOURHOOD_NOTES = "neighbourhoodnotes";
 			public static final String NEIGHBOURHOOD_SHARING = "neighbourhoodsharing";
+
 			public static final String DEALS_AND_OFFERS = "dealsandoffers";
 			public static final String DEALS_AND_OFFERS_ATTACHMENTS = "dealsandoffersattachments";
+			public static final String DEALS_AND_OFFERS_NOTES = "dealsandoffersnotes";
 			public static final String DEALS_AND_OFFERS_SHARING = "dealsandofferssharing";
+
+			public static final String CONTACT_DIRECTORY = "contactdirectory";
+			public static final String CONTACT_DIRECTORY_ATTACHMENTS = "contactdirectoryattachments";
+			public static final String CONTACT_DIRECTORY_NOTES = "contactdirectorynotes";
+			public static final String CONTACT_DIRECTORY_SHARING = "contactdirectorysharing";
+
+			public static final String ADMIN_DOCUMENTS = "admindocuments";
+			public static final String ADMIN_DOCUMENTS_NOTES = "admindocumentnotes";
+			public static final String ADMIN_DOCUMENTS_SHARING = "admindocumentsharing";
 		}
 		
 		// etisalat changes
@@ -2013,8 +2023,13 @@ public class FacilioConstants {
 			classMap.put(Tenant.NEWS_AND_INFORMATION_SHARING, NewsAndInformationSharingContext.class);
 			classMap.put(Tenant.DEALS_AND_OFFERS_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.NEIGHBOURHOOD_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Tenant.CONTACT_DIRECTORY_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.DEALS_AND_OFFERS_SHARING, DealsAndOffersSharingContext.class);
 			classMap.put(Tenant.NEIGHBOURHOOD_SHARING, NeighbourhoodSharingContext.class);
+			classMap.put(Tenant.ADMIN_DOCUMENTS, AdminDocumentsContext.class);
+			classMap.put(Tenant.ADMIN_DOCUMENTS_SHARING, AdminDocumentsSharingContext.class);
+			classMap.put(Tenant.CONTACT_DIRECTORY, ContactDirectoryContext.class);
+			classMap.put(Tenant.CONTACT_DIRECTORY_SHARING, ContactDirectorySharingContext.class);
 
 			return classMap;
 		}
