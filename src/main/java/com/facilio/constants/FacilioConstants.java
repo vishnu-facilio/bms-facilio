@@ -1717,6 +1717,10 @@ public class FacilioConstants {
 		public static final String ANNOUNCEMENTS = "announcements";
 		public static final String ANNOUNCEMENT_ACTION = "announcementaction";
 
+		public static final String NEWS_AND_INFORMATION = "newsandinformation";
+		public static final String NEIGHBOURHOOD = "neighbourhood";
+		public static final String DEALS_AND_OFFERS = "dealsandoffers";
+
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
