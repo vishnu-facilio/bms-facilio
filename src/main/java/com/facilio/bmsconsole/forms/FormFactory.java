@@ -368,6 +368,8 @@ public class FormFactory {
 		List<FacilioForm> newsAndInformationFormsList = Arrays.asList(getNewsAndInformationForm());
 		List<FacilioForm> neighbourhoodFormsList = Arrays.asList(getNeighbourhoodForm());
 		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm());
+		List<FacilioForm> contactDirectoryFormsList = Arrays.asList(getContactDirectoryForm());
+		List<FacilioForm> adminDocumentsFormsList = Arrays.asList(getAdminDocumentsForm());
 
 
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
@@ -415,6 +417,9 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, getFormMap(neighbourhoodFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, getFormMap(newsAndInformationFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, getFormMap(dealsAndOffersFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY, getFormMap(contactDirectoryFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS, getFormMap(adminDocumentsFormsList))
+
 				.build();
 	}
 	
@@ -2284,6 +2289,45 @@ public class FormFactory {
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
+	private static FacilioForm getContactDirectoryForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Contact Directory");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("people", FieldDisplayType.LOOKUP_SIMPLE, "People", Required.REQUIRED, "people",1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("contactdirectorysharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
+	private static FacilioForm getAdminDocumentsForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Admin Documents");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS +"_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("file", FieldDisplayType.FILE, "File", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("admindocumentsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
 		form.setFields(fields);
 
 		return form;

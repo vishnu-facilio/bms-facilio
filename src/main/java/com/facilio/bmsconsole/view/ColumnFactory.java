@@ -203,6 +203,8 @@ public class ColumnFactory {
 		columnMap.put("neighbourhood-default", getDefaultNeighbourhoodColumns());
 		columnMap.put("dealsandoffers-default", getDefaultDealsAndOffersColumns());
 		columnMap.put("newsandinformation-default", getDefaultNewsAndInformationColumns());
+		columnMap.put("contactdirectory-default", getDefaultContactDirectoryColumns());
+		columnMap.put("admindocuments-default", getDefaultAdminDocumentsColumns());
 
 
 		// Default report columns
@@ -1536,6 +1538,27 @@ public class ColumnFactory {
 
 		columns.add(new ViewField("title", "title"));
 		columns.add(new ViewField("description", "Description"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultContactDirectoryColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("people", "people"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("category", "Category"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultAdminDocumentsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("file", "File"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("category", "Category"));
 
 		return columns;
 	}

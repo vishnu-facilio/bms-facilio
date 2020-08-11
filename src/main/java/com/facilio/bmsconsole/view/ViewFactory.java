@@ -832,6 +832,16 @@ public class ViewFactory {
 		views.put("all", getAllNeighbourhoodView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllContactDirectoryView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAdminDocumentsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS, views);
+
 		return viewsMap;
 	}
 
@@ -7469,6 +7479,38 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All News and Information");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllContactDirectoryView() {
+
+		FacilioModule module = ModuleFactory.getContactDirectoryModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Contact Directory");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllAdminDocumentsView() {
+
+		FacilioModule module = ModuleFactory.getAdminDocumentsModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Admin Documents");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));

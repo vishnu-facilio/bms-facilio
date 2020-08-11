@@ -3966,5 +3966,21 @@ public class ModuleFactory {
 		module.setTableName("Neighbourhood");
 		return module;
 	}
+	public static FacilioModule getContactDirectoryModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Tenant.CONTACT_DIRECTORY);
+		module.setDisplayName("Contact Directory");
+		module.setTableName("ContactDirectory");
+		return module;
+	}
+	public static FacilioModule getAdminDocumentsModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.Tenant.ADMIN_DOCUMENTS);
+		module.setDisplayName("Admin Documents");
+		module.setTableName("AdminDocuments");
+		return module;
+	}
 
 }
