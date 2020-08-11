@@ -55,7 +55,7 @@ public class VendorPageFactory extends PageFactory{
 			cards2.addToLayoutParams(tab1Sec1, 18, 4);
 			tab1Sec1.addWidget(cards2);
 			
-			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY);
+			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY, "supplierElectrycity");
 			electriycity.addToLayoutParams(tab1Sec2, 24, 10);
 			tab1Sec2.addWidget(electriycity);
 			

@@ -23,7 +23,7 @@ public class BillUtilityPageFactory extends PageFactory {
 		cards.addToLayoutParams(tab1Sec1, 24, 4);
 		tab1Sec1.addWidget(cards);
 		
-		PageWidget electriycity= new PageWidget(PageWidget.WidgetType.UTILITY_CONNECTIONS);
+		PageWidget electriycity= new PageWidget(PageWidget.WidgetType.UTILITY_CONNECTIONS, "utilityConnections");
 		electriycity.addToLayoutParams(tab1Sec1, 24, 10);
 		tab1Sec1.addWidget(electriycity);
 		
