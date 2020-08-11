@@ -48,24 +48,24 @@ public class VendorPageFactory extends PageFactory{
 
 		
 			PageWidget cards= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS);
-			cards.addToLayoutParams(tab1Sec1, 10, 4);
+			cards.addToLayoutParams(tab1Sec1, 5, 4);
 			tab1Sec1.addWidget(cards);
 			
 			PageWidget cards2= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS2);
-			cards2.addToLayoutParams(tab1Sec1, 14, 4);
+			cards2.addToLayoutParams(tab1Sec1, 19, 4);
 			tab1Sec1.addWidget(cards2);
 			
 			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY);
-			electriycity.addToLayoutParams(tab1Sec2, 24, 4);
+			electriycity.addToLayoutParams(tab1Sec2, 24, 10);
 			tab1Sec2.addWidget(electriycity);
 			
-			PageWidget water= new PageWidget(PageWidget.WidgetType.SUPPLIER_WATER);
-			water.addToLayoutParams(tab1Sec2, 24, 4);
-			tab1Sec2.addWidget(water);
-			
-			PageWidget seawage= new PageWidget(PageWidget.WidgetType.SUPPLIER_SEAWAGE);
-			seawage.addToLayoutParams(tab1Sec2, 24, 4);
-			tab1Sec2.addWidget(seawage);
+//			PageWidget water= new PageWidget(PageWidget.WidgetType.SUPPLIER_WATER);
+//			water.addToLayoutParams(tab1Sec2, 24, 4);
+//			tab1Sec2.addWidget(water);
+//			
+//			PageWidget seawage= new PageWidget(PageWidget.WidgetType.SUPPLIER_SEAWAGE);
+//			seawage.addToLayoutParams(tab1Sec2, 24, 4);
+//			tab1Sec2.addWidget(seawage);
 			
 			PageWidget details= new PageWidget(PageWidget.WidgetType.SUPPLIER_DETAILS);
 			details.addToLayoutParams(tab1Sec2, 24, 4);
