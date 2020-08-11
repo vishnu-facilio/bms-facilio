@@ -213,13 +213,15 @@ public class WattsenseClient
 
     public List<MiscPoint> getPoints(Device device) throws IOException, ParseException {
         List<MiscPoint> pointsList = new ArrayList<>();
-        JSONArray points = getProperties(device.getName());
+        String deviceName = device.getName();
+        JSONArray points = getProperties(deviceName);
         for (Object p : points) {
             JSONObject point = (JSONObject) p;
             MiscPoint miscPoint = new MiscPoint(device.getAgentId());
             miscPoint.setName(point.get("property").toString());
             miscPoint.setDisplayName(point.get("name").toString());
             miscPoint.setDeviceId(device.getId());
+            miscPoint.setDeviceName(deviceName);
             pointsList.add(miscPoint);
         }
         return pointsList;
