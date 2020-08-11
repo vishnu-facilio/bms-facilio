@@ -1,6 +1,7 @@
 package com.facilio.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class ArithmeticUtil {
 	
@@ -31,7 +32,7 @@ public class ArithmeticUtil {
 	public static double divide(String a, String b) {
 		
 		BigDecimal a1 = new BigDecimal(a);
-		a1 = a1.divide(new BigDecimal(b));
+		a1 = a1.divide(new BigDecimal(b),10,RoundingMode.HALF_UP);
 		
 		return a1.doubleValue();
 	}

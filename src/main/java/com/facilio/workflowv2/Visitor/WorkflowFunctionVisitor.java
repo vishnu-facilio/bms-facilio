@@ -814,7 +814,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             case WorkflowV2Parser.MULT:
                 return new Value(ArithmeticUtil.multiply(left.asString(), right.asString()));
             case WorkflowV2Parser.DIV:
-            	return new Value(left.asDouble() / right.asDouble());
+                return new Value(ArithmeticUtil.divide(left.asString(), right.asString()));
             case WorkflowV2Parser.MOD:
                 return new Value(left.asDouble() % right.asDouble());
             default:
