@@ -17,11 +17,8 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
-import com.facilio.modules.BmsAggregateOperators.StringAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -63,7 +60,7 @@ public class FieldDeviceApi {
         //try multiple insert if bulk fails
     }
 
-    public static void addFieldDevice(Device device) throws Exception {
+    public static long addFieldDevice(Device device) throws Exception {
         FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
         if (device.getCreatedTime() < 100) {
             device.setCreatedTime(System.currentTimeMillis());
@@ -78,6 +75,7 @@ public class FieldDeviceApi {
             LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
 
         }
+        return deviceId;
     }
 
     public static Device getDevice(long agentId, String identifier) throws Exception {

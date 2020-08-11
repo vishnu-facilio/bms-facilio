@@ -455,6 +455,12 @@
         <action name="addIntegration" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="addAltairIntegration">
         </action>
     </package>
+    <package name="wattsenseIntegration" namespace="/api/v2/agent/wattsense" extends="agent">
+        <action name="getDevices" class="com.facilio.agentv2.actions.WattsenseAction" method="getDevices">
+        </action>
+        <action name="discoverPoints" class="com.facilio.agentv2.actions.WattsenseAction" method="discoverPoints">
+        </action>
+    </package>
     <package name="inboundConnectionConf" namespace="/api/v2/agent/inboundConnections" extends="agent">
         <action name="add" class="com.facilio.agentv2.actions.InboundConnectionsAction" method="add">
         </action>

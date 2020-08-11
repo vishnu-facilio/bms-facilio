@@ -1,26 +1,40 @@
 package com.facilio.dataFetchers;
 
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 public abstract class DataFetcher {
  private static final Logger LOGGER = LogManager.getLogger(Wateruos.class.getName());
+    protected FacilioAgent agent;
 
+    public void setAgent(FacilioAgent agent) {
+        this.agent = agent;
+    }
+
+    public FacilioAgent getAgent() {
+        return this.agent;
+    }
  abstract Object getData() throws Exception;
- abstract JSONObject preProcess(Object o);
+
+    abstract List<JSONObject> preProcess(Object o);
  public void process(){
-  JSONObject data;
   try {
-   data = (JSONObject) getData();
-   LOGGER.info("Data : "+data);
-   JSONObject timeSeriesData= preProcess(data);
+      Object data = getData();
+      LOGGER.info("Data : " + data.toString());
+      List<JSONObject> timeSeriesData = preProcess(data);
    LOGGER.info("TimeSeriesData :" + timeSeriesData);
-   TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
+      for (JSONObject item : timeSeriesData) {
+          TimeSeriesAPI.processPayLoad(0, item, null);
+      }
   }catch(Exception ex){
    LOGGER.error("Error while getting/Processing Data from endpoint");
    LOGGER.error(ex.getMessage());
+      ex.printStackTrace();
   }
  }
 }

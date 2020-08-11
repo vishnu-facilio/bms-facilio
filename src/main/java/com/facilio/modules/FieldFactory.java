@@ -635,12 +635,12 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewControllerModule();
         fields.add(getIdField(module));
-        fields.add(getNameField(module));
+        //fields.add(getNameField(module));
         fields.add(getSiteIdField(module));
         fields.add(getNewAgentIdField(module));
         fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
         fields.add(getWritableField(module));
-        fields.add(getField(AgentConstants.ACTIVE, "ACTIVE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.ACTIVE, "ACTIVE", module, FieldType.BOOLEAN));
         fields.add(getControllerTypeField(module));
         fields.add(getField(AgentConstants.AVAILABLE_POINTS, "AVAILABLE_POINTS", FieldType.NUMBER));
         fields.add(getField(AgentConstants.CONTROLLER_PROPS, "CONTROLLER_PROPS", module, FieldType.STRING));
