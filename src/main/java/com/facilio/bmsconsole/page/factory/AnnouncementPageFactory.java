@@ -16,10 +16,10 @@ public class AnnouncementPageFactory extends PageFactory {
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PRIMARY_DETAILS_WIDGET);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
         tab1Sec1.addWidget(previewWidget);
 
-        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
+        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
         secDetailsWidget.setTitle("Announcement Details");
         tab1Sec1.addWidget(secDetailsWidget);
@@ -30,7 +30,7 @@ public class AnnouncementPageFactory extends PageFactory {
         publishToWidget.setTitle("Published To");
         tab1Sec1.addWidget(publishToWidget);
 
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
         attachmentWidget.setTitle("Attachments");
         tab1Sec1.addWidget(attachmentWidget);
