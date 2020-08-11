@@ -238,8 +238,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, orgId, identifier));
 	}
 
-	public static Map<String, Object> getLoginModes(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getLoginModes(userName));
+	public static Map<String, Object> getLoginModes(String userName, String domain) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getLoginModes(userName, domain));
 	}
 	
 	public static boolean disableUser(long userId, long orgId) throws Exception {

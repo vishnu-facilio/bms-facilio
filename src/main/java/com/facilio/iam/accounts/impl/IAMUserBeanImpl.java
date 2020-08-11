@@ -502,12 +502,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getLoginModes(String userName) throws Exception {
+	public Map<String, Object> getLoginModes(String userName, String domain) throws Exception {
 		if (StringUtils.isEmpty(userName)) {
 			throw new IllegalArgumentException("user name is missing");
 		}
 
-		final List<Map<String, Object>> userForUsername = getUserData(userName, -1L, null);
+		long orgId = -1L;
+		Organization appOrg = null;
+		if (domain != null) {
+			appOrg = IAMOrgUtil.getOrg(domain);
+			orgId = appOrg.getOrgId();
+		}
+
+		final List<Map<String, Object>> userForUsername = getUserData(userName, orgId, null);
 		final long userPresent = 1;
 		final long userNotPresent = 2;
 		final Map<String, Object> result = new HashMap<>();
@@ -526,7 +533,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		boolean hasPassword = hasPassword(userName);
 		if (orgIds.size() == 1) {
-			Organization org = IAMOrgUtil.getOrg(orgIds.get(0));
+			Organization org = appOrg;
+			if (appOrg == null) {
+				org = IAMOrgUtil.getOrg(orgIds.get(0));
+			}
+
 			result.put("logo_url", org.getLogoUrl());
 		}
 
@@ -541,7 +552,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			AccountSSO accountSSO = accountSSODetails.get(0);
 
 			// should handle for multiple saml
-			long orgId = accountSSO.getOrgId();
+			orgId = accountSSO.getOrgId();
 			String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
 			result.put("SSOURL", domainLoginURL);
 		}
