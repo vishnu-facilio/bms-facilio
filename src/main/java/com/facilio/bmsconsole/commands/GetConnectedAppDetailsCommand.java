@@ -14,7 +14,10 @@ import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -66,10 +69,15 @@ public class GetConnectedAppDetailsCommand extends FacilioCommand{
 				connectedAppContext.setConnectedAppWidgetsList(connectedAppWidgetsList);
 			}
 			
+			Criteria visibilityCriteria = new Criteria();
+			visibilityCriteria.addOrCondition(CriteriaAPI.getCondition("VISIBILITY", "visibility", String.valueOf(true), BooleanOperators.IS));
+			visibilityCriteria.addOrCondition(CriteriaAPI.getCondition("VISIBILITY", "visibility", "", CommonOperators.IS_EMPTY));
+			
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getVariablesFields())
 					.table(ModuleFactory.getVariablesModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("CONNECTEDAPP_ID", "connectedAppId", String.valueOf(connectedAppId), NumberOperators.EQUALS))
+					.andCriteria(visibilityCriteria);
 					;
 			props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
