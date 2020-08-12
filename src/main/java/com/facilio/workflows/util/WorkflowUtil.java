@@ -77,6 +77,7 @@ import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
 import com.facilio.workflows.functions.FacilioChatBotFunctions;
+import com.facilio.workflows.functions.FacilioConnectedAppFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 import com.facilio.workflows.functions.FacilioConsumptionFunctions;
 import com.facilio.workflows.functions.FacilioCostFunctions;
@@ -2120,6 +2121,9 @@ public class WorkflowUtil {
 				case SCHEDULE:
 					facilioWorkflowFunction = FacilioScheduleFunctions.getFacilioScheduleFunctions(functionName);
 					break;
+				case CONNECTED_APP:
+					facilioWorkflowFunction = FacilioConnectedAppFunctions.getFacilioConnectedAppFunction(functionName);
+					break;
 					
 			}
 		}
@@ -2215,6 +2219,9 @@ public class WorkflowUtil {
 					break;
 				case SCHEDULE:
 					facilioWorkflowFunction = new ArrayList<>( FacilioScheduleFunctions.getAllFunctions().values());
+					break;
+				case CONNECTED_APP:
+					facilioWorkflowFunction = new ArrayList<>( FacilioConnectedAppFunctions.getAllFunctions().values());
 					break;
 			}
 		}

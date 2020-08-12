@@ -229,6 +229,22 @@ public class ConnectedAppAPI {
 		return null;
 	}
 	
+	public static ConnectedAppContext getConnectedApp(String connectedAppLinkName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppFields())
+				.table(ModuleFactory.getConnectedAppsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			ConnectedAppContext connectedApp = FieldUtil.getAsBeanFromMap(props.get(0), ConnectedAppContext.class);
+			return connectedApp;
+		}
+		return null;
+	}
+	
 	public static VariableContext getVariable(String connectedAppLinkName, String variableName) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

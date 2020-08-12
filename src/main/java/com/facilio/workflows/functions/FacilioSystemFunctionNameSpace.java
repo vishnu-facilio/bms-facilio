@@ -35,6 +35,7 @@ public enum FacilioSystemFunctionNameSpace {
 	HTTP(27,"http"),
 	WORKFLOW_READINGS(28,"workflowReadings"),
 	SCHEDULE(29,"schedule"),
+	CONNECTED_APP(30,"connectedApp"),
 	;
 	
 	
