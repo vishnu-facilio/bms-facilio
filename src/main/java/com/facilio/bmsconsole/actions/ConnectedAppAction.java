@@ -522,6 +522,16 @@ public class ConnectedAppAction extends FacilioAction {
 	public void setWidgetId(long widgetId) {
 		this.widgetId = widgetId;
 	}
+	
+	private String widgetLinkName;
+
+	public String getWidgetLinkName() {
+		return widgetLinkName;
+	}
+
+	public void setWidgetLinkName(String widgetLinkName) {
+		this.widgetLinkName = widgetLinkName;
+	}
 
 	private Long recordId;
 
@@ -546,6 +556,7 @@ public class ConnectedAppAction extends FacilioAction {
 
 		FacilioChain viewConnectedAppWidgetChain = ReadOnlyChainFactory.getViewConnectedAppWidgetChain();
 		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.ID, getWidgetId());
+		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.WIDGET_LINK_NAME, getWidgetLinkName());
 		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
 		viewConnectedAppWidgetChain.getContext().put(FacilioConstants.ContextNames.SANDBOX_MODE, isSandboxMode());
 

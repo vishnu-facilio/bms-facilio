@@ -6,6 +6,7 @@ public class VariableContext {
 	private long connectedAppId;
 	private String name;
 	private String value;
+	private Boolean visibility;
 
 	public long getId() {
 		return id;
@@ -79,4 +80,11 @@ public class VariableContext {
 		this.sysModifiedTime = sysModifiedTime;
 	}
 
+	public Boolean getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(Boolean visibility) {
+		this.visibility = visibility;
+	}
 }

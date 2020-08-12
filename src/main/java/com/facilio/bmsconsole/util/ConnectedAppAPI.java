@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.ConnectedAppConnectorContext;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.ConnectedAppSAMLContext;
 import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -77,6 +78,25 @@ public class ConnectedAppAPI {
 				.innerJoin("ConnectedApps")
 				.on("ConnectedApp_Widgets.CONNECTEDAPP_ID=ConnectedApps.ID")
 				.andCondition(CriteriaAPI.getIdCondition(widgetId, (ModuleFactory.getConnectedAppWidgetsModule())))
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			ConnectedAppWidgetContext connectedAppWidget = FieldUtil.getAsBeanFromMap(props.get(0), ConnectedAppWidgetContext.class);
+			return connectedAppWidget;
+		}
+		return null;
+	}
+	
+	public static ConnectedAppWidgetContext getConnectedAppWidget(String connectedAppLinkName, String widgetLinkName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getConnectedAppWidgetsFields())
+				.table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+				.innerJoin("ConnectedApps")
+				.on("ConnectedApp_Widgets.CONNECTEDAPP_ID=ConnectedApps.ID")
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("ConnectedApp_Widgets.LINK_NAME", "linkName", widgetLinkName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -205,6 +225,24 @@ public class ConnectedAppAPI {
 			ConnectedAppConnectorContext connectedAppConnector = FieldUtil.getAsBeanFromMap(props, ConnectedAppConnectorContext.class);
 			connectedAppConnector.setConnection(ConnectionUtil.getConnection(connectedAppConnector.getConnectorId()));
 			return connectedAppConnector;
+		}
+		return null;
+	}
+	
+	public static VariableContext getVariable(String connectedAppLinkName, String variableName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVariablesFields())
+				.table(ModuleFactory.getVariablesModule().getTableName())
+				.innerJoin("ConnectedApps")
+				.on("Variables.CONNECTEDAPP_ID=ConnectedApps.ID")
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Variables.NAME","name", variableName, StringOperators.IS));
+		
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (props != null && !props.isEmpty()) {
+			VariableContext variable = FieldUtil.getAsBeanFromMap(props, VariableContext.class);
+			return variable;
 		}
 		return null;
 	}

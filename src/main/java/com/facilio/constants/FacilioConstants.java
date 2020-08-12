@@ -558,6 +558,7 @@ public class FacilioConstants {
 
 		
 		public static final String WIDGET_ID = "widgetId";
+		public static final String WIDGET_LINK_NAME = "widgetLinkName";
 		public static final String WIDGET_STATIC_KEY = "widgetStaticKey";
 		public static final String WIDGET_BASESPACE_ID = "widgetbasespaceId";
 		public static final String WIDGET_WORKFLOW = "widgetWorkflow";

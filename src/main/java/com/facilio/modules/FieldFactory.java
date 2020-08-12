@@ -3563,11 +3563,12 @@ public class FieldFactory {
 	public static List<FacilioField> getVariablesFields() {
 		FacilioModule module = ModuleFactory.getVariablesModule();
 
-        List<FacilioField> fields = getSystemPointFields(module);
+		List<FacilioField> fields = getSystemPointFields(module);
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("value", "VALUE", module, FieldType.STRING));
         fields.add(getField("connectedAppId", "CONNECTEDAPP_ID", module, FieldType.NUMBER));
+        fields.add(getField("visibility", "VISIBILITY", module, FieldType.BOOLEAN));
 
         return fields;
 	}
