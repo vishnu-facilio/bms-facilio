@@ -39,6 +39,10 @@ public class BillInvoicePageFactory extends PageFactory {
         billDetails.addToLayoutParams(tab1Sec1, 24, 24);
         tab1Sec1.addWidget(billDetails);
         
+        PageWidget card2= new PageWidget(PageWidget.WidgetType.INVOICE_DETAILS_2);
+		card2.addToLayoutParams(tab1Sec1, 24, 24);
+		tab1Sec1.addWidget(card2);
+        
     	Tab tab2 = page.new Tab("Attachments");
 		page.addTab(tab2);
 		

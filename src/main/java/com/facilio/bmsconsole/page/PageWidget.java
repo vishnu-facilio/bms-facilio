@@ -254,6 +254,7 @@ public class PageWidget {
 		BILL_LIST("billList"),
 		BILL_ALERT_DETAILS("billAlertDetails"),
 		INVOICE_DETAILS("invoiceDetails"),
+		INVOICE_DETAILS_2("invoiceDetails2"),
 		SUPPLIER_ACTIVE_PAYMENTS("supplierActivePayment"),
 		SUPPLIER_TRANSACTIONS("supplierTransaction"),
 		ARREARS("arrears"),
@@ -271,7 +272,6 @@ public class PageWidget {
 		TARIFF_INFORMATION("tariffInformation"),
 		
 		UTILITY_DETAILS("utilityDetails"),
-		UTILITY_DETAILS_2("utilityDetails2"),
 		UTILITY_CONNECTIONS("utilityConnections"),
 		UTILITY_ACTIVITY_PAYMENT("utilityActivePayments"),
 		UTILITY_CANCEL_PAYMENT("utilityCancelPayments"),
