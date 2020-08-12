@@ -3,12 +3,15 @@ package com.facilio.elasticsearch.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanCacheImpl;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.services.FacilioHttpUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ESUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger(ModuleBeanCacheImpl.class.getName());
 
     public static class ESException extends Exception {
         public ESException(String message) {
@@ -63,6 +68,7 @@ public class ESUtil {
             System.out.println("Response: " + s);
         } catch (ESException ex) {
             // not configured
+            LOGGER.debug(ex);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -106,7 +112,9 @@ public class ESUtil {
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, bodyContent.toString());
             System.out.println("Response: " + s);
         }
-        catch (ESException ex) {}
+        catch (ESException ex) {
+            LOGGER.debug(ex);
+        }
         catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -126,7 +134,9 @@ public class ESUtil {
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, query.toString());
             System.out.println("Response: " + s);
         }
-        catch (ESException ex) {}
+        catch (ESException ex) {
+            LOGGER.debug(ex);
+        }
         catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -155,7 +165,9 @@ public class ESUtil {
             String s = FacilioHttpUtils.doHttpPost(url, getHeaders(), null, queryBody.toString());
             return getResultFromSearch(s, collapseField);
         }
-        catch (ESException ex) {}
+        catch (ESException ex) {
+            LOGGER.debug(ex);
+        }
         catch (IOException ex) {
             ex.printStackTrace();
         }
