@@ -24,7 +24,7 @@ public class WattsenseDataFetcher extends DataFetcher {
         if (client != null) {
             return client.getData();
         } else {
-            //error
+            LOGGER.info("client is null");
             return null;
         }
     }

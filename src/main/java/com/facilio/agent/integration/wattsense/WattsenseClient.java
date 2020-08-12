@@ -165,9 +165,9 @@ public class WattsenseClient
 
             // Can either base64 encode or put it right into hex
             hash = Base64.getEncoder().encodeToString(macData);
-            LOGGER.info("Hash : " + hash);
+            LOGGER.info("Message : " + message + "  : Hash : " + hash);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-
+            LOGGER.info("Error while calculating hash");
         }
         return hash;
     }
@@ -181,18 +181,22 @@ public class WattsenseClient
     }
 
     private JSONArray getProperties(String deviceId) throws IOException, ParseException {
+        LOGGER.info("Getting Properties for device " + deviceId);
         HttpResponse res = get(BASE_URL, GET_DEVICES_PATH + "/" + deviceId + "/properties", System.currentTimeMillis());
         return getArrayFromResponse(res);
     }
 
     public Map<String, JSONArray> getData() throws Exception {
+        LOGGER.info("Getting data");
         Map<String, JSONArray> controllerVsValues = new HashMap<>();
         FacilioAgent agent = getAgent();
         if (agent != null && agent.getId() > 0) {
             List<Map<String, Object>> devices = FieldDeviceApi.getDevicesForAgent(agent.getId());
+            LOGGER.info("devices size :" + devices.size());
             for (Map<String, Object> device : devices) {
                 String deviceName = device.get("name").toString();
                 JSONArray jsonArray = getProperties(deviceName);
+                LOGGER.info("Properties : " + jsonArray);
                 controllerVsValues.put(deviceName, jsonArray);
             }
         }
