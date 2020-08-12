@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 
 public abstract class DataFetcher {
- private static final Logger LOGGER = LogManager.getLogger(Wateruos.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DataFetcher.class.getName());
     protected FacilioAgent agent;
 
     public void setAgent(FacilioAgent agent) {
@@ -19,22 +19,25 @@ public abstract class DataFetcher {
     public FacilioAgent getAgent() {
         return this.agent;
     }
- abstract Object getData() throws Exception;
+
+    abstract Object getData() throws Exception;
 
     abstract List<JSONObject> preProcess(Object o);
- public void process(){
-  try {
-      Object data = getData();
-      LOGGER.info("Data : " + data.toString());
-      List<JSONObject> timeSeriesData = preProcess(data);
-   LOGGER.info("TimeSeriesData :" + timeSeriesData);
-      for (JSONObject item : timeSeriesData) {
-          TimeSeriesAPI.processPayLoad(0, item, null);
-      }
-  }catch(Exception ex){
-   LOGGER.error("Error while getting/Processing Data from endpoint");
-   LOGGER.error(ex.getMessage());
-      ex.printStackTrace();
-  }
- }
+
+    public void process() {
+        try {
+            Object data = getData();
+            LOGGER.info("Data : " + data.toString());
+            List<JSONObject> timeSeriesData = preProcess(data);
+            LOGGER.info("TimeSeriesData :" + timeSeriesData);
+            for (JSONObject item : timeSeriesData) {
+                TimeSeriesAPI.processPayLoad(0, item, null);
+            }
+        } catch (Exception ex) {
+            LOGGER.info("Error while getting/Processing Data from endpoint");
+            LOGGER.info(ex.getMessage());
+            LOGGER.info(ex.getStackTrace());
+            ex.printStackTrace();
+        }
+    }
 }
