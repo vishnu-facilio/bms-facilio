@@ -34,10 +34,7 @@ public abstract class DataFetcher {
                 TimeSeriesAPI.processPayLoad(0, item, null);
             }
         } catch (Exception ex) {
-            LOGGER.info("Error while getting/Processing Data from endpoint");
-            LOGGER.info(ex.getMessage());
-            LOGGER.info(ex.getStackTrace());
-            ex.printStackTrace();
+            LOGGER.info("Error while getting/Processing Data from endpoint", ex);
         }
     }
 }

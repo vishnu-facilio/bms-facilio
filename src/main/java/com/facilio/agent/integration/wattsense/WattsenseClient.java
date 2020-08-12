@@ -45,7 +45,7 @@ import java.security.NoSuchAlgorithmException;
 public class WattsenseClient
 {
     private static final Logger LOGGER = LogManager.getLogger(WattsenseClient.class.getName());
-    
+
 
     private String clientId;
     private String certificateStoreId;
@@ -152,6 +152,7 @@ public class WattsenseClient
         Mac sha512Hmac;
         String hash = null;
         try {
+            LOGGER.info("calculating hash for secret key" + client.getSecretKey());
             final byte[] byteKey = client.getSecretKey().getBytes(StandardCharsets.UTF_8);
             sha512Hmac = Mac.getInstance(HMAC_SHA512);
             SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
@@ -165,25 +166,42 @@ public class WattsenseClient
 
             // Can either base64 encode or put it right into hex
             hash = Base64.getEncoder().encodeToString(macData);
-            LOGGER.info("Message : " + message + "  : Hash : " + hash);
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.info("Error while calculating hash");
+            LOGGER.info("Message : " + message);
+        } catch (Exception e) {
+            LOGGER.info("Error while calculating hash", e);
         }
         return hash;
     }
 
     private HttpResponse get(String base,String path,long timestamp) throws IOException {
         HttpGet get = new HttpGet(base+path);
-        get.addHeader("X-API-Auth",getApiKey()+":"+WattsenseClient.getHmac(GET,path,null,
-                timestamp,this));
+        String hash = WattsenseClient.getHmac(GET, path, null,
+                timestamp, this);
+        LOGGER.info("x-api-auth : " + getApiKey() + ":" + hash);
+        get.addHeader("X-API-Auth", getApiKey() + ":" + hash);
         get.addHeader("X-API-Timestamp",""+timestamp);
-        return httpclient.execute(get);
+        HttpResponse res = null;
+        try {
+            res = httpclient.execute(get);
+        } catch (Exception ex) {
+            LOGGER.info("Error while sending request ", ex);
+        }
+        return res;
     }
 
     private JSONArray getProperties(String deviceId) throws IOException, ParseException {
         LOGGER.info("Getting Properties for device " + deviceId);
         HttpResponse res = get(BASE_URL, GET_DEVICES_PATH + "/" + deviceId + "/properties", System.currentTimeMillis());
-        return getArrayFromResponse(res);
+        JSONArray jsonArray = new JSONArray();
+        if (res != null) {
+            LOGGER.info("Response : " + res);
+            try {
+                jsonArray = getArrayFromResponse(res);
+            } catch (Exception ex) {
+                LOGGER.info("Error while converting response to JSON", ex);
+            }
+        }
+        return jsonArray;
     }
 
     public Map<String, JSONArray> getData() throws Exception {
@@ -211,7 +229,6 @@ public class WattsenseClient
             return null;
         }
         JSONParser parser = new JSONParser();
-        LOGGER.info("Response : " + response);
         return (JSONArray) parser.parse(WattsenseUtil.getResponseString(response));
     }
 
