@@ -271,6 +271,7 @@ public class PageWidget {
 		TARIFF_INFORMATION("tariffInformation"),
 		
 		UTILITY_DETAILS("utilityDetails"),
+		UTILITY_DETAILS_2("utilityDetails2"),
 		UTILITY_CONNECTIONS("utilityConnections"),
 		UTILITY_ACTIVITY_PAYMENT("utilityActivePayments"),
 		UTILITY_CANCEL_PAYMENT("utilityCancelPayments"),
