@@ -15,15 +15,19 @@ public class DataFetcherJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
-        LOGGER.info("Calling Wattsense data fetcher");
+        try {
+            LOGGER.info("Calling Wattsense data fetcher");
         /*DataFetcher wateruos = new Wateruos();
         wateruos.process();*/
-        WattsenseClient client = new WattsenseClient();
-        client.setApiKey("XdwqbEv0aOgrVXBQZPD7Lxp5A89GP68wR064gW3eq4lz6JkKMwdYRmbyo2N1JR4Y");
-        client.setSecretKey("YPreE3g20A8wX9dBVNYpL1QzvMW5QzM18QKZtoWleDbR6OKJa4yoxm7qr5PZkmRM");
-        DataFetcher wattsenseDataFetcher = new WattsenseDataFetcher(client);
-        wattsenseDataFetcher.setAgent(client.getAgent());
-        wattsenseDataFetcher.process();
+            WattsenseClient client = new WattsenseClient();
+            client.setApiKey("XdwqbEv0aOgrVXBQZPD7Lxp5A89GP68wR064gW3eq4lz6JkKMwdYRmbyo2N1JR4Y");
+            client.setSecretKey("YPreE3g20A8wX9dBVNYpL1QzvMW5QzM18QKZtoWleDbR6OKJa4yoxm7qr5PZkmRM");
+            DataFetcher wattsenseDataFetcher = new WattsenseDataFetcher(client);
+            wattsenseDataFetcher.setAgent(client.getAgent());
+            wattsenseDataFetcher.process();
+        } catch (Exception e) {
+            LOGGER.info("Error while fetching data", e);
+        }
 
     }
 }
