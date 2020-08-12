@@ -30,7 +30,7 @@ public class AnnouncementPageFactory extends PageFactory {
         publishToWidget.setTitle("Published To");
         tab1Sec1.addWidget(publishToWidget);
 
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_ATTACHMENT);
         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
         attachmentWidget.setTitle("Attachments");
         tab1Sec1.addWidget(attachmentWidget);
