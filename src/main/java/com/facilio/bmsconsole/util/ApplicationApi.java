@@ -547,7 +547,7 @@ public class ApplicationApi {
                 throw new IllegalArgumentException("Scoping field --> " + sc.getFieldName() + " must either have avlue or value generator associated");
             }
             if(computedValues.containsKey(sc.getFieldValueGenerator())){
-                sc.setValue((String) computedValues.get(sc.getFieldValueGenerator()));
+                sc.setValue(computedValues.get(sc.getFieldValueGenerator()));
             }
             else {
                 Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
