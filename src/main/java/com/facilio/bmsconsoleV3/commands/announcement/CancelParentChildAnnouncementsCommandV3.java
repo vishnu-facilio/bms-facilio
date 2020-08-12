@@ -27,12 +27,12 @@ public class CancelParentChildAnnouncementsCommandV3 extends FacilioCommand {
         List<AnnouncementContext> announcements = recordMap.get(moduleName);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         if (CollectionUtils.isNotEmpty(announcements) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("cancel")) {
-            context.put(FacilioConstants.ContextNames.ANNOUNCEMENTS, announcements);
-            context.put(FacilioConstants.ContextNames.ANNOUNCEMENT_ACTION, 2);
+            context.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS, announcements);
+            context.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 2);
             FacilioTimer.scheduleInstantJob("AddOrUpdateChildAnnouncementsJob", (FacilioContext) context);
         }
         return false;

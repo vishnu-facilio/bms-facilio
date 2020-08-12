@@ -13,8 +13,8 @@ public class AddOrUpdateChildAnnouncementsJob extends InstantJob {
 
     @Override
     public void execute(FacilioContext context) throws Exception {
-      List<AnnouncementContext> parentAnnouncements = (List<AnnouncementContext>) context.get(FacilioConstants.ContextNames.ANNOUNCEMENTS);
-      Integer action = (Integer) context.get(FacilioConstants.ContextNames.ANNOUNCEMENT_ACTION);
+      List<AnnouncementContext> parentAnnouncements = (List<AnnouncementContext>) context.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS);
+      Integer action = (Integer) context.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION);
       //1-publish 2-cancel
 
         if(action != null && CollectionUtils.isNotEmpty(parentAnnouncements)) {

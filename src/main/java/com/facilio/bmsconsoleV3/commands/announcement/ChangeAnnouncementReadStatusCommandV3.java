@@ -24,7 +24,7 @@ public class ChangeAnnouncementReadStatusCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         List<Long> recordIds = (List<Long>) context.get(Constants.RECORD_ID_LIST);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 

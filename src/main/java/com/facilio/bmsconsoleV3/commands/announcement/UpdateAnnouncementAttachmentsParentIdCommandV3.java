@@ -36,10 +36,10 @@ public class UpdateAnnouncementAttachmentsParentIdCommandV3 extends FacilioComma
             for(AnnouncementContext announcement : announcementContexts){
                 Map<String, List<Map<String, Object>>> subformMap = announcement.getSubForm();
 
-                if(MapUtils.isNotEmpty(subformMap) && subformMap.containsKey(FacilioConstants.ContextNames.ANNOUNCEMENT_ATTACHMENTS)){
-                    List<Map<String, Object>> attachmentsAdded = subformMap.get(FacilioConstants.ContextNames.ANNOUNCEMENT_ATTACHMENTS);
+                if(MapUtils.isNotEmpty(subformMap) && subformMap.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ATTACHMENTS)){
+                    List<Map<String, Object>> attachmentsAdded = subformMap.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ATTACHMENTS);
 
-                    FacilioModule announcementAttachmentModule = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT_ATTACHMENTS);
+                    FacilioModule announcementAttachmentModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ATTACHMENTS);
                     FacilioField parentIdField = modBean.getField("parentId", announcementAttachmentModule.getName());
 
                     if(CollectionUtils.isNotEmpty(attachmentsAdded)){

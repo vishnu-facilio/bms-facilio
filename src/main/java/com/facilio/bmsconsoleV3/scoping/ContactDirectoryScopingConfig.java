@@ -10,17 +10,17 @@ import com.facilio.modules.FacilioModule;
 
 import java.util.Collections;
 
-public class DealsAndOffersScopingConfig extends ModuleScopingConfiguration {
+public class ContactDirectoryScopingConfig extends ModuleScopingConfiguration {
     @Override
     public void addScopingConfiguration() {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS);
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
 
             //adding building scope in Tenant Portal
             long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            scoping.setFieldName("dealsandofferssharing.deals");
+            scoping.setFieldName("contactdirectorysharing.contactDirectory");
             scoping.setScopingId(applicationScopingId);
             scoping.setOperatorId(88);
             scoping.setFieldValueGenerator("com.facilio.modules.CommunityBuildingValueGenerator");

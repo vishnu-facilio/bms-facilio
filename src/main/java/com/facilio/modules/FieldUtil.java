@@ -450,7 +450,7 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.PRECAUTION,
                     FacilioConstants.ContextNames.SERVICE_REQUEST,
                     FacilioConstants.ContextNames.QUOTE,
-					FacilioConstants.ContextNames.ANNOUNCEMENT
+					FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT
 				))
 			);
 

@@ -18,7 +18,7 @@ public class AnnouncementFillDetailsCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(recordIds)) {
             for(Long recId : recordIds) {
-                AnnouncementContext announcement = (AnnouncementContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.ANNOUNCEMENT, recId);
+                AnnouncementContext announcement = (AnnouncementContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, recId);
                 if (announcement != null) {
                     AnnouncementAPI.setSharingInfo(announcement);
                 }

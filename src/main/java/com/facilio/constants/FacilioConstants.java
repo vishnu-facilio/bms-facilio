@@ -1709,19 +1709,6 @@ public class FacilioConstants {
 		public static final String MESSAGES = "messages";
 		public static final String MAIL_ATTACHMENT = "mailAttachments";
 
-		public static final String ANNOUNCEMENT = "announcement";
-		public static final String ANNOUNCEMENT_ATTACHMENTS = "announcementattachments";
-		public static final String ANNOUNCEMENT_NOTES = "announcementnotes";
-		public static final String PEOPLE_ANNOUNCEMENTS = "peopleannouncement";
-		public static final String ANNOUNCEMENTS_SHARING_INFO = "announcementsharing";
-		public static final String ANNOUNCEMENTS = "announcements";
-		public static final String ANNOUNCEMENT_ACTION = "announcementaction";
-
-		public static final String NEWS_AND_INFORMATION = "newsandinformation";
-		public static final String NEIGHBOURHOOD = "neighbourhood";
-		public static final String DEALS_AND_OFFERS = "dealsandoffers";
-
-
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1733,6 +1720,14 @@ public class FacilioConstants {
 			public static final String WORKPERMIT = "workpermit";
 		}
 		public static class Tenant {
+			public static final String ANNOUNCEMENT = "announcement";
+			public static final String ANNOUNCEMENT_ATTACHMENTS = "announcementattachments";
+			public static final String ANNOUNCEMENT_NOTES = "announcementnotes";
+			public static final String PEOPLE_ANNOUNCEMENTS = "peopleannouncement";
+			public static final String ANNOUNCEMENTS_SHARING_INFO = "announcementsharing";
+			public static final String ANNOUNCEMENTS = "announcements";
+			public static final String ANNOUNCEMENT_ACTION = "announcementaction";
+
 			public static final String NEWS_AND_INFORMATION = "newsandinformation";
 			public static final String NEWS_AND_INFORMATION_ATTACHMENTS = "newsandinformationattachments";
 			public static final String NEWS_AND_INFORMATION_SHARING = "newsandinformationsharing";
@@ -2019,9 +2014,9 @@ public class FacilioConstants {
 			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
 			classMap.put(ContextNames.TICKET_ATTACHMENTS, AttachmentV3Context.class);
 
-			classMap.put(ContextNames.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
-			classMap.put(ContextNames.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
-			classMap.put(ContextNames.ANNOUNCEMENT, AnnouncementContext.class);
+			classMap.put(Tenant.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Tenant.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
+			classMap.put(Tenant.ANNOUNCEMENT, AnnouncementContext.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION, NewsAndInformationContext.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_SHARING, NewsAndInformationSharingContext.class);

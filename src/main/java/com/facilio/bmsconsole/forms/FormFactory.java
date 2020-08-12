@@ -413,7 +413,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY, getFormMap(workPermitTypeChecklistCategoryForm))
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
 				.put(FacilioConstants.ContextNames.SERVICE, getFormMap(serviceFormsList))
-				.put(FacilioConstants.ContextNames.ANNOUNCEMENT, getFormMap(announcementFormsList))
+				.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, getFormMap(announcementFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, getFormMap(neighbourhoodFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, getFormMap(newsAndInformationFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, getFormMap(dealsAndOffersFormsList))
@@ -2144,7 +2144,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Announcement");
 		form.setName("default_announcement_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getAnnouncementFormFields());
 		form.setFormType(FormType.WEB);

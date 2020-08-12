@@ -78,7 +78,7 @@ public class AnnouncementAPI {
 
     public static List<AnnouncementSharingInfoContext> getSharingInfo(Long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENTS_SHARING_INFO);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         SelectRecordsBuilder<AnnouncementSharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
@@ -93,7 +93,7 @@ public class AnnouncementAPI {
 
     private static List<PeopleAnnouncementContext> getChildAnnouncementList(Long parentId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         SelectRecordsBuilder<PeopleAnnouncementContext> builder = new SelectRecordsBuilder<PeopleAnnouncementContext>()
@@ -111,10 +111,10 @@ public class AnnouncementAPI {
         if(CollectionUtils.isNotEmpty(childAnnouncements)) {
             //can be changed to batch update once the support comes in v3
             for(PeopleAnnouncementContext peopleAnnouncement : childAnnouncements) {
-                FacilioChain updateChain = ChainUtil.getUpdateChain(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+                FacilioChain updateChain = ChainUtil.getUpdateChain(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
                 FacilioContext context = updateChain.getContext();
                 context.put(Constants.RECORD_ID, peopleAnnouncement.getId());
-                Constants.setModuleName(context, FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+                Constants.setModuleName(context, FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
                 peopleAnnouncement.setIsCancelled(true);
                 peopleAnnouncement.setModuleState(parentAnnouncement.getModuleState());
                 peopleAnnouncement.setApprovalStatus(parentAnnouncement.getApprovalStatus());
@@ -129,7 +129,7 @@ public class AnnouncementAPI {
     public static void addAnnouncementPeople(AnnouncementContext announcement) throws Exception{
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
         announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
 
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
@@ -155,7 +155,7 @@ public class AnnouncementAPI {
                 }
             }
             if(MapUtils.isNotEmpty(pplMap)) {
-                V3RecordAPI.addRecord(true, new ArrayList<PeopleAnnouncementContext>(pplMap.values()), module, modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS));
+                V3RecordAPI.addRecord(true, new ArrayList<PeopleAnnouncementContext>(pplMap.values()), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS));
             }
         }
 
@@ -164,7 +164,7 @@ public class AnnouncementAPI {
     public static void setSharingInfo(AnnouncementContext announcement) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String sharingModName = FacilioConstants.ContextNames.ANNOUNCEMENTS_SHARING_INFO;
+        String sharingModName = FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO;
         List<FacilioField> fields = modBean.getAllFields(sharingModName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));

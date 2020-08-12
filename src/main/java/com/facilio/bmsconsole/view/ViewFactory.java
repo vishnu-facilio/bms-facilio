@@ -810,12 +810,12 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllAnnouncementView().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.ANNOUNCEMENT, views);
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPeopleAnnouncementView().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS, views);
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
