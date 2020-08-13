@@ -465,7 +465,8 @@
         <action name="add" class="com.facilio.agentv2.actions.InboundConnectionsAction" method="add">
         </action>
     </package>
-    <package name="inboundConnections" namespace="/api/agent/inboundConnection" extends="struts-default,json-default">
+    <package name="inboundConnections" namespace="/api/agent/inbound/wegot/events"
+             extends="struts-default,json-default">
         <interceptors>
             <interceptor name="agentInboundConnectionInterceptor"
                          class="com.facilio.bmsconsole.interceptors.AgentInboundConnectionInterceptor">
