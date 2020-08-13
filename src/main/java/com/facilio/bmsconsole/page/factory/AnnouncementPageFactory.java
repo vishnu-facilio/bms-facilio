@@ -19,7 +19,7 @@ public class AnnouncementPageFactory extends PageFactory {
         previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
         tab1Sec1.addWidget(previewWidget);
 
-        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
         secDetailsWidget.setTitle("Announcement Details");
         tab1Sec1.addWidget(secDetailsWidget);
