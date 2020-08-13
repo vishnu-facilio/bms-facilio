@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.budget.LoadChartOfAccountLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
@@ -45,6 +46,8 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
+import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
@@ -510,7 +513,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getAnnouncement() {
         return () -> new V3Config(AnnouncementContext.class)
                 .create()
-                .beforeSave(new SetLocalIdCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getCreateAnnouncementBeforeSaveChain())
                 .afterSave(new UpdateAnnouncementAttachmentsParentIdCommandV3())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
@@ -571,6 +574,26 @@ public class APIv3Config {
                 .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
                 .summary()
+                .build();
+    }
+
+    @Module("accounttype")
+    public static Supplier<V3Config> getAccountType() {
+        return () -> new V3Config(AccountTypeContext.class)
+                .update()
+                .summary()
+                .build();
+    }
+
+    @Module("chartofaccount")
+    public static Supplier<V3Config> getChartOfAccount() {
+        return () -> new V3Config(ChartOfAccountContext.class)
+                .create().beforeSave(new SetLocalIdCommandV3())
+                .update()
+                .list()
+                    .beforeFetch(new LoadChartOfAccountLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadChartOfAccountLookupCommandV3())
                 .build();
     }
 

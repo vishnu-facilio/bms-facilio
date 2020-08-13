@@ -102,3 +102,6 @@ enums:
 
   - name: SharingType
     enumClassName: com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext$SharingType
+
+  - name: Group
+    enumClassName: com.facilio.bmsconsoleV3.context.budget.AccountTypeContext$Group

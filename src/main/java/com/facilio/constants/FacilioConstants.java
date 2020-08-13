@@ -31,6 +31,8 @@ import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
+import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
+import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -1720,6 +1722,12 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+
+		public static class Budget {
+			public static final String ACCOUNT_TYPE = "accounttype";
+			public static final String CHART_OF_ACCOUNT = "chartofaccount";
+		}
+
 		public static class Tenant {
 			public static final String ANNOUNCEMENT = "announcement";
 			public static final String ANNOUNCEMENT_ATTACHMENTS = "announcementattachments";
@@ -2030,6 +2038,9 @@ public class FacilioConstants {
 			classMap.put(Tenant.ADMIN_DOCUMENTS_SHARING, AdminDocumentsSharingContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY, ContactDirectoryContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY_SHARING, ContactDirectorySharingContext.class);
+			classMap.put(Budget.ACCOUNT_TYPE, AccountTypeContext.class);
+			classMap.put(Budget.CHART_OF_ACCOUNT, ChartOfAccountContext.class);
+
 
 			return classMap;
 		}

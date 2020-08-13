@@ -72,6 +72,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.EMPLOYEE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.QUOTE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT);
 
 
 		return modulesWithLocalId;
