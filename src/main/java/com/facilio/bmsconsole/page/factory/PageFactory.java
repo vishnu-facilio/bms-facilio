@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -116,6 +117,8 @@ public class PageFactory {
 				return QuotationPageFactory.getQuotationPage((QuotationContext) record, module);
 			case ContextNames.Tenant.ANNOUNCEMENT:
 				return AnnouncementPageFactory.getAnnouncementPage((AnnouncementContext) record, module);
+			case ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS:
+				return PeopleAnnouncementPageFactory.getPeopleAnnouncementPage((PeopleAnnouncementContext) record, module);
 
 
 		}

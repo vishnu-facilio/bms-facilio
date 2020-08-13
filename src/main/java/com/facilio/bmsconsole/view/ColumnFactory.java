@@ -200,6 +200,7 @@ public class ColumnFactory {
 
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
+		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
 		columnMap.put("neighbourhood-default", getDefaultNeighbourhoodColumns());
 		columnMap.put("dealsandoffers-default", getDefaultDealsAndOffersColumns());
 		columnMap.put("newsandinformation-default", getDefaultNewsAndInformationColumns());
