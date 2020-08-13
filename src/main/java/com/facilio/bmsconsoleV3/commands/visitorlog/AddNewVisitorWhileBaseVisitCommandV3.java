@@ -15,11 +15,10 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.V3ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3ContactsAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -32,20 +31,20 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 
-public class AddNewVisitorWhileVisitorLogCommandV3 extends FacilioCommand {
+public class AddNewVisitorWhileBaseVisitCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
+        List<BaseVisitContextV3> visitorLogs = recordMap.get(moduleName);
 
         if(CollectionUtils.isNotEmpty(visitorLogs)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Map<Long, VisitorSettingsContext> settingsMap = VisitorManagementAPI.getVisitorSettingsForType();
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
             List<FacilioField> fields = modBean.getAllFields(module.getName());
-            for(VisitorLogContextV3 vL : visitorLogs) {
+            for(BaseVisitContextV3 vL : visitorLogs) {
 
                 //need to change this to tenant contact context once host is changed to people lookup
 
@@ -93,20 +92,7 @@ public class AddNewVisitorWhileVisitorLogCommandV3 extends FacilioCommand {
                         vL.getVisitor().setIsReturningVisitor(false);
                     }
                 }
-                VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
-                if(setting != null) {
-                    JSONObject hostSetting = setting.getHostSettings();
-                    if(hostSetting.get("requireApproval") != null && (boolean)hostSetting.get("requireApproval")) {
-                        vL.setIsApprovalNeeded((boolean)hostSetting.get("requireApproval"));
-                    }
-                    else {
-                        vL.setIsApprovalNeeded(false);
-                    }
-                }
-                else {
-                    vL.setIsApprovalNeeded(false);
-                }
-              
+                 
                 if(vL.getAvatar() != null) {
                     vL.setPhotoStatus(true);
                 }

@@ -7,22 +7,21 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.V3WatchListContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.v3.context.Constants;
 
-public class CheckForWatchListRecordVisitorLogCommandV3 extends FacilioCommand {
+public class CheckForWatchListRecordBaseVisitCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<VisitorLogContextV3> list = recordMap.get(moduleName);
+        List<BaseVisitContextV3> list = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(list)) {
-            for(VisitorLogContextV3 vLog : list) {
+            for(BaseVisitContextV3 vLog : list) {
                 V3VisitorContext visitor = vLog.getVisitor();
                 if(visitor != null) {
                     if(visitor.getId() > 0) {

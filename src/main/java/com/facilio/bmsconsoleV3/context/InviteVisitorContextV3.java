@@ -19,6 +19,7 @@ public class InviteVisitorContextV3 extends BaseVisitContextV3 {
 	private Long groupId;
 	private Long parentInviteId;
 	private Boolean isInvited;
+	private Boolean hasCheckedIn;
 	//private Long parentLogId;
 
 	public Long getExpectedVisitDuration() {
@@ -146,6 +147,21 @@ public class InviteVisitorContextV3 extends BaseVisitContextV3 {
 	public Boolean isInvited() {
 		if (isInvited != null) {
 			return isInvited.booleanValue();
+		}
+		return false;
+	}
+
+	public Boolean getHasCheckedIn() {
+		return hasCheckedIn;
+	}
+
+	public void setHasCheckedIn(Boolean hasCheckedIn) {
+		this.hasCheckedIn = hasCheckedIn;
+	}
+	
+	public Boolean hasCheckedIn() {
+		if (hasCheckedIn != null) {
+			return hasCheckedIn.booleanValue();
 		}
 		return false;
 	}

@@ -13,8 +13,6 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -23,23 +21,19 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
-public class AddOrUpdateVisitorFromVisitorLogsCommandV3 extends FacilioCommand {
+public class AddOrUpdateVisitorFromBaseVisitCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
+        List<BaseVisitContextV3> visitorLogs = recordMap.get(moduleName);
 
         if(CollectionUtils.isNotEmpty(visitorLogs)) {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
             List<FacilioField> fields = modBean.getAllFields(module.getName());
-            for(VisitorLogContextV3 vL : visitorLogs) {
-                CommonCommandUtil.handleLookupFormData(modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOG), vL.getData());
-                if(vL.getChildVisitTypeEnum() == null) {
-                	vL.setChildVisitType(BaseVisitContextV3.ChildVisitType.VISIT);
-                }
+            for(BaseVisitContextV3 vL : visitorLogs) {
                 if(StringUtils.isNotEmpty(vL.getVisitorPhone())) {
                     V3VisitorContext visitor = V3VisitorManagementAPI.getVisitor(-1L, vL.getVisitorPhone());
                     if(visitor == null) {

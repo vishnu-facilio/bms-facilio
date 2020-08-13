@@ -16,8 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
-import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
+import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fs.FileInfo;
@@ -28,14 +27,14 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.v3.context.Constants;
 
-public class GenerateQrInviteUrlForVisitorLogCommandV3 extends FacilioCommand implements Serializable {
+public class GenerateQrInviteUrlForBaseVisitCommandV3 extends FacilioCommand implements Serializable {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<VisitorLogContextV3> inviteVisitors = recordMap.get(moduleName);
+        List<BaseVisitContextV3> inviteVisitors = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(inviteVisitors)) {
-            for(VisitorLogContextV3 inviteVisitor : inviteVisitors) {
+            for(BaseVisitContextV3 inviteVisitor : inviteVisitors) {
                 String passCode = VisitorManagementAPI.generatePassCode();
                 String qrCode = "visitorLog_" + passCode;
                 JSONObject size = new JSONObject();
@@ -53,7 +52,7 @@ public class GenerateQrInviteUrlForVisitorLogCommandV3 extends FacilioCommand im
                 inviteVisitor.setPassCode(passCode);
 
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_VISIT);
 
 
                 Map<String, Object> updateMap = new HashMap<>();
@@ -66,7 +65,7 @@ public class GenerateQrInviteUrlForVisitorLogCommandV3 extends FacilioCommand im
                 List<FacilioField> updatedfields = new ArrayList<FacilioField>();
                 updatedfields.add(qrUrlField);
                 updatedfields.add(otpField);
-                UpdateRecordBuilder<VisitorLogContextV3> updateBuilder = new UpdateRecordBuilder<VisitorLogContextV3>()
+                UpdateRecordBuilder<BaseVisitContextV3> updateBuilder = new UpdateRecordBuilder<BaseVisitContextV3>()
                         .module(module)
                         .fields(updatedfields)
                         .andCondition(CriteriaAPI.getIdCondition(inviteVisitor.getId(), module));

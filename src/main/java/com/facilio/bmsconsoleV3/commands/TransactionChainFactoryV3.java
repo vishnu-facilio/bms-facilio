@@ -42,14 +42,17 @@ import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPor
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.AddNdaForVisitorLogModuleCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileVisitorLogCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromVisitorLogsCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeVisitorLogStateCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.CheckForWatchListRecordVisitorLogCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.GenerateQrInviteUrlForVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.CheckForWatchListRecordBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GenerateQrInviteUrlForBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillInviteVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInInviteVisitorContextCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInVisitorLogContextCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateVisitorLogArrivedStateCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
@@ -141,10 +144,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getVisitorLogBeforeSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3());
-        c.addCommand(new AddNewVisitorWhileVisitorLogCommandV3());
-        c.addCommand(new AddOrUpdateVisitorFromVisitorLogsCommandV3());
-        c.addCommand(new CheckForWatchListRecordVisitorLogCommandV3());
+        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3()); //check-in related
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillVisitorLogCommandV3()); //check-in related
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
 
         return c;
     }
@@ -152,12 +156,12 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getVisitorLogAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3());
-        c.addCommand(new ChangeVisitorLogStateCommandV3());
+        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); //check-in related
+        c.addCommand(new ChangeVisitorLogStateCommandV3()); //check-in related
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new AddNdaForVisitorLogModuleCommandV3())
-                .addCommand(new GenerateQrInviteUrlForVisitorLogCommandV3())
-                .addCommand(new VisitorFaceRecognitionForVisitorLogCommandV3()));
+                .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
 
         return c;
     }
@@ -166,7 +170,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3());
-        c.addCommand(new AddOrUpdateVisitorFromVisitorLogsCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         return c;
     }
 
@@ -175,6 +179,45 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ChangeVisitorLogStateCommandV3());
         return c;
     }
+    
+    public static FacilioChain getInviteVisitorBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
+        c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
+        c.addCommand(new PreFillInviteVisitorCommandV3()); //check-in related
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getInviteVisitorAfterSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); //change
+        c.addCommand(new ChangeVisitorLogStateCommandV3()); //change
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
+                .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+
+        return c;
+    }
+    
+    public static FacilioChain getInviteVisitorBeforeSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3());
+        c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getInviteVisitorAfterSaveOnUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ChangeVisitorLogStateCommandV3());
+        return c;
+    }
+
 
     public static FacilioChain getVisitorBeforeSaveOnAddChain() {
         FacilioChain c = getDefaultChain();

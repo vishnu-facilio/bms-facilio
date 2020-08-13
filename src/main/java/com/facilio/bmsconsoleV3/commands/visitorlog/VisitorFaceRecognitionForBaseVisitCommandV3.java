@@ -13,8 +13,8 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.VisitorFaceAPI;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.VisitorFaceRecognitionCommandV3;
+import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.V3VisitorContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -22,7 +22,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
 
-public class VisitorFaceRecognitionForVisitorLogCommandV3 extends FacilioCommand implements Serializable {
+public class VisitorFaceRecognitionForBaseVisitCommandV3 extends FacilioCommand implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,7 @@ public class VisitorFaceRecognitionForVisitorLogCommandV3 extends FacilioCommand
         if (orgInfo != null && orgInfo.get("value").toString().equalsIgnoreCase("true")) {
 
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-            List<VisitorLogContextV3> records = recordMap.get(moduleName);
+            List<BaseVisitContextV3> records = recordMap.get(moduleName);
 
             if (records != null && !records.isEmpty()) {
                 for (ModuleBaseWithCustomFields record : records) {
@@ -51,9 +51,9 @@ public class VisitorFaceRecognitionForVisitorLogCommandV3 extends FacilioCommand
                         visitorId = visitor.getId();
                         photoId = visitor.getAvatarId();
                     }
-                    else if (FacilioConstants.ContextNames.VISITOR_LOG.equals(moduleName)) {
+                    else if (FacilioConstants.ContextNames.VISITOR_LOG.equals(moduleName) || FacilioConstants.ContextNames.INVITE_VISITOR.equals(moduleName)) { //change to basevisit
                         faceModule = ModuleFactory.getVisitorFacesModule();
-                        VisitorLogContextV3 visitorLog = (VisitorLogContextV3) record;
+                        BaseVisitContextV3 visitorLog = (BaseVisitContextV3) record;
 //						visitorLog = VisitorManagementAPI.getVisitorLogging(visitorLog.getVisitor().getId(), false, visitorLog.getId());
                         visitorId = visitorLog.getVisitor().getId();
                         photoId = visitorLog.getAvatarId();
