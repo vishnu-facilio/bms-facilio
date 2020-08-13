@@ -31,6 +31,7 @@ import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
+import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
@@ -2023,6 +2024,7 @@ public class FacilioConstants {
 			classMap.put(ContextNames.MAIL_ATTACHMENT, AttachmentV3Context.class);
 			classMap.put(ContextNames.TICKET_ATTACHMENTS, AttachmentV3Context.class);
 
+			classMap.put(Tenant.PEOPLE_ANNOUNCEMENTS, PeopleAnnouncementContext.class);
 			classMap.put(Tenant.ANNOUNCEMENT_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.ANNOUNCEMENTS_SHARING_INFO, AnnouncementSharingInfoContext.class);
 			classMap.put(Tenant.ANNOUNCEMENT, AnnouncementContext.class);
