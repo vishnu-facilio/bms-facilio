@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -13,6 +17,10 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.services.procon.consumer.FacilioConsumer;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand{
 
@@ -38,11 +46,19 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
-		
-		
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true, false);
+
+		//adding super admin to agent app
+		long agentAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
+		if(agentAppId > 0) {
+			User clonedUser = FieldUtil.cloneBean(user, User.class);
+			clonedUser.setApplicationId(agentAppId);
+			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
+		}
+
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
 	}
+
 
 }
