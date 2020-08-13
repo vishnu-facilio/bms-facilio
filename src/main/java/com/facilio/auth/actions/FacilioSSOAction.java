@@ -2,12 +2,15 @@ package com.facilio.auth.actions;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -88,7 +91,20 @@ public class FacilioSSOAction extends FacilioAction {
 		if (relayState != null) {
 			ssoURL += "&RelayState=" + URLEncoder.encode(relayState, StandardCharsets.UTF_8.toString());
 		}
-		
+
+		try {
+			URIBuilder builder = new URIBuilder(ssoConfig.getLoginUrl());
+			builder.addParameter("SAMLRequest", samlRequest);
+			if (relayState != null) {
+				builder.addParameter("RelayState", relayState);
+			}
+
+			LOGGER.log(Level.SEVERE, "logging login url " + builder.build().toURL().toString());
+		} catch (Exception e) {
+			// IGNORE
+		}
+
+
 		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
 		response.sendRedirect(ssoURL);
 		return SUCCESS;
