@@ -73,6 +73,12 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.QUOTE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION);
+
 
 
 		return modulesWithLocalId;
