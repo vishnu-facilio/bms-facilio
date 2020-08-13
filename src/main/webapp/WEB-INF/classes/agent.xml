@@ -465,7 +465,7 @@
         <action name="add" class="com.facilio.agentv2.actions.InboundConnectionsAction" method="add">
         </action>
     </package>
-    <package name="inboundConnections" namespace="/api/agent/inbound/wegot/events"
+    <package name="inboundConnections" namespace="/api/agent/inbound/wegot"
              extends="struts-default,json-default">
         <interceptors>
             <interceptor name="agentInboundConnectionInterceptor"
@@ -480,7 +480,7 @@
             </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="inboundInterceptorStack" />
-        <action name="notifications" class="com.facilio.agentv2.actions.InboundNotificationAction">
+        <action name="events" class="com.facilio.agentv2.actions.InboundNotificationAction">
             <result name="success" type="json">
                 <param name="statusCode">200</param>
             </result>
