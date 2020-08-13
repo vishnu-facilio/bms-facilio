@@ -1,7 +1,6 @@
 package com.facilio.iam.accounts.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +16,8 @@ import javax.transaction.TransactionManager;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
-import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,17 +50,11 @@ import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.nimbusds.jose.JOSEException;
 
 ;
 
@@ -409,6 +402,70 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return true;
 	}
 
+	private boolean hasGoogleLogin(long uid) throws Exception  {
+		List<Map<String, Object>> props = getUserSocialLogins(uid);
+		if (CollectionUtils.isEmpty(props)) {
+			return false;
+		}
+		Boolean isgoogle = (Boolean) props.get(0).get("isGoogle");
+		return isgoogle != null && isgoogle;
+	}
+
+	private void upsertAccountSocialLogin(long uid, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
+		List<Map<String, Object>> props = getUserSocialLogins(uid);
+
+		if (CollectionUtils.isEmpty(props)) {
+			insertIntoAccountSocialLogin(uid, socialLogin);
+			return;
+		}
+
+		boolean hasSocialLogin = false;
+		if (socialLogin == IAMAccountConstants.SocialLogin.GOOGLE) {
+			Boolean isgoogle = (Boolean) props.get(0).get("isGoogle");
+			if (isgoogle != null && isgoogle) {
+				hasSocialLogin = true;
+			}
+		}
+
+		if (!hasSocialLogin) {
+			updateAccountSocialLogin(uid, socialLogin);
+		}
+	}
+
+	private List<Map<String, Object>> getUserSocialLogins(long uid) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(IAMAccountConstants.getAccountSocialLoginFields())
+				.table("Account_Social_Login");
+
+		selectRecordBuilder.andCondition(CriteriaAPI.getCondition("Account_Social_Login.USERID", "uid", String.valueOf(uid), NumberOperators.EQUALS));
+		return selectRecordBuilder.get();
+	}
+
+	private void updateAccountSocialLogin(long uid, IAMAccountConstants.SocialLogin socialLogin) throws SQLException {
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+		updateRecordBuilder.fields(IAMAccountConstants.getAccountSocialLoginFields())
+				.table("Account_Social_Login")
+				.andCondition(CriteriaAPI.getCondition("Account_Social_Login.USERID", "uid", String.valueOf(uid), NumberOperators.EQUALS));
+		Map<String, Object> props = new HashMap<>();
+		if (socialLogin == IAMAccountConstants.SocialLogin.GOOGLE) {
+			props.put("isGoogle", true);
+		}
+		updateRecordBuilder.update(props);
+	}
+
+	private void insertIntoAccountSocialLogin(long uid, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
+		insertRecordBuilder.fields(IAMAccountConstants.getAccountSocialLoginFields())
+				.table("Account_Social_Login");
+		Map<String, Object> props = new HashMap<>();
+		props.put("uid", uid);
+		if (socialLogin == IAMAccountConstants.SocialLogin.GOOGLE) {
+			props.put("isGoogle", true);
+		}
+
+		insertRecordBuilder.insert(props);
+	}
+
 	@Override
 	public List<Organization> getOrgsv2(long uid) throws Exception {
 		
@@ -544,6 +601,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<String> loginModes = new ArrayList<>();
 		if (hasPassword) {
 			loginModes.add("password");
+		}
+
+		if (hasGoogleLogin((Long) userForUsername.get(0).get("uid"))) {
+			loginModes.add("google");
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
@@ -1824,7 +1885,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
-			String ipAddress, boolean startUserSession, String appDomain) throws Exception {
+			String ipAddress, boolean startUserSession, String appDomain, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
 		// TODO Auto-generated method stub
 		if(StringUtils.isEmpty(appDomain)) {
 			appDomain = AccountUtil.getDefaultAppDomain();
@@ -1835,16 +1896,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		String identifier = appDomainObj.getIdentifier();
 		IAMUser user = getFacilioUserV3(emailaddress, identifier);
-		if (user != null) {
-			long uid = user.getUid();
-			String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
-					System.currentTimeMillis() + 24 * 60 * 60000);
-			if (startUserSession) {
-				startUserSessionv2(uid, jwt, ipAddress, userAgent, userType);
-			}
-			return jwt;
+
+		if (user == null) {
+			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 		}
-		throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+
+		long uid = user.getUid();
+		String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
+				System.currentTimeMillis() + 24 * 60 * 60000);
+		if (startUserSession) {
+			startUserSessionv2(uid, jwt, ipAddress, userAgent, userType);
+		}
+
+		if (socialLogin != null) {
+			upsertAccountSocialLogin(uid, socialLogin);
+		}
+
+		return jwt;
 	}
 
 	@Override

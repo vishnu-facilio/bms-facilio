@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -57,9 +57,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLServiceProvider;
 import com.facilio.fw.auth.SAMLServiceProvider.SAMLResponse;
 import com.facilio.iam.accounts.exceptions.AccountException;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -498,7 +495,7 @@ public class FacilioAuthAction extends FacilioAction {
 	
 				LOGGER.info("validateLogin() : domainName : " + domainName);
 				
-				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName());
+				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName(), IAMAccountConstants.SocialLogin.GOOGLE);
 				setResult("token", authtoken);
 				setResult("username", email);
 	
@@ -607,7 +604,7 @@ public class FacilioAuthAction extends FacilioAction {
 	
 				LOGGER.info("validateLogin() : domainName : " + domainName);
 				
-				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName());
+				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName(), null);
 				setResult("token", authtoken);
 				setResult("username", email);
 				

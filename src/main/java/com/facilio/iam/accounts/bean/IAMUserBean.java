@@ -3,6 +3,7 @@
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -131,7 +132,7 @@ public interface IAMUserBean {
 	public List<AppDomain> getAppDomainsForOrg(long orgId) throws Exception;
     
 	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
-			String ipAddress, boolean startUserSession, String appDomain) throws Exception;
+			String ipAddress, boolean startUserSession, String appDomain, IAMAccountConstants.SocialLogin socialLogin) throws Exception;
 
 	public boolean deleteUserPhoto(long uid, long photoId) throws Exception;
 

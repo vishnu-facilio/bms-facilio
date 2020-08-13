@@ -15,6 +15,9 @@ import com.facilio.modules.fields.SystemEnumField;
 
 public class IAMAccountConstants {
 
+		public enum SocialLogin {
+			GOOGLE
+		}
 			
 		
 		
@@ -501,7 +504,37 @@ public class IAMAccountConstants {
 		}
 		
 		
-		
+		public static FacilioModule getAccountSocialLoginModule() {
+			FacilioModule accountsociallogin = new FacilioModule();
+			accountsociallogin.setName("accountsociallogin");
+			accountsociallogin.setDisplayName("Account Social Login");
+			accountsociallogin.setTableName("Account_Social_Login");
+
+			return accountsociallogin;
+		}
+
+		public static List<FacilioField> getAccountSocialLoginFields() {
+			FacilioModule module = getAccountSocialLoginModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			fields.add(getUserIdField(module));
+
+			FacilioField google = new FacilioField();
+			google.setName("isGoogle");
+			google.setDataType(FieldType.BOOLEAN);
+			google.setColumnName("IS_GOOGLE");
+			google.setModule(module);
+			fields.add(google);
+
+			return fields;
+		}
 
 		
 		public static List<FacilioField> getUserSessionFields() {

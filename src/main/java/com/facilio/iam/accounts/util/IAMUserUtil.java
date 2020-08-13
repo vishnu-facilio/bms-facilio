@@ -77,9 +77,9 @@ public class IAMUserUtil {
 	}
 	
 	public static String verifyLoginWithoutPassword(String emailaddress, String userAgent, String userType,
-			String ipAddress, String appDomain) throws Exception {
+													String ipAddress, String appDomain, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
 	
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, true, appDomain));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, true, appDomain, socialLogin));
 	}
 
 	public static IAMUser verifyEmail(String invitetoken) throws Exception {
