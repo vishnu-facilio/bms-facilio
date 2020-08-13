@@ -7405,7 +7405,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getPeopleAnnouncementModule();
 
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "People_Announcements.ID", FieldType.NUMBER), true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
