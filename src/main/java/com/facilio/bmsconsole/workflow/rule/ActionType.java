@@ -445,7 +445,7 @@ public enum ActionType {
 							userNotification.setUser(user);
 							userNotification.setModuleId(currentRule.getModuleId());
 							userNotification.setSiteId(currentRule.getSiteId());
-							userNotification.setParentId((long) context.getOrDefault("recordId", -1));
+							userNotification.setParentId((long) context.getOrDefault("recordId", -1l));
 							FacilioChain chain = TransactionChainFactoryV3.addRecords();
 							FacilioContext notificationContext = chain.getContext();
 							notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));
