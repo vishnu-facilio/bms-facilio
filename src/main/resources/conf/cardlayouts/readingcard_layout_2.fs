@@ -5,9 +5,25 @@ Map cardLayout(Map params) {
         fieldid = fieldObj.id();
         fieldMapInfo = fieldObj.asMap();
         date = new NameSpace("date");
+        
+        if(params.cardFilters!=null)
+        {
+            cardFilters=params.cardFilters;
+            startTime = cardFilters.startTime;
+            endTime = cardFilters.endTime;
+            period=cardFilters.dateLabel;
+            dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
+        }
+        else
+        {        
         dateRangeObj = date.getDateRange(params.dateRange);
-        baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
         period = params.dateRange;
+        }
+
+        baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
+        
+
+
         db = {
             criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
             field: params.reading.fieldName,

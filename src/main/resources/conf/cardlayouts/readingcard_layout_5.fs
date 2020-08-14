@@ -7,7 +7,15 @@ Map cardLayout(Map params) {
         date = new NameSpace("date");
         dateRangeObj = null;
         period = null;
-        if (params.dateRange != null) {
+        if(params.cardFilters!=null)
+        {
+            cardFilters=params.cardFilters;
+            startTime=cardFilters.startTime
+            endTime-cardFilters.endTime;
+            period=cardFilters.dateLabel;
+            dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
+        }
+        else if (params.dateRange != null) {
             dateRangeObj = date.getDateRange(params.dateRange);
             period = params.dateRange;
         } else {
