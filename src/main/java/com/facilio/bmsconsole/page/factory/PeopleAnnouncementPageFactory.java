@@ -25,10 +25,10 @@ public class PeopleAnnouncementPageFactory extends PageFactory{
         tab1Sec1.addWidget(secDetailsWidget);
 
 
-        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PUBLISH_TO);
-        publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
-        publishToWidget.setTitle("Published To");
-        tab1Sec1.addWidget(publishToWidget);
+//        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PUBLISH_TO);
+//        publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
+//        publishToWidget.setTitle("Published To");
+//        tab1Sec1.addWidget(publishToWidget);
 
         PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_ATTACHMENT);
         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
