@@ -175,7 +175,9 @@ public class UserNotificationContext extends V3Context {
         userNotification.setSysCreatedTime(System.currentTimeMillis());
         userNotification.setSubject((String) notiObj.get("text"));
         userNotification.setTitle((String) notiObj.get("title"));
-        userNotification.setApplication((long) obj.get("application"));
+        if (obj.containsKey("application")) {
+            userNotification.setApplication((long) obj.get("application"));
+        }
         userNotification.setNotificationStatus(UserNotificationContext.NotificationStatus.UNSEEN);
         return  userNotification;
     }

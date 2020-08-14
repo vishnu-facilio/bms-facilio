@@ -40,7 +40,7 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<UserNotificationContext> records = recordMap.get(moduleName);
         JSONObject obj = (JSONObject) context.get(FacilioConstants.ContextNames.DATA);
-        if (obj != null && (FacilioProperties.isProduction() || AccountUtil.getCurrentOrg().getId() == 155)) {
+        if (obj != null && FacilioProperties.isProduction()) {
             String ids = (String) obj.get("id");
             if (!StringUtils.isEmpty(ids)) {
                 List<Pair<String, Boolean>> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(ids);
