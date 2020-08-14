@@ -519,8 +519,10 @@ public class ActionAPI {
 		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
 		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
-		pushNotificationTemplate.setApplication((long) action.getTemplateJson().get("application"));
-		pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
+		if (action.getTemplateJson().containsKey("application")) {
+			pushNotificationTemplate.setApplication((long) action.getTemplateJson().get("application"));
+			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
+		}
 		action.setTemplate(pushNotificationTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
 	}
