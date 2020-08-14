@@ -520,7 +520,7 @@ public class ActionAPI {
 		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
 		if (action.getTemplateJson().containsKey("application")) {
-			pushNotificationTemplate.setApplication((long) action.getTemplateJson().get("application"));
+			pushNotificationTemplate.setApplication(((Number) action.getTemplateJson().get("application")).longValue());
 			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
 		}
 		action.setTemplate(pushNotificationTemplate);
