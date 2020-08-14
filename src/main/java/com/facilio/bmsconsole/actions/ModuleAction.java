@@ -760,7 +760,30 @@ public class ModuleAction extends FacilioAction {
 	}
 
 	public String updateModuleData() throws Exception {
-		FacilioContext context = new FacilioContext();
+		
+		updateModuleDataCommon();
+		return moduleDataDetails();
+	}
+	
+	public String bulkUpdateModuleData() throws Exception {
+		
+		if(bulkModuleDataList != null && !bulkModuleDataList.isEmpty()) {
+			
+			for(CustomModuleData moduleData1 : bulkModuleDataList) {
+				
+				moduleData = moduleData1;
+				updateModuleDataCommon();
+			}
+		}
+		
+		return SUCCESS;
+	}
+	
+	private void updateModuleDataCommon() throws Exception {
+		
+		FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
+		
+		FacilioContext context = updateModuleDataChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 
@@ -771,11 +794,9 @@ public class ModuleAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
 		
-		FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
-		updateModuleDataChain.execute(context);
+		updateModuleDataChain.execute();
 		
 		setId(moduleData.getId());
-		return moduleDataDetails();
 	}
 	
 	public String deleteModuleData() throws Exception {

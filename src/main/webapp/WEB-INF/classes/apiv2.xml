@@ -2388,6 +2388,11 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="updateModuleData">
 		</action>
+		
+		<action name="bulkUpdate"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="bulkUpdateModuleData">
+		</action>
 
 		<action name="getModuleLookUpFieldDetails"
 				class="com.facilio.bmsconsole.actions.ModuleAction"
