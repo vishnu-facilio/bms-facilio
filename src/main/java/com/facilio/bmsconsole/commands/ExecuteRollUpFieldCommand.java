@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -54,6 +55,8 @@ public class ExecuteRollUpFieldCommand extends FacilioCommand implements PostTra
 		try {
 			long processStartTime = System.currentTimeMillis();
 			Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+				
 			if(recordMap != null && !recordMap.isEmpty()) 
 			{		
 				for(Map.Entry<String, List> entry : recordMap.entrySet()) 

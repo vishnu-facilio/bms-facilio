@@ -324,8 +324,9 @@ public class RollUpFieldUtil {
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
 		FacilioField childFieldCloned = triggeringChildField.getChildField().clone();
 		childFieldCloned.setName(childFieldCloned.getName()+"parentLookUpId");
+		List<Long> aggregatedRollUpFieldDataIds = new ArrayList<Long>();
+
 		selectFields.add(childFieldCloned);
-			
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.table(triggeringChildField.getChildModule().getTableName())
 				.module(triggeringChildField.getChildModule())
@@ -367,11 +368,22 @@ public class RollUpFieldUtil {
 				}
 			
 				if(parentLookUpId != -1 && aggregatedRollUpValue != null) {
+					aggregatedRollUpFieldDataIds.add(parentLookUpId);
 					constructAndAddDynamicRdm(parentLookUpId, aggregatedRollUpValue, triggeringChildField.getParentRollUpField(), rollUpFieldData);
 				}
 				LOGGER.info("Aggregated Rollup Result : "+ aggregatedRollUpValue + " ParentLookUpPrimaryId : " + parentLookUpId +" RollUpFieldContext -- " +triggeringChildField);
 			}
-		}	
+		}
+		
+		for(Long triggerChildGroupedId:triggerChildGroupedIds) {		
+			if(!aggregatedRollUpFieldDataIds.contains(triggerChildGroupedId)) {
+				Object aggregatedRollUpValue = null;
+				if(triggeringChildField.getAggregateFunctionId() == BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue()) {
+					aggregatedRollUpValue = 0l;
+				}
+				constructAndAddDynamicRdm(triggerChildGroupedId, aggregatedRollUpValue, triggeringChildField.getParentRollUpField(), rollUpFieldData);
+			}	
+		}
 	}
 	
 	private static void constructAndAddDynamicRdm(long parentLookUpId, Object aggregatedRollUpResult, FacilioField parentRollUpField, List<ReadingDataMeta> rollUpFieldData) {
@@ -381,7 +393,7 @@ public class RollUpFieldUtil {
 		rdm.setValue(aggregatedRollUpResult);
 		rdm.setReadingDataId(parentLookUpId);
 		rdm.setOrgId(AccountUtil.getCurrentOrg().getId());
-		rollUpFieldData.add(rdm);
+		rollUpFieldData.add(rdm);		
 	}
 	
 	public static void addRollUpMigFields() throws Exception {
