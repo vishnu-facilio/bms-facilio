@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -58,6 +59,8 @@ public class PushNotificationTemplate extends Template{
 			JSONParser parser = new JSONParser();
 	 		try {
 	 			obj = (JSONObject) parser.parse(body);
+	 			obj.put("isSendNotification", isSendNotification);
+	 			obj.put("application", application);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				log.info("Exception occurred ", e);
@@ -70,7 +73,16 @@ public class PushNotificationTemplate extends Template{
 		
 		return obj;
 	}
-	
+
+	public long getApplication() {
+		return application;
+	}
+
+	public void setApplication(long application) {
+		this.application = application;
+	}
+
+	private long application;
 	
 	private Object getTo(String to) {
 		if(to != null && !to.isEmpty()) {
@@ -89,6 +101,14 @@ public class PushNotificationTemplate extends Template{
 		return null;
 	}
 
+	private long moduleId;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
@@ -99,6 +119,28 @@ public class PushNotificationTemplate extends Template{
 	public Type getTypeEnum() {
 		return Type.PUSH_NOTIFICATION;
 	}
+
+
+
+
+//	public boolean getIsSendNotification() {
+//		return isSendNotification;
+//	}
+//
+//	public void setIsSendNotification(boolean isSendNotification) {
+//		isSendNotification = isSendNotification;
+//	}
+
+	public Boolean getIsSendNotification() {
+		return isSendNotification;
+	}
+
+	public void setIsSendNotification(Boolean sendNotification) {
+		isSendNotification = sendNotification;
+	}
+
+	private Boolean isSendNotification;
+
 
 	
 }

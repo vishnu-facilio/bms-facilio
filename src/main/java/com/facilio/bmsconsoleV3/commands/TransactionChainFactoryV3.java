@@ -340,6 +340,11 @@ public class TransactionChainFactoryV3 {
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		return c;
 	}
+    public static FacilioChain addRecords () {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddRecordsCommandV3());
+        return c;
+    }
 
     public static FacilioChain getUpdateAnnouncementBeforeSaveChain() {
         FacilioChain c = getDefaultChain();

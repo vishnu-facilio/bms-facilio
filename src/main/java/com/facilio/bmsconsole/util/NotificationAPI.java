@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -249,5 +250,25 @@ public class NotificationAPI {
 			return notifications;
 		}
 		return null;
+	}
+
+	public static List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
+		List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
+		List<Long> idLongList = Stream.of(idList.split(",")).map(Long::valueOf).collect(Collectors.toList());
+		List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, idLongList);
+		List<Long> userIdList = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(userList)) {
+			userIdList = userList.stream().map(User::getUid).collect(Collectors.toList());
+			List<Map<String, Object>> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList);
+			for (Map<String, Object> instance : instanceIdList) {
+				Boolean fromPortal = (Boolean)instance.get("fromPortal");
+				if (fromPortal == null) {
+					fromPortal = false;
+				}
+				mobileInstanceIds.add(Pair.of((String) instance.get("mobileInstanceId"), fromPortal));
+			}
+		}
+
+		return mobileInstanceIds;
 	}
 }

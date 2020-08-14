@@ -2840,6 +2840,19 @@ public class FieldFactory {
         appType.setModule(module);
         fields.add(appType);
 
+        FacilioField application = new FacilioField();
+        application.setName("application");
+        application.setDataType(FieldType.NUMBER);
+        application.setColumnName("APPLICATION");
+        application.setModule(module);
+        fields.add(application);
+
+        FacilioField isSendNotification = new FacilioField();
+        isSendNotification.setName("isSendNotification");
+        isSendNotification.setDataType(FieldType.BOOLEAN);
+        isSendNotification.setColumnName("IS_SEND_NOTIFICATION");
+        isSendNotification.setModule(module);
+        fields.add(isSendNotification);
 
         return fields;
     }

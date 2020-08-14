@@ -89,6 +89,7 @@ public class ImapsClient implements AutoCloseable {
                     lastUID = inbox.getUID(message);
                     mailMessage.setMessageUID(lastUID);
                     mailMessage.setParentId(mailDeta.getId());
+                    mailMessage.setSiteId(mailDeta.getSiteId());
                     Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
                     if (mailMessage.getAttachmentsList().size() > 0) {
                       attachments.put("mailAttachments", mailMessage.getAttachmentsList());

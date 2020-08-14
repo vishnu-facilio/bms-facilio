@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -57,6 +58,7 @@ public class CreateActionTemplateForWorkflowCommand extends FacilioCommand {
 					pushNotificationTemplate.setTitle((String) templateContent.get("title"));
 					pushNotificationTemplate.setUrl((String) templateContent.get("URL"));
 					pushNotificationTemplate.setWorkflow(workflowContext);
+					pushNotificationTemplate.setApplication((long) templateContent.get("application"));
 					context.put(FacilioConstants.Workflow.TEMPLATE, pushNotificationTemplate);
 					break;
 				case WEB_NOTIFICATION:

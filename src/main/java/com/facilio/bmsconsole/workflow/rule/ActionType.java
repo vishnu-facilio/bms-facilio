@@ -17,6 +17,8 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
@@ -25,6 +27,7 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.google.gson.JsonObject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -264,24 +267,24 @@ public enum ActionType {
 				try {
 					List<Long> reciepents = null;
 					String toIds = (String) obj.get("to");
-					if (toIds != null) {
-						String[] toList = toIds.trim().split(",");
-						for (String toId : toList) {
-							if (toId.isEmpty()) {
-								continue;
+						if (toIds != null) {
+							String[] toList = toIds.trim().split(",");
+							for (String toId : toList) {
+								if (toId.isEmpty()) {
+									continue;
+								}
+								long id = Long.valueOf(toId);
+								if (checkIfActiveUserFromId(id)) {
+									reciepents.add(id);
+								}
 							}
-							long id = Long.valueOf(toId);
-							if (checkIfActiveUserFromId(id)) {
-								reciepents.add(id);
-							}
-						}
 
-						NotificationContext notification = new NotificationContext();
-						notification.setInfo((String) obj.get("message"));
-						int type = (int) obj.get("activityType");
-						notification.setNotificationType(EventType.valueOf(type));
-						NotificationAPI.sendNotification(reciepents, notification);
-					}
+							NotificationContext notification = new NotificationContext();
+							notification.setInfo((String) obj.get("message"));
+							int type = (int) obj.get("activityType");
+							notification.setNotificationType(EventType.valueOf(type));
+							NotificationAPI.sendNotification(reciepents, notification);
+						}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					LOGGER.error("Exception occurred ", e);
@@ -426,34 +429,58 @@ public enum ActionType {
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				if (obj != null && FacilioProperties.isProduction()) {
+//				if (obj != null && FacilioProperties.isProduction()) {
 					String ids = (String) obj.get("id");
-
 					if (!StringUtils.isEmpty(ids)) {
-						List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(ids);
-						LOGGER.info("Sending push notifications for ids : "+ids);
-						if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
-							LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
-							for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
-								if (mobileInstanceSetting != null) {
-									// content.put("to",
-									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-									obj.put("to", mobileInstanceSetting.getLeft());
-
-									Map<String, String> headers = new HashMap<>();
-									headers.put("Content-Type", "application/json");
-									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
-
-									String url = "https://fcm.googleapis.com/fcm/send";
-
-									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
-//									System.out.println("Push notification sent");
-//									System.out.println(obj.toJSONString());
-								}
+						String[] toList = ids.trim().split(",");
+						for (String toId : toList) {
+							if (toId.isEmpty()) {
+								continue;
 							}
+							long id = Long.valueOf(toId);
+							UserNotificationContext userNotification = UserNotificationContext.instance(obj);
+							User user = new User();
+							user.setId(id);
+							userNotification.setUser(user);
+							userNotification.setModuleId(currentRule.getModuleId());
+							userNotification.setSiteId(currentRule.getSiteId());
+							userNotification.setParentId((long) context.getOrDefault("recordId", -1));
+							FacilioChain chain = TransactionChainFactoryV3.addRecords();
+							FacilioContext notificationContext = chain.getContext();
+							notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));
+							notificationContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_NOTIFICATION);
+							Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
+
+							if (isPushNotification != null && isPushNotification ) {
+								notificationContext.put(FacilioConstants.ContextNames.DATA, obj);
+							}
+							chain.execute();
 						}
+						// Moving push notification Post transcation after notification Context is inserted
+//						List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(ids);
+//						LOGGER.info("Sending push notifications for ids : "+ids);
+//						if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
+//							LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
+//							for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
+//								if (mobileInstanceSetting != null) {
+//									// content.put("to",
+//									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
+//									obj.put("to", mobileInstanceSetting.getLeft());
+//
+//									Map<String, String> headers = new HashMap<>();
+//									headers.put("Content-Type", "application/json");
+//									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
+//
+//									String url = "https://fcm.googleapis.com/fcm/send";
+//
+//									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
+////									System.out.println("Push notification sent");
+////									System.out.println(obj.toJSONString());
+//								}
+//							}
+//						}
 					}
-				}
+				// }
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -518,7 +519,8 @@ public class ActionAPI {
 		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
 		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
-		
+		pushNotificationTemplate.setApplication((long) action.getTemplateJson().get("application"));
+		pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
 		action.setTemplate(pushNotificationTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
 	}
