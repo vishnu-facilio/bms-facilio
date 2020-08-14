@@ -86,24 +86,14 @@ public class FacilioSSOAction extends FacilioAction {
 		String samlRequest = samlClient.getSAMLRequest();
 		
 		String relayState = (getRelay() != null && getRelay().trim().isEmpty()) ? getRelay() : null;
-		
-		String ssoURL = ssoConfig.getLoginUrl() + "?SAMLRequest=" + URLEncoder.encode(samlRequest, StandardCharsets.UTF_8.toString());
+
+		URIBuilder builder = new URIBuilder(ssoConfig.getLoginUrl());
+		builder.addParameter("SAMLRequest", samlRequest);
 		if (relayState != null) {
-			ssoURL += "&RelayState=" + URLEncoder.encode(relayState, StandardCharsets.UTF_8.toString());
+			builder.addParameter("RelayState", relayState);
 		}
 
-		try {
-			URIBuilder builder = new URIBuilder(ssoConfig.getLoginUrl());
-			builder.addParameter("SAMLRequest", samlRequest);
-			if (relayState != null) {
-				builder.addParameter("RelayState", relayState);
-			}
-
-			LOGGER.log(Level.SEVERE, "logging login url " + builder.build().toURL().toString());
-		} catch (Exception e) {
-			// IGNORE
-		}
-
+		String ssoURL = builder.build().toURL().toString();
 
 		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
 		response.sendRedirect(ssoURL);
