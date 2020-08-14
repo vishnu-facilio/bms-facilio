@@ -438,6 +438,7 @@ public enum ActionType {
 								continue;
 							}
 							long id = Long.valueOf(toId);
+							LOGGER.info("Notification Modules entry : "+ id);
 							UserNotificationContext userNotification = UserNotificationContext.instance(obj);
 							User user = new User();
 							user.setId(id);
