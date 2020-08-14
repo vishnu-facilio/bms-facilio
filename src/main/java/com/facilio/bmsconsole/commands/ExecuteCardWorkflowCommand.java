@@ -24,7 +24,7 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
 		Long cardId = (Long) context.get(FacilioConstants.ContextNames.CARD_ID);
-		String cardFilters = (String) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
+		
 		
 		if (cardId != null && cardContext == null) {
 			
@@ -44,9 +44,10 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 				throw new IllegalArgumentException("No such card found with the given id.");
 			}
 		}
-		if (cardFilters != null) {
-			cardContext.setCardFilters(FacilioUtil.parseJson(cardFilters));
-		}
+		
+			JSONObject cardFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
+			cardContext.setCardFilters(cardFilters);
+		
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
 		if (cl != null) {

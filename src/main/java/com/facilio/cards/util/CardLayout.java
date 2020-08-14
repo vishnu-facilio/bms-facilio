@@ -464,7 +464,7 @@ public enum CardLayout {
 			
 			JSONObject cardParams = cardContext.getCardParams();
 			if (cardContext.getCardFilters() != null) {
-				cardParams.put("filters", cardContext.getCardFilters());
+				cardParams.put("cardFilters", cardContext.getCardFilters());
 			}
 			
 			List<Object> paramsList = new ArrayList<Object>();

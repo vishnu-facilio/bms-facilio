@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 
 public class CardAction extends FacilioAction {
 	
@@ -34,24 +36,39 @@ public class CardAction extends FacilioAction {
 		return this.cardId;
 	}
 	
-	private String cardFilters;
 	
-
+	private String cardFilter;
 	
-	public String getCardFilters() {
-		return cardFilters;
+	public String getCardFilters()
+	{
+		
+		return this.cardFilter;
+	}
+	
+	public  JSONObject getCardFilterJson() throws ParseException
+	{
+		if(this.cardFilter!=null)
+		{
+			return FacilioUtil.parseJson(this.cardFilter);
+		}
+		else 
+		{
+			return null;
+		}
+	}
+	
+	public void setCardFilters(String cardFilter)
+	{
+		this.cardFilter=cardFilter;
 	}
 
-	public void setCardFilters(String cardFilters) {
-		this.cardFilters = cardFilters;
-	}
 
 	public String getCardData() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.getExecuteCardWorkflowChain();
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
-		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, cardFilters);
+		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
 		
 		chain.execute();
 			
