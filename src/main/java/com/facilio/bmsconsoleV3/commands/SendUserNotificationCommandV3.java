@@ -36,9 +36,11 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
 
     @Override
     public boolean postExecute() throws Exception {
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        String moduleName = (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME, null);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<UserNotificationContext> records = recordMap.get(moduleName);
+        if (moduleName != null) {
+            List<UserNotificationContext> records = recordMap.get(moduleName);
+        }
         JSONObject obj = (JSONObject) context.get(FacilioConstants.ContextNames.DATA);
         if (obj != null && FacilioProperties.isProduction()) {
             String ids = (String) obj.get("id");

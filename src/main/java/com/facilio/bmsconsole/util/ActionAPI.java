@@ -513,7 +513,7 @@ public class ActionAPI {
 		checkAndSetWorkflow(action.getTemplateJson(), whatsappMessageTemplate);
 	}
 	
-	private static void setMobileTemplate(ActionContext action) {
+	private static void setMobileTemplate(ActionContext action) throws Exception {
 		PushNotificationTemplate pushNotificationTemplate = new PushNotificationTemplate();
 		pushNotificationTemplate.setTo((String) action.getTemplateJson().get("id"));
 		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
@@ -522,6 +522,9 @@ public class ActionAPI {
 		if (action.getTemplateJson().containsKey("application")) {
 			pushNotificationTemplate.setApplication(((Number) action.getTemplateJson().get("application")).longValue());
 			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
+		} else {
+			// should be removed once the application id is migrated in ActionArray in SLA
+			pushNotificationTemplate.setApplication(ApplicationApi.getApplicationIdForLinkName("newApp"));
 		}
 		action.setTemplate(pushNotificationTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
