@@ -31,7 +31,8 @@ public class BillTariffPageFactory extends PageFactory {
 		
 	     PageWidget tariffInfo= new PageWidget(PageWidget.WidgetType.TARIFF_INFORMATION);
 	     tariffInfo.addToLayoutParams(tab1Sec2, 24, 10);
-	      tab1Sec2.addWidget(tariffInfo);
+	     tariffInfo.addToWidgetParams("hideBg", true);
+	     tab1Sec2.addWidget(tariffInfo);
 		return page;
 	}
 }
