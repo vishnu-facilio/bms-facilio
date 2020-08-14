@@ -10,8 +10,8 @@ Map cardLayout(Map params) {
         if(params.cardFilters!=null)
         {
             cardFilters=params.cardFilters;
-            startTime=cardFilters.startTime
-            endTime-cardFilters.endTime;
+            startTime=cardFilters.startTime;
+            endTime=cardFilters.endTime;
             period=cardFilters.dateLabel;
             dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
         }
