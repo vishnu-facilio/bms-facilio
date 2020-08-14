@@ -158,7 +158,7 @@ public class ChangeNameLocalIdCommand extends FacilioCommand {
     }
 
     private void validateFieldChange(FacilioModule module, List<FacilioForm> formList) throws Exception {
-        if (module.isCustom()) {
+        if (!module.isCustom()) {
             throw new IllegalArgumentException("Cannot change system modules");
         }
 
