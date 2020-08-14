@@ -7,29 +7,22 @@ Map cardLayout(Map params) {
         date = new NameSpace("date");
         dateRangeObj = null;
         period = null;
-        if (params.dateRange != null) {
+
+        if (params.cardFilters != null ) {
+            cardFilters=params.cardFilters;
+            startTime = cardFilters.startTime;
+            endTime = cardFilters.endTime;            
+            dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
+            period=cardFilters.dateLabel;
+        }
+        else if (params.dateRange != null) {
             dateRangeObj = date.getDateRange(params.dateRange);
             period = params.dateRange;
         } else {
             dateRangeObj = date.getDateRange("Current Month");
             period = "Last Value";
         }
-        if (params.filters != null && params.filters.ttime != null && params.filters.ttime.value != null && params.filters.ttime.value.size() == 2) {
-            startTimeStr = params.filters.ttime.value[0];
-            endTimeStr = params.filters.ttime.value[1];
-            startTime = new NameSpace("number").longValue(startTimeStr);
-            endTime = new NameSpace("number").longValue(endTimeStr);
-
-            dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
-  
-			if (params.filters.ttime.label != null) {
-                period = params.filters.ttime.label;
-            }
-            else {
-                dateNs = new NameSpace("date");
-  			    period = dateNs.getFormattedTime(startTime,"dd-MMM-yyyy") + " to " + dateNs.getFormattedTime(startTime,"dd-MMM-yyyy");
-            }
-        }
+    
         db = {
             criteria: [parentId == (params.reading.parentId) && ttime == dateRangeObj],
             field: params.reading.fieldName,
