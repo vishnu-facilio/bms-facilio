@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -39,7 +40,7 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<UserNotificationContext> records = recordMap.get(moduleName);
         JSONObject obj = (JSONObject) context.get(FacilioConstants.ContextNames.DATA);
-        if (obj != null && FacilioProperties.isProduction()) {
+        if (obj != null && (FacilioProperties.isProduction() || AccountUtil.getCurrentOrg().getId() == 155)) {
             String ids = (String) obj.get("id");
             if (!StringUtils.isEmpty(ids)) {
                 List<Pair<String, Boolean>> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(ids);
