@@ -133,6 +133,9 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.Tenant.NEWS_AND_INFORMATION, getNewsAndInformationModule());
 		moduleMap.put(ContextNames.Tenant.DEALS_AND_OFFERS, getDealsAndOffersModule());
 		moduleMap.put(ContextNames.Tenant.NEIGHBOURHOOD, getNeighbourhoodModule());
+		moduleMap.put(ContextNames.Tenant.ANNOUNCEMENT, getAnnouncementModule());
+		moduleMap.put(ContextNames.Tenant.ADMIN_DOCUMENTS, getAdminDocumentsModule());
+		moduleMap.put(ContextNames.Tenant.CONTACT_DIRECTORY, getContactDirectoryModule());
 
 		return moduleMap;
 	}
