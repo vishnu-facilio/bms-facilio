@@ -308,8 +308,10 @@ public class SqliteBridge {
     private static Point toNiagaraPoint(Map<String, Object> point) throws Exception {
         if (point != null) {
             NiagaraPointContext newPoint = new NiagaraPointContext();
-            if (containsCheck(AgentConstants.PATH, point)) {
-                newPoint.setPath((String) point.get(AgentConstants.PATH));
+            if (containsCheck("instance", point)) {
+                newPoint.setPath((String) point.get("instance"));
+            } else {
+                throw new Exception("instance key not found");
             }
             toPoint(newPoint, point);
             return newPoint;
