@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.visitorlog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +14,16 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
+import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 
 public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
 	
@@ -55,7 +61,7 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         					recordIds = checkInBaseVisitIds;
         				}
         				else if(inviteBaseVisit != null) {
-//            				recordIds.add(0, inviteBaseVisit.getId());
+        					context.put(Constants.RECORD_ID_LIST, Collections.singletonList(inviteBaseVisit.getId()));
         					recordIds = Collections.singletonList(inviteBaseVisit.getId());
         				}
             			List<Object> recordIdParam = new ArrayList<Object>();
@@ -64,14 +70,21 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         			}
         		}	
         	}
-//        	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty()){
-//        		if(queryParams.get("contactNumber").get(0) != null && (Long)queryParams.get("contactNumber").get(0) != -1l) {
-//        			recordIds.add(0, (Long)queryParams.get("contactNumber").get(0));
-//        			List<Object> recordIdParam = new ArrayList<Object>();
-//        			recordIdParam.add(queryParams.get("contactNumber").get(0));
-//        			queryParams.put("id", recordIdParam);
-//        		}	
-//        	}
+        	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty()){
+        		if(StringUtils.isNotEmpty((String)queryParams.get("contactNumber").get(0)) && moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG) && (Boolean)queryParams.get("checkOut").get(0) != null && (Boolean)queryParams.get("checkOut").get(0)) {	
+        			VisitorLogContextV3 activeLog = V3VisitorManagementAPI.checkOutVisitorLog((String)queryParams.get("contactNumber").get(0), (FacilioContext)context);
+        			if(activeLog != null) {
+        				context.put(Constants.RECORD_ID_LIST, Collections.singletonList(activeLog.getId()));
+        				context.put(Constants.RECORD_ID, activeLog.getId());
+        				context.put("id", activeLog.getId());
+    					recordIds = Collections.singletonList(activeLog.getId());
+        				
+            			List<Object> recordIdParam = new ArrayList<Object>();
+            			recordIdParam.addAll(recordIds);
+            			queryParams.put("id", recordIdParam);
+        			}
+        		}	
+        	}
         	else if(queryParams.containsKey("recordId") && queryParams.get("recordId") != null && !queryParams.get("recordId").isEmpty()){
         		if(queryParams.get("recordId").get(0) != null && (Long)queryParams.get("recordId").get(0) != -1l) {
         			recordIds.add(0, (Long)queryParams.get("recordId").get(0));
@@ -81,9 +94,8 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         		}	
         	}
         	else {
-        		throw new IllegalArgumentException("Please provide a valid passcode or qr");
-        	}
-        		
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please input a valid passcode or qr");
+        	}	
         }
 	    
 		return false;

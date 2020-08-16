@@ -3449,12 +3449,30 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getBaseVisitorLogCheckInModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.BASE_VISIT);
+		module.setDisplayName("Base Visits");
+		module.setTableName("BaseVisit");
+		return module;
+	}
+	
 	public static FacilioModule getVisitorLogCheckInModule()
 	{
 		FacilioModule module=new FacilioModule();
 		module.setName(ContextNames.VISITOR_LOG);
 		module.setDisplayName("Visits");
 		module.setTableName("VisitorLog");
+		return module;
+	}
+	
+	public static FacilioModule getInviteVisitorLogModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.INVITE_VISITOR);
+		module.setDisplayName("Invites");
+		module.setTableName("InviteVisitor");
 		return module;
 	}
 	

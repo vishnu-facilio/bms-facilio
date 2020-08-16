@@ -412,7 +412,7 @@ public class APIv3Config {
                     .showStateFlowList()
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
-                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
+//                    .afterFetch(new GetTriggerForRecurringLogCommandV3())
                 .build();
     }
     

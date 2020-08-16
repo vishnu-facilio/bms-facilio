@@ -30,7 +30,6 @@ public class BaseVisitContextV3 extends V3Context {
 	private VendorContext vendor;
     private Long sourceId;
     private BaseVisitContextV3.Source source;
-    private PMTriggerContext trigger;
     private String qrUrl;
     private User requestedBy; 
     private Boolean isReturningVisitor;
@@ -205,14 +204,6 @@ public class BaseVisitContextV3 extends V3Context {
             }
             return null;
         }
-    }
-    
-    public PMTriggerContext getTrigger() {
-        return trigger;
-    }
-
-    public void setTrigger(PMTriggerContext trigger) {
-        this.trigger = trigger;
     }
 
     public String getQrUrl() {

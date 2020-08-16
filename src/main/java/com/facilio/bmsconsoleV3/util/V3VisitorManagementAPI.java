@@ -347,17 +347,17 @@ public class V3VisitorManagementAPI {
         builder.fetchSupplements(additionaLookups);
 
         VisitorLogContextV3 records = builder.fetchFirst();
-        if(records != null && fetchTriggers) { // && records.isRecurring() --> Include in this condition
-            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .select(FieldFactory.getVisitorLogTriggerFields())
-                    .table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
-                    .andCondition(CriteriaAPI.getCondition("VISITOR_LOG_ID", "pmId", String.valueOf(records.getId()), NumberOperators.EQUALS));
-            List<Map<String, Object>> map = selectBuilder.get();
-            if(CollectionUtils.isNotEmpty(map)) {
-                records.setTrigger(FieldUtil.getAsBeanFromMap(map.get(0), PMTriggerContext.class));
-            }
-
-        }
+//        if(records != null && fetchTriggers) { // && records.isRecurring() --> Include in this condition
+//            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//                    .select(FieldFactory.getVisitorLogTriggerFields())
+//                    .table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
+//                    .andCondition(CriteriaAPI.getCondition("VISITOR_LOG_ID", "pmId", String.valueOf(records.getId()), NumberOperators.EQUALS));
+//            List<Map<String, Object>> map = selectBuilder.get();
+//            if(CollectionUtils.isNotEmpty(map)) {
+//                records.setTrigger(FieldUtil.getAsBeanFromMap(map.get(0), PMTriggerContext.class));
+//            }
+//
+//        }
         return records;
 
     }
@@ -853,9 +853,128 @@ public class V3VisitorManagementAPI {
             updateBuilder.ignoreSplNullHandling();
             updateBuilder.updateViaMap(updateMap);
         }
+    }
+    
+    public static void updateVisitorLogCheckInCheckoutTimeFromInviteVisitor(VisitorLogContextV3 vLog, boolean isCheckIn, long time, InviteVisitorContextV3 inviteVisitorContext) throws Exception {
 
+        if(vLog.getId() > 0) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+            Map<String, Object> updateMap = new HashMap<>();
+            
+            if(StringUtils.isEmpty(vLog.getVisitorPhone()) && vLog.getVisitor() != null) {
+                if(StringUtils.isEmpty(vLog.getVisitor().getName())) {
+                    vLog.setVisitor(getVisitor(vLog.getVisitor().getId(), null));
+                }
+                FacilioField visitorNameField = modBean.getField("visitorName", module.getName());
+                FacilioField visitorEmailField = modBean.getField("visitorEmail", module.getName());
+                FacilioField visitorPhoneField = modBean.getField("visitorPhone", module.getName());
+
+                updateMap.put("visitorName", vLog.getVisitor().getName());
+                updateMap.put("visitorEmail", vLog.getVisitor().getEmail());
+                updateMap.put("visitorPhone", vLog.getVisitor().getPhone());
+
+                updatedfields.add(visitorNameField);
+                updatedfields.add(visitorEmailField);
+                updatedfields.add(visitorPhoneField);
+            }
+
+            if(!isCheckIn) {
+                FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
+                updateMap.put("checkOutTime", time);
+                      
+                FacilioField overStayField = modBean.getField("isOverStay", module.getName());
+                boolean isOverStay = false;
+                if(inviteVisitorContext.getExpectedCheckOutTime() != null && time - inviteVisitorContext.getExpectedCheckOutTime() > 0) {
+                    isOverStay = true;
+                }
+                else {
+                    isOverStay = false;
+                } 
+                updateMap.put("isOverStay", isOverStay);
+                updatedfields.add(checkOutTimeField);
+                updatedfields.add(overStayField);
+                
+                vLog.setCheckOutTime(time);
+                vLog.setIsOverStay(isOverStay);
+                
+                UpdateRecordBuilder<VisitorLogContextV3> updateBuilder = new UpdateRecordBuilder<VisitorLogContextV3>()
+                        .module(module)
+                        .fields(updatedfields)
+                        .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
+                        ;
+                updateBuilder.ignoreSplNullHandling();
+                updateBuilder.updateViaMap(updateMap);
+            }
+            else {
+//                FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
+//                updatedfields.add(checkInTimeField);
+//                updateMap.put("checkInTime", time);
+//                vLog.setCheckInTime(time);
+                if(inviteVisitorContext.getExpectedVisitDuration() != null && inviteVisitorContext.getExpectedVisitDuration() > 0) {
+                    FacilioModule inviteVisitorModule = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+                    FacilioField expectedCheckOutTimeField = modBean.getField("expectedCheckOutTime", inviteVisitorModule.getName());
+                    updateMap.put("expectedCheckOutTime", time + inviteVisitorContext.getExpectedVisitDuration());
+                    updatedfields.add(expectedCheckOutTimeField);
+                    
+                    UpdateRecordBuilder<InviteVisitorContextV3> updateBuilder = new UpdateRecordBuilder<InviteVisitorContextV3>()
+                            .module(inviteVisitorModule)
+                            .fields(updatedfields)
+                            .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), inviteVisitorModule))
+                            ;
+                    updateBuilder.ignoreSplNullHandling();
+                    updateBuilder.updateViaMap(updateMap);
+                }
+            }   
+        }
     }
 
+    public static void updateInviteVisitorInvitationStatus(InviteVisitorContextV3 vLog, boolean isInvitationSent) throws Exception {
+
+        if(vLog.getId() > 0) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+
+            Map<String, Object> updateMap = new HashMap<>();
+            FacilioField invitationSentField = modBean.getField("isInvitationSent", module.getName());
+            updateMap.put("isInvitationSent", isInvitationSent);
+            updatedfields.add(invitationSentField);
+
+            UpdateRecordBuilder<V3VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<V3VisitorLoggingContext>()
+                    .module(module)
+                    .fields(updatedfields)
+                    .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
+                    ;
+            updateBuilder.ignoreSplNullHandling();
+            updateBuilder.updateViaMap(updateMap);
+        }
+
+    }
+    
+    public static void updateInviteVisitorHasCheckedIn(InviteVisitorContextV3 vLog, boolean hasCheckedIn) throws Exception {
+
+        if(vLog.getId() > 0) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+
+            Map<String, Object> updateMap = new HashMap<>();
+            FacilioField hasCheckedInField = modBean.getField("hasCheckedIn", module.getName());
+            updateMap.put("hasCheckedIn", hasCheckedIn);
+            updatedfields.add(hasCheckedInField);
+
+            UpdateRecordBuilder<V3VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<V3VisitorLoggingContext>()
+                    .module(module)
+                    .fields(updatedfields)
+                    .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
+                    ;
+            updateBuilder.ignoreSplNullHandling();
+            updateBuilder.updateViaMap(updateMap);
+        }
+    }
+    
     public static void updateVisitorLogInvitationStatus(V3VisitorLoggingContext vLog, boolean isInvitationSent) throws Exception {
 
         if(vLog.getId() > 0) {
@@ -898,6 +1017,27 @@ public class V3VisitorManagementAPI {
         }
 
     }
+    
+    public static VisitorLogContextV3 checkOutVisitorLog(String visitorPhoneNumber, FacilioContext context) throws Exception {
+		
+		if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
+			V3VisitorContext visitor = getVisitor(-1L, visitorPhoneNumber);
+			if(visitor == null) {
+				throw new IllegalArgumentException("Invalid phone number");
+			}
+			VisitorLogContextV3 activeLog = getVisitorLog(visitor.getId(), true, -1);
+			if(activeLog == null) {
+				throw new IllegalArgumentException("No active CheckIn Log found");
+			}
+			List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, activeLog, context);
+			activeLog.setCheckOutTime(System.currentTimeMillis());
+			long nextTransitionId = nextStateRule.get(0).getId();
+            context.put("stateTransitionId", nextTransitionId);
+            return activeLog;
+		}
+		return null;
+		
+	}
 
     public static void getActiveLogExcludingCurrentLog(V3VisitorLoggingContext record, FacilioContext context) throws Exception {
 
@@ -1038,10 +1178,10 @@ public class V3VisitorManagementAPI {
 
 
     }
-    public static void updateVisitorRollUps(VisitorLogContextV3 visitorLog, VisitorLogContextV3 oldRecord) throws Exception {
+    public static void updateVisitorRollUps(VisitorLogContextV3 updatedVisitorLog, VisitorLogContextV3 oldRecord) throws Exception {
 
-        if(visitorLog != null) {
-            VisitorLogContextV3 updatedVisitorLog = getVisitorLogTriggers(visitorLog.getId(), null, false);
+        if(updatedVisitorLog != null) {
+//            VisitorLogContextV3 updatedVisitorLog = getVisitorLogTriggers(visitorLog.getId(), null, false);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
             Map<String, Object> updateMap = new HashMap<>();
@@ -1058,7 +1198,7 @@ public class V3VisitorManagementAPI {
 
             updatedfields.add(visitorType);
 
-            updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
+            updatevisitor(updatedVisitorLog.getVisitor().getId(),updatedfields, updateMap);
         }
 
     }

@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommand
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
 import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotificationCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.SetInviteStatusConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -27,7 +28,7 @@ public class ReadOnlyChainFactoryV3 {
     
     public static FacilioChain getInviteVisitorLogBeforeFetchOnListChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new SetInviteConditionForVisitsListCommandV3());
+        c.addCommand(new SetInviteStatusConditionForVisitsListCommandV3());
         c.addCommand(new LoadVisitorLoggingLookupCommandV3());
         return c;
     }

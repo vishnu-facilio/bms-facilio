@@ -46,12 +46,14 @@ public class LoadVisitorLoggingLookupCommandV3 extends FacilioCommand {
         additionaLookups.add(hostField);
         additionaLookups.add(moduleStateField);
         additionaLookups.add(visitorTypefield);
-
         additionaLookups.add(requestedBy);
         
-        if(moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG)) {
+        if(moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG) || moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOGGING)) {
         	 LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
              additionaLookups.add(visitedSpaceField);
+             if(moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG)){
+            	 additionaLookups.add((LookupField) fieldsAsMap.get("invite"));
+             }
         }
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);

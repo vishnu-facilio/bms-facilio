@@ -22,6 +22,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 
 public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 
@@ -42,11 +44,13 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 								if(inviteVisit.getExpectedCheckInTime() > 0) {
 									if(currentTime < inviteVisit.getExpectedCheckInTime() && !DateTimeUtil.isSameDay(currentTime, inviteVisit.getExpectedCheckInTime()))
 									{
-										throw new IllegalArgumentException("Invalid checkin time");
+						                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid checkin time");
+
 									}
 								}
 								if(inviteVisit.getExpectedCheckOutTime() > 0 && currentTime > inviteVisit.getExpectedCheckOutTime()) {
-									throw new IllegalArgumentException("Invalid checkout time");
+					                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Passcode/qr Expired");
+
 								}
 								if(inviteVisit != null) {
 									List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(inviteVisit.getStateFlowId(), inviteVisit.getModuleState().getId(), FacilioConstants.ContextNames.INVITE_VISITOR, inviteVisit, (FacilioContext)context);
@@ -65,7 +69,8 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 									validChildLog = V3VisitorManagementAPI.getValidChildLogForToday(inviteVisit.getId(), currentTime, false, -1); //recurring change inviteVisitid
 								}
 								if(validChildLog == null) {
-									throw new IllegalArgumentException("No valid invite log found for the day");
+					                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No valid invite log found for the day");
+
 								}
 								baseVisit = validChildLog;
 								if(validChildLog != null) {
@@ -87,11 +92,12 @@ public class ValidateBaseVisitDetailAndLogCommand extends FacilioCommand{
 							}
 						}
 						else {
-							throw new IllegalArgumentException("No active visitor logs");
+			                throw new RESTException(ErrorCode.VALIDATION_ERROR, "No active visitor logs");
 						}
 					}
 					else {
-						throw new IllegalArgumentException("Invalid Passcode/QR");
+		                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Passcode/QR");
+
 					}
 					
 				}
