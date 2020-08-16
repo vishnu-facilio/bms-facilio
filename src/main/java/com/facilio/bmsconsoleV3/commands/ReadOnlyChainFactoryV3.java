@@ -33,6 +33,13 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
     
+    public static FacilioChain getVisitorLogBeforeFetchOnSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadRecordIdForPassCodeCommandV3());
+        c.addCommand(new LoadVisitorLoggingLookupCommandV3());
+        return c;
+    }
+ 
     public static FacilioChain getBaseVisitBeforeFetchOnListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new LoadRecordIdForPassCodeCommandV3());

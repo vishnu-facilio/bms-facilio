@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorComm
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -385,16 +386,16 @@ public class APIv3Config {
     public static Supplier<V3Config> getVisitorLog() {
         return () -> new V3Config(VisitorLogContextV3.class)
                 .create()
-                    .beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnCreateChain())
-                    .afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnCreateChain())
+                	.beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnCreateChain())
+                	.afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnCreateChain())
                 .update()
-                   .beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnUpdateChain())
-                   .afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnUpdateChain())
+            		.beforeSave(TransactionChainFactoryV3.getVisitorLogBeforeSaveOnUpdateChain())
+            		.afterTransaction(TransactionChainFactoryV3.getVisitorLogAfterSaveOnUpdateChain())
                 .list()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
                     .showStateFlowList()
                 .summary()
-                    .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
+                    .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLogBeforeFetchOnSummaryChain())
                 .build();
     }
     

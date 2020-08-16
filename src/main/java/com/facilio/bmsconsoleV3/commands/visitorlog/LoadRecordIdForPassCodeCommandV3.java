@@ -13,14 +13,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.BaseVisitContextV3;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -30,7 +36,8 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
 	@Override
     public boolean executeCommand(Context context) throws Exception {
 		
-		String moduleName = Constants.getModuleName(context);   
+		String moduleName = Constants.getModuleName(context); 
+		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
         List<Long> recordIds = (List<Long>)context.get(Constants.RECORD_ID_LIST);
         
@@ -70,8 +77,8 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         			}
         		}	
         	}
-        	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty()){
-        		if(StringUtils.isNotEmpty((String)queryParams.get("contactNumber").get(0)) && moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG) && (Boolean)queryParams.get("checkOut").get(0) != null && (Boolean)queryParams.get("checkOut").get(0)) {	
+        	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty() && queryParams.containsKey("checkOut") && queryParams.get("checkOut") != null && !queryParams.get("checkOut").isEmpty()){
+        		if(StringUtils.isNotEmpty((String)queryParams.get("contactNumber").get(0)) && moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG) && StringUtils.isNotEmpty((String)queryParams.get("checkOut").get(0)) && Boolean.parseBoolean((String)queryParams.get("checkOut").get(0))) {	
         			VisitorLogContextV3 activeLog = V3VisitorManagementAPI.checkOutVisitorLog((String)queryParams.get("contactNumber").get(0), (FacilioContext)context);
         			if(activeLog != null) {
         				context.put(Constants.RECORD_ID_LIST, Collections.singletonList(activeLog.getId()));
@@ -82,6 +89,17 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
             			List<Object> recordIdParam = new ArrayList<Object>();
             			recordIdParam.addAll(recordIds);
             			queryParams.put("id", recordIdParam);
+            			
+            			if(MapUtils.isNotEmpty(recordMap)){
+            				List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
+                			if(CollectionUtils.isNotEmpty(visitorLogs) && visitorLogs.get(0).getId() == activeLog.getId()) {
+                				visitorLogs.get(0).setCheckOutTime(System.currentTimeMillis());
+                				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, activeLog, (FacilioContext)context);
+                    			long nextTransitionId = nextStateRule.get(0).getId();
+                                context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+
+                			}
+            			}
         			}
         		}	
         	}

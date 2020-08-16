@@ -1030,9 +1030,9 @@ public class V3VisitorManagementAPI {
 				throw new IllegalArgumentException("No active CheckIn Log found");
 			}
 			List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, activeLog, context);
-			activeLog.setCheckOutTime(System.currentTimeMillis());
+//			activeLog.setCheckOutTime(System.currentTimeMillis());
 			long nextTransitionId = nextStateRule.get(0).getId();
-            context.put("stateTransitionId", nextTransitionId);
+//            context.put("stateTransitionId", nextTransitionId);
             return activeLog;
 		}
 		return null;
