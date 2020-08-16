@@ -16,6 +16,8 @@ import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
+import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.point.Point;
@@ -144,6 +146,9 @@ public class SqliteBridge {
                         case LON_WORKS:
                             newController = toLonWorkControllerV2(controller);
                             break;
+                        case MISC:
+                            newController = toMiscControllerV2(controller);
+                            break;
                         /*case OPC_DA:
                             newController = toOpcDaControllerV2(controller);*/
                     }
@@ -227,6 +232,9 @@ public class SqliteBridge {
                                     case NIAGARA:
                                         newPoint = toNiagaraPoint(point);
                                         break;
+                                    case MISC:
+                                        newPoint = toMiscPoint(point);
+                                        break;
                                 }
                                 if (newPoint != null) {
                                     newPoint.setControllerId(newControllerId);
@@ -305,6 +313,16 @@ public class SqliteBridge {
         return (number.intValue() > 0);
     }
 
+    private static Point toMiscPoint(Map<String, Object> point) throws Exception {
+        if (point != null) {
+            MiscPoint newPoint = new MiscPoint();
+            toPoint(newPoint, point);
+            return newPoint;
+        } else {
+            throw new Exception("point is null");
+        }
+    }
+
     private static Point toNiagaraPoint(Map<String, Object> point) throws Exception {
         if (point != null) {
             NiagaraPointContext newPoint = new NiagaraPointContext();
@@ -377,6 +395,13 @@ public class SqliteBridge {
         controllerContext.setIpAddress(controller.getIpAddress());
         controllerContext.setNetworkNumber((int) controller.getNetworkNumber());
         controllerContext.setControllerType(FacilioControllerType.BACNET_IP.asInt());
+        toControllerV2(controllerContext, controller);
+        return controllerContext;
+    }
+
+    private static Controller toMiscControllerV2(ControllerContext controller) {
+        MiscController controllerContext = new MiscController();
+        controllerContext.setName(controller.getName());
         toControllerV2(controllerContext, controller);
         return controllerContext;
     }

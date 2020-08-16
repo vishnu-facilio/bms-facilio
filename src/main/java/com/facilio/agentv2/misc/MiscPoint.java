@@ -18,7 +18,8 @@ public class MiscPoint extends Point {
         super(agentId, controllerId);
     }
     @Deprecated
-    private MiscPoint() { }
+    public MiscPoint() {
+    }
 
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path;}
