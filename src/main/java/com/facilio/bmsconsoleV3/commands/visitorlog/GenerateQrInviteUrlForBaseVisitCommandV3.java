@@ -35,44 +35,44 @@ public class GenerateQrInviteUrlForBaseVisitCommandV3 extends FacilioCommand imp
         List<BaseVisitContextV3> inviteVisitors = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(inviteVisitors)) {
             for(BaseVisitContextV3 inviteVisitor : inviteVisitors) {
-                String passCode = VisitorManagementAPI.generatePassCode();
-                String qrCode = "visitorLog_" + passCode;
-                JSONObject size = new JSONObject();
-                size.put("width", 200);
-                size.put("height", 200);
-                String originalUrl = PdfUtil.exportUrlAsPublicFilePdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, size, -1,  FileInfo.FileFormat.IMAGE);
-                String baseUrl = FacilioProperties.getClientAppUrl();
-                if(!FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(originalUrl)) {
-                    inviteVisitor.setQrUrl(baseUrl.concat(originalUrl));
-                }
-                else {
-                    inviteVisitor.setQrUrl(originalUrl);
-                }
+            	if(StringUtils.isEmpty(inviteVisitor.getPassCode()) && StringUtils.isEmpty(inviteVisitor.getQrUrl())) {
+                    String passCode = VisitorManagementAPI.generatePassCode();
+                    String qrCode = "visitorLog_" + passCode;
+                    JSONObject size = new JSONObject();
+                    size.put("width", 200);
+                    size.put("height", 200);
+                    String originalUrl = PdfUtil.exportUrlAsPublicFilePdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, size, -1,  FileInfo.FileFormat.IMAGE);
+                    String baseUrl = FacilioProperties.getClientAppUrl();
+                    if(!FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(originalUrl)) {
+                        inviteVisitor.setQrUrl(baseUrl.concat(originalUrl));
+                    }
+                    else {
+                        inviteVisitor.setQrUrl(originalUrl);
+                    }
 
-                inviteVisitor.setPassCode(passCode);
+                    inviteVisitor.setPassCode(passCode);
 
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_VISIT);
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_VISIT);
 
+                    Map<String, Object> updateMap = new HashMap<>();
+                    FacilioField qrUrlField = modBean.getField("qrUrl", module.getName());
+                    FacilioField otpField = modBean.getField("passCode", module.getName());
 
-                Map<String, Object> updateMap = new HashMap<>();
-                FacilioField qrUrlField = modBean.getField("qrUrl", module.getName());
-                FacilioField otpField = modBean.getField("passCode", module.getName());
+                    updateMap.put("qrUrl", inviteVisitor.getQrUrl());
+                    updateMap.put("passCode", passCode);
 
-                updateMap.put("qrUrl", inviteVisitor.getQrUrl());
-                updateMap.put("passCode", passCode);
+                    List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+                    updatedfields.add(qrUrlField);
+                    updatedfields.add(otpField);
+                    UpdateRecordBuilder<BaseVisitContextV3> updateBuilder = new UpdateRecordBuilder<BaseVisitContextV3>()
+                            .module(module)
+                            .fields(updatedfields)
+                            .andCondition(CriteriaAPI.getIdCondition(inviteVisitor.getId(), module));
 
-                List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-                updatedfields.add(qrUrlField);
-                updatedfields.add(otpField);
-                UpdateRecordBuilder<BaseVisitContextV3> updateBuilder = new UpdateRecordBuilder<BaseVisitContextV3>()
-                        .module(module)
-                        .fields(updatedfields)
-                        .andCondition(CriteriaAPI.getIdCondition(inviteVisitor.getId(), module));
-
-                ;
-                updateBuilder.updateViaMap(updateMap);
-
+                    ;
+                    updateBuilder.updateViaMap(updateMap);  		
+            	}
             }
 
         }

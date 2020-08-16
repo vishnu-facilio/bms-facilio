@@ -41,12 +41,9 @@ public class AddNewVisitorWhileBaseVisitCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(visitorLogs)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Map<Long, VisitorSettingsContext> settingsMap = VisitorManagementAPI.getVisitorSettingsForType();
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
             List<FacilioField> fields = modBean.getAllFields(module.getName());
             for(BaseVisitContextV3 vL : visitorLogs) {
-
-                //need to change this to tenant contact context once host is changed to people lookup
 
                 if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
                     vL.setRequestedBy(AccountUtil.getCurrentUser());

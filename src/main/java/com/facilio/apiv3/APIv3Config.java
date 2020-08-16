@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorComm
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
@@ -412,6 +413,15 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new LoadVisitorLoggingLookupCommandV3())
                     .afterFetch(new GetTriggerForRecurringLogCommandV3())
+                .build();
+    }
+    
+    @Module("basevisit")
+    public static Supplier<V3Config> getBaseVisit() {
+        return () -> new V3Config(BaseVisitContextV3.class)
+                .summary()
+                    .beforeFetch(ReadOnlyChainFactoryV3.getBaseVisitBeforeFetchOnListChain())
+                    .afterFetch(new ValidateBaseVisitDetailAndLogCommand())
                 .build();
     }
 
