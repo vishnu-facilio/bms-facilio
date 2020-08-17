@@ -105,3 +105,6 @@ enums:
 
   - name: Group
     enumClassName: com.facilio.bmsconsoleV3.context.budget.AccountTypeContext$Group
+
+  - name: NewsType
+    enumClassName: com.facilio.bmsconsoleV3.context.tenantEngagement.NewsAndInformationContext$Type

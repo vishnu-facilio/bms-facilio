@@ -9,6 +9,23 @@ public class DealsAndOffersContext extends V3Context {
     private NeighbourhoodContext neighbourhood;
     private Long expiryDate;
     private Long startDate;
+    private Boolean active;
+
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean isActive() {
+        if (active != null) {
+            return active;
+        }
+        return false;
+    }
 
     public String getTitle() {
         return title;

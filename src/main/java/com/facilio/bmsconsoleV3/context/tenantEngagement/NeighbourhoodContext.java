@@ -9,6 +9,15 @@ public class NeighbourhoodContext extends V3Context {
     private String description;
     private Integer category;
     private LocationContext location;
+    private Long activeDealsCount;
+
+    public Long getActiveDealsCount() {
+        return activeDealsCount;
+    }
+
+    public void setActiveDealsCount(Long activeDealsCount) {
+        this.activeDealsCount = activeDealsCount;
+    }
 
     public LocationContext getLocation() {
         return location;

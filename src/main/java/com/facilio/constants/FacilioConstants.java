@@ -2038,6 +2038,8 @@ public class FacilioConstants {
 			classMap.put(Tenant.ANNOUNCEMENT, AnnouncementContext.class);
 			classMap.put(ContextNames.USER_NOTIFICATION, UserNotificationContext.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION, NewsAndInformationContext.class);
+			classMap.put(Tenant.NEIGHBOURHOOD, NeighbourhoodContext.class);
+			classMap.put(Tenant.DEALS_AND_OFFERS, DealsAndOffersContext.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Tenant.NEWS_AND_INFORMATION_SHARING, NewsAndInformationSharingContext.class);
 			classMap.put(Tenant.DEALS_AND_OFFERS_ATTACHMENTS, AttachmentV3Context.class);
