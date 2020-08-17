@@ -340,8 +340,10 @@ public class FacilioAuthAction extends FacilioAction {
 	public String lookup() {
 		String username = getUsername();
 		String domain = getDomain();
+		HttpServletRequest request = ServletActionContext.getRequest();
 		try {
-			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, domain);
+			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+			Map<String, Object> loginModes = IAMUserUtil.getLoginModes(username, domain, appdomainObj);
 			setJsonresponse(loginModes);
 		} catch (Exception e) {
 			e.printStackTrace();

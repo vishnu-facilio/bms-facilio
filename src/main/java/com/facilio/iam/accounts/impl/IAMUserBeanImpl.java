@@ -559,7 +559,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public Map<String, Object> getLoginModes(String userName, String domain) throws Exception {
+	public Map<String, Object> getLoginModes(String userName, String domain, AppDomain appDomain) throws Exception {
 		if (StringUtils.isEmpty(userName)) {
 			throw new IllegalArgumentException("user name is missing");
 		}
@@ -571,7 +571,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			orgId = appOrg.getOrgId();
 		}
 
-		final List<Map<String, Object>> userForUsername = getUserData(userName, orgId, null);
+		final List<Map<String, Object>> userForUsername = getUserData(userName, orgId, appDomain.getIdentifier());
 		final long userPresent = 1;
 		final long userNotPresent = 2;
 		final Map<String, Object> result = new HashMap<>();
