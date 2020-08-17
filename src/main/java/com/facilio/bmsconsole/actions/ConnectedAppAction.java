@@ -638,6 +638,7 @@ public class ConnectedAppAction extends FacilioAction {
 			customAttributes.put("ORG_NAME", AccountUtil.getCurrentOrg().getName());
 			customAttributes.put("ORG_DOMAIN", AccountUtil.getCurrentOrg().getDomain());
 			customAttributes.put("ORG_TIMEZONE", AccountUtil.getCurrentOrg().getTimezone());
+			customAttributes.put("CONNECTED_APP_ID", connectedApp.getId());
 
 			SAMLAttribute attr = new SAMLAttribute()
 					.setIssuer(issuer)
