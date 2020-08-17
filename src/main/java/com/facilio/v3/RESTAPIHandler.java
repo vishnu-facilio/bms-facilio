@@ -342,8 +342,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
 
         FacilioContext context = patchChain.getContext();
-
         Constants.setV3config(context, v3Config);
+        
+        if(record != null) {
+        	id = ((ModuleBaseWithCustomFields)record).getId();
+        }
         context.put(Constants.RECORD_ID, id);
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, summaryRecord);
