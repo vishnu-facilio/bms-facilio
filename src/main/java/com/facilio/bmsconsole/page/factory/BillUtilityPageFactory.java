@@ -26,6 +26,7 @@ public class BillUtilityPageFactory extends PageFactory {
 		
 		PageWidget electriycity= new PageWidget(PageWidget.WidgetType.UTILITY_CONNECTIONS, "utilityConnections");
 		electriycity.addToLayoutParams(tab1Sec1, 24, 10);
+		electriycity.addToWidgetParams("hideBg", true);
 		tab1Sec1.addWidget(electriycity);
 		
 		
