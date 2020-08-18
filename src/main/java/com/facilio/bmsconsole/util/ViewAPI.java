@@ -44,6 +44,39 @@ public class ViewAPI {
 		return getAllViews(-1, moduleName);
 	}
 	
+	public static long addViewGroup(ViewGroups viewGroup, long orgId) throws Exception {
+		viewGroup.setOrgId(orgId);
+		viewGroup.setId(-1);
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getViewGroupsModule().getTableName())
+				.fields(FieldFactory.getViewGroupFields());
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(viewGroup);
+		insertBuilder.addRecord(prop);
+		insertBuilder.save();
+		
+		return (long) prop.get("id");
+		
+	}
+	
+public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Exception {
+		
+		for(ViewGroups viewGroup: viewGroups)
+		{
+			int order = viewGroup.getSequenceNumber();
+			viewGroup.setSequenceNumber(order + 1000);
+			Map<String, Object> prop = FieldUtil.getAsProperties(viewGroup);
+			
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getViewGroupsModule().getTableName())
+					.fields(FieldFactory.getViewGroupFields())
+					.andCustomWhere("ID = ?", viewGroup.getId());
+
+			updateBuilder.update(prop);
+		}
+		
+	}
+	
 	public static List<ViewGroups> getAllGroups(long moduleId) throws Exception {
 		
 		List<ViewGroups> viewGroups = new ArrayList<>();

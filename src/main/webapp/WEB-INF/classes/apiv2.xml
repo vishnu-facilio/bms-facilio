@@ -891,6 +891,12 @@
 		<action name="deleteGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2deleteGroup">
 		</action>
+		<action name="customizeView"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeView">
+		</action>
+		<action name="customizeViewGroups"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeViewGroups">
+		</action>
 	</package>
 
 	<package name="viewListApiV2" namespace="/api/v2/views/module"

@@ -36,6 +36,9 @@ public class AddCVCommand extends FacilioCommand {
 		if(view != null) {
 			long viewId = view.getId();
 			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			if (view.getCriteria() != null) {
+				viewCriteria = view.getCriteria();
+			}
 			if(view.getIncludeParentCriteria()) {
 				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 				if (viewCriteria == null) {
@@ -111,21 +114,23 @@ public class AddCVCommand extends FacilioCommand {
 		if(viewSharing == null) {
 			viewSharing = new SharingContext<>();
 		}
-		FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
-		if(defaultView == null) {
-			SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
-			if (defaultAppSharing != null) {
-				viewSharing.add(defaultAppSharing);
-			}
-		}
-		else {
-			SharingContext<SingleSharingContext> appSharing = SharingAPI.getDefaultAppTypeSharing(defaultView);
-			if(CollectionUtils.isNotEmpty(appSharing)) {
-				viewSharing.addAll(appSharing);
-			}
-		}
+		
 
 		if (viewSharing != null && !viewSharing.isEmpty()) {
+			FacilioView defaultView = ViewFactory.getView(modBean.getModule(modId > 0 ? modId : view.getModuleId()), view.getName(), modBean);
+			if(defaultView == null) {
+				SingleSharingContext defaultAppSharing = SharingAPI.getCurrentAppTypeSharingForCustomViews();
+				if (defaultAppSharing != null) {
+					viewSharing.add(defaultAppSharing);
+				}
+			}
+			else {
+				SharingContext<SingleSharingContext> appSharing = SharingAPI.getDefaultAppTypeSharing(defaultView);
+				if(CollectionUtils.isNotEmpty(appSharing)) {
+					viewSharing.addAll(appSharing);
+				}
+			}
+			
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {

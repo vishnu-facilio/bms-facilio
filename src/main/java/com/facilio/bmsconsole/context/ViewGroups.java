@@ -13,6 +13,16 @@ public class ViewGroups extends ModuleBaseWithCustomFields{
 			
 	private List<FacilioView> views;
 	
+	private int sequenceNumber = -1;
+	
+	public int getSequenceNumber() {
+		return sequenceNumber;
+	}
+
+	public void setSequenceNumber(int sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
+
 	public List<FacilioView> getViews() {
 		return views;
 	}

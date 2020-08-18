@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewGroups;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -23,15 +24,10 @@ public class AddViewGroupCommand extends FacilioCommand {
 		if (viewGroup != null) {
 			viewGroup.setName(viewGroup.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getViewGroupsModule().getTableName())
-					.fields(FieldFactory.getViewGroupFields());
+			long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId());
 			
-			Map<String, Object> prop = FieldUtil.getAsProperties(viewGroup);
-			insertBuilder.addRecord(prop);
-			insertBuilder.save();
 			
-			viewGroup.setId((Long) prop.get("id"));
+			viewGroup.setId(groupId);
 			context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
 		}
 		return false;

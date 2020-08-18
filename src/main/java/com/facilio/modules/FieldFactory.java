@@ -3448,6 +3448,13 @@ public class FieldFactory {
 
         fields.add(getModuleIdField(module));
         
+        FacilioField groupOrder = new FacilioField();
+        groupOrder.setName("sequenceNumber");
+        groupOrder.setDataType(FieldType.NUMBER);
+        groupOrder.setColumnName("SEQUENCE_NUMBER");
+        groupOrder.setModule(module);
+        fields.add(groupOrder);
+        
         return fields;
 
     }

@@ -284,6 +284,35 @@ public class ViewAction extends FacilioAction {
 	return SUCCESS;
 }
 	
+	public String v2customizeViewGroups() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroupsList);
+		
+		FacilioChain addView = FacilioChainFactory.getViewGroupsCustomizeChain();
+		addView.execute(context);
+		
+		setResult("groupViews", (List<ViewGroups>) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
+				
+		return SUCCESS;
+	}
+	
+public String v2customizeView() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
+		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
+		
+		FacilioChain addView = FacilioChainFactory.getViewsListCustomizeChain();
+		addView.execute(context);
+		
+		setResult("groupViews", (List<ViewGroups>) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
+		
+		return SUCCESS;
+	}
+	
 	public String v2editView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -323,6 +352,7 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;	
 		
 	}
+	
 		
 	public String customizeView() throws Exception {
 		
@@ -404,6 +434,16 @@ public class ViewAction extends FacilioAction {
 		this.groupStatus = groupStatus;
 	}
 	
+	private List<ViewGroups> viewGroupsList;
+	
+	public List<ViewGroups> getViewGroupsList() {
+		return viewGroupsList;
+	}
+	public void setViewGroupsList(List<ViewGroups> viewGroupsList) {
+		this.viewGroupsList = viewGroupsList;
+	}
+
+
 	private ViewGroups viewGroup;
 
 	
