@@ -10,10 +10,37 @@ Map cardLayout(Map params) {
     if (params.excludeEmptyReadings != null) {
         excludeEmptyReadings = params.excludeEmptyReadings;
     }
-    dateRange = "Current Month";
-    if (params.dateRange != null) {
-        dateRange = params.dateRange;
+    period =null;
+    dateRangeObj=null;
+
+    
+  	date = new NameSpace("date");
+
+    if(params.cardFilters!=null)
+    {
+      cardFilters=params.cardFilters;
+      
+      startTime=cardFilters.startTime;
+      endTime=cardFilters.endTime;
+      period=cardFilters.dateLabel;
+      dateRangeObj= new NameSpace("dateRange").create(startTime,endTime);
+      
     }
+    else if(params.dateRange != null) 
+    {
+
+        period = params.dateRange;
+        dateRangeObj=date.getDateRange(period);
+       
+
+    }
+    else 
+    {
+      period = "Current Month";
+      dateRangeObj=date.getDateRange(period);
+      
+    }
+
   	sorting = params.sorting;
   	if (sorting == null) {
       sorting = {};
@@ -25,8 +52,8 @@ Map cardLayout(Map params) {
       perPage = 100;
     }
 
-    date = new NameSpace("date");
-    month = date.getDateRange(dateRange);
+    
+    
 
   	criteriaObj = null;
   	assetCategoryCriteria = [category == assetCategoryId];
@@ -112,7 +139,7 @@ Map cardLayout(Map params) {
                     fieldObj = new NameSpace("module").getField(column.fieldName, column.moduleName);
                     fieldMapInfo = fieldObj.asMap();
                     db = {
-                        criteria : [parentId == asset.id && ttime == month],
+                        criteria : [parentId == asset.id && ttime == dateRangeObj],
                         field : column.fieldName,
                         aggregation : column.yAggr
                     };
