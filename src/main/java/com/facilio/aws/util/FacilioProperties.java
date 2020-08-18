@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -248,13 +249,8 @@ public class FacilioProperties {
     public static String getClientAppUrl() {
         StringBuilder builder = new StringBuilder();
         HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
-        if (request != null && !request.isSecure()) {
-            builder.append("http");
-        }
-        else {
-            builder.append("https");
-        }
-        builder.append("://")
+        builder.append(RequestUtil.getProtocol(request))
+                .append("://")
                 .append(appDomain);
         return builder.toString();
     }

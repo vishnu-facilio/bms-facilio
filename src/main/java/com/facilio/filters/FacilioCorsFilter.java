@@ -8,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.util.RequestUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -92,7 +93,7 @@ public class FacilioCorsFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+        String forwardedProtocol = request.getHeader(RequestUtil.X_FORWARDED_PROTO);
         if(forwardedProtocol != null) {
             if ("http".equalsIgnoreCase(forwardedProtocol)){
                 response.sendRedirect("https://"+request.getServerName()+request.getRequestURI());
@@ -240,7 +241,7 @@ public class FacilioCorsFilter implements Filter {
             String serverName = request.getServerName();
 
             // this value should be null if you are invoking directly from the machine or local development.
-            String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+            String forwardedProtocol = request.getHeader(RequestUtil.X_FORWARDED_PROTO);
             if(forwardedProtocol == null || isAllowedOrigin(forwardedProtocol+"://"+serverName)) {
                 requestType = NO_CORS;
             }

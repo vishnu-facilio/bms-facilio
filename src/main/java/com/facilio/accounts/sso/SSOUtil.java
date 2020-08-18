@@ -2,6 +2,7 @@ package com.facilio.accounts.sso;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.struts2.ServletActionContext;
@@ -24,12 +25,7 @@ public class SSOUtil {
 
 	private static String getProtocol() {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
-		if (request != null && !request.isSecure()) {
-			return "http";
-		}
-		else {
-			return "https";
-		}
+		return RequestUtil.getProtocol(request);
 	}
 	
 	public static String getCurrentAppURL() {
