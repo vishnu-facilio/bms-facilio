@@ -144,7 +144,7 @@ public class GetViewListCommand extends FacilioCommand {
 				else {
 					groupViews = new ArrayList<>();
 					Map<String, Object> groupDetails = new HashMap<>();
-					if (moduleObj.isCustom()) {
+					if (moduleObj != null && moduleObj.isCustom()) {
 						groupDetails.put("name", "allViews");
 						groupDetails.put("displayName", "All Views");
 						groupDetails.put("views", allViews);
