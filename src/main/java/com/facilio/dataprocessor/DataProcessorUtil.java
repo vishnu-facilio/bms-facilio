@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DataProcessorUtil {
 
@@ -130,9 +131,14 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
+                    
                     if(agentV2 != null){
                         processorVersion = agentV2.getProcessorVersion();
                     }
+//                    else {
+//                    	LOGGER.info("This agent was disabled ...."+payLoad.get(AgentConstants.AGENT));
+//                    	return true;
+//                    }
                     LOGGER.info(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {
                     LOGGER.info(" payload missing key 'agent' "+payLoad);
