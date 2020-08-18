@@ -47,6 +47,11 @@ public class ExecuteCardWorkflowCommand extends FacilioCommand {
 		
 			JSONObject cardFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
 			cardContext.setCardFilters(cardFilters);
+			
+			JSONObject cardParams = cardContext.getCardParams();
+			if (cardFilters != null && cardParams!=null) {
+				cardParams.put("cardFilters", cardContext.getCardFilters());
+			}
 		
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
