@@ -167,6 +167,9 @@ public class AdminAction extends ActionSupport {
 					if((summodule & AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense()) == 0) {
 						summodule += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
 					}
+					if((summodule & AccountUtil.FeatureLicense.SCOPING.getLicense()) == 0) {
+						summodule += AccountUtil.FeatureLicense.SCOPING.getLicense();
+					}
 				}
 				long licence = AccountUtil.getTransactionalOrgBean(Long.parseLong(orgidstring)).addLicence(summodule);
 				System.out.println("##########@@@@@@@@@@@@@" + licence);
