@@ -1381,6 +1381,23 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				return select.get();
 	}
 
+	@Override
+	public void disableOrEnableAgent(long agentId, boolean disable) throws Exception {
+		FacilioModule module = ModuleFactory.getNewAgentModule();
+		Map<String,Object> prop = new HashMap<>();
+		prop.put("isDisable", disable);
+		if(disable) {
+			prop.put("lastDisabledTime", System.currentTimeMillis());
+		}else {
+			prop.put("lastEnabledTime", System.currentTimeMillis());
+		}
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.fields(FieldFactory.getNewAgentFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(agentId, module));
+		builder.update(prop);
+	}
+
 }
 
 

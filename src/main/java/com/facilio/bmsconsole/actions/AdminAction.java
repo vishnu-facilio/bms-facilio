@@ -21,6 +21,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
@@ -30,6 +31,7 @@ import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -590,6 +592,28 @@ public class AdminAction extends ActionSupport {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		return bean.getOrgSpecificAgentList();
 	}
+	
+	public String disableAgent() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgId"));
+		long agentId =  Long.parseLong(request.getParameter("agentId"));
+		String optionval = request.getParameter("option");
+		String action = request.getParameter("action");
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		
+		if(StringUtils.isNotEmpty(optionval) && optionval.equals("EnableOrDisable")) {
+			boolean disable = false;
+			if(action.equals("Disable")) {
+				disable = true;
+			}
+			bean.disableOrEnableAgent(agentId,disable);
+		}else if(StringUtils.isNotEmpty(optionval) && optionval.equals("ChangeProcessor")){
+			// future impl..
+		}
+		
+		return SUCCESS;
+	}
+
 	private String orgDomain;
 
 	public String getOrgDomain() {

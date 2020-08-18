@@ -143,4 +143,6 @@ public interface ModuleCRUDBean {
 	public boolean updateMetrics(Map<String, Object> toUpdate, long metricsId) throws Exception;
 
 	public List<Map<String,Object>> getOrgSpecificAgentList() throws Exception;
+	
+	public void disableOrEnableAgent(long agentId, boolean disable) throws Exception;
 }

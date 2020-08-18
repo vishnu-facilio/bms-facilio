@@ -536,6 +536,12 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.PROCESSOR_VERSION, "PROCESSOR_VERSION", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
         fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID, "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField("preProcessor", "PRE_PROCESSOR", module, FieldType.NUMBER));
+        fields.add(getField("processor", "PROCESSOR", module, FieldType.NUMBER));
+        fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
+        fields.add(getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
+        
         return fields;
     }
 
@@ -8794,4 +8800,25 @@ public class FieldFactory {
 		 		     				 
 		 return fields;
 	 }
+	 
+	public static List<FacilioField> getAgentPreprocessorFields() {
+		FacilioModule module = ModuleFactory.getAgentPreProcessorModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("lastUpdatedTime", "LAST_UPDATED_TIME", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static List<FacilioField> getAgentProcessorFields() {
+		FacilioModule module = ModuleFactory.getDashboardUserFilterModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("lastUpdatedTime", "LAST_UPDATED_TIME", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	 
 }

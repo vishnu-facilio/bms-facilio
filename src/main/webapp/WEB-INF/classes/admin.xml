@@ -163,6 +163,13 @@
 				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
 		</action>
+		<action name="disableagent" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/agentcontrol.jsp</result>
+		</action>
+		<action name="disableAgent" class="com.facilio.bmsconsole.actions.AdminAction" method ="disableAgent">
+			<result type="tiles">adminpage/agentcontrol.jsp</result>
+		</action>
+		
 	</package>
 
 </struts>

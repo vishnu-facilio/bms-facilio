@@ -3985,5 +3985,22 @@ public class ModuleFactory {
 		module.setTableName("AdminDocuments");
 		return module;
 	}
+	public static FacilioModule getAgentPreProcessorModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("agentPreProcessor");
+		module.setDisplayName("Agent Pre Processor");
+		module.setTableName("AGENT_PRE_PROCESSOR");
+		return module;
+	}
+	
+	public static FacilioModule getAgentProcessorModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("agentProcessor");
+		module.setDisplayName("Agent Processor");
+		module.setTableName("AGENT_PROCESSOR");
+		return module;
+	}
 
 }

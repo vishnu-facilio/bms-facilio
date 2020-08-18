@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,16 +38,27 @@ import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.beans.ModuleCRUDBeanImpl;
 import com.facilio.bmsconsole.actions.AdminAction;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
 
 public class AgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentAction.class.getName());
-
    /* public String createPolicy(){
             CreateKeysAndCertificateResult cert = AwsUtil.signUpIotToKinesis(AccountUtil.getCurrentOrg().getDomain(), AccountUtil.getCurrentOrg().getDomain(), "facilio");
             JSONObject jsonObject = new JSONObject();
@@ -736,21 +750,17 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+	private Boolean disable;
+	public Boolean getDisable() {
+		return disable;
+	}
 
-    public String getDeviceSearchList() {
-    	try {
-    		FacilioContext context = new FacilioContext();
-    		context.put(AgentConstants.SEARCH_KEY, getName());
-    		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-    		setResult(AgentConstants.DATA, FieldDeviceApi.getDevices(context));
-    		ok();
-    	}catch(Exception e) {
-    		LOGGER.info("Exception occurred while searching devices +",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-    	}
-    	
-    	return SUCCESS;
-    }
-    
+	public void setDisable(Boolean disable) {
+		this.disable = disable;
+	}
+
+	public void updateAgentControl() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+		bean.disableOrEnableAgent(getAgentId(), getDisable());
+	} 
 }
