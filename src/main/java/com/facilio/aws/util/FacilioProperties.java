@@ -22,6 +22,9 @@ import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.facilio.agent.AgentKeys;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class FacilioProperties {
 
@@ -41,7 +44,6 @@ public class FacilioProperties {
     private static boolean userServer = true;
     private static boolean messageProcessor = false;
     private static String appDomain;
-    private static String clientAppUrl;
     private static String pushNotificationKey;
     private static String portalPushNotificationKey;
     private static String environment;
@@ -123,7 +125,6 @@ public class FacilioProperties {
                 appDomain = PROPERTIES.getProperty("app.domain");
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
-                clientAppUrl = "https://"+ appDomain;
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
@@ -179,7 +180,7 @@ public class FacilioProperties {
 
                 localFileStorePath = PROPERTIES.getProperty("files.localFileStore.path");
                 clientVersion = PROPERTIES.getProperty("client.version");
-                PROPERTIES.put("clientapp.url", clientAppUrl);
+                PROPERTIES.put("clientapp.url", getClientAppUrl());
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
                 if(resourceDir != null) {
                     File file = new File(resourceDir.getPath());
@@ -244,7 +245,17 @@ public class FacilioProperties {
     }
 
     public static String getClientAppUrl() {
-        return clientAppUrl;
+        StringBuilder builder = new StringBuilder();
+        HttpServletRequest request = ServletActionContext.getRequest();
+        if (request != null && !request.isSecure()) {
+            builder.append("http");
+        }
+        else {
+            builder.append("https");
+        }
+        builder.append("://")
+                .append(appDomain);
+        return builder.toString();
     }
     
     public static String getAllowedAppDomains() {

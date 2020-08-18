@@ -20,6 +20,16 @@ public class SSOUtil {
 	public static String base64Decode(String encodedStr) {
 		return new String(Base64.decodeBase64(encodedStr));
 	}
+
+	private static String getProtocol() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if (request != null && !request.isSecure()) {
+			return "http";
+		}
+		else {
+			return "https";
+		}
+	}
 	
 	public static String getCurrentAppURL() {
 		try {
@@ -27,7 +37,8 @@ public class SSOUtil {
 			if (request != null) {
 				AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 				if (appDomain != null) {
-					StringBuilder appUrl = new StringBuilder("https://")
+					StringBuilder appUrl = new StringBuilder(getProtocol())
+											.append("://")
 											.append(appDomain.getDomain());
 					if (request.getServerPort() != 80) {
 						appUrl.append(":").append(request.getServerPort());
