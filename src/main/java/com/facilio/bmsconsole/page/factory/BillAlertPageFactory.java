@@ -34,14 +34,16 @@ public class BillAlertPageFactory extends PageFactory {
 			return page;
         }
 		
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.BILL_LIST);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 3);
-        tab1Sec1.addWidget(previewWidget);
+        
         
         PageWidget billDetails= new PageWidget(PageWidget.WidgetType.BILL_ALERT_DETAILS);
         billDetails.addToLayoutParams(tab1Sec1, 24, 5);
+        billDetails.addToWidgetParams("hideBg", true);
         tab1Sec1.addWidget(billDetails);
         
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.BILL_LIST);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 3);
+        tab1Sec1.addWidget(previewWidget);
 
             
          PageWidget commentWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
