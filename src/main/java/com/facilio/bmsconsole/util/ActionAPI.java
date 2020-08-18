@@ -521,10 +521,14 @@ public class ActionAPI {
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
 		if (action.getTemplateJson().containsKey("application")) {
 			pushNotificationTemplate.setApplication(((Number) action.getTemplateJson().get("application")).longValue());
-			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
 		} else {
 			// should be removed once the application id is migrated in ActionArray in SLA
 			pushNotificationTemplate.setApplication(ApplicationApi.getApplicationIdForLinkName("newApp"));
+		}
+		if (action.getTemplateJson().containsKey("isSendNotification")) {
+			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
+		} else {
+			pushNotificationTemplate.setIsSendNotification(true);
 		}
 		action.setTemplate(pushNotificationTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);

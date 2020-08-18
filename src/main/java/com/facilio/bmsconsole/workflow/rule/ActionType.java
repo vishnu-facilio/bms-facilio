@@ -17,8 +17,10 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
+import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
 import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
@@ -1612,7 +1614,7 @@ public enum ActionType {
 			if (formId > -1) {
 				FacilioForm form = FormsAPI.getFormFromDB(formId);
 				String moduleName = form.getModule().getName();
-				Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+				Class beanClassName = V3CustomModuleData.class;
 				obj.put("sourceType", 2);
 				ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
 				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
