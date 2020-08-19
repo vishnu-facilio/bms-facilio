@@ -237,7 +237,9 @@ public class V3MailMessageContext extends V3Context {
         V3MailMessageContext mailContext = new V3MailMessageContext();
 
         try {
-            mailContext.from = InternetAddress.toString(message.getFrom());
+            Address[] froms = message.getFrom();
+            String from = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
+            mailContext.from = from;
             mailContext.message = message.getSubject();
             mailContext.replyTo = InternetAddress.toString(message
                     .getReplyTo());
@@ -280,8 +282,10 @@ public class V3MailMessageContext extends V3Context {
                     continue;
                 } else if (bp.isMimeType("text/html")) {
                     String s = (String) bp.getContent();
-                    if (s != null)
-                        return s;
+                    if (s != null) {
+                        // should parse and send util then send null
+                        return null;
+                    }
                 } else {
                     return getMimeMultipartFromMessage(((MimeMultipart)part.getContent()), mailContext);
                 }

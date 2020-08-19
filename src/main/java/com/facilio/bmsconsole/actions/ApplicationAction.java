@@ -77,6 +77,16 @@ public class ApplicationAction extends FacilioAction {
 		this.fetchNonAppUsers = fetchNonAppUsers;
 	}
 
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	private String moduleName;
+
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
 		FacilioContext context = chain.getContext();
@@ -90,6 +100,7 @@ public class ApplicationAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		HttpServletRequest request = ServletActionContext.getRequest();
 
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.FETCH_MY_APPS, getFetchMyApps());
 		context.put(FacilioConstants.ContextNames.APP_DOMAIN, request.getServerName());
 

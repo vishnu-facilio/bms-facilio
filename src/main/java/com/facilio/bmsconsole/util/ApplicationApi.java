@@ -678,4 +678,20 @@ public class ApplicationApi {
         builder.update(FieldUtil.getAsProperties(app));
     }
 
+    public static List<ApplicationContext> getApplicationsForModule(String moduleName) throws Exception {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.addAll(FieldFactory.getApplicationFields());
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields());
+        if (!moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+            builder.andCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
+        }
+
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
+        return applications;
+
+
+    }
+
 }
