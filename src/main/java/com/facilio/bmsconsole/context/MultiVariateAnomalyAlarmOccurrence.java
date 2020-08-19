@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext.Type;
+
 public class MultiVariateAnomalyAlarmOccurrence extends AlarmOccurrenceContext{
 
 	private static final long serialVersionUID = 1L;
@@ -22,6 +24,8 @@ public class MultiVariateAnomalyAlarmOccurrence extends AlarmOccurrenceContext{
 	private String ratioStr;
 	private JSONObject neighbourCount;
 	private String neighbourCountStr;
+	
+	
 	
 	public void addListOfVarFields(String key, Object value) {
 		if(this.listOfVarFields == null) {
@@ -146,4 +150,10 @@ public class MultiVariateAnomalyAlarmOccurrence extends AlarmOccurrenceContext{
 	public void setNeighbourCount(JSONObject neighbourCount) {
 		this.neighbourCount = neighbourCount;
 	}
+	
+	 @Override
+	 public Type getTypeEnum() {
+	        return Type.MULTIVARIATE_ANOMALY;
+	    }
+
 }
