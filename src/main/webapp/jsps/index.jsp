@@ -5,6 +5,7 @@
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.List"%>
 <%@ page import="org.json.simple.JSONObject" %>
+<%@page import="com.facilio.iam.accounts.util.IAMAppUtil" %>
 <%
 	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
 	
@@ -56,6 +57,8 @@
 	boolean isBuildingstalk = (request.getServerName().endsWith("buildingsoncloud.com")  || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )));
 	
 	boolean isSutherland = request.getServerName().contains("sutherlandglobal.com");
+
+	Map<String, Object> domainInfo = IAMAppUtil.getAppDomainType(request.getServerName());
 	
 	if (isSutherland) {
 		copyrightInfo.put("name", "Sutherland Global Services, Inc");
@@ -219,13 +222,13 @@
         window.rebrandInfo = rebrandInfo;
         var googleAuthEnable = <%=googleAuthEnable%>;
         var googleAuthClientId = "<%=googleAuthClientId%>";
+        var domainInfo = <%=domainInfo%>;
   </script>
   
 <link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
 <link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
   
 </head>
-
   <body>
       <div id="q-app">
           <div class="app-spinner">
