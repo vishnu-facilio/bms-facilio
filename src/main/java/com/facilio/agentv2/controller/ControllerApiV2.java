@@ -587,6 +587,7 @@ public class ControllerApiV2 {
         FacilioControllerType controllerType = FacilioControllerType.valueOf(device.getControllerType());
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> allFields = moduleBean.getAllFields("controller");
+        LOGGER.info("controller fields : " + allFields);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
         List<FacilioField> controllerFields = new ArrayList<>();
         for (FacilioField field :
@@ -597,6 +598,8 @@ public class ControllerApiV2 {
         }
         List<Long> deviceIds = new ArrayList<>();
         deviceIds.add(device.getId());
+        LOGGER.info("Device Ids : " + deviceIds);
+        LOGGER.info("FieldMap : " + fieldMap.toString());
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNewControllerModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"),deviceIds,NumberOperators.EQUALS))

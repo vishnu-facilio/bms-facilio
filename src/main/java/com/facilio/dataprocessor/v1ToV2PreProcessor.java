@@ -159,6 +159,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
                             msg.put(AgentConstants.CONTROLLER_TYPE,controllerType.asInt());
                             switch (controllerType) {
                                 case BACNET_IP:
+                                    LOGGER.info("Bacnet controller :" + controller.getName());
                                     BacnetIpControllerContext bacnetController = (BacnetIpControllerContext) controller;
                                     msg.put(AgentConstants.CONTROLLER, bacnetController.getChildJSON());
                                     break;
