@@ -6,6 +6,7 @@
 <%@page import="java.util.List"%>
 <%@ page import="org.json.simple.JSONObject" %>
 <%@page import="com.facilio.iam.accounts.util.IAMAppUtil" %>
+<%@page import="java.util.Map" %>
 <%
 	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
 	
