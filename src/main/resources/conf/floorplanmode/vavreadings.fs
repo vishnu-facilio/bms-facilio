@@ -70,6 +70,11 @@ Map floorPlanMode(Map params) {
             avgValue2 = 0;
             cavgValue1 = 0;
             for each aidx, assetId in assetIds {
+              	assetNameDb = {
+            		criteria: [id == assetId],
+                  	field: "name",
+        		};
+              	assetName = assetModule.fetch(assetNameDb);
                 readingValue = Reading(fieldId, assetId).getLastValue();
                 readingValue2 = Reading(fieldId2, assetId).getLastValue();
                 enumMap = Reading(fieldId, assetId).getEnumMap();
@@ -78,6 +83,9 @@ Map floorPlanMode(Map params) {
                 avgValue2 = avgValue2 + readingValue2;
               valueMap = {};
               if (setpointMap != null) {
+                if(assetName != null){
+                  valueMap["name"] = assetName[0];
+                }
                 valueMap["value"] = readingValue;
                 valueMap["unit"] = setpointMap.get("unit");
                 valueMap["dataType"] = setpointMap.get("dataTypeEnum");
@@ -91,12 +99,20 @@ Map floorPlanMode(Map params) {
         if (cscassetIds != null) {
             avgValue3 = 0;
             for each idx, cassetId in cscassetIds {
-                        resultData = {};
+              	assetNameDb = {
+            		criteria: [id == cassetId],
+                  	field: "name",
+        		};
+              	assetName = assetModule.fetch(assetNameDb);
+                resultData = {};
                 creadingValue = Reading(fieldId3, cassetId).getLastValue();
                 cenumMap = Reading(fieldId3, cassetId).getEnumMap();
                 avgValue3 = avgValue3 + creadingValue;
                  valueMap = {};
                  if (returnAirTempMap != null) {
+                   if(assetName != null){
+                  valueMap["name"] = assetName[0];
+                }
                 valueMap["value"] = creadingValue;
                 valueMap["unit"] = returnAirTempMap.get("unit");
                 valueMap["dataType"] = returnAirTempMap.get("dataTypeEnum");
@@ -114,11 +130,19 @@ Map floorPlanMode(Map params) {
           resultData = {};
             avgValue4 = 0;
             for each dx, ass in rassetIds {
+              	assetNameDb = {
+            		criteria: [id == ass],
+                  	field: "name",
+        		};
+              	assetName = assetModule.fetch(assetNameDb);
                 rreadingValue = Reading(fieldId4, ass).getLastValue();
                 enumMap3 = Reading(fieldId4, ass).getEnumMap();
                 avgValue4 = avgValue4 + rreadingValue;
                        valueMap = {};
-                 if (sensorMapTemp != null) {
+                if (sensorMapTemp != null) {
+                   if(assetName != null){
+                  valueMap["name"] = assetName[0];
+                }
                 valueMap["value"] = rreadingValue;
                 valueMap["unit"] = sensorMapTemp.get("unit");
                 valueMap["dataType"] = sensorMapTemp.get("dataTypeEnum");
