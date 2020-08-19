@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.service.FacilioService;
+import org.json.simple.JSONObject;
 
 public class IAMAppUtil {
 
@@ -27,23 +28,24 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(appDomain));
 	}
 
-	public static Map<String, Object> getAppDomainType(String serverName) throws Exception {
+	public static JSONObject getAppDomainType(String serverName) throws Exception {
 		AppDomain appDomain = getAppDomain(serverName);
-		Map<String, Object> result = new HashMap<>();
 		boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;
-		result.put("isCustomDomain", isCustomDomain);
+		JSONObject resultJSON = new JSONObject();
+		resultJSON.put("isCustomDomain", isCustomDomain);
 		if (isCustomDomain) {
 			long orgId = appDomain.getOrgId();
 			Organization org = IAMOrgUtil.getOrg(orgId);
 			AccountSSO sso = IAMOrgUtil.getAccountSSO(org.getDomain());
 			if (sso != null && sso.getIsActive()) {
-				result.put("isSSOEnabled", true);
+				resultJSON.put("isSSOEnabled", true);
 				String ssoEndpoint = SSOUtil.getSSOEndpoint(org.getDomain());
-				result.put("ssoEndPoint", ssoEndpoint);
+				resultJSON.put("ssoEndPoint", ssoEndpoint);
 			}
-			result.put("logo_url", org.getLogoUrl());
+			resultJSON.put("logo_url", org.getLogoUrl());
 		}
-		return result;
+
+		return resultJSON;
 	}
 	
 	public static AppDomain getAppDomain(long appDomainId) throws Exception {
