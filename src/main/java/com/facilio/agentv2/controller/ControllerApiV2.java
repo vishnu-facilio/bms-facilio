@@ -587,7 +587,6 @@ public class ControllerApiV2 {
         FacilioControllerType controllerType = FacilioControllerType.valueOf(device.getControllerType());
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> allFields = moduleBean.getAllFields("controller");
-        LOGGER.info("controller fields : " + allFields);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
         List<FacilioField> controllerFields = new ArrayList<>();
         for (FacilioField field :
@@ -598,15 +597,20 @@ public class ControllerApiV2 {
         }
         List<Long> deviceIds = new ArrayList<>();
         deviceIds.add(device.getId());
-        LOGGER.info("Device Ids : " + deviceIds);
-        LOGGER.info("FieldMap : " + fieldMap.toString());
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNewControllerModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"),deviceIds,NumberOperators.EQUALS))
                 .limit(1);
         switch (controllerType){
             case BACNET_IP:
-                controllerFields.addAll(moduleBean.getAllFields("bacnetipcontroller"));
+                List<FacilioField> bacnetIpFields = moduleBean.getAllFields("bacnetipcontroller");
+                for (FacilioField field :
+                        bacnetIpFields) {
+                    if (field.getModule().getName().equals("bacnetipcontroller")) {
+                        controllerFields.add(field);
+                    }
+                }
+                LOGGER.info("Controller Fields : " + controllerFields);
                 select.select(controllerFields).innerJoin(moduleBean.getModule("bacnetipcontroller").getTableName())
                         .on("Controllers.ID = BACnet_IP_Controller.ID");
                 List<Map<String, Object>> res = select.get();
