@@ -8,8 +8,6 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.SendNotificationCommandV3;
-import com.facilio.bmsconsoleV3.commands.SendUserNotificationCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
@@ -512,11 +510,12 @@ public class APIv3Config {
     public static Supplier<V3Config> getUsernotification() {
         return () -> new V3Config(UserNotificationContext.class)
                 .create()
-                .afterSave(new SendUserNotificationCommandV3())
-
+                    .afterSave(TransactionChainFactoryV3.getUserNotifactionBeforeSaveChain())
                 .update()
+                    .beforeSave(TransactionChainFactoryV3.getNotificationSeenUpdateChain())
 
                 .list()
+                   .beforeFetch(ReadOnlyChainFactoryV3.getUserNotificationBeforeFetchChain())
                 .build();
     }
 

@@ -8820,5 +8820,15 @@ public class FieldFactory {
 
 		return fields;
 	}
+    public static List<FacilioField> getUserNotificationSeenMappingFields() {
+        FacilioModule module = ModuleFactory.getUserNotificationSeenMapping();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("user", "USER", module, FieldType.NUMBER));
+        fields.add(getField("lastSeen", "LAST_SEEN", module, FieldType.NUMBER));
+        fields.add(getField("lastSeenAt", "LAST_SEEN_AT", module, FieldType.NUMBER));
+
+        return fields;
+    }
 	 
 }

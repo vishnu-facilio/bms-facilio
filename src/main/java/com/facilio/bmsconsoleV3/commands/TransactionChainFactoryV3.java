@@ -21,6 +21,9 @@ import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.CheckUpdateMappingSeenCommand;
+import com.facilio.bmsconsoleV3.commands.usernotification.SendUserNotificationCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.UpdateSeenNotificationCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorIdCommandV3;
@@ -361,5 +364,17 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CheckForSharingInfoCommandV3());
         return c;
 
+    }
+    public static FacilioChain getNotificationSeenUpdateChain () {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateSeenNotificationCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getUserNotifactionBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckUpdateMappingSeenCommand());
+        c.addCommand(new SendUserNotificationCommandV3());
+        return c;
     }
 }

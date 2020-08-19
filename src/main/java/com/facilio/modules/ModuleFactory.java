@@ -4003,4 +4003,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public  static FacilioModule getUserNotificationSeenMapping() {
+			FacilioModule seenMapping = new FacilioModule();
+			seenMapping.setName("userNotificationSeenMapping");
+			seenMapping.setDisplayName("User Notification Seen Mapping");
+			seenMapping.setTableName("User_Notification_Seen_Mapping");
+			return seenMapping;
+	}
+
 }

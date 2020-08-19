@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFet
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
+import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotifactionCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -54,6 +56,13 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddDefaultCriteriaForQuoteFetchCommandV3());
         c.addCommand(new QuotationFillLookupFields());
+        return c;
+    }
+
+    public static FacilioChain getUserNotificationBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchUnSeenNotifactionCommand());
+        c.addCommand(new AddUserCriteriaMyNotification());
         return c;
     }
 

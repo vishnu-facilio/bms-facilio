@@ -519,7 +519,7 @@ public class ActionAPI {
 		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
 		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
-		if (action.getTemplateJson().containsKey("application")) {
+		if (action.getTemplateJson().containsKey("application") && action.getTemplateJson().get("application") != null) {
 			pushNotificationTemplate.setApplication(((Number) action.getTemplateJson().get("application")).longValue());
 		} else {
 			// should be removed once the application id is migrated in ActionArray in SLA

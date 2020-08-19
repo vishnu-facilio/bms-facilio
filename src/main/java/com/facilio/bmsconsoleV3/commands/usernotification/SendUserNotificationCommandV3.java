@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsoleV3.commands.usernotification;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
