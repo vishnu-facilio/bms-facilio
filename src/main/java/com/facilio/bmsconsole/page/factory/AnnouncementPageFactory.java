@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
 public class AnnouncementPageFactory extends PageFactory {
@@ -15,8 +16,9 @@ public class AnnouncementPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PRIMARY_DETAILS_WIDGET);
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
         previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToWidgetParams("fieldKey", "longDescription");
         tab1Sec1.addWidget(previewWidget);
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
@@ -25,12 +27,13 @@ public class AnnouncementPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
 
-        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PUBLISH_TO);
+        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
         publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
         publishToWidget.setTitle("Published To");
+        publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
         tab1Sec1.addWidget(publishToWidget);
 
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENTS_PREVIEW);
         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
         attachmentWidget.setTitle("Attachments");
         tab1Sec1.addWidget(attachmentWidget);

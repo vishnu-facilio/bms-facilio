@@ -3,12 +3,12 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
-import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
-import com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.interfaces.BuildingTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
 import com.facilio.chain.FacilioChain;
@@ -25,14 +25,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class AnnouncementAPI {
@@ -179,5 +177,23 @@ public class AnnouncementAPI {
         if (CollectionUtils.isNotEmpty(list)) {
             announcement.setAnnouncementsharing(list);
         }
+    }
+
+    public static List<? extends CommunitySharingInfoContext> getSharingInfo(V3Context record, String sharingModuleName, String parentFieldName) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(sharingModuleName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
+
+        SelectRecordsBuilder<? extends CommunitySharingInfoContext> builder = new SelectRecordsBuilder<AnnouncementSharingInfoContext>()
+                .moduleName(sharingModuleName)
+                .select(fields)
+                .beanClass(AnnouncementSharingInfoContext.class)
+                .fetchSupplements(fetchSupplementsList)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get(parentFieldName), String.valueOf(record.getId()), NumberOperators.EQUALS));
+        List<? extends CommunitySharingInfoContext> list = builder.get();
+        return list;
+
     }
 }

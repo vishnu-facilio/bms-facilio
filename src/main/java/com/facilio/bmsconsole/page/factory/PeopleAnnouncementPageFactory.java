@@ -15,8 +15,9 @@ public class PeopleAnnouncementPageFactory extends PageFactory{
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_PRIMARY_DETAILS_WIDGET);
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
         previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToWidgetParams("fieldKey", "longDescription");
         tab1Sec1.addWidget(previewWidget);
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
@@ -28,7 +29,7 @@ public class PeopleAnnouncementPageFactory extends PageFactory{
 //        publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
 //        publishToWidget.setTitle("Published To");
 //        tab1Sec1.addWidget(publishToWidget);
-        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_ATTACHMENT);
+        PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENTS_PREVIEW);
         attachmentWidget.addToLayoutParams(tab1Sec1, 24, 6);
         attachmentWidget.setTitle("Attachments");
         tab1Sec1.addWidget(attachmentWidget);

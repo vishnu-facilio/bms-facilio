@@ -283,10 +283,15 @@ public class PageWidget {
 
 		
 		CONNNECTED_APP("connectedApp"),
-		ANNOUNCEMENT_PRIMARY_DETAILS_WIDGET("announcementPrimaryDetailsWidget"),
+
+		// Community Features Widgets
+		PUBLISH_TO_INFO("publishToInfo"),
 		ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET("announcementSecondaryDetailsWidget"),
-		ANNOUNCEMENT_ATTACHMENT("announcementAttachment"),
-		ANNOUNCEMENT_PUBLISH_TO("announcementPublishTo")
+		ATTACHMENTS_PREVIEW("attachmentsPreview"),
+		RICH_TEXT_PREVIEW("richTextPreview"),
+		NEIGHBOURHOOD_DETAILS_WIDGET("neighbourhoodDetailsWidget"),
+		DEALS_DETAILS_WIDGET("dealsDetailsWidget"),
+
 
 		;
 		

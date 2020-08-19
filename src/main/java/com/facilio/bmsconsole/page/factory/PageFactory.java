@@ -1,37 +1,8 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
-import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import java.util.HashMap;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HazardContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.OperationAlarmContext;
-import com.facilio.bmsconsole.context.PrecautionContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.SafetyPlanContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -41,7 +12,11 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.DealsAndOffersContext;
+import com.facilio.bmsconsoleV3.context.tenantEngagement.NeighbourhoodContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -54,6 +29,13 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PageFactory {
 
@@ -119,6 +101,10 @@ public class PageFactory {
 				return AnnouncementPageFactory.getAnnouncementPage((AnnouncementContext) record, module);
 			case ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS:
 				return PeopleAnnouncementPageFactory.getPeopleAnnouncementPage((PeopleAnnouncementContext) record, module);
+			case ContextNames.Tenant.NEIGHBOURHOOD:
+				return CommunityFeaturesPageFactory.getNeighbourhoodPageFactory((NeighbourhoodContext) record, module);
+			case ContextNames.Tenant.DEALS_AND_OFFERS:
+				return CommunityFeaturesPageFactory.getDealsAndOffersPageFactory((DealsAndOffersContext) record, module);
 
 
 		}

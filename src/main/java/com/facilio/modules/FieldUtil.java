@@ -445,6 +445,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.VISITOR_INVITE,
 					FacilioConstants.ContextNames.VISITOR_LOGGING,
 					FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
+					FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE,
+					FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST,
 					FacilioConstants.ContextNames.CONTACT,
 					FacilioConstants.ContextNames.VENDOR_DOCUMENTS,
 					FacilioConstants.ContextNames.SAFETY_PLAN,

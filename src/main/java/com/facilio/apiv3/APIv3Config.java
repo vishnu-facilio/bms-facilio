@@ -6,17 +6,18 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.announcement.UpdateAnnouncementAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.LoadChartOfAccountLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDealsAndOffersSharingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -453,7 +454,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getWorkPermit() {
         return () -> new V3Config(V3WorkPermitContext.class)
                 .create()
-                .beforeSave(new ComputeScheduleForWorkPermitCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getWorkPermitBeforeSaveOnCreateChain())
                 .afterSave(TransactionChainFactoryV3.getWorkPermitAfterSaveOnCreateChain())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY))
 
@@ -524,7 +525,7 @@ public class APIv3Config {
         return () -> new V3Config(AnnouncementContext.class)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getCreateAnnouncementBeforeSaveChain())
-                .afterSave(new UpdateAnnouncementAttachmentsParentIdCommandV3())
+                .afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
                     .afterTransaction(TransactionChainFactoryV3.getUpdateAnnouncementAfterSaveChain())
@@ -545,8 +546,8 @@ public class APIv3Config {
     @Module("newsandinformation")
     public static Supplier<V3Config> getNewsAndInformation() {
         return () -> new V3Config(NewsAndInformationContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
-                .update()
+                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .summary()
                 .build();
     }
@@ -554,26 +555,27 @@ public class APIv3Config {
     @Module("neighbourhood")
     public static Supplier<V3Config> getNeighbourhood() {
         return () -> new V3Config(NeighbourhoodContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
-                .update()
-                .summary()
+                .create().beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeSaveChain()).afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update().beforeSave(new NeighbourhoodAddLocationCommand()).afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .summary().afterFetch(new FillNeighbourhoodSharingInfoCommand())
                 .build();
     }
 
     @Module("dealsandoffers")
     public static Supplier<V3Config> getDealsAndOffers() {
         return () -> new V3Config(DealsAndOffersContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
-                .update()
-                .summary()
+                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .summary().beforeFetch(new DealsAndOffersFillLookupFields()).afterFetch(new FillDealsAndOffersSharingInfoCommand())
+                .list().beforeFetch(new DealsAndOffersFillLookupFields())
                 .build();
     }
 
     @Module("contactdirectory")
     public static Supplier<V3Config> getContactDirectory() {
         return () -> new V3Config(ContactDirectoryContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
-                .update()
+                .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .summary()
                 .build();
     }

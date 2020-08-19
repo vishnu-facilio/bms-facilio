@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context.tenantEngagement;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class NeighbourhoodContext extends V3Context {
 
     private String title;
@@ -10,6 +12,15 @@ public class NeighbourhoodContext extends V3Context {
     private Integer category;
     private LocationContext location;
     private Long activeDealsCount;
+    private List<NeighbourhoodSharingContext> neighbourhoodsharing;
+
+    public List<NeighbourhoodSharingContext> getNeighbourhoodsharing() {
+        return neighbourhoodsharing;
+    }
+
+    public void setNeighbourhoodsharing(List<NeighbourhoodSharingContext> neighbourhoodsharing) {
+        this.neighbourhoodsharing = neighbourhoodsharing;
+    }
 
     public Long getActiveDealsCount() {
         return activeDealsCount;

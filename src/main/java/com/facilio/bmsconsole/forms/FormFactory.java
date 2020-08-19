@@ -2228,7 +2228,6 @@ public class FormFactory {
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2));
 		fields.add(new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
-
 		return fields;
 	}
 

@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.commands.announcement.*;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
@@ -49,6 +50,15 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new InsertWorkPermitActivitiesCommand());
         c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain getWorkPermitBeforeSaveOnCreateChain() {
+        FacilioChain c = getDefaultChain();
+
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ComputeScheduleForWorkPermitCommandV3());
 
         return c;
     }
@@ -328,7 +338,7 @@ public class TransactionChainFactoryV3 {
 
 	public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
         FacilioChain c = getDefaultChain();
-	    c.addCommand(new UpdateAnnouncementAttachmentsParentIdCommandV3());
+	    c.addCommand(new UpdateAttachmentsParentIdCommandV3());
         c.addCommand(new PublishAnnouncementCommandV3());
         c.addCommand(new CancelParentChildAnnouncementsCommandV3());
         return c;
@@ -376,5 +386,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CheckUpdateMappingSeenCommand());
         c.addCommand(new SendUserNotificationCommandV3());
         return c;
+    }
+
+    public static FacilioChain getCreateNeighbourhoodBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new NeighbourhoodAddLocationCommand());
+        return c;
+
     }
 }

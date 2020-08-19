@@ -1506,7 +1506,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultAnnouncementColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("title", "Title"));
 		columns.add(new ViewField("longDescription", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("expiryDate", "Expiry Date"));
@@ -1516,7 +1516,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultDealsAndOffersColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("title", "Title"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("expiryDate", "Expiry Date"));
 
@@ -1526,7 +1526,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultNeighbourhoodColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("title", "Title"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("location", "Location"));
@@ -1537,7 +1537,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultNewsAndInformationColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("title", "Title"));
 		columns.add(new ViewField("description", "Description"));
 
 		return columns;
@@ -1546,7 +1546,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultContactDirectoryColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("people", "people"));
+		columns.add(new ViewField("people", "People"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 
@@ -1556,7 +1556,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultAdminDocumentsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("title", "title"));
+		columns.add(new ViewField("title", "Title"));
 		columns.add(new ViewField("file", "File"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));

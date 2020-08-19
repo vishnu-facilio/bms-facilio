@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.tenantEngagement;
 
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class DealsAndOffersContext extends V3Context {
 
     private String title;
@@ -10,6 +12,16 @@ public class DealsAndOffersContext extends V3Context {
     private Long expiryDate;
     private Long startDate;
     private Boolean active;
+    private List<DealsAndOffersSharingContext> dealsandofferssharing;
+
+
+    public List<DealsAndOffersSharingContext> getDealsandofferssharing() {
+        return dealsandofferssharing;
+    }
+
+    public void setDealsandofferssharing(List<DealsAndOffersSharingContext> dealsandofferssharing) {
+        this.dealsandofferssharing = dealsandofferssharing;
+    }
 
 
     public Boolean getActive() {
