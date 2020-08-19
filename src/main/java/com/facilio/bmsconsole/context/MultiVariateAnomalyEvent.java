@@ -129,10 +129,10 @@ public class MultiVariateAnomalyEvent extends BaseEventContext {
 	}
 
 	public Boolean getOutlier() {
-		//if(outlier != null) {
+		if(outlier != null) {
 			return outlier.booleanValue();
-		//}
-		//return false;
+		}
+		return false;
 	}
 
 	public void setOutlier(Boolean outlier) {
