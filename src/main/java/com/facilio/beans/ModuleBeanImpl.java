@@ -1333,9 +1333,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else if (field instanceof MultiEnumField) {
 				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
-			} else if (field instanceof LookupField) {
-				validateLookupField((LookupField) field, fieldProps, true);
-				extendendPropsCount = updateExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), field);
 			}
 
 			return Math.max(count, extendendPropsCount);
