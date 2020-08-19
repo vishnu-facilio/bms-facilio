@@ -2558,4 +2558,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetDbUserFilterToWidgetMapping());
 		return chain;
 	}
+	public static FacilioChain getGenerateCriteriaFromFilterChain()
+	{	
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		return chain;
+	}
 }

@@ -2,6 +2,7 @@ package com.facilio.cards.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.floorplan.FloorPlanViewContext;
@@ -132,33 +133,38 @@ public enum CardLayout {
 			
 			Object cardValue = null;
 			Object kpi = null;
-			String period = dateRange;
+			String period = null;
 			
 			if ("module".equalsIgnoreCase(kpiType)) {
 				try {
 					KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
-					if (dateRange != null) {
-						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+					if(cardContext.getCardUserFilters()!=null)//db lookup filters
+					{
+						FacilioChain generateCriteriaChain=ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
+						FacilioContext generateCriteriaContext= generateCriteriaChain.getContext();
+						generateCriteriaContext.put(FacilioConstants.ContextNames.MODULE_NAME,kpiContext.getModuleName());
+						generateCriteriaContext.put(FacilioConstants.ContextNames.FILTERS, cardContext.getCardUserFilters());
+						generateCriteriaChain.execute();
+						Criteria cardFilterCriteria=(Criteria) generateCriteriaContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+						kpiContext.getCriteria().andCriteria(cardFilterCriteria);
 					}
-					if (cardContext.getCardFilters() != null && kpiContext.getDateField() != null && cardContext.getCardFilters().containsKey(kpiContext.getDateField().getName())) {
+					
+					
+					if (cardContext.getCardFilters() != null ) {//db timeline filters
 						
-						JSONObject filterJson = (JSONObject) cardContext.getCardFilters();
+						JSONObject timeLineFilters = (JSONObject) cardContext.getCardFilters();
 						
-						JSONObject dateFilter=(JSONObject) filterJson.get(kpiContext.getDateField().getName());
-						
-						JSONArray values = (JSONArray) dateFilter.get("value");
-						String dateFilterLabel=(String)dateFilter.get("label");
-						if (values.size() == 2) {
 							kpiContext.setDateOperator(DateOperators.BETWEEN);
-							kpiContext.setDateValue(values.get(0).toString() + "," + values.get(1).toString());
-							
-							period = DateTimeUtil.getFormattedTime(Long.parseLong(values.get(0).toString()), "dd-MMM-yyyy") + " to " + DateTimeUtil.getFormattedTime(Long.parseLong(values.get(1).toString()), "dd-MMM-yyyy");
-							if(dateFilterLabel!=null)//
-							{
-								period=dateFilterLabel;
-							}
+							kpiContext.setDateValue((String)timeLineFilters.get("dateValueString"));
+							period=(String) timeLineFilters.get("dateLabel");
+						
 						}
+					else if (dateRange != null) {
+						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+						period=dateRange;
 					}
+					
+					
 					
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 					kpi = KPIUtil.getKPI(kpiId);

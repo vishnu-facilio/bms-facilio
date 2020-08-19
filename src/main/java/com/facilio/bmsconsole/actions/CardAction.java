@@ -61,6 +61,33 @@ public class CardAction extends FacilioAction {
 	{
 		this.cardFilter=cardFilter;
 	}
+	
+	
+private String cardUserFilters;
+	
+	public String getCardUserFilters()
+	{
+		
+		return this.cardUserFilters;
+	}
+	
+	public  JSONObject getCardUserFiltersJson() throws ParseException
+	{
+		if(this.cardUserFilters!=null)
+		{
+			return FacilioUtil.parseJson(this.cardUserFilters);
+		}
+		else 
+		{
+			return null;
+		}
+	}
+	
+	public void setCardUserFilters(String cardUserFilters)
+	{
+		this.cardUserFilters=cardUserFilters;
+	}
+	
 
 
 	public String getCardData() throws Exception {
@@ -69,6 +96,8 @@ public class CardAction extends FacilioAction {
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
 		chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
+		chain.getContext().put(FacilioConstants.ContextNames.CARD_USER_FILTERS, getCardUserFiltersJson());
+		
 		
 		chain.execute();
 			

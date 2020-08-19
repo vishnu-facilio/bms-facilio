@@ -144,6 +144,17 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	public void setCardFilters(JSONObject cardFilters) {
 		this.cardFilters = cardFilters;
 	}
+	
+private JSONObject cardUserFilters;
+	
+	public JSONObject getCardUserFilters() {
+		return cardUserFilters;
+	}
+	public void setCardUserFilters(JSONObject cardUserFilters) {
+		this.cardUserFilters = cardUserFilters;
+	}
+	
+	
 
 	@Override
 	public JSONObject widgetJsonObject() {
