@@ -128,7 +128,7 @@ public class AddCVCommand extends FacilioCommand {
 		if (viewSharing != null && !viewSharing.isEmpty()) {
 			List<Long> orgUsersId = viewSharing.stream().filter(value -> value.getTypeEnum() == SharingType.USER)
 					.map(val -> val.getUserId()).collect(Collectors.toList());
-			if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
+			if (CollectionUtils.isNotEmpty(orgUsersId) && !orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
 				SingleSharingContext newViewSharing = new SingleSharingContext(); 
 				newViewSharing.setUserId(AccountUtil.getCurrentUser().getId());
 				newViewSharing.setType(SharingType.USER);
