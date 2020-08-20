@@ -6,9 +6,11 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.UpdateAttachmentsParentIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.budget.LoadChartOfAccountLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsA
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDealsAndOffersSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -49,7 +52,6 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
-import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -560,7 +562,8 @@ public class APIv3Config {
         return () -> new V3Config(NeighbourhoodContext.class)
                 .create().beforeSave(TransactionChainFactoryV3.getCreateNeighbourhoodBeforeSaveChain()).afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update().beforeSave(new NeighbourhoodAddLocationCommand()).afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .summary().afterFetch(new FillNeighbourhoodSharingInfoCommand())
+                .summary().beforeFetch(new NeighbourhoodFillLookupFieldsCommand()).afterFetch(new FillNeighbourhoodSharingInfoCommand())
+                .list().beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers;
+package com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -14,23 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DealsAndOffersFillLookupFields extends FacilioCommand {
+public class NeighbourhoodFillLookupFieldsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchLookupsList = new ArrayList<>();
-        LookupFieldMeta neighbourhoodField = new LookupFieldMeta((LookupField) fieldsAsMap.get("neighbourhood"));
-        LookupField location = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD);
-        neighbourhoodField.addChildLookupField(location);
-        fetchLookupsList.add(neighbourhoodField);
-
+        List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
+        LookupFieldMeta locationField = new LookupFieldMeta((LookupField) fieldsAsMap.get("location"));
+        fetchLookupsList.add(locationField);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
+
 
         return false;
     }
