@@ -541,6 +541,7 @@ public class FieldFactory {
         fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
         fields.add(getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
         fields.add(getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("commitId", "COMMIT_ID", module, FieldType.NUMBER));
         
         return fields;
     }
@@ -8812,7 +8813,7 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getAgentProcessorFields() {
-		FacilioModule module = ModuleFactory.getDashboardUserFilterModule();
+		FacilioModule module = ModuleFactory.getAgentProcessorModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
@@ -8830,5 +8831,17 @@ public class FieldFactory {
 
         return fields;
     }
-	 
+    
+    public static List<FacilioField> getAgentControlFields() {
+		FacilioModule module = ModuleFactory.getAgentControlModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
+		fields.add(getField("message", "MESSAGE", module, FieldType.STRING));
+		fields.add(getField("commitId", "COMMIT_ID", module, FieldType.NUMBER));
+		fields.add(getField("enabledTime", "ENABLED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("disabledTime", "DISABLED_TIME", module, FieldType.NUMBER));
+		return fields;
+	}
 }

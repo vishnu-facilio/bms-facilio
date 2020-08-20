@@ -4002,6 +4002,15 @@ public class ModuleFactory {
 		module.setTableName("AGENT_PROCESSOR");
 		return module;
 	}
+	
+	public static FacilioModule getAgentControlModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("agentControl");
+		module.setDisplayName("Agent Control");
+		module.setTableName("AgentControl");
+		return module;
+	}
 
 	public  static FacilioModule getUserNotificationSeenMapping() {
 			FacilioModule seenMapping = new FacilioModule();
