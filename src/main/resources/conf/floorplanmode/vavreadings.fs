@@ -86,6 +86,7 @@ Map floorPlanMode(Map params) {
                 if(assetName != null){
                   valueMap["name"] = assetName[0];
                 }
+                valueMap["categoryId"] = vavcategoryid;
                 valueMap["value"] = readingValue;
                 valueMap["unit"] = setpointMap.get("unit");
                 valueMap["dataType"] = setpointMap.get("dataTypeEnum");
@@ -113,6 +114,7 @@ Map floorPlanMode(Map params) {
                    if(assetName != null){
                   valueMap["name"] = assetName[0];
                 }
+                valueMap["categoryId"] = csucatid;
                 valueMap["value"] = creadingValue;
                 valueMap["unit"] = returnAirTempMap.get("unit");
                 valueMap["dataType"] = returnAirTempMap.get("dataTypeEnum");
@@ -143,6 +145,7 @@ Map floorPlanMode(Map params) {
                    if(assetName != null){
                   valueMap["name"] = assetName[0];
                 }
+                valueMap["categoryId"] = sensorCatid;
                 valueMap["value"] = rreadingValue;
                 valueMap["unit"] = sensorMapTemp.get("unit");
                 valueMap["dataType"] = sensorMapTemp.get("dataTypeEnum");
