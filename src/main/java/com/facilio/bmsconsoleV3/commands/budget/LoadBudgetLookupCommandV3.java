@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadChartOfAccountLookupCommandV3 extends FacilioCommand {
+public class LoadBudgetLookupCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -26,10 +26,8 @@ public class LoadChartOfAccountLookupCommandV3 extends FacilioCommand {
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField typeField = (LookupField) fieldsAsMap.get("type");
-        LookupField parentAccountField = (LookupField) fieldsAsMap.get("parentAccount");
-        additionaLookups.add(typeField);
-        additionaLookups.add(parentAccountField);
+        LookupField resourceField = (LookupField) fieldsAsMap.get("focalPointResource");
+        additionaLookups.add(resourceField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }

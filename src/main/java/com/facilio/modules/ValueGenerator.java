@@ -2,6 +2,6 @@ package com.facilio.modules;
 
 public abstract class ValueGenerator {
 
-	  public abstract Object generateValueForCondition (int appType);
+	  public abstract Object generateValueForCondition (long moduleId, int appType);
 
 }

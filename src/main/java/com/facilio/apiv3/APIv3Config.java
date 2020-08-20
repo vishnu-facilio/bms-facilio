@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.LoadChartOfAccountLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
@@ -48,6 +49,8 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
+import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
+import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
@@ -600,12 +603,29 @@ public class APIv3Config {
     @Module("chartofaccount")
     public static Supplier<V3Config> getChartOfAccount() {
         return () -> new V3Config(ChartOfAccountContext.class)
-                .create().beforeSave(new SetLocalIdCommandV3())
+                .create().beforeSave(TransactionChainFactoryV3.getCreateChartOfAccountBeforeSaveChain())
                 .update()
                 .list()
                     .beforeFetch(new LoadChartOfAccountLookupCommandV3())
                 .summary()
                     .beforeFetch(new LoadChartOfAccountLookupCommandV3())
+                .build();
+    }
+
+    @Module("budget")
+    public static Supplier<V3Config> getBudget() {
+        return () -> new V3Config(BudgetContext.class)
+                .create().
+                        beforeSave(TransactionChainFactoryV3.getCreateBudgetBeforeSaveChain())
+                        .afterSave(new AddOrUpdateMonthlyBudgetAmountCommandV3())
+                .update()
+                        .beforeSave(new ValidateBudgetAmountCommandV3())
+                        .afterSave(new AddOrUpdateMonthlyBudgetAmountCommandV3())
+                .list()
+                .beforeFetch(new LoadBudgetLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadBudgetLookupCommandV3())
+                .afterFetch(new FillBudgetDetailsCommandV3())
                 .build();
     }
 

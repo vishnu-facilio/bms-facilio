@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.announcement.*;
+import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
+import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
@@ -395,4 +397,22 @@ public class TransactionChainFactoryV3 {
         return c;
 
     }
+
+    public static FacilioChain getCreateBudgetBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ValidateBudgetAmountCommandV3());
+        return c;
+
+    }
+
+    public static FacilioChain getCreateChartOfAccountBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ValidateChartOfAccountTypeCommandV3());
+        return c;
+
+    }
+
+
 }

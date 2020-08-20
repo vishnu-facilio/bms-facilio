@@ -6,7 +6,7 @@ public class ChartOfAccountContext extends V3Context {
 
     private String name;
     private AccountTypeContext type;
-    private Long parentAccountId;
+    private ChartOfAccountContext parentAccount;
     private String description;
     private String code;
 
@@ -26,14 +26,6 @@ public class ChartOfAccountContext extends V3Context {
         this.type = type;
     }
 
-    public Long getParentAccountId() {
-        return parentAccountId;
-    }
-
-    public void setParentAccountId(Long parentAccountId) {
-        this.parentAccountId = parentAccountId;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -48,5 +40,25 @@ public class ChartOfAccountContext extends V3Context {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public ChartOfAccountContext getParentAccount() {
+        return parentAccount;
+    }
+
+    public void setParentAccount(ChartOfAccountContext parentAccount) {
+        this.parentAccount = parentAccount;
+    }
+
+    public Integer getAmountType() {
+        if(this.type != null) {
+            if(type.getGroupEnum() == AccountTypeContext.Group.INCOME){
+                return BudgetAmountContext.AmountType.INCOME.getIndex();
+            }
+            else if(type.getGroupEnum() == AccountTypeContext.Group.EXPENSE) {
+                return BudgetAmountContext.AmountType.EXPENSE.getIndex();
+            }
+        }
+        return null;
     }
 }

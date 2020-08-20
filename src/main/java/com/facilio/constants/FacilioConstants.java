@@ -31,8 +31,7 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
-import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
-import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
+import com.facilio.bmsconsoleV3.context.budget.*;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.bmsconsoleV3.context.tenantEngagement.*;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
@@ -1735,6 +1734,14 @@ public class FacilioConstants {
 		public static class Budget {
 			public static final String ACCOUNT_TYPE = "accounttype";
 			public static final String CHART_OF_ACCOUNT = "chartofaccount";
+			public static final String CHART_OF_ACCOUNT_ATTACHMENTS = "chartofaccountattachments";
+			public static final String CHART_OF_ACCOUNT_NOTES = "chartofaccountnotes";
+			public static final String BUDGET = "budget";
+			public static final String BUDGET_ATTACHMENTS = "budgetattachments";
+			public static final String BUDGET_NOTES = "budgetnotes";
+			public static final String BUDGET_AMOUNT = "budgetamount";
+			public static final String BUDGET_MONTHLY_AMOUNT = "budgetmonthlyamount";
+
 		}
 
 		public static class Tenant {
@@ -2051,8 +2058,12 @@ public class FacilioConstants {
 			classMap.put(Tenant.ADMIN_DOCUMENTS_SHARING, AdminDocumentsSharingContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY, ContactDirectoryContext.class);
 			classMap.put(Tenant.CONTACT_DIRECTORY_SHARING, ContactDirectorySharingContext.class);
+
 			classMap.put(Budget.ACCOUNT_TYPE, AccountTypeContext.class);
 			classMap.put(Budget.CHART_OF_ACCOUNT, ChartOfAccountContext.class);
+			classMap.put(Budget.BUDGET, BudgetContext.class);
+			classMap.put(Budget.BUDGET_AMOUNT, BudgetAmountContext.class);
+			classMap.put(Budget.BUDGET_MONTHLY_AMOUNT, BudgetMonthlyAmountContext.class);
 
 
 			return classMap;

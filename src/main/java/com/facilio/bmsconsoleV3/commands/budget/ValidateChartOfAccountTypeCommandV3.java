@@ -1,7 +1,8 @@
-package com.facilio.bmsconsoleV3.commands.announcement;
+package com.facilio.bmsconsoleV3.commands.budget;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
+import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -13,23 +14,21 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.List;
 import java.util.Map;
 
-public class CheckForSharingInfoCommandV3 extends FacilioCommand {
+public class ValidateChartOfAccountTypeCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<AnnouncementContext> announcements = recordMap.get(moduleName);
+        List<ChartOfAccountContext> chartOfAccounts = recordMap.get(moduleName);
 
-        if(CollectionUtils.isNotEmpty(announcements)) {
-            for(AnnouncementContext announcement : announcements){
-                Map<String, List<Map<String, Object>>> subforms = announcement.getSubForm();
-                if(MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.ANNOUNCEMENTS_SHARING_INFO)){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
+        if(CollectionUtils.isNotEmpty(chartOfAccounts)) {
+            for(ChartOfAccountContext chartOfAccountContext : chartOfAccounts){
+               if(chartOfAccountContext == null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Chart of account should be associated to an account type");
                 }
             }
 
         }
-
         return false;
     }
 }
