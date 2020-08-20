@@ -36,6 +36,7 @@ public enum FacilioSystemFunctionNameSpace {
 	WORKFLOW_READINGS(28,"workflowReadings"),
 	SCHEDULE(29,"schedule"),
 	CONNECTED_APP(30,"connectedApp"),
+	ML_NAMESPACE(31,"mlNameSpace"),
 	;
 	
 	
