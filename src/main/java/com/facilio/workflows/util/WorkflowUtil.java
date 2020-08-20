@@ -90,6 +90,7 @@ import com.facilio.workflows.functions.FacilioFieldFunctions;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
 import com.facilio.workflows.functions.FacilioHTTPFunctions;
 import com.facilio.workflows.functions.FacilioListFunction;
+import com.facilio.workflows.functions.FacilioMLNameSpaceFunctions;
 import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
 import com.facilio.workflows.functions.FacilioModuleFunctions;
@@ -2124,6 +2125,9 @@ public class WorkflowUtil {
 				case CONNECTED_APP:
 					facilioWorkflowFunction = FacilioConnectedAppFunctions.getFacilioConnectedAppFunction(functionName);
 					break;
+				case ML_NAMESPACE:
+					facilioWorkflowFunction = FacilioMLNameSpaceFunctions.getFacilioMLNameSpaceFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2222,6 +2226,9 @@ public class WorkflowUtil {
 					break;
 				case CONNECTED_APP:
 					facilioWorkflowFunction = new ArrayList<>( FacilioConnectedAppFunctions.getAllFunctions().values());
+					break;
+				case ML_NAMESPACE:
+					facilioWorkflowFunction = new ArrayList<>( FacilioMLNameSpaceFunctions.getAllFunctions().values());
 					break;
 			}
 		}
