@@ -13,13 +13,11 @@ Map floorPlanMode(Map params) {
     readingFieldName4 = "temperture";
     readingFieldName5 = "temperture";
     readigModule3 = "runcommand";
-
+  	humidityFieldName = "humidity";
+	  occupancyName = "occupancystatus";
     readigModule4 = "temperture";
     readigModule5 = "temperture";
-
-  	
-
-
+  
     setPointObj = new NameSpace("module").getField(readingFieldName, readingModule);
     fieldId = setPointObj.id();
 
@@ -31,11 +29,19 @@ Map floorPlanMode(Map params) {
 
     temperture = new NameSpace("module").getField(readingFieldName4, readigModule4);
     fieldId4 = temperture.id();
+  
+  	humidity = new NameSpace("module").getField(humidityFieldName, readigModule4);
+  	humidityFieldId = humidity.id();
+  
+  	occupancy = new NameSpace("module").getField(occupancyName, occupancyName);
+  	occupancyFieldId = occupancy.id();
 
     fieldMapInfo = temperture.asMap();
   	setpointMap = setPointObj.asMap();
    	returnAirTempMap = returnAirTemp.asMap();
   	sensorMapTemp = temperture.asMap();
+  	sensorHumidityMap = humidity.asMap();
+  	occupancyMap = occupancy.asMap();
 
     areas = [];
     for each index, spaceId in spaceIds {
@@ -53,6 +59,7 @@ Map floorPlanMode(Map params) {
             criteria: [space == spaceId && category == sensorCatid],
             field: "id"
         };
+      
         assetIds = assetModule.fetch(db);
         cscassetIds = assetModule.fetch(db1);
         rassetIds = assetModule.fetch(db2);
@@ -63,6 +70,8 @@ Map floorPlanMode(Map params) {
         val1 = 0;
         val2 = 0;
         val3 = 0;
+      	humidityCount = 0;
+      	occupancyVal = false;
       	resultAssets = [];
       	resultData = {};
         if (assetIds != null) {
@@ -77,6 +86,10 @@ Map floorPlanMode(Map params) {
               	assetName = assetModule.fetch(assetNameDb);
                 readingValue = Reading(fieldId, assetId).getLastValue();
                 readingValue2 = Reading(fieldId2, assetId).getLastValue();
+              	occupancyValue = Reading(occupancyFieldId, assetId).getLastValue();
+              	if(occupancyValue != false){
+                  occupancyVal = true;
+                }
                 enumMap = Reading(fieldId, assetId).getEnumMap();
                 enumMap2 = Reading(fieldId2, assetId).getEnumMap();
                 avgValue1 = avgValue1 + readingValue;
@@ -96,6 +109,16 @@ Map floorPlanMode(Map params) {
             resultAssets.add(resultData);
             val1 = avgValue1 / assetIds.size(); // setpoint temperature avg value
             val2 = avgValue2 / assetIds.size(); // space temperature avg value
+          	if(occupancyVal != false){
+              valueMap={};
+              valueMap["value"] = occupancyVal;
+              valueMap["label"] = occupancyMap.get("displayName");
+              if(sensorHumidityMap != null){
+                valueMap["unit"] = occupancyMap.get("unit");
+                valueMap["dataType"] = occupancyMap.get("dataTypeEnum");
+              }
+              markerReadings["OCCUPANCY"] = valueMap;
+            }
         }
         if (cscassetIds != null) {
             avgValue3 = 0;
@@ -125,12 +148,14 @@ Map floorPlanMode(Map params) {
             val3 = avgValue3 / cscassetIds.size();
         }
         val4 = 0;
+      	humidityVal=0;
         enumMap3 = null;
 
         rreadingValue = null;
         if (rassetIds != null) {
           resultData = {};
             avgValue4 = 0;
+          	avgHumidity = 0;
             for each dx, ass in rassetIds {
               	assetNameDb = {
             		criteria: [id == ass],
@@ -139,6 +164,11 @@ Map floorPlanMode(Map params) {
               	assetName = assetModule.fetch(assetNameDb);
                 rreadingValue = Reading(fieldId4, ass).getLastValue();
                 enumMap3 = Reading(fieldId4, ass).getEnumMap();
+              	humidityVal = Reading(humidityFieldId,ass).getLastValue();
+              	if(humidityVal != null && hunmidityVal != -1){
+                  avgHumidity = avgHumidity + humidityVal;
+                  humidityCount = humidityCount + 1;
+                }
                 avgValue4 = avgValue4 + rreadingValue;
                        valueMap = {};
                 if (sensorMapTemp != null) {
@@ -153,6 +183,8 @@ Map floorPlanMode(Map params) {
               }
             }
              resultAssets.add(resultData);
+          	humidityVal = avgHumidity / humidityCount;
+          	humidityVal = math().ceil(humidityVal);
             val4 = avgValue4 / rassetIds.size();
             val4 = math().ceil(val4);
         }
@@ -169,6 +201,7 @@ Map floorPlanMode(Map params) {
 
         icons = [];
         area = {};
+      	markerReadings = {};
         icon = {};
         if (rassetIds != null) {
             valueMap = {};
@@ -186,6 +219,26 @@ Map floorPlanMode(Map params) {
                 unitData = fieldMapInfo.get("unit");
             }
             icons.add(icon);
+          	if(humidityVal != 0){
+              valueMap={};
+              valueMap["value"] = humidityVal;
+              valueMap["label"] = sensorHumidityMap.get("displayName");
+              if(sensorHumidityMap != null){
+                valueMap["unit"] = sensorHumidityMap.get("unit");
+                valueMap["dataType"] = sensorHumidityMap.get("dataTypeEnum");
+              }
+              markerReadings["HUMIDITY"] = valueMap;
+            }
+          	if(val4 != 0){
+              valueMap={};
+              valueMap["value"] = val4;
+              valueMap["label"] = fieldMapInfo.get("displayName");
+              if(sensorHumidityMap != null){
+                valueMap["unit"] = fieldMapInfo.get("unit");
+                valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
+              }
+              markerReadings["TEMPERATURE"] = valueMap;
+            }
         }
 
 
@@ -208,6 +261,7 @@ Map floorPlanMode(Map params) {
         }
         area.spaceId = spaceId;
       	area.assets = resultAssets;
+      	area.markerReadings = markerReadings;
         areas.add(area);
     }
     result = {};
