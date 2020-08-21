@@ -73,10 +73,13 @@ public class MultivariateAnomalyEventJob extends FacilioJob
             Hashtable<String,JSONObject> data = new Hashtable<String,JSONObject>();
             List<Map<String,Object>> outlierData = getData(outlierFields,outlierModule,startTime, startTime+interval,assetId);
             MultiVariateAnomalyEvent event = new MultiVariateAnomalyEvent();
+
             for(Map<String,Object> eachRecord : outlierData)
             {
+                if(eachRecord.isEmpty()){ continue; }
+
                 LOGGER.info("each record outlier " + eachRecord.get("outlier").toString());
-                if(eachRecord.get("outlier").toString().equals("-1") )
+                if(eachRecord.get("outlier").toString().equals("-1"))
                 {
                 	long ratioModuleId = Long.parseLong(props.get("ratioModuleId").toString());
                 	FacilioModule ratioModule = modBean.getModule(ratioModuleId);
