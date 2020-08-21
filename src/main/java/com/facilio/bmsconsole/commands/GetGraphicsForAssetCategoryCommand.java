@@ -10,14 +10,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GraphicsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetGraphicsForAssetCategoryCommand extends FacilioCommand {
 
@@ -57,6 +65,29 @@ public class GetGraphicsForAssetCategoryCommand extends FacilioCommand {
 							JSONArray applyToAssetIds = (JSONArray) applyTo.get("applyToAssetIds");
 							if (applyToAssetIds != null) {
 								if (applyToAssetIds.indexOf(assetId) < 0) {
+									continue;
+								}
+							}
+						} 
+						else if(applyToType != null && applyToType == 3) {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+							List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+							JSONObject criteriaObj = (JSONObject) applyTo.get("criteria");
+							Criteria applyToCriteria = FieldUtil.getAsBeanFromMap(criteriaObj, Criteria.class);
+							SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>().select(fields)
+									.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
+									.andCriteria(applyToCriteria);
+							List<AssetContext> assets = builder.get();
+							List<Long> assetIds = null; 
+							for(AssetContext asset :assets) {
+								if(assetIds == null) {
+									assetIds = new ArrayList<>();
+								}
+								assetIds.add(asset.getId());
+							}
+							if(assetIds != null) {
+								if (assetIds.indexOf(assetId) < 0) {
 									continue;
 								}
 							}
