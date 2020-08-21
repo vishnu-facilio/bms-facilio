@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -7,6 +9,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -63,7 +66,6 @@ public class UserNotificationAPI {
 
         Map<String, Object> prop = new HashMap<>();
         prop.put("lastSeen",  System.currentTimeMillis());
-//        prop.put("lastSeenAt", );
 
         int count = builder.update(prop);
 
@@ -71,5 +73,20 @@ public class UserNotificationAPI {
 
     }
 
+    public static int getUpdateStatusByUser (Long userId) throws Exception {
+        FacilioModule module = ModuleFactory.getModule("usernotification");
 
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .fields(module.getFields())
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), module))
+//                .andCondition(CriteriaAPI.getOrgIdCondition())
+                .andCondition(CriteriaAPI.getCondition(
+                        "USER", "user","" + userId, NumberOperators.EQUALS));
+
+        Map<String, Object> prop = new HashMap<>();
+        prop.put("lastRead",  System.currentTimeMillis());
+        int count = builder.update(prop);
+        return count;
+    }
 }
