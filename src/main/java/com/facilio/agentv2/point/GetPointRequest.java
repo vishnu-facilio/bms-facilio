@@ -153,7 +153,7 @@ public class GetPointRequest {
     public List<Map<String, Object>> getPointsData() throws Exception {
         List<Map<String, Object>> data = new ArrayList<>();
         if(StringUtils.isNotEmpty(serarchPointName)) {
-        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",serarchPointName,serarchPointName + "%");
+        	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?",serarchPointName, "%"+serarchPointName +"%");
         }
         if(selectRecordBuilder == null){
             for (FacilioControllerType controllerType : FacilioControllerType.values()) {

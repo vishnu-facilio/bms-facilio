@@ -203,7 +203,7 @@ public class FieldDeviceApi {
 					StringUtils.join(ids, ","), NumberOperators.EQUALS));
 		}
 		if (StringUtils.isNotEmpty(searchKey)) {
-			builder.andCustomWhere("NAME = ? OR NAME LIKE ?", searchKey, searchKey + "%");
+			builder.andCustomWhere("NAME = ? OR NAME LIKE ?", searchKey, "%"+searchKey +"%");
 		}
 
 		if (pagination != null && !pagination.isEmpty()) {

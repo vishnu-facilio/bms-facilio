@@ -91,7 +91,7 @@ public class GetControllerCommand extends AgentV2Command {
         	selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerTypeField(controllerModule), String.valueOf(controllerType), NumberOperators.EQUALS));
         }
         if(StringUtils.isNotEmpty(controllerName)) {
-        	selectRecordBuilder.andCustomWhere(resourceModule.getTableName()+".NAME = ?  OR  "+resourceModule.getTableName()+".NAME LIKE ?",controllerName,controllerName + "%");
+        	selectRecordBuilder.andCustomWhere(resourceModule.getTableName()+".NAME = ?  OR  "+resourceModule.getTableName()+".NAME LIKE ?",controllerName,"%"+controllerName +"%");
         }
         if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
             selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)), controllerModule));
