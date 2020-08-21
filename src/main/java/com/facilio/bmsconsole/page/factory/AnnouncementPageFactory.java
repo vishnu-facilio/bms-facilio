@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.announcement.AnnouncementContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
+import org.apache.commons.lang.StringUtils;
 
 public class AnnouncementPageFactory extends PageFactory {
 
@@ -16,10 +17,12 @@ public class AnnouncementPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
-        previewWidget.addToWidgetParams("fieldKey", "longDescription");
-        tab1Sec1.addWidget(previewWidget);
+        if (StringUtils.isNotEmpty(record.getLongDescription())) {
+            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+            previewWidget.addToWidgetParams("fieldKey", "longDescription");
+            tab1Sec1.addWidget(previewWidget);
+        }
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);

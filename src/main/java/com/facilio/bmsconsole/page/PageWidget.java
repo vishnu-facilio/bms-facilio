@@ -291,6 +291,7 @@ public class PageWidget {
 		RICH_TEXT_PREVIEW("richTextPreview"),
 		NEIGHBOURHOOD_DETAILS_WIDGET("neighbourhoodDetailsWidget"),
 		DEALS_DETAILS_WIDGET("dealsDetailsWidget"),
+		NEIGHBOURHOOD_DEALS("neighbourhoodDeals"),
 
 
 		;
