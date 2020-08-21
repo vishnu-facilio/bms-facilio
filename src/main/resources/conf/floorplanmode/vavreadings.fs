@@ -165,7 +165,7 @@ Map floorPlanMode(Map params) {
                 rreadingValue = Reading(fieldId4, ass).getLastValue();
                 enumMap3 = Reading(fieldId4, ass).getEnumMap();
               	humidityVal = Reading(humidityFieldId,ass).getLastValue();
-              	if(humidityVal != null && hunmidityVal != -1){
+              	if(humidityVal != null && hunmidityVal > 0){
                   avgHumidity = avgHumidity + humidityVal;
                   humidityCount = humidityCount + 1;
                 }
@@ -183,7 +183,9 @@ Map floorPlanMode(Map params) {
               }
             }
              resultAssets.add(resultData);
+          	if(humidityCount > 0){
           	humidityVal = avgHumidity / humidityCount;
+            }
           	humidityVal = math().ceil(humidityVal);
             val4 = avgValue4 / rassetIds.size();
             val4 = math().ceil(val4);
@@ -219,7 +221,7 @@ Map floorPlanMode(Map params) {
                 unitData = fieldMapInfo.get("unit");
             }
             icons.add(icon);
-          	if(humidityVal != 0){
+          	if(humidityVal > 0){
               valueMap={};
               valueMap["value"] = humidityVal;
               valueMap["label"] = sensorHumidityMap.get("displayName");
@@ -229,7 +231,7 @@ Map floorPlanMode(Map params) {
               }
               markerReadings["HUMIDITY"] = valueMap;
             }
-          	if(val4 != 0){
+          	if(val4  > 0){
               valueMap={};
               valueMap["value"] = val4;
               valueMap["label"] = fieldMapInfo.get("displayName");
