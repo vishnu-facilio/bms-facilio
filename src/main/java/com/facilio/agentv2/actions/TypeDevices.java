@@ -89,7 +89,7 @@ public class TypeDevices extends DeviceIdActions {
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
             if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
     		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
@@ -117,7 +117,7 @@ public class TypeDevices extends DeviceIdActions {
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
             if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
     		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
@@ -145,7 +145,7 @@ public class TypeDevices extends DeviceIdActions {
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
             if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
     		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
@@ -173,7 +173,7 @@ public class TypeDevices extends DeviceIdActions {
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldMap.get(AgentConstants.ID))
                     .andCriteria(criteria);
             if (StringUtils.isNotEmpty(querySearch)) {
-            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, querySearch + "%");
+            	selectRecordBuilder.andCustomWhere("NAME = ? OR NAME LIKE ?", querySearch, "%"+querySearch + "%");
     		}
             List<Map<String, Object>> result = selectRecordBuilder.get();
             LOGGER.info(" query "+selectRecordBuilder.toString());
