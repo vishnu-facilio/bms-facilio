@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.page.Page;
@@ -16,6 +9,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TenantUnitSpacePageFactory extends PageFactory {
     public static Page getTenantUnitSpacePage(TenantUnitSpaceContext tenantUnitSpaceContext, FacilioModule module) throws Exception {
@@ -33,9 +31,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         addSpaceDetailWidget(tab1Sec1);
         addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant Spaces");
         addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
-        if (AccountUtil.getCurrentOrg().getOrgId() != 320l) {
-	        	addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
-        }
+        addRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
         addCommonSubModuleWidget(tab1Sec1, module, tenantUnitSpaceContext);
         return page;
     }
