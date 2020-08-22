@@ -179,15 +179,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 	private List<Map<String, Object>> getTypeBasedHeaders(FacilioControllerType type) {
 		List<Map<String, Object>> typeHeaders = new ArrayList<>();
 		switch(type) {
-			case NIAGARA:
-				Map<String, Object> header = new HashMap<>();
-				header.put("name", AgentConstants.PATH);
-				typeHeaders.add(header);
-				break;
-				
 			case BACNET_IP:
 			case BACNET_MSTP:
-				header = new HashMap<>();
+				Map<String, Object> header = new HashMap<>();
 				header.put("name", AgentConstants.INSTANCE_NUMBER);
 				typeHeaders.add(header);
 				
