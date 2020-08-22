@@ -154,20 +154,17 @@ public class DataProcessorUtil {
                 LOGGER.info(" Exception occurred while checking agent version ",e);
             }
 
-            switch (processorVersion){
+            switch (processorVersion) {
                 case 1:
-                    if  (!FacilioProperties.isProduction()){
-                        LOGGER.info("PreProcessor for V1 to V2 data");
-                        AgentMessagePreProcessor preProcessor = new v1ToV2PreProcessor();
-                        List<JSONObject> messages= preProcessor.preProcess(payLoad);
-                        boolean isEveryMessageProcessed = true;
-                        for (JSONObject msg:
-                                messages) {
-                            isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg,recordId);
-                        }
-                        return isEveryMessageProcessed;
+                    LOGGER.info("PreProcessor for V1 to V2 data");
+                    AgentMessagePreProcessor preProcessor = new v1ToV2PreProcessor();
+                    List<JSONObject> messages = preProcessor.preProcess(payLoad);
+                    boolean isEveryMessageProcessed = true;
+                    for (JSONObject msg :
+                            messages) {
+                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId);
                     }
-                    break;
+                    return isEveryMessageProcessed;
                 case 2:
                     LOGGER.info(" new processor data ");
                     return sendToProcessorV2(payLoad,recordId);
