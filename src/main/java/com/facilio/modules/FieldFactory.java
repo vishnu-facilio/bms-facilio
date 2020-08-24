@@ -4423,7 +4423,7 @@ public class FieldFactory {
         fields.add(getIdField(module));
         /*fields.add(getOrgIdField(module));*/
         fields.add(getModuleIdField(module));
-        fields.add(getField("widgetSettings", "WIDGET_SETTINGS_JSON", module, FieldType.STRING));
+        fields.add(getField("widgetSettingsJsonString", "WIDGET_SETTINGS_JSON", module, FieldType.STRING));
         fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
 
         fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));

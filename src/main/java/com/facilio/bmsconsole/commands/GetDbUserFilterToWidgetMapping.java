@@ -99,7 +99,11 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							 
 							 //must check if widget module is either same as filter module or one of its children
 							 //Ex , ticketCategory field has module='ticket' but report_chart corresponding to workorders has module='workorder'
-							 if(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId))
+							 
+							 JSONObject widgetSettings=widget.getWidgetSettings();
+							 boolean isFilterExclude=(boolean)widgetSettings.get("excludeDbFilters");
+							 
+							 if(!isFilterExclude &&(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId)))
 							 	
 							 	{
 							 	

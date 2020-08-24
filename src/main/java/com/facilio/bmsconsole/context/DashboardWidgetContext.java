@@ -50,40 +50,58 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String metaJSONString;
 	private JSONObject metaJSON;
 	
-	String widgetSettings;
-	JSONObject widgetSettingsJson;
-		
-//send only JSON object to client 
-	@JSON(serialize = false)
-	public String getWidgetSettings() {
-		if(this.widgetSettingsJson!=null)
-		{		
-			return widgetSettingsJson.toJSONString();
-		}
-		else {
-			return null;
-		}
+	String widgetSettingsJsonString;
+	public String getWidgetSettingsJsonString() {
+		return widgetSettingsJsonString;
+	}
+	public void setWidgetSettingsJsonString(String widgetSettingsJsonString) {
+		this.widgetSettingsJsonString = widgetSettingsJsonString;
 	}
 
-	public void setWidgetSettings(String widgetSettings) {
+
+
+	JSONObject widgetSettings;
+	
+	public void setWidgetSettings(JSONObject widgetSettings)
+	{
 		if(widgetSettings!=null)
 		{
+			this.widgetSettingsJsonString=widgetSettings.toJSONString();
+		}
+		
+	}
+	public JSONObject getWidgetSettings() 
+	{
+		
+		if(this.widgetSettingsJsonString!=null)
+		{
+			
 			try {
-				this.widgetSettingsJson=FacilioUtil.parseJson(widgetSettings);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				return FacilioUtil.parseJson(this.widgetSettingsJsonString);
+			} catch (ParseException e) {				
 				e.printStackTrace();
+				return null;
 			}
 		}
+		else
+		{
+			return DEFAULT_WIDGET_SETTINGS;
+		}
+		
 	}
 
-	public JSONObject getWidgetSettingsJson() {
-		return widgetSettingsJson;
-	}
 
-	public void setWidgetSettingsJson(JSONObject widgetSettingsJson) {
-		this.widgetSettingsJson = widgetSettingsJson;
-	}
+	
+  public static final JSONObject DEFAULT_WIDGET_SETTINGS=initDefaultWidgetSettingsJson();
+  
+  public static JSONObject initDefaultWidgetSettingsJson()
+  {
+	  
+	  JSONObject defaultWidgetSettings=new JSONObject();
+	  defaultWidgetSettings.put("excludeDbFilters", false);
+	return defaultWidgetSettings;
+  }
+
 
 	public String getMetaJSONString() {
 		if(metaJSON != null) {
