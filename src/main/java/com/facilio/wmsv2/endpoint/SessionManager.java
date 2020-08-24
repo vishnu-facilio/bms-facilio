@@ -88,40 +88,8 @@ public class SessionManager {
 	}
 	
 	public void sendMessage(Message message) {
-		message = Processor.getInstance().filterOutgoingMessage(message);
-		BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-		message = handler.processOutgoingMessage(message);
-
-		if (message == null) {
-			return;
-		}
-
 		try {
-			switch (handler.getDeliverTo()) {
-				case ALL: {
-					broadcaster.broadcast(message);
-					break;
-				}
-
-				case USER: {
-					Long to = message.getTo();
-					Collection<LiveSession> liveSessions = getLiveSessions(message.getSessionType(), to);
-					broadcaster.broadcast(liveSessions, message);
-					break;
-				}
-
-				case ORG: {
-					Long orgId = message.getOrgId();
-					Collection<LiveSession> liveSessions = getLiveSessions(message.getTopic(), orgId);
-					broadcaster.broadcast(liveSessions, message);
-					break;
-				}
-
-				case SESSION: {
-					broadcaster.broadcast(message.getLiveSession(), message);
-					break;
-				}
-			}
+			broadcaster.broadcast(message);
 		} catch (Exception ex) {
 			logger.log(Level.WARNING, "Send message failed: " + message.toString(), ex);
 		}
