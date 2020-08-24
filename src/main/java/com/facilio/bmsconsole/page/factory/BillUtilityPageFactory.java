@@ -65,15 +65,15 @@ public class BillUtilityPageFactory extends PageFactory {
 		
 
 		
-		
-		Page.Tab tab5 = page.new Tab("ALL ACTIVITIES");
-		page.addTab(tab5);
-		Page.Section tab5Sec1 = page.new Section();
-		tab5.addSection(tab5Sec1);
-		
-		PageWidget allactivities = new PageWidget(PageWidget.WidgetType.UTILITY_ALL_ACTIVITIES);
-		allactivities.addToLayoutParams(tab5Sec1, 24, 24);
-		tab5Sec1.addWidget(allactivities);
+//		
+//		Page.Tab tab5 = page.new Tab("ALL ACTIVITIES");
+//		page.addTab(tab5);
+//		Page.Section tab5Sec1 = page.new Section();
+//		tab5.addSection(tab5Sec1);
+//		
+//		PageWidget allactivities = new PageWidget(PageWidget.WidgetType.UTILITY_ALL_ACTIVITIES);
+//		allactivities.addToLayoutParams(tab5Sec1, 24, 24);
+//		tab5Sec1.addWidget(allactivities);
 		
 		
 
