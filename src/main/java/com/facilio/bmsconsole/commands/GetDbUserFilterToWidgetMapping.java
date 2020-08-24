@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
@@ -150,6 +151,16 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 				 moduleId=report.getModuleId();
 			 }
 			 				 				 
+		 }
+		 else if(widget.getWidgetType().equals(WidgetType.LIST_VIEW))
+		 {
+			 WidgetListViewContext listWidget = (WidgetListViewContext)widget;
+			 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			 
+			 FacilioModule listModule=modBean.getModule(listWidget.getModuleName());
+			 moduleId=listModule.getModuleId();
+			 
+			 
 		 }
 		 else if(widget.getWidgetType().equals(WidgetType.CARD))
 		 {
