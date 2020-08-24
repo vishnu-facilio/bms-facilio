@@ -366,8 +366,8 @@ public class FormFactory {
 		List<FacilioForm> serviceFormsList = Arrays.asList(getServiceForm());
 		List<FacilioForm> announcementFormsList = Arrays.asList(getAnnouncementForm());
 		List<FacilioForm> newsAndInformationFormsList = Arrays.asList(getNewsAndInformationForm());
-		List<FacilioForm> neighbourhoodFormsList = Arrays.asList(getNeighbourhoodForm());
-		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm());
+		List<FacilioForm> neighbourhoodFormsList = Arrays.asList(getNeighbourhoodForm(),getNeighbourhoodPortalForm());
+		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm(), getDealsAndOffersPortalForm());
 		List<FacilioForm> contactDirectoryFormsList = Arrays.asList(getContactDirectoryForm());
 		List<FacilioForm> adminDocumentsFormsList = Arrays.asList(getAdminDocumentsForm());
 
@@ -2273,6 +2273,26 @@ public class FormFactory {
 		return form;
 	}
 
+	private static FacilioForm getNeighbourhoodPortalForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Neighbourhood");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD +"_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.PORTAL);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("neighbourhoodattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
 	private static FacilioForm getDealsAndOffersForm() {
 
 		FacilioForm form = new FacilioForm();
@@ -2293,6 +2313,27 @@ public class FormFactory {
 
 		return form;
 	}
+
+	private static FacilioForm getDealsAndOffersPortalForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Deals and Offers");
+		form.setName("default_"+ FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS +"_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.PORTAL);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",4, 1));
+		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+		form.setFields(fields);
+
+		return form;
+	}
+
 
 	private static FacilioForm getContactDirectoryForm() {
 
