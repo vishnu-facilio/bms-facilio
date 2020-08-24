@@ -44,7 +44,11 @@ public class DeleteSubModuleRecordCommand extends FacilioCommand {
                             .module(module)
                             .andCondition(CriteriaAPI.getIdCondition(deleteRecordIdMap.get(subModName), module))
                             .andCondition(CriteriaAPI.getCondition(lookupField, id+"", NumberOperators.EQUALS));
-            builder.markAsDelete();
+            if (module.getTypeEnum() == FacilioModule.ModuleType.SUB_ENTITY) {
+                builder.delete();
+            } else {
+                builder.markAsDelete();
+            }
         }
 
         return false;
