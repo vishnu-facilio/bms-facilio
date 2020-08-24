@@ -75,6 +75,7 @@ Map floorPlanMode(Map params) {
       	occupancyVal = false;
       	resultAssets = [];
       	resultData = {};
+        markerReadings = {};
         if (assetIds != null) {
             avgValue1 = 0;
             avgValue2 = 0;
@@ -204,7 +205,6 @@ Map floorPlanMode(Map params) {
 
         icons = [];
         area = {};
-      	markerReadings = {};
         icon = {};
         if (rassetIds != null) {
             valueMap = {};
