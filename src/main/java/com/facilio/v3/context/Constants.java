@@ -11,10 +11,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Constants {
     public static final String FILTERS = "filters";
@@ -47,6 +44,15 @@ public class Constants {
 
     public static void setFetchSupplements(Context context, List<LookupField> supplements) {
         context.put(FETCH_SUPPLEMENTS, supplements);
+    }
+
+    private static final String BULK_RAW_INPUT = "bulkRawInput";
+    public static Collection<JSONObject> getBulkRawInput(Context context) {
+        return (Collection<JSONObject>) context.get(BULK_RAW_INPUT);
+    }
+
+    public static void setBulkRawInput(Context context, Collection<JSONObject> jsonObjects) {
+        context.put(BULK_RAW_INPUT, jsonObjects);
     }
 
     private static final String RAW_INPUT = "rawInput";

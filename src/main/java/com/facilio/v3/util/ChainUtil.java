@@ -208,6 +208,12 @@ public class ChainUtil {
         return transactionChain;
     }
 
+    private static FacilioChain getBulkPatchInitChain() throws Exception {
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+        transactionChain.addCommand(new DefaultBulkInit());
+        return transactionChain;
+    }
+
     private static FacilioChain getPatchInitChain() throws Exception {
         FacilioChain transactionChain = FacilioChain.getTransactionChain();
         transactionChain.addCommand(new DefaultInit());
@@ -215,11 +221,19 @@ public class ChainUtil {
         return transactionChain;
     }
 
+    public static FacilioChain getBulkPatchChain(String moduleName) throws Exception {
+        return getPatchChain(moduleName, true);
+    }
+
     public static FacilioChain getPatchChain(String moduleName) throws Exception {
+        return getPatchChain(moduleName, false);
+    }
+
+    private static FacilioChain getPatchChain(String moduleName, boolean isBulkOp) throws Exception {
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioModule module = ChainUtil.getModule(moduleName);
 
-        Command initCommand = getPatchInitChain();
+        Command initCommand = isBulkOp? getBulkPatchInitChain() : getPatchInitChain();
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
@@ -228,9 +242,8 @@ public class ChainUtil {
 
         if (v3Config != null) {
             V3Config.UpdateHandler updateHandler = v3Config.getUpdateHandler();
-            if (updateHandler != null)
-            {
-                if (updateHandler.getInitCommand() != null) {
+            if (updateHandler != null) {
+                if (!isBulkOp && updateHandler.getInitCommand() != null) {
                     initCommand = updateHandler.getInitCommand();
                 }
                 beforeSaveCommand = updateHandler.getBeforeSaveCommand();

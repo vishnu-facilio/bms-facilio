@@ -8,9 +8,10 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -73,6 +74,24 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return list.get(0);
     }
 
+    private Map<String, List<ModuleBaseWithCustomFields>> getRecordsForBulkPatch(String moduleName, List<Long> ids) throws Exception {
+        FacilioChain listChain = ChainUtil.getListChain(moduleName);
+        FacilioContext context = listChain.getContext();
+        FacilioModule module = ChainUtil.getModule(moduleName);
+
+        Criteria idCriteria = new Criteria();
+        idCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, module));
+        context.put(Constants.BEFORE_FETCH_CRITERIA, idCriteria);
+
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        listChain.execute();
+
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        return recordMap;
+    }
 
     private void handleListRequest(String moduleName) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
@@ -177,24 +196,60 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         handleSummaryRequest(moduleName, id);
     }
 
+    private void bulkPatchHandler(Map<String, Object> dataMap, String moduleName, Map<String, Object> bodyParams) throws Exception{
+        List<Map<String, Object>> rawRecords = (List<Map<String, Object>>) dataMap.get(moduleName);
+        List<Long> ids = new ArrayList<>();
+        for (Map<String, Object> record: rawRecords) {
+            ids.add((long) record.get("id"));
+        }
+        Map<String, List<ModuleBaseWithCustomFields>> recordsForBulkPatch = getRecordsForBulkPatch(moduleName, ids);
+        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = recordsForBulkPatch.get(moduleName);
+
+        Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
+        for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
+            idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
+        }
+
+        for (Map<String, Object> rec: rawRecords) {
+            JSONObject jsonObject = idVsRecordMap.get((long) rec.get("id"));
+            Set<String> keys = rec.keySet();
+            for (String key : keys) {
+                jsonObject.put(key, rec.get(key));
+            }
+        }
+        Collection<JSONObject> values = idVsRecordMap.values();
+        FacilioChain patchChain = ChainUtil.getBulkPatchChain(moduleName);
+
+        FacilioContext context = patchChain.getContext();
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+
+        Constants.setModuleName(context, moduleName);
+        Constants.setBulkRawInput(context, values);
+        Constants.setBodyParams(context, bodyParams);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+        context.put(FacilioConstants.ContextNames.TRANSITION_ID, this.getStateTransitionId());
+        context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, this.getApprovalTransitionId());
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
+
+        patchChain.execute();
+
+        Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
+
+        if (count == null || count <= 0) {
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        Map<String, List<ModuleBaseWithCustomFields>> fetchAfterSave = getRecordsForBulkPatch(moduleName, ids);
+        this.setData(FieldUtil.getAsJSON(fetchAfterSave));
+    }
+
     private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
         Object record = getRecord(moduleName, id);
         FacilioModule module = ChainUtil.getModule(moduleName);
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> modFields = modBean.getAllFields(moduleName);
-
-        Set<String> fieldNames = patchObj.keySet();
-        Map<String, FacilioField> fieldAsMap = FieldFactory.getAsMap(modFields);
-
-
-        List<FacilioField> patchedFields = new ArrayList<>();
-        for (String fieldName: fieldNames) {
-            FacilioField field = fieldAsMap.get(fieldName);
-            if (field != null) {
-                patchedFields.add(field);
-            }
-        }
-
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
@@ -215,7 +270,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, summaryRecord);
         Constants.setBodyParams(context, bodyParams);
-//        context.put(Constants.PATCH_FIELDS, patchedFields);
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
@@ -367,6 +421,25 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     public String update() throws Exception {
         try {
             updateHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
+        } catch (RESTException ex) {
+            this.setMessage(ex.getMessage());
+            this.setCode(ex.getErrorCode().getCode());
+            this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+            this.setMessage("Internal Server Error");
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
+        return SUCCESS;
+    }
+
+    public String bulkPatch() throws Exception {
+        try {
+          bulkPatchHandler(this.getData(), this.getModuleName(), this.getParams());
         } catch (RESTException ex) {
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
