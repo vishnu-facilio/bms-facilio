@@ -37,6 +37,7 @@ Map floorPlanMode(Map params) {
   	occupancyFieldId = occupancy.id();
 
     fieldMapInfo = temperture.asMap();
+  	spaceTempMap = spaceTemp.asMap();
   	setpointMap = setPointObj.asMap();
    	returnAirTempMap = returnAirTemp.asMap();
   	sensorMapTemp = temperture.asMap();
@@ -95,14 +96,14 @@ Map floorPlanMode(Map params) {
                 avgValue1 = avgValue1 + readingValue;
                 avgValue2 = avgValue2 + readingValue2;
               valueMap = {};
-              if (setpointMap != null) {
+              if (spaceTempMap != null) {
                 if(assetName != null){
                   valueMap["name"] = assetName[0];
                 }
                 valueMap["categoryId"] = vavcategoryid;
-                valueMap["value"] = readingValue;
-                valueMap["unit"] = setpointMap.get("unit");
-                valueMap["dataType"] = setpointMap.get("dataTypeEnum");
+                valueMap["value"] = readingValue2;
+                valueMap["unit"] = spaceTempMap.get("unit");
+                valueMap["dataType"] = spaceTempMap.get("dataTypeEnum");
                 resultData[assetId] = valueMap;
               }
             }
