@@ -133,6 +133,8 @@
 	<job name='AssetDepreciationJob' classname='com.facilio.bmsconsole.jobs.AssetDepreciationJob' transactionTimeout='7200000' />
 	<job name='AggregationJob' classname='com.facilio.bmsconsole.jobs.AggregationJob' transactionTimeout='1800000' />
 
+	<job name='SLAEditJob' classname='com.facilio.bmsconsole.jobs.SLAEditJob' transactionTimeout='1800000' />
+
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>

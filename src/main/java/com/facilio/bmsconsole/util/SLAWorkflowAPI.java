@@ -4,15 +4,18 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -163,6 +166,46 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
                 .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())
                 .fields(FieldFactory.getSLACommitmentDurationFields());
         builder.addRecords(FieldUtil.getAsMapList(rule.getSlaEntities(), SLAWorkflowCommitmentRuleContext.SLAEntityDuration.class));
+        builder.save();
+    }
+
+    public static List<Map<String, Object>> getSLAEditJobDetails(long slaPolicyId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLAEditJobDetailsModule().getTableName())
+                .select(FieldFactory.getSLAEditJobDetailsFields())
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
+        return builder.get();
+    }
+
+    public static void deleteEditJobDetails(long slaPolicyId, Long slaEntityId) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getSLAEditJobDetailsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("SLA_ENTITY_ID", "slaEntityId", String.valueOf(slaEntityId), NumberOperators.EQUALS))
+                ;
+        builder.delete();
+    }
+
+    public static void updateSLAEditJobDetails(long slaPolicyId, Long slaEntityId, long id) throws SQLException {
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getSLAEditJobDetailsModule().getTableName())
+                .fields(Collections.singletonList(FieldFactory.getField("lastRecordId", "LAST_RECORD_ID", ModuleFactory.getSLAEditJobDetailsModule(), FieldType.NUMBER)))
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("SLA_ENTITY_ID", "slaEntityId", String.valueOf(slaEntityId), NumberOperators.EQUALS));
+        Map<String, Object> map = new HashMap();
+        map.put("lastRecordId", id);
+        builder.update(map);
+    }
+
+    public static void addSLAEditJobDetails(List<Map<String, Object>> slaEditJobDetails) throws SQLException {
+        if (CollectionUtils.isEmpty(slaEditJobDetails)) {
+            return;
+        }
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getSLAEditJobDetailsModule().getTableName())
+                .fields(FieldFactory.getSLAEditJobDetailsFields());
+        builder.addRecords(slaEditJobDetails);
         builder.save();
     }
 }

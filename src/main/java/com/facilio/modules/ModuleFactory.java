@@ -628,6 +628,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getSLAEditJobDetailsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("slaEditJobDetails");
+		module.setDisplayName("SLA Edit Job Details");
+		module.setTableName("SLA_Edit_Job_Details");
+
+		return module;
+	}
+
 	public static FacilioModule getSLARuleModule() {
 		FacilioModule slarule = new FacilioModule();
 		slarule.setName("slarule");

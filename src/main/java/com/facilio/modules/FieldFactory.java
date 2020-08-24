@@ -1969,6 +1969,17 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getSLAEditJobDetailsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSLAEditJobDetailsModule();
+
+        fields.add(getField("slaPolicyId", "SLA_POLICY_ID", module, FieldType.NUMBER));
+        fields.add(getField("lastRecordId", "LAST_RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getSLACommitmentDurationFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getSLACommitmentDurationModule();
