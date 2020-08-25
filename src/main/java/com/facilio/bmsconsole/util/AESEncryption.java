@@ -12,11 +12,9 @@ import javax.crypto.spec.SecretKeySpec;
 public class AESEncryption {
     private static org.apache.log4j.Logger log = LogManager.getLogger(AESEncryption.class.getName());
     private Cipher cipher;
-    private int keySize;
     private SecretKey secretKey;
     private byte[] privateKey = "oB9jtDA0z1fkRJSC98KrgZccWvHAq38I".getBytes();
-
-    private static AESEncryption INSTANCE;
+    
     public AESEncryption () {
         try {
             this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
