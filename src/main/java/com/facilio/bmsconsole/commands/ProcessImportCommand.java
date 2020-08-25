@@ -780,10 +780,14 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop1;
 			}
 			case "site": {
-				long siteId = new ImportSiteAction().getSiteId(value.toString());
-				SiteContext site = SpaceAPI.getSiteSpace(siteId);
-				Map<String, Object> prop2 = FieldUtil.getAsProperties(site);
-				return prop2;
+				Long siteId = new ImportSiteAction().getSiteId(value.toString());
+				if (siteId != null) {
+					SiteContext site = SpaceAPI.getSiteSpace(siteId);
+					Map<String, Object> prop2 = FieldUtil.getAsProperties(site);
+					return prop2;
+				} else {
+					throw new Exception("Value not found");
+				}
 			}
 			case "resource": {
 				ResourceContext resource = getResource(value.toString());
