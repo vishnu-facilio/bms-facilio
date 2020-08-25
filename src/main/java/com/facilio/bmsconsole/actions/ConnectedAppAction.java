@@ -572,6 +572,25 @@ public class ConnectedAppAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private String SAMLRequest;
+	private String RelayState;
+	
+	public String getSAMLRequest() {
+		return SAMLRequest;
+	}
+
+	public void setSAMLRequest(String SAMLRequest) {
+		SAMLRequest = SAMLRequest;
+	}
+
+	public String getRelayState() {
+		return RelayState;
+	}
+
+	public void setRelayState(String RelayState) {
+		RelayState = RelayState;
+	}
+
 	private void handleSAMLResponse(ConnectedAppContext connectedApp, String viewURL) throws Exception {
 
 		HttpServletRequest req = ServletActionContext.getRequest();
@@ -581,7 +600,7 @@ public class ConnectedAppAction extends FacilioAction {
 		if (connectedAppSAML != null) {
 			// saml enabled connected apps
 
-			String samlRequest = req.getParameter("SAMLRequest");
+			String samlRequest = getSAMLRequest();
 
 			Boolean isSandbox = this.isSandboxMode();
 			
@@ -597,7 +616,7 @@ public class ConnectedAppAction extends FacilioAction {
 
 			if (samlRequest != null) {
 				// SP Initiated Login
-				relayState = req.getParameter("RelayState");
+				relayState = getRelayState();
 
 				String decodedsamlRequest = SAMLUtil.decodeSAMLRequest(samlRequest);
 				Document document = SAMLUtil.convertStringToDocument(decodedsamlRequest);

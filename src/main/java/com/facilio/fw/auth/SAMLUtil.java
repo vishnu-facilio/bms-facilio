@@ -149,6 +149,7 @@ public class SAMLUtil {
 			inf.end();
 			return new String(message, 0, resultLength, "UTF-8");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -215,6 +216,7 @@ public class SAMLUtil {
 				elem.setIdAttributeNode(attr, true);
 			}
 		} catch (XPathExpressionException e) {
+			e.printStackTrace();
 			return null;
 		}
 		return doc;

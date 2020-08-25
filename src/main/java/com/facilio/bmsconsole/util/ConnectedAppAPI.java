@@ -96,8 +96,8 @@ public class ConnectedAppAPI {
 				.innerJoin("ConnectedApps")
 				.on("ConnectedApp_Widgets.CONNECTEDAPP_ID=ConnectedApps.ID")
 				.andCondition(CriteriaAPI.getCondition("ConnectedApps.LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition("ConnectedApp_Widgets.LINK_NAME", "linkName", widgetLinkName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive", "true", BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition("ConnectedApp_Widgets.LINK_NAME", "widgetLinkName", widgetLinkName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("ConnectedApps.IS_ACTIVE", "isActive", String.valueOf(true), BooleanOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
