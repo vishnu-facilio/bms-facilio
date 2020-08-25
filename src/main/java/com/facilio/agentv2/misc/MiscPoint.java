@@ -1,9 +1,11 @@
 package com.facilio.agentv2.misc;
 
+import com.facilio.agent.AgentContent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.point.Point;
+import jdk.internal.agent.Agent;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -31,6 +33,9 @@ public class MiscPoint extends Point {
         if(containsValueCheck(AgentConstants.PATH,pointMap)){
             MiscPoint point = new MiscPoint();
             point.setPath(((String)pointMap.get(AgentConstants.PATH)));
+            if (pointMap.containsKey(AgentConstants.ID)) {
+                point.setId((Long) pointMap.get(AgentConstants.ID));
+            }
             if(pointMap.containsKey(AgentConstants.PSEUDO)){
                 point.setPseudo(JsonUtil.getBoolean(pointMap.get(AgentConstants.PSEUDO)));
             }
