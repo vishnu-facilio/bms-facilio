@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
@@ -734,7 +735,9 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		if (isMobile) {
-			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", EncryptionUtil.encode(authtoken));
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("token", authtoken);
+			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
 		}
