@@ -8719,7 +8719,6 @@ public class FieldFactory {
 	        return fields;
 
 	    }
-<<<<<<< HEAD
 	 
 	 public static List<FacilioField> getScopingConfigFields() {
 		 List<FacilioField> fields = new ArrayList<>();

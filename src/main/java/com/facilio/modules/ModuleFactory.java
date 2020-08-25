@@ -3820,7 +3820,6 @@ public class ModuleFactory {
 		module.setTableName("Employee");
 		return module;
 	}
-<<<<<<< HEAD
 
 	public static FacilioModule getAgentThreadDumpModule() {
 		FacilioModule module = new FacilioModule();

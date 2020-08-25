@@ -1375,7 +1375,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-<<<<<<< HEAD
+
 	public List<Map<String, Object>> getOrgSpecificAgentList() throws Exception {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(FieldFactory.getNewAgentFields()).table(ModuleFactory.getNewAgentModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get("type"), "facilio", StringOperators.IS));
