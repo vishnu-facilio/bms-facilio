@@ -5,7 +5,7 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 ipAddress=`hostname -I|awk '{$1=$1};1'`
 logsBucket=facilio-server-logs
-servername=`grep "app.domain=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+servername=`grep "mainapp.domain=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 
 today=`date +%F`
