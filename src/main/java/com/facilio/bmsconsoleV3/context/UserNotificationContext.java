@@ -1,13 +1,19 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanCacheImpl;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 public class UserNotificationContext extends V3Context {
+
 
     public User getUser() {
         return user;
@@ -101,31 +107,16 @@ public class UserNotificationContext extends V3Context {
 
     private String title;
 
-    public long getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(long parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 
-    private long parentId;
+    private Long parentId;
 
-//    public NotificationStatus getNotificationStatus() {
-//        return notificationStatus;
-//    }
-//
-//    public void setNotificationStatus(NotificationStatus notificationStatus) {
-//        this.notificationStatus = notificationStatus;
-//    }
-//    public NotificationStatus getNotificationStatusEnum() {
-//        return notificationStatus;
-//    }
-//
-//    public void setNotificationStatus(int notificationStatus) {
-//        this.notificationStatus = NotificationStatus.valueOf(notificationStatus);
-//    }
-//    private NotificationStatus notificationStatus;
 
     private NotificationStatus notificationStatus;
     public int getNotificationStatus() {
@@ -168,6 +159,72 @@ public class UserNotificationContext extends V3Context {
         }
     }
 
+
+    public Long getParentModule() {
+        return parentModule;
+    }
+
+    public void setParentModule(Long parentModule) {
+        this.parentModule = parentModule;
+    }
+
+    private Long parentModule;
+
+    public Action getAction() throws Exception {
+        if (getActionTypeEnum() != null) {
+            return Action.getActionObj(this);
+        }
+        return null;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    private Action action;
+
+
+    private ActionType actionType;
+    public int getActionType() {
+        if (actionType == null) {
+            return -1;
+        }
+        return actionType.getIndex();
+    }
+    public ActionType getActionTypeEnum() {
+        return actionType;
+    }
+
+    public void setActionType(ActionType actionType) {
+        this.actionType = actionType;
+    }
+    public void setActionType(int actionType) {
+        this.actionType = ActionType.valueOf(actionType);
+    }
+    public enum ActionType implements FacilioEnum {
+        SUMMARY
+        ;
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return null;
+        }
+
+        public static ActionType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+    }
+
+
     public static UserNotificationContext instance(JSONObject obj) throws Exception {
         UserNotificationContext userNotification = new UserNotificationContext();
         JSONObject notiObj = (JSONObject) obj.get("notification");
@@ -181,5 +238,52 @@ public class UserNotificationContext extends V3Context {
         userNotification.setNotificationStatus(UserNotificationContext.NotificationStatus.UNSEEN);
         return  userNotification;
     }
+
+    public static class Action {
+
+        public ActionType getActionType() {
+            return actionType;
+        }
+
+        public void setActionType(ActionType actionType) {
+            this.actionType = actionType;
+        }
+
+        ActionType actionType;
+
+        public JSONObject getActionData() {
+            return actionData;
+        }
+
+        public void setActionData(JSONObject actionData) {
+            this.actionData = actionData;
+        }
+
+        JSONObject actionData ;
+
+
+        public Action(ActionType actionType, JSONObject actionData) {
+            this.actionType = actionType;
+            this.actionData = actionData;
+        }
+
+        public static Action getActionObj(UserNotificationContext user) throws Exception {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            ActionType value = user.getActionTypeEnum();
+            JSONObject jsonObj = new JSONObject();
+            switch(value) {
+                case SUMMARY:
+                    jsonObj.put("moduleId", user.getParentModule());
+                    jsonObj.put("recordId", user.getParentId());
+                    if (user.getParentModule() != null) {
+                        jsonObj.put("module", modBean.getModule(user.getParentModule()));
+                    }
+                    break;
+            }
+            return new Action(value, jsonObj);
+        }
+    }
+
+
 }
 

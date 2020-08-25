@@ -15,7 +15,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 import java.util.Map;
 
-public class FetchUnSeenNotifactionCommand extends FacilioCommand {
+public class FetchUnSeenNotificationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, Object> queryParams = Constants.getQueryParams(context);

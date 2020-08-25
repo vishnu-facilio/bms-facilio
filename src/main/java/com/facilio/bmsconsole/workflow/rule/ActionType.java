@@ -431,6 +431,7 @@ public enum ActionType {
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //				if (obj != null && FacilioProperties.isProduction()) {
 					String ids = (String) obj.get("id");
 					if (!StringUtils.isEmpty(ids)) {
@@ -445,9 +446,11 @@ public enum ActionType {
 							User user = new User();
 							user.setId(id);
 							userNotification.setUser(user);
-							userNotification.setModuleId(currentRule.getModuleId());
 							userNotification.setSiteId(currentRule.getSiteId());
+							FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
+							userNotification.setParentModule(module.getModuleId());
 							userNotification.setParentId((long) context.getOrDefault("recordId", -1l));
+							userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
 							FacilioChain chain = TransactionChainFactoryV3.addRecords();
 							FacilioContext notificationContext = chain.getContext();
 							notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));

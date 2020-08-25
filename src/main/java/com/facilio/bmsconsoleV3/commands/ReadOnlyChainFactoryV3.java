@@ -1,13 +1,11 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
-import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotifactionCommand;
+import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotificationCommand;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
@@ -61,7 +59,7 @@ public class ReadOnlyChainFactoryV3 {
 
     public static FacilioChain getUserNotificationBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new FetchUnSeenNotifactionCommand());
+        c.addCommand(new FetchUnSeenNotificationCommand());
         c.addCommand(new AddUserCriteriaMyNotification());
         return c;
     }
