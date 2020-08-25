@@ -1,11 +1,9 @@
 package com.facilio.agentv2.misc;
 
-import com.facilio.agent.AgentContent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.point.Point;
-import jdk.internal.agent.Agent;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
