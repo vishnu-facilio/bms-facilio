@@ -2,15 +2,14 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleBeanCacheImpl;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+import java.io.Serializable;
 
 public class UserNotificationContext extends V3Context {
 
@@ -239,7 +238,7 @@ public class UserNotificationContext extends V3Context {
         return  userNotification;
     }
 
-    public static class Action {
+    public static class Action implements Serializable {
 
         public ActionType getActionType() {
             return actionType;
@@ -260,6 +259,8 @@ public class UserNotificationContext extends V3Context {
         }
 
         JSONObject actionData ;
+
+        public Action() { }
 
 
         public Action(ActionType actionType, JSONObject actionData) {
