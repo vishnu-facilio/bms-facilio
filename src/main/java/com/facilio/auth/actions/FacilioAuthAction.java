@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
@@ -401,7 +402,7 @@ public class FacilioAuthAction extends FacilioAction {
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
 				if (!StringUtils.isNullOrEmpty(deviceType)
-						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
 				}
 
@@ -416,8 +417,7 @@ public class FacilioAuthAction extends FacilioAction {
 				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 				FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-				addAuthCookies(authtoken, portalUser, false, request);
-
+				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 			} 
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating password, ", e);
@@ -617,7 +617,7 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", SSOUtil.getCurrentAppURL());
 				}
 	
-				addAuthCookies(authtoken, portalUser, false, request);
+				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 			} 
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
@@ -717,8 +717,12 @@ public class FacilioAuthAction extends FacilioAction {
 
 		return null;
 	}
-	
+
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) {
+		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
+	}
+	
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
 
@@ -728,6 +732,13 @@ public class FacilioAuthAction extends FacilioAction {
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
+
+		if (isMobile) {
+			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", EncryptionUtil.encode(authtoken));
+			setCookieProperties(mobileTokenCookie, false);
+			response.addCookie(mobileTokenCookie);
+		}
+
 		setCookieProperties(cookie,true);
 		response.addCookie(cookie);
 
