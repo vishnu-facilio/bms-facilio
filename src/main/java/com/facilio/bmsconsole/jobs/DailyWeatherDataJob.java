@@ -10,7 +10,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -20,8 +19,6 @@ import com.facilio.time.DateTimeUtil;
 public class DailyWeatherDataJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(DailyWeatherDataJob.class.getName());
 	
-	
-
 	@Override
 	public void execute(JobContext jc) {
 		try {
@@ -32,7 +29,7 @@ public class DailyWeatherDataJob extends FacilioJob {
 			}
 			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
-			List<SiteContext> sites=SpaceAPI.getAllSites(true);
+			List<SiteContext> sites=WeatherUtil.getAllSites(true);
 			for(SiteContext site:sites) {
 				
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,DateTimeUtil.getDayStartTime(-1)/1000);

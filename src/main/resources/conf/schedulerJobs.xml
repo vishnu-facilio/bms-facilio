@@ -18,8 +18,13 @@
 	 <job name='ViewEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ViewEmailScheduler' transactionTimeout='300000'/>
 	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>
 	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='900000'/>
+
+	<!-- Weather Data Job -->
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DailyWeatherData' classname = 'com.facilio.bmsconsole.jobs.DailyWeatherDataJob' transactionTimeout='300000'/>
+	 <job name='DailyWeatherStationJob' classname ='com.facilio.bmsconsole.jobs.DailyWeatherStationJob' transactionTimeout='300000'/>
+	 <job name='HourlyWeatherStationJob' classname = 'com.facilio.bmsconsole.jobs.HourlyWeatherStationJob' transactionTimeout='300000'/>
+
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
 	 <job name='V1AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.V1AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='V1RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.V1RefreshAnomalyModelJob' transactionTimeout='14400000'/>

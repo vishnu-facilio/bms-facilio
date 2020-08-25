@@ -6440,8 +6440,8 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
         fields.add(getField("name", "Name", "NAME", module, FieldType.STRING));
-        fields.add(getField("latitude", "Latitude", "LAT", module, FieldType.NUMBER));
-        fields.add(getField("longtitude", "Longtitude", "LNG", module, FieldType.NUMBER));
+        fields.add(getField("lat", "Latitude", "LAT", module, FieldType.NUMBER));
+        fields.add(getField("lng", "Longtitude", "LNG", module, FieldType.NUMBER));
         return fields;
     }
 
@@ -8719,6 +8719,7 @@ public class FieldFactory {
 	        return fields;
 
 	    }
+<<<<<<< HEAD
 	 
 	 public static List<FacilioField> getScopingConfigFields() {
 		 List<FacilioField> fields = new ArrayList<>();
@@ -8855,4 +8856,14 @@ public class FieldFactory {
 		fields.add(getField("disabledTime", "DISABLED_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
+
+	 public static List<FacilioField> getOrgWeatherStationFields(){
+		 List<FacilioField> fields = new ArrayList<>();
+		 FacilioModule module = ModuleFactory.getOrgWeatherStationModule();
+		 fields.add(getIdField(module));
+		 fields.add(AccountConstants.getOrgIdField(module));
+		 fields.add(getNumberField("weatherStationId","WEATHER_STATION_ID", module));
+		 fields.add(getNumberField("siteId", "SITE_ID", module));
+		 return fields;
+	 }
 }

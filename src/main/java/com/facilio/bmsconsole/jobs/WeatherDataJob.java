@@ -14,8 +14,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.PsychrometricUtil;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -32,18 +30,13 @@ public class WeatherDataJob extends FacilioJob {
 			{
 				return;
 			}
-			List<SiteContext> sites=SpaceAPI.getAllSites(true);
-			
+			List<SiteContext> sites = WeatherUtil.getAllSites(true);
 			List<ReadingContext> hourlyReadings= new ArrayList<ReadingContext>();
 			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();
 			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
-
-			
 			Map<Long,List<ReadingContext>> siteCurrentReadings = new HashMap<Long,List<ReadingContext>>();
 			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
-			
-			
 			for(SiteContext site:sites) {
 
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,null);
@@ -58,7 +51,7 @@ public class WeatherDataJob extends FacilioJob {
 					
 					WeatherUtil.populateMap(siteId, reading,siteCurrentReadings);
 					
-					ReadingContext psychrometricReading = getPsychrometricReading(siteId, currentWeather);
+					ReadingContext psychrometricReading = WeatherUtil.getPsychrometricReading(siteId, currentWeather);
 					if(psychrometricReading != null) {
 						psychrometricReadings.add(psychrometricReading);
 					}
@@ -91,32 +84,4 @@ public class WeatherDataJob extends FacilioJob {
 			CommonCommandUtil.emailException("WeatherDataJob", "Exception in Weather Data job ", e);
 		}
 	}
-		
-	
-
-
-	
-	
-	private ReadingContext getPsychrometricReading(long siteId, Map<String,Object> weatherData) {
-		
-		ReadingContext reading= new ReadingContext();
-		reading.setParentId(siteId);
-		try {
-			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherData);
-			Double dewPointTemperature = PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(weatherData);
-			Double enthalpy = PsychrometricUtil.getEnthalpy(weatherData);
-			
-			
-			reading.addReading("wetBulbTemperature", wetBulbTemperature);
-			reading.addReading("dewPointTemperature", dewPointTemperature);
-			reading.addReading("enthalpy", enthalpy);
-		}
-		catch (Exception e) {
-			logger.log(Level.ERROR, e.getMessage(), e);
-		}
-		return reading;
-	}
-	
-	
-	
 }

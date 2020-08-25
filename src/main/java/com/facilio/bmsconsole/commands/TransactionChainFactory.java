@@ -5627,6 +5627,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new SaveMailMessageCommandV3());
 		return chain;
 	}
+
+	public static FacilioChain addOrUpdateWeatherDataChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateWeatherDataCommand());
+		return chain;
+	}
+	
+	public static FacilioChain addOrUpdateDailyWeatherDataChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateDailyWeatherDataCommand());
+		return chain;
+	}
 }
 
 

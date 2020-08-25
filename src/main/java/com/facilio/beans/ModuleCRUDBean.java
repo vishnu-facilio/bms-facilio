@@ -145,4 +145,9 @@ public interface ModuleCRUDBean {
 	public List<Map<String,Object>> getOrgSpecificAgentList() throws Exception;
 	
 	public void disableOrEnableAgent(long agentId, boolean disable) throws Exception;
+	
+	public void addOrUpdateWeatherData(Map<Long, List<Long>> siteAndStationMap, Map<Long, Map<String, Object>> dataMap)throws Exception;
+	
+	public void addOrUpdateDailyWeatherData(Map<Long, List<Long>> map, Map<Long, Map<String, Object>> dataMap)throws Exception;
+
 }

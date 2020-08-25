@@ -1375,6 +1375,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public List<Map<String, Object>> getOrgSpecificAgentList() throws Exception {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(FieldFactory.getNewAgentFields()).table(ModuleFactory.getNewAgentModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get("type"), "facilio", StringOperators.IS));
@@ -1398,6 +1399,28 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		builder.update(prop);
 	}
 
+	public void addOrUpdateWeatherData(Map<Long, List<Long>> siteAndStationMap, Map<Long, Map<String, Object>> dataMap) throws Exception {
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
+		{
+			return;
+		}
+		FacilioChain context = TransactionChainFactory.addOrUpdateWeatherDataChain();
+		context.getContext().put("WeatherStationIdVsSiteId", siteAndStationMap);
+		context.getContext().put("dataMap", dataMap);
+		context.execute();
+	}
+
+	@Override
+	public void addOrUpdateDailyWeatherData(Map<Long, List<Long>> siteAndStationMap, Map<Long, Map<String, Object>> dataMap) throws Exception {
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
+		{
+			return;
+		}
+		FacilioChain context = TransactionChainFactory.addOrUpdateDailyWeatherDataChain();
+		context.getContext().put("WeatherStationIdVsSiteId", siteAndStationMap);
+		context.getContext().put("dataMap", dataMap);
+		context.execute();
+	}
 }
 
 

@@ -1720,6 +1720,9 @@ public class FacilioConstants {
 
 		public static final String USER_NOTIFICATION = "usernotification";
 
+		public static final String ORGID = "orgId";
+		public static final String WEATHER_STATION_ID = "weatherStationId";
+		
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";

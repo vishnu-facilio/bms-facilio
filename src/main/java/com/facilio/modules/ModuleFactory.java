@@ -3820,6 +3820,7 @@ public class ModuleFactory {
 		module.setTableName("Employee");
 		return module;
 	}
+<<<<<<< HEAD
 
 	public static FacilioModule getAgentThreadDumpModule() {
 		FacilioModule module = new FacilioModule();
@@ -4028,5 +4029,12 @@ public class ModuleFactory {
 			seenMapping.setTableName("User_Notification_Seen_Mapping");
 			return seenMapping;
 	}
-
+	
+	public static FacilioModule getOrgWeatherStationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("org weather station");
+		module.setDisplayName("Org Weather Station");
+		module.setTableName("Org_Weather_Station");
+		return module;
+	}
 }
