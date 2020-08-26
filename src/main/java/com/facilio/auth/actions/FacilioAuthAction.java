@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.facilio.bmsconsole.util.AESEncryption;
-import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.iam.accounts.util.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;

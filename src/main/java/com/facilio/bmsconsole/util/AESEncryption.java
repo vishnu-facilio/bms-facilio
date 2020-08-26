@@ -14,7 +14,7 @@ public class AESEncryption {
     private Cipher cipher;
     private SecretKey secretKey;
     private byte[] privateKey = "oB9jtDA0z1fkRJSC98KrgZccWvHAq38I".getBytes();
-    
+
     public AESEncryption () {
         try {
             this.cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");

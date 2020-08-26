@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.dto.Organization;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -108,9 +109,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 		if (request != null) {
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 			if (appDomain != null && appDomain.getOrgId() > 0 && appDomain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getDomain());
+				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
+				Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				if (sso != null && sso.getIsActive()) {
-					String ssoEndpoint = SSOUtil.getSSOEndpoint(appDomain.getDomain());
+					String ssoEndpoint = SSOUtil.getSSOEndpoint(org.getDomain());
 					response.setHeader("X-Redirect-To", ssoEndpoint);
 				}
 			}
