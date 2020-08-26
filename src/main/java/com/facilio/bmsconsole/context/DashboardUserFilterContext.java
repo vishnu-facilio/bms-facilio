@@ -17,6 +17,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	
 	// default values is type string to handle  ,'all' ,'others' cases
 		
+
 	
 	public String[] getDefaultValues() {
 		return this.filterPojo.getDefaultValues();
@@ -173,17 +174,10 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	// to do , serialize and deserialize context fields to json , than via POJO
 	private DashboardUserFilter filterPojo = new DashboardUserFilter();
 
-	private int order;
+	private int filterOrder;
 	
 	
-	public int getOrder() {
-		return order;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
+	
 	public int getComponentType() {
 
 		if (this.filterPojo.getComponentType() != null) {
@@ -290,6 +284,14 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	public void setField(FacilioField field) {
 		this.field = field;
+	}
+
+	public int getFilterOrder() {
+		return filterOrder;
+	}
+
+	public void setFilterOrder(int filterOrder) {
+		this.filterOrder = filterOrder;
 	}
 
 }
