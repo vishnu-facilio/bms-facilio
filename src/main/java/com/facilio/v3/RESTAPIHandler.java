@@ -61,6 +61,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Class beanClass = ChainUtil.getBeanClass(config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
         Constants.setModuleName(context, moduleName);
+        Constants.setV3config(context, config);
 
         fetchRecordChain.execute();
 
@@ -85,6 +86,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
+        Constants.setV3config(context, v3Config);
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
         listChain.execute();
@@ -133,6 +135,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
+        Constants.setV3config(context, v3Config);
+
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
         listChain.execute();
@@ -177,6 +181,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             }
         }
 
+        Constants.setV3config(context, v3Config);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
         Constants.setModuleName(context, moduleName);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
@@ -225,6 +230,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
 
+        Constants.setV3config(context, v3Config);
         Constants.setModuleName(context, moduleName);
         Constants.setBulkRawInput(context, values);
         Constants.setBodyParams(context, bodyParams);
@@ -266,6 +272,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         FacilioContext context = patchChain.getContext();
 
+        Constants.setV3config(context, v3Config);
         context.put(Constants.RECORD_ID, id);
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, summaryRecord);
@@ -307,6 +314,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         context.put(Constants.BEAN_CLASS, beanClass);
+        Constants.setV3config(context, v3Config);
 
         updateChain.execute();
 
@@ -340,6 +348,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioChain deleteChain = ChainUtil.getDeleteChain(moduleName);
 
         FacilioContext context = deleteChain.getContext();
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        Constants.setV3config(context, v3Config);
 
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, deleteObj);

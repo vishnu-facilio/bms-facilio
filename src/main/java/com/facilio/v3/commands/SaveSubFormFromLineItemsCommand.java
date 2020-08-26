@@ -12,6 +12,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -49,7 +50,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
 
             for (String moduleName : lineItems.keySet()) {
                 List<SubFormContext> subFormContextList = lineItems.get(moduleName);
-                List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subFormContextList, record.getId());
+                List<ModuleBaseWithCustomFields> beanList = insert(context, mainModuleName, moduleName, subFormContextList, record.getId());
                 recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
                 recordMap.get(moduleName).addAll(beanList);
             }
@@ -57,7 +58,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
         return false;
     }
 
-    private List<ModuleBaseWithCustomFields> insert(String mainModuleName, String moduleName, List<SubFormContext> subFormContextList, long recordId) throws Exception {
+    private List<ModuleBaseWithCustomFields> insert(Context context, String mainModuleName, String moduleName, List<SubFormContext> subFormContextList, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -84,7 +85,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
 
-        Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
+        Class contextClass = ChainUtil.getBeanClass(Constants.getV3Config(context), module);
 
         Map<String, List<LookupField>> allLookupFields = getAllLookupFields(modBean, module);
         List<LookupField> lookupFieldList = allLookupFields.get(mainModuleName);

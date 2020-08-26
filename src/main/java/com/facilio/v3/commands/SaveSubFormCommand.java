@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.*;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,7 +56,7 @@ public class SaveSubFormCommand extends FacilioCommand {
                 if (CollectionUtils.isEmpty(subForm)) {
                     continue;
                 }
-                List<ModuleBaseWithCustomFields> beanList = insert(mainModuleName, moduleName, subForm, record.getId());
+                List<ModuleBaseWithCustomFields> beanList = insert(context, mainModuleName, moduleName, subForm, record.getId());
                 recordMap.computeIfAbsent(moduleName, k -> new ArrayList<>());
                 recordMap.get(moduleName).addAll(beanList);
             }
@@ -81,7 +83,7 @@ public class SaveSubFormCommand extends FacilioCommand {
         return lookupField;
     }
 
-    private List<ModuleBaseWithCustomFields> insert(String mainModuleName, String moduleName, List<Map<String, Object>> subForm, long recordId) throws Exception {
+    private List<ModuleBaseWithCustomFields> insert(Context context, String mainModuleName, String moduleName, List<Map<String, Object>> subForm, long recordId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         FacilioModule mainModule = modBean.getModule(mainModuleName);
@@ -107,7 +109,8 @@ public class SaveSubFormCommand extends FacilioCommand {
         }
 
         List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
-        Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
+        Class contextClass = ChainUtil.getBeanClass(Constants.getV3Config(context), module);
+
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
         LookupField lookupField;

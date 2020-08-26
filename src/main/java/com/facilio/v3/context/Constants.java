@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.V3Builder.V3Config;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
@@ -196,6 +197,15 @@ public class Constants {
 
     public static void setDeleteRecordIdMap(Context context, Map<String, List<Long>> deleteRecordIdMap) {
         context.put(DELETE_RECORD_ID_MAP, deleteRecordIdMap);
+    }
+
+    private static final String V3CONFIG = "v3Config";
+    public static V3Config getV3Config(Context context) {
+        return (V3Config) context.get(V3CONFIG);
+    }
+
+    public static void setV3config(Context context, V3Config v3Config) {
+        context.put(V3CONFIG, v3Config);
     }
 
 }
