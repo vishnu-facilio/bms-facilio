@@ -6188,6 +6188,11 @@
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="getDashboardModules">			
 		</action>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
+				method="addOrUpdateDashboardFilters">			
+		</action>
+		
 		
 	</package>
 

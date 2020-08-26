@@ -26,14 +26,14 @@ public class AddOrUpdateDashboardFilterCommand extends FacilioCommand {
 		//Only when timeline enabled or atleast one dashboard user filter is added the filter is saved 
 		if(dashboardFilterContext!=null)
 		{
-		
-		long dashboardId=context.get(FacilioConstants.ContextNames.DASHBOARD)!=null?((DashboardContext)context.get(FacilioConstants.ContextNames.DASHBOARD)).getId():-1;
-
-		long dashboardTabId=context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)!=null?((DashboardTabContext)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)).getId():-1;
-
-			
-		dashboardFilterContext.setDashboardId(dashboardId);
-		dashboardFilterContext.setDashboardTabId(dashboardTabId);
+		//no need as dashboardFilterContext needed dashboardId or dashboardTabId to be filled
+//		long dashboardId=context.get(FacilioConstants.ContextNames.DASHBOARD)!=null?((DashboardContext)context.get(FacilioConstants.ContextNames.DASHBOARD)).getId():-1;
+//
+//		long dashboardTabId=context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)!=null?((DashboardTabContext)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB)).getId():-1;
+//
+//			
+//		dashboardFilterContext.setDashboardId(dashboardId);
+//		dashboardFilterContext.setDashboardTabId(dashboardTabId);
 		Long dashboardFilterId=dashboardFilterContext.getId();
 		
 		
