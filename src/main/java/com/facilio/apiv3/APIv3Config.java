@@ -17,6 +17,9 @@ import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.FillAdminDocumentsSharingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.ContactDirectoryFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.FillContactDirectorySharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDealsAndOffersSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
@@ -582,7 +585,8 @@ public class APIv3Config {
         return () -> new V3Config(ContactDirectoryContext.class)
                 .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
-                .summary()
+                .summary().beforeFetch(new ContactDirectoryFillLookupFieldsCommand()).afterFetch(new FillContactDirectorySharingInfoCommand())
+                .list().beforeFetch(new ContactDirectoryFillLookupFieldsCommand())
                 .build();
     }
 
@@ -591,7 +595,7 @@ public class APIv3Config {
         return () -> new V3Config(AdminDocumentsContext.class)
                 .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
-                .summary()
+                .summary().afterFetch(new FillAdminDocumentsSharingInfoCommand())
                 .build();
     }
 

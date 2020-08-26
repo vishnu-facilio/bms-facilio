@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context.tenantEngagement;
 import com.facilio.v3.context.V3Context;
 
 import java.io.File;
+import java.util.List;
 
 public class AdminDocumentsContext extends V3Context {
 
@@ -13,6 +14,18 @@ public class AdminDocumentsContext extends V3Context {
     private String fileContentType;
     private String description;
     private String title;
+    private List<AdminDocumentsSharingContext> admindocumentsharing;
+
+
+    public List<AdminDocumentsSharingContext> getAdmindocumentsharing() {
+        return admindocumentsharing;
+    }
+
+    public void setAdmindocumentsharing(List<AdminDocumentsSharingContext> admindocumentsharing) {
+        this.admindocumentsharing = admindocumentsharing;
+    }
+
+
 
     public Long getFileId() {
         return fileId;
