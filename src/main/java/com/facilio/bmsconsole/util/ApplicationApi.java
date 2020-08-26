@@ -276,22 +276,22 @@ public class ApplicationApi {
 
         Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
         AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
-        ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex());
+        ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, ApplicationContext.AppLayoutType.DUAL.getIndex(), "Facilio Main App");
 
 
         AppDomain servicePortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
-        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "OCCUPANT PORTAL", false, servicePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "Occupant Portal", false, servicePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Occupant Portal App");
 
         AppDomain tenantPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain());
-        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "TENANT PORTAL", false, tenantPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "Tenant Portal", false, tenantPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Tenant Portal App");
 
         AppDomain vendorPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain());
-        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "VENDOR PORTAL", false, vendorPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "Vendor Portal", false, vendorPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Vendor Portal App");
 
         AppDomain clientPortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain());
-        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "CLIENT PORTAL", false, clientPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "Client Portal", false, clientPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Client Portal App");
 
-        ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex());
+        ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Agent App");
 
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);

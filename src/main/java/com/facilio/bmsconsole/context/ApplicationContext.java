@@ -19,12 +19,13 @@ public class ApplicationContext implements Serializable{
 		this.orgId = orgId;
 	}*/
 
-	public ApplicationContext(long orgId, String name, Boolean isDefault, int domainType, String linkName, int layoutType) {
+	public ApplicationContext(long orgId, String name, Boolean isDefault, int domainType, String linkName, int layoutType, String desc) {
 		this.orgId = orgId;
 		this.name = name;
 		this.isDefault = isDefault;
 		this.domainType = domainType;
 		this.linkName = linkName;
+		this.description = desc;
 		this.layoutType = layoutType;
 	}
 
@@ -168,5 +169,15 @@ public class ApplicationContext implements Serializable{
 
 	public void setDomainType(int domainType) {
 		this.domainType = domainType;
+	}
+
+	private String description;
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
