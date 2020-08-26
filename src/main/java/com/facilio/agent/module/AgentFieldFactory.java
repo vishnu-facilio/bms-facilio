@@ -18,8 +18,8 @@ public class AgentFieldFactory {
 			fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
 			fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("lastEnabledTime", "ENABLED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("lastDisabledTime", "DISABLED_TIME", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
 			return fields;
 		}
 
