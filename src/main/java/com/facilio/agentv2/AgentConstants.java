@@ -203,4 +203,9 @@ public class AgentConstants
     public static final String SYSTEM_POINT_MODULE_NAME = "systemPoint";
     
     public static final String DATA_TIME = "dataTime";
+    
+    public static final String MESSAGE_TOPIC = "topic";
+    public static final String IS_DISABLE = "isDisable";
+    public static final String LAST_DISABLED_TIME = "lastDisabledTime";
+    public static final String LAST_ENBLED_TIME = "lastEnabledTime";
 }

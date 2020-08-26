@@ -1,6 +1,7 @@
 package com.facilio.services.messageQueue;
 
 import com.facilio.accounts.dto.Organization;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -47,12 +48,12 @@ public abstract class MessageQueue {
 //        PropertyConfigurator.configure(getLoggingProps());
 
         try {
-            List<Organization> orgs = getOrgs();
-            if(CollectionUtils.isNotEmpty(orgs)) {
+            List<Map<String,Object>> orgMessageTopics = MessageQueueTopic.getAllMessageTopics();
+            if(CollectionUtils.isNotEmpty(orgMessageTopics)) {
 
-                for (Organization org : orgs) {
-                    Long orgId = org.getOrgId();
-                    String orgDomainName = org.getDomain();
+                for (Map<String, Object> org : orgMessageTopics) {
+                    Long orgId = (Long) org.get(AgentConstants.ORGID);
+                    String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
                     if( (! EXISTING_ORGS.contains(orgDomainName))) {
                         try {
                             startProcessor(orgId, orgDomainName);

@@ -1,6 +1,7 @@
 package com.facilio.services.messageQueue;
 
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.*;
@@ -79,6 +80,5 @@ public class KinesisMessageQueue extends MessageQueue {
     private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName, String type) {
         return new KinesisIRecordProcessorFactory(orgId,orgDomainName);
     }
-
 
 }
