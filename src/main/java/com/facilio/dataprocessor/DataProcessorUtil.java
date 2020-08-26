@@ -112,7 +112,7 @@ public class DataProcessorUtil {
      * @return
      */
     public boolean processRecord(FacilioRecord record) {
-        String recordId = record.getId();
+        long recordId = record.getId();
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
@@ -139,7 +139,7 @@ public class DataProcessorUtil {
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
                     if(FacilioProperties.isDevelopment()) {
                     	 if(payLoad.containsKey(PublishType.AGENT_ACTION) && (agentV2 != null))  {
-                         	AgentControlAction.processAgentAction(Long.parseLong(recordId), payLoad, agentV2.getId());
+                         	AgentControlAction.processAgentAction(recordId, payLoad, agentV2.getId());
                          	return false;
                          }
                     }
@@ -333,7 +333,7 @@ public class DataProcessorUtil {
         return true;
     }
 
-    private boolean sendToProcessorV2(JSONObject payLoad, String recordId) {
+    private boolean sendToProcessorV2(JSONObject payLoad, long recordId) {
         if (dataProcessorV2 != null) {
             try {
                 if (!dataProcessorV2.processRecord(payLoad)) {
@@ -351,7 +351,7 @@ public class DataProcessorUtil {
         }
     }
 
-    public static boolean checkIfDuplicate(String recordId) {
+    public static boolean checkIfDuplicate(long recordId) {
         try {
             boolean isDuplicateMessage = isDuplicate(recordId);
             if (isDuplicateMessage) {
@@ -532,13 +532,13 @@ public class DataProcessorUtil {
      * @return true if not present and false if present
      * @throws Exception
      */
-    public static boolean isDuplicate(String recordId) {
+    public static boolean isDuplicate(long recordId) {
         boolean isNew = true;
         try {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
             FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), recordId, StringOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS));
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(messageModule.getTableName())
                     .select(fieldMap.values())
@@ -553,7 +553,7 @@ public class DataProcessorUtil {
         return isNew;
     }
 
-    public static boolean markMessageProcessed(String recordId) {
+    public static boolean markMessageProcessed(long recordId) {
         try {
             return updateAgentMessage(recordId, MessageStatus.PROCESSED);
         } catch (Exception e) {
@@ -562,15 +562,15 @@ public class DataProcessorUtil {
         return false;
     }
 
-    public static boolean addAgentMessage(String recordId) throws Exception {
+    public static boolean addAgentMessage(long recordId) throws Exception {
         return addOrUpdateAgentMessage(recordId, MessageStatus.RECIEVED);
     }
 
-    public static boolean updateAgentMessage(String recordId, MessageStatus messageStatus) throws Exception {
+    public static boolean updateAgentMessage(long recordId, MessageStatus messageStatus) throws Exception {
         return addOrUpdateAgentMessage(recordId, messageStatus);
     }
 
-    private static boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus) throws Exception {
+    private static boolean addOrUpdateAgentMessage(long recordId, MessageStatus messageStatus) throws Exception {
         boolean status = false;
 
         Map<String, Object> map = new HashMap<>();

@@ -7,7 +7,7 @@ public class FacilioRecord {
     private String partitionKey;
     private JSONObject data;
     private long timeStamp;
-    private String id;
+    private long id;
     private long size;
 
     public FacilioRecord(String partitionKey, JSONObject data) {
@@ -44,11 +44,11 @@ public class FacilioRecord {
         this.timeStamp = timeStamp;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

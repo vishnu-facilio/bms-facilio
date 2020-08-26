@@ -463,7 +463,7 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getAgentMessageModule();
         fields.add(getIdField(module));
-        fields.add(getField(AgentKeys.RECORD_ID, "RECORD_ID", module, FieldType.STRING));
+        fields.add(getNumberField(AgentKeys.RECORD_ID, "RECORD_ID", module));
         fields.add(getAgentMessageStatusField(module));
         fields.add(getAgentMessageStartTimeField(module));
         fields.add(getField(AgentKeys.FINISH_TIME, "FINISH_TIME", module, FieldType.NUMBER));

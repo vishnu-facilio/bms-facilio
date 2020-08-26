@@ -881,9 +881,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(messageModule.getTableName())
 					.fields(new ArrayList<>(fieldMap.values()))
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.MSG_STATUS),"0",NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID),String.valueOf(map.get(AgentKeys.RECORD_ID)),NumberOperators.EQUALS));
 
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.valueOf(rowsAffected);

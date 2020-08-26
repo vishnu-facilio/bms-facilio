@@ -62,7 +62,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 JSONObject object = (JSONObject) parser.parse(reader);
                 JSONObject data = (JSONObject) parser.parse((String)object.get("data"));
                 FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
-                facilioRecord.setId(String.valueOf(record.offset()));
+                facilioRecord.setId(record.offset());
                 try {
                     if(object.containsKey("timestamp")) {
                         Long timestamp = Long.parseLong(object.get("timestamp").toString());
@@ -83,7 +83,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
 
     public void commit(FacilioRecord record) {
         try {
-            long offset = Long.parseLong(record.getId().trim());
+            long offset = record.getId();
             consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(offset+1)));
         } catch (NumberFormatException e) {
             LOGGER.info("Exception while parsing offset " + record.getId());
