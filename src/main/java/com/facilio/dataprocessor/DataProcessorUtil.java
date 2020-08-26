@@ -500,6 +500,7 @@ public class DataProcessorUtil {
             deviceMap.put(deviceId, bean.addDeviceId(deviceId));
         }*/
 
+    
     public static String getLastRecordChecked() throws Exception {
         Map<String, FacilioField> fieldmap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
         Criteria criteria = new Criteria();
@@ -515,7 +516,7 @@ public class DataProcessorUtil {
         if (!record.isEmpty()) {
             if (record.get(0).containsKey(AgentKeys.MSG_STATUS)) {
                 //OGGER.info(" record selected is -> " + record.get(0));
-                return (String) record.get(0).get(AgentKeys.RECORD_ID);
+                return record.get(0).get(AgentKeys.RECORD_ID).toString();
             } else {
                 throw new Exception(AgentKeys.MSG_STATUS + " field missing from record selected ->" + record.get(0));
             }
