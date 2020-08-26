@@ -29,19 +29,19 @@ public class BillUtilityPageFactory extends PageFactory {
 		electriycity.addToWidgetParams("hideBg", true);
 		tab1Sec1.addWidget(electriycity);
 		
-		
-		Page.Tab tab2 = page.new Tab("ACTIVE PAYMENTS");
-		page.addTab(tab2);
-		Page.Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
-		
-		PageWidget payments= new PageWidget(PageWidget.WidgetType.UTILITY_ACTIVITY_PAYMENT);
-		payments.addToLayoutParams(tab2Sec1, 24, 24);
-		tab2Sec1.addWidget(payments);
+//		
+//		Page.Tab tab2 = page.new Tab("ACTIVE PAYMENTS");
+//		page.addTab(tab2);
+//		Page.Section tab2Sec1 = page.new Section();
+//		tab2.addSection(tab2Sec1);
+//		
+//		PageWidget payments= new PageWidget(PageWidget.WidgetType.UTILITY_ACTIVITY_PAYMENT);
+//		payments.addToLayoutParams(tab2Sec1, 24, 24);
+//		tab2Sec1.addWidget(payments);
 
 		
 		
-		Page.Tab tab3 = page.new Tab("TRANSACTIONS");
+		Page.Tab tab3 = page.new Tab("PAYMENTS");
 		page.addTab(tab3);
 		Page.Section tab3Sec1 = page.new Section();
 		tab3.addSection(tab3Sec1);
@@ -52,15 +52,15 @@ public class BillUtilityPageFactory extends PageFactory {
 		
 		
 		
-		Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
-		page.addTab(tab4);
-		Page.Section tab4Sec1 = page.new Section();
-		tab4.addSection(tab4Sec1);
-		
-		
-		PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.UTILITY_CANCEL_PAYMENT);
-		cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
-		tab4Sec1.addWidget(cancelPayments);
+//		Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
+//		page.addTab(tab4);
+//		Page.Section tab4Sec1 = page.new Section();
+//		tab4.addSection(tab4Sec1);
+//		
+//		
+//		PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.UTILITY_CANCEL_PAYMENT);
+//		cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
+//		tab4Sec1.addWidget(cancelPayments);
 		
 		
 
