@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -34,20 +35,14 @@ public class FetchModulesInDashboardCommand extends FacilioCommand{
 		
 		 for(DashboardWidgetContext widget : dashboardWidgets)
 		 {
-			 if(widget.getWidgetType().equals(WidgetType.CHART))
-			 {
-				 WidgetChartContext widgetChart=(WidgetChartContext)widget;
-				 
-				 
-				 ReportContext report=ReportUtil.getReport(widgetChart.getNewReportId(), true);
-				 
-				 				 
-				 if(report.getTypeEnum()==ReportType.WORKORDER_REPORT)
-				 {				 
-					 moduleIds.add(report.getModuleId());
-				 }
-				 				 				 
-			 }
+			 
+				 	long widgetModuleId=DashboardFilterUtil.getModuleIdFromWidget(widget);
+				 	if(widgetModuleId!=-1)
+				 	{
+					 moduleIds.add(widgetModuleId);
+					 
+				 	}
+			
 			
 		 }
 		 
