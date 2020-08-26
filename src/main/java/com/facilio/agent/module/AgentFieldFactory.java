@@ -15,6 +15,7 @@ public class AgentFieldFactory {
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(FieldFactory.getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
+			fields.add(FieldFactory.getField("orgId", "ORGID", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
 			fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
