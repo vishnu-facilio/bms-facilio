@@ -357,10 +357,11 @@ public class AccountUtil {
 		ASSET_DEPRECIATION(8796093022208L), // 2^43
 		CUSTOM_MAIL(17592186044416L),
 		ETISALAT(35184372088832L),
-		COMMUNITY(70368744177664L)
+		COMMUNITY(70368744177664L),
+		TENANT_BILLING(140737488355328L) // 2^47
 		;
 		
-		private long license;
+		private long license;	
 
 		FeatureLicense(long license) {
 			this.license = license;
