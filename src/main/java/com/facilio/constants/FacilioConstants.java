@@ -935,6 +935,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULES_COUNT = "workflowRulesCount";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
+		public static final String WORKFLOW_RULE_ID_LIST = "workflowRuleIDList";
 		public static final String WORKFLOW_RULE_PARENT_LOGGER_ID = "workflowRuleParentLoggerId";
 		public static final String WORKFLOW_RULE_RESOURCE_ID = "workflowRuleResourceId";
 		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";

@@ -26,13 +26,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -40,7 +36,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -136,7 +131,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		return ruleTypes;
 	}
 
-	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records, FacilioContext context) throws Exception {
 		Criteria parentCriteria = getCriteria(records);
 
 		// don't take any record if criteria
@@ -174,7 +169,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				FacilioModule module = modBean.getModule(moduleName);
 				
 				long currentTime = System.currentTimeMillis();
-				List<WorkflowRuleContext> workflowRules = getWorkflowRules(module, activities, entry.getValue());
+				List<WorkflowRuleContext> workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
 				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				currentTime = System.currentTimeMillis();
 				

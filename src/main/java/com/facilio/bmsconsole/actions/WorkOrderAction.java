@@ -1413,6 +1413,14 @@ public class WorkOrderAction extends FacilioAction {
 		this.approvalTransitionId = approvalTransitionId;
 	}
 
+	private Long customButtonId;
+	public Long getCustomButtonId() {
+		return customButtonId;
+	}
+	public void setCustomButtonId(Long customButtonId) {
+		this.customButtonId = customButtonId;
+	}
+
 	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
 		EventType activityType = EventType.EDIT;
 		if (workorder == null) {
@@ -1420,6 +1428,9 @@ public class WorkOrderAction extends FacilioAction {
 				workorder = new WorkOrderContext();
 			}
 			else if (approvalTransitionId != null && approvalTransitionId > 0) {
+				workorder = new WorkOrderContext();
+			}
+			else if (customButtonId != null && customButtonId > 0) {
 				workorder = new WorkOrderContext();
 			}
 		}
@@ -1452,6 +1463,10 @@ public class WorkOrderAction extends FacilioAction {
  		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
  		context.put(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID, approvalTransitionId);
+ 		if (customButtonId != null && customButtonId > 0) {
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID_LIST, Collections.singletonList(customButtonId));
+			CommonCommandUtil.addEventType(EventType.CUSTOM_BUTTON, context);
+		}
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 		context.put(FacilioConstants.ContextNames.NOTIFY_REQUESTER, getNotifyRequester());
