@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -20,8 +19,8 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
     }
 
     @Override
-    protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records, FacilioContext context) throws Exception {
-        List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records, context);
+    protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+        List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records);
         List<WorkflowRuleContext> newWorkflowRules = null;
 
         // Re-arrange execution order
