@@ -17,7 +17,6 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3CustomModuleData;
@@ -25,11 +24,11 @@ import com.facilio.bmsconsoleV3.context.V3MailMessageContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.fs.FileInfo;
+import com.facilio.modules.fields.FileField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
-import com.google.gson.JsonObject;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -49,7 +48,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.activity.ActivityType;
 import com.facilio.activity.AlarmActivityType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
@@ -97,8 +95,6 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-
-import javax.activation.DataSource;
 
 public enum ActionType {
 
@@ -1623,10 +1619,11 @@ public enum ActionType {
 				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
 				FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(moduleName);
 				FacilioContext createContext = createRecordChain.getContext();
-				recordMap.put(moduleName, Collections.singletonList(record));
 				Constants.setRecordMap(createContext, recordMap);
 				Constants.setModuleName(createContext, moduleName);
 				FacilioModule module = ChainUtil.getModule(moduleName);
+				handleFileAttachmentField(currentRecord, record, module, obj);
+				recordMap.put(moduleName, Collections.singletonList(record));
 				Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
 				createContext.put(Constants.BEAN_CLASS, beanClass);
 				createRecordChain.execute();
@@ -1878,5 +1875,92 @@ public enum ActionType {
 
 	private static ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
 		return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false, StringUtils.EMPTY);
+	}
+
+	private static Map<String, Object> parseFileObject (AttachmentV3Context attachment, String fileFieldName) throws Exception {
+
+		FileStore fs = FacilioFactory.getFileStore();
+		Long fileId = attachment.getAttachmentId();
+		FileInfo fileInfo = null;
+		InputStream downloadStream = null;
+		fileInfo = fs.getFileInfo(fileId, true);
+		downloadStream = fs.readFile(fileInfo);
+		File file = File.createTempFile(attachment.getAttachmentFileName(), "");
+		FileUtils.copyInputStreamToFile(downloadStream, file);
+		Map<String, Object> fileObject = new HashMap<>();
+		fileObject.put("createdTime", System.currentTimeMillis());
+		fileObject.put(fileFieldName+"FileName", attachment.getAttachmentFileName());
+		fileObject.put(fileFieldName+"ContentType", attachment.getAttachmentContentType());
+		fileObject.put(fileFieldName, file);
+
+		return fileObject;
+
+	}
+
+	private static void handleFileAttachmentField(Object currentRecord, ModuleBaseWithCustomFields record, FacilioModule module , JSONObject obj) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (currentRecord instanceof V3MailMessageContext) {
+			V3MailMessageContext mailContext = (V3MailMessageContext) currentRecord;
+			List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(mailContext.getId(), FacilioConstants.ContextNames.MAIL_ATTACHMENT);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			if (mailContext.getAttachmentsList() != null && mailContext.getAttachmentsList().size() > 0) {
+				addFileFields(attachments, obj, fields, record);
+			}
+			if (attachments != null && attachments.size() > 0) {
+				List<FacilioModule> attachmentModules = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.ATTACHMENTS);
+				if (attachmentModules != null && attachmentModules.size() > 0) {
+					FacilioModule attachmentModule = attachmentModules.get(0);
+					Map<String, List<Map<String, Object>>> attachmentMap = new HashMap<>();
+					List<Map<String, Object>> attachmentList = new ArrayList<>();
+					for (AttachmentV3Context attachmentV3Context :attachments) {
+						attachmentList.add(parseFileObject(attachmentV3Context, "attachment"));
+					}
+					attachmentMap.put(attachmentModule.getName(), attachmentList);
+					record.setSubForm(attachmentMap);
+				}
+			}
+		}
+	}
+	private static void addFileFields(List<AttachmentV3Context> attachments,JSONObject obj,List<FacilioField> fields,ModuleBaseWithCustomFields record) throws Exception {
+		List<FileField> fileFields = new ArrayList<>();
+		Iterator<String> keysItr = obj.keySet().iterator();
+		while(keysItr.hasNext()) {
+			String key = keysItr.next();
+			Object value = obj.get(key);
+			if (value != null) {
+				if (value.equals(FacilioConstants.ContextNames.MAIL_ATTACHMENT)) {
+					for (FacilioField f : fields) {
+						if (f.getName().equals(key)) {
+							if (f instanceof FileField) {
+								FileField fileField = (FileField) f;
+								fileFields.add(fileField);
+								if (fileField.getFormatEnum() != null) {
+									Boolean isAdded = false;
+									// check if attachment type matches to file file type
+									for (int i = attachments.size() - 1; i >= 0; i--) {
+										AttachmentV3Context attachment = attachments.get(i);
+										if (attachment.getAttachmentContentType().contains(fileField.getFormatEnum().getStringVal())) {
+											record.addData(parseFileObject(attachment, f.getName()));
+											attachments.remove(i);
+											isAdded = true;
+											break;
+										}
+									}
+									if (!isAdded) {
+										record.getData().remove(key);
+									}
+								} else {
+									AttachmentV3Context attachment = attachments.get(0);
+									record.addData(parseFileObject(attachment, f.getName()));
+									attachments.remove(0);
+									break;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

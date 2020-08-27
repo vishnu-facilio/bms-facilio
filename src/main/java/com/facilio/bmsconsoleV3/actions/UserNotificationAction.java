@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
@@ -27,14 +28,14 @@ public class UserNotificationAction extends V3Action {
     public String updateUserNotificationSeen () throws Exception {
         try {
             if (userId == null) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "User Id cannot be null");
+                userId = AccountUtil.getCurrentUser().getId();
             }
             FacilioChain c = TransactionChainFactoryV3.getUserNotificationSeenUpdateChain();
             c.getContext().put(FacilioConstants.ContextNames.USER, userId);
             c.execute();
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
+            this.setMessage("Internal Server Error" + ex);
             return "failure";
         }
         return SUCCESS;
@@ -50,7 +51,7 @@ public class UserNotificationAction extends V3Action {
             c.execute();
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-            this.setMessage("Internal Server Error");
+            this.setMessage("Internal Server Error" + ex);
             return "failure";
         }
         return SUCCESS;

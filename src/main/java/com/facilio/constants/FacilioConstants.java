@@ -2088,7 +2088,11 @@ public class FacilioConstants {
 			}
 
 			if (moduleClass == null && module.isCustom()) {
-				moduleClass = CustomModuleData.class;
+				if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+					moduleClass = AttachmentV3Context.class;
+				} else {
+					moduleClass = CustomModuleData.class;
+				}
 			}
 			return moduleClass;
 		}

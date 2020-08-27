@@ -1,18 +1,21 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.v3.context.V3Context;
+import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -283,7 +286,14 @@ public class V3MailMessageContext extends V3Context {
                 } else if (bp.isMimeType("text/html")) {
                     String s = (String) bp.getContent();
                     if (s != null) {
-                        // should parse and send util then send null
+                        if (s.length() > 2000) {
+                            // TODO
+                            // Saving large content to pdf
+                            // Should be handle when big text field is supported
+                            // service to parse mail content
+                            saveContentAsPdf(s, mailContext);
+                            return "Content too big. Please check attachment";
+                        }
                         return null;
                     }
                 } else {
@@ -343,5 +353,15 @@ public class V3MailMessageContext extends V3Context {
             }
         }
         return result;
+    }
+    private static void saveContentAsPdf (String s, V3MailMessageContext mailContext) throws IOException {
+        Map<String, Object> attachmentObject = new HashMap<>();
+        File tmpFile = File.createTempFile("Email_Content", ".pdf");
+        String pdfFileLocation = PdfUtil.convertUrlToPdf(tmpFile.getPath(), s, null , FileInfo.FileFormat.PDF);
+        File pdfFile = new File(pdfFileLocation);
+        attachmentObject.put("attachment", pdfFile);
+        attachmentObject.put("attachmentFileName", tmpFile.getName());
+        attachmentObject.put("attachmentContentType", "pdf");
+        mailContext.addAttachmentList(attachmentObject);
     }
 }
