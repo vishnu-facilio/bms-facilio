@@ -33,6 +33,9 @@ public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 		if (!eventTypes.contains(EventType.APPROVAL)) {
 			eventTypes.add(EventType.APPROVAL);
 		}
+		if (!eventTypes.contains(EventType.SCORING_RULE)) {
+			eventTypes.add(EventType.SCORING_RULE);
+		}
 	}
 
 }

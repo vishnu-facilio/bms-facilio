@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -25,7 +27,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
@@ -150,6 +151,11 @@ public class WorkflowRuleAPI {
 				break;
 			case TRANSACTION_RULE:
 				addExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), ruleProps);
+				break;
+			case SCORING_RULE:
+				ScoringRuleAPI.validateRule((ScoringRuleContext) rule);
+				ScoringRuleAPI.addScoringRuleChildren((ScoringRuleContext) rule);
+				addExtendedProps(ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields(), ruleProps);
 				break;
 			default:
 				break;
@@ -651,6 +657,9 @@ public class WorkflowRuleAPI {
 				case ALARM_WORKFLOW_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), entry.getValue()));
 					break;
+				case SCORING_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields(), entry.getValue()));
+					break;
 				case TRANSACTION_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), entry.getValue()));
 					break;
@@ -807,6 +816,10 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, TransactionRuleContext.class);
 							break;
+						case SCORING_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, ScoringRuleContext.class);
+							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 							break;
@@ -836,6 +849,7 @@ public class WorkflowRuleAPI {
 			}
 
 			StateFlowRulesAPI.constructStateRule(workflows);
+			ScoringRuleAPI.constructScoringRule(workflows);
 			return workflows;
 		}
 		return null;
@@ -1060,33 +1074,33 @@ public class WorkflowRuleAPI {
 		RuleType[] ruleTypes = new RuleType[ruleTypeList.size()];
 		return ruleTypeList.toArray(ruleTypes);
 	}
-	
+
 	public static RuleType[] getNonReadingRuleWorkflowRuleTypes(RuleType[] ruleTypes){
 		ArrayList<RuleType> ruleTypeList = new ArrayList<RuleType>();
 		List<RuleType> readingRuleTypes = Arrays.asList(getAllowedInstantJobWorkflowRuleTypes());
 		if(readingRuleTypes != null && !readingRuleTypes.isEmpty()) {
-			for(RuleType ruleType: ruleTypes) 
+			for(RuleType ruleType: ruleTypes)
 			{
 				if(!readingRuleTypes.contains(ruleType)) {
 					ruleTypeList.add(ruleType);
-				}	
+				}
 			}
 		}
-		
+
 		RuleType[] nonReadingRuleTypes = new RuleType[ruleTypeList.size()];
 		return ruleTypeList.toArray(nonReadingRuleTypes);
 	}
-	
+
 	public static FacilioContext addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, FacilioContext context, RuleType... ruleTypes) {
-		
+
 		FacilioContext instantParallelWorkflowRuleJobContext = new FacilioContext();
-		HashMap<String, Object> workflowRuleExecutionMap = new HashMap<String, Object>();	
+		HashMap<String, Object> workflowRuleExecutionMap = new HashMap<String, Object>();
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RECORD, record);
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.CHANGE_SET, currentChangeSet);
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RULE_TYPES, ruleTypes);
-		
+
 		FacilioContext newContext = (FacilioContext) context.clone();
 		newContext.remove(FacilioConstants.ContextNames.MODULE_NAME);
 		newContext.remove(FacilioConstants.ContextNames.RECORD_MAP);
@@ -1099,10 +1113,10 @@ public class WorkflowRuleAPI {
 
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, newContext);
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);
-		return instantParallelWorkflowRuleJobContext;		
+		return instantParallelWorkflowRuleJobContext;
 	}
-	
-	
+
+
 	public static List<WorkflowRuleContext> getWorkflowRuleByRuletype(List<Long> parentRuleIds,RuleType ruletype) throws Exception {
 		if (CollectionUtils.isEmpty(parentRuleIds)) {
 			return null;

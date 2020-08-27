@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.modules.FieldFactory;
@@ -71,6 +73,9 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		}
 		else if (rule instanceof SLAPolicyContext) {
 			SLAWorkflowAPI.updateSLAPolicyRule((SLAPolicyContext) rule);
+		}
+		else if (rule instanceof ScoringRuleContext) {
+			ScoringRuleAPI.updateScoringRule((ScoringRuleContext) rule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);

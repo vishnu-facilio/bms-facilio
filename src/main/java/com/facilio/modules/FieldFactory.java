@@ -2047,6 +2047,51 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getScoringRuleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScoringRuleModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("scoreFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getBaseScoringFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBaseScoringModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("weightage", "WEIGHTAGE", module, FieldType.DECIMAL));
+        fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getField("scoringRuleId", "SCORING_RULE_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getConditionScoringFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getConditionScoringModule();
+
+        fields.add(getIdField(module));
+        fields.addAll(getBaseScoringFields());
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getNodeScoringFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getNodeScoringModule();
+
+        fields.add(getIdField(module));
+        fields.addAll(getBaseScoringFields());
+        fields.add(getField("recordModuleId", "RECORD_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("scoringFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
 
 //	public static List<FacilioField> getScheduledRuleFields() {
     //	List<FacilioField> fields = new ArrayList<>();

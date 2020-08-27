@@ -646,6 +646,45 @@ public class ModuleFactory {
 
 		return slarule;
 	}
+
+	public static FacilioModule getScoringRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scoringRuleModule");
+		module.setDisplayName("Scoring Rule Module");
+		module.setTableName("Scoring_Rule");
+		module.setExtendModule(getWorkflowRuleModule());
+
+		return module;
+	}
+
+	public static FacilioModule getBaseScoringModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("baseScoringModule");
+		module.setDisplayName("Base Scoring Module");
+		module.setTableName("Base_Scoring");
+
+		return module;
+	}
+
+	public static FacilioModule getConditionScoringModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("conditionScoringModule");
+		module.setDisplayName("Condition Scoring Module");
+		module.setTableName("Condition_Scoring");
+		module.setExtendModule(getBaseScoringModule());
+
+		return module;
+	}
+
+	public static FacilioModule getNodeScoringModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("nodeScoringModule");
+		module.setDisplayName("Node Scoring Module");
+		module.setTableName("Node_Scoring");
+		module.setExtendModule(getBaseScoringModule());
+
+		return module;
+	}
 	
 	public static FacilioModule getScheduledActionModule() {
 		FacilioModule scheduledRule = new FacilioModule();

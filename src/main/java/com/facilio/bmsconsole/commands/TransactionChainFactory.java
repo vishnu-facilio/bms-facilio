@@ -395,6 +395,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SCORING_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
@@ -1507,7 +1508,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
-			
+
 			return c;
 		}
 	    
@@ -4909,6 +4910,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddOrUpdateScoringRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateScoringRuleCommand());
+		return chain;
+	}
+
 	public static FacilioChain getReorderWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetCustomModuleWorkflowRulesCommand());
@@ -5673,7 +5680,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateWeatherDataCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain addOrUpdateDailyWeatherDataChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateDailyWeatherDataCommand());

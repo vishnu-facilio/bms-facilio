@@ -2572,4 +2572,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		return chain;
 	}
+
+	public static FacilioChain getTempScoringChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenericGetModuleDataDetailCommand());
+		chain.addCommand(new EvaluateScoringRuleCommand());
+		return chain;
+	}
 }

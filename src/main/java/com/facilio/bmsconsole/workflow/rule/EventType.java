@@ -255,6 +255,12 @@ public enum EventType {
 			return null;
 		}
 	},
+	SCORING_RULE(1 << 29) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	}
 	;
 
     private int eventType;

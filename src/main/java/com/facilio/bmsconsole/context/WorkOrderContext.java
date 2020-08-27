@@ -628,4 +628,12 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private Boolean isQuotationApproved;
+
+	private float score = -1;
+	public float getScore() {
+		return score;
+	}
+	public void setScore(float score) {
+		this.score = score;
+	}
 }
