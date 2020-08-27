@@ -1721,6 +1721,8 @@ public class FacilioConstants {
 		public static final String ANNOUNCEMENT_ACTION = "announcementaction";
 
 		public static final String USER_NOTIFICATION = "usernotification";
+		public static final String TRANSACTION = "transaction";
+
 
 		public static final String ORGID = "orgId";
 		public static final String WEATHER_STATION_ID = "weatherStationId";
@@ -2070,6 +2072,8 @@ public class FacilioConstants {
 			classMap.put(Budget.BUDGET_AMOUNT, BudgetAmountContext.class);
 			classMap.put(Budget.BUDGET_MONTHLY_AMOUNT, BudgetMonthlyAmountContext.class);
 
+
+			classMap.put(TRANSACTION, V3TransactionContext.class);
 
 			return classMap;
 		}

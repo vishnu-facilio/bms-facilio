@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,13 +18,6 @@ import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -229,7 +223,43 @@ public class WorkflowRuleAction extends FacilioAction {
 		}
 		return null;
 	}
-	
+
+	private TransactionRuleContext transactionRule;
+
+	public TransactionRuleContext getTransactionRule() {
+		return transactionRule;
+	}
+
+	public void setTransactionRule(TransactionRuleContext transactionRule) {
+		this.transactionRule = transactionRule;
+	}
+
+	public String addTransactionRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+		transactionRule.setRuleType(WorkflowRuleContext.RuleType.TRANSACTION_RULE);
+		if(transactionRule.isValidated()) {
+			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
+			FacilioChain addRule = TransactionChainFactory.addWorkflowRuleChain();
+			addRule.execute(facilioContext);
+			setResult("rule", transactionRule);
+			return SUCCESS;
+		}
+		throw new IllegalArgumentException("Transaction rule config is not complete");
+	}
+
+	public String updateTransactionRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+		transactionRule.setRuleType(WorkflowRuleContext.RuleType.TRANSACTION_RULE);
+		if(transactionRule.isValidated()) {
+			facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transactionRule);
+			FacilioChain addRule = TransactionChainFactory.updateWorkflowRuleChain();
+			addRule.execute(facilioContext);
+			setResult("rule", transactionRule);
+			return SUCCESS;
+		}
+		throw new IllegalArgumentException("Transaction rule config is not complete");
+	}
+
 	private SLARuleContext slaRule;
 	public SLARuleContext getSlaRule() {
 		return slaRule;

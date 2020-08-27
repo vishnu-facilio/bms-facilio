@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.fields.LookupFieldMeta;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -30,11 +31,11 @@ public class LoadWorkOrderServiceLookUpCommand extends FacilioCommand{
 			fields = modBean.getAllFields(moduleName);
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		
-		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("service"));
+		LookupFieldMeta service = new LookupFieldMeta((LookupField) fieldsAsMap.get("service"));
+		List<LookupField>fetchLookup = Arrays.asList(service,(LookupField) fieldsAsMap.get("parent"));
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		Long parentId = (Long)context.get(FacilioConstants.ContextNames.PARENT_ID);
-		if(parentId > 0) {
+		if(parentId != null && parentId > 0) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);

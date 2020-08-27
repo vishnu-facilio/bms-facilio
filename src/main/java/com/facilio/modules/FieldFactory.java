@@ -8868,4 +8868,14 @@ public class FieldFactory {
 		 fields.add(getNumberField("siteId", "SITE_ID", module));
 		 return fields;
 	 }
+
+    public static List<FacilioField> getTransactionWorkflowRuleFields() {
+        FacilioModule module = ModuleFactory.getTransactionRuleModule();
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getField("id", "ID", module, FieldType.NUMBER));
+        list.add(getField("configJson", "TRANSACTION_CONFIG_JSON", module, FieldType.STRING));
+        return list;
+    }
 }
+

@@ -4022,11 +4022,11 @@ public class ModuleFactory {
 	}
 
 	public  static FacilioModule getUserNotificationSeenMapping() {
-			FacilioModule seenMapping = new FacilioModule();
-			seenMapping.setName("userNotificationSeenMapping");
-			seenMapping.setDisplayName("User Notification Seen Mapping");
-			seenMapping.setTableName("User_Notification_Seen_Mapping");
-			return seenMapping;
+		FacilioModule seenMapping = new FacilioModule();
+		seenMapping.setName("userNotificationSeenMapping");
+		seenMapping.setDisplayName("User Notification Seen Mapping");
+		seenMapping.setTableName("User_Notification_Seen_Mapping");
+		return seenMapping;
 	}
 	
 	public static FacilioModule getOrgWeatherStationModule() {
@@ -4034,6 +4034,14 @@ public class ModuleFactory {
 		module.setName("org weather station");
 		module.setDisplayName("Org Weather Station");
 		module.setTableName("Org_Weather_Station");
+		return module;
+	}
+
+	public static FacilioModule getTransactionRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("transaction_rule");
+		module.setDisplayName("Transaction Rule");
+		module.setTableName("Transaction_Rule_Config");
 		return module;
 	}
 }

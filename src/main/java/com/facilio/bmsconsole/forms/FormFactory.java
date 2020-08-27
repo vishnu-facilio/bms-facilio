@@ -2223,7 +2223,9 @@ public class FormFactory {
 
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("longDescription", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		FormField descField = new FormField("longDescription", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1);
+		descField.addToConfig("richText", true);
+		fields.add(descField);
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 3));
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED,4, 2));
 		fields.add(new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));

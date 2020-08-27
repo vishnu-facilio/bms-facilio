@@ -142,6 +142,9 @@ public class WorkflowRuleAPI {
 			case ALARM_WORKFLOW_RULE:
 				addExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), ruleProps);
 				break;
+			case TRANSACTION_RULE:
+				addExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), ruleProps);
+				break;
 			default:
 				break;
 		}
@@ -637,6 +640,9 @@ public class WorkflowRuleAPI {
 				case ALARM_WORKFLOW_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), entry.getValue()));
 					break;
+				case TRANSACTION_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -785,6 +791,10 @@ public class WorkflowRuleAPI {
 							break;
 						case STATE_TRANSACTION_FIELD_SCHEDULED:
 							rule = FieldUtil.getAsBeanFromMap(prop, StateTransitionFieldScheduleRuleContext.class);
+							break;
+						case TRANSACTION_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, TransactionRuleContext.class);
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

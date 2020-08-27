@@ -114,3 +114,6 @@ enums:
 
   - name: AmountType
     enumClassName: com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext$AmountType
+
+  - name: TransactionTypes
+    enumClassName: com.facilio.bmsconsoleV3.context.V3TransactionContext$TransactionTypes

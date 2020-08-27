@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -32,6 +33,8 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		FacilioModule workorderServiceModule = modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE);
 		List<FacilioField> workorderServiceFields = modBean.getAllFields(FacilioConstants.ContextNames.WO_SERVICE);
 		Map<String, FacilioField> serviceFieldsMap = FieldFactory.getAsMap(workorderServiceFields);
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+
 		List<LookupField>lookUpfields = new ArrayList<>();
 		lookUpfields.add((LookupField) serviceFieldsMap.get("service"));
 		List<WorkOrderServiceContext> workorderServices = (List<WorkOrderServiceContext>) context
@@ -46,6 +49,7 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 
 			for (WorkOrderServiceContext woService : workorderServices) {
 				woService.setCost(getCostForService(woService.getVendor(), woService.getService().getId()));
+				woService.setParent(workorder);
 				if (woService.getId() > 0) {
 					SelectRecordsBuilder<WorkOrderServiceContext> selectBuilder = new SelectRecordsBuilder<WorkOrderServiceContext>()
 							.select(workorderServiceFields).table(workorderServiceModule.getTableName())
@@ -57,22 +61,36 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 					woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), parentId, workorder, woService);
 					workorderServicelist.add(woService);
 					updateWorkorderService(workorderServiceModule, workorderServiceFields, woService);
+
+					if (!eventTypes.contains(EventType.EDIT)) {
+						eventTypes.add(EventType.EDIT);
+					}
 				}
 				else
 				{
 					woService = setWorkorderServiceObj(woService.getService(), parentId, workorder, woService);
 					woServiceToBeAdded.add(woService);
 					workorderServicelist.add(woService);
-
+					if (!eventTypes.contains(EventType.CREATE)) {
+						eventTypes.add(EventType.CREATE);
+					}
 				}
 			}
 
 			if (CollectionUtils.isNotEmpty(woServiceToBeAdded)) {
 				addWorkorderService(workorderServiceModule, workorderServiceFields, woServiceToBeAdded);
 			}
+			if(CollectionUtils.isNotEmpty(workorderServicelist)) {
+				List<Long> recordIds = new ArrayList<>();
+				for(WorkOrderServiceContext ws : workorderServicelist){
+					recordIds.add(ws.getId());
+				}
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WO_SERVICE);
+			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderServices.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderServices.get(0).getParentId()));
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServices);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServicelist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 4);
 			context.put(FacilioConstants.ContextNames.WO_SERVICE_LIST, workorderServices);
 		}
@@ -102,6 +120,7 @@ public class AddOrUpdateWorkorderServiceCommand extends FacilioCommand{
 		woService.setEndTime(workorderService.getEndTime());
 		woService.setDuration(workorderService.getDuration());
 		woService.setId(workorderService.getId());
+		woService.setParent(workorderService.getParent());
 		double duration = 0;
 		if (woService.getDuration() <= 0) {
 //			if (woService.getStartTime() <= 0) {

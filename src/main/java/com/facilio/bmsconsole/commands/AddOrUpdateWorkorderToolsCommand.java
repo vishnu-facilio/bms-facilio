@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -12,14 +14,6 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ToolsApi;
@@ -49,6 +43,8 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		FacilioModule workorderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 		List<FacilioField> workorderToolsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(workorderToolsFields);
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+
 		List<LookupField>lookUpfields = new ArrayList<>();
 		lookUpfields.add((LookupField) toolFieldsMap.get("tool"));
 		lookUpfields.add((LookupField) toolFieldsMap.get("toolType"));
@@ -79,6 +75,9 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				}
 				
 				if (workorderTool.getId() > 0) {
+					if (!eventTypes.contains(EventType.EDIT)) {
+						eventTypes.add(EventType.EDIT);
+					}
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
 							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
@@ -113,7 +112,10 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 						}
 					}
 				} else {
-                    if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getQuantity() < workorderTool.getQuantity()) {
+					if (!eventTypes.contains(EventType.CREATE)) {
+						eventTypes.add(EventType.CREATE);
+					}
+					if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
@@ -149,6 +151,14 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			}
 			if (toolsToBeAdded != null && !toolsToBeAdded.isEmpty()) {
 				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
+			}
+			if(CollectionUtils.isNotEmpty(workorderToolslist)) {
+				List<Long> recordIds = new ArrayList<>();
+				for(WorkorderToolsContext ws : workorderToolslist){
+					recordIds.add(ws.getId());
+				}
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_TOOLS);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.WorkOrderServiceContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -34,6 +36,8 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		FacilioModule workorderLabourModule = modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
 		List<FacilioField> workorderLabourFields = modBean.getAllFields(FacilioConstants.ContextNames.WO_LABOUR);
 		Map<String, FacilioField> labourFieldsMap = FieldFactory.getAsMap(workorderLabourFields);
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+
 		List<LookupField>lookUpfields = new ArrayList<>();
 		lookUpfields.add((LookupField) labourFieldsMap.get("labour"));
 		List<WorkOrderLabourContext> workorderLabours = (List<WorkOrderLabourContext>) context
@@ -46,7 +50,12 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 			
 			for (WorkOrderLabourContext woLabour : workorderLabours) {
 //				woLabour.calculate();
+				woLabour.setParent(workorder);
+
 				if (woLabour.getId() > 0) {
+					if (!eventTypes.contains(EventType.EDIT)) {
+						eventTypes.add(EventType.EDIT);
+					}
 					SelectRecordsBuilder<WorkOrderLabourContext> selectBuilder = new SelectRecordsBuilder<WorkOrderLabourContext>()
 							.select(workorderLabourFields).table(workorderLabourModule.getTableName())
 							.moduleName(workorderLabourModule.getName()).beanClass(WorkOrderLabourContext.class)
@@ -60,14 +69,26 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 				}
 				else
 				{
-						woLabour = setWorkorderItemObj(woLabour.getLabour(), parentId, workorder, woLabour);
-						labourToBeAdded.add(woLabour);
-						workorderLabourlist.add(woLabour);
+					if (!eventTypes.contains(EventType.CREATE)) {
+						eventTypes.add(EventType.CREATE);
+					}
+					woLabour = setWorkorderItemObj(woLabour.getLabour(), parentId, workorder, woLabour);
+					labourToBeAdded.add(woLabour);
+					workorderLabourlist.add(woLabour);
 					
 				}
 			}
 			if (labourToBeAdded != null && !labourToBeAdded.isEmpty()) {
 				addWorkorderLabour(workorderLabourModule, workorderLabourFields, labourToBeAdded);
+			}
+
+			if(CollectionUtils.isNotEmpty(workorderLabourlist)) {
+				List<Long> recordIds = new ArrayList<>();
+				for(WorkOrderLabourContext ws : workorderLabourlist){
+					recordIds.add(ws.getId());
+				}
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WO_LABOUR);
 			}
 			
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
@@ -86,6 +107,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		woLabour.setEndTime(workorderLabour.getEndTime());
 		woLabour.setDuration(workorderLabour.getDuration());
 		woLabour.setId(workorderLabour.getId());
+		woLabour.setParent(workorderLabour.getParent());
 		double duration = 0;
 		if (woLabour.getDuration() <= 0) {
 //			if (woLabour.getStartTime() <= 0) {

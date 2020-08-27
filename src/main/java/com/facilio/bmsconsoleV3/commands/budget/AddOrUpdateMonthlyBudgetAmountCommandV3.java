@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsoleV3.context.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
+import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetMonthlyAmountContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -18,6 +19,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -41,6 +43,7 @@ public class AddOrUpdateMonthlyBudgetAmountCommandV3 extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(budgetAmountList)) {
             for(BudgetAmountContext budgetAmnt : budgetAmountList){
+                BudgetContext budget = (BudgetContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Budget.BUDGET, budgetAmnt.getBudget().getId(), BudgetContext.class);
                 FacilioModule monthlyAmountModule = modBean.getModule(FacilioConstants.ContextNames.Budget.BUDGET_MONTHLY_AMOUNT);
                 DeleteRecordBuilder<BudgetMonthlyAmountContext> deleteBuilder = new DeleteRecordBuilder<BudgetMonthlyAmountContext>()
                         .module(monthlyAmountModule)
@@ -49,40 +52,39 @@ public class AddOrUpdateMonthlyBudgetAmountCommandV3 extends FacilioCommand {
                 List<BudgetMonthlyAmountContext> monthlySplit = new ArrayList<>();
                 Double yearlyAmnt = 0.0;
 
-                if(MapUtils.isNotEmpty(budgetAmnt.getMonthlyAmountSplitUp())) {
-                    Set<String> keys = budgetAmnt.getMonthlyAmountSplitUp().keySet();
-                    if(keys.size() != 12) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Monthly Splitup");
+                if(CollectionUtils.isNotEmpty(budgetAmnt.getMonthlyAmountSplitUp())) {
+                    if(budgetAmnt.getMonthlyAmountSplitUp().size() < 12){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid monthly split up");
                     }
-                    for (Object key : keys) {
-                        Integer keyInt  = Integer.parseInt((String)key);
-                        if(keyInt != null && keyInt <= 12) {
-                            Map<String, Object> monthMap = (Map<String, Object>) budgetAmnt.getMonthlyAmountSplitUp().get(String.valueOf(keyInt));
-                            BudgetMonthlyAmountContext month = FieldUtil.getAsBeanFromMap(monthMap, BudgetMonthlyAmountContext.class);
-                            month.setBudgetAmount(budgetAmnt);
-                            monthlySplit.add(month);
-                            yearlyAmnt += month.getMonthlyAmount();
-                            continue;
-                        }
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Month Identifier in the Monthly Splitup");
+                    for (BudgetMonthlyAmountContext month : budgetAmnt.getMonthlyAmountSplitUp()) {
+                        month.setBudgetAmount(budgetAmnt);
+                        month.setResource(budget.getFocalPointResource());
+                        month.setAccount(budgetAmnt.getAccount());
+                        monthlySplit.add(month);
+                        yearlyAmnt += month.getMonthlyAmount();
+                        continue;
                     }
                 }
                 else {
-                    int i =1;
-                    while (i <= 12){
+                    int i =budget.getFiscalYear();
+                    int count=0;
+                    while (count <= 11){
                         BudgetMonthlyAmountContext month = new BudgetMonthlyAmountContext();
-                        month.setMonthIdentifier(i);
+                        month.setStartDate(DateTimeUtil.getMonthStartTime((i+count), budget.getFiscalYearStart()));
                         month.setMonthlyAmount((Double) budgetAmnt.getYearlyAmount()/12);
                         month.setBudgetAmount(budgetAmnt);
+                        month.setResource(budget.getFocalPointResource());
+                        month.setAccount(budgetAmnt.getAccount());
                         yearlyAmnt += month.getMonthlyAmount();
                         monthlySplit.add(month);
-                        i++;
+                        count++;
                     }
                 }
                 V3RecordAPI.addRecord(false, monthlySplit, monthlyAmountModule, modBean.getAllFields(monthlyAmountModule.getName()));
 
                 //updating yearly amnt in budget amnt
                 budgetAmnt.setYearlyAmount(yearlyAmnt);
+                budgetAmnt.setResource(budget.getFocalPointResource());
                 if(budgetAmnt.getAccount() != null) {
                     budgetAmnt.setAmountType(budgetAmnt.getAccount().getAmountType());
                 }

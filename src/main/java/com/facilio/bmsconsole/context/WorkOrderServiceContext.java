@@ -1,9 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class WorkOrderServiceContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
+
+	private WorkOrderContext parent;
 
 	private double cost = -1;
 
@@ -94,7 +100,11 @@ public class WorkOrderServiceContext extends ModuleBaseWithCustomFields{
 		return duration;
 	}
 
+	public WorkOrderContext getParent() {
+		return parent;
+	}
 
-
-
+	public void setParent(WorkOrderContext parent) {
+		this.parent = parent;
+	}
 }

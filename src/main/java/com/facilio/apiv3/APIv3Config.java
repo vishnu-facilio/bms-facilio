@@ -6,10 +6,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.UpdateAttachmentsParentIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
@@ -635,6 +632,19 @@ public class APIv3Config {
                 .afterFetch(new FillBudgetDetailsCommandV3())
                 .build();
     }
+
+    @Module("transaction")
+    public static Supplier<V3Config> getTransaction() {
+        return () -> new V3Config(V3TransactionContext.class)
+                .create().
+                 afterSave(new RollUpTransactionAmountCommand())
+                .update()
+                .afterSave(new RollUpTransactionAmountCommand())
+                .delete()
+                .afterDelete(new RollUpTransactionAmountCommand())
+                .build();
+    }
+
 
 }
 

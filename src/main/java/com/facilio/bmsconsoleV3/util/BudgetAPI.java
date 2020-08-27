@@ -56,7 +56,7 @@ public class BudgetAPI {
     }
 
 
-    private static JSONObject getMonthlySplitUp(Long parentId) throws Exception {
+    private static List<BudgetMonthlyAmountContext> getMonthlySplitUp(Long parentId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Budget.BUDGET_MONTHLY_AMOUNT);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -71,11 +71,7 @@ public class BudgetAPI {
         List<BudgetMonthlyAmountContext> monthlyList = builder.get();
         if(CollectionUtils.isNotEmpty(monthlyList))
         {
-            JSONObject json = new JSONObject();
-            for(BudgetMonthlyAmountContext month : monthlyList){
-                json.put(String.valueOf(month.getMonthIdentifier()), month);
-            }
-            return  json;
+            return monthlyList;
         }
         return null;
     }

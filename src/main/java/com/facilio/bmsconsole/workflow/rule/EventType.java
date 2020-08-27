@@ -249,6 +249,12 @@ public enum EventType {
 			return null;
 		}
 	},
+	TRANSACTION (1 << 28) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
 	;
 
     private int eventType;

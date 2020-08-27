@@ -462,7 +462,10 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD,
 					FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS,
 					FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS,
-					FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY
+					FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY,
+					FacilioConstants.ContextNames.WO_SERVICE,
+					FacilioConstants.ContextNames.WO_LABOUR,
+					FacilioConstants.ContextNames.TRANSACTION
 				))
 			);
 

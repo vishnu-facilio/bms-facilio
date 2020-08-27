@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.budget;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.v3.context.V3Context;
@@ -7,6 +8,7 @@ import com.google.gson.JsonObject;
 import org.json.simple.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 public class BudgetAmountContext extends V3Context {
@@ -78,13 +80,13 @@ public class BudgetAmountContext extends V3Context {
         }
     }
 
-    private Map<String, Object> monthlyAmountSplitUp;
+    private List<BudgetMonthlyAmountContext> monthlyAmountSplitUp;
 
-    public Map<String, Object> getMonthlyAmountSplitUp() {
+    public List<BudgetMonthlyAmountContext> getMonthlyAmountSplitUp() {
         return monthlyAmountSplitUp;
     }
 
-    public void setMonthlyAmountSplitUp(Map<String, Object> monthlyAmount) {
+    public void setMonthlyAmountSplitUp(List<BudgetMonthlyAmountContext> monthlyAmount) {
         this.monthlyAmountSplitUp = monthlyAmount;
     }
 
@@ -104,5 +106,36 @@ public class BudgetAmountContext extends V3Context {
             return df.format(this.yearlyAmount);
         }
         return null;
+    }
+
+    private Double actualYearlyAmount;
+
+    public Double getActualYearlyAmount() {
+        return actualYearlyAmount;
+    }
+
+    public void setActualYearlyAmount(Double actualAmount) {
+        if(actualAmount != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            this.actualYearlyAmount = Double.valueOf(df.format(actualAmount));
+        }
+    }
+
+    public String getActualYearlyAmountString() {
+        if(actualYearlyAmount != null) {
+            final DecimalFormat df = new DecimalFormat(BudgetAPI.CURRENCY_PATTERN);
+            return df.format(this.actualYearlyAmount);
+        }
+        return null;
+    }
+
+    private ResourceContext resource;
+
+    public ResourceContext getResource() {
+        return resource;
+    }
+
+    public void setResource(ResourceContext resource) {
+        this.resource = resource;
     }
 }

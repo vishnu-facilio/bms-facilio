@@ -2025,8 +2025,11 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUdpateWorkorderItemsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new AddOrUpdateWorkorderItemsCommand());
-//			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new LoadWorkorderItemLookUpCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
@@ -2040,8 +2043,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteWorkorderItemChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new DeleteWorkorderItemCommand());
 			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
@@ -2085,7 +2090,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUdpateWorkorderToolsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new AddOrUpdateWorkorderToolsCommand());
+			c.addCommand(new LoadWorkorderToolLookupCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddActivitiesCommand());
@@ -2098,7 +2106,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUdpateWorkorderLabourChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new AddOrUpdateWorkorderLabourCommand());
+			c.addCommand(new LoadWorkorderLabourLookupCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -2132,8 +2143,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteWorkorderToolsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(new ToolTransactionRemainingQuantityRollupCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
@@ -2146,6 +2159,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteWorkorderLabourChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderLabourCommand());
 			//c.addCommand(getUpdateAvailabilityRollupChain());
@@ -3435,7 +3449,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddOrUdpateWorkorderServiceChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderService());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new AddOrUpdateWorkorderServiceCommand());
+			c.addCommand(new LoadWorkOrderServiceLookUpCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
@@ -3445,7 +3462,9 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteWorkorderServiceChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderService());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			return c;

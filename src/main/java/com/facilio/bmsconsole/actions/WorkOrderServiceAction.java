@@ -68,7 +68,6 @@ public class WorkOrderServiceAction extends FacilioAction{
 
 	public String addOrUpdateWorkorderService() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderServiceList);
 		FacilioChain addWorkorderServiceChain = TransactionChainFactory.getAddOrUdpateWorkorderServiceChain();
 		addWorkorderServiceChain.execute(context);

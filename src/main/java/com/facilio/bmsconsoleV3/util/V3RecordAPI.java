@@ -3,7 +3,9 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -11,6 +13,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -144,6 +147,41 @@ public class V3RecordAPI {
         else {
             return null;
         }
+    }
+
+    public static List<? extends V3Context> getTransactionRecordsList (String modName, String sourceModName, Long sourceId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(modName);
+        List<FacilioField> fields = modBean.getAllFields(modName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        if(MapUtils.isNotEmpty(fieldsAsMap)) {
+            FacilioField sourceModNameField = fieldsAsMap.get("transactionSourceModuleName");
+            FacilioField sourceRecId = fieldsAsMap.get("transactionSourceRecordId");
+
+
+            Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+            if (beanClassName == null) {
+                beanClassName = V3Context.class;
+            }
+            SelectRecordsBuilder<? extends V3Context> builder = new SelectRecordsBuilder<V3Context>()
+                    .module(module)
+                    .beanClass(beanClassName)
+                    .select(fields);
+
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(sourceModNameField, sourceModName, StringOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(sourceRecId, String.valueOf(sourceId), NumberOperators.EQUALS));
+
+            builder.andCriteria(criteria);
+
+            List<? extends V3Context> records = builder.get();
+            if (CollectionUtils.isNotEmpty(records)) {
+                return records;
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 
 

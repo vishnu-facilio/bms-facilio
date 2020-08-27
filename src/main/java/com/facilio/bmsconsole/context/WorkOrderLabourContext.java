@@ -78,7 +78,15 @@ public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 			this.cost = (this.duration / 1000.0 / 60 / 60) * this.labour.getCost();
 		}
 	}
-	
+
+	private WorkOrderContext parent;
+	public WorkOrderContext getParent() {
+		return parent;
+	}
+
+	public void setParent(WorkOrderContext parent) {
+		this.parent = parent;
+	}
 	
 	
 }
