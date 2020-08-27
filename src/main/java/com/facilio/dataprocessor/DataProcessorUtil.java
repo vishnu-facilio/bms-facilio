@@ -126,7 +126,6 @@ public class DataProcessorUtil {
                 updateAgentMessage(recordId,MessageStatus.DATA_EMPTY);
                 return false;
             }
-            LOGGER.info("Message Processor for orgId : "+orgId );
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             List<EventRuleContext> ruleList = bean.getActiveEventRules();
             if (ruleList != null) {

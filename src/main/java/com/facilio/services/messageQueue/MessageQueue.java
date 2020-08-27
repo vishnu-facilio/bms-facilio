@@ -54,7 +54,6 @@ public abstract class MessageQueue {
                 for (Map<String, Object> org : orgMessageTopics) {
                     Long orgId = (Long) org.get(AgentConstants.ORGID);
                     String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
-                    log.info("Message Processing for orgId :"+orgId);
                     if( (! EXISTING_ORGS.contains(orgDomainName))) {
                         try {
                             startProcessor(orgId, orgDomainName);
