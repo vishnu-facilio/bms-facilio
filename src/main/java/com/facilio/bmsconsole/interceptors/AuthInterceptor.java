@@ -104,19 +104,19 @@ public class AuthInterceptor extends AbstractInterceptor {
 	}
 	
 	private String handleLogin() throws Exception {
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-		if (request != null) {
-			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
-			if (appDomain != null && appDomain.getOrgId() > 0 && appDomain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
-				Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
-				if (sso != null && sso.getIsActive()) {
-					String ssoEndpoint = SSOUtil.getSSOEndpoint(org.getDomain());
-					response.setHeader("X-Redirect-To", ssoEndpoint);
-				}
-			}
-		}
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		HttpServletResponse response = ServletActionContext.getResponse();
+//		if (request != null) {
+//			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+//			if (appDomain != null && appDomain.getOrgId() > 0 && appDomain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+//				AccountSSO sso = IAMOrgUtil.getAccountSSO(appDomain.getOrgId());
+//				Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
+//				if (sso != null && sso.getIsActive()) {
+//					String ssoEndpoint = SSOUtil.getSSOEndpoint(org.getDomain());
+//					response.setHeader("X-Redirect-To", ssoEndpoint);
+//				}
+//			}
+//		}
 		return Action.LOGIN;
 	}
 

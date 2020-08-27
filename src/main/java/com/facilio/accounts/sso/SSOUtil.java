@@ -27,6 +27,14 @@ public class SSOUtil {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
 		return RequestUtil.getProtocol(request);
 	}
+
+	public static String getLoginSuccessURL(boolean isWebView) {
+		String loginSuccessURL = getCurrentAppURL();
+		if (isWebView) {
+			loginSuccessURL += "/app/loginsuccess";
+		}
+		return loginSuccessURL;
+	}
 	
 	public static String getCurrentAppURL() {
 		try {
@@ -78,11 +86,12 @@ public class SSOUtil {
 		return acsUrl;
 	}
 	
-	public static String getSPLoginURL() {
-		
-		String acsUrl = getCurrentAppURL() + "/app/login";
-		
-		return acsUrl;
+	public static String getSPLoginURL(boolean isWebView) {
+		String loginUrl = getCurrentAppURL() + "/app/login";
+		if (isWebView) {
+			loginUrl = getCurrentAppURL() + "/app/mobile/login";
+		}
+		return loginUrl;
 	}
 	
 	public static String getDomainLoginURL(long orgId) throws Exception {

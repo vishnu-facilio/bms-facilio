@@ -614,7 +614,8 @@ public class FacilioAuthAction extends FacilioAction {
 					setResult("url", relayState);
 				}
 				else {
-					setResult("url", SSOUtil.getCurrentAppURL());
+					String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+					setResult("url", SSOUtil.getLoginSuccessURL("true".equalsIgnoreCase(isWebView)));
 				}
 	
 				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));

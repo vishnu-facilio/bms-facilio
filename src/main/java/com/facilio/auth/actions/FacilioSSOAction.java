@@ -8,8 +8,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.auth.cookie.FacilioCookie;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -166,8 +168,11 @@ public class FacilioSSOAction extends FacilioAction {
 		else {
 			message = "Invalid SSO Access.";
 		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
-		String loginUrl = SSOUtil.getSPLoginURL() + "?ssoError=" + URLEncoder.encode(message, "UTF-8");
+		String loginUrl = SSOUtil.getSPLoginURL("true".equalsIgnoreCase(isWebView)) + "?ssoError=" + URLEncoder.encode(message, "UTF-8");
 		response.sendRedirect(loginUrl);
 		return SUCCESS;
 	}
