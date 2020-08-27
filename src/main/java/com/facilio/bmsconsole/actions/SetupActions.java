@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.service.FacilioService;
+import com.facilio.services.email.ImapsClient;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Organization;
@@ -566,5 +570,25 @@ public String importData() throws Exception {
 	}
 
 	private Map<Long, WorkflowRuleContext> supportMailRules;
-	
+
+	// exposes api for testing
+	public String fetchMailImap() throws Exception {
+		List<SupportEmailContext> imapEmails = FacilioService.runAsServiceWihReturn(() -> SupportEmailAPI.getImapsEmailsOfOrg(1));
+		if (CollectionUtils.isNotEmpty(imapEmails)) {
+			for (SupportEmailContext imapMail : imapEmails) {
+				long latestUID = imapMail.getLatestMessageUID();
+				try ( ImapsClient mailService = new ImapsClient(imapMail)){
+					if (latestUID > 0) {
+						// fetch mail which is greater than messageUID
+						mailService.getMessageGtUID(latestUID);
+					} else {
+						// fetch today's Mail n days
+						mailService.getNDaysMails(1);
+					}
+				}
+
+			}
+		}
+		return  SUCCESS;
+	}
 }

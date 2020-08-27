@@ -139,6 +139,10 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS,ASSIGNMENT_RULES</param>
 		</action>
+		<action name="imapfetch"
+				class="com.facilio.bmsconsole.actions.SetupActions" method="fetchMailImap" >
+			<param name="moduleName">setup</param>
+		</action>
 	</package>
 
 	<package name="woRuleApiV2" namespace="/api/v2/setup/workorder/rules" extends="v2Api">
