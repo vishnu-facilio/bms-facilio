@@ -51,6 +51,7 @@ Map cardLayout(Map params) {
         result["value"] = valueMap;
     }
     result["title"] = params.title;
+    result["image"] = params.imageId;
     result["period"] = period;
     return result;
 }

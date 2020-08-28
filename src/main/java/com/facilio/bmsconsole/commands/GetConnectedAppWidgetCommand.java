@@ -20,9 +20,9 @@ public class GetConnectedAppWidgetCommand extends FacilioCommand {
 			connectedAppWidget = ConnectedAppAPI.getConnectedAppWidget(connectedAppWidgetId);
 		}
 		else if (widgetLinkName != null) {
-			if (widgetLinkName.split(".").length == 2) {
-				String connectedAppLink = widgetLinkName.split(".")[0];
-				String widgetLink = widgetLinkName.split(".")[1];
+			if (widgetLinkName.split("\\.").length == 2) {
+				String connectedAppLink = widgetLinkName.split("\\.")[0];
+				String widgetLink = widgetLinkName.split("\\.")[1];
 				
 				connectedAppWidget = ConnectedAppAPI.getConnectedAppWidget(connectedAppLink, widgetLink);
 			}

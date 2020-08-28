@@ -110,6 +110,7 @@ public enum CardLayout {
 			JSONObject cardParams = cardContext.getCardParams();
 			
 			String title = (String) cardParams.get("title");
+			Object imageId = (Object) cardParams.get("imageId");
 			String kpiType = (String) cardParams.get("kpiType");
 			String dateRange = (String) cardParams.get("dateRange");
 			String dateField = (String) cardParams.get("dateField");
@@ -194,6 +195,9 @@ public enum CardLayout {
 			if(period != null) {
 			returnValue.put("period", period);
 			}
+			if (imageId != null) {
+				returnValue.put("image", imageId);
+			}
 			
 			return returnValue;
 		}
@@ -204,6 +208,7 @@ public enum CardLayout {
 			JSONObject cardParams = cardContext.getCardParams();
 
 			String title = (String) cardParams.get("title");
+			Object imageId = (Object) cardParams.get("imageId");
 			String kpiType = (String) cardParams.get("kpiType");
 			String dateRange = (String) cardParams.get("dateRange");
 			String dateField = (String) cardParams.get("dateField");
@@ -255,6 +260,9 @@ public enum CardLayout {
 			
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", title);
+			if (imageId != null) {
+				returnValue.put("image", imageId);
+			}
 			returnValue.put("value", jobj);
 			returnValue.put("baselineValue", jobj);
 			returnValue.put("period", dateRange);

@@ -67,6 +67,7 @@ Map cardLayout(Map params) {
         result["baselineValue"] = baselineValueMap;
     }
     result["title"] = params.title;
+    result["image"] = params.imageId;
     result["period"] = period;
     result["baselinePeriod"] = params.baseline;
     return result;

@@ -580,7 +580,7 @@ public class ConnectedAppAction extends FacilioAction {
 	}
 
 	public void setSAMLRequest(String SAMLRequest) {
-		SAMLRequest = SAMLRequest;
+		this.SAMLRequest = SAMLRequest;
 	}
 
 	public String getRelayState() {
@@ -588,7 +588,7 @@ public class ConnectedAppAction extends FacilioAction {
 	}
 
 	public void setRelayState(String RelayState) {
-		RelayState = RelayState;
+		this.RelayState = RelayState;
 	}
 
 	private void handleSAMLResponse(ConnectedAppContext connectedApp, String viewURL) throws Exception {
