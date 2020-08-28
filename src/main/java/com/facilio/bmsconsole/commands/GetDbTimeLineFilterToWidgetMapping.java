@@ -34,7 +34,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 		DashboardFilterContext dashboardFilterContext = (DashboardFilterContext) context
 				.get(FacilioConstants.ContextNames.DASHBOARD_FILTER);
 
-		if (dashboardFilterContext != null && dashboardFilterContext.getIsTimelineFilterEnabled() != null) {
+		if (dashboardFilterContext != null && dashboardFilterContext.getIsTimelineFilterEnabled() != null &&dashboardFilterContext.getIsTimelineFilterEnabled() == true) {
 
 			DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 
