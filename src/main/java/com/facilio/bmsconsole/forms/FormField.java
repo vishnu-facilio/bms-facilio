@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.forms;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -94,6 +95,7 @@ public class FormField implements Serializable {
 	public Object getValue() {
 		return value;
 	}
+	@JSON(deserialize = false)
 	public void setValue(Object value) {
 		this.value = value;
 	}
