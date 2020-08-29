@@ -18,7 +18,7 @@ public class CustomizeViewCommand extends FacilioCommand{
 			for(FacilioView view : views) {
 				if(view.getId() == -1) {
 					String viewName = view.getName();
-					long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null);
+					long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null, null);
 					view.setId(viewId);
 				}
 			}

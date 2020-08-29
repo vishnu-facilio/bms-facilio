@@ -34,15 +34,19 @@ public class CustomizeViewGroupsCommand extends FacilioCommand {
 			for(ViewGroups viewGroup : viewGroups) {
 				if(viewGroup.getId() == -1) {
 					viewGroup.setModuleId(moduleId);
-					long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId());
+					long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), module.getName());
 					viewGroup.setId(groupId);
 					List<FacilioView> views = viewGroup.getViews();
 					if (views != null) {
 						for(FacilioView view : views) {
 							if(view.getId() == -1) {
-								view.setGroupId(groupId);
-								long viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());
-								view.setId(viewId);
+								String viewName = view.getName();
+								if (viewName != null && !viewName.isEmpty()) {
+									long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null, groupId);
+									view.setId(viewId);
+								} else {
+									throw new IllegalArgumentException("viewId or viewName,moduleName is required");
+								}
 							}else if (view.getId() > 0) {
 								view.setGroupId(groupId);
 								Map<String, Object> viewProp = FieldUtil.getAsProperties(view);

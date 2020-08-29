@@ -253,6 +253,7 @@ public class ViewAction extends FacilioAction {
 		FacilioChain chain = TransactionChainFactory.addViewGroupChain();
 		Context context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		chain.execute();
 		
 		

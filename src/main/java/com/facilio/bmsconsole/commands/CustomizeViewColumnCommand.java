@@ -19,7 +19,7 @@ public class CustomizeViewColumnCommand extends FacilioCommand {
 				String viewName = (String)context.get(FacilioConstants.ContextNames.CV_NAME);
 				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 				if (viewName != null && !viewName.isEmpty()) {
-					viewId = ViewAPI.checkAndAddView(viewName, moduleName, columns);
+					viewId = ViewAPI.checkAndAddView(viewName, moduleName, columns, (Long) null);
 				} else {
 					throw new IllegalArgumentException("viewId or viewName,moduleName is required");
 				}

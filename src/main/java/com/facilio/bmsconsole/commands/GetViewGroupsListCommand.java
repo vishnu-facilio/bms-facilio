@@ -38,12 +38,9 @@ public class GetViewGroupsListCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		if (moduleName.equals(ContextNames.ALARM_OCCURRENCE)) {
-			moduleName = FacilioConstants.ContextNames.NEW_READING_ALARM;
-		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = null;
-		moduleObj = modBean.getModule(moduleName);
+		FacilioModule moduleObj = modBean.getModule(moduleName);
+
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		
 		
@@ -58,7 +55,6 @@ public class GetViewGroupsListCommand extends FacilioCommand {
 					dbViews = ViewAPI.getAllViews(modBean.getModule(ContextNames.NEW_READING_ALARM).getModuleId());
 				}
 				else {
-					moduleObj = modBean.getModule(moduleName);
 					dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 				}
 			}
@@ -198,55 +194,80 @@ public class GetViewGroupsListCommand extends FacilioCommand {
 				}
 				
 			}
+			
 			else {
-				
 				groupViews = new ArrayList<>();
 				Map<String, Object> groupDetails = new HashMap<>();
-				groupDetails.put("name", "systemviews");
-				groupDetails.put("displayName", "System Views");
-				groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
-				groupViews.add(groupDetails);
-				if (!customViews.isEmpty() ) {
-					groupDetails = new HashMap<>();
-					groupDetails.put("name", "customviews");
-					groupDetails.put("displayName", "Custom Views");
-					groupDetails.put("views", customViews);
+				if (moduleObj != null && moduleObj.isCustom()) {
+					groupDetails.put("name", "allViews");
+					groupDetails.put("displayName", "All Views");
+					groupDetails.put("views", allViews);
 					groupViews.add(groupDetails);
 				}
-			}
-			
-			
-			if (groupViews != null) {
-				for(Map<String, Object> group : groupViews) {
-					List<ViewGroups> sysAndCusViewGroup = viewGroups.stream().filter(viewGroup -> viewGroup.getName().equals(group.get("name"))).collect(Collectors.toList());
-					if ((sysAndCusViewGroup.isEmpty() || sysAndCusViewGroup == null)) {
-						ViewGroups viewGroup = new ViewGroups();
-						List<FacilioView> viewsList = (List<FacilioView>) group.get("views");
-						viewsList.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
-							if(s1 == s2){
-								return 0;
-							}
-							return s1 < s2 ? -1 : 1;
-						}));
-						
-						viewGroup.setViews((List<FacilioView>) viewsList);
-						viewGroup.setDisplayName((String) group.get("displayName"));
-						viewGroup.setName((String) group.get("name"));
-						viewGroups.add(viewGroup);
+				else {
+					groupDetails.put("name", "systemviews");
+					groupDetails.put("displayName", "System Views");
+					groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
+					groupViews.add(groupDetails);
+					if (!customViews.isEmpty() ) {
+						groupDetails = new HashMap<>();
+						groupDetails.put("name", "customviews");
+						groupDetails.put("displayName", "Custom Views");
+						groupDetails.put("views", customViews);
+						groupViews.add(groupDetails);
 					}
 				}
-				
-				
 			}
 			
-			if (viewGroups != null) {
-				viewGroups.sort(Comparator.comparing(ViewGroups::getSequenceNumber, (s1, s2) -> {
-					if(s1 == s2){
-						return 0;
-					}
-					return s1 < s2 ? -1 : 1;
-				}));
-			}
+			
+//			if (groupViews != null) {
+//				for(Map<String, Object> group : groupViews) {
+//					List<ViewGroups> sysAndCusViewGroup = viewGroups.stream().filter(viewGroup -> viewGroup.getName().equals(group.get("name"))).collect(Collectors.toList());
+//					if ((sysAndCusViewGroup.isEmpty() || sysAndCusViewGroup == null)) {
+//						ViewGroups viewGroup = new ViewGroups();
+//						List<FacilioView> viewsList;
+//						if (group.get("views") != null) {
+//						if (!(((List<?>)group.get("views")).isEmpty()) && ((List<?>)group.get("views")).get(0) instanceof FacilioView) {
+//							viewsList = (List<FacilioView>) group.get("views");
+//						}
+//						else {
+//							viewsList = new ArrayList<>();
+//							for(String viewName: ((List<String>)group.get("views"))) {
+//								FacilioView view = viewMap.get(viewName);
+//								if (view != null ) {
+//									viewsList.add(view);
+//								}
+//							}
+//						}	
+//						viewsList.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
+//							if(s1 == s2){
+//								return 0;
+//							}
+//							return s1 < s2 ? -1 : 1;
+//						}));
+//						
+//						
+//						viewGroup.setViews((List<FacilioView>) viewsList);
+//						viewGroup.setDisplayName((String) group.get("displayName"));
+//						viewGroup.setName((String) group.get("name"));
+//						viewGroups.add(viewGroup);
+//					}
+//					}
+//				}
+//				
+//				
+//			}
+			
+//			if (viewGroups != null) {
+//				viewGroups.sort(Comparator.comparing(ViewGroups::getSequenceNumber, (s1, s2) -> {
+//					if(s1 == s2){
+//						return 0;
+//					}
+//					return s1 < s2 ? -1 : 1;
+//				}));
+//			}
+			
+			sortGroupViews(groupViews, viewMap, viewGroups);
 						
 			context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroups);
 			
@@ -262,6 +283,56 @@ public class GetViewGroupsListCommand extends FacilioCommand {
 		}	
 				
 		return false;
+	}
+	
+	private void sortGroupViews(List<Map<String, Object>> groupViews, Map<String, FacilioView> viewMap, List<ViewGroups> viewGroups) {
+		if (groupViews != null) {
+			for(Map<String, Object> group : groupViews) {
+				List<ViewGroups> sysAndCusViewGroup = viewGroups.stream().filter(viewGroup -> viewGroup.getName().equals(group.get("name"))).collect(Collectors.toList());
+				if ((sysAndCusViewGroup.isEmpty() || sysAndCusViewGroup == null)) {
+					ViewGroups viewGroup = new ViewGroups();
+					List<FacilioView> viewsList;
+					if (group.get("views") != null) {
+					if (!(((List<?>)group.get("views")).isEmpty()) && ((List<?>)group.get("views")).get(0) instanceof FacilioView) {
+						viewsList = (List<FacilioView>) group.get("views");
+					}
+					else {
+						viewsList = new ArrayList<>();
+						for(String viewName: ((List<String>)group.get("views"))) {
+							FacilioView view = viewMap.get(viewName);
+							if (view != null ) {
+								viewsList.add(view);
+							}
+						}
+					}	
+					viewsList.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
+						if(s1 == s2){
+							return 0;
+						}
+						return s1 < s2 ? -1 : 1;
+					}));
+					
+					
+					viewGroup.setViews((List<FacilioView>) viewsList);
+					viewGroup.setDisplayName((String) group.get("displayName"));
+					viewGroup.setName((String) group.get("name"));
+					viewGroups.add(viewGroup);
+				}
+				}
+			}
+			
+			
+		}
+		
+		if (viewGroups != null) {
+			viewGroups.sort(Comparator.comparing(ViewGroups::getSequenceNumber, (s1, s2) -> {
+				if(s1 == s2){
+					return 0;
+				}
+				return s1 < s2 ? -1 : 1;
+			}));
+		}
+
 	}
 
 	private int getCustomGroupIdx(List<Map<String, Object>> groupViews ) {

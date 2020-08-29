@@ -44,7 +44,12 @@ public class ViewAPI {
 		return getAllViews(-1, moduleName);
 	}
 	
-	public static long addViewGroup(ViewGroups viewGroup, long orgId) throws Exception {
+	public static long addViewGroup(ViewGroups viewGroup, long orgId, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module= modBean.getModule(moduleName);
+		long moduleId = module.getModuleId();
+		
+		viewGroup.setModuleId(moduleId);
 		viewGroup.setOrgId(orgId);
 		viewGroup.setId(-1);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -507,7 +512,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return sortFields;
 	}
 	
-	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns) throws Exception {
+	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns, Long groupId) throws Exception {
 		long viewId = -1;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module= modBean.getModule(moduleName);
@@ -522,6 +527,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				}
 				view.setDefault(true);
 				view.setModuleId(moduleId);
+				if (groupId != null && groupId > 0) {
+					view.setGroupId(groupId);
+				}
 				viewId = ViewAPI.addView(view, orgId);
 				if (columns == null || columns.isEmpty()) {
 					columns = view.getFields();
@@ -554,6 +562,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				view.setType(ViewType.TABLE_LIST);
 				view.setDefault(false);
 				view.setHidden(true);
+				if (groupId != null && groupId > 0) {
+					view.setGroupId(groupId);
+				}
 				viewId = ViewAPI.addView(view, orgId);
 			}
 			

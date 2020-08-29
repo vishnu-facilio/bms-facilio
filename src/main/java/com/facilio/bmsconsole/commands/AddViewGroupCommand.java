@@ -21,10 +21,11 @@ public class AddViewGroupCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ViewGroups viewGroup = (ViewGroups) context.get(FacilioConstants.ContextNames.VIEW_GROUP);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (viewGroup != null) {
 			viewGroup.setName(viewGroup.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			
-			long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId());
+			long groupId = ViewAPI.addViewGroup(viewGroup, AccountUtil.getCurrentOrg().getOrgId(), moduleName);
 			
 			
 			viewGroup.setId(groupId);
