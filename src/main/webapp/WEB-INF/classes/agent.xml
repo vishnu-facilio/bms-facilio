@@ -183,6 +183,8 @@
         </action>
         <action name="logCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getLogCount">
         </action>
+        <action name="agentDownload" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
+        </action>
 
 
     </package>
