@@ -8811,6 +8811,15 @@ public class FieldFactory {
 		 fields.add(getIdField(module));
 		 fields.add(getField("dashboardFilterId", "DASHBOARD_FILTER_ID", module, FieldType.NUMBER));
 		 fields.add(getField("filterOrder", "FILTER_ORDER", module, FieldType.NUMBER));
+		 fields.add(getField("fieldId","FIELD_ID", module, FieldType.NUMBER));
+		 fields.add(getField("componentType","COMPONENT_TYPE", module, FieldType.SYSTEM_ENUM));
+		 fields.add(getField("optionType", "OPTION_TYPE", module, FieldType.SYSTEM_ENUM));
+		 fields.add(getField("isAllOptionEnabled", "IS_ALL_OPTION_ENABLED", module, FieldType.BOOLEAN));
+		 fields.add(getField("isOthersOptionEnabled", "IS_OTHERS_OPTION_ENABLED", module, FieldType.BOOLEAN));
+		 fields.add(getField("label", "LABEL", module, FieldType.STRING));
+		 
+		 
+		 
 		 fields.add(getField("dashboardUserFilterJson","DASHBOARD_USER_FILTER_JSON", module,FieldType.STRING));
 		 		     				 
 		 return fields;
