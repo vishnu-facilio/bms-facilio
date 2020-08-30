@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
@@ -13,7 +14,8 @@ import com.facilio.util.FacilioUtil;
 
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
-
+	private Map<Long,FacilioField> widgetFieldMap;
+	
 	
 	// default values is type string to handle  ,'all' ,'others' cases
 		
@@ -278,6 +280,12 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	public void setOptionType(OptionType optionType)
 	{
 		this.optionType=optionType;
+	}
+	public Map<Long,FacilioField> getWidgetFieldMap() {
+		return this.widgetFieldMap;
+	}
+	public void setWidgetFieldMap(Map<Long,FacilioField> widgetFieldMap) {
+		this.widgetFieldMap = widgetFieldMap;
 	}
 
 }

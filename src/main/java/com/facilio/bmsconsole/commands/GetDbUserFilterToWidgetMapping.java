@@ -26,6 +26,7 @@ import com.facilio.cards.util.CardLayout;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
@@ -103,8 +104,15 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							 
 							 JSONObject widgetSettings=widget.getWidgetSettings();
 							 boolean isFilterExclude=(boolean)widgetSettings.get("excludeDbFilters");
+							 Map<Long,FacilioField> widgetFilterFieldMap=filter.getWidgetFieldMap();
+							 boolean isFilterFieldMappedToWidgetField=false;
 							 
-							 if(!isFilterExclude &&(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId)))
+							 if(widgetFilterFieldMap!=null&&widgetFilterFieldMap.containsKey(widgetId))
+							 {
+								 isFilterFieldMappedToWidgetField=true;
+							 }
+							 
+							 if(!isFilterExclude &&(widgetModuleId==filterModule.getModuleId()||filterChildModuleIds.contains(widgetModuleId)||isFilterFieldMappedToWidgetField))
 							 	
 							 	{
 							 	

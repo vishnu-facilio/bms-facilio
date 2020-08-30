@@ -3953,6 +3953,15 @@ public class ModuleFactory {
 		return module;
 		
 	}
+	public static FacilioModule getDashboardUserFilterWidgetFieldMappingModule()
+	{	
+		FacilioModule module = new FacilioModule();
+		module.setName("dashboardUserFilterWidgetFieldMapping");
+		module.setDisplayName("Dashboard user filter widget field mapping");
+		module.setTableName("Dashboard_User_Filter_Widget_Field_Mapping");
+		return module;
+		
+	}
 
 	public static FacilioModule getNewsAndInformationModule()
 	{

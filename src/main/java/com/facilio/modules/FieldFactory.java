@@ -8824,6 +8824,16 @@ public class FieldFactory {
 		 		     				 
 		 return fields;
 	 }
+	 public static List<FacilioField>  getDashboardUserFilterWidgetFieldMappingFields()
+	 {
+		 FacilioModule module=ModuleFactory.getDashboardUserFilterWidgetFieldMappingModule();
+		 List<FacilioField> fields =new ArrayList<>();
+		 fields.add(getIdField(module));
+		 fields.add(getField("userFilterId", "USER_FILTER_ID", module, FieldType.NUMBER));
+		 fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
+		 fields.add(getField("widgetFieldId", "WIDGET_FIELD_ID", module, FieldType.NUMBER));
+		 return fields;
+	 }
 	 
 	public static List<FacilioField> getAgentPreprocessorFields() {
 		FacilioModule module = ModuleFactory.getAgentPreProcessorModule();

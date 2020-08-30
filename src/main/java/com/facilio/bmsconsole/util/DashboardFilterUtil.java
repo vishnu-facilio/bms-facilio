@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
+import com.facilio.bmsconsole.context.DashboardUserFilterWidgetFieldMappingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
@@ -31,9 +33,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.util.FacilioUtil;
 
 public class DashboardFilterUtil {
 
@@ -106,6 +110,7 @@ public class DashboardFilterUtil {
 			for (DashboardUserFilterContext filter : dashboardUserFilters) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				filter.setField(modBean.getField(filter.getFieldId()));
+				filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 
 			}
 			return dashboardUserFilters;
@@ -191,6 +196,34 @@ public class DashboardFilterUtil {
 		 
 		 return moduleId;
 		 
+	}
+	
+	public static  Map<Long,FacilioField> getUserFilterToWidgetColumnMapping(long userFilterId) throws Exception
+	{
+		FacilioModule module = ModuleFactory.getDashboardUserFilterWidgetFieldMappingModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(FieldFactory.getDashboardUserFilterWidgetFieldMappingFields()).andCondition(CriteriaAPI.getCondition(
+						"USER_FILTER_ID", "userFilterId", "" + userFilterId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> records = builder.get();
+		
+		
+		Map<Long ,FacilioField> widgetIdWidgetFieldMap=new HashMap<>();
+		if (records != null && !records.isEmpty()) {
+			List<DashboardUserFilterWidgetFieldMappingContext> userFilterWidgetFieldRels=FieldUtil.getAsBeanListFromMapList(records,DashboardUserFilterWidgetFieldMappingContext.class);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			for (DashboardUserFilterWidgetFieldMappingContext userFilterWidgetFieldRel : userFilterWidgetFieldRels) {
+				
+				widgetIdWidgetFieldMap.put(userFilterWidgetFieldRel.getWidgetId(),modBean.getField(userFilterWidgetFieldRel.getWidgetFieldId()));
+			}
+		
+				return widgetIdWidgetFieldMap;
+		}
+		
+		
+		return null;
 	}
 
 }
