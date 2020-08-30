@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -12,6 +13,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.opensymphony.xwork2.ActionSupport;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -65,6 +68,12 @@ public class AgentDownloadAction extends ActionSupport {
         try {
             LOGGER.info("Download Agent called");
             String path = getExeUrl(getToken());
+            if(StringUtils.isEmpty(path)) {
+            	FacilioContext context = new FacilioContext();
+            	context.put(AgentConstants.IS_LATEST_VERSION, true);
+            	List<Map<String,Object>> prop = AgentVersionApi.listAgentVersions(context);
+            	path = (String) prop.get(0).get(AgentConstants.URL);
+            }
             LOGGER.info("Agent Download " + path);
             File file = downloadExeFrom(path);
             if (file==null){
