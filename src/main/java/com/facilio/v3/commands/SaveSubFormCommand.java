@@ -109,7 +109,7 @@ public class SaveSubFormCommand extends FacilioCommand {
         }
 
         List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
-        Class contextClass = ChainUtil.getBeanClass(Constants.getV3Config(context), module);
+        Class contextClass = ChainUtil.getBeanClass(null, module);
 
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);

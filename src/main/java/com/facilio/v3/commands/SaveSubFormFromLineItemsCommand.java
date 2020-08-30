@@ -85,7 +85,7 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
         Map<String, Object> parentObject = new HashMap<>();
         parentObject.put("id", recordId);
 
-        Class contextClass = ChainUtil.getBeanClass(Constants.getV3Config(context), module);
+        Class contextClass = ChainUtil.getBeanClass(null, module);
 
         Map<String, List<LookupField>> allLookupFields = getAllLookupFields(modBean, module);
         List<LookupField> lookupFieldList = allLookupFields.get(mainModuleName);
