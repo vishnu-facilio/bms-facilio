@@ -84,8 +84,8 @@ public class AgentDownloadAction extends ActionSupport {
             	FacilioContext context = new FacilioContext();
             	context.put(AgentConstants.IS_LATEST_VERSION, true);
             	List<Map<String,Object>> prop = AgentVersionApi.listAgentVersions(context);
-            	path = (String) prop.get(0).get(AgentConstants.URL);
-            	version = (String) prop.get(0).get(AgentConstants.VERSION);
+            	path = prop.get(0).get(AgentConstants.URL).toString();
+            	version = prop.get(0).get(AgentConstants.VERSION).toString();
             	agentVersionId = (long) prop.get(0).get(AgentConstants.VERSION_ID);
             }
             LOGGER.info("Agent Download " + path);
