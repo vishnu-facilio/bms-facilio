@@ -1,15 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.upgrade.AgentVersionApi;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -20,8 +24,11 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +42,7 @@ public class AgentDownloadAction extends ActionSupport {
     private String orgId;
     private String agentId;
     private String version;
+    long agentVersionId = -1;
     public String getToken() {
         return token;
     }
@@ -67,12 +75,18 @@ public class AgentDownloadAction extends ActionSupport {
     public String downloadAgent() throws Exception {
         try {
             LOGGER.info("Download Agent called");
-            String path = getExeUrl(getToken());
-            if(StringUtils.isEmpty(path)) {
+            String path = null;
+          
+            if(StringUtils.isNotEmpty(getToken())) {
+            	path = getExeUrl(getToken());
+            }
+            else {
             	FacilioContext context = new FacilioContext();
             	context.put(AgentConstants.IS_LATEST_VERSION, true);
             	List<Map<String,Object>> prop = AgentVersionApi.listAgentVersions(context);
             	path = (String) prop.get(0).get(AgentConstants.URL);
+            	version = (String) prop.get(0).get(AgentConstants.VERSION);
+            	agentVersionId = (long) prop.get(0).get(AgentConstants.VERSION_ID);
             }
             LOGGER.info("Agent Download " + path);
             File file = downloadExeFrom(path);
@@ -84,7 +98,11 @@ public class AgentDownloadAction extends ActionSupport {
                 LOGGER.info("FilePath " + file.getAbsolutePath());
             }
             fileInputStream = new FileInputStream(file);
-            FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
+            if(StringUtils.isEmpty(getToken())) {
+            	FacilioService.runAsService(()-> markAgentVersionLogUpdated(agentId,agentVersionId));
+            }else {
+            	FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
+            }
             return SUCCESS;
         }catch (Exception ex){
             LOGGER.info(ex.getMessage());
@@ -92,9 +110,24 @@ public class AgentDownloadAction extends ActionSupport {
         }
     }
 
-    private File downloadExeFrom(String url) throws Exception {
+    private void markAgentVersionLogUpdated(String agentId2, long agentVersionId) throws SQLException {
+		// TODO Auto-generated method stub
+    	 FacilioModule agentVersionLogModule = ModuleFactory.getAgentVersionLogModule();
+         Map<String, Object> toUpdate = new HashMap<>();
+         toUpdate.put(AgentConstants.UPDATED_TIME, System.currentTimeMillis());
+         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                 .table(agentVersionLogModule.getTableName())
+                 .fields(new ArrayList<>(Arrays.asList(FieldFactory.getUpdatedTimeField(agentVersionLogModule))))
+                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(agentVersionLogModule), agentId2, NumberOperators.EQUALS))
+                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getAgentVersionLogFields()).get(AgentConstants.VERSION_ID), String.valueOf(agentVersionId), StringOperators.IS));
+         		
+          updateRecordBuilder.update(toUpdate);
+	}
+
+	private File downloadExeFrom(String url) throws Exception {
         if (FacilioProperties.isProduction()) {
-            String key = "Org_" + this.orgId
+        	orgId = String.valueOf(AccountUtil.getCurrentOrg().getOrgId()).toString();
+        	String key = "Org_" + this.orgId
                     + "Agent_" + this.agentId
                     + "Version_" + this.version
                     + System.currentTimeMillis()
