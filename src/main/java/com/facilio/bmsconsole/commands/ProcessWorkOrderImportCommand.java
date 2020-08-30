@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -17,6 +21,8 @@ import java.util.List;
 
 public class ProcessWorkOrderImportCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(ProcessWorkOrderImportCommand.class.getName());
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -27,6 +33,9 @@ public class ProcessWorkOrderImportCommand extends FacilioCommand {
 		
 		BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext();
 		for(ReadingContext readingContext: readingsContext) {
+			if((AccountUtil.getCurrentOrg().getId() == 78l)) {
+				LOGGER.info("ProcessWorkOrderImportCommand readingContext: -- " +readingContext.getData());
+			}
 			WorkOrderContext tempWo = FieldUtil.getAsBeanFromMap(readingContext.getData(), WorkOrderContext.class);
 			if (readingContext.getModuleState() != null) {
 				tempWo.setModuleState(readingContext.getModuleState());
