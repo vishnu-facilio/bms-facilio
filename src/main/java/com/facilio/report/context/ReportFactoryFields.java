@@ -956,18 +956,15 @@ public class ReportFactoryFields {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
 			metricFields.add(ReportFactory.getReportField(WorkOrder.ESTIMATED_DURATION_COL));
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
-//				if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 					ReportFacilioField totalScorePercentageField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL);
 					metricFields.add(totalScorePercentageField);	
-//				}
-				
-//				metricFields.add(ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL));
 			}
 			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.RESPONSE_SLA_COL));
 			
 			
 		}

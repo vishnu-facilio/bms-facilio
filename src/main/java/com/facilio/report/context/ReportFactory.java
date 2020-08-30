@@ -41,6 +41,7 @@ public class ReportFactory {
 		String FIRST_RESPONSE_TIME_COL = "firstresponsetime";
 		String ESTIMATED_DURATION_COL = "estimatedduration";
 		String TOTAL_SCORE_PERCENTAGE_COL = "totalscorepercentage";
+		String RESPONSE_SLA_COL = "response_sla";
 		
 		
 		int OPENVSCLOSE = 1;
@@ -50,7 +51,7 @@ public class ReportFactory {
 		int FIRST_RESPONSE_TIME = 5;
 		int ESTIMATED_DURATION = 6;
 		int TOTAL_SCORE_PERCENTAGE = 13;
-		
+		int RESPONSE_SLA = 14;
 	}
 	
 	public interface Alarm {
@@ -98,6 +99,11 @@ public class ReportFactory {
 			overdueClosedField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.LESS_THAN));
 			overdueClosedField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.GREATER_THAN_EQUAL));
 			reportFields.add(overdueClosedField);
+			
+			ReportFacilioField responseSlaField = (ReportFacilioField) getField(WorkOrder.RESPONSE_SLA_COL, "Response SLA", ModuleFactory.getWorkOrdersModule(), " CASE WHEN SCHEDULED_START IS NOT NULL AND ACTUAL_WORK_START IS NOT NULL THEN CASE WHEN ACTUAL_WORK_START > SCHEDULED_START THEN 'Delayed' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.RESPONSE_SLA);
+			responseSlaField.addGenericCondition("Overdue", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.GREATER_THAN));
+			responseSlaField.addGenericCondition("Ontime", CriteriaAPI.getCondition("ACTUAL_WORK_START", "actualWorkStart", "scheduledStart", FieldOperator.LESS_THAN_EQUAL));
+			reportFields.add(responseSlaField);
 			
 			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.STRING, WorkOrder.PLANNED_VS_UNPLANNED);
 			plannedVsUnplannedField.addGenericCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
