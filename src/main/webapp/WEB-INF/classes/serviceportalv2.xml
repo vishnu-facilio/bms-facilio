@@ -994,7 +994,17 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
-	
+
+	<package name="vendorworkorderServiceList"
+			 namespace="/api/service/v2/workorderServiceList/parent" extends="newServicePortalApiV2">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.WorkOrderServiceAction"
+				method="workorderServiceList">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
+
+
 	<package name="VendoritemTransactionsList"
 		namespace="/api/service/v2/itemTransactions/view" extends="newServicePortalApiV2">
 		<action name="*"
