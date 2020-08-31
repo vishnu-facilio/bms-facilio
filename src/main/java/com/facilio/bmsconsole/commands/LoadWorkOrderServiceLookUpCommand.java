@@ -32,8 +32,7 @@ public class LoadWorkOrderServiceLookUpCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		LookupFieldMeta service = new LookupFieldMeta((LookupField) fieldsAsMap.get("service"));
-		//List<LookupField>fetchLookup = Arrays.asList(service,(LookupField) fieldsAsMap.get("parent"));
-		 List<LookupField>fetchLookup = Arrays.asList(service);
+		List<LookupField>fetchLookup = Arrays.asList(service,(LookupField) fieldsAsMap.get("parent"));
 
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		Long parentId = (Long)context.get(FacilioConstants.ContextNames.PARENT_ID);
