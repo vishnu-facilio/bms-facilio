@@ -11,17 +11,16 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ProcessWorkOrderImportCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = LogManager.getLogger(ProcessWorkOrderImportCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ProcessWorkOrderImportCommand.class.getName());
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
