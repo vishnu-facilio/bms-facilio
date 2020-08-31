@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.usernotification;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -29,7 +30,7 @@ public class AddUserCriteriaMyNotification extends FacilioCommand {
         }
         filters.put("user", userFilter);
 
-
+        context.put(FacilioConstants.ContextNames.SORTING_QUERY, "User_Notification.SYS_CREATED_TIME desc");
         context.put(FacilioConstants.ContextNames.FILTERS, filters);
         return false;
     }

@@ -368,9 +368,11 @@ public String importData() throws Exception {
 			List<Long> ruleIds = supportEmails.stream().map(SupportEmailContext::getSupportRuleId).filter(Objects::nonNull).collect(Collectors.toList());
 			if (ruleIds != null && ruleIds.size() > 0) {
 				Map<Long, WorkflowRuleContext> supportMailRule = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
-				for (Long ruleId : supportMailRule.keySet()) {
-					WorkflowRuleContext rule = supportMailRule.get(ruleId);
-					rule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId));
+				if (supportMailRule != null) {
+					for (Long ruleId : supportMailRule.keySet()) {
+						WorkflowRuleContext rule = supportMailRule.get(ruleId);
+						rule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId));
+					}
 				}
 				setSupportMailRules(supportMailRule);
 			}
