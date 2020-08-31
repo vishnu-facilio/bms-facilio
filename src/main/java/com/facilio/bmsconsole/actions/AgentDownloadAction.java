@@ -86,6 +86,22 @@ public class AgentDownloadAction extends ActionSupport {
     public void setResult(JSONObject result) {
         this.result = result;
     }
+    
+    private String contentType="application/octet-stream";
+	public String getContentType() {
+		return contentType;
+	}
+	protected void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+	
+	private String filename;
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
     public String downloadAgent() throws Exception {
         try {
@@ -114,6 +130,10 @@ public class AgentDownloadAction extends ActionSupport {
             fileInputStream = new FileInputStream(file);
             if(StringUtils.isNotEmpty(getToken())) {
             	FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
+            }else {
+            	String fileName = version+".exe";
+            	setFilename(fileName);
+            	setContentType("application/x-download");
             }
             return SUCCESS;
         }catch (Exception ex){
