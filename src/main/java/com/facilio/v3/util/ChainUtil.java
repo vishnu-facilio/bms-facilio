@@ -269,6 +269,9 @@ public class ChainUtil {
 
         addIfNotNull(transactionChain, afterSaveCommand);
         addWorkflowChain(transactionChain);
+        // execute custom button action if the custom button id is sent
+        transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
+
         addIfNotNull(transactionChain, afterTransactionCommand);
         return transactionChain;
     }

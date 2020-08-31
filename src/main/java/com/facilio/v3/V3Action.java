@@ -160,6 +160,14 @@ public class V3Action extends ActionSupport {
 		this.stateTransitionId = transitionId;
 	}
 
+	private Long customButtonId;
+	public Long getCustomButtonId() {
+		return customButtonId;
+	}
+	public void setCustomButtonId(Long customButtonId) {
+		this.customButtonId = customButtonId;
+	}
+
 	private Long approvalTransitionId;
 	public Long getApprovalTransitionId() {
 		return approvalTransitionId;

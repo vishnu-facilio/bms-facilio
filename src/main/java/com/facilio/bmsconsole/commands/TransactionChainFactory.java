@@ -377,7 +377,6 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
-			c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
 			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
@@ -395,6 +394,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
 			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
