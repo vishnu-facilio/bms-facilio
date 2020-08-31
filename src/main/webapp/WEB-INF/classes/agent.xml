@@ -36,17 +36,6 @@
                 <param name="includeProperties">errorStatus</param>
             </result>
         </action>
-		<action name="agentDownload" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
-            <result name="success" type="stream">
-                <param name="contentType">application/octet-stream</param>
-                <param name="inputName">fileInputStream</param>
-                <param name="contentDisposition">attachment;filename="FacilioAgent.exe"</param>
-                <param name="bufferSize">1024</param>
-            </result>
-            <result name="invalidToken" type="json">
-                <param name="includeProperties">errorStatus</param>
-            </result>
-        </action>
 
     </package>
 

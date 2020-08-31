@@ -42,7 +42,6 @@ public class AgentDownloadAction extends ActionSupport {
     private String orgId;
     private String agentId;
     private String version;
-    long agentVersionId = -1;
     public String getToken() {
         return token;
     }
@@ -86,7 +85,6 @@ public class AgentDownloadAction extends ActionSupport {
             	List<Map<String,Object>> prop = AgentVersionApi.listAgentVersions(context);
             	path = prop.get(0).get(AgentConstants.URL).toString();
             	version = prop.get(0).get(AgentConstants.VERSION).toString();
-            	agentVersionId = (long) prop.get(0).get(AgentConstants.VERSION_ID);
             }
             LOGGER.info("Agent Download " + path);
             File file = downloadExeFrom(path);
@@ -98,9 +96,7 @@ public class AgentDownloadAction extends ActionSupport {
                 LOGGER.info("FilePath " + file.getAbsolutePath());
             }
             fileInputStream = new FileInputStream(file);
-            if(StringUtils.isEmpty(getToken())) {
-            	FacilioService.runAsService(()-> markAgentVersionLogUpdated(agentId,agentVersionId));
-            }else {
+            if(StringUtils.isNotEmpty(getToken())) {
             	FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
             }
             return SUCCESS;
@@ -110,23 +106,11 @@ public class AgentDownloadAction extends ActionSupport {
         }
     }
 
-    private void markAgentVersionLogUpdated(String agentId2, long agentVersionId) throws SQLException {
-		// TODO Auto-generated method stub
-    	 FacilioModule agentVersionLogModule = ModuleFactory.getAgentVersionLogModule();
-         Map<String, Object> toUpdate = new HashMap<>();
-         toUpdate.put(AgentConstants.UPDATED_TIME, System.currentTimeMillis());
-         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-                 .table(agentVersionLogModule.getTableName())
-                 .fields(new ArrayList<>(Arrays.asList(FieldFactory.getUpdatedTimeField(agentVersionLogModule))))
-                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(agentVersionLogModule), agentId2, NumberOperators.EQUALS))
-                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getAgentVersionLogFields()).get(AgentConstants.VERSION_ID), String.valueOf(agentVersionId), StringOperators.IS));
-         		
-          updateRecordBuilder.update(toUpdate);
-	}
-
 	private File downloadExeFrom(String url) throws Exception {
         if (FacilioProperties.isProduction()) {
-        	orgId = String.valueOf(AccountUtil.getCurrentOrg().getOrgId()).toString();
+        	if(StringUtils.isEmpty(orgId)) {
+        		orgId = String.valueOf(AccountUtil.getCurrentOrg().getOrgId()).toString();
+        	}
         	String key = "Org_" + this.orgId
                     + "Agent_" + this.agentId
                     + "Version_" + this.version
