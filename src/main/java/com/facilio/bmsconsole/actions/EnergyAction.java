@@ -161,6 +161,7 @@ public class EnergyAction extends FacilioAction {
 	
 	public String runHistoricalBasedOnHierarchy() throws Exception
 	{
+		LOGGER.info("Historical VM runHistoricalBasedOnHierarchy started: "+startTime+ " and endTime: "+endTime);
 		if(startTime >= endTime)
 		{
 			throw new Exception("Start time should be less than the Endtime");
