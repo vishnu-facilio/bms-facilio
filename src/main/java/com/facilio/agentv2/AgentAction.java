@@ -24,6 +24,8 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.integration.DownloadCertFile;
+import com.facilio.agent.module.AgentFieldFactory;
+import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -48,13 +50,16 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.messageQueue.MessageQueueTopic;
 
 
 public class AgentAction extends AgentActionV2 {
@@ -502,14 +507,13 @@ public class AgentAction extends AgentActionV2 {
 
     public String downloadCertificate(){
         try{
-            Organization currentOrg = AccountUtil.getCurrentOrg();
-            Objects.requireNonNull(currentOrg, " current org null");
+            String orgMessageTopic = getMessageTopic();
             FacilioAgent agent = AgentApiV2.getAgent(agentId);
-            String downloadCertificateLink = DownloadCertFile.downloadCertificate(currentOrg.getDomain(), "facilio");
+            String downloadCertificateLink = DownloadCertFile.downloadCertificate(orgMessageTopic, "facilio");
             setResult(AgentConstants.DATA, downloadCertificateLink);
             Objects.requireNonNull(agent, "no such agent");
             try {
-                AwsUtil.addClientToPolicy(agent.getName(), currentOrg.getDomain(), "facilio");
+                AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
                 ok();
             } catch (Exception e) {
                 setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());
@@ -526,7 +530,19 @@ public class AgentAction extends AgentActionV2 {
     }
 
 
-    public List<Long> getRecordIds() { return recordIds; }
+    private String getMessageTopic() throws Exception {
+    	Organization currentOrg = AccountUtil.getCurrentOrg();
+    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
+    			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
+    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
+    	Map<String,Object> prop =	builder.fetchFirst();
+    	if(MapUtils.isEmpty(prop)) {
+    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? prop.get("domain").toString():null;
+    	}
+    	return prop.get("domain").toString();
+    }
+
+	public List<Long> getRecordIds() { return recordIds; }
 
     public void setRecordIds(List<Long> recordIds) { this.recordIds = recordIds; }
 

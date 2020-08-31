@@ -28,16 +28,19 @@ public class MessageQueueTopic {
 	private static final List<FacilioField> MESSAGE_TOPIC_FIELDS = AgentFieldFactory.getMessageTopicFields();
 	private static final FacilioModule MESSAGE_TOIPC_MODULE = AgentModuleFactory.getMessageToipcModule();
 
-	public static void addMsgTopic(String topicName) throws Exception {
+	public static boolean addMsgTopic(String topicName,long orgId) throws Exception {
 		Map<String, Object> prop = new HashedMap<>();
 		prop.put(AgentConstants.MESSAGE_TOPIC, topicName);
 		prop.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
+		prop.put(AgentConstants.ORGID,orgId);
 		long count = new GenericInsertRecordBuilder().fields(MESSAGE_TOPIC_FIELDS)
 				.table(MESSAGE_TOIPC_MODULE.getTableName())
 				.insert(prop);
 		if (count > 0) {
-			LOGGER.info("New MessageQueue topic added. Topic name: " + topicName + " orgId :"+ AccountUtil.getCurrentOrg().getOrgId());
+			LOGGER.info("New MessageQueue topic added. Topic name: " + topicName + " orgId :"+ orgId);
+			return true;
 		}
+		return false;
 	}
 
 	public static List<Map<String, Object>> getAllMessageTopics() throws Exception {
