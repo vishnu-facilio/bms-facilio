@@ -174,7 +174,7 @@
         </action>
         <action name="agentDownload" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
          <result name="success" type="stream">
-                <param name="contentType">application/octet-stream</param>
+                <param name="contentType">application/x-download</param>
                 <param name="inputName">fileInputStream</param>
                 <param name="contentDisposition">attachment;filename="FacilioAgent.exe"</param>
                 <param name="bufferSize">1024</param>
