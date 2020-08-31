@@ -42,7 +42,23 @@ public class AgentDownloadAction extends ActionSupport {
     private String orgId;
     private String agentId;
     private String version;
-    public String getToken() {
+    public String getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(String agentId) {
+		this.agentId = agentId;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getToken() {
         return token;
     }
 
@@ -73,7 +89,7 @@ public class AgentDownloadAction extends ActionSupport {
 
     public String downloadAgent() throws Exception {
         try {
-            LOGGER.info("Download Agent called");
+            LOGGER.info("Download Agent called agent Id :"+agentId);
             String path = null;
           
             if(StringUtils.isNotEmpty(getToken())) {
