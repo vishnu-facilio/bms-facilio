@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -26,6 +30,36 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     }
     public void setFormId(long formId) {
         this.formId = formId;
+    }
+
+    private String formModuleName;
+    public String getFormModuleName() {
+        return formModuleName;
+    }
+    public void setFormModuleName(String formModuleName) {
+        this.formModuleName = formModuleName;
+    }
+
+    private long lookupFieldId = -1;
+    public long getLookupFieldId() {
+        return lookupFieldId;
+    }
+    public void setLookupFieldId(long lookupFieldId) {
+        this.lookupFieldId = lookupFieldId;
+    }
+
+    private FacilioField lookupField;
+    public FacilioField getLookupField() throws Exception {
+        if (lookupField == null) {
+            if (lookupFieldId > 0 && StringUtils.isNotEmpty(formModuleName)) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                lookupField = modBean.getField(lookupFieldId, formModuleName);
+            }
+        }
+        return lookupField;
+    }
+    public void setLookupField(FacilioField lookupField) {
+        this.lookupField = lookupField;
     }
 
     private ButtonType buttonType;

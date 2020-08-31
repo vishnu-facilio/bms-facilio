@@ -7631,6 +7631,8 @@ public class FieldFactory {
 
         list.add(getIdField(module));
         list.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+        list.add(getField("formModuleName", "FORM_MODULE_NAME", module, FieldType.STRING));
+        list.add(getField("lookupFieldId", "LOOKUP_FIELD_ID", module, FieldType.NUMBER));
         list.add(getField("buttonType", "BUTTON_TYPE", module, FieldType.NUMBER));
         list.add(getField("positionType", "POSITION_TYPE", module, FieldType.NUMBER));
         list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
