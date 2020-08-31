@@ -445,7 +445,10 @@ public enum ActionType {
 							userNotification.setSiteId(currentRule.getSiteId());
 							FacilioModule module = modBean.getModule((String) context.getOrDefault("moduleName", null));
 							userNotification.setParentModule(module.getModuleId());
-							userNotification.setParentId((long) context.getOrDefault("recordId", -1l));
+							if (currentRecord instanceof ModuleBaseWithCustomFields) {
+								long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
+								userNotification.setParentId(parentId);
+							}
 							userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
 							FacilioChain chain = TransactionChainFactoryV3.addRecords();
 							FacilioContext notificationContext = chain.getContext();
