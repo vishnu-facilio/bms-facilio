@@ -42,7 +42,7 @@ public class BillAlertPageFactory extends PageFactory {
         tab1Sec1.addWidget(billDetails);
         
         PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.BILL_LIST);
-        previewWidget.addToLayoutParams(tab1Sec1, 24, 3);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 5);
         tab1Sec1.addWidget(previewWidget);
 
             
