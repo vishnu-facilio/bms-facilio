@@ -16,8 +16,8 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(DashboardFilterContext.class.getName());
 	
-	private long dashboardId;
-	private long dashboardTabId;
+	private long dashboardId=-1;
+	private long dashboardTabId=-1;
 	private Boolean isTimelineFilterEnabled;
 	private long dateOperator;
 	private String dateValue;

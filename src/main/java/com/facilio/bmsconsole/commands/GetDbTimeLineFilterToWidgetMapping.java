@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
@@ -36,9 +38,24 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 
 		if (dashboardFilterContext != null && dashboardFilterContext.getIsTimelineFilterEnabled() != null &&dashboardFilterContext.getIsTimelineFilterEnabled() == true) {
 
-			DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
+			DashboardContext dashboard=(DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
+			 
+			 DashboardTabContext dashboardTab=(DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
+			 
+			 List<DashboardWidgetContext> widgets=new ArrayList<>();
+			 if(dashboard!=null)
+			 {
+				 	widgets=dashboard.getDashboardWidgets();
+			 }
+			 else if(dashboardTab!=null)
+			 {
+				 widgets=dashboardTab.getDashboardWidgets();
+			 }
+			 else {
+				 throw new Exception("NO dashboard or dashboard tab");
+			 }
 
-			List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
+
 
 			Map<Long, Map<String, String>> widgetTimeLineFilters = new HashMap<>();
 

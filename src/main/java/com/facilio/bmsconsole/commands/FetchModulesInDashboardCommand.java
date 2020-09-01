@@ -27,6 +27,8 @@ public class FetchModulesInDashboardCommand extends FacilioCommand{
 		Long dashboardId=(Long)context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
 		Long dashboardTabId=(Long)context.get(FacilioConstants.ContextNames.DASHBOARD_TAB_ID);
 		
+		
+		
 		 List<DashboardWidgetContext> dashboardWidgets=DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboardId, dashboardTabId);
 		 
 		 List<String> moduleNames=new ArrayList<>();

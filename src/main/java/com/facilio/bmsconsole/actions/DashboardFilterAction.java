@@ -16,8 +16,8 @@ public class DashboardFilterAction extends FacilioAction{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private long dashboardId;
-	private long dashboardTabId;
+	private Long dashboardId;
+	private Long dashboardTabId;
 	private DashboardFilterContext dashboardFilter;
 	
 	public DashboardFilterContext getDashboardFilter() {
@@ -56,11 +56,11 @@ public class DashboardFilterAction extends FacilioAction{
 		context.put(ContextNames.DASHBOARD_FILTER, dashboardFilter);
 		if(dashboardFilter.getDashboardId()!=-1)
 		{
-			context.put(ContextNames.DASHBOARD, DashboardUtil.getDashboardWithWidgets(getDashboardId()));
+			context.put(ContextNames.DASHBOARD, DashboardUtil.getDashboardWithWidgets(dashboardFilter.getDashboardId()));
 		}
 		else if(dashboardFilter.getDashboardTabId()!=-1)
 		{
-			context.put(ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(getDashboardTabId()));
+			context.put(ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(dashboardFilter.getDashboardTabId()));
 		}
 		dbFilterUpdateChain.execute();
 		return SUCCESS;
