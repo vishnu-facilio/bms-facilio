@@ -1500,7 +1500,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
-			c.addCommand( getAddOrUpdateDashboardFilterChain());
+			
 			return c;
 		}
 	    

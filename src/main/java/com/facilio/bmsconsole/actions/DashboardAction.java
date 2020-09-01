@@ -6536,18 +6536,14 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
 		
-		context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilter());
+		
 		
 		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
 		
 		
 		
-//		FacilioChain updateDashboardFilterChain=TransactionChainFactory.addOrUpdateDashboardFilterChain();
-//		FacilioContext updateDashboardFilterContext=updateDashboardChain.getContext();
-//		updateDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, getDashboardFilter());
-//		updateDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
-//		updateDashboardFilterChain.execute();
+
 		
 		return SUCCESS;
 	}
