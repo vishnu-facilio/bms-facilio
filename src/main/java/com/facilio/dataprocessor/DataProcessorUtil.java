@@ -116,6 +116,10 @@ public class DataProcessorUtil {
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
+            if(AccountUtil.getCurrentOrg().getOrgId() == 343) {
+                AccountUtil.getCurrentOrg().setLoggerLevel(2);
+                AccountUtil.getCurrentAccount().setLoggerLevel(2);
+            }
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
