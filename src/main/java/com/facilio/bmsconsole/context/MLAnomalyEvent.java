@@ -38,7 +38,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 				mlAlarmOccurence.setUpperAnomaly(upperAnomaly);
 			}
 		}
-		LOGGER.info("ML Alarm Occurence "+FieldUtil.getAsProperties(mlAlarmOccurence));
+
 		return super.updateAlarmOccurrenceContext(mlAlarmOccurence, context, add);
 	}
 	
