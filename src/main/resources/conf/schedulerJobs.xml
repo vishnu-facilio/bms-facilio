@@ -98,7 +98,7 @@
      <job name='InitiateSplitJob' classname='com.facilio.bmsconsole.jobs.InitiateSplitJob' transactionTimeout='7200000' />
      
      <job name='AddAnomalyEventJob' classname='com.facilio.bmsconsole.jobs.AddAnomalyEventJob' transactionTimeout='7200000' />
-     
+     <job name='AddSimpleAnomalyEventJob' classname='com.facilio.bmsconsole.jobs.AddSimpleAnomalyEventJob' transactionTimeout='7200000' />
      <job name='AddHistoricalMLReadingsJob' classname='com.facilio.bmsconsole.jobs.AddHistoricalMLReadingsJob' transactionTimeout='7200000' />
      
 	 <!-- Facilio DemoJob -->
