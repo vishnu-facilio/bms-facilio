@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -35,8 +36,10 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		if (controller == null && adjustTime) {
 			executeFormulae(context);
 		}
-		
-		publishReadingChangeMessage(context);
+
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 343l) {
+			publishReadingChangeMessage(context);
+		}
 
 		return false;
 	}
