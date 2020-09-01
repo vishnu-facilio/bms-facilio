@@ -46,9 +46,7 @@ public class ReportFactoryFields {
 					lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
 				}
 				}
-				else {
-					selectedFields.add(fields.get(fieldName));
-				}
+				selectedFields.add(fields.get(fieldName));
 			}
 			else {
 				selectedFields.add(fields.get(fieldName));
