@@ -256,6 +256,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			dbParamContext = new DBParamContext();
 			dbParamContext.setCriteria((Criteria)objects.get(1));
 		}
+		else if (objects.get(1) instanceof Map) {
+			dbParamContext = FieldUtil.getAsBeanFromMap((Map)objects.get(1), DBParamContext.class);
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		WorkflowV2Util.fillCriteriaField(dbParamContext.getCriteria(), module.getName());
@@ -291,6 +295,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			
 			if(dbParamContext.isSkipUnitConversion()) {
 				selectBuilder.skipUnitConversion();
+			}
+			if(dbParamContext.isSkipModuleCriteria()) {
+				selectBuilder.skipModuleCriteria();
 			}
 			
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {

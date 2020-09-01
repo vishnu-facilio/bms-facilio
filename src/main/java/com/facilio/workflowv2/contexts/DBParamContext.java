@@ -19,7 +19,14 @@ public class DBParamContext {
 	Criteria criteria;
 	Criteria fieldCriteria;
 	boolean skipUnitConversion;
-
+	boolean skipModuleCriteria;
+	
+	public boolean isSkipModuleCriteria() {
+		return skipModuleCriteria;
+	}
+	public void setSkipModuleCriteria(boolean skipModuleCriteria) {
+		this.skipModuleCriteria = skipModuleCriteria;
+	}
 	public boolean isSkipUnitConversion() {
 		return skipUnitConversion;
 	}
@@ -92,10 +99,17 @@ public class DBParamContext {
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
+	public void setField(String fieldName) {
+		this.fieldName = fieldName;
+	}
+	
 	public String getAggregateString() {
 		return aggregateString;
 	}
 	public void setAggregateString(String aggregateString) {
+		this.aggregateString = aggregateString;
+	}
+	public void setAggregation(String aggregateString) {
 		this.aggregateString = aggregateString;
 	}
 	public Pair<Integer, Integer> getRange() {
@@ -114,6 +128,9 @@ public class DBParamContext {
 		return sortOrder;
 	}
 	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	public void setOrderBy(String sortOrder) {
 		this.sortOrder = sortOrder;
 	}
 	
