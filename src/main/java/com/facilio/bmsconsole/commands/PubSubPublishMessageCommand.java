@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,28 +12,44 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.endpoints.PubSubManager;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PubSubPublishMessageCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(PubSubPublishMessageCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
 		Map<String, ReadingDataMeta> currentReadingMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
-		
+
 		if (currentReadingMap != null) {
+			int i=0;
 			Iterator<String> readingKeys = currentReadingMap.keySet().iterator();
+			long totalChangeCheckTime = 0;
+			long totalInstantJobAddTime = 0;
 			while (readingKeys.hasNext()) {
 				String readingKey = readingKeys.next();
-				
-				if (PubSubManager.getInstance().isReadingChangeSubscribed(AccountUtil.getCurrentOrg().getId(), readingKey)) {
+
+				long startTime = System.currentTimeMillis();
+				boolean readingChangeSubscribed = PubSubManager.getInstance().isReadingChangeSubscribed(AccountUtil.getCurrentOrg().getId(), readingKey);
+				long timeTaken = System.currentTimeMillis() - startTime;
+				LOGGER.debug(MessageFormat.format("Time taken to check {0} is {1}", readingKey, timeTaken));
+				totalChangeCheckTime += timeTaken;
+				if (readingChangeSubscribed) {
 					FacilioContext jobContext = new FacilioContext();
 					jobContext.put(FacilioConstants.ContextNames.PUBSUB_TOPIC, "readingChange");
 					jobContext.put(FacilioConstants.ContextNames.READING_KEY, readingKey);
 					jobContext.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap.get(readingKey));
-					
+
+					startTime = System.currentTimeMillis();
 					FacilioTimer.scheduleInstantJob("PubSubInstantJob", jobContext);
+					timeTaken = System.currentTimeMillis() - startTime;
+					LOGGER.debug(MessageFormat.format("Time taken to add instant job for {0} is {1}", readingKey, timeTaken));
+					totalInstantJobAddTime += timeTaken;
 				}
+				i++;
 			}
+			LOGGER.debug(MessageFormat.format("Total number of data points checked : {0}. Total time taken to check : {1}. Total time taken to add instant job : {2}", i, totalChangeCheckTime, totalInstantJobAddTime));
 		}
 		return false;
 	}
