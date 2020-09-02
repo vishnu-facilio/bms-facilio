@@ -23,6 +23,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -56,7 +57,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .beanClass(V3TransactionContext.class)
                 .select(selectFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), "1", CommonOperators.IS_NOT_EMPTY))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), "1", CommonOperators.IS_NOT_EMPTY))
+               // .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionResource"), "1", CommonOperators.IS_NOT_EMPTY))
                 .groupBy(groupingTimeField.getCompleteColumnName()+ "," +fieldMap.get("account").getCompleteColumnName()+"," + fieldMap.get("transactionResource").getCompleteColumnName() +"," +fieldMap.get("transactionRollUpFieldName").getCompleteColumnName() +"," + fieldMap.get("transactionRollUpModuleName").getCompleteColumnName())
                 ;
 
@@ -103,10 +104,12 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
                 .beanClass(V3Context.class)
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), String.valueOf(accountMap.get("id")), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("startDate"), String.valueOf(startDate), DateOperators.IS))
                 ;
 
+        if(MapUtils.isNotEmpty(resourceMap) && resourceMap.containsKey("id")){
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceMap.get("id")), PickListOperators.IS));
+        }
 
         List<Map<String, Object>> mapList = builder.getAsProps();
 

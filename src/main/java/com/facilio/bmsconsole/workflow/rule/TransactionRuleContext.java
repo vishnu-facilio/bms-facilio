@@ -128,7 +128,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
     }
 
     public Boolean isValidated(){
-        if(transactionConfigJson == null || StringUtils.isEmpty((String)transactionConfigJson.get("transactionDate")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionSourceModuleName"))  || StringUtils.isEmpty((String)transactionConfigJson.get("transactionResource")) || StringUtils.isEmpty((String)transactionConfigJson.get("account"))
+        if(transactionConfigJson == null || StringUtils.isEmpty((String)transactionConfigJson.get("transactionDate")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionSourceModuleName")) || StringUtils.isEmpty((String)transactionConfigJson.get("account"))
                 || StringUtils.isEmpty((String)transactionConfigJson.get("creationModuleName")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionAmount")) || StringUtils.isEmpty((String)transactionConfigJson.get("transactionType"))) {
             return  false;
         }
