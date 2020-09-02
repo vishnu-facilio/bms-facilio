@@ -134,7 +134,7 @@ public class LoggerAPI {
 					.select(fields)
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",""+ resourceId, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), ""+resourceId, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
@@ -152,7 +152,7 @@ public class LoggerAPI {
 					.select(fields)
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("dependentId"), ""+ dependentId, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",""+ resourceId, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), ""+resourceId, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
@@ -170,7 +170,7 @@ public class LoggerAPI {
 					.select(fields)
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("dependentId"), dependentIds, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",""+ resourceId, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), ""+resourceId, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();

@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,21 +69,26 @@ public class FormulaFieldDependenciesAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldDependenciesContext> getFormulaFieldDependencyByParentFormula(long parentFormulaResourceId) throws Exception {
+	public static List<Long> getFormulaFieldDependencyIdsByParentFormula(long parentFormulaResourceId) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldDependenciesFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFormulaFieldDependenciesFields())
+				.select(Collections.singletonList(fieldMap.get("dependentFormulaResourceId")))
 				.table(ModuleFactory.getFormulaFieldDependenciesModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentFormulaResourceId"), ""+ parentFormulaResourceId, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {			
-			List<FormulaFieldDependenciesContext> formulaFieldDependenciesContextList = FieldUtil.getAsBeanListFromMapList(props, FormulaFieldDependenciesContext.class);
-			return formulaFieldDependenciesContextList;
+		List<Long> formulaFieldDependencyIds = new ArrayList<Long>();
+		
+		if (props != null && !props.isEmpty()) {	
+			for(Map<String, Object> prop : props) {
+				if(prop.get("dependentFormulaResourceId") != null) {
+					formulaFieldDependencyIds.add((long) prop.get("dependentFormulaResourceId"));
+				}
+			}	
 		}
-		return null;
+		return formulaFieldDependencyIds;
 	}
 	
 	public static List<FormulaFieldDependenciesContext> getFormulaFieldDependencyByDependentFormula(long dependentFormulaResourceId) throws Exception {
@@ -98,6 +106,28 @@ public class FormulaFieldDependenciesAPI {
 			return formulaFieldDependenciesContextList;
 		}
 		return null;
+	}
+	
+	public static List<Long> getFormulaFieldResourceParentIdsByDependentFormula(long dependentFormulaResourceId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldDependenciesFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(fieldMap.get("parentFormulaResourceId")))
+				.table(ModuleFactory.getFormulaFieldDependenciesModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dependentFormulaResourceId"), ""+ dependentFormulaResourceId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<Long> formulaFieldResourceParentIds = new ArrayList<Long>();
+		
+		if (props != null && !props.isEmpty()) {	
+			for(Map<String, Object> prop : props) {
+				if(prop.get("parentFormulaResourceId") != null) {
+					formulaFieldResourceParentIds.add((long) prop.get("parentFormulaResourceId"));
+				}
+			}	
+		}
+		return formulaFieldResourceParentIds;
 	}
 	
 	public static FormulaFieldDependenciesContext getFormulaFieldDependenciesByFieldAndResource(long fieldId, long resourceId) throws Exception {

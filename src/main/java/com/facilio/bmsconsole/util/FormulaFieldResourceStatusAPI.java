@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -77,7 +79,7 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ""+ ids, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {			
@@ -94,9 +96,9 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), StringUtils.join(types, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ""+ ids, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {			
@@ -104,6 +106,30 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 			return formulaFieldResourceStatusContextList;
 		}
 		return null;
+	}
+	
+	public static List<Long> getFormulaFieldResourceStatusIdsByFrequencyAndIds(List<Long> ids, List<Integer> types) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(fieldMap.get("id")))
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), StringUtils.join(types, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<Long> formulaFieldResourceIds = new ArrayList<Long>();
+		
+		if (props != null && !props.isEmpty()) {	
+			for(Map<String, Object> prop : props) {
+				if(prop.get("id") != null) {
+					formulaFieldResourceIds.add((long) prop.get("id"));
+				}
+			}	
+		}
+		return formulaFieldResourceIds;
 	}
 	
 	public static List<FormulaFieldResourceStatusContext> getActiveFormulaFieldResourceStatusByIds(List<Long> ids) throws Exception {
@@ -115,7 +141,7 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 					.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
 					.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ""+ ids, NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {			
@@ -125,6 +151,35 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		}	
 		
 		return null;
+	}
+	
+	public static long getCompletedFormulaFieldResourceStatusCountByIds(List<Long> ids) throws Exception {
+		
+		long count = 0;
+		if(ids != null && !ids.isEmpty())
+		{
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+			
+			FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("id"));
+			countField.setName("count");			
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(Collections.singletonList(countField))
+					.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty() && props.get(0) != null) {	
+				Map<String, Object> prop = props.get(0);
+				if(prop.get("count") != null)
+				{
+					count = (long) prop.get("count");
+					return count;
+				}
+			}		
+		}	
+		return count;
 	}
 
 	public static List<FormulaFieldResourceStatusContext> getFormulaFieldResourceStatusByFormula(long formulaFieldId) throws Exception {
@@ -209,6 +264,36 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
 		updateBuilder.update(props);
+	}
+	
+	public static int updateInProgressFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
+		int rowsUpdated = updateBuilder.update(props);
+		return rowsUpdated;
+	}
+	
+	public static int updateCompletedFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+			
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
+		int rowsUpdated = updateBuilder.update(props);
+		return rowsUpdated;
 	}
 	
 	public static void updateIsLeafField(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {

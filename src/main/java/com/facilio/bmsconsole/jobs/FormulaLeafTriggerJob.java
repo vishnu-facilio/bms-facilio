@@ -33,10 +33,7 @@ public class FormulaLeafTriggerJob extends FacilioJob{
 		
 		if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {			
 			for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
-			{
-				formulaResourceAtLeaf.setStatus(FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal());
-				FormulaFieldResourceStatusAPI.updateFormulaFieldResourceStatus(formulaResourceAtLeaf);
-				
+			{		
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, formulaResourceAtLeaf.getId());
 				context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);

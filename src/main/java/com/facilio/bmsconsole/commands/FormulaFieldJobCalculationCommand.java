@@ -5,7 +5,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,9 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
@@ -59,45 +63,53 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 		
 		formulaResourceId = (long) context.get(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID);
 		frequencyTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES);
+		
 		long jobStartTime = System.currentTimeMillis();
 			
 		if(formulaResourceId != -1)
 		{				
 			formulaResourceStatusContext = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusById(formulaResourceId);
-			List<FormulaFieldDependenciesContext> childDependencies = FormulaFieldDependenciesAPI.getFormulaFieldDependencyByParentFormula(formulaResourceId);
+			List<Long> childDependencyIds = FormulaFieldDependenciesAPI.getFormulaFieldDependencyIdsByParentFormula(formulaResourceId);
 				
-			if(formulaResourceStatusContext != null)
-			{						
-				List<Long> childFormulaResourceIds = null;
-				if(childDependencies != null || !childDependencies.isEmpty())
+			if(formulaResourceStatusContext != null && formulaResourceStatusContext.getStatus() == FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal())
+			{
+				if(formulaResourceId == 14)
 				{
-					System.out.println("Entering1 for formulaResourceId -- "+formulaResourceId);
-					childFormulaResourceIds = childDependencies.stream().map(childDependency -> childDependency.getDependentFormulaResourceId()).filter(childDependency -> childDependency != null).collect(Collectors.toList());
-					List<FormulaFieldResourceStatusContext> childFormulaResourceStatusList = FormulaFieldResourceStatusAPI.getActiveFormulaFieldResourceStatusByIds(childFormulaResourceIds);
+					System.out.println("Entered for formulaResourceId -- ");
+				}
+				
+				formulaResourceStatusContext.setActualStartTime(DateTimeUtil.getCurrenTime());	
+				long childCompletedCount = FormulaFieldResourceStatusAPI.getCompletedFormulaFieldResourceStatusCountByIds(childDependencyIds);
 					
-					if(childFormulaResourceStatusList == null || childFormulaResourceStatusList.isEmpty())
-					{
-						System.out.println("Entering2 for formulaResourceId -- "+formulaResourceId);
-						long formulaId = formulaResourceStatusContext.getFormulaFieldId();
-						FormulaFieldContext formula = FormulaFieldAPI.getActiveFormulaField(formulaId, true);
-						if(formula != null && !timedOut)
-						{	
-							System.out.println("Entering for formulaResourceId -- "+formulaResourceId);	
-							formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-							calculateScheduledFormula(formula,formulaResourceStatusContext);
+				if((int)childCompletedCount == childDependencyIds.size())
+				{
+					long formulaId = formulaResourceStatusContext.getFormulaFieldId();
+					FormulaFieldContext formula = FormulaFieldAPI.getActiveFormulaField(formulaId, true);
+					if(formula != null && !timedOut)
+					{							
+						formulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal());
+						int rowsUpdated = NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateCompletedFormulaFieldResourceStatus(formulaResourceStatusContext));	
+						if (rowsUpdated == 1)
+						{
 							currentStatusUpdate = true;
-							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);
-							System.out.println("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);
-						}			
-					}
-					else
-					{			
-						System.out.println("Failing for formulaResourceId --"+formulaResourceId);		
-					}
+							formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+							System.out.println("Entered for formulaResourceId -- "+formulaResourceId);
+							calculateScheduledFormula(formula,formulaResourceStatusContext);
+							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
+						}
+						else
+						{
+							System.out.println("Failed -- "+formulaResourceId);
+						}
+					}			
+				}
+				else
+				{			
+					System.out.println("Failed for formulaResourceId -- "+formulaResourceId);
+				}
 				}	
 			}												
-		}
-		
+			
 		return false;
 	}
 	
@@ -107,28 +119,17 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 		{
 			formulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal());
 			formulaResourceStatusContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-			FormulaFieldResourceStatusAPI.updateFormulaFieldResourceStatus(formulaResourceStatusContext);
+			FormulaFieldResourceStatusAPI.updateInProgressFormulaFieldResourceStatus(formulaResourceStatusContext);
 			
-			List<FormulaFieldDependenciesContext> parentDependentFormulaeList = FormulaFieldDependenciesAPI.getFormulaFieldDependencyByDependentFormula(formulaResourceId);
-			if(parentDependentFormulaeList != null && !parentDependentFormulaeList.isEmpty())
+			List<Long> parentFormulaResourceIds = FormulaFieldDependenciesAPI.getFormulaFieldResourceParentIdsByDependentFormula(formulaResourceId);
+			if(parentFormulaResourceIds != null && !parentFormulaResourceIds.isEmpty())
 			{
-				List<Long> parentFormulaResourceIds = parentDependentFormulaeList.stream().map(parentFormulaDependency -> parentFormulaDependency.getParentFormulaResourceId()).filter(parentFormulaDependency -> parentFormulaDependency != null).collect(Collectors.toList());
-				List<FormulaFieldResourceStatusContext> typedParentFormulaResourceStatusList = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusByFrequencyAndIds(parentFormulaResourceIds, frequencyTypes);
-				
-				if(typedParentFormulaResourceStatusList != null && !typedParentFormulaResourceStatusList.isEmpty())
-				{
-					System.out.println("Triggering parents formulaResourceId --"+typedParentFormulaResourceStatusList);	
-					List<Long> typedParentFormulaResourceStatusIds = new ArrayList<Long>();	
-					for(FormulaFieldResourceStatusContext typedParentFormulaResourceStatusContext: typedParentFormulaResourceStatusList)
-					{
-						typedParentFormulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal());
-						typedParentFormulaResourceStatusContext.setActualStartTime(DateTimeUtil.getCurrenTime());
-						FormulaFieldResourceStatusAPI.updateFormulaFieldResourceStatus(typedParentFormulaResourceStatusContext);
-						typedParentFormulaResourceStatusIds.add(typedParentFormulaResourceStatusContext.getId());
-					}
-					
+				List<Long> typedParentFormulaResourceStatusIds = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusIdsByFrequencyAndIds(parentFormulaResourceIds, frequencyTypes);
+				if(typedParentFormulaResourceStatusIds != null && !typedParentFormulaResourceStatusIds.isEmpty())
+				{					
 					for(Long typedParentFormulaResourceStatusId :typedParentFormulaResourceStatusIds)
 					{
+						System.out.println("Triggering parents for --"+ formulaResourceId + " parent --" +typedParentFormulaResourceStatusId);	
 						FacilioContext context = new FacilioContext();
 						context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, typedParentFormulaResourceStatusId);
 						context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
@@ -205,37 +206,5 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			}
 		}
 		return true;
-	}
-	
-	private List<Integer> getFrequencyTypesToBeFetched() {
-		List<Integer> types = new ArrayList<Integer>();
-		types.add(FacilioFrequency.HOURLY.getValue());
-		
-		ZonedDateTime zdt = DateTimeUtil.getDateTime();
-		
-		if (zdt.getHour() == 0) {
-			types.add(FacilioFrequency.DAILY.getValue());
-			if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
-				types.add(FacilioFrequency.WEEKLY.getValue());
-			}
-			
-			if (zdt.getDayOfMonth() == 1) {
-				types.add(FacilioFrequency.MONTHLY.getValue());
-				
-				if (zdt.getMonth() == Month.JANUARY) {
-					types.add(FacilioFrequency.QUARTERTLY.getValue());
-					types.add(FacilioFrequency.HALF_YEARLY.getValue());
-					types.add(FacilioFrequency.ANNUALLY.getValue());
-				}
-				else if (zdt.getMonth() == Month.JULY) {
-					types.add(FacilioFrequency.QUARTERTLY.getValue());
-					types.add(FacilioFrequency.HALF_YEARLY.getValue());
-				}
-				else if (zdt.getMonth() == Month.APRIL || zdt.getMonth() == Month.OCTOBER) {
-					types.add(FacilioFrequency.QUARTERTLY.getValue());
-				}
-			}
-		}
-		return types;
 	}
 }
