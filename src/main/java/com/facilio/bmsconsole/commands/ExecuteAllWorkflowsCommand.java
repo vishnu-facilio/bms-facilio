@@ -92,7 +92,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
 					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
 					if (isParallelRuleExecutionProp != null && !isParallelRuleExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelRuleExecutionProp)) {
-						isParallelRuleExecution = Boolean.parseBoolean(isParallelRuleExecutionProp) || isParallelRuleExecution;
+						isParallelRuleExecution = Boolean.parseBoolean(isParallelRuleExecutionProp) && isParallelRuleExecution;
 					}
 				}
 			}
