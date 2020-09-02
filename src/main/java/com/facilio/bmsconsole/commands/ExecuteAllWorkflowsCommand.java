@@ -87,7 +87,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			Boolean stopParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION);
 			stopParallelRuleExecution = stopParallelRuleExecution != null ? stopParallelRuleExecution : Boolean.FALSE;
 
-			if( !stopParallelRuleExecution) {
+			if(FacilioProperties.isProduction() && !stopParallelRuleExecution) {
 				Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
 				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
 					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
