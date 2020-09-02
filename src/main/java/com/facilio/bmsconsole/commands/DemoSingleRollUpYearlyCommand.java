@@ -260,37 +260,36 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 				try {
 					LOGGER.info("####DemoSingleRollUpYearlyCommand Entered ReadingModuleName : " + readingModule.getName() +" ReadingModule Count: " + ++i);
 					Map<String, FacilioField> allModuleFields = FieldFactory.getAsMap(modBean.getAllFields(readingModule.getName()));
-					
-					SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-		    				.module(readingModule)
-		    				.select(Collections.singletonList(FieldFactory.getIdField(readingModule)))
-		    				.table(readingModuleTableName)
-		    				.beanClass(ReadingContext.class)
-		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), delStart+","+delEnd, DateOperators.BETWEEN))
-		    				.orderBy("ID")
-							.limit(30000);
-								
-				   try {
-					   while (true) {
-							List<Map<String, Object>> props = selectBuilder.getAsProps();
+													
+					while (true) {					   
+					   SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+			    				.module(readingModule)
+			    				.select(Collections.singletonList(FieldFactory.getIdField(readingModule)))
+			    				.table(readingModuleTableName)
+			    				.beanClass(ReadingContext.class)
+			    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), delStart+","+delEnd, DateOperators.BETWEEN))
+			    				.orderBy("ID")
+								.limit(30000);
+					   
+						List<Map<String, Object>> props = selectBuilder.getAsProps();
 
-							if (CollectionUtils.isEmpty(props)) {
-								break;
-							}
-							List<Long> ids = props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
-							
-							DeleteRecordBuilder<ReadingContext> deleteBuilder = new DeleteRecordBuilder<ReadingContext>()
-									.module(readingModule)
-									.table(readingModule.getTableName());
-							int deletionCount = deleteBuilder.batchDeleteById(ids);
-							
-							LOGGER.info("###DemoSingleRollUpYearlyCommand " + deletionCount + " of rows deletionCount in  " + readingModuleTableName + " successfully. delStart: "
-									+ delStart + " delEnd: " + delEnd);
+						if (CollectionUtils.isEmpty(props)) {
+							break;
 						}
-						   				 
-					} catch (Exception e) {
-						LOGGER.error("###Exception occurred in Delete DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
-						throw e;
+						List<Long> ids = props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
+						try {
+						DeleteRecordBuilder<ReadingContext> deleteBuilder = new DeleteRecordBuilder<ReadingContext>()
+								.module(readingModule)
+								.table(readingModule.getTableName());
+						int deletionCount = deleteBuilder.batchDeleteById(ids);
+						
+						LOGGER.info("###DemoSingleRollUpYearlyCommand " + deletionCount + " of rows deletionCount in  " + readingModuleTableName + " successfully. delStart: "
+								+ delStart + " delEnd: " + delEnd);
+						}
+						catch (Exception e) {
+							LOGGER.error("###Exception occurred in Delete DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
+							throw e;
+						}
 					}		
 				}
 				catch (Exception e) {
