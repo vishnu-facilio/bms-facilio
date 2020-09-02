@@ -244,6 +244,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 					Iterator it = records.iterator();
 					long totalInstantJobAddTime = 0;
 					int jobs = 0;
+
 					while (it.hasNext()) {
 						Object record = it.next();		
 						if(isParallelRuleExecution) {
@@ -262,6 +263,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 //								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
+							long timeTaken = System.currentTimeMillis() - processStartTime;
+							LOGGER.debug(MessageFormat.format("Time taken for adding instant job : {0}", timeTaken));
+							totalInstantJobAddTime += timeTaken;
 						}
 						else {
 							List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
@@ -270,6 +274,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 						}		
 					}
 					LOGGER.debug(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
+
 				}
 				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 			}
