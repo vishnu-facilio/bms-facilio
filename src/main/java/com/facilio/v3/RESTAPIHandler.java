@@ -16,6 +16,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.Constants;
@@ -254,6 +255,20 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         this.setData(FieldUtil.getAsJSON(fetchAfterSave));
     }
 
+    private Map<String, FacilioField> getFileFields(String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        Map<String, FacilioField> fieldMap = new HashMap<>();
+        List<FacilioField> fileFields = new ArrayList<>();
+        for (FacilioField f : fields) {
+            if (f instanceof FileField) {
+                fieldMap.put(f.getName()+"Id", f);
+            }
+        }
+        return fieldMap;
+    }
+
     private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
         Object record = getRecord(moduleName, id);
         FacilioModule module = ChainUtil.getModule(moduleName);
@@ -264,8 +279,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
 
         JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
 
+        Map<String, FacilioField> fileFields = getFileFields(moduleName);
+
         Set<String> keys = patchObj.keySet();
         for (String key: keys) {
+            FacilioField fileField = fileFields.get(key);
+            if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
+                summaryRecord.put(fileField.getName(), patchObj.get(key));
+            }
             summaryRecord.put(key, patchObj.get(key));
         }
 
