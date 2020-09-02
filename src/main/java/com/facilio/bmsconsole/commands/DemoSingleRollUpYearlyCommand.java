@@ -12,8 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -26,8 +28,10 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -35,6 +39,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -63,28 +68,38 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		List<FacilioModule> readingModules = fetchAllReadingModules();
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
+		//del Start
+		ZonedDateTime thisYearDelStartWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 41l
+		ZonedDateTime thisYearDelEndWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 40l)); // 43l
+		ZonedDateTime thisYearDelEndWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(thisYearDelEndWeekStartZdt);
+
+		long thisYearDelStartWeekStart = thisYearDelStartWeekStartZdt.toInstant().toEpochMilli();
+		long thisYearDelEndWeekEnd = thisYearDelEndWeekEndZdt.toInstant().toEpochMilli();
+		deleteTtimeColumns(thisYearDelStartWeekStart,thisYearDelEndWeekEnd,readingModules,readingTableNamesVsColumns);
+		//del End
+		
 		//MachineStalk to be done from 18thWeek to 25th in firstcut.
-		for(int currentWeek = 38; currentWeek <= 43; currentWeek++) 
-		{	
-			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
-			ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
-			ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
-			
-			long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
-			long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
-			long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
-			long weekDiff = (thisYearWeekStart - lastYearWeekStart);
-			
-			try {
-				rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
-				LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
-						"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
-			}
-			catch(Exception e) {
-				LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. CurrentWeek is:  " + currentWeek);
-				throw e;
-			} 	
-		}
+//		for(int currentWeek = 38; currentWeek <= 43; currentWeek++) 
+//		{	
+//			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
+//			ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
+//			ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
+//			
+//			long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
+//			long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
+//			long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
+//			long weekDiff = (thisYearWeekStart - lastYearWeekStart);
+//			
+//			try {
+//				rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
+//				LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
+//						"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
+//			}
+//			catch(Exception e) {
+//				LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. CurrentWeek is:  " + currentWeek);
+//				throw e;
+//			} 	
+//		}
         
 		LOGGER.info("####DemoSingleRollUpYearlyCommand time taken to complete : " + (System.currentTimeMillis()-jobStartTime));
 		
@@ -227,5 +242,65 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
         return readingTableNamesVsColumns;
 	}
 
+	private void deleteTtimeColumns(long delStart, long delEnd, List<FacilioModule> readingModules, HashMap<String, List<String>> readingTableNamesVsColumns) throws Exception 
+	{
+		if(readingModules == null || readingModules.isEmpty() || readingTableNamesVsColumns == null || readingTableNamesVsColumns.isEmpty() || delStart < 0 || delEnd < 0) {
+			return;
+		}
+		
+		LOGGER.info("####DemoSingleRollUpYearlyCommand ReadingModules size : " + readingModules.size());
+		int i=0;		
+		for(FacilioModule readingModule :readingModules) 
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String readingModuleTableName = readingModule.getTableName();
+			
+			if(readingTableNamesVsColumns.containsKey(readingModuleTableName)) 
+			{
+				try {
+					LOGGER.info("####DemoSingleRollUpYearlyCommand Entered ReadingModuleName : " + readingModule.getName() +" ReadingModule Count: " + ++i);
+					Map<String, FacilioField> allModuleFields = FieldFactory.getAsMap(modBean.getAllFields(readingModule.getName()));
+					
+					SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+		    				.module(readingModule)
+		    				.select(Collections.singletonList(FieldFactory.getIdField(readingModule)))
+		    				.table(readingModuleTableName)
+		    				.beanClass(ReadingContext.class)
+		    				.andCondition(CriteriaAPI.getCondition(allModuleFields.get("ttime"), delStart+","+delEnd, DateOperators.BETWEEN))
+		    				.orderBy("ID")
+							.limit(30000);
+								
+				   try {
+					   while (true) {
+							List<Map<String, Object>> props = selectBuilder.getAsProps();
+
+							if (CollectionUtils.isEmpty(props)) {
+								break;
+							}
+							List<Long> ids = props.stream().map(p -> (Long) p.get("id")).collect(Collectors.toList());
+							
+							DeleteRecordBuilder<ReadingContext> deleteBuilder = new DeleteRecordBuilder<ReadingContext>()
+									.module(readingModule)
+									.table(readingModule.getTableName());
+							int deletionCount = deleteBuilder.batchDeleteById(ids);
+							
+							LOGGER.info("###DemoSingleRollUpYearlyCommand " + deletionCount + " of rows deletionCount in  " + readingModuleTableName + " successfully. delStart: "
+									+ delStart + " delEnd: " + delEnd);
+						}
+						   				 
+					} catch (Exception e) {
+						LOGGER.error("###Exception occurred in Delete DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
+						throw e;
+					}		
+				}
+				catch (Exception e) {
+					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. ReadingModule: " + readingModule + " readingModuleTableName " + readingModuleTableName + "Exception: " +e);
+					throw e;
+				}	
+			}	
+		}
+		
+		LOGGER.info("####DemoSingleRollUpYearlyCommand Current Week ReadingModules Deleted");						
+	}
 
 }
