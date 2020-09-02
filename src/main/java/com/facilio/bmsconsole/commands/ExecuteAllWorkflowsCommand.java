@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -192,38 +193,63 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 				}
 
-				LOGGER.debug("Number of entry: " + (workflowRules == null ? 0 : workflowRules.size()));
+				LOGGER.debug(MessageFormat.format("Number of (rules, records) : ({0}, {1})",
+								(workflowRules == null ? 0 : workflowRules.size()),
+								(entry.getValue() == null ? 0 : entry.getValue().size())
+												)
+							);
 
 				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				if (workflowRules != null && !workflowRules.isEmpty()) {
-					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+					long processStartTime = System.currentTimeMillis();
 					LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = WorkflowRuleAPI.groupWorkflowRulesByRuletype(workflowRules);
 					List<WorkflowRuleContext> workflowRulesExcludingReadingRule = new LinkedList<WorkflowRuleContext>();
 					List<WorkflowRuleContext> readingRules = new LinkedList<WorkflowRuleContext>();
 					WorkflowRuleAPI.groupWorkflowRulesByInstantJobs(ruleTypeVsWorkflowRules, workflowRulesExcludingReadingRule, readingRules);
+					LOGGER.debug(MessageFormat.format("Time taken for splitting rules : {0}", System.currentTimeMillis() - processStartTime));
 					
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
+					long totalInstantJobAddTime = 0;
+					int jobs = 0;
 					while (it.hasNext()) {
 						Object record = it.next();		
-						if(isParallelRuleExecution) {							
+						if(isParallelRuleExecution) {
+							processStartTime = System.currentTimeMillis();
 							if(readingRules != null && !readingRules.isEmpty())  {
-								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));			
+								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));
+								jobs++;
+								long timeTaken = System.currentTimeMillis() - processStartTime;
+								LOGGER.debug(MessageFormat.format("Time taken for adding reading instant job : {0}", timeTaken));
+								totalInstantJobAddTime += timeTaken;
 							}
 							if(workflowRulesExcludingReadingRule != null && !workflowRulesExcludingReadingRule.isEmpty())  {
 								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getNonReadingRuleWorkflowRuleTypes(ruleTypes)));
+								jobs++;
+								long timeTaken = System.currentTimeMillis() - processStartTime;
+								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
+								totalInstantJobAddTime += timeTaken;
 							}
 						}
 						else {
 							List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-							Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
+							Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, getOrgPlaceHolders());
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
 						}		
 					}
+					LOGGER.debug(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
 				}
 				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 			}
 		}
+	}
+
+	private Map<String, Object> orgPlaceHolders = null;
+	private Map<String, Object> getOrgPlaceHolders() throws Exception {
+		if (orgPlaceHolders == null) {
+			orgPlaceHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+		}
+		return orgPlaceHolders;
 	}
 
 	private String getPrintDebug() {
