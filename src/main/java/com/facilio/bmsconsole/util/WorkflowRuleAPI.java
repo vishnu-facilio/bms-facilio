@@ -1065,7 +1065,7 @@ public class WorkflowRuleAPI {
 		return ruleTypeList.toArray(nonReadingRuleTypes);
 	}
 	
-	public static FacilioContext addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, Context context, RuleType... ruleTypes) {
+	public static FacilioContext addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, FacilioContext context, RuleType... ruleTypes) {
 		
 		FacilioContext instantParallelWorkflowRuleJobContext = new FacilioContext();
 		HashMap<String, Object> workflowRuleExecutionMap = new HashMap<String, Object>();	
@@ -1075,16 +1075,17 @@ public class WorkflowRuleAPI {
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RULE_TYPES, ruleTypes);
 		
-		context.remove(FacilioConstants.ContextNames.MODULE_NAME);
-		context.remove(FacilioConstants.ContextNames.RECORD_MAP);
-		context.remove(FacilioConstants.ContextNames.RECORD_LIST);
-		context.remove(FacilioConstants.ContextNames.RECORD);
-		context.remove(FacilioConstants.ContextNames.CHANGE_SET_MAP);
-		context.remove(FacilioConstants.ContextNames.CHANGE_SET);
-		context.remove(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
-		context.remove(FacilioConstants.ContextNames.EVENT_TYPE);
+		FacilioContext newContext = (FacilioContext) context.clone();
+		newContext.remove(FacilioConstants.ContextNames.MODULE_NAME);
+		newContext.remove(FacilioConstants.ContextNames.RECORD_MAP);
+		newContext.remove(FacilioConstants.ContextNames.RECORD_LIST);
+		newContext.remove(FacilioConstants.ContextNames.RECORD);
+		newContext.remove(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+		newContext.remove(FacilioConstants.ContextNames.CHANGE_SET);
+		newContext.remove(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+		newContext.remove(FacilioConstants.ContextNames.EVENT_TYPE);
 
-		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, context);
+		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, newContext);
 		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);
 		return instantParallelWorkflowRuleJobContext;		
 	}
