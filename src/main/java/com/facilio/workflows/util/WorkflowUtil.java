@@ -57,6 +57,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
@@ -365,7 +366,11 @@ public class WorkflowUtil {
 			workflowContext.fillFunctionHeaderFromScript();
 			List<Object> params = new ArrayList<>();
 			for(ParameterContext parameterContext : workflowContext.getParameters()) {
-				params.add(paramMap.get(parameterContext.getName()));
+				Object objectValue = paramMap.get(parameterContext.getName());
+				if(objectValue instanceof ModuleBaseWithCustomFields) {
+					objectValue = FieldUtil.getAsProperties(objectValue);
+				}
+				params.add(objectValue);
 			}
 			workflowContext.setParams(params);
 		}
