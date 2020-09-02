@@ -59,6 +59,7 @@ public enum CardLayout {
 	GAUGE_LAYOUT_3 ("gauge_layout_3"),
 	GAUGE_LAYOUT_4 ("gauge_layout_4"),
 	GAUGE_LAYOUT_5 ("gauge_layout_5"),
+	GAUGE_LAYOUT_6 ("gauge_layout_6"),
 	ENERGYCARD_LAYOUT_1 ("energycard_layout_1"),
 	ENERGYCOST_LAYOUT_1 ("energycost_layout_1"),
 	CARBONCARD_LAYOUT_1 ("carboncard_layout_1"),
