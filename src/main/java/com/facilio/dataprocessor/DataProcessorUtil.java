@@ -113,6 +113,8 @@ public class DataProcessorUtil {
      */
     public boolean processRecord(FacilioRecord record) {
         long recordId = record.getId();
+        String threadName = Thread.currentThread().getName();
+        Thread.currentThread().setName(recordId+"-"+threadName);
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
@@ -331,6 +333,7 @@ public class DataProcessorUtil {
             } catch (Exception e) {
                 LOGGER.info("record: " + recordId);
             }
+            Thread.currentThread().setName(threadName);
         }
         // LOGGER.info(" processing successful");
         return true;
