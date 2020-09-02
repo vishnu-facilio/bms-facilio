@@ -8505,6 +8505,21 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getBaseSchedulerFields() {
+        FacilioModule module = ModuleFactory.getBaseSchedulerModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+        fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+        fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+        fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("generatedUptoTime", "GENERATED_UPTO_TIME", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getPrinterFields() {
         FacilioModule module = ModuleFactory.getPrinterModule();

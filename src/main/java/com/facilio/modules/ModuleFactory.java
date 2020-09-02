@@ -3601,6 +3601,14 @@ public class ModuleFactory {
 		pmTriggers.setTableName("VisitorLog_Triggers");
 		return pmTriggers;
 	}
+	
+	public static FacilioModule getBaseSchedulerModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("baseScheduler");
+		pmTriggers.setDisplayName("Base Scheduler");
+		pmTriggers.setTableName("BaseScheduler");
+		return pmTriggers;
+	}
 
 	public static FacilioModule getAgentVersionLogModule() {
 		FacilioModule agentVersionLogModule = new FacilioModule();

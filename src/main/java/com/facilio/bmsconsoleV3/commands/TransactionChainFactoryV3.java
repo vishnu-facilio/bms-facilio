@@ -43,6 +43,7 @@ import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCo
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.AddNdaForVisitorLogModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateScheduleInRecurringVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromBaseVisitCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeInviteVisitorStateCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeVisitorLogStateCommandV3;
@@ -192,6 +193,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PreFillInviteVisitorCommandV3()); 
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+
 
         return c;
     }
@@ -213,6 +216,8 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
+		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+
         return c;
     }
 
