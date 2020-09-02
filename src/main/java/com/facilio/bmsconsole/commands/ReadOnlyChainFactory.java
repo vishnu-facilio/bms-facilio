@@ -906,7 +906,6 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
-		chain.addCommand(new GetPurchaseOrderListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
 		chain.addCommand(new SetPurchaseOrderLineItemsCommand());
