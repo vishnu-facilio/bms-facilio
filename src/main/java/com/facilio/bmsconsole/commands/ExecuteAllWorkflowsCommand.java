@@ -263,9 +263,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 //								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
-							long timeTaken = System.currentTimeMillis() - processStartTime;
-							LOGGER.debug(MessageFormat.format("Time taken for adding instant job : {0}", timeTaken));
-							totalInstantJobAddTime += timeTaken;
 						}
 						else {
 							List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
