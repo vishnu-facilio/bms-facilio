@@ -74,7 +74,7 @@ public class RulePageFactory extends PageFactory {
 				List<ActionContext> actions = alarmRule.getAlarmTriggerRule().getActions();
 				for (ActionContext action: actions) {
 					if (action.template.getOriginalTemplate() != null && action.template.getOriginalTemplate().containsKey("impact")) {
-						Tab tab5 = page.new Tab("rule_impact", "rule_impact");
+						Tab tab5 = page.new Tab("rule_impact");
 						page.addTab(tab5);
 						Section tab5Sec1 = page.new Section();
 						tab5.addSection(tab5Sec1);
