@@ -905,8 +905,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
 		chain.addCommand(new GetPurchaseOrderListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new LookupPrimaryFieldHandlingCommand());
 		chain.addCommand(new SetPurchaseOrderLineItemsCommand());
 		return chain;
 	}
@@ -916,6 +918,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new FetchPurchaseOrderDetailsCommand());
 		return c;
 	}
