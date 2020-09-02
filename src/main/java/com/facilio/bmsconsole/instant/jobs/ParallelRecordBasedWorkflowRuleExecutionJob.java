@@ -31,19 +31,20 @@ public class ParallelRecordBasedWorkflowRuleExecutionJob extends InstantJob{
 			workflowRuleExecutionMap = (HashMap<String, Object>) context.get(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP);	
 			if(workflowRuleExecutionMap != null && !workflowRuleExecutionMap.isEmpty()) {
 				
-				FacilioContext recordContextForRuleExecution = (FacilioContext) context.get(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION);
-
-				WorkflowRuleContext.RuleType[] ruleTypes = (WorkflowRuleContext.RuleType[]) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RULE_TYPES);		
 				FacilioContext filteredContextForRecordSpecificRulesExecution = new FacilioContext();
+
+				FacilioContext recordContextForRuleExecution = (FacilioContext) context.get(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION);
+				if(recordContextForRuleExecution != null && !recordContextForRuleExecution.isEmpty()) {
+					filteredContextForRecordSpecificRulesExecution.putAll(recordContextForRuleExecution);
+				}
+				
+				WorkflowRuleContext.RuleType[] ruleTypes = (WorkflowRuleContext.RuleType[]) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RULE_TYPES);		
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.MODULE_NAME, (String)workflowRuleExecutionMap.get(FacilioConstants.ContextNames.MODULE_NAME));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.RECORD, (Object) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.RECORD));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.CHANGE_SET, (Map<Long, List<UpdateChangeSet>>)  workflowRuleExecutionMap.get(FacilioConstants.ContextNames.CHANGE_SET));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, (List<EventType>) workflowRuleExecutionMap.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST));
 				filteredContextForRecordSpecificRulesExecution.put(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION, true);
-			
-				if(recordContextForRuleExecution != null && !recordContextForRuleExecution.isEmpty()) {
-					filteredContextForRecordSpecificRulesExecution.putAll(recordContextForRuleExecution);
-				}
+						
 				FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeSpecifcRuleTypeWorkflowsForReadingChain(ruleTypes);
 				executeWorkflowChain.execute(filteredContextForRecordSpecificRulesExecution);
 				

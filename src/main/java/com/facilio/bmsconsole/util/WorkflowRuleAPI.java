@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -17,6 +19,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -29,6 +32,8 @@ import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
+
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1043,7 +1048,48 @@ public class WorkflowRuleAPI {
 		RuleType[] ruleTypes = new RuleType[ruleTypeList.size()];
 		return ruleTypeList.toArray(ruleTypes);
 	}
+	
+	public static RuleType[] getNonReadingRuleWorkflowRuleTypes(RuleType[] ruleTypes){
+		ArrayList<RuleType> ruleTypeList = new ArrayList<RuleType>();
+		List<RuleType> readingRuleTypes = Arrays.asList(getAllowedInstantJobWorkflowRuleTypes());
+		if(readingRuleTypes != null && !readingRuleTypes.isEmpty()) {
+			for(RuleType ruleType: ruleTypes) 
+			{
+				if(!readingRuleTypes.contains(ruleType)) {
+					ruleTypeList.add(ruleType);
+				}	
+			}
+		}
+		
+		RuleType[] nonReadingRuleTypes = new RuleType[ruleTypeList.size()];
+		return ruleTypeList.toArray(nonReadingRuleTypes);
+	}
+	
+	public static FacilioContext addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, Context context, RuleType... ruleTypes) {
+		
+		FacilioContext instantParallelWorkflowRuleJobContext = new FacilioContext();
+		HashMap<String, Object> workflowRuleExecutionMap = new HashMap<String, Object>();	
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RECORD, record);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.CHANGE_SET, currentChangeSet);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
+		workflowRuleExecutionMap.put(FacilioConstants.ContextNames.RULE_TYPES, ruleTypes);
+		
+		context.remove(FacilioConstants.ContextNames.MODULE_NAME);
+		context.remove(FacilioConstants.ContextNames.RECORD_MAP);
+		context.remove(FacilioConstants.ContextNames.RECORD_LIST);
+		context.remove(FacilioConstants.ContextNames.RECORD);
+		context.remove(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+		context.remove(FacilioConstants.ContextNames.CHANGE_SET);
+		context.remove(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+		context.remove(FacilioConstants.ContextNames.EVENT_TYPE);
 
+		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, context);
+		instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.WORKFLOW_PARALLEL_RULE_EXECUTION_MAP, workflowRuleExecutionMap);
+		return instantParallelWorkflowRuleJobContext;		
+	}
+	
+	
 	public static List<WorkflowRuleContext> getWorkflowRuleByRuletype(List<Long> parentRuleIds,RuleType ruletype) throws Exception {
 		if (CollectionUtils.isEmpty(parentRuleIds)) {
 			return null;

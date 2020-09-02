@@ -87,7 +87,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			Boolean stopParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION);
 			stopParallelRuleExecution = stopParallelRuleExecution != null ? stopParallelRuleExecution : Boolean.FALSE;
 
-			if(FacilioProperties.isProduction() && !stopParallelRuleExecution) {
+			if( !stopParallelRuleExecution) {
 				Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
 				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
 					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
@@ -198,25 +198,25 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 					LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = WorkflowRuleAPI.groupWorkflowRulesByRuletype(workflowRules);
-					List<WorkflowRuleContext> workflowRulesExcludingInstantJobRuleTypes = new LinkedList<WorkflowRuleContext>();
-					List<WorkflowRuleContext> workflowRulesForInstantJobs = new LinkedList<WorkflowRuleContext>();
-					WorkflowRuleAPI.groupWorkflowRulesByInstantJobs(ruleTypeVsWorkflowRules, workflowRulesExcludingInstantJobRuleTypes, workflowRulesForInstantJobs);
+					List<WorkflowRuleContext> workflowRulesExcludingReadingRule = new LinkedList<WorkflowRuleContext>();
+					List<WorkflowRuleContext> readingRules = new LinkedList<WorkflowRuleContext>();
+					WorkflowRuleAPI.groupWorkflowRulesByInstantJobs(ruleTypeVsWorkflowRules, workflowRulesExcludingReadingRule, readingRules);
 					
 					List records = new LinkedList<>(entry.getValue());
 					Iterator it = records.iterator();
 					while (it.hasNext()) {
-						Object record = it.next();
-						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
-
+						Object record = it.next();		
 						if(isParallelRuleExecution) {							
-							if(workflowRulesForInstantJobs != null && !workflowRulesForInstantJobs.isEmpty())  {
-								FacilioContext instantParallelWorkflowRuleJobContext = ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes());	
-								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", instantParallelWorkflowRuleJobContext);			
+							if(readingRules != null && !readingRules.isEmpty())  {
+								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));			
 							}
-							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRulesExcludingInstantJobRuleTypes, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
+							if(workflowRulesExcludingReadingRule != null && !workflowRulesExcludingReadingRule.isEmpty())  {
+								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getNonReadingRuleWorkflowRuleTypes(ruleTypes)));
+							}
 						}
 						else {
+							List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
+							Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
 						}		
 					}
