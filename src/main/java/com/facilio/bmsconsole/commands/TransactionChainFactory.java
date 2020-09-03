@@ -2443,12 +2443,15 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddPurchaseOrderChain() {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			chain.addCommand(new UpdateTransactionEventTypeCommand());
 			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
 			chain.addCommand(new RollUpReceivableDeliveryTimeCommand());
 			chain.addCommand(new AssociateDefaultTermsToPoCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			chain.addCommand(new AddPurchaseRequestOrderRelation());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE));
+
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 
@@ -2459,7 +2462,9 @@ public class TransactionChainFactory {
 		public static FacilioChain getPurchaseOrderDeleteChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
-			c.addCommand(new DeletePurchaseOrderCommand());
+			c.addCommand(new UpdateTransactionEventTypeCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE));
 			c.addCommand(new DeleteReceivableByPoIdCommand());
 			return c;
 		}

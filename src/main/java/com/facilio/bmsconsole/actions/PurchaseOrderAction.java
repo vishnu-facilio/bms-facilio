@@ -227,6 +227,8 @@ public class PurchaseOrderAction extends FacilioAction {
 	
 	public String deletePurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		
 		FacilioChain chain = TransactionChainFactory.getPurchaseOrderDeleteChain();
