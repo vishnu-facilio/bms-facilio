@@ -302,12 +302,16 @@ public class ConnectedAppAction extends FacilioAction {
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
         
 //        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM));
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
         if (modBean.getModule(FacilioConstants.ContextNames.OPERATION_ALARM) != null) {
         	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.OPERATION_ALARM));
         }
         if (modBean.getModule(FacilioConstants.ContextNames.ML_ANOMALY_ALARM) != null) {
         	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ML_ANOMALY_ALARM));
+        }
+        if (modBean.getModule(FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM) != null) {
+        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM));
         }
         
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
