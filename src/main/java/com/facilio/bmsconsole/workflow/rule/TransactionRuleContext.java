@@ -124,7 +124,8 @@ public class TransactionRuleContext extends WorkflowRuleContext{
             chain.execute();
         }
 
-        super.executeTrueActions(record, context, placeHolders);
+
+        super.executeTrueActions(currentRecord, context, placeHolders);
     }
 
     public Boolean isValidated(){
