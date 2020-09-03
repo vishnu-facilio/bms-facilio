@@ -590,12 +590,14 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			JSONObject jObj = new JSONObject();
 			jObj.put("recordId", (long)objects[1]);
 			jObj.put("allowUrls",(String)objects[2]);
-			ModuleBaseWithCustomFields record = RecordAPI.getRecord((String)objects[3], (long)objects[1]);
+			String moduleName = (String)objects[3];
+			ModuleBaseWithCustomFields record = RecordAPI.getRecord(moduleName, (long)objects[1]);
 			
 			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
 						
-				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), (String)objects[3], record, new FacilioContext());
+				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), moduleName, record, new FacilioContext());
 				jObj.put("moduleId", record.getModuleId());
+				jObj.put("moduleName", moduleName);
 				ArrayList<String> permalinks = new ArrayList<String>();
 				
 				if(CollectionUtils.isNotEmpty(nextStateRule)){
