@@ -91,6 +91,8 @@ public class AddOrUpdatePurchaseOrderCommand extends FacilioCommand {
 			
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseOrderContext);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(purchaseOrderContext.getId()));
+
 		}
 		return false;
 	}
