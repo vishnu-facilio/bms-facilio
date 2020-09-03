@@ -33,6 +33,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class PageFactory {
 				return KPIPageFacory.getKpiPage((FormulaFieldContext) record);
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
-				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
+				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record, module);
 			case ContextNames.OPERATION_ALARM:
 				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
 			case ContextNames.AGENT_ALARM:
@@ -128,7 +129,11 @@ public class PageFactory {
 		return null;
 	}
 	
-	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap) throws Exception {
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
+		return addCommonSubModuleWidget(section, module, record, null);
+	}
+	
+	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record, HashMap<String, String> titleMap,WidgetType... widgetTypes) throws Exception {
 		
 		List<Long> moduleIds = module.getExtendedModuleIds();
 		
@@ -168,16 +173,20 @@ public class PageFactory {
 			}
 		}
 		
-		subModuleGroup.addToWidget(notesWidget);
-		subModuleGroup.addToWidget(attachmentWidget);
+		List<WidgetType> widgetTypeList = null;
+		if (widgetTypes.length > 0) {
+			widgetTypeList = Arrays.asList(widgetTypes);
+		}
+		if (widgetTypeList == null || widgetTypeList.contains(WidgetType.COMMENT)) {
+			subModuleGroup.addToWidget(notesWidget);
+		}
+		if (widgetTypeList == null || widgetTypeList.contains(WidgetType.ATTACHMENT)) {
+			subModuleGroup.addToWidget(attachmentWidget);
+		}
 
 		return subModuleGroup;
 	}
 	
-	protected static PageWidget addCommonSubModuleWidget(Section section, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
-		return addCommonSubModuleWidget(section, module, record, null);
-	}
-
 	protected static void addAssetReadingChart(Section section, long reportId, String title) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "assetReadingWidget");
 		cardWidget.addToLayoutParams(section, 24, 14);

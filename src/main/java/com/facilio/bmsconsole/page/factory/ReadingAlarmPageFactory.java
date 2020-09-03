@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
@@ -11,6 +12,8 @@ import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -27,10 +30,10 @@ import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 
 public class ReadingAlarmPageFactory extends PageFactory  {
-    public static Page getReadingAlarmPage(ReadingAlarm alarms) throws Exception {
-        return getDefaultReadingAlarmSummaryPage(alarms);
+    public static Page getReadingAlarmPage(ReadingAlarm alarms, FacilioModule module) throws Exception {
+        return getDefaultReadingAlarmSummaryPage(alarms, module);
     }
-    private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms) throws Exception {
+    private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms, FacilioModule module) throws Exception {
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Page page = new Page();
         // Summary Tab
@@ -44,7 +47,10 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
         addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
-        addCommonSubModuleGroup(tab1Sec1);
+        
+        HashMap<String, String> titles = new HashMap<>();
+        titles.put("notes", "Comment");
+        addCommonSubModuleWidget(tab1Sec1, module, alarms, titles, WidgetType.COMMENT);
 
         Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
         page.addTab(tab4);

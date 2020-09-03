@@ -445,6 +445,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		List<Integer> formTypes = Collections.singletonList(FormType.WEB.getIntVal());
 		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
+		context.put("handleStateField", true);
 		
 		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsWithTemplateChain();
 		getFieldsChain.execute(context);

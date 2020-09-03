@@ -9,6 +9,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class LoadAllFieldsCommand extends FacilioCommand{
@@ -23,6 +24,8 @@ public class LoadAllFieldsCommand extends FacilioCommand{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
+			boolean handleStateField = (boolean) context.getOrDefault("handleStateField", false);
+			FacilioModule mod = modBean.getModule(moduleName);
 			for(int i=0;i<fields.size();i++) {
 				if(fields.get(i).getName().equals("tenant")) {
 					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
@@ -35,7 +38,10 @@ public class LoadAllFieldsCommand extends FacilioCommand{
 					  continue;
 					}
 						
-				} 
+				}
+				else if (handleStateField) {
+					fields.removeIf(field -> field.getName().equals("stateFlowId") || (field.getName().equals("moduleState") && !mod.isStateFlowEnabled()));
+				}
 				restrictedFields.add(fields.get(i));
 			}
 			
