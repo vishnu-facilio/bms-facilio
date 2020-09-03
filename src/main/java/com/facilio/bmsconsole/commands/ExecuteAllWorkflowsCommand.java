@@ -220,14 +220,14 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));
 								jobs++;
 								long timeTaken = System.currentTimeMillis() - processStartTime;
-								LOGGER.debug(MessageFormat.format("Time taken for adding reading instant job : {0}", timeTaken));
+//								LOGGER.debug(MessageFormat.format("Time taken for adding reading instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
 							if(workflowRulesExcludingReadingRule != null && !workflowRulesExcludingReadingRule.isEmpty())  {
 								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getNonReadingRuleWorkflowRuleTypes(ruleTypes)));
 								jobs++;
 								long timeTaken = System.currentTimeMillis() - processStartTime;
-								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
+//								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
 						}
