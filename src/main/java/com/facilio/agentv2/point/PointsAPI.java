@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.facilio.modules.*;
+import com.facilio.wms.constants.WmsEventType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -47,11 +50,6 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class PointsAPI {
@@ -281,7 +279,11 @@ public class PointsAPI {
         List<Point> pointList = new ArrayList<>();
         for (Map<String, Object> point : points) {
             try {
-                pointList.add(PointsAPI.getPointFromJSON(point));
+                Point p = PointsAPI.getPointFromJSON(point);
+                if (point.containsKey("configureStatus")) {
+                    p.setConfigureStatus(Integer.parseInt(point.get("configureStatus").toString()));
+                }
+                pointList.add(p);
             } catch (Exception e) {
                     LOGGER.info("Exception occurred while making point from row ", e);
             }
@@ -928,5 +930,26 @@ public class PointsAPI {
                 point.put(AgentConstants.WRITABLE_SWITCH,false);
             }
         }
+    }
+
+    public static List<Point> getControllerPointsFromNames(FacilioControllerType type, Controller controller, List<String> pointNames) throws Exception {
+
+        if (controller.getDeviceId() < 0) {
+            throw new Exception("Invalid deviceId for controller : " + controller.getName());
+        }
+        FacilioContext context = getPointTypeBasedConditionAndFields(type);
+        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
+        fields.addAll(FieldFactory.getPointFields());
+        String condition = context.get(FacilioConstants.ContextNames.ON_CONDITION).toString();
+        String innerJoin = context.get(FacilioConstants.ContextNames.INNER_JOIN).toString();
+        List<Long> deviceIds = new ArrayList<>();
+        deviceIds.add(controller.getDeviceId());
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName()).innerJoin(innerJoin).on(condition)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()), StringUtils.join(pointNames, ","), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID, "DEVICE_ID", ModuleFactory.getPointModule(), FieldType.NUMBER), deviceIds, NumberOperators.EQUALS));
+        List<Map<String, Object>> rows = selectRecordBuilder.get();
+        return getPointFromRows(rows);
     }
 }

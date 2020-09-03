@@ -583,6 +583,11 @@ public class ControllerApiV2 {
         return null;
     }
 
+    public static List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames, FacilioControllerType controllerType) throws Exception {
+        List<Device> devices = FieldDeviceApi.getDevicesByNames(agentId, deviceNames);
+        return getControllersFromDevices(devices, controllerType);
+    }
+
     private static Controller getControllerFromDevice(Device device) throws Exception {
         FacilioControllerType controllerType = FacilioControllerType.valueOf(device.getControllerType());
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -636,5 +641,70 @@ public class ControllerApiV2 {
                 LOGGER.info("Unknown controller type "+ controllerType);
         }
         return null;
+    }
+
+    public static List<Controller> getControllersFromDevices(List<Device> devices, FacilioControllerType controllerType) throws Exception {
+        List<Controller> controllers = new ArrayList<>();
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = moduleBean.getAllFields("controller");
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        List<FacilioField> controllerFields = new ArrayList<>();
+        for (FacilioField field :
+                allFields) {
+            if (field.getModule().getName().equals("controller")) {
+                controllerFields.add(field);
+            }
+        }
+        List<Long> deviceIds = new ArrayList<>();
+        Map<Long, String> idVsDeviceName = new HashMap<>();
+        devices.forEach(device -> {
+            idVsDeviceName.put(device.getId(), device.getName());
+            deviceIds.add(device.getId());
+        });
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNewControllerModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"), deviceIds, NumberOperators.EQUALS))
+                .limit(500);
+        switch (controllerType) {
+            case BACNET_IP:
+                List<FacilioField> bacnetIpFields = moduleBean.getAllFields("bacnetipcontroller");
+                for (FacilioField field :
+                        bacnetIpFields) {
+                    if (field.getModule().getName().equals("bacnetipcontroller")) {
+                        controllerFields.add(field);
+                    }
+                }
+                LOGGER.info("Controller Fields : " + controllerFields);
+                select.select(controllerFields).innerJoin(moduleBean.getModule("bacnetipcontroller").getTableName())
+                        .on("Controllers.ID = BACnet_IP_Controller.ID");
+                List<Map<String, Object>> res = select.get();
+                if (res != null) {
+                    res.forEach(row -> {
+                        BacnetIpControllerContext c = FieldUtil.getAsBeanFromMap(row, BacnetIpControllerContext.class);
+                        c.setName(idVsDeviceName.get(c.getDeviceId()));
+                        controllers.add(c);
+                    });
+                }
+                break;
+            case NIAGARA:
+                for (FacilioField field :
+                        moduleBean.getAllFields("niagaracontroller")) {
+                    if (field.getModule().getName().equals("niagaracontroller")) {
+                        controllerFields.add(field);
+                    }
+                }
+                select.select(controllerFields).innerJoin(moduleBean.getModule("niagaracontroller").getTableName())
+                        .on("Controllers.ID = Niagara_Controller.ID");
+                List<Map<String, Object>> res_2 = select.get();
+                res_2.forEach(row -> {
+                    NiagaraControllerContext c = FieldUtil.getAsBeanFromMap(row, NiagaraControllerContext.class);
+                    c.setName(idVsDeviceName.get(c.getDeviceId()));
+                    controllers.add(c);
+                });
+                break;
+            default:
+                LOGGER.info("Unknown controller type " + controllerType);
+        }
+        return controllers;
     }
 }

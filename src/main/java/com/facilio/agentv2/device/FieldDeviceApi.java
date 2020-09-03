@@ -133,6 +133,36 @@ public class FieldDeviceApi {
         return null;
     }
 
+    public static List<Device> getDevicesByNames(long agentId, Set<String> name) throws Exception {
+        List<Device> deviceList = new ArrayList<>();
+        FacilioModule fieldDeviceModule = ModuleFactory.getFieldDeviceModule();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
+        if (agentId > 0) {
+            if ((name != null) && (!name.isEmpty())) {
+                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                        .table(fieldDeviceModule.getTableName())
+                        .select(fieldMap.values())
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.NAME), StringUtils.join(name, ","), StringOperators.IS))
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+                List<Map<String, Object>> result = builder.get();
+                result.forEach(row -> {
+                    Device device = FieldUtil.getAsBeanFromMap(row, Device.class);
+                    if (device.getControllerProps().containsKey("type"))
+                        device.setControllerType(Integer.parseInt(device.getControllerProps().get("type").toString()));
+                    deviceList.add(device);
+                });
+                if (result.size() == 0) {
+                    LOGGER.info("No devices found ");
+                }
+            } else {
+                throw new Exception(" device name can't be null or empty");
+            }
+        } else {
+            throw new Exception("agentId can't be less than 1");
+        }
+        return deviceList;
+    }
+
 
     public static List<Map<String, Object>> getDevices(List<Long> deviceIds) {
         try {
@@ -182,7 +212,14 @@ public class FieldDeviceApi {
 					String.valueOf(agentId), NumberOperators.EQUALS));
 		}
 		if ((controllerType != null) && (controllerType >= 0)) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), "NULL",CommonOperators.IS_EMPTY));
+            if (!context.containsKey(FacilioConstants.ContextNames.CONFIGURE)) {
+                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), "NULL", CommonOperators.IS_EMPTY));
+            } else {
+                if (context.get(FacilioConstants.ContextNames.CONFIGURE) != null) {
+                    String val = context.get(FacilioConstants.ContextNames.CONFIGURE).toString();
+                    builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONFIGURE), val, NumberOperators.EQUALS));
+                }
+            }
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.CONTROLLER_TYPE),
 					String.valueOf(controllerType), NumberOperators.EQUALS));
 		} 
