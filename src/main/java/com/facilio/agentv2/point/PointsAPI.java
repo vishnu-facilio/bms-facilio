@@ -12,11 +12,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.facilio.modules.*;
-import com.facilio.wms.constants.WmsEventType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
