@@ -76,7 +76,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
             }
 
         });
-        obj.put("transactionSourceRecordId", String.valueOf(((ModuleBaseWithCustomFields) currentRecord).getId()));
+        obj.put("transactionSourceRecordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
 
         Class beanClassName = V3CustomModuleData.class;
         ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
