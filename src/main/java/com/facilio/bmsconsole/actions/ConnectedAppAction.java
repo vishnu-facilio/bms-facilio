@@ -302,12 +302,12 @@ public class ConnectedAppAction extends FacilioAction {
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
         
 //        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-//        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
+        sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
         
         sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
         	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR));
-//        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
+        	sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
         }
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
