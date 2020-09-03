@@ -67,16 +67,16 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         String sourceModName = (String) obj.get("transactionSourceModuleName");
         obj.keySet().forEach(keyStr ->
         {
-            String keyvalue = (String) obj.get(keyStr);
+            Object keyvalue = (Object) obj.get(keyStr);
             try {
-                obj.put(keyStr, BeanUtils.getNestedProperty(currentRecord, keyvalue));
+                obj.put(keyStr, BeanUtils.getNestedProperty(currentRecord, (String)keyvalue));
             }
             catch(Exception e){
                 obj.put(keyStr, keyvalue);
             }
 
         });
-        obj.put("transactionSourceRecordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
+        obj.put("transactionSourceRecordId", String.valueOf(((ModuleBaseWithCustomFields) currentRecord).getId()));
 
         Class beanClassName = V3CustomModuleData.class;
         ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
