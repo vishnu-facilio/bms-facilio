@@ -24,7 +24,7 @@
 <script>
 
 function changeAction(){
-	var selectedOption = "disableagent?orgId="+ $("#orgId").val()+ "&" + "option=" + $("#option").val();
+	var selectedOption = "disableagent?orgId="+ $("#orgId").val()+ "&" + "level=" + $("#level").val();
 	location.href = selectedOption;
 }
 
@@ -52,22 +52,36 @@ function changeAction(){
 								}
 							%>
 				</select>
-				<br><br>
+				
 		<label for="txtClassroomName">
-			<b><h5>Option</h5></b>
+			<b><h5>Level</h5></b>
 				</label>
       <select class="admin-data-select"
-					name="option" id="option" onChange="changeAction()">
+					name="level" id="level" onChange="changeAction()">
 					<option value="" disabled selected>Select</option>
 					
-					<option value="<%="EnableOrDisable"%>"<%=(request.getParameter("option") != null && request.getParameter("option").equals("EnableOrDisable")) ? "selected" : " "%>><%="Enable or disable"%>
+					<option value="<%="topic"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("topic")) ? "selected" : " "%>><%="Topic"%>
 						</option>
-					<option value="<%="ChangeProcessor"%>"<%=(request.getParameter("option") != null && request.getParameter("option").equals("ChangeProcessor")) ? "selected" : " "%>><%="Change Processor"%>
+					<%-- <option value="<%="ChangeProcessor"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("ChangeProcessor")) ? "selected" : " "%>><%="Change Processor"%>
+						</option> --%>
+				</select>	
+				
+		<label for="txtClassroomName">
+			<b><h5>Action</h5></b>
+				</label>
+      <select class="admin-data-select"
+					name="action" id="action">
+					<option value="" disabled selected>Select</option>
+					
+					<option value="<%="false"%>"<%=(request.getParameter("action") != null && request.getParameter("action").equals("enable")) ? "selected" : " "%>><%="Enable"%>
 						</option>
+					<option value="<%="true"%>"<%=(request.getParameter("action") != null && request.getParameter("action").equals("disable")) ? "selected" : " "%>><%="Disable"%>
+						</option> 
 				</select>		
+					
     </div>
  
-  <%if((request.getParameter("option") != null)){ %>
+<%--   <%if((request.getParameter("level") != null)) { %>
 <fieldset>
 
 			<label for="txtClassroomName"><h5><b>Agent</b></h5> </label>	<select class="admin-data-select"
@@ -87,8 +101,8 @@ function changeAction(){
 							}
 						}
 				%>
-				</select></br></br>	
-				<%if((request.getParameter("option") != null && request.getParameter("option").equals("EnableOrDisable"))){ %>
+				</select></br></br> --%>	
+				<%-- <%if((request.getParameter("option") != null && request.getParameter("option").equals("EnableOrDisable"))){ %>
 		<label for="txtClassroomName">
 			<b><h5>Action </h5></b>
 				</label>
@@ -101,8 +115,8 @@ function changeAction(){
 					<option value="<%="Disable"%>"<%=(request.getParameter("action") != null && request.getParameter("action").equals("Disable")) ? "Disable" : " "%>><%="Disable"%>
 						</option>
 				</select>			
-				<%} %>	
-	<%if((request.getParameter("option") != null && request.getParameter("option").equals("ChangeProcessor"))){ %>			
+				<%} %>	 --%>
+<%-- 	<%if((request.getParameter("option") != null && request.getParameter("option").equals("ChangeProcessor"))){ %>			
 			<label for="txtClassroomName">
 			<b><h5>Pre Processor</h5></b>
 				</label>
@@ -127,9 +141,9 @@ function changeAction(){
 					<option value="<%="V1Processor"%>"<%=(request.getParameter("pros") != null && request.getParameter("pros").equals("V2Processor")) ? "selected" : " "%>><%="V2 Processor"%>
 						</option>
 				</select>		
-	<%} %>
-	<%} %>				
-			</fieldset>
+	<%} %> --%>
+	<%-- <%} %>				
+			</fieldset> --%>
 			<input type = "submit"  style="margin-left: 200px" name="disableAgent"  value = "Submit"/> 
 </form>
 </body>

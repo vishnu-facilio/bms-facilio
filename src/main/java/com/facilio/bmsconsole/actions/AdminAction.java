@@ -40,6 +40,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -599,21 +600,11 @@ public class AdminAction extends ActionSupport {
 	public String disableAgent() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgId"));
-		long agentId =  Long.parseLong(request.getParameter("agentId"));
-		String optionval = request.getParameter("option");
-		String action = request.getParameter("action");
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+//		long agentId =  Long.parseLong(request.getParameter("agentId"));
+		String level = request.getParameter("level");
+		boolean action = Boolean.parseBoolean(request.getParameter("action"));
 		
-		if(StringUtils.isNotEmpty(optionval) && optionval.equals("EnableOrDisable")) {
-			boolean disable = false;
-			if(action.equals("Disable")) {
-				disable = true;
-			}
-			bean.disableOrEnableAgent(agentId,disable);
-		}else if(StringUtils.isNotEmpty(optionval) && optionval.equals("ChangeProcessor")){
-			// future impl..
-		}
-		
+		FacilioService.runAsService(()->MessageQueueTopic.disableOrEnableMessageTopic(action, orgId));
 		return SUCCESS;
 	}
 

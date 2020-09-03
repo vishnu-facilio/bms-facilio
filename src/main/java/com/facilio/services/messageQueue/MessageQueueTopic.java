@@ -50,7 +50,7 @@ public class MessageQueueTopic {
 				.get();
 	}
 
-	public static void disableOrEnableMessageTopic(boolean disable) throws SQLException {
+	public static void disableOrEnableMessageTopic(boolean disable,long orgId) throws SQLException {
 		Map<String, Object> prop = new HashedMap<>();
 		long currentTime = System.currentTimeMillis();
 		prop.put(AgentConstants.IS_DISABLE,disable);
@@ -60,24 +60,25 @@ public class MessageQueueTopic {
 			prop.put(AgentConstants.LAST_ENBLED_TIME, currentTime);
 		}
 		prop.put(AgentConstants.LAST_MODIFIED_TIME, currentTime);
-		int count = updateValue(prop);
+		int count = updateValue(prop ,orgId);
 		if (count > 0) {
-			LOGGER.info("selected ORG MessageQueue topic is disabled|enabled.  orgId :"+ AccountUtil.getCurrentOrg().getOrgId());
+			LOGGER.info("selected ORG MessageQueue topic is disabled|enabled.  orgId :"+ orgId);
 		}
 	}
 
-	public static void updateMessageTopic(String topicName) throws SQLException {
+	public static void updateMessageTopic(String topicName,long orgId) throws SQLException {
 		Map<String, Object> prop = new HashedMap<>();
 		prop.put(AgentConstants.MESSAGE_TOPIC, topicName);
 		prop.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
-		int count = updateValue(prop);
+		int count = updateValue(prop,orgId);
 		if (count > 0) {
-			LOGGER.info("Renamed MessageQueue topic. Topic name: " + topicName + " orgId :"+ AccountUtil.getCurrentOrg().getOrgId());
+			LOGGER.info("Renamed MessageQueue topic. Topic name: " + topicName + " orgId :"+ orgId);
 		}
 	}
 	
-	public static int updateValue(Map<String,Object> prop) throws SQLException {
+	public static int updateValue(Map<String,Object> prop,long orgId) throws SQLException {
 		return new GenericUpdateRecordBuilder().fields(MESSAGE_TOPIC_FIELDS).table(MESSAGE_TOIPC_MODULE.getTableName())
+				.andCondition(CriteriaAPI.getOrgIdCondition(orgId, MESSAGE_TOIPC_MODULE))
 				.update(prop);
 	}
 }
