@@ -60,6 +60,7 @@ Map cardLayout(Map params) {
     if (offset < 0) {
         offset = 0;
     }
+    offset = new NameSpace("number").intValue(offset+"");
 
   	criteriaObj = null;
   	assetCategoryCriteria = [category == assetCategoryId];
@@ -84,7 +85,7 @@ Map cardLayout(Map params) {
         assetDb.put("sortOrder", sorting.order);
     }
     assetDb.put("offset", offset);
-    assetDb.put("limit", limit);
+    assetDb.put("limit", perPage);
 
     assetModule = Module(moduleName);
     assetList = assetModule.fetch(assetDb);
