@@ -339,7 +339,6 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.INSERT_QUERIES, account.getInsertQueries());
                 	prop.put(AgentConstants.UPDATE_QUERIES, account.getUpdateQueries());
                 	prop.put(AgentConstants.DELETE_QUERIES, account.getDeleteQueries());
-                	prop.put(AgentConstants.REDIS_QUERIES, account.getRedisQueries());
                 	prop.put(AgentConstants.REDIS_GET_COUNT, account.getRedisGetCount());
                 	prop.put(AgentConstants.REDIS_PUT_COUNT, account.getRedisPutCount());
                 	prop.put(AgentConstants.REDIS_DELETE_COUNT, account.getRedisDeleteCount());
@@ -347,7 +346,6 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.INSERT_QUERIES_TIME, account.getInsertQueriesTime());
                 	prop.put(AgentConstants.UPDATE_QUERIES_TIME, account.getUpdateQueriesTime());
                 	prop.put(AgentConstants.DELETE_QUERIES_TIME, account.getDeleteQueriesTime());
-                	prop.put(AgentConstants.REDIS_TIME, account.getRedisTime());
                 	prop.put(AgentConstants.REDIS_GET_TIME, account.getRedisGetTime());
                 	prop.put(AgentConstants.REDIS_PUT_TIME, account.getRedisPutTime());
                 	prop.put(AgentConstants.REDIS_DELETE_TIME, account.getRedisDeleteTime());
@@ -355,7 +353,6 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_INSERT_QUERIES, account.getPublicInsertQueries());
                 	prop.put(AgentConstants.PUBLIC_UPDATE_QUERIES, account.getPublicUpdateQueries());
                 	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES, account.getPublicDeleteQueries());
-                	prop.put(AgentConstants.PUBLIC_REDIS_QUERIES, account.getPublicRedisQueries());
                 	prop.put(AgentConstants.PUBLIC_REDIS_GET_COUNT, account.getPublicRedisGetCount());
                 	prop.put(AgentConstants.PUBLIC_REDIS_PUT_COUNT, account.getPublicRedisPutCount());
                 	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_COUNT, account.getPublicRedisDeleteCount());
@@ -363,7 +360,6 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_INSERT_QUERIES_TIME, account.getPublicInsertQueriesTime());
                 	prop.put(AgentConstants.PUBLIC_UPDATE_QUERIES_TIME, account.getPublicUpdateQueriesTime());
                 	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES_TIME, account.getPublicDeleteQueriesTime());
-                	prop.put(AgentConstants.PUBLIC_REDIS_TIME, account.getPublicRedisTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_GET_TIME, account.getPublicRedisGetTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_PUT_TIME, account.getPublicRedisPutTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
