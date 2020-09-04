@@ -590,15 +590,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			JSONObject jObj = new JSONObject();
 			jObj.put("recordId", (long)objects[1]);
 			jObj.put("allowUrls",(String)objects[2]);
-			
 			String moduleName = (String)objects[3];
-			boolean getTransitionDetails = false;
-			if (objects.length > 4) {
-				getTransitionDetails =  (boolean)objects[4];
-			}
-			
-			List<Map<String, Object>> details = new ArrayList<>();
-			
 			ModuleBaseWithCustomFields record = RecordAPI.getRecord(moduleName, (long)objects[1]);
 			
 			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
@@ -614,18 +606,9 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 						jObj.put("transitionId", transitionId);
 						String token = AccountUtil.getUserBean().generatePermalink(user, jObj);
 						String permalLinkURL = objects[0].toString()+objects[2].toString()+"?token=" + token;
-						
-						if (getTransitionDetails) {
-							Map<String, Object> detail = new HashMap<>();
-							detail.put("permalink", permalLinkURL);
-							detail.put("transitionId", transitionId);
-							detail.put("name", rule.getName());
-							details.add(detail);
-						}
-						
 						permalinks.add(permalLinkURL);
 					}
-					return getTransitionDetails ? details : permalinks;
+					return permalinks;
 				}
 			}
 			return null;

@@ -46,7 +46,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.google.common.collect.Lists;
 
-public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTransactionCommand,Serializable
+public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serializable
 {
 	/**
 	 * 
@@ -56,10 +56,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	private RuleType[] ruleTypes;
 	private int recordsPerThread = -1;
 	private boolean propagateError = true;
-	
-	private RuleType[] postRuleTypes;
-	private Context context;
-	
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
 		this.ruleTypes = ruleTypes;
@@ -80,28 +76,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		List<RuleType> preRuleTypeList = new ArrayList<>();
-		List<RuleType> postRuleTypeList = new ArrayList<>();
-		 
-		for(RuleType ruleType: ruleTypes) {
-			if (ruleType.isPostExecute()) {
-				postRuleTypeList.add(ruleType);
-			}
-			else {
-				preRuleTypeList.add(ruleType);
-			}
-		}
-		if (postRuleTypeList != null) {
-			this.context = context;
-			postRuleTypes = postRuleTypeList.toArray(new RuleType[postRuleTypeList.size()]);
-		}
-		if (preRuleTypeList.size() > 0) {
-			ruleTypes = preRuleTypeList.toArray(new RuleType[preRuleTypeList.size()]);
-			return executeRule(context);
-		}
-		return false;
-	}
-	private boolean executeRule(Context context) throws Exception {
 		Map<String, List> recordMap = null;
 		try {
 			long startTime = System.currentTimeMillis();
@@ -350,20 +324,4 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		}
 		
 	}
-
-	@Override
-	public boolean postExecute() throws Exception {
-		try {
-			if (this.postRuleTypes != null && this.postRuleTypes.length > 0) {
-				this.ruleTypes = this.postRuleTypes;
-				executeRule(context);				
-			}
-		}
-		catch (Exception e) {
-			LOGGER.error("OnPostExecuteRule:: Error occurred on post execution of workflow rule", e);
-		}
-		
-		return false;
-	}
-	
 }

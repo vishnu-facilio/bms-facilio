@@ -5,9 +5,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +26,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -35,10 +39,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkflowRuleContext implements Serializable {
 	/**
@@ -512,7 +516,7 @@ public class WorkflowRuleContext implements Serializable {
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
-		READING_RULE(false, false, false, true, false), // reading
+		READING_RULE(false, false, false, true), // reading
 		WORKORDER_AGENT_NOTIFICATION_RULE,
 		WORKORDER_REQUESTER_NOTIFICATION_RULE, //3
 		
@@ -526,7 +530,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		ASSET_ACTION_RULE,
 		SLA_WORKFLOW_RULE(true),
-		SLA_POLICY_RULE(true, false, false, true, false), //12
+		SLA_POLICY_RULE(true, false, false, true), //12
 		
 		APPROVAL_RULE(true, true),
 		REQUEST_APPROVAL_RULE(true),
@@ -534,7 +538,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE(false,true,true, true, false), //18
+		ALARM_TRIGGER_RULE(false,true,true, true), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
@@ -559,7 +563,7 @@ public class WorkflowRuleContext implements Serializable {
 		RECORD_SPECIFIC_RULE, //34
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
-		MODULE_RULE(false,false,false, false, true), // 37
+		MODULE_RULE, // 37
 		MODULE_RULE_NOTIFICATION,
 		
 		READING_VIOLATION_RULE, // 39
@@ -572,7 +576,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		
 		private boolean stopFurtherExecution = false, versionSupported = false,isChildType = false;
-		private boolean childSupport = false, isPostExecute = false;
+		private boolean childSupport = false;
 		private RuleType() {
 		}
 		
@@ -585,15 +589,14 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		
 		private RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType) {
-			this(stopFurtherExecution, versionSupported, isChildType, false, false);
+			this(stopFurtherExecution, versionSupported, isChildType, false);
 		}
 
-		RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType, boolean childSupport, boolean isPostExecute) {
+		RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType, boolean childSupport) {
 			this.stopFurtherExecution = stopFurtherExecution;
 			this.versionSupported = versionSupported;
 			this.isChildType = isChildType;
 			this.childSupport = childSupport;
-			this.isPostExecute = isPostExecute;
 		}
 		
 		public boolean isChildType() {
@@ -616,10 +619,6 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		public boolean versionSupported() {
 			return versionSupported;
-		}
-		
-		public boolean isPostExecute() {
-			return isPostExecute;
 		}
 		
 		public static RuleType valueOf(int val) {
