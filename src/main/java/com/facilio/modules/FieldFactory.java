@@ -8215,6 +8215,8 @@ public class FieldFactory {
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
+
 
         return fields;
     }
@@ -8230,6 +8232,7 @@ public class FieldFactory {
         fields.add(getField("order", "TAB_ORDER", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
+        fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
 
         return fields;
     }

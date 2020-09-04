@@ -64,11 +64,30 @@ public class WebTabGroupContext implements Serializable {
     public WebTabGroupContext() {
     }
 
+    private long featureLicense;
+
+    public long getFeatureLicense() {
+        return featureLicense;
+    }
+
+    public void setFeatureLicense(long featureLicense) {
+        this.featureLicense = featureLicense;
+    }
+
     public WebTabGroupContext(String name, String route, long appId, int iconType, int order) {
         this.name = name;
         this.route = route;
         this.appId = appId;
         this.iconType = iconType;
         this.order = order;
+    }
+
+    public WebTabGroupContext(String name, String route, long appId, int iconType, int order, long license) {
+        this.name = name;
+        this.route = route;
+        this.appId = appId;
+        this.iconType = iconType;
+        this.order = order;
+        this.featureLicense = license;
     }
 }

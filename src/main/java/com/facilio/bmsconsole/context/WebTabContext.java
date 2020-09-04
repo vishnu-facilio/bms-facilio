@@ -204,6 +204,15 @@ public class WebTabContext implements Serializable {
 		this.permission = permission;
 	}
 
+    private long featureLicense;
+
+    public long getFeatureLicense() {
+        return featureLicense;
+    }
+
+    public void setFeatureLicense(long featureLicense) {
+        this.featureLicense = featureLicense;
+    }
 
     public WebTabContext(String name, String route, Type type, int order, List<Long> moduleIds, long appId, JSONObject config) {
         this.name = name;
@@ -216,6 +225,17 @@ public class WebTabContext implements Serializable {
     }
 
     public WebTabContext() {
+    }
+
+    public WebTabContext(String name, String route, Type type, int order, List<Long> moduleIds, long appId, JSONObject config, long featureLicense) {
+        this.name = name;
+        this.route = route;
+        this.type = type;
+        this.order = order;
+        this.moduleIds = moduleIds;
+        this.appId = appId;
+        this.config = config;
+        this.featureLicense = featureLicense;
     }
 
     private List<String> specialTypeModules;
