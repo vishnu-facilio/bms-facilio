@@ -20,6 +20,7 @@ import javax.transaction.TransactionManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
@@ -57,6 +58,10 @@ public class FacilioChain extends ChainBase {
 			context = new FacilioContext();
 		}
 		return context;
+	}
+	public void setContext(FacilioContext context) {
+		Objects.requireNonNull(context, "Cannot set null context for Facilio Chain");
+		this.context = context;
 	}
 
 	@Override

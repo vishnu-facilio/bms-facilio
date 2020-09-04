@@ -349,7 +349,7 @@ public class FacilioConstants {
 		public static final String CONTROLLER_LIST = "controllerList";
 		public static final String CONTROLLER_SETTINGS = "controllerSettings";
 		public static final String FEDGE_CERT_FILE_ID = "fedgeCertFileId";
-		
+		public static final String OLD_CONTROLLER = "oldController";
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		public static final String WORK_ORDER_REQUEST_COUNT = "workorderrequestcount";
@@ -538,6 +538,7 @@ public class FacilioConstants {
 		public static final String KPI = "kpi";
 		public static final String KPI_LIST = "kpis";
 		public static final String KPI_CATEGORY = "kpiCategory";
+		public static final String FORK_POST_READING_PROCESSING = "forkPostReadingProcessing";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";

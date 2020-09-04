@@ -443,6 +443,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new AddOrUpdateReadingsCommand());
 		return c;
 	}
+
+	public static FacilioChain readingPostProcessingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReadingPostProcessingCommand());
+		return c;
+	}
 	
 	public static FacilioChain executeWorkflowsForReadingChain() {
 		FacilioChain c = getDefaultChain();
