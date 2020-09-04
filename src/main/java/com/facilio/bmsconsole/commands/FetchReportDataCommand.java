@@ -484,7 +484,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 
 			props = newSelect.get();
-//			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
+			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
 		}
 		else {
 			props = newSelectBuilder.getAsProps();
