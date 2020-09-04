@@ -2,10 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -87,9 +90,18 @@ public class NoteAction extends FacilioAction {
 	private String addNote(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
+		parent.setId(note.getParentId());
+		note.setParent(parent);
 		String parentModuleName = this.parentModuleName;
 		if (parentModuleName == null) {
 			parentModuleName = ticketModuleName;
+		}
+		if (this.module.equals("cmdnotes")) {
+			String customModuleNotes = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.NOTES);
+			if (customModuleNotes != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleNotes);
+			}
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
@@ -117,7 +129,7 @@ public class NoteAction extends FacilioAction {
 		setNoteId(note.getId());
 		
 		return SUCCESS;
-	} 
+	}
 	
 	private String module;
 	public String getModule() {
@@ -247,6 +259,13 @@ public class NoteAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.NOTE_IDS, notesIds);
 			}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+		if (this.module.equals("cmdnotes")) {
+			String customModuleNotes = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.NOTES);
+			if (customModuleNotes != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleNotes);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
 
 		FacilioChain getRelatedNoteChain = FacilioChainFactory.getNotesChain();

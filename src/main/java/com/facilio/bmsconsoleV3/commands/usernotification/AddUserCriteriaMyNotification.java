@@ -2,12 +2,8 @@ package com.facilio.bmsconsoleV3.commands.usernotification;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;

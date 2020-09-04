@@ -168,4 +168,12 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				.append("]")
 				.toString();
 	}
+	private ModuleBaseWithCustomFields parent;
+
+	public ModuleBaseWithCustomFields getParent() {
+		return parent;
+	}
+	public void setParent(ModuleBaseWithCustomFields parent) {
+		this.parent = parent;
+	}
 }

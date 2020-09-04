@@ -1064,4 +1064,13 @@ public class CommonCommandUtil {
 
 	}
 
+	public static String getModuleTypeModuleName(String module, FacilioModule.ModuleType moduleType) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> modules = modBean.getSubModules(module, moduleType);
+		if (modules != null && modules.size() > 0) {
+			return modules.get(0).getName();
+		}
+		return null;
+	}
+
 }

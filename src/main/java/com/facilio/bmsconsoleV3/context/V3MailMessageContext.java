@@ -344,11 +344,11 @@ public class V3MailMessageContext extends V3Context {
                 MimeMessageParser parser = new MimeMessageParser(attachmentMessage);
                 parser.parse();
                 Map<String, Object> attachmentObject = new HashMap<>();
-                attachmentObject.put("attachmentFileName", bodyPart.getFileName());
-                attachmentObject.put("attachmentContentType", bodyPart.getContentType());
+                attachmentObject.put("fileFileName", bodyPart.getFileName());
+                attachmentObject.put("fileContentType", bodyPart.getContentType());
                 File file = File.createTempFile(fileName, "");
                 FileUtils.copyInputStreamToFile(bodyPart.getInputStream(), file);
-                attachmentObject.put("attachment", file);
+                attachmentObject.put("file", file);
                 mailContext.addAttachmentList(attachmentObject);
             }
         }
@@ -359,9 +359,9 @@ public class V3MailMessageContext extends V3Context {
         File tmpFile = File.createTempFile("Email_Content", ".pdf");
         String pdfFileLocation = PdfUtil.convertUrlToPdf(tmpFile.getPath(), s, null , FileInfo.FileFormat.PDF);
         File pdfFile = new File(pdfFileLocation);
-        attachmentObject.put("attachment", pdfFile);
-        attachmentObject.put("attachmentFileName", tmpFile.getName());
-        attachmentObject.put("attachmentContentType", "pdf");
+        attachmentObject.put("file", pdfFile);
+        attachmentObject.put("fileFileName", tmpFile.getName());
+        attachmentObject.put("fileContentType", "pdf");
         mailContext.addAttachmentList(attachmentObject);
     }
 }

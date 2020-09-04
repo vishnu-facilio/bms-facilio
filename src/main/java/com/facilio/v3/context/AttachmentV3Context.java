@@ -8,91 +8,102 @@ public class AttachmentV3Context extends V3Context {
 
     private static final long serialVersionUID = 1L;
 
-    public int getAttachmentType() {
-        return attachmentType;
+    private int fileType;
+
+    private String fileTypeEnum;
+
+
+//    public String getFileName() {
+//        return fileName;
+//    }
+//
+//    public void setFileName(String fileName) {
+//        this.fileName = fileName;
+//    }
+//
+//    private String fileName;
+
+
+    public String getFileFileName() {
+        return fileFileName;
     }
 
-    public void setAttachmentType(int attachmentType) {
-        this.attachmentType = attachmentType;
+    public void setFileFileName(String fileFileName) {
+        this.fileFileName = fileFileName;
     }
 
-    private int attachmentType;
+    private String fileFileName;
 
-
-    public String getAttachmentTypeEnum() {
-        return attachmentTypeEnum;
+    public File getFile() {
+        return file;
     }
 
-    public void setAttachmentTypeEnum(String attachmentTypeEnum) {
-        this.attachmentTypeEnum = attachmentTypeEnum;
+    public void setFile(File file) {
+        this.file = file;
     }
 
-    private String attachmentTypeEnum;
+    private File file;
 
-
-    public String getAttachmentName() {
-        return attachmentName;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setAttachmentName(String attachmentName) {
-        this.attachmentName = attachmentName;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
-    public File getAttachment() {
-        return attachment;
+    private String fileUrl;
+
+    public int getFileType() {
+        return fileType;
     }
 
-    public void setAttachment(File attachment) {
-        this.attachment = attachment;
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
     }
 
-    public String getAttachmentUrl() {
-        return attachmentUrl;
+    public String getFileTypeEnum() {
+        return fileTypeEnum;
     }
 
-    public void setAttachmentUrl(String attachmentUrl) {
-        this.attachmentUrl = attachmentUrl;
+    public void setFileTypeEnum(String fileTypeEnum) {
+        this.fileTypeEnum = fileTypeEnum;
     }
 
-    public String getAttachmentDownloadUrl() {
-        return attachmentDownloadUrl;
+    public String getFileDownloadUrl() {
+        return fileDownloadUrl;
     }
 
-    public void setAttachmentDownloadUrl(String attachmentDownloadUrl) {
-        this.attachmentDownloadUrl = attachmentDownloadUrl;
+    public void setFileDownloadUrl(String fileDownloadUrl) {
+        this.fileDownloadUrl = fileDownloadUrl;
     }
 
-    public long getAttachmentId() {
-        return attachmentId;
+    public long getFileId() {
+        return fileId;
     }
 
-    public void setAttachmentId(long attachmentId) {
-        this.attachmentId = attachmentId;
+    public void setFileId(long fileId) {
+        this.fileId = fileId;
     }
 
-    public String getAttachmentFileName() {
-        return attachmentFileName;
+
+
+    public String getFileContentType() {
+        return fileContentType;
     }
 
-    public void setAttachmentFileName(String attachmentFileName) {
-        this.attachmentFileName = attachmentFileName;
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
     }
 
-    public String getAttachmentContentType() {
-        return attachmentContentType;
+    private String fileDownloadUrl;
+    private long fileId;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
-    public void setAttachmentContentType(String attachmentContentType) {
-        this.attachmentContentType = attachmentContentType;
-    }
-
-    private String attachmentName;
-    private File attachment;
-    private String attachmentUrl;
-    private String attachmentDownloadUrl;
-    private long attachmentId;
-    private String attachmentFileName;
-    private  String attachmentContentType;
+    private  String fileContentType;
 
 
     private ModuleBaseWithCustomFields parent;

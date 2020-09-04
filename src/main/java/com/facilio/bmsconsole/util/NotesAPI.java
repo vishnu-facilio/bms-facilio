@@ -84,8 +84,15 @@ public class NotesAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(NoteContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
 				.maxLevel(0);
+
+		if (fieldMap.containsKey("parentId")) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+		}
+
+		if (fieldMap.containsKey("parent")) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+		}
 		
 		if (AccountUtil.getCurrentUser().isPortalUser()) {
 			Criteria cri = new Criteria();

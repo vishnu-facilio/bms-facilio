@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -65,6 +66,9 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 		if(attachments != null && !attachments.isEmpty()) {
 			for(AttachmentContext attachment : attachments) {
 				attachment.setParentId(recordId);
+				ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
+				parent.setId(recordId);
+				attachment.setParent(parent);
 			}
 			
 //			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {

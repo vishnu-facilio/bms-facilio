@@ -1590,14 +1590,14 @@ public enum ActionType {
 				List<AttachmentV3Context> attachments = V3AttachmentAPI.getAttachments(mailContext.getId(), FacilioConstants.ContextNames.MAIL_ATTACHMENT);
 				for (AttachmentV3Context attachment :attachments) {
 					FileStore fs = FacilioFactory.getFileStore();
-					Long fileId = attachment.getAttachmentId();
+					Long fileId = attachment.getFileId();
 					FileInfo fileInfo = fs.getFileInfo(fileId, true);
 					InputStream downloadStream = fs.readFile(fileInfo);
-					File file = File.createTempFile(attachment.getAttachmentFileName(), "");
+					File file = File.createTempFile(attachment.getFileFileName(), "");
 					FileUtils.copyInputStreamToFile(downloadStream, file);
 					attachedFiles.add(file);
-					attachedFilesFileName.add(attachment.getAttachmentFileName());
-					attachedFilesContentType.add(attachment.getAttachmentContentType());
+					attachedFilesFileName.add(attachment.getFileFileName());
+					attachedFilesContentType.add(attachment.getFileContentType());
 				}
 			}
 			bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
@@ -1883,17 +1883,17 @@ public enum ActionType {
 	private static Map<String, Object> parseFileObject (AttachmentV3Context attachment, String fileFieldName) throws Exception {
 
 		FileStore fs = FacilioFactory.getFileStore();
-		Long fileId = attachment.getAttachmentId();
+		Long fileId = attachment.getFileId();
 		FileInfo fileInfo = null;
 		InputStream downloadStream = null;
 		fileInfo = fs.getFileInfo(fileId, true);
 		downloadStream = fs.readFile(fileInfo);
-		File file = File.createTempFile(attachment.getAttachmentFileName(), "");
+		File file = File.createTempFile(attachment.getFileFileName(), "");
 		FileUtils.copyInputStreamToFile(downloadStream, file);
 		Map<String, Object> fileObject = new HashMap<>();
 		fileObject.put("createdTime", System.currentTimeMillis());
-		fileObject.put(fileFieldName+"FileName", attachment.getAttachmentFileName());
-		fileObject.put(fileFieldName+"ContentType", attachment.getAttachmentContentType());
+		fileObject.put(fileFieldName+"FileName", attachment.getFileFileName());
+		fileObject.put(fileFieldName+"ContentType", attachment.getFileContentType());
 		fileObject.put(fileFieldName, file);
 
 		return fileObject;
@@ -1916,7 +1916,7 @@ public enum ActionType {
 					Map<String, List<Map<String, Object>>> attachmentMap = new HashMap<>();
 					List<Map<String, Object>> attachmentList = new ArrayList<>();
 					for (AttachmentV3Context attachmentV3Context :attachments) {
-						attachmentList.add(parseFileObject(attachmentV3Context, "attachment"));
+						attachmentList.add(parseFileObject(attachmentV3Context, "file"));
 					}
 					attachmentMap.put(attachmentModule.getName(), attachmentList);
 					record.setSubForm(attachmentMap);
@@ -1942,7 +1942,7 @@ public enum ActionType {
 									// check if attachment type matches to file file type
 									for (int i = attachments.size() - 1; i >= 0; i--) {
 										AttachmentV3Context attachment = attachments.get(i);
-										if (attachment.getAttachmentContentType().contains(fileField.getFormatEnum().getStringVal())) {
+										if (attachment.getFileContentType().contains(fileField.getFormatEnum().getStringVal())) {
 											record.addData(parseFileObject(attachment, f.getName()));
 											attachments.remove(i);
 											isAdded = true;

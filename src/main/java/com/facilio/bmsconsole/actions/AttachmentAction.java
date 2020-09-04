@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
@@ -8,6 +9,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
+import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.log4j.LogManager;
@@ -102,9 +104,8 @@ public class AttachmentAction  extends FacilioAction {
 	public String addAttachment() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
-		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachment);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
@@ -121,7 +122,13 @@ public class AttachmentAction  extends FacilioAction {
 		}  else if (module.equals(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
 		}
- 		
+		if (this.module.equals("cmdattachments")) {
+			String customModuleAttachment = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.ATTACHMENTS);
+			if (customModuleAttachment != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleAttachment);
+			}
+		}
+
 		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		
@@ -165,8 +172,14 @@ public class AttachmentAction  extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+		if (this.module.equals("cmdattachments")) {
+			String customModuleAttachment = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.ATTACHMENTS);
+			if (customModuleAttachment != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleAttachment);
+			}
+		}
+
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
-		
 		FacilioChain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
 		getAttachmentsChain.execute(context);
 		
@@ -276,6 +289,14 @@ public class AttachmentAction  extends FacilioAction {
 	}
 	public void setFileId(Long fileId) {
 		this.fileId = fileId;
+	}
+
+	private String parentModuleName;
+	public String getParentModuleName() {
+		return parentModuleName;
+	}
+	public void setParentModuleName(String parentModuleName) {
+		this.parentModuleName = parentModuleName;
 	}
 	
 }

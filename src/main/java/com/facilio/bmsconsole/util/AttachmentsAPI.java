@@ -142,7 +142,11 @@ public class AttachmentsAPI {
 		}
 		
 		if (parentId != null && parentId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+			if (module.isCustom()) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+			} else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+			}
 		}
 		
 		if (attachmentIds != null && attachmentIds.length > 0 && !attachmentIds[0].isEmpty()) {

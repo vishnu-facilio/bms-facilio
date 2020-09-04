@@ -56,4 +56,13 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	public void setNotifyRequester(boolean notifyRequester) {
 		this.notifyRequester = notifyRequester;
 	}
+
+	private ModuleBaseWithCustomFields parent;
+
+	public ModuleBaseWithCustomFields getParent() {
+		return parent;
+	}
+	public void setParent(ModuleBaseWithCustomFields parent) {
+		this.parent = parent;
+	}
 }
