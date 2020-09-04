@@ -33,7 +33,8 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		}
 
 		boolean forkPostProcessing = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, false);
-		if (forkPostProcessing) {
+		LOGGER.debug(MessageFormat.format("Fork post processing --> {0}", forkPostProcessing));
+		if (forkPostProcessing || AccountUtil.getCurrentOrg().getOrgId() == 343) { //Temporarily adding orgid since not able to figure out where to set the property
 			long time = System.currentTimeMillis();
 			FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
 			LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
