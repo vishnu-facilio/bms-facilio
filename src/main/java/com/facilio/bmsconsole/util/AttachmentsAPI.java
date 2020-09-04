@@ -142,10 +142,13 @@ public class AttachmentsAPI {
 		}
 		
 		if (parentId != null && parentId > 0) {
-			if (module.isCustom()) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
-			} else {
+
+			if (fieldMap.containsKey("parentId")) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+			}
+
+			if (fieldMap.containsKey("parent")) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
 			}
 		}
 		

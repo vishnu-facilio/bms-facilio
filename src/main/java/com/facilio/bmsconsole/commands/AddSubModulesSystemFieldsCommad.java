@@ -31,7 +31,7 @@ public class AddSubModulesSystemFieldsCommad extends FacilioCommand {
         customAttachmentModule.setName(module.getName() + "cmdattachments");
         customAttachmentModule.setDisplayName(module.getDisplayName() + "CMD Attachments");
         customAttachmentModule.setTableName("CMD_Attachments");
-        customNotesModule.setCustom(true);
+        customAttachmentModule.setCustom(true);
         customAttachmentModule.setType(FacilioModule.ModuleType.ATTACHMENTS);
 
         modules.add(customAttachmentModule);
