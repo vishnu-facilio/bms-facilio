@@ -165,7 +165,7 @@ public class AgentAlarmPageFactory extends PageFactory  {
         cardWidget.addToWidgetParams("primaryKey", "durationCurrentMonth");
         cardWidget.addToWidgetParams("secondaryTitle", "Last Month");
         cardWidget.addToWidgetParams("secondaryKey", "durationLastMonth");
-        cardWidget.addToWidgetParams("type", "duration");
+        cardWidget.addToWidgetParams("dataType", "duration");
         cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
         section.addWidget(cardWidget);
         return  cardWidget;
@@ -178,7 +178,7 @@ public class AgentAlarmPageFactory extends PageFactory  {
         cardWidget.addToWidgetParams("primaryKey", "maxDurationThisMonth");
         cardWidget.addToWidgetParams("secondaryTitle", "Last Month");
         cardWidget.addToWidgetParams("secondaryKey", "maxDurationLastMonth");
-        cardWidget.addToWidgetParams("type", "duration");
+        cardWidget.addToWidgetParams("dataType", "duration");
         cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
         section.addWidget(cardWidget);
         return  cardWidget;
