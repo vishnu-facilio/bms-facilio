@@ -113,15 +113,10 @@ public class DataProcessorUtil {
      */
     public boolean processRecord(FacilioRecord record) {
         long recordId = record.getId();
-        String threadName = Thread.currentThread().getName();
-        Thread.currentThread().setName(recordId+"-"+threadName);
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
-            if(AccountUtil.getCurrentOrg().getOrgId() == 343) {
-                AccountUtil.getCurrentOrg().setLoggerLevel(2);
-                AccountUtil.getCurrentAccount().setLoggerLevel(2);
-            }
+            AccountUtil.getCurrentAccount().setRequestUri(String.valueOf(recordId));
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
@@ -333,7 +328,6 @@ public class DataProcessorUtil {
             } catch (Exception e) {
                 LOGGER.info("record: " + recordId);
             }
-            Thread.currentThread().setName(threadName);
         }
         // LOGGER.info(" processing successful");
         return true;
