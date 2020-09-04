@@ -47,13 +47,19 @@ Map cardLayout(Map params) {
       sorting["fieldName"] = "name";
 	  sorting["order"] = "asc";
     }
-  	perPage = params.perPage;
+  	page = params.page;
+    if (page == null) {
+        page = 1;
+    }
+    perPage = params.perPage;
   	if (perPage == null) {
       perPage = 100;
     }
 
-    
-    
+    offset = ((page-1) * perPage);
+    if (offset < 0) {
+        offset = 0;
+    }
 
   	criteriaObj = null;
   	assetCategoryCriteria = [category == assetCategoryId];
@@ -69,21 +75,17 @@ Map cardLayout(Map params) {
       criteriaObj.and(assetCategoryCriteria);
     }
   
-  	assetDb = null;
-  	if (sorting.order == "asc") {
-      assetDb = {
-          criteria : criteriaObj,
-          orderBy : sorting.fieldName asc,
-          limit : perPage
-      };
+  	assetDb = {};
+  	assetDb.put("criteria", criteriaObj);
+    if (sorting.fieldName != null) {
+        assetDb.put("sortByFieldName", sorting.fieldName);
     }
-  	else {
-      assetDb = {
-          criteria : criteriaObj,
-          orderBy : sorting.fieldName desc,
-          limit : perPage
-      };
+    if (sorting.order != null) {
+        assetDb.put("sortOrder", sorting.order);
     }
+    assetDb.put("offset", offset);
+    assetDb.put("limit", limit);
+
     assetModule = Module(moduleName);
     assetList = assetModule.fetch(assetDb);
 
