@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.DashboardUserFilterWidgetFieldMappingConte
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
+import com.facilio.bmsconsole.context.WidgetCardContext.ScriptMode;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
@@ -143,6 +144,20 @@ public class DashboardFilterUtil {
 				.andCondition(CriteriaAPI.getIdCondition(toRemove, module));
 		builder.delete();
 
+	}
+	public static boolean isCustomScriptWidget(DashboardWidgetContext widget)
+	{
+		if(widget.getWidgetType()==WidgetType.CARD)
+		{
+			WidgetCardContext cardContext=(WidgetCardContext)widget;
+			if(cardContext.getScriptMode()==ScriptMode.CUSTOM_SCRIPT)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+		
 	}
 	public static long getModuleIdFromWidget(DashboardWidgetContext widget) throws Exception
 	{

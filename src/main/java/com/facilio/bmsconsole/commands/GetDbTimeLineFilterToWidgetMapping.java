@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
+import com.facilio.bmsconsole.context.WidgetCardContext.ScriptMode;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.KPIUtil;
@@ -101,8 +102,15 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 						WidgetCardContext newCardWidget = (WidgetCardContext) widget;
 
 						String cardLayout = newCardWidget.getCardLayout();
+						
+						if(newCardWidget.getScriptMode()==ScriptMode.CUSTOM_SCRIPT)
+						{
+							//cannot identify datefield for custom script cards, but still include widget in timeline map
+							widgetTimeLineFilters.put(widget.getId(), Collections.singletonMap("dateField",null));
 
-						if (DashboardFilterUtil.T_TIME_ONLY_CARD_LAYOUTS.contains(cardLayout)) {
+						}	
+
+						else if (DashboardFilterUtil.T_TIME_ONLY_CARD_LAYOUTS.contains(cardLayout)) {
 
 							widgetTimeLineFilters.put(widget.getId(), TIME_LINE_T_TIME_DATE_FIELD);
 
