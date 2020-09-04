@@ -2,7 +2,9 @@ package com.facilio.services.procon.message;
 
 import org.json.simple.JSONObject;
 
-public class FacilioRecord {
+import java.io.Serializable;
+
+public class FacilioRecord implements Serializable {
 
     private String partitionKey;
     private JSONObject data;
