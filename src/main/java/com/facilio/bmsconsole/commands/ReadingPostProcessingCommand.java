@@ -27,10 +27,16 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
             LOGGER.debug("Executing formula");
             executeFormulae(context);
         }
-//        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 343l) {
-        LOGGER.debug("Executing PubSub");
+        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343l) {// Needs to be removed
+            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+            if (forkPostProcessing) {
+                publishReadingChangeMessage(context);
+            }
+        }
+        else {
             publishReadingChangeMessage(context);
-//        }
+        }
         LOGGER.debug("Post processing completed");
         return false;
     }
@@ -63,6 +69,7 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     private void publishReadingChangeMessage (Context context) {
         try {
+            LOGGER.debug("Executing PubSub");
             FacilioChain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
             publishChain.setContext((FacilioContext) context);
             publishChain.execute();
