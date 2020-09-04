@@ -336,9 +336,6 @@ public class DataProcessorV2
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.IS_NEW_AGENT, true);
-            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-                context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, true);
-            }
             //TODO
             if (controller != null) {
                 context.put(AgentConstants.CONTROLLER, controller);

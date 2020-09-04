@@ -2116,6 +2116,7 @@ public class FacilioConstants {
 		public static final String ENERGY_COST_CONSTANT = "energyCostConstant";
 		public static final String ENERGY_CARBON_CONSTANT = "energyCarbonConstant";
 		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
+		public static final String FORK_READING_POST_PROCESSING = "forkReadingPostProcessing";
 	}
 	
 	public static class Alarm {

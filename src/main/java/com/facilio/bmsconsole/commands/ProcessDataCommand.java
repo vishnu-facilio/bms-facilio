@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -30,6 +31,10 @@ public class ProcessDataCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+
+		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+		boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+		context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
 
 		JSONObject payLoad = (JSONObject) context.get(FacilioConstants.ContextNames.PAY_LOAD);
 	
