@@ -1,5 +1,6 @@
 package com.facilio.tasker.job;
 
+import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,12 +39,10 @@ public abstract class InstantJob {
 	public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
-        if(getMessageId()!=null) {
-        	currentThread.setName(threadName + "-instant-job-" + getMessageId());
-        }else {
-        	currentThread.setName(threadName + "-instant-job-" + StringUtils.truncate(getReceiptHandle(), 50));
-        }
-        
+        currentThread.setName(MessageFormat.format("{0}-{1}-instant-job-{2}",
+                                                    threadName,
+                                                    executor.getName(),
+                                                    getMessageId() != null ? getMessageId() : StringUtils.truncate(getReceiptHandle(), 50)));
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
