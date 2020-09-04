@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,9 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 
 		boolean forkPostProcessing = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, false);
 		if (forkPostProcessing) {
+			long time = System.currentTimeMillis();
 			FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
+			LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
 		}
 		else {
 			FacilioChain postProcessingChain = ReadOnlyChainFactory.readingPostProcessingChain();
