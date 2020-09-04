@@ -13,7 +13,8 @@ public class CommunitySharingInfoContext extends V3Context {
 
     public enum SharingType implements FacilioEnum {
         BUILDING("Building"),
-        SITE("Site")
+        SITE("Site"),
+        ALL_SITES("All Sites")
         ;
 
         private String name;

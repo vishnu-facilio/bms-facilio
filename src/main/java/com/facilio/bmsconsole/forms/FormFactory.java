@@ -2308,9 +2308,10 @@ public class FormFactory {
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",4, 1));
-		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("dealer", FieldDisplayType.TEXTBOX, "Dealer", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",5, 1));
+		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
 		form.setFields(fields);
 
 		return form;
@@ -2329,8 +2330,9 @@ public class FormFactory {
 		fields.add(new FormField("title", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("expiryDate", FieldDisplayType.DATE, "Expiry Date", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",4, 1));
-		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("dealer", FieldDisplayType.TEXTBOX, "Dealer", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("neighbourhood", FieldDisplayType.LOOKUP_SIMPLE, "Neighbourhood", Required.REQUIRED, "neighbourhood",5, 1));
+		fields.add(new FormField("dealsandoffersattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1));
 		form.setFields(fields);
 
 		return form;

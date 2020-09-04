@@ -13,7 +13,7 @@ public class DealsAndOffersContext extends V3Context {
     private Long startDate;
     private Boolean active;
     private List<DealsAndOffersSharingContext> dealsandofferssharing;
-
+    private String dealer;
 
     public List<DealsAndOffersSharingContext> getDealsandofferssharing() {
         return dealsandofferssharing;
@@ -77,5 +77,13 @@ public class DealsAndOffersContext extends V3Context {
 
     public void setStartDate(Long startDate) {
         this.startDate = startDate;
+    }
+
+    public String getDealer() {
+        return dealer;
+    }
+
+    public void setDealer(String dealer) {
+        this.dealer = dealer;
     }
 }

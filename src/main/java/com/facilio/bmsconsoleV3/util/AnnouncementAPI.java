@@ -138,7 +138,7 @@ public class AnnouncementAPI {
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
                      ppl = new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.SITE) {
+                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ALL_SITES || sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.SITE) {
                     ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
 

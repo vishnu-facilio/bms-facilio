@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.announcement.LoadAnnouncementLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCo
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.FillAdminDocumentsSharingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.LoadAdminDocumentsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.ContactDirectoryFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.FillContactDirectorySharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
@@ -22,6 +24,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDe
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodAddLocationCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
@@ -534,7 +537,10 @@ public class APIv3Config {
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getUpdateAnnouncementBeforeSaveChain())
                     .afterTransaction(TransactionChainFactoryV3.getUpdateAnnouncementAfterSaveChain())
+                .list()
+                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
                 .summary()
+                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
                     .afterFetch(new AnnouncementFillDetailsCommandV3())
                 .build();
     }
@@ -544,7 +550,10 @@ public class APIv3Config {
         return () -> new V3Config(PeopleAnnouncementContext.class)
                 .create()
                 .update()
+                .list()
+                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
                 .summary()
+                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
                 .build();
     }
 
@@ -553,7 +562,10 @@ public class APIv3Config {
         return () -> new V3Config(NewsAndInformationContext.class)
                 .create().beforeSave(new SetLocalIdCommandV3()).afterSave(new UpdateAttachmentsParentIdCommandV3())
                 .update().afterSave(new UpdateAttachmentsParentIdCommandV3())
+                .list()
+                    .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                 .summary()
+                    .beforeFetch(new LoadNewsAndInformationLookupCommandV3())
                 .build();
     }
 
@@ -592,7 +604,11 @@ public class APIv3Config {
         return () -> new V3Config(AdminDocumentsContext.class)
                 .create().beforeSave(new SetLocalIdCommandV3())
                 .update()
-                .summary().afterFetch(new FillAdminDocumentsSharingInfoCommand())
+                .list()
+                    .beforeFetch(new LoadAdminDocumentsLookupCommandV3())
+                .summary()
+                    .beforeFetch(new LoadAdminDocumentsLookupCommandV3())
+                    .afterFetch(new FillAdminDocumentsSharingInfoCommand())
                 .build();
     }
 
