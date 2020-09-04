@@ -35,6 +35,7 @@ public class DBParamContext {
 	}
 
 	int limit;
+	int offset;
 	boolean ignoreMarkedReadings;
 	String groupBy;
 	
@@ -70,6 +71,12 @@ public class DBParamContext {
 	}
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 	public Criteria getCriteria() {
 		return criteria;

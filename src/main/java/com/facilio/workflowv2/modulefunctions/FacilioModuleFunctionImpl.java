@@ -476,6 +476,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				selectBuilder.limit(dbParamContext.getLimit());
 				isLimitApplied = true;
 			}
+			if(dbParamContext.getOffset() >= 0) {
+				selectBuilder.offset(dbParamContext.getOffset());
+			}
 			if(!isLimitApplied) {
 				selectBuilder.limit(WorkflowV2Util.SELECT_DEFAULT_LIMIT);
 			}
