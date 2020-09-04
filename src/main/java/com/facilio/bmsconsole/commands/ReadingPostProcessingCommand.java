@@ -19,15 +19,19 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        LOGGER.debug("Executing workflow rules");
         executeWorkflowsRules(context);
         boolean adjustTime = (boolean) context.getOrDefault(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
         ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.OLD_CONTROLLER);
         if (controller == null && adjustTime) {
+            LOGGER.debug("Executing formula");
             executeFormulae(context);
         }
 //        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() != 343l) {
+        LOGGER.debug("Executing PubSub");
             publishReadingChangeMessage(context);
 //        }
+        LOGGER.debug("Post processing completed");
         return false;
     }
 
