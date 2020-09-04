@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.LoadAnnouncementLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
@@ -551,9 +552,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
-                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
+                    .beforeFetch(new LoadPeopleAnnouncementLookupCommand())
                 .summary()
-                    .beforeFetch(new LoadAnnouncementLookupCommandV3())
+                    .beforeFetch(new LoadPeopleAnnouncementLookupCommand())
                 .build();
     }
 
