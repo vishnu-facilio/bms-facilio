@@ -1,8 +1,28 @@
 package com.facilio.dataprocessor;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.*;
+import com.facilio.agent.AgentContent;
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.CommandStatus;
+import com.facilio.agent.ControllerCommand;
+import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.MessageStatus;
+import com.facilio.agent.PublishType;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -16,10 +36,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
@@ -32,23 +52,6 @@ import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
-
-import io.jsonwebtoken.lang.Collections;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class DataProcessorUtil {
 
@@ -113,6 +116,7 @@ public class DataProcessorUtil {
      */
     public boolean processRecord(FacilioRecord record) {
         long recordId = record.getId();
+        long agentMsgId = -1L;
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
@@ -144,7 +148,8 @@ public class DataProcessorUtil {
                          }
                     }
                     if(agentV2 != null){
-                        processorVersion = agentV2.getProcessorVersion();
+                    	agentMsgId = agentV2.getId();
+                    	processorVersion = agentV2.getProcessorVersion();
                     }
                     LOGGER.info(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {
@@ -228,6 +233,9 @@ public class DataProcessorUtil {
                 if (agentId < 1L) {
                     LOGGER.info(" Error in AgentId generation ");
                     return false;
+                }
+                if(agentMsgId == -1L) {
+                	agentMsgId = agent.getId();
                 }
                 agent.setId(agentId);
             }
@@ -325,6 +333,43 @@ public class DataProcessorUtil {
                 event.setProperty(TIME_TAKEN, String.valueOf(time / 1000));
                 event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(time));
                 LOGGER.callAppenders(event);
+                if(isStage) {
+                	Map<String,Object> prop = new HashMap<>();
+                	prop.put(AgentConstants.SELECT_QUERIES, account.getSelectQueries());
+                	prop.put(AgentConstants.INSERT_QUERIES, account.getInsertQueries());
+                	prop.put(AgentConstants.UPDATE_QUERIES, account.getUpdateQueries());
+                	prop.put(AgentConstants.DELETE_QUERIES, account.getDeleteQueries());
+                	prop.put(AgentConstants.REDIS_QUERIES, account.getRedisQueries());
+                	prop.put(AgentConstants.REDIS_GET_COUNT, account.getRedisGetCount());
+                	prop.put(AgentConstants.REDIS_PUT_COUNT, account.getRedisPutCount());
+                	prop.put(AgentConstants.REDIS_DELETE_COUNT, account.getRedisDeleteCount());
+                	prop.put(AgentConstants.SELECT_QUERIES_TIME, account.getSelectQueriesTime());
+                	prop.put(AgentConstants.INSERT_QUERIES_TIME, account.getInsertQueriesTime());
+                	prop.put(AgentConstants.UPDATE_QUERIES_TIME, account.getUpdateQueriesTime());
+                	prop.put(AgentConstants.DELETE_QUERIES_TIME, account.getDeleteQueriesTime());
+                	prop.put(AgentConstants.REDIS_TIME, account.getRedisTime());
+                	prop.put(AgentConstants.REDIS_GET_TIME, account.getRedisGetTime());
+                	prop.put(AgentConstants.REDIS_PUT_TIME, account.getRedisPutTime());
+                	prop.put(AgentConstants.REDIS_DELETE_TIME, account.getRedisDeleteTime());
+                	prop.put(AgentConstants.PUBLIC_SELECT_QUERIES, account.getPublicSelectQueries());
+                	prop.put(AgentConstants.PUBLIC_INSERT_QUERIES, account.getPublicInsertQueries());
+                	prop.put(AgentConstants.PUBLIC_UPDATE_QUERIES, account.getPublicUpdateQueries());
+                	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES, account.getPublicDeleteQueries());
+                	prop.put(AgentConstants.PUBLIC_REDIS_QUERIES, account.getPublicRedisQueries());
+                	prop.put(AgentConstants.PUBLIC_REDIS_GET_COUNT, account.getPublicRedisGetCount());
+                	prop.put(AgentConstants.PUBLIC_REDIS_PUT_COUNT, account.getPublicRedisPutCount());
+                	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_COUNT, account.getPublicRedisDeleteCount());
+                	prop.put(AgentConstants.PUBLIC_SELECT_QUERIES_TIME, account.getPublicSelectQueriesTime());
+                	prop.put(AgentConstants.PUBLIC_INSERT_QUERIES_TIME, account.getPublicInsertQueriesTime());
+                	prop.put(AgentConstants.PUBLIC_UPDATE_QUERIES_TIME, account.getPublicUpdateQueriesTime());
+                	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES_TIME, account.getPublicDeleteQueriesTime());
+                	prop.put(AgentConstants.PUBLIC_REDIS_TIME, account.getPublicRedisTime());
+                	prop.put(AgentConstants.PUBLIC_REDIS_GET_TIME, account.getPublicRedisGetTime());
+                	prop.put(AgentConstants.PUBLIC_REDIS_PUT_TIME, account.getPublicRedisPutTime());
+                	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
+                	prop.put(AgentConstants.AGENT_ID, agentMsgId);
+                	updateAgentMsg(prop,recordId);
+                }
             } catch (Exception e) {
                 LOGGER.info("record: " + recordId);
             }
@@ -333,7 +378,16 @@ public class DataProcessorUtil {
         return true;
     }
 
-    private boolean sendToProcessorV2(JSONObject payLoad, long recordId) {
+    private void updateAgentMsg(Map<String, Object> prop, long recordId) throws SQLException {
+    	List<FacilioField> fields = FieldFactory.getAgentMessageFields();
+		int count = new GenericUpdateRecordBuilder().fields(fields).table(ModuleFactory.getAgentMessageModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS))
+				.update(prop);
+		if(count == 0) {
+			LOGGER.error("Cann't able to update log count in Agent Message Table ");
+		}
+    }
+	private boolean sendToProcessorV2(JSONObject payLoad, long recordId) {
         if (dataProcessorV2 != null) {
             try {
                 if (!dataProcessorV2.processRecord(payLoad)) {

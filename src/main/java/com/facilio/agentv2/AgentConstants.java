@@ -135,7 +135,7 @@ public class AgentConstants
     public static final String CONTROLLER_TABLE = "Controllers";
     public static final String POINT_IDS = "pointIds";
     public static final String UPDATE_CHILD = "updateChild";
-
+    public static final String RECORD_ID = "recordId";
 
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";
@@ -208,4 +208,38 @@ public class AgentConstants
     public static final String IS_DISABLE = "isDisable";
     public static final String LAST_DISABLED_TIME = "lastDisabledTime";
     public static final String LAST_ENBLED_TIME = "lastEnabledTime";
+    
+    public static final String SELECT_QUERIES = "selectQueries";
+    public static final String INSERT_QUERIES = "insertQueries";
+    public static final String UPDATE_QUERIES = "updateQueries";
+    public static final String DELETE_QUERIES = "deleteQueries";
+    public static final String REDIS_QUERIES = "redisQueries";
+    public static final String REDIS_GET_COUNT = "redisGetCount";
+    public static final String REDIS_PUT_COUNT = "redisPutCount";
+    public static final String REDIS_DELETE_COUNT = "redisDeleteCount";
+    public static final String SELECT_QUERIES_TIME = "selectQueriesTime";
+    public static final String INSERT_QUERIES_TIME = "insertQueriesTime";
+    public static final String UPDATE_QUERIES_TIME = "updateQueriesTime";
+    public static final String DELETE_QUERIES_TIME = "deleteQueriesTime";
+    public static final String REDIS_TIME = "redisTime";
+    public static final String REDIS_GET_TIME = "redisGetTime";
+    public static final String REDIS_PUT_TIME = "redisPutTime";
+    public static final String REDIS_DELETE_TIME = "redisDeleteTime";
+    public static final String PUBLIC_SELECT_QUERIES = "publicSelectQueries";
+    public static final String PUBLIC_INSERT_QUERIES = "publicInsertQueries";
+    public static final String PUBLIC_UPDATE_QUERIES = "publicUpdateQueries";
+    public static final String PUBLIC_DELETE_QUERIES = "publicDeleteQueries";
+    public static final String PUBLIC_REDIS_QUERIES = "publicRedisQueries";
+    public static final String PUBLIC_REDIS_GET_COUNT = "publicRedisGetCount";
+    public static final String PUBLIC_REDIS_PUT_COUNT = "publicRedisPutCount";
+    public static final String PUBLIC_REDIS_DELETE_COUNT = "publicRedisDeleteCount";
+    public static final String PUBLIC_SELECT_QUERIES_TIME = "publicSelectQueriesTime";
+    public static final String PUBLIC_INSERT_QUERIES_TIME = "publicInsertQueriesTime";
+    public static final String PUBLIC_UPDATE_QUERIES_TIME = "publicUpdateQueriesTime";
+    public static final String PUBLIC_DELETE_QUERIES_TIME = "publicDeleteQueriesTime";
+    public static final String PUBLIC_REDIS_TIME = "publicRedisTime";
+    public static final String PUBLIC_REDIS_GET_TIME = "publicRedisGetTime";
+    public static final String PUBLIC_REDIS_PUT_TIME = "publicRedisPutTime";
+    public static final String PUBLIC_REDIS_DELETE_TIME = "publicRedisDeleteTime";
+    
 }

@@ -466,7 +466,41 @@ public class FieldFactory {
         fields.add(getNumberField(AgentKeys.RECORD_ID, "RECORD_ID", module));
         fields.add(getAgentMessageStatusField(module));
         fields.add(getAgentMessageStartTimeField(module));
+        fields.add(getNumberField(AgentConstants.AGENT_ID, "AGENT_ID", module));
         fields.add(getField(AgentKeys.FINISH_TIME, "FINISH_TIME", module, FieldType.NUMBER));
+        fields.add(getNumberField(AgentConstants.SELECT_QUERIES, "SELECT_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.INSERT_QUERIES, "INSERT_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.UPDATE_QUERIES, "UPDATE_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.DELETE_QUERIES, "DELETE_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.REDIS_QUERIES, "REDIS_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.REDIS_GET_COUNT, "REDIS_GET_COUNT", module));
+        fields.add(getNumberField(AgentConstants.REDIS_PUT_COUNT, "REDIS_PUT_COUNT", module));
+        fields.add(getNumberField(AgentConstants.REDIS_DELETE_COUNT, "REDIS_DELETE_COUNT", module));
+        fields.add(getNumberField(AgentConstants.SELECT_QUERIES_TIME, "SELECT_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.INSERT_QUERIES_TIME, "INSERT_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.UPDATE_QUERIES_TIME, "UPDATE_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.DELETE_QUERIES_TIME, "DELETE_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.REDIS_TIME, "REDIS_TIME", module));
+        fields.add(getNumberField(AgentConstants.REDIS_GET_TIME, "REDIS_GET_TIME", module));
+        fields.add(getNumberField(AgentConstants.REDIS_PUT_TIME, "REDIS_PUT_TIME", module));
+        fields.add(getNumberField(AgentConstants.REDIS_DELETE_TIME, "REDIS_DELETE_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_SELECT_QUERIES, "PUBLIC_SELECT_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_INSERT_QUERIES, "PUBLIC_INSERT_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_UPDATE_QUERIES, "PUBLIC_UPDATE_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_DELETE_QUERIES, "PUBLIC_DELETE_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_QUERIES, "PUBLIC_REDIS_QUERIES", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_GET_COUNT, "PUBLIC_REDIS_GET_COUNT", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_PUT_COUNT, "PUBLIC_REDIS_PUT_COUNT", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_DELETE_COUNT, "PUBLIC_REDIS_DELETE_COUNT", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_SELECT_QUERIES_TIME, "PUBLIC_SELECT_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_INSERT_QUERIES_TIME, "PUBLIC_INSERT_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_UPDATE_QUERIES_TIME, "PUBLIC_UPDATE_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_DELETE_QUERIES_TIME, "PUBLIC_DELETE_QUERIES_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_TIME, "PUBLIC_REDIS_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_GET_TIME, "PUBLIC_REDIS_GET_TIME", module));
+        fields.add(getNumberField(AgentConstants.PUBLIC_REDIS_PUT_TIME, "PUBLIC_REDIS_PUT_TIME", module));
+        fields.add(getNumberField(AgentConstants.SELECT_QUERIES, "PUBLIC_REDIS_DELETE_TIME", module));
+        
         return fields;
     }
 

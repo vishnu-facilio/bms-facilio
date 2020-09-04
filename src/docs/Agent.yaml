@@ -365,7 +365,80 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgentStandardResponse'                                   
+                $ref: '#/components/schemas/AgentStandardResponse'          
+
+  /v2/agent/getConfPoints:
+    get:
+      tags:
+        - points
+      description: get configured points list.
+      parameters:
+        - $ref: '#/components/parameters/controllerType'
+        - $ref: '#/components/parameters/deviceId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPointsResponses'
+ 
+  /v2/agent/getUnConfPoints:
+    get:
+      tags:
+        - points
+      description: get Unconfigured points list.
+      parameters:
+        - $ref: '#/components/parameters/controllerType'
+        - $ref: '#/components/parameters/deviceId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPointsResponses'
+ 
+  /v2/agent/getSubPoints:
+    get:
+      tags:
+        - points
+      description: get subscribe points list.
+      parameters:
+        - $ref: '#/components/parameters/controllerType'
+        - $ref: '#/components/parameters/deviceId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPointsResponses' 
+ 
+
+  /v2/agent/getCommPoints:
+    get:
+      tags:
+        - points
+      description: get commissioned points list.
+      parameters:
+        - $ref: '#/components/parameters/controllerType'
+        - $ref: '#/components/parameters/deviceId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Result of api
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPointsResponses' 
 
 components:
   securitySchemes:
@@ -465,6 +538,14 @@ components:
       required: false
       schema: 
         type: string
+    deviceId:
+      in: query
+      description: device id
+      name: deviceId
+      required: true
+      schema:
+        type: integer
+        
               
   schemas:
     AgentStandardResponse:
@@ -687,4 +768,57 @@ components:
                   format: int64
                 version:
                   type: string
+ 
+    GetPointsResponses:
+      type: object
+      properties:
+        responseCode:
+          type: integer
+          format: int32
+        result:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                configureStatus:
+                  type: integer
+                controllerId:
+                  type: integer
+                createdTime:
+                  type: integer
+                dataType:
+                  type: integer
+                deviceId:
+                  type: integer
+                deviceName:
+                  type: string
+                id:
+                  type: integer
+                instanceNumber:
+                  type: integer
+                instanceType:
+                  type: integer
+                mappedTime:
+                  type: integer
+                name:
+                  type: string
+                orgId:
+                  type: integer
+                pointType:
+                  type: integer
+                pseudo:
+                  type: boolean
+                subscribeStatus:
+                  type: boolean
+                thresholdJson:
+                  type: object
+                unit:
+                  type: integer
+                writable:
+                  type: boolean
+                writableSwitch:
+                  type: boolean
+                
+                  
                         
