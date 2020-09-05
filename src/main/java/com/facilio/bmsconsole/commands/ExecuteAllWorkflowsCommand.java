@@ -46,7 +46,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.google.common.collect.Lists;
 
-public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serializable
+public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTransactionCommand,Serializable
 {
 	/**
 	 * 
@@ -56,6 +56,13 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 	private RuleType[] ruleTypes;
 	private int recordsPerThread = -1;
 	private boolean propagateError = true;
+	
+	private Map<String, List> recordMap;
+	private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap;
+	private Boolean isParallelRuleExecution;
+	private Context context;
+	private Map<String,List<WorkflowRuleContext>> postRules;
+	
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
 		this.ruleTypes = ruleTypes;
@@ -76,14 +83,13 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		Map<String, List> recordMap = null;
 		try {
 			long startTime = System.currentTimeMillis();
 			Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
-			Boolean isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
+			isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
 			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
 			Boolean stopParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION);
 			stopParallelRuleExecution = stopParallelRuleExecution != null ? stopParallelRuleExecution : Boolean.FALSE;
@@ -99,10 +105,12 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			}
 			
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+			changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 			if(recordMap != null && !recordMap.isEmpty()) {
 				if (recordsPerThread == -1) {
-					fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context);
+					postRules = new HashMap<>();
+					this.context = context;
+					fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context, false);
 				}
 				else {
 					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
@@ -152,7 +160,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		return parentCriteria;
 	}
 
-	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, boolean isParallelRuleExecution, FacilioContext context) throws Exception {
+	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, boolean isParallelRuleExecution, FacilioContext context, boolean isPostExecute) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
 			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -170,7 +178,18 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				FacilioModule module = modBean.getModule(moduleName);
 				
 				long currentTime = System.currentTimeMillis();
-				List<WorkflowRuleContext> workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
+				List<WorkflowRuleContext> workflowRules;
+				if (isPostExecute ) {
+					if (postRules.containsKey(moduleName)) {
+						workflowRules = postRules.get(moduleName);
+					}
+					else {
+						continue;
+					}
+				}
+				else {
+					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
+				}
 				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				currentTime = System.currentTimeMillis();
 				
@@ -203,7 +222,19 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					long processStartTime = System.currentTimeMillis();
-					LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = WorkflowRuleAPI.groupWorkflowRulesByRuletype(workflowRules);
+					
+					List<WorkflowRuleContext> postRulesList = null;
+					if (!isPostExecute) {
+						postRulesList = postRules.get(moduleName);
+						if (postRulesList == null) {
+							postRulesList = new ArrayList<>();
+						}
+					}
+					
+					LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = WorkflowRuleAPI.groupWorkflowRulesByRuletype(workflowRules, postRulesList);
+					if (postRulesList != null && !postRulesList.isEmpty()) {
+						postRules.put(moduleName, postRulesList);
+					}
 					List<WorkflowRuleContext> workflowRulesExcludingReadingRule = new LinkedList<WorkflowRuleContext>();
 					List<WorkflowRuleContext> readingRules = new LinkedList<WorkflowRuleContext>();
 					WorkflowRuleAPI.groupWorkflowRulesByInstantJobs(ruleTypeVsWorkflowRules, workflowRulesExcludingReadingRule, readingRules);
@@ -305,7 +336,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					if (records != null && !records.isEmpty()) {
 						String moduleName = entry.getKey();
 						if (records.size() <= recordsPerThread) {
-							fetchAndExecuteRules(recordMap, changeSetMap, false, context);
+							fetchAndExecuteRules(recordMap, changeSetMap, false, context, false);
 						}
 						else {
 							List<List> recordLists = Lists.partition(records, recordsPerThread);
@@ -325,4 +356,19 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		}
 		
 	}
+
+	@Override
+	public boolean postExecute() throws Exception {
+		try {
+			if (postRules != null && !postRules.isEmpty()) {
+				fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context, true);
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("OnPostExecuteRule:: Error occurred on post execution of workflow rule", e);
+		}
+		
+		return false;
+	}
+	
 }

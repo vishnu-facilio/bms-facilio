@@ -1010,10 +1010,16 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
-	public static LinkedHashMap<RuleType, List<WorkflowRuleContext>> groupWorkflowRulesByRuletype(List<WorkflowRuleContext> workflowRules) throws Exception {
+	public static LinkedHashMap<RuleType, List<WorkflowRuleContext>> groupWorkflowRulesByRuletype(List<WorkflowRuleContext> workflowRules, List<WorkflowRuleContext> postRules) throws Exception {
 
 		LinkedHashMap<RuleType, List<WorkflowRuleContext>> ruleTypeVsWorkflowRules = new LinkedHashMap<RuleType, List<WorkflowRuleContext>>();
-		for(WorkflowRuleContext workflowRule: workflowRules) {
+		for (Iterator<WorkflowRuleContext> iterator = workflowRules.iterator(); iterator.hasNext(); ) {
+			WorkflowRuleContext workflowRule = iterator.next();
+			if (postRules != null && workflowRule.getRuleTypeEnum().isPostExecute()) {
+				postRules.add(workflowRule);
+				iterator.remove();
+				continue;
+			}
 			List<WorkflowRuleContext> ruleTypeSpecificWorkflowRules = ruleTypeVsWorkflowRules.get(workflowRule.getRuleTypeEnum());
 			if(ruleTypeSpecificWorkflowRules == null || ruleTypeSpecificWorkflowRules.isEmpty()) {
 				ruleTypeSpecificWorkflowRules = new LinkedList<WorkflowRuleContext>();
