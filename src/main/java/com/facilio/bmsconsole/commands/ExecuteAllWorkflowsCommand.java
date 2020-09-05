@@ -193,9 +193,10 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 				}
 
-				LOGGER.debug(MessageFormat.format("Number of (rules, records) : ({0}, {1})",
+				LOGGER.debug(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
 								(workflowRules == null ? 0 : workflowRules.size()),
-								(entry.getValue() == null ? 0 : entry.getValue().size())
+								(entry.getValue() == null ? 0 : entry.getValue().size()),
+								isParallelRuleExecution
 												)
 							);
 
