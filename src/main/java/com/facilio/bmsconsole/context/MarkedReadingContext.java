@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-public class MarkedReadingContext  {
+import java.io.Serializable;
+
+public class MarkedReadingContext implements Serializable {
 
 	private long ttime = -1;
 	public long getTtime() {
