@@ -40,7 +40,7 @@ public class DataProcessorV2
     private AgentUtilV2 agentUtil;
     private ControllerUtilV2 controllerUtil;
     private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
-
+    private Map<Long, Long> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
 
 
 
@@ -71,6 +71,10 @@ public class DataProcessorV2
             Long timeStamp = System.currentTimeMillis();
             if(payload.containsKey(AgentConstants.TIMESTAMP)){
                 timeStamp = (Long) payload.get(AgentConstants.TIMESTAMP);
+                if (payload.containsKey("actual_timestamp")) {
+                    Object actual_timestampObj = payload.get("actual_timestamp");
+                    timeStamp = actual_timestampObj instanceof Long ? (Long) actual_timestampObj : Long.parseLong(actual_timestampObj.toString());
+                }
             }else {
                 payload.put(AgentConstants.TIMESTAMP,timeStamp);
             }
@@ -87,7 +91,6 @@ public class DataProcessorV2
             if(publishType == null){
                 throw new Exception(" publish type cant be null "+JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
             }
-
             markMetrices(agent,payload);
             switch (publishType) {
             	case CUSTOM:
@@ -107,17 +110,19 @@ public class DataProcessorV2
                     processStatus = processAck(agent,payload);
                     break;
                 case TIMESERIES:
-                    Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    if (timeseriesController != null) {
+                    Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
+                    if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
+                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp)) {
+
+                        controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
+                        processStatus = processTimeSeries(timeSeriesPayload, timeseriesController, true);
+
                     } else {
-                        LOGGER.info(" timeseries controller not found ");
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
+                        LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
+                                " a_timestamp : " + timeStamp);
                     }
-
-                    processStatus = processTimeSeries(timeSeriesPayload, timeseriesController, true);
-
                     break;
                 case COV:
                     Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
