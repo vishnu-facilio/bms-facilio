@@ -29,25 +29,39 @@ public class FormulaLeafTriggerJob extends FacilioJob{
 		
 		List<Integer> types = getFrequencyTypesToBeFetched();
 		LOGGER.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : "+types);
-		List<FormulaFieldResourceStatusContext> formulaResourcesAtLeaf = FormulaFieldResourceStatusAPI.getLeafFormulaFieldResourceStatusByFrequency(types);
 		
-		if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {			
-			for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
-			{		
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, formulaResourceAtLeaf.getId());
-				context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);
-				FacilioTimer.scheduleInstantJob("FormulaFieldCalculatorJob", context);				
-			}		
-		}	
+		if(types != null && !types.isEmpty()) {
+			List<FormulaFieldResourceStatusContext> formulaResourcesAtLeaf = FormulaFieldResourceStatusAPI.getLeafFormulaFieldResourceStatusByFrequency(types);		
+			if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {			
+				for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
+				{		
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, formulaResourceAtLeaf.getId());
+					context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);
+					FacilioTimer.scheduleInstantJob("FormulaFieldCalculatorJob", context);				
+				}		
+			}	
+		}
+		
 	}
 	
 	private List<Integer> getFrequencyTypesToBeFetched() {
 		List<Integer> types = new ArrayList<Integer>();
-		types.add(FacilioFrequency.HOURLY.getValue());
 		
 		ZonedDateTime zdt = DateTimeUtil.getDateTime();
+		int currentMinute = zdt.getMinute();
+		int roundedMinute = FormulaFieldAPI.getRoundedMinute(currentMinute, 5);
 		
+		if(roundedMinute%10 == 0) {
+			types.add(FacilioFrequency.TEN_MINUTES.getValue());
+		}
+		if(roundedMinute%15 == 0) {
+			types.add(FacilioFrequency.FIFTEEN_MINUTES.getValue());
+		}
+		if(roundedMinute%60 == 0) {
+			types.add(FacilioFrequency.HOURLY.getValue());
+		}
+
 		if (zdt.getHour() == 0) {
 			types.add(FacilioFrequency.DAILY.getValue());
 			if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
@@ -73,6 +87,8 @@ public class FormulaLeafTriggerJob extends FacilioJob{
 		}
 		return types;
 	}
+	
+	
 
 }
 

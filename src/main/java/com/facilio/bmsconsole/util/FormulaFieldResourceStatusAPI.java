@@ -206,7 +206,6 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-//				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formulaFieldId"), ""+ formulaFieldIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), StringUtils.join(types, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isLeaf"), ""+ true, BooleanOperators.IS));

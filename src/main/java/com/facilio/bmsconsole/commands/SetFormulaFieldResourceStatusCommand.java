@@ -3,10 +3,14 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
@@ -16,37 +20,44 @@ public class SetFormulaFieldResourceStatusCommand extends FacilioCommand {
 	
 	public boolean executeCommand(Context context) throws Exception {
 		
-		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
-		
-		List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
-		if (parentIds == null) {
-			Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-			if (parentId != null) {
-				parentIds = Collections.singletonList(parentId);
+		Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);
+		calculateVmThroughFormula = calculateVmThroughFormula != null ? calculateVmThroughFormula : Boolean.FALSE;
+
+		boolean isParallelFormulaExecution = false;
+		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_FORMULA_EXECUTION);
+		if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+			String isParallelFormulaExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_FORMULA_EXECUTION);
+			if (isParallelFormulaExecutionProp != null && !isParallelFormulaExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelFormulaExecutionProp)) {
+				isParallelFormulaExecution = Boolean.parseBoolean(isParallelFormulaExecutionProp);
 			}
 		}
-		
-		if(parentIds == null || parentIds.isEmpty())
+		isParallelFormulaExecution = isParallelFormulaExecution || calculateVmThroughFormula;
+
+		if(isParallelFormulaExecution) 
 		{
-			throw new Exception("No resource is associated for the given formula id " +formula.getId());
-		}
-		
-		List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = new ArrayList<FormulaFieldResourceStatusContext>();
-		for(Long parentId:parentIds)
-		{
-			FormulaFieldResourceStatusContext formulaFieldResourceStatusContext = new FormulaFieldResourceStatusContext();	
-			formulaFieldResourceStatusContext.setFormulaFieldId(formula.getId());
-			formulaFieldResourceStatusContext.setFieldId(formula.getReadingFieldId());;
-			formulaFieldResourceStatusContext.setResourceId(parentId);
-			formulaFieldResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal());
-			formulaFieldResourceStatusContext.setTriggerType(formula.getTriggerType());
-			formulaFieldResourceStatusContext.setFrequency(formula.getFrequency());
-			formulaFieldResourceStatusContext.setInterval(formula.getInterval());
-			
-			FormulaFieldResourceStatusAPI.addFormulaFieldResourceStatus(formulaFieldResourceStatusContext);
-			formulaFieldResourceStatusContextList.add(formulaFieldResourceStatusContext);		
-		}
-		context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_STATUS_LIST, formulaFieldResourceStatusContextList);
+			FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
+			List<Long> parentIds = formula.getIncludedResources();
+			if(parentIds == null || parentIds.isEmpty()){
+				throw new Exception("No resource is associated for the given formula id " +formula.getId());
+			}
+
+			List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = new ArrayList<FormulaFieldResourceStatusContext>();
+			for(Long parentId:parentIds)
+			{
+				FormulaFieldResourceStatusContext formulaFieldResourceStatusContext = new FormulaFieldResourceStatusContext();	
+				formulaFieldResourceStatusContext.setFormulaFieldId(formula.getId());
+				formulaFieldResourceStatusContext.setFieldId(formula.getReadingFieldId());;
+				formulaFieldResourceStatusContext.setResourceId(parentId);
+				formulaFieldResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal());
+				formulaFieldResourceStatusContext.setTriggerType(formula.getTriggerType());
+				formulaFieldResourceStatusContext.setFrequency(formula.getFrequency());
+				formulaFieldResourceStatusContext.setInterval(formula.getInterval());
+				
+				FormulaFieldResourceStatusAPI.addFormulaFieldResourceStatus(formulaFieldResourceStatusContext);
+				formulaFieldResourceStatusContextList.add(formulaFieldResourceStatusContext);		
+			}
+			context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_STATUS_LIST, formulaFieldResourceStatusContextList);	
+		}	
 		
 		return false;
 	}

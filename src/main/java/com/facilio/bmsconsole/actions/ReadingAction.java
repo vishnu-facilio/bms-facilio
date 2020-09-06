@@ -1119,7 +1119,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
 		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
-		context.put(FacilioConstants.ContextNames.HISTORY_ALARM, historicalAlarm);
+		context.put(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA,calculateVmThroughFormula);
 		context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
 		
 		FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
@@ -1146,6 +1146,11 @@ public class ReadingAction extends FacilioAction {
 	
 	public String runMig() throws Exception {
 		EnergyMeterUtilAPI.runMig();
+		return SUCCESS;	
+	}
+	
+	public String convertVMToFormulaMig() throws Exception {
+		EnergyMeterUtilAPI.convertVMToFormulaMig();
 		return SUCCESS;	
 	}
 	
@@ -1201,11 +1206,21 @@ public class ReadingAction extends FacilioAction {
 	public Boolean getIsInclude() {
 		return isInclude;
 	}
-
+	
 	public void setIsInclude(Boolean isInclude) {
 		this.isInclude = isInclude;
 	}
 	
+	private Boolean calculateVmThroughFormula;
+
+	public Boolean getCalculateVmThroughFormula() {
+		return calculateVmThroughFormula;
+	}
+
+	public void setCalculateVmThroughFormula(Boolean calculateVmThroughFormula) {
+		this.calculateVmThroughFormula = calculateVmThroughFormula;
+	}
+
 	private Integer ruleJobType;	
 
 	public Integer getRuleJobType() {

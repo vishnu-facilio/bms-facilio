@@ -944,7 +944,7 @@ public class FormulaFieldAPI {
 		return function;
 	}
 	
-	private static ParameterContext getWorkflowParameter (String name, String type) {
+	public static ParameterContext getWorkflowParameter (String name, String type) {
 		ParameterContext param = new ParameterContext();
 		param.setName(name);
 		param.setTypeString(type);
@@ -1208,6 +1208,11 @@ public class FormulaFieldAPI {
 		}
 	}
 	
+	public static int getRoundedMinute(int currentMinute, int toBeRoundedMinute) {
+		int roundedMinute = (currentMinute/toBeRoundedMinute) * toBeRoundedMinute;
+		return roundedMinute;
+	}
+	
 	public static int getDataInterval(FormulaFieldContext formula) throws Exception {
 		if (formula.getInterval() == -1 && formula.getTriggerTypeEnum() != TriggerType.SCHEDULE && formula.getWorkflow() != null) {
 			formula.setInterval(ReadingsAPI.getDataInterval(formula.getWorkflow()));
@@ -1225,6 +1230,10 @@ public class FormulaFieldAPI {
 					case HALF_YEARLY:
 					case ANNUALLY:
 						return 24 * 60;
+					case TEN_MINUTES:
+						return 10;
+					case FIFTEEN_MINUTES:
+						return 15;
 					default:
 						return -1;
 				}

@@ -24,7 +24,7 @@ import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext.Status;
 import com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob;
@@ -72,12 +72,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			List<Long> childDependencyIds = FormulaFieldDependenciesAPI.getFormulaFieldDependencyIdsByParentFormula(formulaResourceId);
 				
 			if(formulaResourceStatusContext != null && formulaResourceStatusContext.getStatus() == FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal())
-			{
-				if(formulaResourceId == 14)
-				{
-					System.out.println("Entered for formulaResourceId -- ");
-				}
-				
+			{			
 				formulaResourceStatusContext.setActualStartTime(DateTimeUtil.getCurrenTime());	
 				long childCompletedCount = FormulaFieldResourceStatusAPI.getCompletedFormulaFieldResourceStatusCountByIds(childDependencyIds);
 					
@@ -97,18 +92,16 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 							calculateScheduledFormula(formula,formulaResourceStatusContext);
 							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
 						}
-						else
-						{
-							System.out.println("Failed -- "+formulaResourceId);
+						else {
+							System.out.println("Failed at rowsUpdate -- "+formulaResourceId);
 						}
 					}			
 				}
-				else
-				{			
-					System.out.println("Failed for formulaResourceId -- "+formulaResourceId);
+				else {			
+					System.out.println("Failed at parentTrigger mismatch -- "+formulaResourceId);
 				}
-				}	
-			}												
+			}	
+		}												
 			
 		return false;
 	}
@@ -144,17 +137,22 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 	public void calculateScheduledFormula(FormulaFieldContext formula, FormulaFieldResourceStatusContext formulaResourceStatusContext) throws Exception {
 		
 		try {		
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long endTime = DateTimeUtil.getHourStartTime();	
-			fetchFields(formula, modBean);
-			
-			long resourceId = formulaResourceStatusContext.getId();
+			long endTime = getEndTime(formula);				
+			long resourceId = formulaResourceStatusContext.getResourceId();
 			ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 			long startTime = getStartTime(formula, meta.getTtime());
 			List<ReadingContext> readings = new ArrayList<>();
 			
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
-			List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
+			List<DateRange> intervals = new ArrayList<DateRange>();
+			if(schedule != null) {
+				intervals = schedule.getTimeIntervals(startTime, endTime);
+			}
+			else {
+				intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
+			}
+
+			//check ignoreNullValues
 			List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
 			if (currentReadings != null && !currentReadings.isEmpty()) {
 				readings.addAll(currentReadings);
@@ -188,13 +186,43 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 	
 	private long getStartTime (FormulaFieldContext formula, long lastReadingTime) {
 		ZonedDateTime zdt = null;
-		if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
+		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
+			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 10) + 10;
+			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
+			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
+		}
+		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
+			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 15) + 15;
+			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
+			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
+		}
+		else if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
 		}
 		else {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusDays(1).truncatedTo(ChronoUnit.DAYS);
 		}
 		return DateTimeUtil.getMillis(zdt, true);
+	}
+	
+	private long getEndTime(FormulaFieldContext formula) {
+		
+		ZonedDateTime zdt = DateTimeUtil.getDateTime();
+		int currentMinute = zdt.getMinute();
+		int roundedMinute = FormulaFieldAPI.getRoundedMinute(currentMinute, 5);
+		int minusMinute = currentMinute - roundedMinute;
+		
+		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
+			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
+			return DateTimeUtil.getMillis(zdt, true);
+		}
+		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
+			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
+			return DateTimeUtil.getMillis(zdt, true);
+		}
+		else {
+			return DateTimeUtil.getHourStartTime();
+		}
 	}
 	
 	private boolean isCalculatable(FormulaFieldContext formula, List<Long> calculatedFieldIds) throws Exception {

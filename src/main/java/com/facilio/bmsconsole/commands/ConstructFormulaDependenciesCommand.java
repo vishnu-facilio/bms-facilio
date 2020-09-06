@@ -11,10 +11,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
@@ -43,6 +46,22 @@ public class ConstructFormulaDependenciesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(ConstructFormulaDependenciesCommand.class.getName());
 	
 	public boolean executeCommand(Context context) throws Exception {
+		
+		Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);
+		calculateVmThroughFormula = calculateVmThroughFormula != null ? calculateVmThroughFormula : Boolean.FALSE;
+
+		boolean isParallelFormulaExecution = false;
+		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_PARALLEL_FORMULA_EXECUTION);
+		if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
+			String isParallelFormulaExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_FORMULA_EXECUTION);
+			if (isParallelFormulaExecutionProp != null && !isParallelFormulaExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelFormulaExecutionProp)) {
+				isParallelFormulaExecution = Boolean.parseBoolean(isParallelFormulaExecutionProp);
+			}
+		}
+		isParallelFormulaExecution = isParallelFormulaExecution || calculateVmThroughFormula;
+		if(!isParallelFormulaExecution) {
+			return false;
+		}
 		
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = (List<FormulaFieldResourceStatusContext>) context.get(FacilioConstants.ContextNames.FORMULA_RESOURCE_STATUS_LIST);

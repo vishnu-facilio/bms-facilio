@@ -379,7 +379,8 @@ public class FormulaFieldContext implements Serializable {
 	public enum FormulaFieldType {
 		ENPI,
 		LIVE_FORMULA,
-		M_AND_V_ENPI
+		M_AND_V_ENPI,
+		VM
 		;
 		
 		public int getValue() {

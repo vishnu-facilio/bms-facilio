@@ -979,6 +979,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new AddVirtualMeterRelCommand());
+		c.addCommand(new CreateFormulaFromVMCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(getCategoryReadingsChain());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());

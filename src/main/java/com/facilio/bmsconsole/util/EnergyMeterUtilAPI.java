@@ -14,9 +14,15 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.CreateFormulaFromVMCommand;
+import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.jobs.FormulaLeafTriggerJob;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -185,7 +191,7 @@ public class EnergyMeterUtilAPI {
 			
 		}
 	
-	public static void runMig () throws Exception {
+	public static void runMig() throws Exception {
 		AccountUtil.setCurrentAccount(1l);
 
 		JobContext jc = new JobContext();
@@ -193,6 +199,23 @@ public class EnergyMeterUtilAPI {
 
 		FormulaLeafTriggerJob fLeaf = new FormulaLeafTriggerJob();
 		fLeaf.execute(jc);
+	}
+	
+	public static void convertVMToFormulaMig() throws Exception {
+		
+		List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
+		if(virtualMeters != null && !virtualMeters.isEmpty()) {
+			for(EnergyMeterContext vm:virtualMeters) 
+			{
+				FacilioChain chain = FacilioChain.getTransactionChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.RECORD, vm);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_DATA_READING);
+				chain.addCommand(new CreateFormulaFromVMCommand());
+				chain.execute();
+			}
+		}
+		
 	}
 	
 
