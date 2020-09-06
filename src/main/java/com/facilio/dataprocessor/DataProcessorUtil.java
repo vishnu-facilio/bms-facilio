@@ -121,9 +121,6 @@ public class DataProcessorUtil {
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
             AccountUtil.getCurrentAccount().setRequestUri(String.valueOf(recordId));
-            if (AccountUtil.getCurrentOrg().getOrgId() == 343) {
-                AccountUtil.getCurrentAccount().setLoggerLevel(2);
-            }
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
