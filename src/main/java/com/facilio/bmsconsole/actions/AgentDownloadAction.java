@@ -131,7 +131,7 @@ public class AgentDownloadAction extends ActionSupport {
             if(StringUtils.isNotEmpty(getToken())) {
             	FacilioService.runAsService(() -> AgentVersionApi.markVersionLogUpdated(getToken()));
             }else {
-            	String fileName = "FacilioAgent - "+version+".exe";
+            	String fileName = "agent-"+version+".exe";
             	setFilename(fileName);
             	setContentType("application/x-download");
             }
