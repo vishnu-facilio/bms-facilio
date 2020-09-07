@@ -508,6 +508,10 @@ public class AgentAction extends AgentActionV2 {
     public String downloadCertificate(){
         try{
             String orgMessageTopic = getMessageTopic();
+            LOGGER.info("download certificate current org domain is :"+orgMessageTopic);
+            if(StringUtils.isEmpty(orgMessageTopic)){
+            	orgMessageTopic = AccountUtil.getCurrentOrg().getDomain();
+            }
             FacilioAgent agent = AgentApiV2.getAgent(agentId);
             String downloadCertificateLink = DownloadCertFile.downloadCertificate(orgMessageTopic, "facilio");
             setResult(AgentConstants.DATA, downloadCertificateLink);
@@ -529,8 +533,7 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-
-    private String getMessageTopic() throws Exception {
+    public static String getMessageTopic() throws Exception {
     	Organization currentOrg = AccountUtil.getCurrentOrg();
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
