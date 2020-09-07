@@ -169,8 +169,9 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			}	
 		}
 		catch (Exception e) {
-			LOGGER.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred in Formula Scheduled Calculation", e);
 			CommonCommandUtil.emailException("FormulaFieldCalculatorJob", "Formula Scheduled Calculation failed for formula: " +formula.getId()+ "with resourceId: " +formulaResourceStatusContext.getResourceId()+ "and jobId: " +formulaResourceStatusContext.getId(), e);
+			throw e;
 		}		
 	}
 	
