@@ -58,7 +58,9 @@ public class TVAction extends FacilioAction {
 		try {
 			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getTVPasscode(getCode()));
 			if (codeObj == null) {
-				throw new IllegalArgumentException("passcode_invalid");
+				setResponseCode(1);
+				setResult("status", "passcode_invalid");
+				return SUCCESS;
 			}
 			else {
 				Long connectedScreenId = (Long) codeObj.get("connectedScreenId");
@@ -88,7 +90,9 @@ public class TVAction extends FacilioAction {
 					long expiryTime = (Long) codeObj.get("expiryTime");
 					if (currentTime >= expiryTime) {
 						  FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
-			              throw new IllegalArgumentException("passcode_expired");
+						  setResponseCode(1);
+						  setResult("status", "passcode_expired");
+						  return SUCCESS;
 					}
 					else {
 						setResponseCode(0);
@@ -98,7 +102,10 @@ public class TVAction extends FacilioAction {
 				}
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("passcode_error");
+			e.printStackTrace();
+			setResponseCode(1);
+			setResult("status", "passcode_error");
+			return SUCCESS;
 		}
 	}
 }
