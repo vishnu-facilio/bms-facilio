@@ -24,7 +24,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
@@ -1345,5 +1347,42 @@ public class FormulaFieldAPI {
 				break;
 		}
 		return range;
+	}
+	
+	public static void computeFormulaResourceReadings(FormulaFieldContext formula, long resourceId, long startTime, long endTime, boolean isHistorical) throws Exception {
+		
+		ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
+		List<DateRange> intervals = new ArrayList<DateRange>();
+		if(schedule != null) {
+			intervals = schedule.getTimeIntervals(startTime, endTime);
+		}
+		else {
+			intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
+		}
+							 
+		//check ignoreNullValues(true)
+		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
+
+		if (readings != null && !readings.isEmpty()) {
+			int deletedData = FormulaFieldAPI.deleteOlderData(readings.get(0).getTtime(), readings.get(readings.size() - 1).getTtime(), Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
+			LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
+			
+			FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			FacilioContext context = addReadingChain.getContext();
+			
+			if(formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING))) {
+				EnergyMeterContext virtualMeter = new EnergyMeterContext();
+				virtualMeter.setId(resourceId);
+				List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(readings, virtualMeter, isHistorical);										
+				if (markedList != null && !markedList.isEmpty()) {
+					context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
+				}
+			}
+			
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
+			context.put(FacilioConstants.ContextNames.READINGS, readings);
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);	
+			addReadingChain.execute();					
+		}	
 	}
 }

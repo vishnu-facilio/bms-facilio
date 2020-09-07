@@ -19,26 +19,31 @@ import org.apache.log4j.Level;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.bmsconsole.context.LoggerContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext.Status;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.FormulaFieldDependenciesAPI;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
+import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
@@ -139,55 +144,18 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 	public void calculateScheduledFormula(FormulaFieldContext formula, FormulaFieldResourceStatusContext formulaResourceStatusContext) throws Exception {
 		
 		try {		
-			long endTime = getEndTime(formula);				
 			long resourceId = formulaResourceStatusContext.getResourceId();
 			ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 			long startTime = getStartTime(formula, meta.getTtime());
-			List<ReadingContext> readings = new ArrayList<>();
+			long endTime = getEndTime(formula);				
 			
-			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
-			List<DateRange> intervals = new ArrayList<DateRange>();
-			if(schedule != null) {
-				intervals = schedule.getTimeIntervals(startTime, endTime);
-			}
-			else {
-				intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
-			}
-								 
-			//check ignoreNullValues(true)
-			List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
-			if (currentReadings != null && !currentReadings.isEmpty()) {
-				readings.addAll(currentReadings);
-			}
-	
-			if (!readings.isEmpty()) {
-				int deletedData = FormulaFieldAPI.deleteOlderData(readings.get(0).getTtime(), readings.get(readings.size() - 1).getTtime(), Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
-				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
-				
-				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-				FacilioContext context = addReadingChain.getContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
-				context.put(FacilioConstants.ContextNames.READINGS, readings);
-				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);	
-				addReadingChain.execute();					
-			}	
+			FormulaFieldAPI.computeFormulaResourceReadings(formula, resourceId, startTime, endTime, false);	
 		}
 		catch (Exception e) {
 			LOGGER.info("Exception occurred in Formula Scheduled Calculation", e);
-			CommonCommandUtil.emailException("FormulaFieldCalculatorJob", "Formula Scheduled Calculation failed for formula: " +formula.getId()+ "with resourceId: " +formulaResourceStatusContext.getResourceId()+ "and jobId: " +formulaResourceStatusContext.getId(), e);
+			CommonCommandUtil.emailException("FormulaFieldCalculatorJob", "ScheduledFormulaField Calculation failed for formula: " +formula.getId()+ "with resourceId: " +formulaResourceStatusContext.getResourceId()+ "and jobId: " +formulaResourceStatusContext.getId(), e);
 			throw e;
 		}		
-	}
-	
-	private void fetchFields (FormulaFieldContext formula, ModuleBean modBean) throws Exception {	
-		List<Long> dependentIds = formula.getWorkflow().getDependentFieldIds();
-		if (dependentIds != null && !dependentIds.isEmpty()) {
-			List<FacilioField> fields = new ArrayList<>();
-			for (Long fieldId : dependentIds) {
-				fields.add(modBean.getField(fieldId));
-			}
-			formula.getWorkflow().setDependentFields(fields);
-		}	
 	}
 	
 	private long getStartTime (FormulaFieldContext formula, long lastReadingTime) {
@@ -230,6 +198,18 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			return DateTimeUtil.getHourStartTime();
 		}
 	}
+	
+	private void fetchFields (FormulaFieldContext formula, ModuleBean modBean) throws Exception {	
+		List<Long> dependentIds = formula.getWorkflow().getDependentFieldIds();
+		if (dependentIds != null && !dependentIds.isEmpty()) {
+			List<FacilioField> fields = new ArrayList<>();
+			for (Long fieldId : dependentIds) {
+				fields.add(modBean.getField(fieldId));
+			}
+			formula.getWorkflow().setDependentFields(fields);
+		}	
+	}
+	
 	
 	private boolean isCalculatable(FormulaFieldContext formula, List<Long> calculatedFieldIds) throws Exception {
 		if (formula.getWorkflow().getDependentFields() != null && !formula.getWorkflow().getDependentFields().isEmpty()) {
