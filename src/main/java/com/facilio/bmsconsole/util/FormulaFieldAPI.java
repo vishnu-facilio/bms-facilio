@@ -1110,7 +1110,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	private static int deleteOlderData(long startTime, long endTime, List<Long> parentIds, FacilioField readingField) throws Exception {
+	public static int deleteOlderData(long startTime, long endTime, List<Long> parentIds, FacilioField readingField) throws Exception {
 		
 		String moduleName = readingField.getModule().getName();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

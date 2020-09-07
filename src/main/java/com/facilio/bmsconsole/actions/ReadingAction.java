@@ -1146,6 +1146,7 @@ public class ReadingAction extends FacilioAction {
 	
 	public String convertVMToFormulaMig() throws Exception {
 		EnergyMeterUtilAPI.convertVMToFormulaMig();
+		setResult("success", "VM Formula Migration Done ");
 		return SUCCESS;	
 	}
 	

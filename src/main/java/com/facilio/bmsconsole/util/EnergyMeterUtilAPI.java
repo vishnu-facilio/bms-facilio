@@ -194,18 +194,59 @@ public class EnergyMeterUtilAPI {
 	public static void convertVMToFormulaMig() throws Exception {
 		
 		List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
-		if(virtualMeters != null && !virtualMeters.isEmpty()) {
-			for(EnergyMeterContext vm:virtualMeters) 
+		if(virtualMeters != null && !virtualMeters.isEmpty())
+		{	
+			Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap = new HashMap<Long,EnergyMeterContext>();
+			for(EnergyMeterContext vm:virtualMeters) {
+				virtualEnergyMeterContextMap.put(vm.getId(), vm);
+			}
+
+			Map <Long, List<Long>> childMeterIdMap= new HashMap<Long,List<Long>>();
+			Map<Integer,List<EnergyMeterContext>> hierarchyVMMap = new HashMap<Integer, List<EnergyMeterContext>>();
+					
+			for(EnergyMeterContext vm:virtualMeters)
+			{			
+				Integer hierarchy = DeviceAPI.getVMHierarchy(vm, 0, virtualEnergyMeterContextMap, childMeterIdMap);
+				if(hierarchy != null)
+				{
+					if(hierarchyVMMap.containsKey(hierarchy))
+					{
+						List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
+						groupedVMList.add(vm);
+					}
+					else
+					{
+						List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
+						groupedVMList.add(vm);
+						hierarchyVMMap.put(hierarchy, groupedVMList);
+					}		
+				}
+				
+			}
+			
+			if(MapUtils.isNotEmpty(hierarchyVMMap))
 			{
-				FacilioChain chain = FacilioChain.getTransactionChain();
-				FacilioContext context = chain.getContext();
-				context.put(FacilioConstants.ContextNames.RECORD, vm);
-				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				chain.addCommand(new CreateFormulaFromVMCommand());
-				chain.execute();
+				Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
+				
+				for(Integer hierarchy:sortedHierarchyVMMap.keySet())
+				{		
+					List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
+					
+					for(EnergyMeterContext vm:groupedVMList)
+					{
+						FacilioChain chain = FacilioChain.getTransactionChain();
+						FacilioContext context = chain.getContext();
+						context.put(FacilioConstants.ContextNames.RECORD, vm);
+						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_DATA_READING);
+						chain.addCommand(new CreateFormulaFromVMCommand());
+						chain.execute();
+					}
+				}
 			}
 		}
 		
+		LOGGER.info("VM Formula Migration Done ");		
+
 	}
 	
 

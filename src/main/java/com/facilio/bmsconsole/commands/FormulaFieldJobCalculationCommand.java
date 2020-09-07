@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext.Status;
 import com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.FormulaFieldDependenciesAPI;
@@ -152,7 +153,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			else {
 				intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
 			}
-
+								 
 			//check ignoreNullValues(true)
 			List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
 			if (currentReadings != null && !currentReadings.isEmpty()) {
@@ -160,6 +161,9 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			}
 	
 			if (!readings.isEmpty()) {
+				int deletedData = FormulaFieldAPI.deleteOlderData(readings.get(0).getTtime(), readings.get(readings.size() - 1).getTtime(), Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
+				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
+				
 				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				FacilioContext context = addReadingChain.getContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
