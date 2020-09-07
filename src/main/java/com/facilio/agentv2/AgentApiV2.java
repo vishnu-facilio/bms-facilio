@@ -285,6 +285,7 @@ public class AgentApiV2 {
         List<FacilioField> filterFields = new ArrayList<>();
         filterFields.add(FieldFactory.getIdField(agentDataModule));
         filterFields.add(FieldFactory.getNameField(agentDataModule));
+        filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(agentDataModule.getTableName())
                 .select(filterFields)
