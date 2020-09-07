@@ -354,7 +354,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 	private String digest;
 
-	public String loginWithPasswordAndDigest()  {
+	public String loginWithPasswordAndDigest() throws Exception {
 		String digest = getDigest();
 		String emailFromDigest = null;
 		try {
@@ -374,6 +374,25 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		setUsername(emailFromDigest);
 		validateLoginv3();
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
+		if ("true".equalsIgnoreCase(isWebView)) {
+			AppDomain appDomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+			String scheme = "";
+			if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+				if (appDomainObj.getDomainType() == AppDomain.DomainType.DEFAULT.getIndex()) {
+					scheme = "facilio";
+				} else {
+					Organization org = IAMOrgUtil.getOrg(appDomainObj.getOrgId());
+					scheme = org.getDomain();
+				}
+				Cookie schemeCookie = new Cookie("fc.mobile.scheme", scheme);
+				setTempCookieProperties(schemeCookie, false);
+				response.addCookie(schemeCookie);
+			}
+		}
 		return SUCCESS;
 	}
 
@@ -738,7 +757,7 @@ public class FacilioAuthAction extends FacilioAction {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("token", authtoken);
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
-			setCookieProperties(mobileTokenCookie, false);
+			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
 		}
 
@@ -750,6 +769,15 @@ public class FacilioAuthAction extends FacilioAction {
 			Cookie portalCookie = new Cookie("fc.idToken.facilio", authtoken);
 			setCookieProperties(portalCookie, true);
 			response.addCookie(portalCookie);
+		}
+	}
+
+	private void setTempCookieProperties(Cookie cookie, boolean authModel) {
+		cookie.setMaxAge(60 * 60); // Make the cookie last an hour
+		cookie.setPath("/");
+		cookie.setHttpOnly(authModel);
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
+			cookie.setSecure(true);
 		}
 	}
 
@@ -1248,5 +1276,15 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public void setDigest(String digest) {
 		this.digest = digest;
+	}
+
+	private String service;
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
 	}
 }
