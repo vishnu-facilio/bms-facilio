@@ -224,6 +224,25 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
+	public static FormulaFieldContext getActiveFormulaField(long id, boolean fetchChildren) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(id, module))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("active"), String.valueOf(true), BooleanOperators.IS))
+														;
+		
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), fetchChildren);
+		if (enpiList != null && !enpiList.isEmpty()) {
+			return enpiList.get(0);
+		}
+		return null;
+	}
+	
 	public static List<FormulaFieldContext> getFormulaFields(Collection<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		
@@ -421,7 +440,6 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(triggerType, String.valueOf(TriggerType.SCHEDULE.getValue()), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(frequencyField, StringUtils.join(types, ","), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
@@ -926,7 +944,7 @@ public class FormulaFieldAPI {
 		return function;
 	}
 	
-	private static ParameterContext getWorkflowParameter (String name, String type) {
+	public static ParameterContext getWorkflowParameter (String name, String type) {
 		ParameterContext param = new ParameterContext();
 		param.setName(name);
 		param.setTypeString(type);
@@ -1190,6 +1208,11 @@ public class FormulaFieldAPI {
 		}
 	}
 	
+	public static int getRoundedMinute(int currentMinute, int toBeRoundedMinute) {
+		int roundedMinute = (currentMinute/toBeRoundedMinute) * toBeRoundedMinute;
+		return roundedMinute;
+	}
+	
 	public static int getDataInterval(FormulaFieldContext formula) throws Exception {
 		if (formula.getInterval() == -1 && formula.getTriggerTypeEnum() != TriggerType.SCHEDULE && formula.getWorkflow() != null) {
 			formula.setInterval(ReadingsAPI.getDataInterval(formula.getWorkflow()));
@@ -1207,6 +1230,10 @@ public class FormulaFieldAPI {
 					case HALF_YEARLY:
 					case ANNUALLY:
 						return 24 * 60;
+					case TEN_MINUTES:
+						return 10;
+					case FIFTEEN_MINUTES:
+						return 15;
 					default:
 						return -1;
 				}

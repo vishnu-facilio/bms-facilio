@@ -61,7 +61,6 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			long formulaId = (long) historicalFormulaFieldLogger.getParentId();
 			DateRange range = new DateRange(startTime, endTime);
 			
-			JSONObject prop = BmsJobUtil.getJobProps(jobId, "SingleResourceHistoricalFormulaFieldCalculator");
 			
 			boolean skipOptimisedWorkflow = false;
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
@@ -69,6 +68,7 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 				skipOptimisedWorkflow = true;
 			}
 			
+			JSONObject prop = BmsJobUtil.getJobProps(jobId, "SingleResourceHistoricalFormulaFieldCalculator");
 			if (prop != null && prop.get("skipOptimisedWorkflow") != null) {
 				skipOptimisedWorkflow = (boolean) prop.get("skipOptimisedWorkflow");
 			}

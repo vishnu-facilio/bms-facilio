@@ -9,7 +9,9 @@ public enum FacilioFrequency {
 	HALF_YEARLY(366, "Half Yearly"),
 	ANNUALLY(366, "Annually"),
 	CUSTOM(-1, "Custom"),
-	HOURLY(-1, "Hourly")
+	HOURLY(-1, "Hourly"),
+	FIFTEEN_MINUTES(-1, "Quarter Hour"),
+	TEN_MINUTES(-1, "One-Sixth Hour")
 	;
 	public int getValue() {
 		return ordinal();

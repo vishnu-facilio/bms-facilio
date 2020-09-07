@@ -37,9 +37,18 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 			Boolean isFromulaFieldIOpperationFromMAndV = (Boolean) context.get(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V);
 			
 			if(isFromulaFieldIOpperationFromMAndV == null || !isFromulaFieldIOpperationFromMAndV) {
-				FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
-				field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
-				if(field instanceof NumberField) {
+				Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);
+				FacilioField field = null;
+				
+				if(calculateVmThroughFormula != null && calculateVmThroughFormula) {
+					field = formulaField.getReadingField();
+				}
+				else {
+					field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
+					field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
+				}
+
+				if(field != null && field instanceof NumberField) {
 					if (formulaUnitString != null) {
 						((NumberField) field).setUnit(formulaUnitString);
 					}

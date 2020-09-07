@@ -100,9 +100,13 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		newFormula.setResourceId(-1);
 		newFormula.setAssetCategoryId(-1);
 		newFormula.setSpaceCategoryId(-1);
-		newFormula.setIncludedResources(null);
 		newFormula.setFrequency(null);
 		newFormula.setInterval(-1);
+		
+		Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);		
+		if(calculateVmThroughFormula == null || !calculateVmThroughFormula) {
+			newFormula.setIncludedResources(null);
+		}
 		
 		newFormula.setModifiedTime(System.currentTimeMillis());
 		

@@ -17,3 +17,10 @@ executors :
     tableName : ReadingDataMigrationInstantJobQueue
     dataRetention : 1 #in days
     pollingFrequency : 5000 #in milliseconds
+
+  - name : formula
+    tableName : FormulaInstantJobQueue
+    maxThreads : 20
+    queueSize : 100
+    dataRetention : 1 #in days
+    pollingFrequency : 5000 #in milliseconds
