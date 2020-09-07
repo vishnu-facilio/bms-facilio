@@ -42,6 +42,8 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		FormulaFieldContext newFormula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaFieldUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
 		int formulaUnit = (int) context.getOrDefault(FacilioConstants.ContextNames.FORMULA_UNIT, -1);
+		Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);		
+
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
 		context.put(FacilioConstants.ContextNames.READING_FIELD_ID,oldFormula.getReadingFieldId());
@@ -52,9 +54,13 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		FacilioModule module = null;
 		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null || formulaUnit > 0)) {
 			FacilioField field = new NumberField();
+			module = new FacilioModule();
 			
 			if((newFormula.getName() != null && !newFormula.getName().isEmpty())) {
-				field.setDisplayName(newFormula.getName());
+				if(calculateVmThroughFormula == null || !calculateVmThroughFormula) {
+					field.setDisplayName(newFormula.getName());
+					module.setDisplayName(newFormula.getName());
+				}
 			}
 			if(formulaFieldUnit != null) {
 				((NumberField)field).setUnit(formulaFieldUnit);
@@ -66,9 +72,6 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			
 			field.setId(oldFormula.getReadingFieldId());
 			modBean.updateField(field);
-			
-			module = new FacilioModule();
-			module.setDisplayName(newFormula.getName());
 		}
 		
 		if (newFormula.getInterval() != -1) {
@@ -103,7 +106,6 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		newFormula.setFrequency(null);
 		newFormula.setInterval(-1);
 		
-		Boolean calculateVmThroughFormula = (Boolean) context.get(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA);		
 		if(calculateVmThroughFormula == null || !calculateVmThroughFormula) {
 			newFormula.setIncludedResources(null);
 		}
