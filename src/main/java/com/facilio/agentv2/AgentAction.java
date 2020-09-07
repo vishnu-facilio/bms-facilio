@@ -509,9 +509,6 @@ public class AgentAction extends AgentActionV2 {
         try{
             String orgMessageTopic = getMessageTopic();
             LOGGER.info("download certificate current org domain is :"+orgMessageTopic);
-            if(StringUtils.isEmpty(orgMessageTopic)){
-            	orgMessageTopic = AccountUtil.getCurrentOrg().getDomain();
-            }
             FacilioAgent agent = AgentApiV2.getAgent(agentId);
             String downloadCertificateLink = DownloadCertFile.downloadCertificate(orgMessageTopic, "facilio");
             setResult(AgentConstants.DATA, downloadCertificateLink);
@@ -535,18 +532,14 @@ public class AgentAction extends AgentActionV2 {
 
     private String getMessageTopic() throws Exception {
     	Organization currentOrg = AccountUtil.getCurrentOrg();
-    	if(currentOrg == null) {
-    		LOGGER.info("message topic current org :");
-    		return null;
-    	}
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? prop.get("domain").toString():null;
+    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? prop.get("topic").toString():null;
     	}
-    	return prop.get("domain").toString();
+    	return prop.get("topic").toString();
     }
 
 	public List<Long> getRecordIds() { return recordIds; }
