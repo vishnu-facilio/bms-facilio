@@ -88,17 +88,17 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 						{
 							currentStatusUpdate = true;
 							formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-							System.out.println("Entered for formulaResourceId -- "+formulaResourceId);
+							LOGGER.info("Entered for formulaResourceId -- "+formulaResourceId);
 							calculateScheduledFormula(formula,formulaResourceStatusContext);
 							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
 						}
 						else {
-							System.out.println("Failed at rowsUpdate -- "+formulaResourceId);
+							LOGGER.info("Failed at rowsUpdate -- "+formulaResourceId);
 						}
 					}			
 				}
 				else {			
-					System.out.println("Failed at parentTrigger mismatch -- "+formulaResourceId);
+					LOGGER.info("Failed at parentTrigger mismatch -- "+formulaResourceId);
 				}
 			}	
 		}												
@@ -122,11 +122,12 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 				{					
 					for(Long typedParentFormulaResourceStatusId :typedParentFormulaResourceStatusIds)
 					{
+						LOGGER.info("Triggering parents for --"+ formulaResourceId + " parent --" +typedParentFormulaResourceStatusId);
 						System.out.println("Triggering parents for --"+ formulaResourceId + " parent --" +typedParentFormulaResourceStatusId);	
 						FacilioContext context = new FacilioContext();
 						context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, typedParentFormulaResourceStatusId);
 						context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
-						FacilioTimer.scheduleInstantJob("FormulaFieldCalculatorJob", context);
+						FacilioTimer.scheduleInstantJob("formula","FormulaFieldCalculatorJob", context);
 					}	
 				}				
 			}				
@@ -152,7 +153,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 				intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
 			}
 
-			//check ignoreNullValues
+			//check ignoreNullValues(true)
 			List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
 			if (currentReadings != null && !currentReadings.isEmpty()) {
 				readings.addAll(currentReadings);
