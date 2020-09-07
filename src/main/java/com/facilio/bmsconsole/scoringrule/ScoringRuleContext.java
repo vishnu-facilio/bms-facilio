@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -11,9 +10,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScoringRuleContext extends WorkflowRuleContext {
 
@@ -54,13 +51,23 @@ public class ScoringRuleContext extends WorkflowRuleContext {
 
     @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-        if (record instanceof WorkOrderContext) {
+        if (record instanceof ModuleBaseWithCustomFields) {
             ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
+            List<Map<String, Object>> scores = new ArrayList<>();
             float totalScore = 0f;
             for (BaseScoringContext scoringContext : baseScoringContexts) {
-                totalScore += scoringContext.getScore(record, context, placeHolders);
+                float score = scoringContext.getScore(record, context, placeHolders);
+                totalScore += score;
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("recordId", moduleRecord.getId());
+                map.put("score", score);
+                map.put("baseScoreId", scoringContext.getId());
+                scores.add(map);
             }
+            ScoringRuleAPI.addActualScore(scores, moduleRecord.getId());
+
             System.out.println("Total score: " + totalScore);
             FacilioField scoreField = getScoreField();
             if (scoreField == null) {
@@ -73,6 +80,8 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                         .fields(Collections.singletonList(scoreField))
                         .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), getModule()));
                 builder.update(moduleRecord);
+
+                ScoringRuleAPI.updateParentScores(moduleRecord, scoreFieldId);
             }
         }
     }

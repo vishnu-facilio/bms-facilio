@@ -550,8 +550,8 @@ public class WorkflowRuleContext implements Serializable {
 		
 		STATE_RULE(true),
 		STATE_FLOW(true),
-		
-		SCORING_RULE, //30
+
+		BUSSINESS_LOGIC_ASSET_RULE, //30
 		REPORT_DOWNTIME_RULE, //31
 		CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE, //32
 		CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE, //33
@@ -566,7 +566,9 @@ public class WorkflowRuleContext implements Serializable {
 		CUSTOM_BUTTON,	// 40
 		ALARM_WORKFLOW_RULE,
 		PM_CUSTOM_TRIGGER_RULE,
-		TRANSACTION_RULE //43
+		TRANSACTION_RULE, //43
+
+		SCORING_RULE, // 43
 		;
 		//Always add at the end
 		
@@ -621,7 +623,7 @@ public class WorkflowRuleContext implements Serializable {
 		public boolean isPostExecute() {
 			return isPostExecute;
 		}
-		
+
 		public static RuleType valueOf(int val) {
 			try {
 				return RULE_TYPES[val - 1];

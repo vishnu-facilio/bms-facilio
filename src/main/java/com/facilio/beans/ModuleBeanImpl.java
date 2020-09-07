@@ -662,6 +662,10 @@ public class ModuleBeanImpl implements ModuleBean {
 								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
 								field = enumField;
 								break;
+						case SCORE:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							field = FieldUtil.getAsBeanFromMap(prop, ScoreField.class);
+							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
@@ -731,6 +735,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case SYSTEM_ENUM:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), entry.getValue()));
+					break;
+				case SCORE:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), entry.getValue()));
 					break;
 				default:
 					break;
@@ -1045,6 +1052,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case SYSTEM_ENUM:
 					addExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), fieldProps);
 					break;
+				case SCORE:
+					addExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), fieldProps);
+					break;
 				default:
 					break;
 			}
@@ -1333,6 +1343,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else if (field instanceof MultiEnumField) {
 				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
+			}
+			else if (field instanceof ScoreField) {
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
 			}
 
 			return Math.max(count, extendendPropsCount);

@@ -1082,6 +1082,16 @@ public class FieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getScoreFieldFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScoreFieldModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("scale", "SCALE", module, FieldType.DECIMAL));
+        return fields;
+    }
+
     public static List<FacilioField> getEnumFieldValuesFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
@@ -2085,13 +2095,24 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.addAll(getBaseScoringFields());
-        fields.add(getField("recordModuleId", "RECORD_MODULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldModuleId", "FIELD_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getField("scoringFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
 
         return fields;
     }
 
+    public static List<FacilioField> getActualScoreFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getActualScoreModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("score", "SCORE", module, FieldType.DECIMAL));
+        fields.add(getField("baseScoreId", "BASE_SCORE_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
 //	public static List<FacilioField> getScheduledRuleFields() {
     //	List<FacilioField> fields = new ArrayList<>();

@@ -401,6 +401,15 @@ public class ModuleFactory {
 		return fileModule;
 	}
 
+	public static FacilioModule getScoreFieldModule() {
+		FacilioModule fileModule = new FacilioModule();
+		fileModule.setName("scoreFields");
+		fileModule.setDisplayName("Score Fields");
+		fileModule.setTableName("ScoreFields");
+		fileModule.setExtendModule(getFieldsModule());
+		return fileModule;
+	}
+
 	public static FacilioModule getSystemEnumFieldModule() {
 		FacilioModule systemModule = new FacilioModule();
 		systemModule.setName("systemEnumFields");
@@ -682,6 +691,15 @@ public class ModuleFactory {
 		module.setDisplayName("Node Scoring Module");
 		module.setTableName("Node_Scoring");
 		module.setExtendModule(getBaseScoringModule());
+
+		return module;
+	}
+
+	public static FacilioModule getActualScoreModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("actualScoreModule");
+		module.setDisplayName("Actual Score");
+		module.setTableName("Actual_Score");
 
 		return module;
 	}
