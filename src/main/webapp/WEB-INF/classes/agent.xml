@@ -271,10 +271,10 @@
         <action name="unconfigure" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="unConfigurePoints"> <!--DONE-->
         </action>
-        <action name="subscribe" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
+        <action name="subscribe" class="com.facilio.agentv2.actions.SubscribeAndUnscribeAction"
                 method="subscribePoints"> <!--DONE-->
         </action>
-        <action name="unsubscribe" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
+        <action name="unsubscribe" class="com.facilio.agentv2.actions.SubscribeAndUnscribeAction"
                 method="unsubscribePoints"> <!--DONE-->
         </action>
 

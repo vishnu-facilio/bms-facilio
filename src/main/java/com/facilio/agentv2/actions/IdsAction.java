@@ -21,7 +21,7 @@ public class IdsAction extends AgentActionV2
 
     public void setRecordIds(List<Long> recordIds) { this.recordIds = recordIds; }
 
-   
+    @NotNull
     private List<Long> recordIds;
 
 
