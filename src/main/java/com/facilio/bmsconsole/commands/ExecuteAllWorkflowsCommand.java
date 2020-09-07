@@ -54,7 +54,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteAllWorkflowsCommand.class.getName());
 	private RuleType[] ruleTypes;
-	private int recordsPerThread = -1;
 	private boolean propagateError = true;
 	
 	private Map<String, List> recordMap;
@@ -65,13 +64,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
-		this.ruleTypes = ruleTypes;
-	}
-	public ExecuteAllWorkflowsCommand(int recordsPerThread, RuleType... ruleTypes) {
-		// TODO Auto-generated constructor stub
-		if (recordsPerThread > 0) {
-			this.recordsPerThread = recordsPerThread;
-		}
 		this.ruleTypes = ruleTypes;
 	}
 	
@@ -107,14 +99,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 			if(recordMap != null && !recordMap.isEmpty()) {
-				if (recordsPerThread == -1) {
-					postRules = new HashMap<>();
-					this.context = context;
-					fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context, false);
-				}
-				else {
-					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
-				}
+				postRules = new HashMap<>();
+				this.context = context;
+				fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context, false);
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
 					LOGGER.info("Time taken to Execute workflows for modules : " + recordMap.keySet() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 				}
@@ -198,20 +185,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				}
 				currentTime = System.currentTimeMillis();
 				
-//				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
-//					LOGGER.info("Records : "+entry.getValue());
-//					LOGGER.info("Matching Rules : "+workflowRules);
-//					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
-//				}
-//
 //				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
 //					LOGGER.error("EMMAR RULE DEBUGGING");
-//					LOGGER.error("Records : "+entry.getValue());
-//					LOGGER.error("Matching Rules : "+workflowRules);
-//					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
-//				}
-//				if (AccountUtil.getCurrentOrg().getId() == 88l && "alarm".equals(moduleName)) {
-//					LOGGER.error("ALSEEF DEBUGGING");
 //					LOGGER.error("Records : "+entry.getValue());
 //					LOGGER.error("Matching Rules : "+workflowRules);
 //					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
@@ -302,69 +277,6 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 			}
 		}
 		return sb.toString();
-	}
-
-	private class ParallalWorkflowExecution extends RecursiveAction {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private Account account;
-		private Map<String, List> recordMap = null;
-		private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = null;
-		private FacilioContext context = null;
-		
-		public ParallalWorkflowExecution(Account account, Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) {
-			// TODO Auto-generated constructor stub
-			this.account = account;
-			this.recordMap = recordMap;
-			this.context = context;
-			this.changeSetMap = changeSetMap;
-		}
-		
-		@Override
-		protected void compute() {
-			// TODO Auto-generated method stub
-			try {
-				AccountUtil.cleanCurrentAccount();
-				AccountUtil.setCurrentAccount(account);
-				
-				if (recordMap.size() > 1) {
-					List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
-					for (Map.Entry<String, List> entry : recordMap.entrySet()) {
-						String name = entry.getKey();
-						if (name != null && !name.isEmpty()) {
-							subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(name, entry.getValue()), changeSetMap, context));
-						}
-					}
-					ForkJoinTask.invokeAll(subTasks);
-				}
-				else if (recordMap.size() == 1) {
-					Map.Entry<String, List> entry = recordMap.entrySet().iterator().next();
-					List records = entry.getValue();
-					if (records != null && !records.isEmpty()) {
-						String moduleName = entry.getKey();
-						if (records.size() <= recordsPerThread) {
-							fetchAndExecuteRules(recordMap, changeSetMap, false, context, false);
-						}
-						else {
-							List<List> recordLists = Lists.partition(records, recordsPerThread);
-							List<ParallalWorkflowExecution> subTasks  = new ArrayList<>();
-							for (List recordList : recordLists) {
-								subTasks.add(new ParallalWorkflowExecution(account, Collections.singletonMap(moduleName, recordList), changeSetMap, context));
-							}
-							ForkJoinTask.invokeAll(subTasks);
-						}
-					}
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				CommonCommandUtil.emailException("ParallalWorkflowForkJoinThread", "Error occurred during parallal execution of Workflows", e, recordMap.toString());
-				LOGGER.error("Error occurred during parallal execution of Workflows for record map "+recordMap, e);
-			}
-		}
-		
 	}
 
 	@Override
