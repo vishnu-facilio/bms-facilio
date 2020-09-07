@@ -533,8 +533,12 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public static String getMessageTopic() throws Exception {
+    private String getMessageTopic() throws Exception {
     	Organization currentOrg = AccountUtil.getCurrentOrg();
+    	if(currentOrg == null) {
+    		LOGGER.info("message topic current org :");
+    		return null;
+    	}
     	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
     			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
