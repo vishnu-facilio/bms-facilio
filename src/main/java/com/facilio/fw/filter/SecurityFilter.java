@@ -38,6 +38,7 @@ public class SecurityFilter implements Filter {
         urls.add("/sso/");
         urls.add("/api/v2/module/data/customUpload");
         urls.add("/api/v2/agent/agentDownload");
+        urls.add("/api/v2/agent/certificate");
         return urls;
     }
 
