@@ -120,6 +120,11 @@
                 method="files">
         </action>
 
+        <action name="count"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="count">
+        </action>
+
 
     </package>
     <package name="usernotification" namespace="/api/v3/usernotification/update" extends="v3BaseApi">

@@ -27,6 +27,41 @@ public class ListCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean onlyCount = Constants.getOnlyCount(context);
+        if (onlyCount) {
+            fetchCount(context);
+        } else {
+            fetchData(context);
+        }
+        return false;
+    }
+
+    private void fetchCount(Context context) throws Exception {
+        SelectRecordsBuilder countSelect = getSelectRecordsBuilder(context);
+
+        countSelect.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+
+//        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+//        if (pagination != null) {
+//            int page = (int) pagination.get("page");
+//            int perPage = (int) pagination.get("perPage");
+//
+//            int offset = ((page-1) * perPage);
+//            if (offset < 0) {
+//                offset = 0;
+//            }
+//
+//            countSelect.offset(offset);
+//            countSelect.limit(perPage);
+//        }
+
+        List<? extends ModuleBaseWithCustomFields> countRecord = countSelect.get();
+        context.put(Constants.COUNT, countRecord.get(0).getId());
+
+
+    }
+
+    private void fetchData(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = module.getName();
         List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -70,8 +105,6 @@ public class ListCommand extends FacilioCommand {
         }
 
         context.put(Constants.RECORD_MAP, recordMap);
-
-        return false;
     }
 
     private SelectRecordsBuilder getSelectRecordsBuilder(Context context) {

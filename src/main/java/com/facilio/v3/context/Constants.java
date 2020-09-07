@@ -22,7 +22,6 @@ public class Constants {
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String MODULE_BEAN = "moduleBean";
     public static final String WITH_COUNT = "withCount";
-    public static final String COUNT = "count";
     public static final String BEAN_CLASS = "beanClass";
     public static final String ROWS_UPDATED = "rowsUpdated";
     public static final String PATCH_FIELDS = "patchFields";
@@ -206,6 +205,27 @@ public class Constants {
 
     public static void setV3config(Context context, V3Config v3Config) {
         context.put(V3CONFIG, v3Config);
+    }
+
+    private static final String ONLY_COUNT = "onlyCount";
+    public static boolean getOnlyCount(Context context) {
+        if (context.get(ONLY_COUNT) == null) {
+            return false;
+        }
+        return (Boolean) context.get(ONLY_COUNT);
+    }
+
+    public static void setOnlyCount(Context context, boolean onlyCount) {
+        context.put(ONLY_COUNT, onlyCount);
+    }
+
+    public static final String COUNT = "count";
+    public static Long getCount(Context context) {
+        return (Long) context.get(COUNT);
+    }
+
+    public static void setCount(Context context, long count) {
+        context.put(COUNT, count);
     }
 
 }

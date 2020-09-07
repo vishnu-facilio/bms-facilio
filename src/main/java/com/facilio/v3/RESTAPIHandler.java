@@ -97,6 +97,39 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         return recordMap;
     }
 
+    private void countHandler(String moduleName) throws Exception {
+        FacilioChain countChain = ChainUtil.getCountChain(moduleName);
+        FacilioContext context = countChain.getContext();
+
+        context.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
+
+        String filters = this.getFilters();
+        if (filters != null && !filters.isEmpty()) {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(filters);
+            context.put(Constants.FILTERS, json);
+
+            boolean excludeParentFilter = this.getExcludeParentFilter();
+            context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+        }
+
+        context.put(Constants.QUERY_PARAMS, getQueryParameters());
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+
+        Constants.setV3config(context, v3Config);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        countChain.execute();
+
+        Long count = Constants.getCount(context);
+        this.setData("count", count);
+    }
+
     private void handleListRequest(String moduleName) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
@@ -537,6 +570,19 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
     public String files() throws Exception {
         try {
             addFiles();
+        } catch (Exception ex) {
+            this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
+            this.setMessage("Internal Server Error");
+            this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
+            return "failure";
+        }
+        return SUCCESS;
+    }
+
+    public String count() throws Exception {
+        try {
+            countHandler(this.getModuleName());
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
