@@ -385,7 +385,7 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	private void setWebViewCookies() throws Exception {
+	public void setWebViewCookies() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");

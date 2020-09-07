@@ -148,6 +148,8 @@ public class FacilioSSOAction extends FacilioAction {
 		String message = null;
 		
 		HttpServletResponse response= (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
 		if (getSsoToken() != null && isValidSSOToken(getSsoToken())) {
 			
@@ -158,6 +160,7 @@ public class FacilioSSOAction extends FacilioAction {
 			
 			JSONObject result = authAction.getResult();
 			if (result.containsKey("url")) {
+				authAction.setWebViewCookies();
 				response.sendRedirect((String) result.get("url"));
 				return SUCCESS;
 			}
@@ -168,9 +171,6 @@ public class FacilioSSOAction extends FacilioAction {
 		else {
 			message = "Invalid SSO Access.";
 		}
-
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
 		String loginUrl = SSOUtil.getSPLoginURL("true".equalsIgnoreCase(isWebView)) + "?ssoError=" + URLEncoder.encode(message, "UTF-8");
 		response.sendRedirect(loginUrl);
