@@ -18,8 +18,15 @@ Map cardLayout(Map params) {
         valueMap = {};
         valueMap["value"] = cardValue;
         if (enumMap != null) {
-            if (cardValue != null && enumMap.get(cardValue) != null) {
-                valueMap["value"] = enumMap.get(cardValue);
+            enumValue = cardValue;
+          	if (cardValue == true) {
+              enumValue = 1;
+            }
+          	else if (cardValue == false) {
+              enumValue = 0;
+            }
+            if (enumValue != null && enumMap.get(enumValue) != null) {
+                valueMap["value"] = enumMap.get(enumValue);
             }
         }
         if (fieldMapInfo != null) {
