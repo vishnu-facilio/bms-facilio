@@ -115,7 +115,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				else {
 					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
 				}
-				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info("Time taken to Execute workflows for modules : " + recordMap.keySet() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
+				}
 			}
 //			if (AccountUtil.getCurrentOrg().getId() == 78l) {
 //				LOGGER.info("ExecuteAllWorkflowsCommand Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());	
@@ -190,34 +192,39 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				else {
 					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
 				}
-				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+				}
 				currentTime = System.currentTimeMillis();
 				
-				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
-					LOGGER.info("Records : "+entry.getValue());
-					LOGGER.info("Matching Rules : "+workflowRules);
-					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
-				}
-				
-				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
-					LOGGER.error("EMMAR RULE DEBUGGING");
-					LOGGER.error("Records : "+entry.getValue());
-					LOGGER.error("Matching Rules : "+workflowRules);
-					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
-				}
-				if (AccountUtil.getCurrentOrg().getId() == 88l && "alarm".equals(moduleName)) {
-					LOGGER.error("ALSEEF DEBUGGING");
-					LOGGER.error("Records : "+entry.getValue());
-					LOGGER.error("Matching Rules : "+workflowRules);
-					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
+//					LOGGER.info("Records : "+entry.getValue());
+//					LOGGER.info("Matching Rules : "+workflowRules);
+//					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
+//				}
+//
+//				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
+//					LOGGER.error("EMMAR RULE DEBUGGING");
+//					LOGGER.error("Records : "+entry.getValue());
+//					LOGGER.error("Matching Rules : "+workflowRules);
+//					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
+//				}
+//				if (AccountUtil.getCurrentOrg().getId() == 88l && "alarm".equals(moduleName)) {
+//					LOGGER.error("ALSEEF DEBUGGING");
+//					LOGGER.error("Records : "+entry.getValue());
+//					LOGGER.error("Matching Rules : "+workflowRules);
+//					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
+//				}
 
-				LOGGER.debug(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
-								(workflowRules == null ? 0 : workflowRules.size()),
-								(entry.getValue() == null ? 0 : entry.getValue().size()),
-								isParallelRuleExecution
-												)
-							);
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
+							(workflowRules == null ? 0 : workflowRules.size()),
+							(entry.getValue() == null ? 0 : entry.getValue().size()),
+							isParallelRuleExecution
+							)
+					);
+				}
 
 				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				if (workflowRules != null && !workflowRules.isEmpty()) {
@@ -253,14 +260,12 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", ReadingRuleAPI.addAdditionalPropsForRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getAllowedInstantJobWorkflowRuleTypes()));
 								jobs++;
 								long timeTaken = System.currentTimeMillis() - processStartTime;
-//								LOGGER.debug(MessageFormat.format("Time taken for adding reading instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
 							if(workflowRulesExcludingReadingRule != null && !workflowRulesExcludingReadingRule.isEmpty())  {
 								FacilioTimer.scheduleInstantJob("rule","ParallelRecordBasedWorkflowRuleExecutionJob", WorkflowRuleAPI.addAdditionalPropsForNonReadingRuleRecordBasedInstantJob(module, record, currentChangeSet, activities, context, WorkflowRuleAPI.getNonReadingRuleWorkflowRuleTypes(ruleTypes)));
 								jobs++;
 								long timeTaken = System.currentTimeMillis() - processStartTime;
-//								LOGGER.debug(MessageFormat.format("Time taken for adding other instant job : {0}", timeTaken));
 								totalInstantJobAddTime += timeTaken;
 							}
 						}
@@ -270,10 +275,13 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
 						}		
 					}
-					LOGGER.debug(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
-
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+						LOGGER.info(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
+					}
 				}
-				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+				}
 			}
 		}
 	}

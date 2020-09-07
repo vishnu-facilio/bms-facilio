@@ -19,12 +19,16 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.debug("Executing workflow rules");
+        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+            LOGGER.info("Executing workflow rules");
+        }
         executeWorkflowsRules(context);
         boolean adjustTime = (boolean) context.getOrDefault(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
         ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.OLD_CONTROLLER);
         if (controller == null && adjustTime) {
-            LOGGER.debug("Executing formula");
+            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+                LOGGER.info("Executing formula");
+            }
             executeFormulae(context);
         }
         if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343l) {// Needs to be removed
@@ -69,7 +73,9 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     private void publishReadingChangeMessage (Context context) {
         try {
-            LOGGER.debug("Executing PubSub");
+            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+                LOGGER.info("Executing PubSub");
+            }
             FacilioChain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
             publishChain.setContext((FacilioContext) context);
             publishChain.execute();
