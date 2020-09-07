@@ -1169,7 +1169,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateFormulaCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			//c.addCommand(new AddKPIViolationRuleCommand());
-			c.addCommand(new UpdateFormulaFieldResourceStatusCommand());
+			c.addCommand(new SetFormulaFieldResourceStatusCommand(true));
 			c.addCommand(new ConstructFormulaDependenciesCommand());
 			return c;
 		}

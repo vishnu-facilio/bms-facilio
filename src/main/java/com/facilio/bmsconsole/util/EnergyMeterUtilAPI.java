@@ -184,21 +184,11 @@ public class EnergyMeterUtilAPI {
 				}
 				LOGGER.info("VM Marking for data gap End ---");
 			}
-			}
-			catch(Exception e) {
-				LOGGER.error("Exception while cheking data Gap", e);
-			}
-			
 		}
-	
-	public static void runMig() throws Exception {
-		AccountUtil.setCurrentAccount(1l);
-
-		JobContext jc = new JobContext();
-		jc.setJobId(1l);
-
-		FormulaLeafTriggerJob fLeaf = new FormulaLeafTriggerJob();
-		fLeaf.execute(jc);
+		catch(Exception e) {
+			LOGGER.error("Exception while cheking data Gap", e);
+		}
+			
 	}
 	
 	public static void convertVMToFormulaMig() throws Exception {

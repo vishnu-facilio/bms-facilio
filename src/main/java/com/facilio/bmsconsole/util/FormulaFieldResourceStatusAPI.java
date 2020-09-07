@@ -43,11 +43,11 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 
 	}
 	
-	public static void addFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+	public static void addFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext, List<FacilioField> addOrUpdateFields) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+				.fields(addOrUpdateFields);
 	
 		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
 		insertBuilder.addRecord(props);
@@ -254,6 +254,24 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		return null;
 	}
 	
+	public static FormulaFieldResourceStatusContext getFormulaFieldResourceStatusByFieldAndResource(long fieldId, long resourceId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), ""+ fieldId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), ""+ resourceId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {			
+			FormulaFieldResourceStatusContext formulaFieldResourceStatusContext =  FieldUtil.getAsBeanFromMap(props.get(0), FormulaFieldResourceStatusContext.class);
+			return formulaFieldResourceStatusContext;
+		}
+		return null;
+	}
+	
 	public static void updateFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -317,7 +335,7 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
 	}
 	
-	public static void deleteFormulaFieldResourceStatusByFormulaId(long formulaFieldId) {
+	public static void deleteFormulaFieldResourceStatusByFormulaId(long formulaFieldId) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
@@ -325,6 +343,7 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 		deleteRecordBuilder
 			.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("formulaFieldId"), ""+ formulaFieldId, NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
 	}
 	
 	public static void rollUpIsLeafBasedOnDependencies(List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList, List<FormulaFieldDependenciesContext> formulaFieldDependenciesContextList) throws Exception

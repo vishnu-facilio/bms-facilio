@@ -1144,11 +1144,6 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;	
 	}
 	
-	public String runMig() throws Exception {
-		EnergyMeterUtilAPI.runMig();
-		return SUCCESS;	
-	}
-	
 	public String convertVMToFormulaMig() throws Exception {
 		EnergyMeterUtilAPI.convertVMToFormulaMig();
 		return SUCCESS;	

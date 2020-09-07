@@ -13,10 +13,25 @@ import org.apache.commons.lang.StringUtils;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class SetFormulaFieldResourceStatusCommand extends FacilioCommand {
+	
+	private boolean isUpdate = false;
+	public SetFormulaFieldResourceStatusCommand(boolean isUpdate) {
+		this.isUpdate = isUpdate;
+	}
+
+	public SetFormulaFieldResourceStatusCommand() {
+	}
 	
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -37,29 +52,59 @@ public class SetFormulaFieldResourceStatusCommand extends FacilioCommand {
 		{
 			FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 			List<Long> parentIds = formula.getIncludedResources();
+			
 			if(parentIds == null || parentIds.isEmpty()){
-				throw new Exception("No resource is associated for the given formula id " +formula.getId());
+				parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+				if (parentIds == null) {
+					Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+					if (parentId != null) {
+						parentIds = Collections.singletonList(parentId);
+					}
+				}
 			}
-
+			if(parentIds == null || parentIds.isEmpty()){
+				if(!isUpdate) {
+					throw new IllegalArgumentException("No resource is associated for the given formula id " +formula.getId());
+				}
+				else {
+					return false;
+				}
+			}
+			
+			//delete resourceIds present
+			if(isUpdate) {
+				FormulaFieldResourceStatusAPI.deleteFormulaFieldResourceStatusByFormulaId(formula.getId());
+				setDefaultFormulaProps(formula);
+			}
+			
 			List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = new ArrayList<FormulaFieldResourceStatusContext>();
 			for(Long parentId:parentIds)
 			{
 				FormulaFieldResourceStatusContext formulaFieldResourceStatusContext = new FormulaFieldResourceStatusContext();	
 				formulaFieldResourceStatusContext.setFormulaFieldId(formula.getId());
-				formulaFieldResourceStatusContext.setFieldId(formula.getReadingFieldId());;
 				formulaFieldResourceStatusContext.setResourceId(parentId);
 				formulaFieldResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal());
+
+				formulaFieldResourceStatusContext.setFieldId(formula.getReadingFieldId());;
 				formulaFieldResourceStatusContext.setTriggerType(formula.getTriggerType());
 				formulaFieldResourceStatusContext.setFrequency(formula.getFrequency());
 				formulaFieldResourceStatusContext.setInterval(formula.getInterval());
-				
-				FormulaFieldResourceStatusAPI.addFormulaFieldResourceStatus(formulaFieldResourceStatusContext);
+					
+				FormulaFieldResourceStatusAPI.addFormulaFieldResourceStatus(formulaFieldResourceStatusContext, FieldFactory.getFormulaFieldResourceStatusModuleFields());
 				formulaFieldResourceStatusContextList.add(formulaFieldResourceStatusContext);		
 			}
 			context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_STATUS_LIST, formulaFieldResourceStatusContextList);	
 		}	
 		
 		return false;
+	}
+	
+	private void setDefaultFormulaProps(FormulaFieldContext formula) throws Exception {	
+		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(formula.getId());
+		formula.setReadingFieldId(oldFormula.getReadingFieldId());;
+		formula.setTriggerType(oldFormula.getTriggerType());
+		formula.setFrequency(oldFormula.getFrequency());
+		formula.setInterval(oldFormula.getInterval());		
 	}
 
 }

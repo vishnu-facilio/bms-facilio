@@ -65,6 +65,9 @@ public class ConstructFormulaDependenciesCommand extends FacilioCommand {
 		
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = (List<FormulaFieldResourceStatusContext>) context.get(FacilioConstants.ContextNames.FORMULA_RESOURCE_STATUS_LIST);
+		if(formulaFieldResourceStatusContextList == null || formulaFieldResourceStatusContextList.isEmpty()) {
+			return false;
+		}
 		List<FormulaFieldResourceContext> dependentFormulaFieldResourceContextList = (List<FormulaFieldResourceContext>) context.get(FacilioConstants.ContextNames.DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST);
 		
 		Map<Long, FormulaFieldResourceStatusContext> resourceIdVsFormulaResourceStatusMap = new LinkedHashMap<Long, FormulaFieldResourceStatusContext>();
@@ -75,7 +78,7 @@ public class ConstructFormulaDependenciesCommand extends FacilioCommand {
 		
 		if(dependentFormulaFieldResourceContextList == null || dependentFormulaFieldResourceContextList.isEmpty())
 		{
-			throw new Exception("Dependent Field Context cannot be null for the given parent formula id " +formula.getId());
+			throw new IllegalArgumentException("Dependent Field Context cannot be null for the given parent formula id " +formula.getId());
 		}
 		
 		List<FormulaFieldDependenciesContext> formulaFieldDependenciesContextList = new ArrayList<FormulaFieldDependenciesContext>();	
