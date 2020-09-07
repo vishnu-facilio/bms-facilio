@@ -352,6 +352,12 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String loginWithUserNameAndPassword() throws Exception {
+		validateLoginv3();
+		setWebViewCookies();
+		return SUCCESS;
+	}
+
 	private String digest;
 
 	public String loginWithPasswordAndDigest() throws Exception {
@@ -375,6 +381,11 @@ public class FacilioAuthAction extends FacilioAction {
 		setUsername(emailFromDigest);
 		validateLoginv3();
 
+		setWebViewCookies();
+		return SUCCESS;
+	}
+
+	private void setWebViewCookies() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
@@ -393,7 +404,6 @@ public class FacilioAuthAction extends FacilioAction {
 				response.addCookie(schemeCookie);
 			}
 		}
-		return SUCCESS;
 	}
 
 	public String validateLoginv3() {
