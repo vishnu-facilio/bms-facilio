@@ -638,16 +638,17 @@ public class FacilioAuthAction extends FacilioAction {
 				authtoken = IAMUserUtil.verifyLoginWithoutPassword(email, userAgent, userType, ipAddress, request.getServerName(), null);
 				setResult("token", authtoken);
 				setResult("username", email);
+
+				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 				
 				if (relayState != null && (relayState.indexOf("http") >= 0)) {
 					setResult("url", relayState);
 				}
 				else {
-					String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 					setResult("url", SSOUtil.getLoginSuccessURL("true".equalsIgnoreCase(isWebView)));
 				}
 	
-				addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
+				addAuthCookies(authtoken, portalUser, false, request, "true".equalsIgnoreCase(isWebView) || "mobile".equals(userType));
 			} 
 			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating sso signin, ", e);
