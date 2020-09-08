@@ -561,6 +561,8 @@ public class Account implements AccountsInterface<User>, Serializable{
 		redisGetTime = 0L;
 		redisPutTime = 0L;
 		redisDeleteTime = 0L;
+		instantJobCount = 0;
+		instantJobFileAddTime = 0L;
 
 		publicSelectQueries = 0;
 		publicInsertQueries = 0;
@@ -570,6 +572,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 		publicRedisGetCount = 0;
 		publicRedisPutCount = 0;
 		publicRedisDeleteCount = 0;
+		publicInstantJobCount = 0;
 		publicSelectQueriesTime = 0L;
 		publicInsertQueriesTime = 0L;
 		publicUpdateQueriesTime = 0L;
@@ -578,6 +581,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 		publicRedisGetTime = 0L;
 		publicRedisPutTime = 0L;
 		publicRedisDeleteTime = 0L;
+		publicInstantJobFileAddTime = 0L;
 
 		if (redisLocalCache != null) {//Better for gc I guess
 			redisLocalCache.clear();
