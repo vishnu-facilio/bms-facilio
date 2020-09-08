@@ -238,6 +238,15 @@ public class WorkflowContext implements Serializable {
 	public void setIgnoreMarkedReadings(boolean ignoreMarkedReadings) {
 		this.ignoreMarkedReadings = ignoreMarkedReadings;
 	}
+	
+	boolean fetchMarkedReadings = false;
+
+	public boolean isFetchMarkedReadings() {
+		return fetchMarkedReadings;
+	}
+	public void setFetchMarkedReadings(boolean fetchMarkedReadings) {
+		this.fetchMarkedReadings = fetchMarkedReadings;
+	}
 
 	boolean terminateExecution;
 	

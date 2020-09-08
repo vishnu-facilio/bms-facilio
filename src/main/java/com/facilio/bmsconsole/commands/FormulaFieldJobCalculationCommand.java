@@ -149,6 +149,9 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			long startTime = getStartTime(formula, meta.getTtime());
 			long endTime = getEndTime(formula);				
 			
+			if(formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING)) && formula.getReadingField().getName().equals("totalEnergyConsumptionDelta")) {
+				formula.getWorkflow().setFetchMarkedReadings(true);
+			}
 			FormulaFieldAPI.computeFormulaResourceReadings(formula, resourceId, startTime, endTime, false);	
 		}
 		catch (Exception e) {

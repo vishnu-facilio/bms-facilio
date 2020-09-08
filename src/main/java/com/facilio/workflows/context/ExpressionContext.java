@@ -419,7 +419,7 @@ public class ExpressionContext implements WorkflowExpression {
 						}
 					}
 					
-					if(moduleName != null && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+					if(moduleName != null && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING) && !workflowContext.isFetchMarkedReadings()) {
 						FacilioField markedField = modBean.getField("marked", moduleName);
 						if(markedField != null) {
 							selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, Boolean.FALSE.toString(), BooleanOperators.IS));
