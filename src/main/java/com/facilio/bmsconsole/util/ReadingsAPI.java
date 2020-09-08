@@ -778,7 +778,8 @@ public class ReadingsAPI {
 				.andCondition(CriteriaAPI.getIdCondition(id, module)).limit(1);
 		return selectBuilder.fetchFirst();
 	}
-	
+
+	private static final int CURRENT_TIME_BUFFER = 5 * 1000;
 	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
 
 
@@ -810,7 +811,7 @@ public class ReadingsAPI {
 								Object lastReading = meta.getValue();
 								long lastTimeStamp = meta.getTtime();
 								long currentTime = System.currentTimeMillis();
-								if (timeStamp > currentTime
+								if (timeStamp > (currentTime + CURRENT_TIME_BUFFER)
 										|| (lastReading != null
 										&& lastTimeStamp != -1
 										&& StringUtils.isNotEmpty(meta.getActualValue())
