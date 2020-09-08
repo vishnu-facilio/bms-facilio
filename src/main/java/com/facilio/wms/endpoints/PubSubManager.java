@@ -149,7 +149,10 @@ public class PubSubManager {
 	public void unsubscribe(LiveSession ls, Message message) {
 		
 		try {
-			long orgId = (message.getOrgId() != null && message.getOrgId() > 0) ? message.getOrgId() : ls.getCurrentAccount().getOrg().getOrgId();
+			if (message.getOrgId() == null || message.getOrgId() <= 0) {
+				return;
+			}
+			long orgId = message.getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
@@ -300,7 +303,7 @@ public class PubSubManager {
 			JSONArray watchers = (JSONArray) readingWatchers.get(readingKey);
 			if (watchers != null && watchers.size() > 0) {
 				
-				List<Integer> removedWatchers = new ArrayList<>();
+				JSONArray newWatchers = new JSONArray();
 				
 				for (int i = 0; i < watchers.size(); i++) {
 					JSONObject watcher = (JSONObject) watchers.get(i);
@@ -308,19 +311,15 @@ public class PubSubManager {
 					long timestamp = (Long) watcher.get("timestamp");
 					
 					long diff = System.currentTimeMillis() - timestamp;
-					if (diff > 1296000000) { // 15 days before subscribed
-						removedWatchers.add(i);
+					if (diff < 1296000000) { // 15 days before subscribed
+						newWatchers.add(watcher);
 					}
 				}
 				
-				if (removedWatchers.size() > 0) {
+				if (watchers.size() > 0) {
 					
-					for (Integer idx : removedWatchers) {
-						watchers.remove((int) idx);
-					}
-					
-					if (watchers.size() > 0) {
-						readingWatchers.put(readingKey, watchers);
+					if (newWatchers.size() > 0) {
+						readingWatchers.put(readingKey, newWatchers);
 					}
 					else {
 						readingWatchers.remove(readingKey);
