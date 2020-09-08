@@ -106,8 +106,11 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
                 event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
                 event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
+                event.setProperty("ijob", String.valueOf(account.getInstantJobCount()));
+                event.setProperty("ijobfiletime", String.valueOf(account.getInstantJobFileAddTime()));
                 event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
                 event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
+                
             }
 
             RequestUtil.addRequestLogEvents(request, event);

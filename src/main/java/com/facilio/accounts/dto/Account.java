@@ -40,10 +40,12 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private int redisGetCount = 0;
 	private int redisPutCount = 0;
 	private int redisDeleteCount = 0;
+	private int instantJobCount = 0;
 	private long selectQueriesTime = 0L;
 	private long insertQueriesTime = 0L;
 	private long updateQueriesTime = 0L;
 	private long deleteQueriesTime = 0L;
+	private long instantJobFileAddTime = 0L;
 	private long redisTime = 0L;
 	private long redisGetTime = 0L;
 	private long redisPutTime = 0L;
@@ -57,6 +59,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private int publicRedisGetCount = 0;
 	private int publicRedisPutCount = 0;
 	private int publicRedisDeleteCount = 0;
+	private int publicInstantJobCount = 0;
 	private long publicSelectQueriesTime = 0L;
 	private long publicInsertQueriesTime = 0L;
 	private long publicUpdateQueriesTime = 0L;
@@ -65,6 +68,8 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long publicRedisGetTime = 0L;
 	private long publicRedisPutTime = 0L;
 	private long publicRedisDeleteTime = 0L;
+	private long publicInstantJobFileAddTime = 0L;
+
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
 	private Map<Long, Map<String, Object>> scopingMap;
 	private Boolean shouldApplySwitchScope;
@@ -258,6 +263,40 @@ public class Account implements AccountsInterface<User>, Serializable{
 		}
 		else {
 			this.publicDeleteQueries += deleteQueries;
+		}
+	}
+
+	public int getInstantJobCount() {
+		return instantJobCount;
+	}
+	
+	public int getPublicInstantJobCount() {
+		return publicInstantJobCount;
+	}
+
+	public void incrementInstantJobCount(int InstantJobCount) {
+		if (isScoped()) {
+			this.instantJobCount += InstantJobCount;
+		}
+		else {
+			this.publicInstantJobCount += InstantJobCount;
+		}
+	}
+	
+	public long getInstantJobFileAddTime() {
+		return instantJobFileAddTime;
+	}
+
+	public long getPublicInstantJobFileAddTime() {
+		return publicInstantJobFileAddTime;
+	}
+	
+	public void incrementInstantJobFileAddTime(long fileAddedTime) {
+		if (isScoped()) {
+			this.instantJobFileAddTime += fileAddedTime;
+		}
+		else {
+			this.publicInstantJobFileAddTime += fileAddedTime;
 		}
 	}
 

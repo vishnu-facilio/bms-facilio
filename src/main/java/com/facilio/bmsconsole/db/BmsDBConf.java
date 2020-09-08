@@ -433,8 +433,17 @@ public class BmsDBConf extends DBConf {
     public void incrementDeleteQueryTime(long duration) {
         AccountUtil.incrementDeleteQueryTime(duration);
     }
-
-
+    
+    @Override
+    public void incrementInstantJobCount(int count) {
+    	AccountUtil.incrementInstantJobCount(count);
+    }
+    
+    @Override
+    public void incrementInstantJobFileAddTime(long duration) {
+        AccountUtil.incrementInstantJobFileAddTime(duration);
+    }
+    
 
     private class SelectQueryCache {
 

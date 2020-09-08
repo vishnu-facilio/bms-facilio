@@ -237,6 +237,18 @@ public class AccountUtil {
 		}
 	}
 	
+	public static void incrementInstantJobCount(int instantJobs) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementInstantJobCount(instantJobs);
+		}
+	}
+	
+	public static void incrementInstantJobFileAddTime(long duration) {
+		if(currentAccount.get() != null) {
+			currentAccount.get().incrementInstantJobFileAddTime(duration);
+		}
+	}
+	
 	public static UserBean getUserBean() throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		return userBean;
