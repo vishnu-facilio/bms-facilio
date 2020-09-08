@@ -35,7 +35,9 @@ public class VendorPageFactory extends PageFactory{
 
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT)) {
 	
-			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(vendor.getModuleId());
+	
 			Tab tab1 = page.new Tab("summary");
 			page.addTab(tab1);
 			
@@ -46,27 +48,23 @@ public class VendorPageFactory extends PageFactory{
 
 			tab1.addSection(tab1Sec2);
 
-		
-			PageWidget cards= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS);
-			cards.addToLayoutParams(tab1Sec1, 6, 4);
-			tab1Sec1.addWidget(cards);
+			if (isNotLandLord(vendor) == true) {
+				PageWidget cards= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS);
+				cards.addToLayoutParams(tab1Sec1, 6, 4);
+				tab1Sec1.addWidget(cards);
+				
+				PageWidget cards2= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS2);
+				cards2.addToLayoutParams(tab1Sec1, 18, 4);
+				tab1Sec1.addWidget(cards2);
+				
+				PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY, "supplierElectrycity");
+				electriycity.addToLayoutParams(tab1Sec2, 24, 10);
+				tab1Sec2.addWidget(electriycity);
+			}
+
 			
-			PageWidget cards2= new PageWidget(PageWidget.WidgetType.SUPPLIER_CARDS2);
-			cards2.addToLayoutParams(tab1Sec1, 18, 4);
-			tab1Sec1.addWidget(cards2);
-			
-			PageWidget electriycity= new PageWidget(PageWidget.WidgetType.SUPPLIER_ELECTRYCITY, "supplierElectrycity");
-			electriycity.addToLayoutParams(tab1Sec2, 24, 10);
-			tab1Sec2.addWidget(electriycity);
-			
-//			PageWidget water= new PageWidget(PageWidget.WidgetType.SUPPLIER_WATER);
-//			water.addToLayoutParams(tab1Sec2, 24, 4);
-//			tab1Sec2.addWidget(water);
-//			
-//			PageWidget seawage= new PageWidget(PageWidget.WidgetType.SUPPLIER_SEAWAGE);
-//			seawage.addToLayoutParams(tab1Sec2, 24, 4);
-//			tab1Sec2.addWidget(seawage);
-			
+
+
 			PageWidget details= new PageWidget(PageWidget.WidgetType.SUPPLIER_DETAILS);
 			details.addToLayoutParams(tab1Sec2, 24, 4);
 			tab1Sec2.addWidget(details);
@@ -87,8 +85,7 @@ public class VendorPageFactory extends PageFactory{
 			attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
 			subModuleGroup.addToWidget(attachmentWidget);
 	
-			
-			
+
 			Page.Tab tab2 = page.new Tab("ACTIVE PAYMENTS");
 			page.addTab(tab2);
 			Page.Section tab2Sec1 = page.new Section();
@@ -98,44 +95,45 @@ public class VendorPageFactory extends PageFactory{
 			payments.addToLayoutParams(tab2Sec1, 24, 24);
 			tab2Sec1.addWidget(payments);
 
-			
-			Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
-			page.addTab(tab4);
-			Page.Section tab4Sec1 = page.new Section();
-			tab4.addSection(tab4Sec1);
-			
-			
-			PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.SUPPLIER_CANCELLED_PAYMENTS);
-			cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
-			tab4Sec1.addWidget(cancelPayments);
-			
-			
-	
-			
-			
-			Page.Tab tab5 = page.new Tab("ARREARS");
-			page.addTab(tab5);
-			Page.Section tab5Sec1 = page.new Section();
-			tab5.addSection(tab5Sec1);
-			
-			PageWidget outstanding = new PageWidget(PageWidget.WidgetType.ARREARS);
-			outstanding.addToLayoutParams(tab5Sec1, 10, 4);
-			tab5Sec1.addWidget(outstanding);
-			
-			PageWidget underreview = new PageWidget(PageWidget.WidgetType.UNDER_REVIEW);
-			underreview.addToLayoutParams(tab5Sec1, 14, 4);
-			tab5Sec1.addWidget(underreview);
-			
-			Page.Section tab5Sec2 = page.new Section();
-			tab5.addSection(tab5Sec2);
-			
-			PageWidget detailTable = new PageWidget(PageWidget.WidgetType.DETAILS_TABLE);
-			detailTable.addToLayoutParams(tab5Sec2, 24, 8);
-			tab5Sec2.addWidget(detailTable);
-			
-			PageWidget detailtabs = new PageWidget(PageWidget.WidgetType.DETAILS_TAB);
-			detailtabs.addToLayoutParams(tab5Sec2, 24, 8);
-			tab5Sec2.addWidget(detailtabs);
+			if (isNotLandLord(vendor) == true) {
+				Page.Tab tab4 = page.new Tab("CANCELLED PAYMENTS");
+				page.addTab(tab4);
+				Page.Section tab4Sec1 = page.new Section();
+				tab4.addSection(tab4Sec1);
+				
+				
+				PageWidget cancelPayments= new PageWidget(PageWidget.WidgetType.SUPPLIER_CANCELLED_PAYMENTS);
+				cancelPayments.addToLayoutParams(tab4Sec1, 24, 24);
+				tab4Sec1.addWidget(cancelPayments);
+				
+				
+		
+				
+				
+				Page.Tab tab5 = page.new Tab("ARREARS");
+				page.addTab(tab5);
+				Page.Section tab5Sec1 = page.new Section();
+				tab5.addSection(tab5Sec1);
+				
+				PageWidget outstanding = new PageWidget(PageWidget.WidgetType.ARREARS);
+				outstanding.addToLayoutParams(tab5Sec1, 10, 4);
+				tab5Sec1.addWidget(outstanding);
+				
+				PageWidget underreview = new PageWidget(PageWidget.WidgetType.UNDER_REVIEW);
+				underreview.addToLayoutParams(tab5Sec1, 14, 4);
+				tab5Sec1.addWidget(underreview);
+				
+				Page.Section tab5Sec2 = page.new Section();
+				tab5.addSection(tab5Sec2);
+				
+				PageWidget detailTable = new PageWidget(PageWidget.WidgetType.DETAILS_TABLE);
+				detailTable.addToLayoutParams(tab5Sec2, 24, 8);
+				tab5Sec2.addWidget(detailTable);
+				
+				PageWidget detailtabs = new PageWidget(PageWidget.WidgetType.DETAILS_TAB);
+				detailtabs.addToLayoutParams(tab5Sec2, 24, 8);
+				tab5Sec2.addWidget(detailtabs);
+			}
 			
 			
 			Page.Tab tab3 = page.new Tab("TRANSACTIONS");
@@ -226,6 +224,19 @@ public class VendorPageFactory extends PageFactory{
 		return page;
 
 		
+	}
+	private static boolean isNotLandLord(VendorContext vendor) {
+		boolean isNotLandLord = true;
+		if (vendor.getData() != null) {
+			
+			if (vendor.getData().get("picklist") != null) {
+				if (vendor.getData().get("picklist").equals(2)) {
+					return false;
+				}
+			}
+			
+		}
+		return isNotLandLord;
 	}
 
 	private static void addPrimaryDetailsWidget(Section section) {
