@@ -604,7 +604,7 @@ public abstract class FileStore {
 //			}
 //		}
 		if (FacilioProperties.isDevelopment()) {
-			url.append(FacilioProperties.getServerName());
+			url.append(FacilioProperties.getClientAppUrl());
 		}
 		url.append("/api/v2/");
 
