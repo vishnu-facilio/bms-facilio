@@ -27,7 +27,9 @@ public enum ControllerType {
 	
 	CUSTOM(10, "Custom"),
 	
-	REST(11, "Rest")
+	REST(11, "Rest"),
+	
+	SYSTEM(12, "System");
 	;
 
 	private int key;

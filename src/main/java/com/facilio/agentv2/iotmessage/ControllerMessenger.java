@@ -1,6 +1,18 @@
 package com.facilio.agentv2.iotmessage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.fw.constants.FacilioCommand;
+import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
@@ -9,20 +21,13 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.point.Point;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ControllerType;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.facilio.modules.FieldUtil;
 
 public class ControllerMessenger {
     private static final Logger LOGGER = LogManager.getLogger(ControllerMessenger.class.getName());
@@ -80,63 +85,76 @@ public class ControllerMessenger {
             iotData.setAgentId(agentId);
             iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
-            object.put(AgentConstants.COMMAND, command.asInt());
-            object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
-            object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
-            //object.putAll(controller.getChildJSON());
-            object.put("timestamp", System.currentTimeMillis());
-            object.put("agent", agent.getName());
-            object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
-
-            switch (command) {
-                case RESET:
-                    //build reset message
-                    break;
-                //
-                case SET:
-                    JSONArray pointsData = MessengerUtil.getPointsData(points);
-                    for (Object pointsDatumObject : pointsData) {
-                        JSONObject pointdatum = (JSONObject) pointsDatumObject;
-                        pointdatum.put(AgentConstants.VALUE,points.get(pointsData.indexOf(pointdatum)).getValue());
-                        if(pointdatum.containsKey(AgentConstants.DEVICE_ID)){
-                            pointdatum.remove(AgentConstants.DEVICE_ID);
-                        }
-                    }
-                    object.put(AgentConstants.POINTS, pointsData);
-                    break;
-                case SUBSCRIBE:
-                case CONFIGURE:
-                case REMOVE:
-                case UNSUBSCRIBE:
-                case GET:
-                    object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
-                    break;
-                //
-                case SHUTDOWN:
-                    break;
-                case PROPERTY:
-                    object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
-                case STATS:
-                    break;
-                case UPGRADE:
-                    break;
-                case THREAD_DUMP:
-                    break;
-                case ADD_CONTROLLER:
-                    break;
-                case DISCOVER_POINTS:
-                    if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
-                            controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
-                        object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);
-                    }
-                    break;
-                case EDIT_CONTROLLER:
-                    break;
-                case CONTROLLER_STATUS:
-                    break;
-                case DISCOVER_CONTROLLERS:
-                    break;
+            if (command == FacilioCommand.SET) {
+            		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
+            		String isOldAgent = orgInfo.get(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
+            		if (isOldAgent != null && isOldAgent.equals("true")) {
+            			constructMessageForOldAgent(controller, command, points, object);
+            		}
             }
+            if (object.isEmpty()) {
+	            	object.put(AgentConstants.COMMAND, command.asInt());
+	            	object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
+	            	object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
+	            	//object.putAll(controller.getChildJSON());
+	            
+	            	
+	            	switch (command) {
+	            	case RESET:
+	            		//build reset message
+	            		break;
+	            		//
+	            	case SET:
+	            		JSONArray pointsData = MessengerUtil.getPointsData(points);
+	            		for (Object pointsDatumObject : pointsData) {
+	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;
+	            			pointdatum.put(AgentConstants.VALUE,points.get(pointsData.indexOf(pointdatum)).getValue());
+	            			if(pointdatum.containsKey(AgentConstants.DEVICE_ID)){
+	            				pointdatum.remove(AgentConstants.DEVICE_ID);
+	            			}
+	            		}
+	            		object.put(AgentConstants.POINTS, pointsData);
+	            		break;
+	            	case SUBSCRIBE:
+	            	case CONFIGURE:
+	            	case REMOVE:
+	            	case UNSUBSCRIBE:
+	            	case GET:
+	            		object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
+	            		break;
+	            		//
+	            	case SHUTDOWN:
+	            		break;
+	            	case PROPERTY:
+	            		object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
+	            	case STATS:
+	            		break;
+	            	case UPGRADE:
+	            		break;
+	            	case THREAD_DUMP:
+	            		break;
+	            	case ADD_CONTROLLER:
+	            		break;
+	            	case DISCOVER_POINTS:
+	            		if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
+	            		controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
+	            			object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);
+	            		}
+	            		break;
+	            	case EDIT_CONTROLLER:
+	            		break;
+	            	case CONTROLLER_STATUS:
+	            		break;
+	            	case DISCOVER_CONTROLLERS:
+	            		break;
+	            	}
+            	
+            }
+            
+	        	object.put("timestamp", System.currentTimeMillis());
+	        	object.put("agent", agent.getName());
+	        	object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
+        	
             String objString = object.toJSONString();
             if (objString.length() > MAX_BUFFER) {
                 List<IotMessage> messages = new ArrayList<>();
@@ -168,6 +186,26 @@ public class ControllerMessenger {
             LOGGER.info("Exception Occurred, agent is null -> ");
         }
         return iotData;
+    }
+    
+    @SuppressWarnings("unchecked")
+	private static void constructMessageForOldAgent(Controller controller, FacilioCommand facilioCommand, List<Point> points, JSONObject object) throws Exception {
+		
+		IotCommandType command = IotCommandType.getCommandType(facilioCommand.toString());
+		object.put("command", command.getName());
+		
+		object.put("deviceName", controller.getName());
+		object.put("type", controller.getControllerType());
+		object.put("subnetPrefix", 1l);
+		object.put("broadcastAddress", "1");
+		
+		List<Map<String, Object>> instances = FieldUtil.getAsMapList(points, Point.class);
+		instances.forEach(instance -> instance.put("instance", instance.get("name")));
+		
+		ControllerContext oldController = new ControllerContext();
+		oldController.setControllerType(controller.getControllerType());
+		JSONArray pointsList = ProtocolUtil.getPointsToPublish(oldController, instances, command);
+		object.put("points", pointsList);
     }
 
 public static boolean discoverPoints(long controllerId) throws Exception {

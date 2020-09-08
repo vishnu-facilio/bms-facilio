@@ -642,7 +642,7 @@ public class ExportUtil {
 			viewFields.add(serialNumber);
 			
 			// TODO handle in view info
-			if (view.getName().startsWith("upcoming")) {
+			if (viewName.startsWith("upcoming")) {
 				context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
 			}
 		}

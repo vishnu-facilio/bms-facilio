@@ -142,7 +142,7 @@ public class IoTMessageAPI {
 	
 	
 
-	private static PublishMessage getMessageObject(JSONObject object) {
+	public static PublishMessage getMessageObject(JSONObject object) {
 		PublishMessage msg = new PublishMessage();
 		JSONObject message = new JSONObject();
 		message.putAll(object);

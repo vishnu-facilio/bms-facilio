@@ -2124,6 +2124,7 @@ public class FacilioConstants {
 		public static final String FORK_READING_POST_PROCESSING = "forkReadingPostProcessing";
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";
+		public static final String IS_OLD_AGENT = "isOldAgent";
 	}
 	
 	public static class Alarm {
