@@ -984,6 +984,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
 		public static final String WORKFLOW_ACTION_ID="workflowActionId";
 		public static final String PAGINATION = "pagination";
+		public static final String SKIP_MODULE_CRITERIA = "skipModuleCriteria";
 		public static final String FETCH_COMPLAINT_TYPE = "fetchComplaintType";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";

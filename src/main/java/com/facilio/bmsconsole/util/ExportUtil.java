@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -639,6 +640,11 @@ public class ExportUtil {
 			ViewField serialNumber = new ViewField("serialNumber", "Serial Number");
 			serialNumber.setField(modBean.getField("serialNumber", moduleName));
 			viewFields.add(serialNumber);
+			
+			// TODO handle in view info
+			if (view.getName().startsWith("upcoming")) {
+				context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
+			}
 		}
 		viewFields.addAll(view.getFields());
 		if (moduleName.equals("alarm")) {
