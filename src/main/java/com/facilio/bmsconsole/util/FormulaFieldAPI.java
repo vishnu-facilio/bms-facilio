@@ -1359,25 +1359,29 @@ public class FormulaFieldAPI {
 		else {
 			intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
 		}
-							 
+				 
+		if(resourceId >= 34) {
+			System.out.println("ParentSecondCalculating formula: "+formula+" between "+startTime+ " and " +endTime+", resourceId: "+resourceId+ " and getReadingField: "+ formula.getReadingField());
+		}
 		//check ignoreNullValues(true)
-		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
+		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);	
+		System.out.println("Calculating formula: "+formula+" between "+startTime+ " and " +endTime+" is : "+readings.size()+ ". ResourceId: "+resourceId+ " and getReadingField: "+ formula.getReadingField());
 
 		if (readings != null && !readings.isEmpty()) {
-			int deletedData = FormulaFieldAPI.deleteOlderData(readings.get(0).getTtime(), readings.get(readings.size() - 1).getTtime(), Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
-			LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
+			int deletedData = FormulaFieldAPI.deleteOlderData(startTime, endTime, Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
+			System.out.println("Deleted rows for formula : "+formula+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
 			
 			FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			FacilioContext context = addReadingChain.getContext();
 			
-			if(formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING))) {
-				EnergyMeterContext virtualMeter = new EnergyMeterContext();
-				virtualMeter.setId(resourceId);
-				List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(readings, virtualMeter, isHistorical);										
-				if (markedList != null && !markedList.isEmpty()) {
-					context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
-				}
-			}
+//			if(formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING))) {
+//				EnergyMeterContext virtualMeter = new EnergyMeterContext();
+//				virtualMeter.setId(resourceId);
+//				List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(readings, virtualMeter, isHistorical);										
+//				if (markedList != null && !markedList.isEmpty()) {
+//					context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
+//				}
+//			}
 			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 			context.put(FacilioConstants.ContextNames.READINGS, readings);
