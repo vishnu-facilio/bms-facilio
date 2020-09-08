@@ -57,6 +57,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.messageQueue.MessageQueueTopic;
@@ -758,7 +759,7 @@ public class AgentAction extends AgentActionV2 {
         try{
         	FacilioContext context = new FacilioContext();
         	context.put(AgentConstants.IS_LATEST_VERSION, getLatestVersion());
-        	setResult(AgentConstants.DATA, AgentVersionApi.listAgentVersions(context));
+        	setResult(AgentConstants.DATA, FacilioService.runAsServiceWihReturn(()->AgentVersionApi.listAgentVersions(context)));
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting versions +",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
