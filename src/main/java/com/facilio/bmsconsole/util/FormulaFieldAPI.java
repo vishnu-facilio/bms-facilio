@@ -1364,8 +1364,7 @@ public class FormulaFieldAPI {
 			System.out.println("ParentSecondCalculating formula: "+formula+" between "+startTime+ " and " +endTime+", resourceId: "+resourceId+ " and getReadingField: "+ formula.getReadingField());
 		}
 		//check ignoreNullValues(true)
-		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), false, false);	
-		System.out.println("Calculating formula: "+formula+" between "+startTime+ " and " +endTime+" is : "+readings.size()+ ". ResourceId: "+resourceId+ " and getReadingField: "+ formula.getReadingField());
+		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
 
 		if (readings != null && !readings.isEmpty()) {
 			int deletedData = FormulaFieldAPI.deleteOlderData(startTime, endTime, Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
