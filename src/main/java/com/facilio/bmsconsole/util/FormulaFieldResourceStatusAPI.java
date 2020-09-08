@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.commands.FormulaFieldJobCalculationCommand;
 import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
@@ -28,7 +31,9 @@ import com.facilio.modules.fields.FacilioField;
 
 public class FormulaFieldResourceStatusAPI {
 	
-public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList) throws Exception {
+	private static final Logger LOGGER = LogManager.getLogger(FormulaFieldResourceStatusAPI.class.getName());
+	
+	public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
@@ -170,6 +175,9 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
+			
+			LOGGER.info("getCompletedFormulaFieldResourceStatusCountByIds childDependencyFormulaResourceIds -- "+ids+ " selectBuilder -- " + selectBuilder);
+
 			if (props != null && !props.isEmpty() && props.get(0) != null) {	
 				Map<String, Object> prop = props.get(0);
 				if(prop.get("count") != null)
@@ -309,7 +317,8 @@ public static void addFormulaFieldResourceStatus(List<FormulaFieldResourceStatus
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
-		int rowsUpdated = updateBuilder.update(props);
+		int rowsUpdated = updateBuilder.update(props);	
+		LOGGER.info("updateCompletedFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder);
 		return rowsUpdated;
 	}
 	

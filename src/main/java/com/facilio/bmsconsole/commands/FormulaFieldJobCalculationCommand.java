@@ -94,7 +94,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 						{
 							currentStatusUpdate = true;
 							formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-							LOGGER.info("Entered for formulaResourceId -- "+formulaResourceId);
+							LOGGER.info("Entered for formulaResourceId -- "+formulaResourceId + " rowsUpdated: "+rowsUpdated+ " childCompletedCount: "+childCompletedCount+" childDependencyIds.size() "+childDependencyIds.size());
 							calculateScheduledFormula(formula,formulaResourceStatusContext);
 							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
 						}
@@ -118,7 +118,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 		{
 			formulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal());
 			formulaResourceStatusContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-			FormulaFieldResourceStatusAPI.updateInProgressFormulaFieldResourceStatus(formulaResourceStatusContext);
+			NewTransactionService.newTransactionWithReturn(() ->FormulaFieldResourceStatusAPI.updateInProgressFormulaFieldResourceStatus(formulaResourceStatusContext));
 			
 			List<Long> parentFormulaResourceIds = FormulaFieldDependenciesAPI.getFormulaFieldResourceParentIdsByDependentFormula(formulaResourceId);
 			if(parentFormulaResourceIds != null && !parentFormulaResourceIds.isEmpty())
