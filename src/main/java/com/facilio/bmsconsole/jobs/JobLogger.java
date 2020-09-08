@@ -39,6 +39,7 @@ public class JobLogger {
                     " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
                     " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
                     " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
+                    " ijob: " + account.getInstantJobCount() + " time: " + account.getInstantJobFileAddTime() +
                     " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
@@ -59,8 +60,10 @@ public class JobLogger {
             event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
             event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
             event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
-            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries())));
-            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()));
+            event.setProperty("instantJob", String.valueOf(account.getInstantJobCount()));
+            event.setProperty("fileaddt", String.valueOf(account.getInstantJobFileAddTime()));
+            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries() + account.getInstantJobCount())));
+            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()+account.getInstantJobFileAddTime()));
         }
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
