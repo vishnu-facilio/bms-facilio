@@ -43,6 +43,7 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -569,6 +570,11 @@ public class WorkflowRuleAPI {
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
 		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> props = ruleBuilder.get();
+
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343 && module != null && module.getTypeEnum().isReadingType()) {
+			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
+		}
+
 		return getWorkFlowsFromMapList(props, true, true);
 	}
 	
