@@ -32,6 +32,7 @@ Map cardLayout(Map params) {
         if (fieldMapInfo != null) {
             valueMap["unit"] = fieldMapInfo.get("unit");
             valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
+            valueMap["label"] = fieldMapInfo.get("displayName");
         }
         result["value"] = valueMap;
     } else {
