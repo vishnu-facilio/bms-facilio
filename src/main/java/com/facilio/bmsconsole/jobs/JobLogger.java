@@ -60,10 +60,10 @@ public class JobLogger {
             event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
             event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
             event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
-            event.setProperty("instantJob", String.valueOf(account.getInstantJobCount()));
-            event.setProperty("fileaddt", String.valueOf(account.getInstantJobFileAddTime()));
-            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries() + account.getInstantJobCount())));
-            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()+account.getInstantJobFileAddTime()));
+            event.setProperty("instantJob", String.valueOf(account.getPublicInstantJobCount()));
+            event.setProperty("fileaddt", String.valueOf(account.getPublicInstantJobFileAddTime()));
+            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries() + account.getPublicInstantJobCount())));
+            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()+account.getPublicInstantJobFileAddTime()));
         }
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
