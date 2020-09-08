@@ -16,9 +16,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.iotmessage.ControllerMessenger;
-import com.facilio.agentv2.point.GetPointRequest;
-import com.facilio.agentv2.point.Point;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -53,9 +50,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -1608,32 +1602,11 @@ public class ReadingAction extends FacilioAction {
 
 
 	public String setReading () throws Exception {
-		Map<String, Object> instance = TimeSeriesAPI.getMappedInstance(assetId,fieldId);
-		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
-			instance.put("value", value);
-			instance.put("fieldId", fieldId);
-			PublishData data = IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+		PublishData data = IoTMessageAPI.setReadingValue(assetId, fieldId, value);
+		if (data != null) {
 			setResult("data", data);
-		}else {
-			if(AccountUtil.getCurrentOrg()!= null){
-				Criteria criteria = new Criteria();
-				FacilioModule pointModule = ModuleFactory.getPointModule();
-				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(resourceId), NumberOperators.EQUALS));
-				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointAssetCategoryIdField(pointModule), String.valueOf(assetId), NumberOperators.EQUALS));
-				GetPointRequest getPointRequest = new GetPointRequest()
-						.withCriteria(criteria);
-				List<Point> points = getPointRequest.getPoints();
-				if ((points != null) && ( ! points.isEmpty())){
-					Point point = points.get(0);
-					point.setValue(value);
-					ControllerMessenger.setValue(point);
-				}else {
-					LOGGER.info("No point for assetid "+assetId+" and fieldId "+fieldId+" for set vlaue "+value);
-				}
-			}else {
-				LOGGER.info("Exception occurred current org is null");
-			}
 		}
+		
 		return SUCCESS;
 	}
 	

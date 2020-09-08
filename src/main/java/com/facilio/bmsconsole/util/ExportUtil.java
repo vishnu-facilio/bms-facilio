@@ -621,6 +621,11 @@ public class ExportUtil {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
 		}
 		
+		// TODO handle in view info
+		if (moduleName.equals("workorder") && viewName.startsWith("upcoming")) {
+			context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
+		}
+		
 		FacilioChain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 
@@ -640,11 +645,6 @@ public class ExportUtil {
 			ViewField serialNumber = new ViewField("serialNumber", "Serial Number");
 			serialNumber.setField(modBean.getField("serialNumber", moduleName));
 			viewFields.add(serialNumber);
-			
-			// TODO handle in view info
-			if (viewName.startsWith("upcoming")) {
-				context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
-			}
 		}
 		viewFields.addAll(view.getFields());
 		if (moduleName.equals("alarm")) {

@@ -27,6 +27,9 @@ import com.facilio.agent.CommandStatus;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.PublishType;
 import com.facilio.agent.protocol.ProtocolUtil;
+import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -37,6 +40,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -556,6 +560,38 @@ public class IoTMessageAPI {
 			LOGGER.error("Error occurred while sending publish notification", e);
 		}
 	}
+ 	
+ 	public static PublishData setReadingValue(long resourceId, long fieldId, Object value) throws Exception {
+ 		if(AccountUtil.getCurrentOrg()!= null){
+			Criteria criteria = new Criteria();
+			FacilioModule pointModule = ModuleFactory.getPointModule();
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(fieldId),NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointResourceIdField(pointModule), String.valueOf(resourceId), NumberOperators.EQUALS));
+			GetPointRequest getPointRequest = new GetPointRequest()
+					.withCriteria(criteria);
+			List<Point> points = getPointRequest.getPoints();
+			if ((points != null) && ( ! points.isEmpty())){
+				Point point = points.get(0);
+				point.setValue(value);
+				ControllerMessenger.setValue(point);
+			}else {
+				Map<String, Object> instance = TimeSeriesAPI.getMappedInstance(resourceId,fieldId);
+				if (instance != null) {
+					instance.put("value", value);
+					instance.put("fieldId", fieldId);
+					return IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+				}else {
+					LOGGER.info("No point for assetid "+resourceId+" and fieldId "+fieldId+" for set vlaue "+value);
+				}
+			}
+		}else {
+			LOGGER.info("Exception occurred current org is null");
+		}
+		return null;
+ 		
+ 	}
+ 	
+ 	
  	
  	public enum IotCommandType {
  		// Maintain the index. Always add at the bottom
