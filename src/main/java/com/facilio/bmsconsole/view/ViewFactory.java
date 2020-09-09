@@ -7448,6 +7448,7 @@ public class ViewFactory {
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 
 		return allView;
@@ -7465,6 +7466,7 @@ public class ViewFactory {
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
 
 		return allView;
@@ -7482,6 +7484,8 @@ public class ViewFactory {
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return allView;
 	}
@@ -7498,6 +7502,8 @@ public class ViewFactory {
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return allView;
 	}
@@ -7514,6 +7520,8 @@ public class ViewFactory {
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
 
 		return allView;
 	}
