@@ -44,7 +44,9 @@ public class VendorPageFactory extends PageFactory{
 			Section tab1Sec1 = page.new Section();
 
 			tab1.addSection(tab1Sec1);
-			Section tab1Sec2 = page.new Section("TARIFFS");
+
+
+			Section tab1Sec2 = isNotLandLord(vendor) == true ? page.new Section("TARIFFS") : page.new Section();
 
 			tab1.addSection(tab1Sec2);
 
