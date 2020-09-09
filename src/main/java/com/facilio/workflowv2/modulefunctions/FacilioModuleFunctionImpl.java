@@ -15,6 +15,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
@@ -53,6 +54,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.QueryUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
@@ -150,27 +154,88 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		else {
 			
-			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
-					.module(module)
-					.fields(modBean.getAllFields(module.getName()));
+			boolean isV3SupportedModule = false;
 			
-			if(insertObject instanceof Map) {
-				ModuleBaseWithCustomFields moBaseWithCustomFields = new ModuleBaseWithCustomFields();
-				moBaseWithCustomFields.setData((Map<String, Object>) insertObject);
-				insertRecordBuilder.addRecord(moBaseWithCustomFields);
-			}
-			else if (insertObject instanceof Collection) {
-				List<Object> insertList = (List<Object>)insertObject;
+			if(isV3SupportedModule) {
 				
-				for(Object insert :insertList) {
-					ModuleBaseWithCustomFields moBaseWithCustomFields = new ModuleBaseWithCustomFields();
-					moBaseWithCustomFields.setData((Map<String, Object>) insert);
-					insertRecordBuilder.addRecord(moBaseWithCustomFields);
+				List<Map<String, Object>> dataList = new ArrayList<>();
+				
+				if(insertObject instanceof Map) {
+					dataList.add((Map<String, Object>) insertObject);
+				}
+				else if (insertObject instanceof Collection) {
+					
+					List<Object> insertList = (List<Object>)insertObject;
+					for(Object insert :insertList) {
+						dataList.add((Map<String, Object>) insert);
+					}
+				}
+				
+				for(Map<String, Object> rawData : dataList) {
+					module = ChainUtil.getModule(module.getName());
+
+			        V3Config v3Config = ChainUtil.getV3Config(module.getName());
+			        FacilioChain createRecordChain = ChainUtil.getCreateRecordChain(module.getName());
+			        FacilioContext context = createRecordChain.getContext();
+
+			        if (module.isCustom()) {
+			            FacilioField localIdField = modBean.getField("localId", module.getName());
+			            if (localIdField != null) {
+			                context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			            }
+			        }
+
+			        Constants.setV3config(context, v3Config);
+			        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+			        Constants.setModuleName(context, module.getName());
+			        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
+
+			        Constants.setRawInput(context, rawData);
+
+			        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+			        context.put(Constants.BEAN_CLASS, beanClass);
+			        
+			        context.put(Constants.FROM_SCRIPT, Boolean.TRUE);
+
+			        createRecordChain.execute();
 				}
 			}
-			
-			insertRecordBuilder.save();
-			
+			else {
+				
+				List<ModuleBaseWithCustomFields> dataList = new ArrayList<>();
+				
+				if(insertObject instanceof Map) {
+					ModuleBaseWithCustomFields customModuleData = new ModuleBaseWithCustomFields();
+					customModuleData.setData((Map<String, Object>) insertObject);
+					
+					dataList.add(customModuleData);
+				}
+				else if (insertObject instanceof Collection) {
+					
+					List<Object> insertList = (List<Object>)insertObject;
+					
+					for(Object insert :insertList) {
+						ModuleBaseWithCustomFields customModuleData = new ModuleBaseWithCustomFields();
+						customModuleData.setData((Map<String, Object>) insert);
+						dataList.add(customModuleData);
+					}
+				}
+				
+				for(ModuleBaseWithCustomFields moduleData :dataList) {
+					FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+					FacilioContext context = addModuleDataChain.getContext();
+					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+
+					
+					context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+					context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+					moduleData.parseFormData();
+					
+					context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
+					
+					addModuleDataChain.execute();
+				}
+			}
 		}
 		
 	}
