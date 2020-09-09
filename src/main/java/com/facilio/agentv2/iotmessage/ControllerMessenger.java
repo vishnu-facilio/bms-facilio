@@ -95,7 +95,9 @@ public class ControllerMessenger {
             if (object.isEmpty()) {
 	            	object.put(AgentConstants.COMMAND, command.asInt());
 	            	object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
-	            	object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
+                JSONObject controllerJson = controller.getChildJSON();
+                controllerJson.put(AgentConstants.NAME, controller.getName());
+                object.put(AgentConstants.CONTROLLER, controllerJson);
 	            	//object.putAll(controller.getChildJSON());
 	            
 	            	

@@ -11,6 +11,7 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import sun.management.Agent;
 
 public class MessengerUtil
 {
@@ -18,7 +19,9 @@ public class MessengerUtil
 	public static JSONArray getPointsData(List<Point> points){
 		JSONArray array = new JSONArray();
 		points.forEach(point ->{
-			array.add(point.getChildJSON());
+            JSONObject pointJson = point.getChildJSON();
+            pointJson.put(AgentConstants.NAME, point.getName());
+            array.add(pointJson);
 			 if((point.getThresholdJSON() != null) && (!point.getThresholdJSON().isEmpty())){
 				 JSONObject thresholdJSON = new JSONObject();
 				 thresholdJSON.putAll(point.getThresholdJSON());

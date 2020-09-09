@@ -47,6 +47,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
                     break;
                 case "cov":
                     messages = processTimeseries(payload, true);
+                    break;
                 case "ack":
                 default:
                     LOGGER.info("Unknown PUBLISH_TYPE");
@@ -193,7 +194,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
         }
         List<JSONObject> messages = new ArrayList<>();
         messages.add(msg);
-        System.out.println("Messages " + messages);
+        LOGGER.info("Messages " + messages);
         return messages;
     }
 
