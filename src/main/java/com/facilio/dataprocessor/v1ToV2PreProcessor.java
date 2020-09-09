@@ -34,7 +34,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
                     messages = processAgent(payload);
                     break;
                 case "timeseries":
-                    messages = processTimeseries(payload);
+                    messages = processTimeseries(payload, false);
                     break;
                 case "devicepoints":
                     if(payload.containsKey(AgentConstants.POINTS) &&
@@ -46,6 +46,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
                     }
                     break;
                 case "cov":
+                    messages = processTimeseries(payload, true);
                 case "ack":
                 default:
                     LOGGER.info("Unknown PUBLISH_TYPE");
@@ -53,7 +54,6 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
         }
         return messages;
     }
-
     private List<JSONObject> processDevicepointsToControllers(JSONObject payload) throws Exception {
         JSONObject msg = new JSONObject();
         msg.put(AgentConstants.PUBLISH_TYPE, PublishType.CONTROLLERS.asInt());
@@ -131,7 +131,7 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
         return msgs;
     }
 
-    private List<JSONObject> processTimeseries(JSONObject payload) throws Exception {
+    private List<JSONObject> processTimeseries(JSONObject payload, boolean isCov) throws Exception {
         JSONObject msg = new JSONObject();
         FacilioAgent agent;
         String deviceId = null;
@@ -148,7 +148,11 @@ public class v1ToV2PreProcessor implements AgentMessagePreProcessor {
             agent = AgentApiV2.getAgent(payload.get(AgentConstants.AGENT).toString());
             if (agent !=null) {
                 msg.put(AgentConstants.AGENT, payload.get(AgentConstants.AGENT).toString());
-                msg.put(AgentConstants.PUBLISH_TYPE, PublishType.TIMESERIES.asInt());
+                if (isCov) {
+                    msg.put(AgentConstants.PUBLISH_TYPE, PublishType.COV.asInt());
+                } else {
+                    msg.put(AgentConstants.PUBLISH_TYPE, PublishType.TIMESERIES.asInt());
+                }
                 if (payload.containsKey(AgentConstants.TIMESTAMP) && payload.containsKey("deviceId")) {
                     msg.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
                     if (payload.containsKey(deviceId)) {
