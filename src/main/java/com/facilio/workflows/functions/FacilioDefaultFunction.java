@@ -8,13 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.bmsconsole.util.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -22,9 +19,15 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.BitlyUtil;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
@@ -37,7 +40,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -50,7 +52,6 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -734,6 +735,17 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 		}
 
+	},
+   	ENCODE_URL(12, "encodeUrl") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			if(objects[0] != null) {
+				return URLEncoder.encode((String)objects[0], "UTF-8");
+			}
+			return null;
+		}
+		
 	}
 	;
 	private Integer value;
