@@ -31,9 +31,10 @@ public class PublishAnnouncementCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         if (CollectionUtils.isNotEmpty(announcements) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("publish")) {
-            context.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS, announcements);
-            context.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 1);
-            FacilioTimer.scheduleInstantJob("AddOrUpdateChildAnnouncementsJob", (FacilioContext) context);
+            FacilioContext jobContext =  new FacilioContext();
+            jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS, announcements);
+            jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 1);
+            FacilioTimer.scheduleInstantJob("AddOrUpdateChildAnnouncementsJob", jobContext);
         }
         return false;
     }
