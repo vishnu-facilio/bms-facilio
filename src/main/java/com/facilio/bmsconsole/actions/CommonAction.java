@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -60,12 +61,22 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, false);
 		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, specialFields);
 		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
+		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, criteria);
 		FacilioChain exportModule = TransactionChainFactory.getExportModuleChain();
 		exportModule.execute(context);
 		fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		return SUCCESS;
 	}
 	
+	private Criteria criteria;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
 	private String ftl;
 	public String getFtl() {
 		return ftl;
