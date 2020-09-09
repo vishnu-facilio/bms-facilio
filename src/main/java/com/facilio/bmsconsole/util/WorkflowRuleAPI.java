@@ -910,6 +910,9 @@ public class WorkflowRuleAPI {
 							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 							StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
 							break;
+						case SCORING_RULE:
+							ScoringRuleAPI.deleteField((ScoringRuleContext) rule);
+							break;
 						default:
 							break;
 					}

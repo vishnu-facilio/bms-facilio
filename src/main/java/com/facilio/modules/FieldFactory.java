@@ -2063,6 +2063,7 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("scoreFieldId", "SCORING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("draft", "DRAFT", module, FieldType.BOOLEAN));
         return fields;
     }
 
@@ -2108,6 +2109,7 @@ public class FieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+        fields.add(getField("recordModuleId", "RECORD_MODULEID", module, FieldType.NUMBER));
         fields.add(getField("score", "SCORE", module, FieldType.DECIMAL));
         fields.add(getField("baseScoreId", "BASE_SCORE_ID", module, FieldType.NUMBER));
 

@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.scoringrule;
 
 import com.facilio.modules.FacilioEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.http.MethodNotSupportedException;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class BaseScoringContext {
     private long id;
@@ -48,12 +51,51 @@ public class BaseScoringContext {
         this.scoringRuleId = scoringRuleId;
     }
 
+    @JsonIgnore
+    private boolean dirty = true;
+    @JSON(serialize = false)
+    public boolean isDirty() {
+        return dirty;
+    }
+    @JSON(deserialize = false)
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    @JsonIgnore
+    private float score = 0f;
+    @JSON(serialize = false)
+    public float getScore() {
+        return score;
+    }
+    @JSON(deserialize = false)
+    public void setScore(float score) {
+        this.score = score;
+    }
+
     public float getScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-        float v = evaluatedScore(record, context, placeHolders);
-        if (v < 0 || v > 1) {
-            throw new IllegalArgumentException("Evaluated score cannot be other than the range of [0 - 1]");
+        if (isDirty()) {
+            float v = evaluatedScore(record, context, placeHolders);
+            if (v < 0 || v > 1) {
+                throw new IllegalArgumentException("Evaluated score cannot be other than the range of [0 - 1]");
+            }
+            score = v * (weightage / 100);
+            setDirty(false);
         }
-        return (v * (weightage / 100));
+        return score;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseScoringContext that = (BaseScoringContext) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     // should return always 0 - 1

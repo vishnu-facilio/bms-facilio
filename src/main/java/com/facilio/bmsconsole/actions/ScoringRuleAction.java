@@ -57,14 +57,19 @@ public class ScoringRuleAction extends FacilioAction {
         return SUCCESS;
     }
 
-    public String getScore() throws Exception {
-        FacilioChain chain = ReadOnlyChainFactory.getTempScoringChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.ID, id);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        chain.execute();
+    private long ruleId = -1;
+    public long getRuleId() {
+        return ruleId;
+    }
+    public void setRuleId(long ruleId) {
+        this.ruleId = ruleId;
+    }
 
-        setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+    public String deleteScoringRule() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDelWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+        chain.execute();
 
         return SUCCESS;
     }

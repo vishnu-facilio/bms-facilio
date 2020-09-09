@@ -27,18 +27,20 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
             throw new IllegalArgumentException("Scoring field cannot be empty");
         }
 
-        List<BaseScoringContext> baseScoringContexts = rule.getBaseScoringContexts();
-        if (CollectionUtils.isEmpty(baseScoringContexts)) {
-            throw new IllegalArgumentException("Scoring contexts cannot be empty");
-        }
-        float totalWeightage = 0f;
-        for (BaseScoringContext scoringContext : baseScoringContexts) {
-            scoringContext.validate();
-            totalWeightage += scoringContext.getWeightage();
-        }
+        if (!rule.isDraft()) {
+            List<BaseScoringContext> baseScoringContexts = rule.getBaseScoringContexts();
+            if (CollectionUtils.isEmpty(baseScoringContexts)) {
+                throw new IllegalArgumentException("Scoring contexts cannot be empty");
+            }
+            float totalWeightage = 0f;
+            for (BaseScoringContext scoringContext : baseScoringContexts) {
+                scoringContext.validate();
+                totalWeightage += scoringContext.getWeightage();
+            }
 
-        if (totalWeightage != 100f) {
-            throw new IllegalArgumentException("Weightage should be always 100%");
+            if (totalWeightage != 100f) {
+                throw new IllegalArgumentException("Weightage should be always 100%");
+            }
         }
     }
 
@@ -114,7 +116,15 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         rule.setScoreFieldId(oldRule.getScoreFieldId());
         rule.setScoreField(oldRule.getScoreField());
 
+        if (!oldRule.isDraft()) {
+            if (rule.isDraft()) {
+                throw new IllegalArgumentException("Cannot draft published scoring rule");
+            }
+        }
+
+        validateRule(rule);
         updateWorkflowRuleWithChildren(rule);
+        updateExtendedRule(rule, ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields());
     }
 
     public static FacilioModule getModule(BaseScoringContext.Type type) {
@@ -200,12 +210,15 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                     switch (type) {
                         case CONDITIONED:
                             List<ConditionScoringContext> conditionedList = (List<ConditionScoringContext>) scoringList;
-                            Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(conditionedList.stream()
+                            List<Long> criteriaIds = conditionedList.stream()
                                     .filter(conditioned -> conditioned.getCriteriaId() > 0)
-                                    .map(ConditionScoringContext::getCriteriaId).collect(Collectors.toList()));
-                            for (ConditionScoringContext conditioned : conditionedList) {
-                                if (conditioned.getCriteriaId() > 0) {
-                                    conditioned.setCriteria(criteriaMap.get(conditioned.getCriteriaId()));
+                                    .map(ConditionScoringContext::getCriteriaId).collect(Collectors.toList());
+                            if (CollectionUtils.isNotEmpty(criteriaIds)) {
+                                Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+                                for (ConditionScoringContext conditioned : conditionedList) {
+                                    if (conditioned.getCriteriaId() > 0) {
+                                        conditioned.setCriteria(criteriaMap.get(conditioned.getCriteriaId()));
+                                    }
                                 }
                             }
                             break;
@@ -247,7 +260,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
     }
 
-    public static void addActualScore(List<Map<String, Object>> scores, long recordId) throws Exception {
+    public static void addActualScore(List<Map<String, Object>> scores, long recordId, long recordModuleId) throws Exception {
         if (CollectionUtils.isEmpty(scores)) {
             return;
         }
@@ -258,6 +271,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
             GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
                     .table(ModuleFactory.getActualScoreModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition("BASE_SCORE_ID", "baseScoreId", StringUtils.join(baseScoreIds, ","), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("RECORD_MODULEID", "recordModuleId", String.valueOf(recordModuleId), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(recordId), NumberOperators.EQUALS));
             deleteBuilder.delete();
 
@@ -269,7 +283,28 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         }
     }
 
-    public static void updateParentScores(ModuleBaseWithCustomFields moduleRecord, long scoreFieldId) throws Exception {
+    public static Map<Long, Map<Long, Float>> getActualScore(List<Long> recordIds, long recordModuleId, List<Long> baseScoreIds) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getActualScoreModule().getTableName())
+                .select(FieldFactory.getActualScoreFields())
+                .andCondition(CriteriaAPI.getCondition("BASE_SCORE_ID", "baseScoreId", StringUtils.join(baseScoreIds, ","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("RECORD_MODULEID", "recordModuleId", String.valueOf(recordModuleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", StringUtils.join(recordIds, ","), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = builder.get();
+        Map<Long, Map<Long, Float>> scoreMap = new HashMap<>();
+        for (Map<String, Object> prop : props) {
+            Long recordId = (Long) prop.get("recordId");
+            Map<Long, Float> score = scoreMap.get(recordId);
+            if (score == null) {
+                score = new HashMap<>();
+                scoreMap.put(recordId, score);
+            }
+            score.put((Long) prop.get("baseScoreId"), ((Number) prop.get("score")).floatValue());
+        }
+        return scoreMap;
+    }
+
+    public static void updateParentScores(ModuleBaseWithCustomFields moduleRecord, long scoreFieldId, boolean isDirty) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNodeScoringModule().getTableName())
                 .innerJoin(ModuleFactory.getBaseScoringModule().getTableName())
@@ -281,9 +316,11 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
             for (NodeScoringContext nodeScore : nodeScoringList) {
-                WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(nodeScore.getScoringRuleId());
-                FacilioModule module = workflowRule.getModule();
+                ScoringRuleContext workflowRule = (ScoringRuleContext) WorkflowRuleAPI.getWorkflowRule(nodeScore.getScoringRuleId());
+                List<BaseScoringContext> baseScoringContexts = workflowRule.getBaseScoringContexts();
+                List<Long> baseScoreIds = baseScoringContexts.stream().filter(baseScore -> baseScore.getId() != nodeScore.getId()).map(BaseScoringContext::getId).collect(Collectors.toList());
 
+                FacilioModule module = workflowRule.getModule();
                 long fieldId = nodeScore.getFieldId();
                 LookupField field = (LookupField) modBean.getField(fieldId, nodeScore.getFieldModuleId());
 
@@ -296,8 +333,13 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                             .andCondition(CriteriaAPI.getCondition(field, String.valueOf(moduleRecord.getId()), NumberOperators.EQUALS));
                     List<? extends ModuleBaseWithCustomFields> records = selectBuilder.get();
                     if (CollectionUtils.isNotEmpty(records)) {
-//                        WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(nodeScore.getScoringRuleId());
+                        List<Long> recordIds = records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
+                        Map<Long, Map<Long, Float>> actualScoreMap = getActualScore(recordIds, module.getModuleId(), baseScoreIds);
+
                         for (ModuleBaseWithCustomFields record : records) {
+                            Map<Long, Float> scoreMap = actualScoreMap.get(record.getId());
+                            setBaseScoreValues(scoreMap, workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+
                             Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
                             WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, null, recordPlaceHolders, null);
                         }
@@ -315,7 +357,9 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                                 .andCondition(CriteriaAPI.getIdCondition(emptyParentRecord.getId(), module));
                         ModuleBaseWithCustomFields parentRecord = selectBuilder.fetchFirst();
                         if (parentRecord != null) {
-//                            WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(nodeScore.getScoringRuleId());
+                            Map<Long, Map<Long, Float>> actualScore = getActualScore(Collections.singletonList(parentRecord.getId()), parentRecord.getModuleId(), baseScoreIds);
+                            setBaseScoreValues(actualScore.get(parentRecord.getId()), workflowRule.getBaseScoringContexts(), nodeScore, isDirty);
+
                             Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), parentRecord, placeHolders);
                             WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), parentRecord, null, recordPlaceHolders, null);
                         }
@@ -323,5 +367,39 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                 }
             }
         }
+    }
+
+    private static void setBaseScoreValues(Map<Long, Float> scoreMap, List<BaseScoringContext> baseScoringContexts, NodeScoringContext nodeScore, boolean isDirty) {
+        for (BaseScoringContext baseScoringContext : baseScoringContexts) {
+            if (scoreMap == null || !(scoreMap.containsKey(baseScoringContext.getId()))) {
+                baseScoringContext.setDirty(true);
+                continue;
+            }
+
+            if (baseScoringContext.equals(nodeScore) && isDirty) {
+                baseScoringContext.setDirty(true);
+                continue;
+            }
+
+            baseScoringContext.setDirty(false);
+            baseScoringContext.setScore(scoreMap.get(baseScoringContext.getId()));
+        }
+    }
+
+    public static void deleteField(ScoringRuleContext rule) throws Exception {
+        long scoreFieldId = rule.getScoreFieldId();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = modBean.getModule(rule.getModuleId());
+
+        // clear all data in that field
+        UpdateRecordBuilder<? extends ModuleBaseWithCustomFields> builder = new UpdateRecordBuilder<>()
+                .module(module)
+                .fields(Collections.singletonList(rule.getScoreField()));
+        Map<String, Object> map = new HashMap<>();
+        map.put(rule.getScoreField().getName(), -99);
+        builder.updateViaMap(map);
+
+        modBean.deleteField(scoreFieldId);
     }
 }

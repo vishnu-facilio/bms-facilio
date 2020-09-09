@@ -473,10 +473,10 @@
 	</package>
 
 	<package name="scoringRule" namespace="/api/v2/scoringRule" extends="v2Api">
-		<action name="temp"
-                class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="getScore" />
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="addOrUpdateScoringRule" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="deleteScoringRule" />
 	</package>
 
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">

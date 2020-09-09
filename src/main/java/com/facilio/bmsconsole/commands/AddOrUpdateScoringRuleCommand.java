@@ -49,6 +49,7 @@ public class AddOrUpdateScoringRuleCommand extends FacilioCommand {
 
                 FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
                 FacilioContext addFieldContext = chain.getContext();
+                addFieldContext.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
                 addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(scoreField));
                 addFieldContext.put(FacilioConstants.ContextNames.MODULE, module);
                 chain.execute();
