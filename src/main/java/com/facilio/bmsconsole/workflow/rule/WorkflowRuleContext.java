@@ -684,10 +684,10 @@ public class WorkflowRuleContext implements Serializable {
 			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 		
-			if((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
-				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
-				LOGGER.info("Select Query Count till execution of workflow and actions" + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
-			}
+//			if((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 78l)) {
+//				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+//				LOGGER.info("Select Query Count till execution of workflow and actions" + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
+//			}
 			
 			boolean stopFurtherExecution = false;	
 			if (result) {
