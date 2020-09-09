@@ -7447,8 +7447,11 @@ public class ViewFactory {
 		allView.setDisplayName("All Deals and Offers");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 
 		return allView;
@@ -7465,8 +7468,11 @@ public class ViewFactory {
 		allView.setDisplayName("All Neighbourhood");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 
 		return allView;
@@ -7483,8 +7489,11 @@ public class ViewFactory {
 		allView.setDisplayName("All News and Information");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 
 		return allView;
@@ -7501,8 +7510,11 @@ public class ViewFactory {
 		allView.setDisplayName("All Contact Directory");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 
 		return allView;
@@ -7519,8 +7531,11 @@ public class ViewFactory {
 		allView.setDisplayName("All Admin Documents");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		appDomains.add(AppDomain.AppDomainType.TENANT_PORTAL);
+		allView.setViewSharing(getSharingContext(appDomains));
 
 
 		return allView;
