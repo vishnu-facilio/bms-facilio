@@ -69,8 +69,8 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
 		//del Start
-		ZonedDateTime thisYearDelStartWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 41l
-		ZonedDateTime thisYearDelEndWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 40l)); // 43l
+		ZonedDateTime thisYearDelStartWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 40,41l
+		ZonedDateTime thisYearDelEndWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 43l
 		ZonedDateTime thisYearDelEndWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(thisYearDelEndWeekStartZdt);
 
 		long thisYearDelStartWeekStart = thisYearDelStartWeekStartZdt.toInstant().toEpochMilli();
@@ -288,13 +288,11 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 						}
 						catch (Exception e) {
 							LOGGER.error("###Exception occurred in Delete DemoSingleRollUpYearlyCommand. TableName is:  " + readingModuleTableName + "Exception: " +e);
-							throw e;
 						}
 					}		
 				}
 				catch (Exception e) {
 					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. ReadingModule: " + readingModule + " readingModuleTableName " + readingModuleTableName + "Exception: " +e);
-					throw e;
 				}	
 			}	
 		}
