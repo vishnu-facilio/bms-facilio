@@ -369,9 +369,11 @@ public class SAMLUtil {
 				Element attributeStatement = document.createElement("AttributeStatement");
 				while (keys.hasNext()) {
 					String attr = keys.next();
-					String value = customAttr.get(attr).toString();
-					Element cuatomAttrElement = newAttrTag(document, attr, value);
-					attributeStatement.appendChild(cuatomAttrElement);
+					if (customAttr.get(attr) != null) {
+						String value = customAttr.get(attr).toString();
+						Element cuatomAttrElement = newAttrTag(document, attr, value);
+						attributeStatement.appendChild(cuatomAttrElement);
+					}
 				}
 				assertion.appendChild(attributeStatement);
 			}
