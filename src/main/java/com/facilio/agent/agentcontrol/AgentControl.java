@@ -45,8 +45,9 @@ public class AgentControl extends AgentActionV2 {
 
 	public String agentAction() {
 		try {
-			KafkaProcessor processor = new KafkaProcessor(orgId, getTopic());
-			long recordId = processor.send(createRecord());
+			String topicName = getTopic();
+			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
+			long recordId = processor.send(topicName,createRecord());
 			LOGGER.info("Agent control action recordId :"+recordId);
 			if(recordId > 0) {
 				updateAgent(recordId);
@@ -105,7 +106,7 @@ public class AgentControl extends AgentActionV2 {
 	
 	private JSONObject createRecord() throws Exception {
 		JSONObject data = new JSONObject();
-		Map<String,Object> prop = new HashMap<>();
+		JSONObject prop = new JSONObject();
 		prop.put(AgentConstants.AGENT,agentName);
 		prop.put(AgentConstants.PUBLISH_TYPE, AgentConstants.AGENT_ACTION);
 		prop.put(AgentConstants.MESSAGE, action);

@@ -48,8 +48,8 @@ public class KafkaProcessor extends FacilioProcessor {
         }
     }
     
-    public long send(JSONObject data) {
-    	FacilioRecord record= new FacilioRecord("aaaa", data);
+    public long send(String orgDomain,JSONObject data) {
+    	FacilioRecord record= new FacilioRecord(orgDomain, data);
     	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
     	return metaData.offset();
     }
