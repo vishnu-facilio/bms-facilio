@@ -112,6 +112,7 @@ public class ChainUtil {
 
         // this should be last command always
         nonTransactionChain.addCommand(new SupplementsCommand());
+        nonTransactionChain.addCommand(new FetchRelationsCommand());
 
         return nonTransactionChain;
     }

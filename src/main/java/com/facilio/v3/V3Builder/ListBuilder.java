@@ -9,6 +9,8 @@ public interface ListBuilder {
 
     ListBuilder showStateFlowList();
 
+    ListBuilder fetchRelations(String moduleName, String lookupField);
+
     UpdateBuilder update();
 
     CreateBuilder create();

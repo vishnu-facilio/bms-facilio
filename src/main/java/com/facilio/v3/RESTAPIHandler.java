@@ -17,6 +17,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.Constants;
@@ -170,6 +171,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
+        V3Config.ListHandler listHandler = v3Config.getListHandler();
+        if (listHandler != null) {
+            Map<String, List<String>> lookupFieldCriteriaMap = listHandler.getLookupFieldCriteriaMap();
+            if (!MapUtils.isEmpty(lookupFieldCriteriaMap)) {
+                Constants.setListRelationCriteria(context, lookupFieldCriteriaMap);
+            }
+        }
+
         Constants.setV3config(context, v3Config);
 
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
@@ -190,6 +199,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         Object supplMap = Constants.getSupplementMap(context);
         if (supplMap != null) {
             meta.put("supplements", supplMap);
+        }
+
+        Map<String, Map<String, Object>> listRelationRecords = Constants.getListRelationRecords(context);
+        if (listRelationRecords != null) {
+            meta.put("submoduleRelations", listRelationRecords);
         }
 
         JSONObject recordJSON = Constants.getJsonRecordMap(context);

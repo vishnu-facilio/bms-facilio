@@ -3,6 +3,7 @@ package com.facilio.v3.context;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
@@ -228,5 +229,24 @@ public class Constants {
     public static void setCount(Context context, long count) {
         context.put(COUNT, count);
     }
+
+    private static final String LIST_RELATION_CRITERIA = "listRelationCriteria";
+    public static Map<String, List<String>> getListRelationCriteria(Context context) {
+        return (Map<String, List<String>>) context.get(LIST_RELATION_CRITERIA);
+    }
+
+    public static void setListRelationCriteria(Context context, Map<String, List<String>> lookupFieldCriteriaMap) {
+        context.put(LIST_RELATION_CRITERIA, lookupFieldCriteriaMap);
+    }
+
+    private static final String LIST_RELATION_RECORDS = "listRelationRecords";
+    public static Map<String, Map<String, Object>> getListRelationRecords(Context context) {
+        return (Map<String, Map<String, Object>>) context.get(LIST_RELATION_RECORDS);
+    }
+
+    public static void setListRelationRecords(Context context, Map<String, Map<String, Object>> relationRecords) {
+        context.put(LIST_RELATION_RECORDS, relationRecords);
+    }
+
 
 }

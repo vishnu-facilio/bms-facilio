@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This command fills in the relations meta in the list response.
+ * It handles two types of relations,
+ *  1. one to one relations (e.g. work order and asset relationship)
+ *  2. one to many relations (e.g. work order and attachments relationship)
+ */
 public class SupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {

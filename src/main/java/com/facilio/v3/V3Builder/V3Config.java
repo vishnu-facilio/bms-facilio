@@ -2,6 +2,11 @@ package com.facilio.v3.V3Builder;
 
 import org.apache.commons.chain.Command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class V3Config implements V3Builder {
     private String moduleName;
     private Class beanClass;
@@ -395,9 +400,11 @@ public class V3Config implements V3Builder {
         private Command afterFetchCommand;
         private V3Builder parent;
         private boolean showStateFlowList;
+        private Map<String, List<String>> lookupFieldCriteriaMap;
 
         private ListHandler(V3Builder parent) {
             this.parent = parent;
+            this.lookupFieldCriteriaMap = new HashMap<>();
         }
 
         @Override
@@ -415,6 +422,15 @@ public class V3Config implements V3Builder {
         @Override
         public ListBuilder showStateFlowList() {
             this.showStateFlowList = true;
+            return this;
+        }
+
+        @Override
+        public ListBuilder fetchRelations(String moduleName, String lookupField) {
+            if (this.lookupFieldCriteriaMap.get(moduleName) == null) {
+                this.lookupFieldCriteriaMap.put(moduleName, new ArrayList<>());
+            }
+            this.lookupFieldCriteriaMap.get(moduleName).add(lookupField);
             return this;
         }
 
@@ -465,6 +481,10 @@ public class V3Config implements V3Builder {
 
         public void setShowStateFlowList(boolean showStateFlowList) {
             this.showStateFlowList = showStateFlowList;
+        }
+
+        public Map<String, List<String>> getLookupFieldCriteriaMap() {
+            return this.lookupFieldCriteriaMap;
         }
     }
 
