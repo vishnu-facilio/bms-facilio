@@ -4018,6 +4018,12 @@ public class TransactionChainFactory {
 			c.addCommand(new FormulaFieldJobCalculationCommand());
 			return c;
 		}
+		
+		public static FacilioChain getScheduleFormulaFieldParentJobCommand() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ScheduleFormulaFieldParentJobCommand());
+			return c;
+		}
 
 	public static FacilioChain getAddModuleWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();

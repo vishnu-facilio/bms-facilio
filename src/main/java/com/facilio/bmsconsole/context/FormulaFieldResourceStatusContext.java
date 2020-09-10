@@ -101,6 +101,7 @@ public class FormulaFieldResourceStatusContext {
 		IN_PROGRESS(1),
 		RESOLVED(2),
 		FAILED(3),
+		IN_QUEUE(4),
 		;
 
 		int intVal;

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -30,12 +31,15 @@ public class FormulaLeafTriggerJob extends FacilioJob{
 		
 		List<Integer> types = getFrequencyTypesToBeFetched();
 		LOGGER.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation in FormulaLeafTriggerJob: "+types);
-		
+
 		if(types != null && !types.isEmpty()) {
 			List<FormulaFieldResourceStatusContext> formulaResourcesAtLeaf = FormulaFieldResourceStatusAPI.getLeafFormulaFieldResourceStatusByFrequency(types);		
 			if (formulaResourcesAtLeaf != null && !formulaResourcesAtLeaf.isEmpty()) {			
 				for(FormulaFieldResourceStatusContext formulaResourceAtLeaf:formulaResourcesAtLeaf)
 				{		
+					formulaResourceAtLeaf.setStatus(FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal());
+					NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateCompletedFormulaFieldResourceStatus(formulaResourceAtLeaf));
+					
 					FacilioContext context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID, formulaResourceAtLeaf.getId());
 					context.put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, types);

@@ -767,6 +767,7 @@ public class FacilioConstants {
 		public static final String HISTORICAL_OPERATIONAL_ALARM_PROCESSING_JOB_ID = "historicalOperationalAlarmProcessingJobId";
 		public static final String HISTORICAL_OPERATIONAL_EVENT_JOB_ID = "historicalOperationalEventJobId";
 		public static final String FORMULA_RESOURCE_JOB_ID = "formulaJobId";
+		public static final String FORMULA_RESOURCE = "formulaResource";
 		public static final String FORMULA_FREQUENCY_TYPES="formulaFrequencyTypes";
 		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";

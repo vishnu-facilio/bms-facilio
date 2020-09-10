@@ -94,7 +94,7 @@ public class FormulaFieldResourceStatusAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldResourceStatusContext> getFormulaFieldResourceStatusByFrequencyAndIds(List<Long> ids, List<Integer> types) throws Exception {
+	public static List<FormulaFieldResourceStatusContext> getNotInProgressFormulaFieldResourceStatusByFrequencyAndIds(List<Long> ids, List<Integer> types) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
 		
@@ -103,58 +103,13 @@ public class FormulaFieldResourceStatusAPI {
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), StringUtils.join(types, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.NOT_EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {			
 			List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = FieldUtil.getAsBeanListFromMapList(props, FormulaFieldResourceStatusContext.class);
 			return formulaFieldResourceStatusContextList;
 		}
-		return null;
-	}
-	
-	public static List<Long> getFormulaFieldResourceStatusIdsByFrequencyAndIds(List<Long> ids, List<Integer> types) throws Exception {
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(Collections.singletonList(fieldMap.get("id")))
-				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), StringUtils.join(types, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<Long> formulaFieldResourceIds = new ArrayList<Long>();
-		
-		if (props != null && !props.isEmpty()) {	
-			for(Map<String, Object> prop : props) {
-				if(prop.get("id") != null) {
-					formulaFieldResourceIds.add((long) prop.get("id"));
-				}
-			}	
-		}
-		return formulaFieldResourceIds;
-	}
-	
-	public static List<FormulaFieldResourceStatusContext> getActiveFormulaFieldResourceStatusByIds(List<Long> ids) throws Exception {
-		
-		if(ids != null && !ids.isEmpty())
-		{
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(FieldFactory.getFormulaFieldResourceStatusModuleFields())
-					.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (props != null && !props.isEmpty()) {			
-				List<FormulaFieldResourceStatusContext> formulaFieldResourceStatusContextList = FieldUtil.getAsBeanListFromMapList(props, FormulaFieldResourceStatusContext.class);
-				return formulaFieldResourceStatusContextList;
-			}		
-		}	
-		
 		return null;
 	}
 	
@@ -280,20 +235,57 @@ public class FormulaFieldResourceStatusAPI {
 		return null;
 	}
 	
-	public static void updateFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+	public static int updateCompletedFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields()); //to inqueue
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
 				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
-				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
-		updateBuilder.update(props);
+		int rowsUpdated = updateBuilder.update(props);
+		LOGGER.info("updateCompletedFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder+ " rowsUpdated: "+rowsUpdated);
+		return rowsUpdated;
+	}
+	
+	public static int updateNotInProgressFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields()); //to inqueue
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.NOT_EQUALS));
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
+		int rowsUpdated = updateBuilder.update(props);
+		LOGGER.info("updateNotInProgressFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder+ " rowsUpdated: "+rowsUpdated);
+		return rowsUpdated;
+	}
+	
+	public static int updateInqueueFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
+			
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields()); // to inprogress
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
+				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal(), NumberOperators.EQUALS));
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
+		int rowsUpdated = updateBuilder.update(props);	
+		LOGGER.info("updateInqueueFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder+ " rowsUpdated: "+ rowsUpdated);
+		return rowsUpdated;
 	}
 	
 	public static int updateInProgressFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
 		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields()); //to completed
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
@@ -303,22 +295,7 @@ public class FormulaFieldResourceStatusAPI {
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
 		int rowsUpdated = updateBuilder.update(props);
-		return rowsUpdated;
-	}
-	
-	public static int updateCompletedFormulaFieldResourceStatus(FormulaFieldResourceStatusContext formulaFieldResourceStatusContext) throws Exception {
-			
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldResourceStatusModuleFields());
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getFormulaFieldResourceStatusModule().getTableName())
-				.fields(FieldFactory.getFormulaFieldResourceStatusModuleFields())
-				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+formulaFieldResourceStatusContext.getId(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), ""+ FormulaFieldResourceStatusContext.Status.RESOLVED.getIntVal(), NumberOperators.EQUALS));
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(formulaFieldResourceStatusContext);
-		int rowsUpdated = updateBuilder.update(props);	
-		LOGGER.info("updateCompletedFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder);
+		LOGGER.info("updateInProgressFormulaFieldResourceStatus formulaFieldResourceStatusContext -- "+formulaFieldResourceStatusContext.getStatus()+ " updateBuilder -- " + updateBuilder+ " rowsUpdated: "+ rowsUpdated);
 		return rowsUpdated;
 	}
 	
