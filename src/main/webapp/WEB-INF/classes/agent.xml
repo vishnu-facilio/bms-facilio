@@ -180,7 +180,7 @@
                 <param name="bufferSize">1024</param>
             </result>
         </action>
-		<action name="agentAction" class="com.facilio.agent.agentcontrol.AgentControlAction" method="agentAction">
+		<action name="agentAction" class="com.facilio.agent.agentcontrol.AgentControl" method="agentAction">
 		</action>
 
     </package>
