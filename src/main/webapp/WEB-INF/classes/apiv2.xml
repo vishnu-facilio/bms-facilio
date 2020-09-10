@@ -473,6 +473,8 @@
 	</package>
 
 	<package name="scoringRule" namespace="/api/v2/scoringRule" extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="list" />
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ScoringRuleAction" method="addOrUpdateScoringRule" />
 		<action name="delete"

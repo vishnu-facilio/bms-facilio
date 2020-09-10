@@ -44,6 +44,16 @@ public class ScoringRuleAction extends FacilioAction {
         this.scoringContexts = scoringContexts;
     }
 
+    public String list() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getScoringRuleListChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+        return SUCCESS;
+    }
+
     public String addOrUpdateScoringRule() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateScoringRuleChain();
         FacilioContext context = chain.getContext();
