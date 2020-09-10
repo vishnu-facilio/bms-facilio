@@ -36,6 +36,20 @@
 									  	  if (recordObj != null && recordObj.size() > 0) {
 									  	  	  rec = recordObj[0];
 									  	  	  valueStr = rec.get(variableObj.select);
+									  	  	  if (valueStr != null) {
+									  	  	  	fieldObj = new NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	  	  	fieldMap = fieldObj.asMap();
+									  	  	  	if (fieldMap.dataTypeEnum == \"LOOKUP\") {
+									  	  	  		lookupModule = fieldMap.lookupModule;
+									  	  	  		lookupId = valueStr.id;
+									  	  	  		
+									  	  	  		lookupRecords = Module(lookupModule.name).fetch([id == lookupId]);
+									  	  	  		if (lookupRecords != null && lookupRecords.size() > 0) {
+									  	  	  			lookupRecord = lookupRecords.get(0);
+									  	  	  			valueStr = lookupRecord.name;
+									  	  	  		}
+									  	  	  	}
+									  	  	 }
 									  	  }
 									  	  	  
 								  	  	  valueMap = {};
