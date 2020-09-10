@@ -97,7 +97,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 
 			long thisYearDelStartWeekStart = thisYearDelStartWeekStartZdt.toInstant().toEpochMilli();
 			long thisYearDelEndWeekEnd = thisYearDelEndWeekEndZdt.toInstant().toEpochMilli();
-			//deleteTtimeColumns(thisYearDelStartWeekStart,thisYearDelEndWeekEnd,readingModules,readingTableNamesVsColumns);
+			deleteTtimeColumns(thisYearDelStartWeekStart,thisYearDelEndWeekEnd,readingModules,readingTableNamesVsColumns);
 		}
 		else {
 			
@@ -116,7 +116,7 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 				long weekDiff = (thisYearWeekStart - lastYearWeekStart);
 				
 				try {
-					//rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
+					rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
 					LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
 							"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
 				}
