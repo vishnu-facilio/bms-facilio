@@ -7414,6 +7414,27 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.TENANT_PORTAL)));
 
+		FacilioField isCancelledField = new FacilioField();
+		isCancelledField.setName("isCancelled");
+		isCancelledField.setColumnName("IS_CANCELLED");
+		isCancelledField.setDataType(FieldType.BOOLEAN);
+		isCancelledField.setModule(module);
+
+		Condition condition = new Condition();
+		condition.setField(isCancelledField);
+		condition.setOperator(BooleanOperators.IS);
+		condition.setValue("false");
+
+		Condition condition2 = new Condition();
+		condition2.setField(isCancelledField);
+		condition2.setOperator(CommonOperators.IS_EMPTY);
+		condition2.setValue("false");
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition2);
+		criteria.addOrCondition(condition);
+
+		allView.setCriteria(criteria);
 
 		return allView;
 	}
