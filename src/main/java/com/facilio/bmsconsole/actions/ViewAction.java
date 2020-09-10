@@ -179,26 +179,6 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String v2viewGroups() throws Exception{
-		
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
-			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-		}
-		
-		FacilioChain chain = ReadOnlyChainFactory.getViewGroupsList();
-		
-		Context context = chain.getContext();
-		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
-		
-		chain.execute();
-		
-		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
-		setResult("groupViews", (List<ViewGroups>) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
-		
-		return SUCCESS;
-	}
 	
 	public String v2getViewDetail() throws Exception
 	{

@@ -3,9 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class ViewGroups extends ModuleBaseWithCustomFields{
+public class ViewGroups {
 	
 	private String name;
 	
@@ -14,6 +13,37 @@ public class ViewGroups extends ModuleBaseWithCustomFields{
 	private List<FacilioView> views;
 	
 	private int sequenceNumber = -1;
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+
+	long id = -1;
+	
+	long moduleId = -1;
+	
+	long orgId = -1;
+	
+	public long getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+
 	
 	public int getSequenceNumber() {
 		return sequenceNumber;

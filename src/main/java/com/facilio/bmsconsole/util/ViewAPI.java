@@ -129,6 +129,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
+			List<Long> criteriaIds = new ArrayList<>();
 			for(Map<String, Object> viewProp : viewProps) 
 			{
 				//views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
@@ -139,7 +140,20 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
 				}
+				if (view.getCriteriaId() > 0) {
+					criteriaIds.add(view.getCriteriaId());
+				}
 			}
+			
+			if (!criteriaIds.isEmpty() && criteriaIds != null) {
+				Map<Long, Criteria> criteriaValueMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+				for (FacilioView view : viewMap.values())  {
+					if (view.getCriteriaId() > 0 && criteriaValueMap.get(view.getCriteriaId()) != null) {
+						view.setCriteria(criteriaValueMap.get(view.getCriteriaId()));
+					}
+				}
+			}
+			
 		} 
 		catch (Exception e) 
 		{

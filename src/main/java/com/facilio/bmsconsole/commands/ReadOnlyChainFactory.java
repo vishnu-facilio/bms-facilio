@@ -880,12 +880,6 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain getViewGroupsList() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new GetViewGroupsListCommand());
-		return c;
-	}
-
 
 	public static FacilioChain getPurchaseRequestListChain() {
 		FacilioChain chain = getDefaultChain();

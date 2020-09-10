@@ -866,9 +866,6 @@
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 		</action>
-		<action name="viewGroups"
-			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewGroups">
-		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
 		</action>

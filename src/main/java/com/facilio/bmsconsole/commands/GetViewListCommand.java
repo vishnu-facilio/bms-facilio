@@ -26,7 +26,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -95,9 +94,6 @@ public class GetViewListCommand extends FacilioCommand {
 			List<FacilioView> groupBasedViews = dbViews.stream().filter(view -> view.getGroupId() == viewGroup.getId()).collect(Collectors.toList());
 			if (groupBasedViews != null && groupBasedViews.size() > 0) {
 			for(FacilioView view: groupBasedViews) {
-				if (view.getCriteriaId() > 0) {
-					view.setCriteria(CriteriaAPI.getCriteria(view.getCriteriaId()));
-				}
 					if (sharingMap != null && sharingMap.containsKey(view.getId())) {
 						view.setViewSharing(sharingMap.get(view.getId()));
 					}
