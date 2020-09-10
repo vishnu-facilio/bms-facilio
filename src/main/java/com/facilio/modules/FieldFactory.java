@@ -569,9 +569,8 @@ public class FieldFactory {
         fields.add(getField("preProcessor", "PRE_PROCESSOR", module, FieldType.NUMBER));
         fields.add(getField("processor", "PROCESSOR", module, FieldType.NUMBER));
         fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
-        fields.add(getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("commitId", "COMMIT_ID", module, FieldType.NUMBER));
+        fields.add(getField("lastActionModified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
+        fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
         
         return fields;
     }

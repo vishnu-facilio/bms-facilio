@@ -11,4 +11,13 @@ public class AgentModuleFactory {
 		module.setTableName("MessageTopic");
 		return module;
 	}
+	
+	public static FacilioModule getAgentDisableModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName("agentDisable");
+		module.setDisplayName("Agent Disable");
+		module.setTableName("Agent_Disable");
+		return module;
+	}
 }

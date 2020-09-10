@@ -1,14 +1,17 @@
 package com.facilio.services.kafka;
 
+import java.util.List;
+
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.dataprocessor.DataProcessorUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.processor.FacilioProcessor;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
 
 //Renamed from Processor
 public class KafkaProcessor extends FacilioProcessor {
@@ -44,4 +47,11 @@ public class KafkaProcessor extends FacilioProcessor {
             }
         }
     }
+    
+    public long send(JSONObject data) {
+    	FacilioRecord record= new FacilioRecord("aaaa", data);
+    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
+    	return metaData.offset();
+    }
+    
 }

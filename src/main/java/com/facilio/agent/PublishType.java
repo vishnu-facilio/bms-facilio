@@ -17,7 +17,7 @@ public enum PublishType {
     devicepoints("devicepoints",6),
     controllers("controllers",7),
     AGENT_EVENTS("agentEvents",8),
-    AGENT_ACTION("agentAction",9);
+    agentAction("agentAction",9);
 
     private int key;
 

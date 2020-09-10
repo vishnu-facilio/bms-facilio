@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -23,10 +24,10 @@ import com.facilio.agent.ControllerCommand;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.MessageStatus;
 import com.facilio.agent.PublishType;
+import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.AgentControlAction;
 import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
@@ -48,6 +49,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
@@ -141,9 +143,29 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
-                    if(FacilioProperties.isDevelopment()) {
-                    	 if(payLoad.containsKey(PublishType.AGENT_ACTION) && (agentV2 != null))  {
-                         	AgentControlAction.processAgentAction(recordId, payLoad, agentV2.getId());
+                    if(isStage) {
+                    	if(payLoad.containsKey(PublishType.agentAction) && payLoad.containsKey(AgentConstants.MESSAGE))  {
+                    		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
+                    		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);
+                    		AgentControl object = new AgentControl();
+                    		if(agentV2 != null && disable) {
+                        			 object.setAction(disable);
+                        			 object.setAgentId(agentV2.getId());
+                        			 object.setOrgId(orgId);
+                        			 object.updateAgent(recordId);
+                        			FacilioService.runAsService(()-> object.insertAgentDisable(recordId));
+                    		 }else if(!disable) {
+                    			 object.setAction(disable);
+                    			 if(payLoad.containsKey(AgentConstants.AGENT)) {
+                    				 String agentName = payLoad.get(AgentConstants.AGENT).toString();
+                    				if( StringUtils.isEmpty(agentName)){
+                    					 throw new IllegalArgumentException("agentName is null :"+agentName);
+                    				 }
+                    				 object.setAgentName(agentName);
+                    			 }
+                    			 object.updateAgent(recordId);
+                    			 FacilioService.runAsService(()-> object.updateAgentDisable(recordId));
+                    		 }
                          	return false;
                          }
                     }

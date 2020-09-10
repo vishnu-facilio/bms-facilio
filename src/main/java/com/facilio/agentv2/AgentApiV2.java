@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -368,7 +369,9 @@ public class AgentApiV2 {
     public static FacilioAgent getAgent(String agentName) throws Exception {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agentName,StringOperators.IS));
-//        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get("isDisable"), CommonOperators.IS_EMPTY));
+        if(!FacilioProperties.isProduction()) {
+        	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get(AgentConstants.IS_DISABLE), String.valueOf(false),BooleanOperators.IS));
+        }
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         List<FacilioAgent> agents = getAgents(context);

@@ -242,4 +242,6 @@ public class AgentConstants
     public static final String PUBLIC_REDIS_PUT_TIME = "publicRedisPutTime";
     public static final String PUBLIC_REDIS_DELETE_TIME = "publicRedisDeleteTime";
     
+    public static final String MESSAGE = "message";
+    public static final String AGENT_ACTION = "agentAction";
 }
