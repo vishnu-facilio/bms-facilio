@@ -9,6 +9,10 @@
 	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
+        		<id>maven-central</id>
+        		<url>https://repo1.maven.org/maven2</url>
+    		</repository>
+		<repository>
 			<id>facilio-framework-s3-release-repo</id>
 			<url>s3://repo.facilio/facilio-framework/release</url>
 		</repository>
