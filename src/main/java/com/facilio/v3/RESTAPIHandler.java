@@ -448,12 +448,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling summary request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -468,11 +470,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
             LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
+            this.setStackTrace(ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling list request moduleName: " + this.getModuleName(), ex);
             return "failure";
         }
@@ -490,12 +494,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling create request moduleName: " + this.getModuleName(), ex);
             return "failure";
         }
@@ -510,12 +516,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -529,12 +537,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -550,12 +560,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -569,12 +581,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setMessage(ex.getMessage());
             this.setCode(ex.getErrorCode().getCode());
             this.httpServletResponse.setStatus(ex.getErrorCode().getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         } catch (Exception ex) {
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -588,6 +602,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }
@@ -601,6 +616,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             this.setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
             this.setMessage("Internal Server Error");
             this.httpServletResponse.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
+            this.setStackTrace(ex);
             LOGGER.log(Level.SEVERE, "exception handling update request moduleName: " + this.getModuleName() + " id: " + this.getId(), ex);
             return "failure";
         }

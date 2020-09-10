@@ -1,5 +1,8 @@
 package com.facilio.v3;
 
+import com.facilio.aws.util.FacilioProperties;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -209,5 +212,19 @@ public class V3Action extends ActionSupport {
 
 	public void setContentTypes(List<String> contentTypes) {
 		this.contentTypes = contentTypes;
+	}
+
+	private String stackTrace;
+	public String getStackTrace() {
+		return stackTrace;
+	}
+	public void setStackTrace(Exception e) {
+		if (e != null) {
+			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
+			if(!FacilioProperties.isProduction()) {
+				this.stackTrace = ExceptionUtils.getStackTrace(e);
+				System.out.println(this.stackTrace);
+			}
+		}
 	}
 }
