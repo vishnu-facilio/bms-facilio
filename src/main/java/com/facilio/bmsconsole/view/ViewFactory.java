@@ -7404,6 +7404,7 @@ public class ViewFactory {
 	private static FacilioView getAllPeopleAnnouncementView() {
 
 		FacilioModule module = ModuleFactory.getPeopleAnnouncementModule();
+		FacilioModule announcementModule = ModuleFactory.getAnnouncementModule();
 
 		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "People_Announcements.ID", FieldType.NUMBER), true));
 
@@ -7418,20 +7419,14 @@ public class ViewFactory {
 		isCancelledField.setName("isCancelled");
 		isCancelledField.setColumnName("IS_CANCELLED");
 		isCancelledField.setDataType(FieldType.BOOLEAN);
-		isCancelledField.setModule(module);
+		isCancelledField.setModule(announcementModule);
 
 		Condition condition = new Condition();
 		condition.setField(isCancelledField);
 		condition.setOperator(BooleanOperators.IS);
 		condition.setValue("false");
 
-		Condition condition2 = new Condition();
-		condition2.setField(isCancelledField);
-		condition2.setOperator(CommonOperators.IS_EMPTY);
-		condition2.setValue("false");
-
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(condition2);
 		criteria.addOrCondition(condition);
 
 		allView.setCriteria(criteria);
