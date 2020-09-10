@@ -18,6 +18,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.beans.ModuleBean;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -53,6 +55,25 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		JSONObject jobProps = BmsJobUtil.getJobProps(321l, "DemoSingleRollUpYearlyJob");
+		
+		if(jobProps == null) {
+			LOGGER.error("DemoSingleRollUpYearlyCommand empty jobProps");
+			return false;
+		}
+		
+		LOGGER.info("DemoSingleRollUpYearlyCommand jobProps :"+jobProps);	
+		Integer startWeek =Integer.valueOf(String.valueOf((Long)jobProps.get("startWeek")));
+		Integer endWeek =Integer.valueOf(String.valueOf((Long)jobProps.get("endWeek")));
+		Boolean doDelete = (Boolean)jobProps.get("doDelete");
+		
+		if(startWeek == null || endWeek== null) {
+			LOGGER.error("DemoSingleRollUpYearlyCommand - Please provide startWeek and endWeek for rollup");
+			return false;
+		}
+		doDelete = doDelete == null ? Boolean.FALSE : doDelete;  
+
+		
 		long jobStartTime = System.currentTimeMillis();
 		Long orgId=(Long) context.get(ContextNames.DEMO_ROLLUP_JOB_ORG);
 		ZonedDateTime currentZdt = (ZonedDateTime) context.get(ContextNames.START_TIME);
@@ -63,44 +84,50 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 		
 		ZonedDateTime presentWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(currentZdt);
 		int presentWeek = DateTimeUtil.getWeekOfWeekBasedYear(presentWeekStartZdt);
-		LOGGER.info("DemoSingleRollUpYearlyCommand presentWeekStartZdt :"+presentWeekStartZdt + " presentWeekNo. : "+presentWeek);
-		
+		LOGGER.info("DemoSingleRollUpYearlyCommand presentWeekStartZdt :"+presentWeekStartZdt + " presentWeekNo. : "+presentWeek);	
 		List<FacilioModule> readingModules = fetchAllReadingModules();
 		HashMap<String, List<String>> readingTableNamesVsColumns = fetchDemoReadingTableNamesVsColumns();
 		
-		//del Start
-		ZonedDateTime thisYearDelStartWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 40,41l
-		ZonedDateTime thisYearDelEndWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), 38l)); // 43l
-		ZonedDateTime thisYearDelEndWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(thisYearDelEndWeekStartZdt);
+		if(doDelete) {
+			LOGGER.info("DemoSingleRollUpYearlyCommand Starting Deletion between weeks: startWeekNo. :"+startWeek + " endWeekNo. : "+endWeek);
+			
+			ZonedDateTime thisYearDelStartWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), startWeek)); // 40,41l
+			ZonedDateTime thisYearDelEndWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), endWeek)); // 43l
+			ZonedDateTime thisYearDelEndWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(thisYearDelEndWeekStartZdt);
 
-		long thisYearDelStartWeekStart = thisYearDelStartWeekStartZdt.toInstant().toEpochMilli();
-		long thisYearDelEndWeekEnd = thisYearDelEndWeekEndZdt.toInstant().toEpochMilli();
-		deleteTtimeColumns(thisYearDelStartWeekStart,thisYearDelEndWeekEnd,readingModules,readingTableNamesVsColumns);
-		//del End
-		
+			long thisYearDelStartWeekStart = thisYearDelStartWeekStartZdt.toInstant().toEpochMilli();
+			long thisYearDelEndWeekEnd = thisYearDelEndWeekEndZdt.toInstant().toEpochMilli();
+			//deleteTtimeColumns(thisYearDelStartWeekStart,thisYearDelEndWeekEnd,readingModules,readingTableNamesVsColumns);
+		}
+		else {
+			
+			LOGGER.info("DemoSingleRollUpYearlyCommand Starting Rollup between weeks: startWeekNo. :"+startWeek + " endWeekNo. : "+endWeek);
+
+			//38 to 43
+			for(int currentWeek = startWeek; currentWeek <= endWeek; currentWeek++) 
+			{	
+				ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
+				ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
+				ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
+				
+				long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
+				long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
+				long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
+				long weekDiff = (thisYearWeekStart - lastYearWeekStart);
+				
+				try {
+					//rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
+					LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
+							"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
+				}
+				catch(Exception e) {
+					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. CurrentWeek is:  " + currentWeek);
+					throw e;
+				} 	
+			}	
+		}
+				
 		//MachineStalk to be done from 18thWeek to 25th in firstcut.
-//		for(int currentWeek = 38; currentWeek <= 43; currentWeek++) 
-//		{	
-//			ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
-//			ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearStartZdt.minusYears(1).with(DateTimeUtil.getWeekFields().weekOfWeekBasedYear(), currentWeek));
-//			ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
-//			
-//			long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
-//			long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
-//			long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
-//			long weekDiff = (thisYearWeekStart - lastYearWeekStart);
-//			
-//			try {
-//				rollUpTtimeColumns(lastYearWeekStart,lastYearWeekEnd,weekDiff,readingModules,readingTableNamesVsColumns);
-//				LOGGER.info("DemoSingleRollUpYearlyCommand lastYearWeekStart :"+lastYearWeekStart + " lastYearWeekEnd : "+lastYearWeekEnd + 
-//						"thisYearWeekStart :"+thisYearWeekStart + " weekDiff : " +weekDiff + " CurrentWeekNo.: "+currentWeek);
-//			}
-//			catch(Exception e) {
-//				LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. CurrentWeek is:  " + currentWeek);
-//				throw e;
-//			} 	
-//		}
-        
 		LOGGER.info("####DemoSingleRollUpYearlyCommand time taken to complete : " + (System.currentTimeMillis()-jobStartTime));
 		
 		return false;
@@ -184,7 +211,6 @@ public class DemoSingleRollUpYearlyCommand extends FacilioCommand{
 				}
 				catch (Exception e) {
 					LOGGER.error("###Exception occurred in DemoSingleRollUpYearlyCommand. ReadingModule: " + readingModule + " readingModuleTableName " + readingModuleTableName + "Exception: " +e);
-					throw e;
 				}	
 			}	
 		}
