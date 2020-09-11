@@ -51,6 +51,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.time.SecondsChronoUnit;
 
 public class FormulaFieldJobCalculationCommand extends FacilioCommand implements PostTransactionCommand{
 
@@ -147,15 +148,19 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 	
 	private long getStartTime (FormulaFieldContext formula, long lastReadingTime) {
 		ZonedDateTime zdt = null;
-		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
-			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 10) + 10;
-			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
-			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
-		}
-		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 15) + 15;
-			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
-			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
+//		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
+//			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 10) + 10;
+//			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
+//			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
+//		}
+//		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
+//			int greaterRoundedMinute = FormulaFieldAPI.getRoundedMinute(DateTimeUtil.getDateTime(lastReadingTime).getMinute(), 15) + 15;
+//			int plusMinutes = greaterRoundedMinute - DateTimeUtil.getDateTime(lastReadingTime).getMinute();
+//			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
+//		}
+		
+		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
+			return lastReadingTime + 1;
 		}
 		else if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
@@ -174,17 +179,34 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 		int minusMinute = currentMinute - roundedMinute;
 		
 		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
-			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
-			return DateTimeUtil.getMillis(zdt, true);
+//			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
+//			return DateTimeUtil.getMillis(zdt, true);
+			
+			return DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(10 * 60)).toInstant().toEpochMilli();
 		}
 		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
-			return DateTimeUtil.getMillis(zdt, true);
+//			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
+//			return DateTimeUtil.getMillis(zdt, true);
+			
+			return DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(15 * 60)).toInstant().toEpochMilli();
 		}
 		else {
 			return DateTimeUtil.getHourStartTime();
 		}
 	}
+	
+	private void adjustTtime(ReadingContext reading) {
+		
+		long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(15 * 60)).toInstant().toEpochMilli();
+
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
+		if (reading.getDatum("interval") != null) {
+			int interval = (int) reading.getDatum("interval");
+			zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
+		}
+		reading.setTtime(DateTimeUtil.getMillis(zdt, true));
+	}
+
 	
 	private void fetchFields (FormulaFieldContext formula, ModuleBean modBean) throws Exception {	
 		List<Long> dependentIds = formula.getWorkflow().getDependentFieldIds();
