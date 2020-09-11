@@ -18,12 +18,12 @@ public abstract class FacilioCommand implements Command, Filter {
 		long executionTime = System.currentTimeMillis() - currentMillis;
 		// if the execution takes more than 50 millis, log them
 		if (executionTime > 50) {
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-				LOGGER.info("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
-			}
-			else {
+//			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+//				LOGGER.info("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
+//			}
+//			else {
 				LOGGER.debug("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
-			}
+//			}
 		}
 
 		return result;

@@ -97,9 +97,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				postRules = new HashMap<>();
 				this.context = context;
 				fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context, false);
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-					LOGGER.info("Time taken to Execute workflows for modules : " + recordMap.keySet() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
-				}
+//				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.debug("Time taken to Execute workflows for modules : " + recordMap.keySet() + " is " + (System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
+//				}
 			}
 //			if (AccountUtil.getCurrentOrg().getId() == 78l) {
 //				LOGGER.info("ExecuteAllWorkflowsCommand Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());	
@@ -175,9 +175,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 					workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
 				}
 
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-					LOGGER.info("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
-				}
+//				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+//				}
 				currentTime = System.currentTimeMillis();
 				
 //				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
@@ -187,14 +187,14 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 //					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 //				}
 
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-					LOGGER.info(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
+//				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.debug(MessageFormat.format("Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
 							(workflowRules == null ? 0 : workflowRules.size()),
 							(entry.getValue() == null ? 0 : entry.getValue().size()),
 							isParallelRuleExecution
 							)
 					);
-				}
+//				}
 
 				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				if (workflowRules != null && !workflowRules.isEmpty()) {
@@ -245,13 +245,13 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
 						}		
 					}
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-						LOGGER.info(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
-					}
+//					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+						LOGGER.debug(MessageFormat.format("Total Time taken for adding {0} instant jobs : {1}", jobs, totalInstantJobAddTime));
+//					}
 				}
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-					LOGGER.info("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
-				}
+//				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+					LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
+//				}
 			}
 		}
 	}

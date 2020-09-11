@@ -33,15 +33,17 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		}
 
 		boolean forkPostProcessing = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, false);
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-			LOGGER.info(MessageFormat.format("Fork post processing --> {0}", forkPostProcessing));
-		}
+//		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+//			LOGGER.info(MessageFormat.format("Fork post processing --> {0}", forkPostProcessing));
+//		}
+		LOGGER.debug(MessageFormat.format("Fork post processing --> {0}", forkPostProcessing));
 		if (forkPostProcessing) {
 			long time = System.currentTimeMillis();
 			FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
-				LOGGER.info(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
-			}
+//			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+//				LOGGER.info(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
+//			}
+			LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
 		}
 		else {
 			FacilioChain postProcessingChain = ReadOnlyChainFactory.readingPostProcessingChain();
