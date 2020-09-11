@@ -76,7 +76,7 @@ import java.util.function.Supplier;
 @Config
 public class APIv3Config {
 
-    @Module("custom_test")
+    @Module("_custom_test")
     // we are returning a lambda so as to generate new V3Config object each
     // and every time a request happens
     public static Supplier<V3Config> customTest() {

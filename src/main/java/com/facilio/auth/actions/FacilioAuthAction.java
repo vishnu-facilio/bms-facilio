@@ -481,6 +481,9 @@ public class FacilioAuthAction extends FacilioAction {
 		
 		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
+		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
 		if (payload != null) {
 			String email = (String) payload.get("email");
@@ -530,7 +533,13 @@ public class FacilioAuthAction extends FacilioAction {
 				setResult("token", authtoken);
 				setResult("username", email);
 	
-				addAuthCookies(authtoken, portalUser, false, request);
+				addAuthCookies(authtoken, portalUser, false, request, "true".equalsIgnoreCase(isWebView));
+
+				if ("true".equalsIgnoreCase(isWebView)) {
+					setWebViewCookies();
+					response.sendRedirect(SSOUtil.getLoginSuccessURL("true".equalsIgnoreCase(isWebView)));
+					return SUCCESS;
+				}
 			} 
 			catch (Exception e) {
 				CommonCommandUtil.emailNewLead("New Lead - Google User", name, email, locale, hostedDomain);
