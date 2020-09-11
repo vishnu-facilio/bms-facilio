@@ -2128,6 +2128,7 @@ public class FacilioConstants {
 		public static final String IS_PARALLEL_FORMULA_EXECUTION= "isParallelFormulaExecution";
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";
 		public static final String IS_OLD_AGENT = "isOldAgent";
+		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";
 	}
 	
 	public static class Alarm {

@@ -1,11 +1,13 @@
 package com.facilio.dataprocessor;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Level;
@@ -123,6 +125,16 @@ public class DataProcessorUtil {
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
             AccountUtil.getCurrentAccount().setRequestUri(String.valueOf(recordId));
+            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DATA_PROCESSING_LOGGER_LEVEL);
+            String loggerLevel = orgInfoMap.get(FacilioConstants.OrgInfoKeys.DATA_PROCESSING_LOGGER_LEVEL);
+            try {
+                if (StringUtils.isNotEmpty(loggerLevel)) {
+                    AccountUtil.getCurrentAccount().setLoggerLevel(FacilioUtil.parseInt(loggerLevel));
+                }
+            }
+            catch (Exception e) {
+                LOGGER.info(MessageFormat.format("Error occurred while setting logger level for data processing. Logger Level prop = {0}. Exception msg => {1}", loggerLevel, e.getMessage()));
+            }
             if (checkIfDuplicate(recordId)) {
                 LOGGER.info(" skipping record "+recordId);
                 return false;
