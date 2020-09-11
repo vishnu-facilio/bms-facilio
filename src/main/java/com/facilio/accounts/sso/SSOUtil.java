@@ -5,10 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.fw.auth.SAMLServiceProvider;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.xml.builder.XMLBuilder;
@@ -121,5 +124,32 @@ public class SSOUtil {
 			.element("md:SingleLogoutService").attr("Binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST").attr("Location", spLogoutUrl).p();
 		
 		return builder.getAsXMLString();
+	}
+	
+	public static String getSSOLogoutRequestURL() throws Exception {
+		
+		if (AccountUtil.getCurrentOrg() != null) {
+			
+			long orgId = AccountUtil.getCurrentOrg().getId();
+		
+			AccountSSO sso = IAMOrgUtil.getAccountSSO(orgId);
+			if (sso.getIsActive()) {
+		
+				SamlSSOConfig ssoConfig = (SamlSSOConfig) sso.getSSOConfig();
+			
+				if (ssoConfig.getLogoutUrl() != null) {
+				
+					SAMLServiceProvider samlClient = new SAMLServiceProvider(SSOUtil.getSPMetadataURL(sso), SSOUtil.getSPAcsURL(sso), ssoConfig.getEntityId(), ssoConfig.getLoginUrl(), ssoConfig.getCertificate());
+					String logoutRequest = samlClient.getLogoutRequest();
+			
+					URIBuilder builder = new URIBuilder(ssoConfig.getLogoutUrl());
+					builder.addParameter("SAMLRequest", logoutRequest);
+			
+					String logoutURL = builder.build().toURL().toString();
+					return logoutURL;
+				}
+			}
+		}
+		return null;
 	}
 }

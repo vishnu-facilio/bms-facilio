@@ -139,6 +139,23 @@ public class SAMLServiceProvider {
 		return encodeSAMLRequest(authnRequest);
 	}
 	
+	public String getLogoutRequest() throws Exception {
+		String uid = "FACILIO_" + UUID.randomUUID().toString();
+		
+		String nameID = "FACILIO_" + UUID.randomUUID().toString();
+		
+		Map<String, String> templateProps = new HashMap<>();
+		templateProps.put("ID", uid);
+		templateProps.put("IssueInstant", SAMLUtil.formatDate(new Date()));
+		templateProps.put("Destination", getIdpURL());
+		templateProps.put("Issuer", getSpEntityId());
+		templateProps.put("NameID", nameID);
+		
+		String authnRequest = getLogoutRequestTemplate(templateProps);
+		
+		return encodeSAMLRequest(authnRequest);
+	}
+	
 	private void parseIdPMetadata(Document document) throws Exception {
 		
 		String entityID = document.getDocumentElement().getAttribute("entityID");
@@ -220,6 +237,24 @@ public class SAMLServiceProvider {
 		template.append("<samlp:NameIDPolicy Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\" AllowCreate=\"true\" />");
 		template.append("<samlp:RequestedAuthnContext Comparison=\"exact\"><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>");
 		template.append("</samlp:AuthnRequest>");
+		String templateStr = template.toString();
+		
+		Iterator<String> itr = props.keySet().iterator();
+		while (itr.hasNext()) {
+			String key = itr.next();
+			String value = props.get(key);
+			templateStr = templateStr.replaceAll("\\$\\{" + key + "\\}", value);
+		}
+		return templateStr;
+	}
+	
+	private String getLogoutRequestTemplate(Map<String, String> props) {
+		
+		StringBuilder template = new StringBuilder();
+		template.append("<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"${ID}\" Version=\"2.0\" IssueInstant=\"${IssueInstant}\" Destination=\"${Destination}\">");
+		template.append("<saml:Issuer>${Issuer}</saml:Issuer>");
+		template.append("<saml:NameID SPNameQualifier=\"${Issuer}\" Format=\"urn:oasis:names:tc:SAML:2.0:nameid-format:transient\">${NameID}</saml:NameID>");
+		template.append("</samlp:LogoutRequest>");
 		String templateStr = template.toString();
 		
 		Iterator<String> itr = props.keySet().iterator();
