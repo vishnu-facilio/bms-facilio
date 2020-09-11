@@ -26,6 +26,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
         Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
         boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+        LOGGER.info("Fork post processing in data process v2 => "+forkPostProcessing);
         context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
 
         if( containsCheck(AgentConstants.DATA,context) ){
