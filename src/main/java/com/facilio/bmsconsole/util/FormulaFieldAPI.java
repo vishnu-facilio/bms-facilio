@@ -1360,15 +1360,12 @@ public class FormulaFieldAPI {
 			intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
 		}
 				 
-		if(resourceId >= 34) {
-			System.out.println("ParentSecondCalculating formula: "+formula+" between "+startTime+ " and " +endTime+", resourceId: "+resourceId+ " and getReadingField: "+ formula.getReadingField());
-		}
 		//check ignoreNullValues(true)
 		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
 
 		if (readings != null && !readings.isEmpty()) {
 			int deletedData = FormulaFieldAPI.deleteOlderData(startTime, endTime, Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries
-			System.out.println("Deleted rows for formula : "+formula+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
+			LOGGER.info("Deleted rows for formula : "+formula+" between "+startTime+ " and " +endTime+" is : "+deletedData+ ". ResourceId: "+resourceId+ " and readingsInsertedSize: "+ readings.size());
 			
 			FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			FacilioContext context = addReadingChain.getContext();
