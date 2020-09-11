@@ -481,7 +481,6 @@ public class FacilioAuthAction extends FacilioAction {
 		
 		JSONObject payload = FederatedIdentityUtil.verifyGooogeIdToken(idToken);
 		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
 
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		
@@ -537,7 +536,6 @@ public class FacilioAuthAction extends FacilioAction {
 
 				if ("true".equalsIgnoreCase(isWebView)) {
 					setWebViewCookies();
-					response.sendRedirect(SSOUtil.getLoginSuccessURL("true".equalsIgnoreCase(isWebView)));
 					return SUCCESS;
 				}
 			} 
