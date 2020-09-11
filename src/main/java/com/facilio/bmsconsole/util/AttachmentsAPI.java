@@ -143,12 +143,17 @@ public class AttachmentsAPI {
 		
 		if (parentId != null && parentId > 0) {
 
+			Criteria criteria = new Criteria();
 			if (fieldMap.containsKey("parentId")) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
 			}
 
 			if (fieldMap.containsKey("parent")) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), String.valueOf(parentId), NumberOperators.EQUALS));
+			}
+
+			if(!criteria.isEmpty()){
+				selectBuilder.andCriteria(criteria);
 			}
 		}
 		
