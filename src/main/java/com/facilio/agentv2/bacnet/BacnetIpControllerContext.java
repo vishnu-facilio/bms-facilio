@@ -1,5 +1,6 @@
 package com.facilio.agentv2.bacnet;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
@@ -99,6 +100,12 @@ public class BacnetIpControllerContext extends Controller {
     public List<Condition>  getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName()); // change it to static final
+        if (AccountUtil.getCurrentOrg().getOrgId() == 152) {
+            LOGGER.info("Fields : " + fieldsMap);
+            LOGGER.info("nn : " + fieldsMap.get(AgentConstants.NETWORK_NUMBER));
+            LOGGER.info("in : " + fieldsMap.get(AgentConstants.INSTANCE_NUMBER));
+            LOGGER.info("ip : " + fieldsMap.get(AgentConstants.IP_ADDRESS));
+        }
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_NUMBER), String.valueOf(getNetworkNumber()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.INSTANCE_NUMBER), String.valueOf(getInstanceNumber()),NumberOperators.EQUALS));
         if(getIpAddress() != null){
