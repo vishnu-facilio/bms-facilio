@@ -41,7 +41,6 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
-import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import org.apache.log4j.LogManager;
@@ -222,12 +221,6 @@ public class LoginAction extends FacilioAction {
 						
 						if(mobileInstanceId != null) {
 							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
-						}
-
-						boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
-						if (isSSOEnabled) {
-							String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
-							response.sendRedirect(ssoLogoutRequestURL);
 						}
 					}
 							
