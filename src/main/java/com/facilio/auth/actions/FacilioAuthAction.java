@@ -1278,11 +1278,6 @@ public class FacilioAuthAction extends FacilioAction {
 						FacilioCookie.eraseUserCookie(request, response, "fc.mobile.idToken.facilio", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
-						boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
-						if (isSSOEnabled) {
-							String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
-							response.sendRedirect(ssoLogoutRequestURL);
-						}
 					}
 				}
 			}
