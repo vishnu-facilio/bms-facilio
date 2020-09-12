@@ -28,7 +28,18 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(appDomain));
 	}
 
-	public static JSONObject getAppDomainType(String serverName) throws Exception {
+	public static boolean isSSoEnabled(String serverName, long orgId) throws Exception {
+		AppDomain appDomain = getAppDomain(serverName);
+		boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;
+		if (isCustomDomain) {
+			orgId = appDomain.getOrgId();
+		}
+		Organization org = IAMOrgUtil.getOrg(orgId);
+		AccountSSO sso = IAMOrgUtil.getAccountSSO(org.getDomain());
+		return sso != null && sso.getIsActive();
+	}
+
+	public static JSONObject getDomainInfo(String serverName) throws Exception {
 		AppDomain appDomain = getAppDomain(serverName);
 		boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;
 		JSONObject resultJSON = new JSONObject();

@@ -150,6 +150,6 @@ public class SSOUtil {
 				}
 			}
 		}
-		return null;
+		return getCurrentAppURL() + "/app/samllogout";
 	}
 }
