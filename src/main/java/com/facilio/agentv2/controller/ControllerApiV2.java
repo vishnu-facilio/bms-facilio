@@ -151,7 +151,11 @@ public class ControllerApiV2 {
      */
     public static List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
         List<Condition> conditions = new ArrayList<>();
-        conditions.addAll(makeControllerFromMap(childJson, controllerType).getControllerConditions());
+        Controller controller = makeControllerFromMap(childJson, controllerType);
+        if (AccountUtil.getCurrentOrg().getOrgId() == 152) {
+            LOGGER.info("controller : " + controller.getName() + " : " + controller.getType());
+        }
+        conditions.addAll(controller.getControllerConditions());
         return conditions;
     }
 
