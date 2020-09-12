@@ -6027,7 +6027,11 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />
 	</package>
-
+	
+	<package name="mlService" namespace="/api/v2/mlService" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.MLServiceAction" method="addMLModel" />	
+	</package>
+	
 	<package name="fieldMigration" namespace="/api/v2/fieldMigrate" extends="v2Api">
 		<action name="migrate" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="migrateField" />
 		<action name="fieldDependency" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="fieldDependency" />

@@ -432,6 +432,13 @@ public class FacilioConstants {
 		public static final String MULTIVARIATE_ANOMALY_ALARM ="multivariateanomalyalarm";
 		public static final String MULTIVARIATE_ANOMALY_ALARM_OCCURRENCE ="multivariateanomalyalarmoccurrence";
 		public static final String MULTIVARIATE_ANOMALY_EVENT ="multivariateanomalyevent";
+		
+//		public static final String ML_USECASE_ID = "mlUsecaseId";
+		public static final String ML_MODEL_INFO = "modelInfo";
+//		public static final String ML_MODEL_NAME = "modelName";
+//		public static final String ML_FILTER = "filteringMethod";
+//		public static final String ML_GROUP = "groupingMethod";
+//		public static final String ML_VARIABLES = "mlVariables";
 
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
@@ -1752,6 +1759,7 @@ public class FacilioConstants {
 
 
 		public static final String ORGID = "orgId";
+		public static final String TIME_ZONE = "timezone";
 		public static final String WEATHER_STATION_ID = "weatherStationId";
 		
 		public static class WorkPermit {

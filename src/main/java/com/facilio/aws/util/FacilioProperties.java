@@ -60,6 +60,7 @@ public class FacilioProperties {
     private static String anomalyRefreshWaitTimeInSeconds;
     private static String anomalyDetectWaitTimeInSeconds;
     private static String anomalyPredictAPIURL;
+    private static String mlModelBuildingApi;
     private static String iotEndPoint;
     private static String defaultDB;
     private static String defaultAppDB;
@@ -154,6 +155,7 @@ public class FacilioProperties {
                 anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
                 anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
                 anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
+                mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL","http://localhost:7445/api/trainingModel");
                 sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
                 sentryEnabled = "true".equals(PROPERTIES.getProperty( "sentry.enabled", "false"));
                 iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
@@ -356,6 +358,10 @@ public class FacilioProperties {
 
     public static String getAnomalyPredictAPIURL() {
         return anomalyPredictAPIURL;
+    }
+    
+    public static String getMlModelBuildingApi() {
+    	return mlModelBuildingApi;
     }
 
     public static boolean isSysLogEnabled() {
