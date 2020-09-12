@@ -59,7 +59,7 @@
 	
 	boolean isSutherland = request.getServerName().contains("sutherlandglobal.com");
 
-	JSONObject domainInfo = IAMAppUtil.getDomainInfo(request.getServerName());
+	JSONObject domainInfo = IAMAppUtil.getAppDomainType(request.getServerName());
 	
 	if (isSutherland) {
 		copyrightInfo.put("name", "Sutherland Global Services, Inc");
