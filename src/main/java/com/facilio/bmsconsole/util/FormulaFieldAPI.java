@@ -20,7 +20,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -49,6 +51,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.DeleteRecordBuilder;
@@ -56,6 +59,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -294,6 +298,10 @@ public class FormulaFieldAPI {
 	}
 	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
+		return calculateFormulaReadings(resourceId, moduleName, fieldName, intervals, workflow, ignoreNullValues, addValue, false);
+	}
+	
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue, boolean calculateVMDeltaThroughFormula) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
 //			intervals.get(0).getStartTime();
 //			intervals.get(intervals.size() - 1).getEndTime();
@@ -304,7 +312,7 @@ public class FormulaFieldAPI {
 				long iEndTime = interval.getEndTime();
 				try {
 					long startTime = System.currentTimeMillis();
-					Map<String, Object> params = new HashMap<>();
+					HashMap<String, Object> params = new HashMap<>();
 					params.put("startTime", iStartTime);
 					params.put("endTime", iEndTime);
 					params.put("resourceId", resourceId);
@@ -314,27 +322,28 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
+					
+					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
-					if (AccountUtil.getCurrentOrg().getId() == 286l && resourceId == 1248194l) {
+					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
+					
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
-//						if (AccountUtil.getCurrentOrg().getId() == 135) {
-
-//						}
 						if (resultVal != null) {
 							ReadingContext reading = new ReadingContext();
 							reading.setParentId(resourceId);
 							reading.addReading(fieldName, resultVal);
 							reading.addReading("startTime", iStartTime);
 							reading.setTtime(iEndTime);
+							if(isChildMeterMarked && calculateVMDeltaThroughFormula) {
+								reading.setMarked(isChildMeterMarked);
+							}
 							readings.add(reading);
 							
-							if (addValue) {
-								
-								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-								
+							if (addValue) {	
+								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");	
 								FacilioField field = modBean.getField(fieldName, moduleName);
 								FormulaFieldContext formulaField = getFormulaField(field);
 								
@@ -357,10 +366,12 @@ public class FormulaFieldAPI {
 							}
 						}
 					}
+					if(calculateVMDeltaThroughFormula) {
+						workflow.setCachedData(null);
+					}
 					long timeTaken = System.currentTimeMillis() - startTime;
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
-//					}
+					LOGGER.debug("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
+
 				}
 				catch (Exception e) {
 					LOGGER.log(Level.ERROR, e.getMessage(), e);
@@ -372,6 +383,112 @@ public class FormulaFieldAPI {
 			return readings;
 		}
 		return null;
+	}
+	
+	public static boolean setWorkflowCacheMapForVM(String moduleName, String fieldName, long iStartTime, long iEndTime, WorkflowContext workflow, boolean calculateVMDeltaThroughFormula, Map<String,Object> paramMap) throws Exception 
+	{
+		if(calculateVMDeltaThroughFormula && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING) && fieldName.equals("totalEnergyConsumptionDelta")) {
+			if(workflow.getExpressions() != null && !workflow.getExpressions().isEmpty() && !workflow.isV2Script()) {
+				try {
+					workflow.setVariableResultMap(null);
+					workflow.setCachedRDM(null);
+					for(WorkflowExpression workflowExpression: workflow.getExpressions()) 
+					{
+						if(workflowExpression instanceof ExpressionContext) {
+							ExpressionContext expressionContext = (ExpressionContext) workflowExpression;
+							String parentId = WorkflowUtil.getParentIdFromCriteria(expressionContext.getCriteria());	
+							if(parentId == null) {
+								return false;
+							}
+							workflow.setParameters(WorkflowUtil.validateAndGetParameters(workflow,paramMap));
+							expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext, workflow.getVariableResultMap());
+							
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							FacilioModule module = modBean.getModule(moduleName);
+							
+							SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+									.table(module.getTableName())
+									.module(module)
+									.andCriteria(expressionContext.getCriteria());
+							
+							if(workflow.getCriteria() != null) {
+								selectBuilder.andCriteria(workflow.getCriteria());
+							}
+							if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
+								selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
+							}
+							if (AccountUtil.getCurrentUser() == null) {
+								User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+								AccountUtil.getCurrentAccount().setUser(user);
+							}
+							Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
+							if (scopeCriteria != null) {
+								selectBuilder.andCriteria(scopeCriteria);
+							}
+							
+							if(expressionContext.getAggregateString() != null && !expressionContext.getAggregateString().isEmpty()) {
+								FacilioField selectOriginal = modBean.getField(fieldName, moduleName);
+								FacilioField select = selectOriginal.clone();	
+								if(select == null) {
+									return false;
+								}
+								select.setName("result");
+								selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
+								
+								AggregateOperator expAggregateOpp = expressionContext.getAggregateOpperator();
+								selectBuilder.aggregate(expAggregateOpp, select);
+							
+								if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
+									boolean isLastValueWithTimeRange = false;
+									Map<String, Condition> conditions = expressionContext.getCriteria().getConditions();
+									for(String key:conditions.keySet()) {
+										Condition condition = conditions.get(key);
+										if(condition.getFieldName().contains("ttime")) {
+											isLastValueWithTimeRange = true;
+											break;
+										}
+									}
+									if(isLastValueWithTimeRange) {	
+										selectBuilder.limit(1);
+										selectBuilder.orderBy("TTIME desc");	
+									}
+									else {
+										return false;
+									}
+								}
+								
+								FacilioField markedField = modBean.getField("marked", moduleName);
+								if(markedField != null) {
+									selectBuilder.select(Collections.singletonList(markedField));
+									if(!workflow.isFetchMarkedReadings()) {
+										selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, Boolean.FALSE.toString(), BooleanOperators.IS));
+									}
+								}
+								
+							}
+							selectBuilder.beanClass(ReadingContext.class);
+							List<Map<String, Object>> props = selectBuilder.getAsProps();
+
+							if(props != null && !props.isEmpty()) {
+								Object exprResult = (Object) props.get(0).get("result");
+								Boolean isMarked = (Boolean) props.get(0).get("marked");
+								workflow.addCachedData(WorkflowUtil.getCacheKey(moduleName, parentId), props);							
+								if(isMarked != null && isMarked) {
+									return true;
+								}
+							}	
+						}
+					}
+					workflow.setParameters(null);
+					workflow.setVariableResultMap(null);
+					workflow.setCachedRDM(null);
+				}
+				catch (Exception e) {
+					LOGGER.error("Exception occurred to fetch markedReadings in FormulaScheduledCalculation - setWorkflowCacheMapForVM", e);
+				}		
+			}
+		}
+		return false;
 	}
 	
 	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources, Criteria criteria, JSONObject pagination) throws Exception {
@@ -1349,7 +1466,7 @@ public class FormulaFieldAPI {
 		return range;
 	}
 	
-	public static void computeFormulaResourceReadings(FormulaFieldContext formula, long resourceId, long startTime, long endTime, boolean isHistorical) throws Exception {
+	public static void computeFormulaResourceReadings(FormulaFieldContext formula, long resourceId, long startTime, long endTime, boolean isHistorical, boolean calculateVMDeltaThroughFormula) throws Exception {
 		
 		ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
 		List<DateRange> intervals = new ArrayList<DateRange>();
@@ -1360,8 +1477,7 @@ public class FormulaFieldAPI {
 			intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, formula.getInterval());
 		}
 				 
-		//check ignoreNullValues(true)
-		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);	
+		List<ReadingContext> readings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false, calculateVMDeltaThroughFormula);	
 
 		if (readings != null && !readings.isEmpty()) {
 			int deletedData = FormulaFieldAPI.deleteOlderData(startTime, endTime, Collections.singletonList(resourceId), formula.getReadingField()); //Deleting anyway to avoid duplicate entries

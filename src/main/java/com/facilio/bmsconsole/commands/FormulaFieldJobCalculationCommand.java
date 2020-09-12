@@ -21,6 +21,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldDependenciesContext;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext;
 import com.facilio.bmsconsole.context.LoggerContext;
@@ -132,12 +133,14 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			long resourceId = formulaResourceStatusContext.getResourceId();
 			ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 			long startTime = getStartTime(formula, meta.getTtime());
-			long endTime = getEndTime(formula);				
+			long endTime = getEndTime(formula);	
+			boolean calculateVMDeltaThroughFormula = false;
 			
-			if(formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING)) && formula.getReadingField().getName().equals("totalEnergyConsumptionDelta")) {
+			if(formula.getFormulaFieldTypeEnum() == FormulaFieldType.VM && formula.getReadingField().getModule().getName().equals((FacilioConstants.ContextNames.ENERGY_DATA_READING)) && formula.getReadingField().getName().equals("totalEnergyConsumptionDelta")) {
 				formula.getWorkflow().setFetchMarkedReadings(true);
+				calculateVMDeltaThroughFormula = true;
 			}
-			FormulaFieldAPI.computeFormulaResourceReadings(formula, resourceId, startTime, endTime, false);	
+			FormulaFieldAPI.computeFormulaResourceReadings(formula, resourceId, startTime, endTime, false, calculateVMDeltaThroughFormula);	
 		}
 		catch (Exception e) {
 			LOGGER.info("Exception occurred in Formula Scheduled Calculation", e);
@@ -160,7 +163,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 //		}
 		
 		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-			return lastReadingTime + 1;
+			return DateTimeUtil.getDateTime(lastReadingTime).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60)).plusNanos(1000).toInstant().toEpochMilli();
 		}
 		else if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
@@ -194,19 +197,6 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 			return DateTimeUtil.getHourStartTime();
 		}
 	}
-	
-	private void adjustTtime(ReadingContext reading) {
-		
-		long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(15 * 60)).toInstant().toEpochMilli();
-
-		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
-		if (reading.getDatum("interval") != null) {
-			int interval = (int) reading.getDatum("interval");
-			zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
-		}
-		reading.setTtime(DateTimeUtil.getMillis(zdt, true));
-	}
-
 	
 	private void fetchFields (FormulaFieldContext formula, ModuleBean modBean) throws Exception {	
 		List<Long> dependentIds = formula.getWorkflow().getDependentFieldIds();
