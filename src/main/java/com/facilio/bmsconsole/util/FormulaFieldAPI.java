@@ -385,14 +385,14 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static boolean setWorkflowCacheMapForVM(String moduleName, String fieldName, long iStartTime, long iEndTime, WorkflowContext workflow, boolean calculateVMDeltaThroughFormula, Map<String,Object> paramMap) throws Exception 
+	public static boolean setWorkflowCacheMapForVM(String moduleName, String fieldName, long iStartTime, long iEndTime, WorkflowContext workflowContext, boolean calculateVMDeltaThroughFormula, Map<String,Object> paramMap) throws Exception 
 	{
 		boolean isChildMeterMarked = false;
+		
 		if(calculateVMDeltaThroughFormula && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING) && fieldName.equals("totalEnergyConsumptionDelta")) {
-			if(workflow.getExpressions() != null && !workflow.getExpressions().isEmpty() && !workflow.isV2Script()) {
+			if(workflowContext.getExpressions() != null && !workflowContext.getExpressions().isEmpty() && !workflowContext.isV2Script()) {
 				try {
-					workflow.setVariableResultMap(null);
-					workflow.setCachedRDM(null);
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
 					for(WorkflowExpression workflowExpression: workflow.getExpressions()) 
 					{
 						if(workflowExpression instanceof ExpressionContext) {
@@ -403,6 +403,7 @@ public class FormulaFieldAPI {
 							}
 							workflow.setParameters(WorkflowUtil.validateAndGetParameters(workflow,paramMap));
 							expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext, workflow.getVariableResultMap());
+							expressionContext.setVariableToExpresionMap(workflow.getVariableResultMap());
 							
 							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 							FacilioModule module = modBean.getModule(moduleName);
@@ -461,7 +462,7 @@ public class FormulaFieldAPI {
 								FacilioField markedField = modBean.getField("marked", moduleName);
 								if(markedField != null) {
 									selectBuilder.select(Collections.singletonList(markedField));
-									if(!workflow.isFetchMarkedReadings()) {
+									if(!workflowContext.isFetchMarkedReadings()) {
 										selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, Boolean.FALSE.toString(), BooleanOperators.IS));
 									}
 								}
@@ -473,16 +474,13 @@ public class FormulaFieldAPI {
 							if(props != null && !props.isEmpty()) {
 								Object exprResult = (Object) props.get(0).get("result");
 								Boolean isMarked = (Boolean) props.get(0).get("marked");
-								workflow.addCachedData(WorkflowUtil.getCacheKey(moduleName, parentId), props);							
+								workflowContext.addCachedData(WorkflowUtil.getCacheKey(moduleName, parentId), props);							
 								if(isMarked != null && isMarked) {
 									isChildMeterMarked = true;
 								}
 							}	
 						}
 					}
-					workflow.setParameters(null);
-					workflow.setVariableResultMap(null);
-					workflow.setCachedRDM(null);
 				}
 				catch (Exception e) {
 					LOGGER.error("Exception occurred to fetch markedReadings in FormulaScheduledCalculation - setWorkflowCacheMapForVM Timerange: " +iStartTime+ " - "+iEndTime+ " fieldName: "+fieldName+ " Exception: ", e);
