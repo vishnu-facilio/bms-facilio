@@ -162,8 +162,8 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 //			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusMinutes(plusMinutes).truncatedTo(ChronoUnit.MINUTES);
 //		}
 		
-		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-			return DateTimeUtil.getDateTime(lastReadingTime).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60)).plusNanos(1000000).toInstant().toEpochMilli();
+		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {			
+			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusSeconds(formula.getInterval() * 60).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
 		}
 		else if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
@@ -181,17 +181,11 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 		int roundedMinute = FormulaFieldAPI.getRoundedMinute(currentMinute, 5);
 		int minusMinute = currentMinute - roundedMinute;
 		
-		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES) {
+		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
 //			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
 //			return DateTimeUtil.getMillis(zdt, true);
 			
-			return DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(10 * 60)).toInstant().toEpochMilli();
-		}
-		else if (formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-//			zdt = DateTimeUtil.getDateTime().plusMinutes(-minusMinute).truncatedTo(ChronoUnit.MINUTES);
-//			return DateTimeUtil.getMillis(zdt, true);
-			
-			return DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(15 * 60)).toInstant().toEpochMilli();
+			return (DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60)).toInstant().toEpochMilli()) - 1;	
 		}
 		else {
 			return DateTimeUtil.getHourStartTime();
