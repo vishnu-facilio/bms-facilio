@@ -163,7 +163,7 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 //		}
 		
 		if (formula.getFrequencyEnum() == FacilioFrequency.TEN_MINUTES || formula.getFrequencyEnum() == FacilioFrequency.FIFTEEN_MINUTES) {
-			return DateTimeUtil.getDateTime(lastReadingTime).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60)).plusNanos(1000).toInstant().toEpochMilli();
+			return DateTimeUtil.getDateTime(lastReadingTime).truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60)).plusNanos(1000000).toInstant().toEpochMilli();
 		}
 		else if (formula.getFrequencyEnum() == FacilioFrequency.HOURLY) {
 			zdt = DateTimeUtil.getDateTime(lastReadingTime).plusHours(1).truncatedTo(ChronoUnit.HOURS);
