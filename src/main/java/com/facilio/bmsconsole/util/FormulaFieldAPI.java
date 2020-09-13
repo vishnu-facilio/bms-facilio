@@ -387,6 +387,7 @@ public class FormulaFieldAPI {
 	
 	public static boolean setWorkflowCacheMapForVM(String moduleName, String fieldName, long iStartTime, long iEndTime, WorkflowContext workflow, boolean calculateVMDeltaThroughFormula, Map<String,Object> paramMap) throws Exception 
 	{
+		boolean isChildMeterMarked = false;
 		if(calculateVMDeltaThroughFormula && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING) && fieldName.equals("totalEnergyConsumptionDelta")) {
 			if(workflow.getExpressions() != null && !workflow.getExpressions().isEmpty() && !workflow.isV2Script()) {
 				try {
@@ -398,7 +399,7 @@ public class FormulaFieldAPI {
 							ExpressionContext expressionContext = (ExpressionContext) workflowExpression;
 							String parentId = WorkflowUtil.getParentIdFromCriteria(expressionContext.getCriteria());	
 							if(parentId == null) {
-								return false;
+								throw new IllegalArgumentException("Invalid parentId");
 							}
 							workflow.setParameters(WorkflowUtil.validateAndGetParameters(workflow,paramMap));
 							expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext, workflow.getVariableResultMap());
@@ -430,7 +431,7 @@ public class FormulaFieldAPI {
 								FacilioField selectOriginal = modBean.getField(fieldName, moduleName);
 								FacilioField select = selectOriginal.clone();	
 								if(select == null) {
-									return false;
+									throw new IllegalArgumentException("Invalid fieldName");
 								}
 								select.setName("result");
 								selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
@@ -453,7 +454,7 @@ public class FormulaFieldAPI {
 										selectBuilder.orderBy("TTIME desc");	
 									}
 									else {
-										return false;
+										throw new IllegalArgumentException("Invalid timerange");
 									}
 								}
 								
@@ -474,7 +475,7 @@ public class FormulaFieldAPI {
 								Boolean isMarked = (Boolean) props.get(0).get("marked");
 								workflow.addCachedData(WorkflowUtil.getCacheKey(moduleName, parentId), props);							
 								if(isMarked != null && isMarked) {
-									return true;
+									isChildMeterMarked = true;
 								}
 							}	
 						}
@@ -484,11 +485,11 @@ public class FormulaFieldAPI {
 					workflow.setCachedRDM(null);
 				}
 				catch (Exception e) {
-					LOGGER.error("Exception occurred to fetch markedReadings in FormulaScheduledCalculation - setWorkflowCacheMapForVM", e);
+					LOGGER.error("Exception occurred to fetch markedReadings in FormulaScheduledCalculation - setWorkflowCacheMapForVM Timerange: " +iStartTime+ " - "+iEndTime+ " fieldName: "+fieldName+ " Exception: ", e);
 				}		
 			}
 		}
-		return false;
+		return isChildMeterMarked;
 	}
 	
 	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources, Criteria criteria, JSONObject pagination) throws Exception {
