@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FieldFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -38,13 +40,45 @@ public class TenantPageFactory extends PageFactory{
 		if (record == null) {
 			return page;
 		}
-
+		if(AccountUtil.getCurrentOrg().getOrgId() == 321l) {
+			addSpecialRelatedListWidgetForDemoOrg(tab1Sec1, record.getModuleId());
+		}
 		addRelatedList(tab1Sec1, record.getModuleId());
 		addCommonSubModuleWidget(tab1Sec1, module, record);
 		
 
 		return page;
 	}
+
+	private static void addSpecialRelatedListWidgetForDemoOrg(Section section, long moduleId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule custom_module_utility = modBean.getModule("custom_tenantutility");
+		FacilioModule custom_module_billing = modBean.getModule("custom_tenantbilling");
+
+		List<FacilioField> allFields = modBean.getAllFields(custom_module_utility.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(allFields);
+
+		PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+		JSONObject relatedList = new JSONObject();
+		relatedList.put("module", custom_module_utility);
+		relatedList.put("field", fieldsAsMap.get("tenant"));
+		relatedListWidget.setRelatedList(relatedList);
+		relatedListWidget.addToLayoutParams(section, 24, 8);
+		section.addWidget(relatedListWidget);
+
+		List<FacilioField> billFields = modBean.getAllFields(custom_module_billing.getName());
+		Map<String, FacilioField> billFieldsAsMap = FieldFactory.getAsMap(billFields);
+
+		PageWidget billRelatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+		JSONObject billRelatedList = new JSONObject();
+		billRelatedList.put("module", custom_module_billing);
+		billRelatedList.put("field", billFieldsAsMap.get("tenanttobebilled"));
+		billRelatedListWidget.setRelatedList(billRelatedList);
+		billRelatedListWidget.addToLayoutParams(section, 24, 8);
+		section.addWidget(billRelatedListWidget);
+	}
+
 
 	private static void addRelatedList(Section section, long moduleId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -54,6 +88,9 @@ public class TenantPageFactory extends PageFactory{
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
 				if(subModule.getName().equals(FacilioConstants.ContextNames.CONTACT) && AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+					continue;
+				}
+				if(AccountUtil.getCurrentOrg().getOrgId() == 321l && (subModule.getName().equals("custom_tenantutility") || subModule.getName().equals("custom_tenantbilling"))) {
 					continue;
 				}
 				
