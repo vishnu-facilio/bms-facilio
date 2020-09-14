@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -32,11 +33,13 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldResourceStatusContext.Status;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob;
+import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.FormulaFieldDependenciesAPI;
 import com.facilio.bmsconsole.util.FormulaFieldResourceStatusAPI;
+import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
@@ -46,6 +49,7 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
@@ -69,63 +73,113 @@ public class FormulaFieldJobCalculationCommand extends FacilioCommand implements
 	
 	public boolean executeCommand(Context context) throws Exception {
 		
-		formulaResourceId = (long) context.get(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID);
-		frequencyTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES);
-		
-		long jobStartTime = System.currentTimeMillis();
+		try {
+			formulaResourceId = (long) context.get(FacilioConstants.ContextNames.FORMULA_RESOURCE_JOB_ID);
+			frequencyTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES);
 			
-		if(formulaResourceId != -1)
-		{				
-			formulaResourceStatusContext = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusById(formulaResourceId);
-			List<Long> childDependencyIds = FormulaFieldDependenciesAPI.getFormulaFieldDependencyIdsByParentFormula(formulaResourceId);
+			long jobStartTime = System.currentTimeMillis();
 				
-			if(formulaResourceStatusContext != null && formulaResourceStatusContext.getStatus() == FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal())
-			{			
-				formulaResourceStatusContext.setActualStartTime(DateTimeUtil.getCurrenTime());	
-				long childCompletedCount = FormulaFieldResourceStatusAPI.getCompletedFormulaFieldResourceStatusCountByIds(childDependencyIds);
+			if(formulaResourceId != -1)
+			{				
+				formulaResourceStatusContext = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusById(formulaResourceId);
+				List<Long> childDependencyIds = FormulaFieldDependenciesAPI.getFormulaFieldDependencyIdsByParentFormula(formulaResourceId);
 					
-				if((int)childCompletedCount == childDependencyIds.size())
-				{
-					long formulaId = formulaResourceStatusContext.getFormulaFieldId();
-					FormulaFieldContext formula = FormulaFieldAPI.getActiveFormulaField(formulaId, true);
-					if(formula != null && !timedOut)
-					{							
-						formulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal());
-						int rowsUpdated = NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateInqueueFormulaFieldResourceStatus(formulaResourceStatusContext));	
-						if (rowsUpdated == 1)
-						{
-							currentStatusUpdate = true;
-							formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-							LOGGER.info("Entered for formulaResourceId -- "+formulaResourceId + " rowsUpdated: "+rowsUpdated+ " childCompletedCount: "+childCompletedCount+" childDependencyIds.size() "+childDependencyIds.size());
-							calculateScheduledFormula(formula,formulaResourceStatusContext);
-							LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
-						}
-						else {
-							LOGGER.info("Failed at rowsUpdate -- "+formulaResourceId);
-						}
-					}			
-				}
-				else {			
-					LOGGER.info("Failed at parentTrigger mismatch -- "+formulaResourceId);
-				}
+				if(formulaResourceStatusContext != null && formulaResourceStatusContext.getStatus() == FormulaFieldResourceStatusContext.Status.IN_QUEUE.getIntVal())
+				{			
+					formulaResourceStatusContext.setActualStartTime(DateTimeUtil.getCurrenTime());	
+					long childCompletedCount = FormulaFieldResourceStatusAPI.getCompletedFormulaFieldResourceStatusCountByIds(childDependencyIds);
+						
+					if((int)childCompletedCount == childDependencyIds.size())
+					{
+						long formulaId = formulaResourceStatusContext.getFormulaFieldId();
+						FormulaFieldContext formula = FormulaFieldAPI.getActiveFormulaField(formulaId, true);
+						if(formula != null && !timedOut)
+						{							
+							formulaResourceStatusContext.setStatus(FormulaFieldResourceStatusContext.Status.IN_PROGRESS.getIntVal());
+							int rowsUpdated = NewTransactionService.newTransactionWithReturn(() -> FormulaFieldResourceStatusAPI.updateInqueueFormulaFieldResourceStatus(formulaResourceStatusContext));	
+							if (rowsUpdated == 1)
+							{
+								currentStatusUpdate = true;
+								formulaResourceStatusContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+								LOGGER.info("Entered for formulaResourceId -- "+formulaResourceId + " rowsUpdated: "+rowsUpdated+ " childCompletedCount: "+childCompletedCount+" childDependencyIds.size() "+childDependencyIds.size());
+								calculateScheduledFormula(formula,formulaResourceStatusContext);
+								LOGGER.info("Time taken for FormulaFieldExecution job : " +(System.currentTimeMillis() - jobStartTime) + " with jobId: " +formulaResourceId);								
+							}
+							else {
+								LOGGER.info("Failed at rowsUpdate -- "+formulaResourceId);
+							}
+						}			
+					}
+					else {			
+						LOGGER.info("Failed at parentTrigger mismatch -- "+formulaResourceId);
+					}
+				}	
 			}	
-		}												
+		}
+		catch (Exception formulaFieldException) {
+			exceptionMessage = formulaFieldException.getMessage();
+			stack = formulaFieldException.getStackTrace();
+			throw formulaFieldException;
+		}
 			
 		return false;
 	}
 	
 	public boolean postExecute() throws Exception {
 		
-		if(formulaResourceId != -1 && formulaResourceStatusContext != null && currentStatusUpdate)
-		{
-			FacilioChain chain = TransactionChainFactory.getScheduleFormulaFieldParentJobCommand();
-			chain.getContext().put(FacilioConstants.ContextNames.FORMULA_RESOURCE, formulaResourceStatusContext);
-			chain.getContext().put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
-			chain.execute();
-			
+		try {
+			if(formulaResourceId != -1 && formulaResourceStatusContext != null && currentStatusUpdate)
+			{
+				FacilioChain chain = TransactionChainFactory.getScheduleFormulaFieldParentJobCommand();
+				chain.getContext().put(FacilioConstants.ContextNames.FORMULA_RESOURCE, formulaResourceStatusContext);
+				chain.getContext().put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
+				chain.execute();	
+			}	
 		}	
+		catch (Exception e) 
+		{
+			CommonCommandUtil.emailException("Formula Resource Calculation Job Exception Handling Failed",
+					"PostExecute - Error occurred while doing Formula Resource Calculation Job for orgid -- " + AccountUtil.getCurrentOrg().getId()+ ", formulaResourceId -- " +formulaResourceId, e);
+			LOGGER.error("PostExecute - Formula Resource Calculation Job Exception Handling Failed for formulaResourceId : "+formulaResourceId+ " Exception: "+ e);
+		}
 		return false;
 	}
+	
+	public void onError() throws Exception {
+		constructErrorMessage();
+	}
+	
+	public void constructErrorMessage() throws Exception 
+	{
+		try {
+			Exception mailExp = new Exception(exceptionMessage);
+			if (stack != null) {
+				mailExp.setStackTrace(stack);
+			}
+			
+			CommonCommandUtil.emailException(SingleResourceHistoricalFormulaCalculatorJob.class.getName(), "Error occurred while doing Formula Resource Calculation Job for formulaResourceId : "+formulaResourceId, mailExp); 
+			LOGGER.error("Error occurred while doing Formula Resource Calculation Job for formulaResourceId : "+formulaResourceId+ " ExceptionMessage: "+ exceptionMessage);
+			
+			if(formulaResourceStatusContext == null) {
+				formulaResourceStatusContext = FormulaFieldResourceStatusAPI.getFormulaFieldResourceStatusById(formulaResourceId);
+			}
+			if(formulaResourceId != -1 && formulaResourceStatusContext != null && currentStatusUpdate)
+			{
+				FacilioChain chain = TransactionChainFactory.getScheduleFormulaFieldParentJobCommand();
+				chain.getContext().put(FacilioConstants.ContextNames.FORMULA_RESOURCE, formulaResourceStatusContext);
+				chain.getContext().put(FacilioConstants.ContextNames.FORMULA_FREQUENCY_TYPES, frequencyTypes);
+				chain.execute();
+				
+			}				
+		}
+		catch (Exception e) 
+		{
+			CommonCommandUtil.emailException("Formula Resource Calculation Job Exception Handling Failed",
+					"OnError - Error occurred while doing Formula Resource Calculation Job for orgid -- " + AccountUtil.getCurrentOrg().getId()+ ", formulaResourceId -- " +formulaResourceId, e);
+			LOGGER.error("OnError - Formula Resource Calculation Job Exception Handling Failed for formulaResourceId : "+formulaResourceId+ " Exception: "+ e);
+		}
+	}
+	
 	
 	public void calculateScheduledFormula(FormulaFieldContext formula, FormulaFieldResourceStatusContext formulaResourceStatusContext) throws Exception {
 		
