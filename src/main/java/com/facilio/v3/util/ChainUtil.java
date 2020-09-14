@@ -3,7 +3,6 @@ package com.facilio.v3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
-import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
@@ -17,6 +16,7 @@ import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.AttachmentV3Context;
+import com.facilio.v3.context.CustomModuleDataV3;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.reflections.Reflections;
@@ -385,15 +385,15 @@ public class ChainUtil {
             beanClass = config.getBeanClass();
         }
         if (beanClass == null) {
-            beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-            if (beanClass == null) {
-                if (module.isCustom()) {
-                    if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
-                        beanClass = AttachmentV3Context.class;
-                    } else {
-                        beanClass = CustomModuleData.class;
-                    }
+            if (module.isCustom()) {
+                if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+                    beanClass = AttachmentV3Context.class;
                 } else {
+                    beanClass = CustomModuleDataV3.class;
+                }
+            } else {
+                beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
+                if (beanClass == null) {
                     beanClass = ModuleBaseWithCustomFields.class;
                 }
             }

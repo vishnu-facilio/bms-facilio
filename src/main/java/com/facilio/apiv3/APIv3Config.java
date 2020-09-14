@@ -75,34 +75,34 @@ import java.util.function.Supplier;
 
 @Config
 public class APIv3Config {
-
-    @Module("_custom_test")
-    // we are returning a lambda so as to generate new V3Config object each
-    // and every time a request happens
-    public static Supplier<V3Config> customTest() {
-        return () -> new V3Config(CustomModuleData.class)
-                .create()
-                    .init(new DefaultInit())
-                    .beforeSave(new SampleBeforeSaveCommand())
-                    .afterSave(new SampleAfterSaveCommand())
-                    .afterTransaction(new SampleAfterTransactionCommand())
-                .summary()
-                    .afterFetch(new SampleAfterFetchCommand())
-                .list()
-                    .beforeFetch(new SampleBeforeFetchCommand())
-                    .afterFetch(new SampleAfterFetchCommand())
-                    .showStateFlowList()
-                .update()
-                    .init(new DefaultInit())
-                    .beforeSave(new SampleBeforeSaveCommand())
-                    .afterSave(new SampleAfterSaveCommand())
-                    .afterTransaction(new SampleAfterTransactionCommand())
-                .delete()
-                    .beforeDelete(new SampleBeforeDeleteCommand())
-                    .afterDelete(new SampleAfterDeleteCommand())
-                    .afterTransaction(new SampleAfterTransactionCommand())
-                .build();
-    }
+//
+//    @Module("_custom_test")
+//    // we are returning a lambda so as to generate new V3Config object each
+//    // and every time a request happens
+//    public static Supplier<V3Config> customTest() {
+//        return () -> new V3Config(CustomModuleData.class)
+//                .create()
+//                    .init(new DefaultInit())
+//                    .beforeSave(new SampleBeforeSaveCommand())
+//                    .afterSave(new SampleAfterSaveCommand())
+//                    .afterTransaction(new SampleAfterTransactionCommand())
+//                .summary()
+//                    .afterFetch(new SampleAfterFetchCommand())
+//                .list()
+//                    .beforeFetch(new SampleBeforeFetchCommand())
+//                    .afterFetch(new SampleAfterFetchCommand())
+//                    .showStateFlowList()
+//                .update()
+//                    .init(new DefaultInit())
+//                    .beforeSave(new SampleBeforeSaveCommand())
+//                    .afterSave(new SampleAfterSaveCommand())
+//                    .afterTransaction(new SampleAfterTransactionCommand())
+//                .delete()
+//                    .beforeDelete(new SampleBeforeDeleteCommand())
+//                    .afterDelete(new SampleAfterDeleteCommand())
+//                    .afterTransaction(new SampleAfterTransactionCommand())
+//                .build();
+//    }
 
     @Module("assetdepreciation")
     public static Supplier<V3Config> getAssetDepreciation() {

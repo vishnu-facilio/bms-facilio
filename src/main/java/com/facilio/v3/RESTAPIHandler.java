@@ -171,11 +171,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
-        V3Config.ListHandler listHandler = v3Config.getListHandler();
-        if (listHandler != null) {
-            Map<String, List<String>> lookupFieldCriteriaMap = listHandler.getLookupFieldCriteriaMap();
-            if (!MapUtils.isEmpty(lookupFieldCriteriaMap)) {
-                Constants.setListRelationCriteria(context, lookupFieldCriteriaMap);
+        if (v3Config != null) {
+            V3Config.ListHandler listHandler = v3Config.getListHandler();
+            if (listHandler != null) {
+                Map<String, List<String>> lookupFieldCriteriaMap = listHandler.getLookupFieldCriteriaMap();
+                if (!MapUtils.isEmpty(lookupFieldCriteriaMap)) {
+                    Constants.setListRelationCriteria(context, lookupFieldCriteriaMap);
+                }
             }
         }
 
