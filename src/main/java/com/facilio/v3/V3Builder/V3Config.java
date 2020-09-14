@@ -398,6 +398,7 @@ public class V3Config implements V3Builder {
     public class ListHandler implements ListBuilder {
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
+        private Command beforeCountCommand;
         private V3Builder parent;
         private boolean showStateFlowList;
         private Map<String, List<String>> lookupFieldCriteriaMap;
@@ -431,6 +432,12 @@ public class V3Config implements V3Builder {
                 this.lookupFieldCriteriaMap.put(moduleName, new ArrayList<>());
             }
             this.lookupFieldCriteriaMap.get(moduleName).add(lookupField);
+            return this;
+        }
+
+        @Override
+        public ListBuilder beforeCount(Command beforeCountCommand) {
+            this.beforeCountCommand = beforeCountCommand;
             return this;
         }
 
@@ -485,6 +492,10 @@ public class V3Config implements V3Builder {
 
         public Map<String, List<String>> getLookupFieldCriteriaMap() {
             return this.lookupFieldCriteriaMap;
+        }
+
+        public Command getBeforeCountCommand() {
+            return beforeCountCommand;
         }
     }
 

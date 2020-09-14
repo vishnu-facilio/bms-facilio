@@ -68,8 +68,21 @@ public class ChainUtil {
     public static FacilioChain getCountChain(String moduleName) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
 
+
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
+
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        Command beforeCountCommand = null;
+        V3Config.ListHandler listHandler = null;
+        if (v3Config != null) {
+            listHandler = v3Config.getListHandler();
+            if (listHandler != null) {
+                beforeCountCommand = listHandler.getBeforeCountCommand();
+            }
+        }
+        
+        addIfNotNull(nonTransactionChain, beforeCountCommand);
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
         nonTransactionChain.addCommand(new CountCommand(module));

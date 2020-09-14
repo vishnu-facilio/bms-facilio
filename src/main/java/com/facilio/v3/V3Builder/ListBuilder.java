@@ -11,6 +11,8 @@ public interface ListBuilder {
 
     ListBuilder fetchRelations(String moduleName, String lookupField);
 
+    ListBuilder beforeCount(Command beforeCountCommand);
+
     UpdateBuilder update();
 
     CreateBuilder create();
