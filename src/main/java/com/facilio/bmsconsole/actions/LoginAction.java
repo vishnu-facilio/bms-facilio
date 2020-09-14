@@ -227,7 +227,9 @@ public class LoginAction extends FacilioAction {
 						boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
 					    if (isSSOEnabled) {
 						   String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
-						   response.sendRedirect(ssoLogoutRequestURL);
+						   if (ssoLogoutRequestURL != null) {
+							   response.sendRedirect(ssoLogoutRequestURL);
+						   }
 					    }
 					}
 				}
