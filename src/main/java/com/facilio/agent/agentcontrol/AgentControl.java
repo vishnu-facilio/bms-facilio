@@ -45,9 +45,9 @@ public class AgentControl extends AgentActionV2 {
 
 	public String agentAction() {
 		try {
-			String topicName = getTopic();
-			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
-			long recordId = processor.send(topicName,createRecord());
+//			String topicName = getTopic();
+			KafkaProcessor processor = new KafkaProcessor(orgId, agentName);
+			long recordId = processor.send(agentName,createRecord());
 			LOGGER.info("Agent control action recordId :"+recordId);
 			if(recordId > 0) {
 				updateAgent(recordId);
@@ -121,7 +121,7 @@ public class AgentControl extends AgentActionV2 {
 		Map<String,Object> prop =  new GenericSelectRecordBuilder()
 				.select(MESSAGE_TOPIC_FIELDS)
 				.table(MESSAGE_TOIPC_MODULE.getTableName())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS).get(AgentConstants.ORGID), String.valueOf(AccountUtil.getCurrentOrg().getOrgId()),NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS).get(AgentConstants.ORGID), String.valueOf(orgId),NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS).get(AgentConstants.IS_DISABLE),String.valueOf(false), BooleanOperators.IS))
 				.fetchFirst();
 		if( MapUtils.isNotEmpty(prop)) {

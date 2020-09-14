@@ -155,7 +155,7 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
-                    if(isStage) {
+                    if(AccountUtil.getCurrentOrg().getOrgId() == 152) {
                     	if(payLoad.containsKey(PublishType.agentAction) && payLoad.containsKey(AgentConstants.MESSAGE))  {
                     		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
                     		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);
