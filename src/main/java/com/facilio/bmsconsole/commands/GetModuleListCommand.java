@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
@@ -11,6 +13,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class GetModuleListCommand extends FacilioCommand {
 
@@ -26,6 +29,22 @@ public class GetModuleListCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> moduleList = modBean.getModuleList(ModuleType.valueOf(moduleType), onlyCustom);
+		if(CollectionUtils.isNotEmpty(moduleList) && onlyCustom && (AccountUtil.getCurrentOrg().getOrgId() == 321l || AccountUtil.getCurrentOrg().getOrgId() == 173l)){
+			List<FacilioModule> splModules = moduleList.stream()
+					.filter(mod->mod.getName().equals("custom_tariff") || mod.getName().equals("custom_tenantbilling"))
+					.collect(Collectors.toList());
+
+			if(CollectionUtils.isNotEmpty(splModules)){
+				splModules.sort(new Comparator<FacilioModule>() {
+					@Override
+					public int compare(FacilioModule o1, FacilioModule o2) {
+						return Long.compare(o2.getModuleId(),o1.getModuleId());
+					}
+				});
+				moduleList.removeAll(splModules);
+				moduleList.addAll(0,splModules);
+			}
+		}
 
 		Boolean fetchDefaultModules = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES);
 		if (fetchDefaultModules != null && fetchDefaultModules) {

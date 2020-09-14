@@ -166,7 +166,6 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		if (onlyCustom) {
 			builder.andCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(onlyCustom), BooleanOperators.IS));
-		    builder.orderBy("CREATED_TIME asc");
 		}
 
 
