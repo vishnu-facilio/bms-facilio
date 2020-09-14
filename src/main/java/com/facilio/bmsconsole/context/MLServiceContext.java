@@ -160,15 +160,6 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.mlResponse = mlResponse;
 	}
 
-	private Map<String, MLVariableContext> mlVariableMap;
-	
-	public Map<String, MLVariableContext> getMlVariableMap() {
-		return mlVariableMap;
-	}
-
-	public void setMlVariableMap(Map<String, MLVariableContext> mlVariableMap) {
-		this.mlVariableMap = mlVariableMap;
-	}
 
 	@Override
 	public String toString() {
@@ -176,8 +167,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 				+ assetDetails + ", mlVariables=" + mlVariables + ", filteringMethod=" + filteringMethod
 				+ ", groupingMethod=" + groupingMethod + ", workflowInfo=" + workflowInfo + ", scenario=" + scenario
 				+ ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId=" + useCaseId + ", status="
-				+ status + ", apiResponse=" + apiResponse + ", mlResponse=" + mlResponse + ", mlVariable=" + mlVariable
-				+ "]";
+				+ status + ", apiResponse=" + apiResponse + ", mlResponse=" + mlResponse + "]";
 	}
 
 	

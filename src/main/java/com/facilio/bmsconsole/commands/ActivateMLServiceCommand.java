@@ -10,11 +10,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLCustomModuleContext;
 import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
-import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -49,7 +49,6 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			long assetId = mlResponseContext.getAssetid();
 			String scenario = mlServiceContext.getScenario();
 
-			Map<String, MLVariableContext> mlVariableMap = mlServiceContext.getMlVariableMap();
 
 			List<String> readingVariables = mlServiceContext.getReadingVariables();
 
@@ -82,9 +81,9 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	private void addMLDependencies(long mlID, long assetId, MLCustomModuleContext moduleContext, GenericSelectRecordBuilder userVariables, Map<String, MLCustomModuleContext> mlCustomModuleMap) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		String prevModule = moduleContext.getParentModule();
-		if(prevModule == null) {
+
+		String prevModuleName = moduleContext.getParentModule();
+		if(prevModuleName == null) {
 			boolean first = true;
 			for(Map<String, Object> map : userVariables.get()) {
 
@@ -99,24 +98,21 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 				first = false;
 			}
 		} else {
-			MLCustomModuleContext parentModule = mlCustomModuleMap.get(prevModule);
-			FacilioModule module = modBean.getModule(parentModule.getMlReadingModuleId());
-			
+			MLCustomModuleContext prevModuleContext = mlCustomModuleMap.get(prevModuleName);
+			FacilioModule prevModule = modBean.getModule(prevModuleContext.getMlReadingModuleId());
+			List<FacilioField> parentModuleFields = prevModuleContext.getRequestFields();
+
+			FacilioField parentField = modBean.getField("parentId", prevModule.getName());
+			boolean first = true;
+			for(FacilioField variableField : parentModuleFields) {
+				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, futureSamplingPeriod, first, "SUM");
+				first = false;
+			}
 		}
+		
+		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
+		
 
-
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-
-
-		String aggregation = "SUM";
-		long parentId = 0;
-		MLAPI.addMLVariables(mlID, energyField.getModuleId(), energyField.getFieldId(), energyParentField.getFieldId(), 
-				parentId,
-				maxSamplingPeriod,
-				futureSamplingPeriod,
-				true,
-				aggregation);
 
 
 	}
@@ -159,15 +155,19 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String readingModuleName = (scenario + "_"+ moduleContext.getModuleName());
 			FacilioModule readingModule = modBean.getModule(readingModuleName.toLowerCase());
-			List<FacilioField> mlFields = readingModule != null ? modBean.getAllFields(readingModule.getName()) : getCustomFields(moduleContext.getFields(), readingModuleName);
+			List<FacilioField> mlFields = readingModule != null ? modBean.getAllFields(readingModule.getName()) : getCustomFields(moduleContext.getFields(), ModuleFactory.getMLReadingModule());
+			moduleContext.setRequestFields(mlFields);
 
 			MLAPI.addReading(Collections.singletonList(assetId),readingModuleName,mlFields,ModuleFactory.getMLReadingModule().getTableName(),readingModule);
 
 			String logReadingModuleName = readingModuleName + "_Log";  
 			FacilioModule logReadingModule = modBean.getModule(logReadingModuleName.toLowerCase());
 
-			List<FacilioField> mlLogFields = logReadingModule != null ? modBean.getAllFields(logReadingModule.getName()) : addLogField(mlFields, logReadingModule);
+			List<FacilioField> mlLogFields = logReadingModule != null ? modBean.getAllFields(logReadingModule.getName()) : getCustomFields(moduleContext.getFields(), ModuleFactory.getMLLogReadingModule());
+			mlLogFields = addLogField(mlLogFields, ModuleFactory.getMLLogReadingModule());
 			MLAPI.addReading(Collections.singletonList(assetId), logReadingModuleName, mlLogFields,ModuleFactory.getMLLogReadingModule().getTableName(),readingModule);
+
+			moduleContext.setMlReadingModuleId(readingModule.getModuleId());
 			return MLAPI.addMLModel(moduleContext.getModelPath(), logReadingModule.getModuleId(), readingModule.getModuleId());
 		}
 		catch(Exception e) {
@@ -184,10 +184,9 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 
 
-	private List<FacilioField> getCustomFields(Map<String, List<String>> map, String moduleName) {
-
-		List<FacilioField> fields = getDefaultFields();
-		FacilioModule module = ModuleFactory.getMLReadingModule();
+	private List<FacilioField> getCustomFields(Map<String, List<String>> map, FacilioModule module) {
+		
+		List<FacilioField> fields = getDefaultFields(module);
 		List<String> booleanFields = map.get("boolean");
 		List<String> decimanFields = map.get("decimal");
 		String dataType = "NUMBER_";
@@ -207,12 +206,8 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 	}
 
 
-	private List<FacilioField> getDefaultFields() {
+	private List<FacilioField> getDefaultFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getMLLogReadingModule();
-		fields.add(FieldFactory.getField("daywiseenergy", "daywiseenergyLog", "DECIMAL_CF1", module, FieldType.DECIMAL));
-		fields.add(FieldFactory.getField("endofmonthenergy", "endofmonthenergyLog", "DECIMAL_CF2", module, FieldType.DECIMAL));
-		fields.add(FieldFactory.getField("predictedTime", "PREDICTED_TIME", module, FieldType.NUMBER));
 		fields.add(FieldFactory.getField("mlRunning", "ML_RUNNING", module, FieldType.BOOLEAN));
 		fields.add(FieldFactory.getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
 		return fields;
