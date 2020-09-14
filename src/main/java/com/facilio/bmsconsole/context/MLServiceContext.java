@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.facilio.bmsconsole.actions.MLResponseParser;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -141,6 +141,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setApiResponse(JSONObject apiResponse) {
 		this.apiResponse = apiResponse;
+		setMlResponse(FieldUtil.getAsBeanFromMap(apiResponse.toMap(), MLResponseContext.class));
 	}
 
 	public String getScenario() {
@@ -159,4 +160,25 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.mlResponse = mlResponse;
 	}
 
+	private Map<String, MLVariableContext> mlVariableMap;
+	
+	public Map<String, MLVariableContext> getMlVariableMap() {
+		return mlVariableMap;
+	}
+
+	public void setMlVariableMap(Map<String, MLVariableContext> mlVariableMap) {
+		this.mlVariableMap = mlVariableMap;
+	}
+
+	@Override
+	public String toString() {
+		return "MLServiceContext [modelName=" + modelName + ", readingVariables=" + readingVariables + ", assetDetails="
+				+ assetDetails + ", mlVariables=" + mlVariables + ", filteringMethod=" + filteringMethod
+				+ ", groupingMethod=" + groupingMethod + ", workflowInfo=" + workflowInfo + ", scenario=" + scenario
+				+ ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId=" + useCaseId + ", status="
+				+ status + ", apiResponse=" + apiResponse + ", mlResponse=" + mlResponse + ", mlVariable=" + mlVariable
+				+ "]";
+	}
+
+	
 }
