@@ -157,8 +157,16 @@ Map cardLayout(Map params) {
                     cell = {};
                     cell["value"] = readingValue;
                     if (enumMap != null) {
-                        if (readingValue != null && enumMap.get(readingValue) != null) {
-                            cell["value"] = enumMap.get(readingValue);
+                                    enumValue = readingValue;
+
+                                 if (readingValue == true) {
+                        enumValue = 1;
+                        }
+                        else if (readingValue == false) {
+                        enumValue = 0;
+                        }
+                        if (enumValue != null && enumMap.get(enumValue) != null) {
+                            cell["value"] = enumMap.get(enumValue);
                         }
                     }
 
