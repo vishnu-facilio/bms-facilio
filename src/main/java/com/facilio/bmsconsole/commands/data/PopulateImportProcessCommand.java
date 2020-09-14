@@ -30,17 +30,19 @@ import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.text.MessageFormat;
 import java.util.*;
-import java.util.logging.Logger;
 
 ;
 
 public class PopulateImportProcessCommand extends FacilioCommand {
 
-	private static Logger LOGGER = Logger.getLogger(PopulateImportProcessCommand.class.getName());
+	private static Logger LOGGER = LogManager.getLogger(PopulateImportProcessCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context c) throws Exception{
@@ -280,7 +282,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				toValue = readingsEntireList.size();
 			}
 			List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
-
+			LOGGER.debug(MessageFormat.format("No. of records in this chunk -- {0}", readingsList == null ? "null" : readingsEntireList.size()));
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = bean.getModule(importProcessContext.getModuleId());
 			ArrayList<String> updateFields = new ArrayList();
@@ -293,8 +295,8 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			else {
 				updateFields.add("name");
 			}
-
 			for(int j =0;j< readingsList.size();j++) {
+				LOGGER.debug(MessageFormat.format("Update record -- {0}", j));
 				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 						.table(module.getTableName())
 						.moduleName(moduleName).
