@@ -45,8 +45,8 @@ public class AgentControl extends AgentActionV2 {
 
 	public String agentAction() {
 		try {
-//			String topicName = getTopic();
-			KafkaProcessor processor = new KafkaProcessor(orgId, agentName);
+			String topicName = getTopic();
+			KafkaProcessor processor = new KafkaProcessor(orgId, topicName);
 			long recordId = processor.send(agentName,createRecord());
 			LOGGER.info("Agent control action recordId :"+recordId);
 			if(recordId > 0) {
