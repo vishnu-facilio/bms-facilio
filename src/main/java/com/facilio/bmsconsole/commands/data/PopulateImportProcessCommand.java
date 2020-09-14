@@ -295,12 +295,14 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			else {
 				updateFields.add("name");
 			}
+			List<FacilioField> fields = bean.getAllFields(moduleName);
+			LOGGER.debug(MessageFormat.format("Going to update the following fields \n {0}", fields));
 			for(int j =0;j< readingsList.size();j++) {
-				LOGGER.debug(MessageFormat.format("Update record -- {0}", j));
+				LOGGER.debug(MessageFormat.format("Update {1} -- {0}", j, moduleName));
 				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 						.table(module.getTableName())
 						.moduleName(moduleName).
-						fields(bean.getAllFields(moduleName));
+						fields(fields);
 				if (importProcessContext.getSiteId() > 0) {
 					updateBuilder.andCondition(CriteriaAPI.getCondition(siteField, String.valueOf(importProcessContext.getSiteId()), NumberOperators.EQUALS));
 				}
