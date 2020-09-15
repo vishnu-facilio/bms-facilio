@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -51,7 +53,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 		private String[] defaultValues;
 		
-		List<Long> selectedOptions;
+		List<String> selectedOptions =new ArrayList<String>();
 
 		public String[] getDefaultValues() {
 			return this.defaultValues;
@@ -59,7 +61,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	
 
-		public List<Long> getSelectedOptions()
+		public List<String> getSelectedOptions()
 		{
 			return this.selectedOptions;
 		}
@@ -71,8 +73,15 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 
 
-		public void setSelectedOptions(List<Long> selectedOptions) {
-			this.selectedOptions = selectedOptions;
+		public void setSelectedOptions(List<String> selectedOptions) {
+			if(selectedOptions==null)
+			{
+				this.selectedOptions=new ArrayList<String>();
+			}
+			else {
+				this.selectedOptions = selectedOptions;
+			}
+			
 		}
 
 	}
@@ -151,7 +160,7 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	public String[] getDefaultValues() {
 		return this.filterPojo.getDefaultValues();
 	}
-
+	
 
 
 
@@ -201,10 +210,19 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 		return this.optionType;
 	}
 
-	public List<Long> getSelectedOptions() {
+	public List<String> getSelectedOptions() {
+		if(this.filterPojo.getSelectedOptions()==null)
+		{
+			return new ArrayList<String>(); 
+		}
+		else {
 		return this.filterPojo.getSelectedOptions();
+		}
 	}
 
+	public void setSelectedOptions(List<String> selectedOptions) {
+		this.filterPojo.setSelectedOptions(selectedOptions);
+	}
 
 	public void setComponentType(ComponentType componentType)
 	{
@@ -237,6 +255,8 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	public void setDefaultValues(String[] defaultValues) {
 		this.filterPojo.setDefaultValues(defaultValues);
 	}
+	
+	
 
 	public void setField(FacilioField field) {
 		this.field = field;
@@ -286,6 +306,24 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	}
 	public void setWidgetFieldMap(Map<Long,FacilioField> widgetFieldMap) {
 		this.widgetFieldMap = widgetFieldMap;
+	}
+	
+	private long criteriaId = -1;
+	
+	public long getCriteriaId() {
+		return criteriaId;
+	}
+	public void setCriteriaId(long criteriaId) {
+		this.criteriaId = criteriaId;
+	}
+	
+	private Criteria criteria;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
 	}
 
 }

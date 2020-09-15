@@ -111,6 +111,11 @@ public class DashboardFilterUtil {
 			for (DashboardUserFilterContext filter : dashboardUserFilters) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				filter.setField(modBean.getField(filter.getFieldId()));
+				if(filter.getCriteriaId()>0)
+				{
+				filter.setCriteria(CriteriaAPI.getCriteria(filter.getCriteriaId()));
+				}
+				
 				filter.setWidgetFieldMap(getUserFilterToWidgetColumnMapping(filter.getId()));
 
 			}

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 
 public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 
@@ -40,6 +41,11 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 				for(DashboardUserFilterContext dashboardUserFilterRel:currentDashboardUserFilters)
 				{
 					dashboardUserFilterRel.setDashboardFilterId(dashboardFilterContext.getId());
+					if(dashboardUserFilterRel.getCriteria()!=null)
+					{
+						long criteriaId=CriteriaAPI.addCriteria(dashboardUserFilterRel.getCriteria());
+						dashboardUserFilterRel.setCriteriaId(criteriaId);
+					}
 					
 					if(dashboardUserFilterRel.getId()>0)
 					{
