@@ -90,14 +90,14 @@ public class OpcXmlDaControllerContext extends Controller {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         FacilioField userNameField = fieldsMap.get(AgentConstants.USER_NAME);
-        Objects.requireNonNull(userNameField,"userName field is null");
+//        Objects.requireNonNull(userNameField,"userName field is null");
 
         FacilioField urlField = fieldsMap.get(AgentConstants.URL);
-        Objects.requireNonNull(userNameField,"url field is null");
+//        Objects.requireNonNull(userNameField,"url field is null");
 
 
         FacilioField passwordField = fieldsMap.get(AgentConstants.PASSWORD);
-        Objects.requireNonNull(userNameField,"passWord field is null");
+//        Objects.requireNonNull(userNameField,"passWord field is null");
 
         LOGGER.info(" fields "+userNameField+"-----"+urlField+"-----"+passwordField);
         if(userName == null){
