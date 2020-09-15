@@ -1018,7 +1018,7 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
-		if(AccountUtil.getCurrentOrg().getId()==78 && !FacilioProperties.isProduction()) {
+		if(!FacilioProperties.isProduction()) {
 		ArrayList<String> mlmvaAlarms = new ArrayList<String>();
 		mlmvaAlarms.add("mlmvaAlarms");
 		groupDetails = new HashMap<>();
