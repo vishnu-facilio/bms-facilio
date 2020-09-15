@@ -10,13 +10,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-//import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.ServletActionContext;
 
-//import com.amazonaws.util.StringUtils;
+import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -131,12 +131,12 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		// TODO remove 
 		
-//		HttpServletRequest request = ServletActionContext.getRequest();
-//		String deviceType = request.getHeader("X-Device-Type");
-//		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
-//			fetchByGroup = false;
-//		}
-//		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String deviceType = request.getHeader("X-Device-Type");
+		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+			fetchByGroup = false;
+		}
+		
 		
 		if (fetchByGroup != null && fetchByGroup) {
 			
