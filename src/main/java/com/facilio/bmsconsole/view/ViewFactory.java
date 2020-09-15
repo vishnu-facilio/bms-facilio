@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -499,6 +501,7 @@ public class ViewFactory {
 		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Major Alarms", "Major", true).setOrder(order++));
 		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Minor Alarms", "Minor", true).setOrder(order++));
 		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("mlmvaAlarms", getMultivariateAnomalyAlarmOccurrenceViews().setOrder(order++));
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 		views.put("controllerAll",getControllerAlarmOccurrenceViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
@@ -535,6 +538,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("mlmvaAlarms", getMultivariateAnomalyAlarmOccurrenceViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -1010,6 +1018,15 @@ public class ViewFactory {
 		groupDetails.put("moduleName", FacilioConstants.ContextNames.AGENT_ALARM);
 		groupDetails.put("views", agentAlarms);
 		groupVsViews.add(groupDetails);
+		if(AccountUtil.getCurrentOrg().getId()==78 && !FacilioProperties.isProduction()) {
+		ArrayList<String> mlmvaAlarms = new ArrayList<String>();
+		mlmvaAlarms.add("mlmvaAlarms");
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "multivariateAnomalyAlarmViews");
+		groupDetails.put("displayName", "MultivariateAomaly Alarm");
+		groupDetails.put("moduleName", FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
+		groupDetails.put("views", mlmvaAlarms);
+		groupVsViews.add(groupDetails);}
 
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customalarms");
@@ -5540,6 +5557,26 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	private static FacilioView getMultivariateAnomalyAlarmOccurrenceViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("mlmvaAlarms");
+		allView.setDisplayName("All Alarms");
+		allView.setModuleName("multivariateanomalyalarm");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setDefault(true);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+	
 	private static FacilioView getControllerAlarmOccurrenceViews() {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");
