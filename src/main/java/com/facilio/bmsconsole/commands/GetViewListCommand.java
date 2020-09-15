@@ -129,13 +129,6 @@ public class GetViewListCommand extends FacilioCommand {
 		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
 		
-		// TODO remove 
-		
-//		HttpServletRequest request = ServletActionContext.getRequest();
-//		String deviceType = request.getHeader("X-Device-Type");
-//		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
-//			fetchByGroup = false;
-//		}
 		
 		
 		if (fetchByGroup != null && fetchByGroup) {
@@ -234,8 +227,16 @@ public class GetViewListCommand extends FacilioCommand {
 			}
 			
 			sortGroupViews(groupViews, viewMap, viewGroups);
+			// TODO remove 
+			
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String deviceType = request.getHeader("X-Device-Type");
+			if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+				context.put(FacilioConstants.ContextNames.VIEW_LIST, viewGroups);
+			}else {
+				context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroups);
+			}
 						
-			context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroups);
 			
 		}
 		else {
