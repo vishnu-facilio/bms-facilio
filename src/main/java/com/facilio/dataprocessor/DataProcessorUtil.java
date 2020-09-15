@@ -185,9 +185,9 @@ public class DataProcessorUtil {
                     	agentMsgId = agentV2.getId();
                     	processorVersion = agentV2.getProcessorVersion();
                     }
-                    LOGGER.info(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
+                    LOGGER.debug(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {
-                    LOGGER.info(" payload missing key 'agent' "+payLoad);
+                    LOGGER.debug(" payload missing key 'agent' "+payLoad);
                 }
             }catch (Exception e){
                 LOGGER.info(" Exception occurred while checking agent version ",e);
@@ -195,7 +195,7 @@ public class DataProcessorUtil {
 
             switch (processorVersion) {
                 case 1:
-                    LOGGER.info("PreProcessor for V1 to V2 data");
+//                    LOGGER.info("PreProcessor for V1 to V2 data");
                     AgentMessagePreProcessor preProcessor = new v1ToV2PreProcessor();
                     List<JSONObject> messages = preProcessor.preProcess(payLoad);
                     boolean isEveryMessageProcessed = true;
@@ -205,11 +205,11 @@ public class DataProcessorUtil {
                     }
                     return isEveryMessageProcessed;
                 case 2:
-                    LOGGER.info(" new processor data ");
+//                    LOGGER.info(" new processor data ");
                     return sendToProcessorV2(payLoad,recordId);
 
                 default:
-                    LOGGER.info(" old processor data ");
+//                    LOGGER.info(" old processor data ");
                     // will divert to another class in future.
             }
 

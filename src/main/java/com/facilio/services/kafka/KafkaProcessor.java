@@ -36,7 +36,7 @@ public class KafkaProcessor extends FacilioProcessor {
     @Override
     public void processRecords(List<FacilioRecord> records) {
         for (FacilioRecord record : records) {
-            LOGGER.info(" getting messages via kafka Record Id is : "+record.getId());
+//            LOGGER.info(" getting messages via kafka Record Id is : "+record.getId());
             try {
                 if (!dataProcessorUtil.processRecord(record)) {
                     LOGGER.info("Exception while processing ->" + record.getData());
