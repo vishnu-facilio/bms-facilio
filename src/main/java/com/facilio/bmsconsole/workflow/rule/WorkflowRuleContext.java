@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.sql.SQLTimeoutException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -735,7 +736,7 @@ public class WorkflowRuleContext implements Serializable {
 			}
 			LOGGER.error(builder.toString(), e);
 			
-			if (propagateError) {
+			if (propagateError || (e instanceof SQLTimeoutException && e.getMessage().contains("Transaction timed out and so cannot get new connection"))) {
 				throw e;
 			}
 		}
