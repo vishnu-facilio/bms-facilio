@@ -128,7 +128,7 @@ public class AnnouncementAPI {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
         DeleteRecordBuilder<PeopleAnnouncementContext> deleteBuilder = new DeleteRecordBuilder<PeopleAnnouncementContext>()
                 .module(module)
-                .andCondition(CriteriaAPI.getCondition("PARENT_ANNOUNCEMENT_ID", "parentId", StringUtils.join(recordIds), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("PARENT_ANNOUNCEMENT_ID", "parentId", StringUtils.join(recordIds, ","), NumberOperators.EQUALS));
         deleteBuilder.markAsDelete();
 
     }
