@@ -10,9 +10,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.struts2.ServletActionContext;
 
+import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -124,6 +128,16 @@ public class GetViewListCommand extends FacilioCommand {
 				
 		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
+		
+		// TODO remove 
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String deviceType = request.getHeader("X-Device-Type");
+		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+			fetchByGroup = false;
+		}
+		
+		
 		if (fetchByGroup != null && fetchByGroup) {
 			
 			List<FacilioView> customViews = allViews.stream().filter(view -> view.getIsDefault() != null && !view.getIsDefault()).collect(Collectors.toList());
