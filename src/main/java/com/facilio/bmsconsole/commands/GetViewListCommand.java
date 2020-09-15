@@ -88,6 +88,7 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		
 		//db group views
+		if (moduleObj != null && moduleObj.getModuleId() > 0) {
 		viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId());
 		if (dbViews != null && viewGroups != null) {
 		for(ViewGroups viewGroup : viewGroups) {
@@ -117,6 +118,7 @@ public class GetViewListCommand extends FacilioCommand {
 			viewGroup.setViews(groupBasedViews);
 		}
 		}
+	}
 		
 		
 				
