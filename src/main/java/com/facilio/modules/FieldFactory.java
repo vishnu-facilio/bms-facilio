@@ -3249,6 +3249,7 @@ public class FieldFactory {
         fields.add(getField("defaultAllTriggers", "IS_DEFAULT_ALL_TRIGGERS", module, FieldType.BOOLEAN));
         fields.add(getField("woCreationOffset", "WO_CREATION_OFFSET", module, FieldType.NUMBER));
         fields.add(getField("markIgnoredWo","MARK_IGNORED_WO", module,FieldType.BOOLEAN));
+        fields.add(getField("enableSkipTriggers","ENABLE_SKIP_TRIGGERS", module, FieldType.BOOLEAN));
         return fields;
     }
 

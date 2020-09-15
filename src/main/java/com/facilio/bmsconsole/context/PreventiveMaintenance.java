@@ -545,6 +545,24 @@ public class PreventiveMaintenance extends ResourceContext {
 		return this.DefaultAllTriggers;
 	}
 
+	private Boolean enableSkipTriggers;
+
+	public boolean isEnableSkipTriggers() {
+		if (this.enableSkipTriggers == null) {
+			return false;
+		}
+		return this.enableSkipTriggers;
+	}
+
+	public void setEnableSkipTriggers(Boolean defaultAllTriggers) {
+		this.enableSkipTriggers = defaultAllTriggers;
+	}
+
+	public Boolean getEnableSkipTriggers() {
+		return this.enableSkipTriggers;
+	}
+
+
 	public static enum PMAssignmentType {
 		
 		ALL_FLOORS,

@@ -59,6 +59,7 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 		pm.setStatus(PMStatus.ACTIVE);
 		pm.setResourceType(ResourceType.PM);
 		pm.setDefaultAllTriggers(true);
+		pm.setEnableSkipTriggers(true);
 
 		/*if(workorder.getResource() != null) {
 			pm.setResourceId(workorder.getResource().getId());

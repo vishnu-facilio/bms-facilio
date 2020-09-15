@@ -73,7 +73,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if (superAdmin.getOuid() == AccountUtil.getCurrentUser().getOuid()) {
 			pm.setIsAllowedToExecute(true);
 		} else {
-			pm.setIsAllowedToExecute(isAllowedToExecute(pm.getTriggers()));
+			pm.setIsAllowedToExecute(isAllowedToExecute(pm));
 		}
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
@@ -275,10 +275,14 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		}
 	}
 
-	private boolean isAllowedToExecute(List<PMTriggerContext> pmTriggerContexts) throws Exception {
+	private boolean isAllowedToExecute(PreventiveMaintenance pm) throws Exception {
 		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SKIP_TRIGGERS)) {
-			return true;
+			if (!pm.isEnableSkipTriggers()) {
+				return true;
+			}
 		}
+
+		List<PMTriggerContext> pmTriggerContexts = pm.getTriggers();
 
 		if (CollectionUtils.isEmpty(pmTriggerContexts)) {
 			return false;
