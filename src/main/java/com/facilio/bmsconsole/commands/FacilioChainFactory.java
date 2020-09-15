@@ -2086,9 +2086,9 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain addMLServiceChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new ConstructReadingForMLModelCommand());
-		c.addCommand(new InitMLModelCommand());
-		c.addCommand(new UpdateJobDetailsForMLCommand());
+		c.addCommand(new ConstructReadingForMLServiceCommand());
+		c.addCommand(new InitMLServiceCommand());
+//		c.addCommand(new UpdateJobDetailsForMLCommand());
 		return c;
 	}
 	
