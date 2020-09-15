@@ -48,7 +48,7 @@ public class ReportExportUtil {
 			url.append("http://"+ FacilioProperties.getAppDomain());
 		}
 		else {
-			url.append(FacilioProperties.getConfig("clientapp.url"));
+			url.append(FacilioProperties.getClientAppUrl());
 		}
 		url.append("/app/");
 		String moduleName = module.getName();
