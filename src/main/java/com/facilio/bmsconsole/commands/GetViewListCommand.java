@@ -131,11 +131,11 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		// TODO remove 
 		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String deviceType = request.getHeader("X-Device-Type");
-		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
-			fetchByGroup = false;
-		}
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		String deviceType = request.getHeader("X-Device-Type");
+//		if (!StringUtils.isNullOrEmpty(deviceType) && ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+//			fetchByGroup = false;
+//		}
 		
 		
 		if (fetchByGroup != null && fetchByGroup) {
