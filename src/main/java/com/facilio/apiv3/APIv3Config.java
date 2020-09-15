@@ -525,11 +525,14 @@ public class APIv3Config {
         return () -> new V3Config(UserNotificationContext.class)
                 .create()
                     .afterSave(TransactionChainFactoryV3.getUserNotifactionBeforeSaveChain())
+     
                 .update()
                     .beforeSave(TransactionChainFactoryV3.getNotificationSeenUpdateChain())
 
                 .list()
-                   .beforeFetch(ReadOnlyChainFactoryV3.getUserNotificationBeforeFetchChain())
+                	.beforeFetch(ReadOnlyChainFactoryV3.getUserNotificationBeforeFetchChain())
+                	.beforeCount(ReadOnlyChainFactoryV3.getUserNotificationBeforeFetchChain())
+                  
                 .build();
     }
 
