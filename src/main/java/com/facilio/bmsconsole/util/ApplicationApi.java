@@ -4,10 +4,13 @@ import java.util.*;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
@@ -40,6 +43,9 @@ import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
 public class ApplicationApi {
+	
+	private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ApplicationApi.class);
+	
     public static long addApplicationApi(ApplicationContext application) throws Exception {
         long appId = 0;
         if (application != null) {
@@ -83,11 +89,19 @@ public class ApplicationApi {
         else if (appLinkName.equals("newtenants")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
         }
+        
+        if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
+    		LOGGER.log(Level.ERROR, "appLinkName -- "+appLinkName);
+    	}
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
+        
+        if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
+    		LOGGER.log(Level.ERROR, "applications result -- "+applications);
+    	}
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
         }

@@ -109,12 +109,22 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         appLinkName = (String) request.getAttribute("facilio.app.name");
                     }
                     if (StringUtils.isNotEmpty(appLinkName)) {
+                    	
+                    	if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
+                    		LOGGER.log(Level.ERROR, "appLinkName -- "+appLinkName);
+                    	}
+                    	
                         ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
                         if (application != null) {
                             appId = application.getId();
                         }
                     }
                 } catch (Exception e) {
+                	
+                	if(AccountUtil.getCurrentOrg().getId() == 1l || AccountUtil.getCurrentOrg().getId() == 350l) {
+                		LOGGER.log(Level.ERROR, e.getMessage(), e);
+                	}
+                	
                     throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid app linkName");
                 }
                 if (iamAccount.getUser() != null) {
