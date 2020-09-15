@@ -76,8 +76,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
-			isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
-			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
+			Boolean parallelRecordBasedRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
+			parallelRecordBasedRuleExecution = parallelRecordBasedRuleExecution != null ? parallelRecordBasedRuleExecution : Boolean.FALSE;
 			Boolean stopParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PARALLEL_RULE_EXECUTION);
 			stopParallelRuleExecution = stopParallelRuleExecution != null ? stopParallelRuleExecution : Boolean.FALSE;
 
@@ -86,7 +86,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 				if(orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
 					String isParallelRuleExecutionProp = orgInfoMap.get(FacilioConstants.OrgInfoKeys.IS_PARALLEL_RULE_EXECUTION);
 					if (isParallelRuleExecutionProp != null && !isParallelRuleExecutionProp.isEmpty() && StringUtils.isNotEmpty(isParallelRuleExecutionProp)) {
-						isParallelRuleExecution = Boolean.parseBoolean(isParallelRuleExecutionProp) && isParallelRuleExecution;
+						isParallelRuleExecution = Boolean.parseBoolean(isParallelRuleExecutionProp) && parallelRecordBasedRuleExecution;
 					}
 				}
 			}
