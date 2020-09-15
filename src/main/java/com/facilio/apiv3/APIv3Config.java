@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.DeleteChildAnnouncementsCommand;
@@ -359,9 +360,11 @@ public class APIv3Config {
                   .afterSave(TransactionChainFactoryV3.getVendorsAfterSaveChain())
                 .list()
                   .beforeFetch(new LoadVendorLookupCommandV3())
+                  .afterFetch(new LookUpPrimaryFieldHandlingCommandV3())
                   .showStateFlowList()
                 .summary()
                   .beforeFetch(new LoadVendorLookupCommandV3())
+                  .afterFetch(new LookUpPrimaryFieldHandlingCommandV3())
                 .build();
     }
 

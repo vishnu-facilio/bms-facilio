@@ -217,7 +217,9 @@ public class ChainUtil {
         if (v3Config != null) {
             V3Config.DeleteHandler deleteHandler = v3Config.getDeleteHandler();
             if (deleteHandler != null) {
-                initCommand = deleteHandler.getInitCommand();
+                if (deleteHandler.getInitCommand() != null) {
+                    initCommand = deleteHandler.getInitCommand();
+                }
                 beforeDeleteCommand = deleteHandler.getBeforeDeleteCommand();
                 afterDeleteCommand = deleteHandler.getAfterDeleteCommand();
                 afterTransactionCommand = deleteHandler.getAfterTransactionCommand();

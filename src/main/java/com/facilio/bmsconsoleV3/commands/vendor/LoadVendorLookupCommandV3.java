@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.LoadVendorLookUpCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
@@ -33,6 +34,11 @@ public class LoadVendorLookupCommandV3 extends FacilioCommand {
         additionaLookups.add(contactField);
         additionaLookups.add(addressField);
         additionaLookups.add(moduleStateField);
+        for (FacilioField f : fields) {
+            if (!f.isDefault() && f.getDataTypeEnum() == FieldType.LOOKUP) {
+                additionaLookups.add((LookupField) f);
+            }
+        }
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }

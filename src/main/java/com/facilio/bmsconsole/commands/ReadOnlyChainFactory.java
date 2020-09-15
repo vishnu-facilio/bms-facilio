@@ -640,6 +640,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForVendors());
 		c.addCommand(new LoadVendorLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new GetVendorDetailsCommand());
 		return c;
 	}
@@ -653,6 +654,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new LoadVendorLookUpCommand());
 		c.addCommand(new GetVendorsListCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new GetStateflowsForModuleDataListCommand());
 		return c;
 	}

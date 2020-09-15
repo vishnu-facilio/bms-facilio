@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -34,6 +35,11 @@ public class LoadVendorLookUpCommand extends FacilioCommand{
 		additionaLookups.add(contactField);
 		additionaLookups.add(addressField);
 		additionaLookups.add(moduleStateField);
+		for (FacilioField f : fields) {
+			if (!f.isDefault() && f.getDataTypeEnum() == FieldType.LOOKUP) {
+				additionaLookups.add((LookupField) f);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}
