@@ -16,13 +16,11 @@ public class DeleteChildAnnouncementsCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        String moduleName = Constants.getModuleName(context);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<AnnouncementContext> announcements = recordMap.get(moduleName);
+        List<Long> recordIds = Constants.getRecordIds(context);
 
-        if (CollectionUtils.isNotEmpty(announcements)) {
+        if (CollectionUtils.isNotEmpty(recordIds)) {
             FacilioContext jobContext =  new FacilioContext();
-            jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS, announcements);
+            jobContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
             jobContext.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION, 3);
 
             FacilioTimer.scheduleInstantJob("AddOrUpdateChildAnnouncementsJob", jobContext);

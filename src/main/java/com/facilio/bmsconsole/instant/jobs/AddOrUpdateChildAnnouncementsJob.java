@@ -17,20 +17,25 @@ public class AddOrUpdateChildAnnouncementsJob extends InstantJob {
       Integer action = (Integer) context.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION);
       //1-publish 2-cancel 3-delete
 
-        if(action != null && CollectionUtils.isNotEmpty(parentAnnouncements)) {
+        if(action != null) {
           if(action == 1){
-              for (AnnouncementContext announcement : parentAnnouncements) {
-                  AnnouncementAPI.addAnnouncementPeople(announcement);
+              if(CollectionUtils.isNotEmpty(parentAnnouncements)){
+                  for (AnnouncementContext announcement : parentAnnouncements) {
+                      AnnouncementAPI.addAnnouncementPeople(announcement);
+                  }
               }
           }
           else if(action == 2) {
-              for (AnnouncementContext announcement : parentAnnouncements) {
-                  AnnouncementAPI.cancelChildAnnouncements(announcement);
+              if(CollectionUtils.isNotEmpty(parentAnnouncements)) {
+                  for (AnnouncementContext announcement : parentAnnouncements) {
+                      AnnouncementAPI.cancelChildAnnouncements(announcement);
+                  }
               }
           }
           else if(action == 3) {
-              for (AnnouncementContext announcement : parentAnnouncements) {
-                  AnnouncementAPI.deleteChildAnnouncements(announcement);
+              List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+              if(CollectionUtils.isNotEmpty(recordIds)) {
+                  AnnouncementAPI.deleteChildAnnouncements(recordIds);
               }
           }
       }

@@ -28,6 +28,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -122,12 +123,12 @@ public class AnnouncementAPI {
         }
     }
 
-    public static void deleteChildAnnouncements(AnnouncementContext parentAnnouncement) throws Exception {
+    public static void deleteChildAnnouncements(List<Long> recordIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
         DeleteRecordBuilder<PeopleAnnouncementContext> deleteBuilder = new DeleteRecordBuilder<PeopleAnnouncementContext>()
                 .module(module)
-                .andCondition(CriteriaAPI.getCondition("PARENT_ANNOUNCEMENT_ID", "parentId", String.valueOf(parentAnnouncement.getId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("PARENT_ANNOUNCEMENT_ID", "parentId", StringUtils.join(recordIds), NumberOperators.EQUALS));
         deleteBuilder.markAsDelete();
 
     }
