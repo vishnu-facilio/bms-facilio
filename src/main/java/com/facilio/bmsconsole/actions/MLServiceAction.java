@@ -18,7 +18,7 @@ public class MLServiceAction extends FacilioAction {
     
     private static final long startTime = 1590980400000L;
     private static final long endTime = 1590987600000L;
-    private static final long usecase_id = 21876312873L;
+//    private static final long usecase_id = 21876312873L;
 
     public String addMLModel() throws  Exception {
     	
@@ -28,13 +28,10 @@ public class MLServiceAction extends FacilioAction {
         
         context.put(FacilioConstants.ContextNames.START_TTIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TTIME, endTime);
-        
-        modelInfo.setUseCaseId(usecase_id);
-        
         context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, this.modelInfo);
-        
         chain.execute();
-    	setResult(FacilioConstants.ContextNames.RESULT, modelInfo.getApiResponse().get("message"));
+        
+    	setResult(FacilioConstants.ContextNames.RESULT, modelInfo.getMlResponse().getMessage());
         return SUCCESS;
     }
 

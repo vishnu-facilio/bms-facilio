@@ -16,12 +16,13 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.MLResponseParser;
 import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
+import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
-public class InitMLModelCommand extends FacilioCommand {
+public class InitMLServiceCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = Logger.getLogger(InitMLModelCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(InitMLServiceCommand.class.getName());
 
 
 	@Override
@@ -30,7 +31,6 @@ public class InitMLModelCommand extends FacilioCommand {
 		MLServiceContext mlJobContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
 			LOGGER.info("Start of InitMLModelCommand");
-
 
 			JSONObject postObj = mlJobContext.getReqJson();
 			postObj.put("date", getCurrentDate(true));
@@ -51,10 +51,16 @@ public class InitMLModelCommand extends FacilioCommand {
 				context.put("ML_ERROR", true);
 			} else {
 				LOGGER.info("\n\n\n\nmlresponse :: \n"+result);
-				mlJobContext.setApiResponse(new JSONObject(result));
-				
+				LOGGER.info("I am sleeping for next 20 sec");
+				Thread.sleep(1000 * 20);
+				JSONObject response = new JSONObject(result);
+				MLResponseContext  mlResponse = FieldUtil.getAsBeanFromMap(response.toMap(), MLResponseContext.class);
+				Map<String, Object> row = new HashMap<>();
+				row.put("status", mlResponse.getMessage());
+				MLAPI.updateMLServiceInfo(mlResponse.getUsecaseId(), row);
+				LOGGER.info("\nML Status has been updated :: \n"+result);
+				mlJobContext.setMlResponse(mlResponse);
 			}
-			//			context.put(FacilioConstants.ContextNames.RESULT, result);
 		}catch(Exception e){
 			if(!e.getMessage().contains("ML error")){
 				LOGGER.fatal("Error_JAVA "+ FacilioProperties.getMlModelBuildingApi() + " ML ID : "+mlJobContext.getUseCaseId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);

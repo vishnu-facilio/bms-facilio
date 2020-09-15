@@ -8,7 +8,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,23 +17,22 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 
-public class ConstructReadingForMLModelCommand extends FacilioCommand {
+public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = Logger.getLogger(ConstructReadingForMLModelCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ConstructReadingForMLServiceCommand.class.getName());
 
 	
 	@Override
@@ -42,61 +40,26 @@ public class ConstructReadingForMLModelCommand extends FacilioCommand {
 
 		try {
 			
-			MLServiceContext mlJobContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
+			MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 			
-			Long assetId = (Long) mlJobContext.getAssetDetails().get(FacilioConstants.ContextNames.ASSET_ID);
+			updateMLServiceInfo(mlServiceContext);
+			
+			Long assetId = (Long) mlServiceContext.getAssetDetails().get(FacilioConstants.ContextNames.ASSET_ID);
 			Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TTIME);
 			Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TTIME);
 			
-			List<String> readingVariable = mlJobContext.getReadingVariables();
-			LOGGER.info("ML MODEL assetId :: "+assetId);
-			LOGGER.info("ML MODEL readingVariable :: "+readingVariable);
+			List<String> readingVariable = mlServiceContext.getReadingVariables();
+			LOGGER.info("ML Service assetId :: "+assetId);
+			LOGGER.info("ML Service readingVariable :: "+readingVariable);
 
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule readingDataMeta = modBean.getModule(FacilioConstants.ContextNames.READING_DATA_META);
-			FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+			List<Map<String, Object>> readingFieldsDetails = MLAPI.getReadingFields(assetId, readingVariable);
 
-			List<FacilioField> fields = FieldFactory.getMinimalFieldsFields();
-			fields.addAll(FieldFactory.getReadingDataMetaFields());
+			LOGGER.info("ML MODEL no of variables :: "+readingFieldsDetails.size());
 
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
-			List<FacilioField> selectFields = new ArrayList<>(5);
-			selectFields.add(fieldMap.get("fieldId"));
-			selectFields.add(fieldMap.get("name"));
-			selectFields.add(fieldMap.get("moduleId"));
-			selectFields.add(fieldMap.get("resourceId"));
-			selectFields.add(fieldMap.get("value"));
-
-			GenericSelectRecordBuilder genericSelectBuilder = new GenericSelectRecordBuilder()
-					.table(readingDataMeta.getTableName())
-					.select(selectFields)
-					.innerJoin(fieldsModule.getTableName())
-					.on(fieldsModule.getTableName() +".FIELDID = "+ readingDataMeta.getTableName()+".FIELD_ID")
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), assetId +"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), StringUtils.join(readingVariable, ","), StringOperators.IS));
-
-			LOGGER.info("ML MODEL no of variables :: "+genericSelectBuilder.get().size());
-
-//			String namespace = "machineLearning";
-//			String function = "printFunc";
-//			
-//			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
-//			
-//			LOGGER.info("machinelearning-printFunc id ::"+workflowContext.getId());
-//			LOGGER.info("machinelearning-printrow id ::"+UserFunctionAPI.getWorkflowFunction(namespace, "printrow").getId());
 			JSONArray dataObject = new JSONArray();
 			
-			
-			for(Map<String, Object> map : genericSelectBuilder.get()) {
-				LOGGER.info("before script row ::"+map);
-				
-//				Map<String, Object> sample = new HashMap<>();
-//				sample.put("rowsss", map);
-//				sample.put("row", "seeni");
-//				Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
-//				LOGGER.info("after script row ::"+resMap);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String, Object> map : readingFieldsDetails) {
 				
 	            long moduleId = (long)map.get("moduleId");
 	            long fieldId = (long)map.get("fieldId");
@@ -173,9 +136,8 @@ public class ConstructReadingForMLModelCommand extends FacilioCommand {
 				dataObject.put(attributeArray);
 			}
 			
-			LOGGER.info("DATAAAAAAA : "+dataObject);
-			mlJobContext.setDataObject(dataObject);
-			mlJobContext.setOrgDetails(getOrgInfo());
+			mlServiceContext.setDataObject(dataObject);
+			mlServiceContext.setOrgDetails(getOrgInfo());
 			LOGGER.info("end of GetReadingsForMLModelCommand");
 			return false;
 		}
@@ -183,9 +145,38 @@ public class ConstructReadingForMLModelCommand extends FacilioCommand {
 			LOGGER.error("Error while adding Energy Prediction Job", e);
 			throw e;
 		}
-
 	}
 
+	private void updateMLServiceInfo(MLServiceContext mlServiceContext) throws Exception {
+		Map<String, Object> mlServiceRow = new HashMap<>();
+		mlServiceRow.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+		mlServiceRow.put("status", "Initiated..");
+		mlServiceRow.put("workflowId", getWorkFlowId(mlServiceContext.getWorkflowInfo()));
+		mlServiceRow.put("modelName", mlServiceContext.getModelName());
+		mlServiceRow.put("mlModelMeta", mlServiceContext.getReqJson().toString());
+		
+		long useCaseId = MLAPI.addMLServiceInfo(mlServiceRow);
+		mlServiceContext.setUseCaseId(useCaseId);
+	}
+
+	private Object getWorkFlowId(Map<String, Object> workflowInfo) {
+		String namespace = (String) workflowInfo.get("namespace");
+		String function = (String) workflowInfo.get("function");
+		try {
+			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
+			return workflowContext.getId();
+		} catch (Exception e) {
+			LOGGER.error("Error while getting flow id for given namespace <"+namespace+"> and function <"+function+">");
+			e.printStackTrace();
+		}
+//		Map<String, Object> sample = new HashMap<>();
+//		sample.put("rowsss", map);
+//		sample.put("row", "seeni");
+//		Object resMap = WorkflowUtil.getResult(workflowContext.getId(), sample);
+//		LOGGER.info("after script row ::"+resMap);
+		return null;
+	}
+	
 	private Map<String, Object> getOrgInfo() {
 		Map<String, Object> orgInfo = new TreeMap<>();
 		Organization org = AccountUtil.getCurrentOrg();

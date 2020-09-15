@@ -7593,6 +7593,19 @@ public class FieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getMLServiceFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLServiceModule();
+        fields.add(getField("useCaseId", "USECASE_ID", module, FieldType.NUMBER));
+//        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getField("mlId", "ML_ID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.STRING));
+        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField("modelName", "MODEL_NAME", module, FieldType.STRING));
+        fields.add(getField("mlModelMeta", "ML_MODEL_META", module, FieldType.STRING));
+        return fields;
+    }
 
     public static List<FacilioField> getMLModelVariablesFields() {
         List<FacilioField> fields = new ArrayList<>();

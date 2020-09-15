@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ConstructReadingForMLServiceCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
@@ -24,11 +27,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -37,6 +42,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -256,6 +262,53 @@ public class MLAPI {
 	public static void addJobs(long mlID,String jobName,ScheduleInfo info,String executorName) throws Exception
 	{
 		FacilioTimer.scheduleCalendarJob(mlID, jobName, System.currentTimeMillis(), info, executorName);
+	}
+	
+	private static final Logger LOGGER = Logger.getLogger(MLAPI.class.getName());
+	public static long addMLServiceInfo(Map<String, Object> row) throws Exception {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getMLServiceModule().getTableName())
+				.fields(FieldFactory.getMLServiceFields());
+		LOGGER.info("row--> "+row);
+		LOGGER.info("fields ::" +FieldFactory.getMLServiceFields());
+		return builder.insert(row);
+	}
+	
+	public static void updateMLServiceInfo(long usecaseId, Map<String, Object> row) throws Exception {
+		
+		UpdateRecordBuilder builder = new UpdateRecordBuilder()
+				.module(ModuleFactory.getMLServiceModule())
+				.fields(FieldFactory.getMLServiceFields())
+				.andCondition(CriteriaAPI.getCondition("USECASE_ID", "useCaseId", String.valueOf(usecaseId), NumberOperators.EQUALS));
+		builder.updateViaMap(row);
+	}
+	
+	public static List<Map<String, Object>> getReadingFields(long assetId, List<String> readingFields) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule readingDataMeta = modBean.getModule(FacilioConstants.ContextNames.READING_DATA_META);
+		FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+
+		List<FacilioField> fields = FieldFactory.getMinimalFieldsFields();
+		fields.addAll(FieldFactory.getReadingDataMetaFields());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		List<FacilioField> selectFields = new ArrayList<>(5);
+		selectFields.add(fieldMap.get("fieldId"));
+		selectFields.add(fieldMap.get("name"));
+		selectFields.add(fieldMap.get("moduleId"));
+		selectFields.add(fieldMap.get("resourceId"));
+		selectFields.add(fieldMap.get("value"));
+
+		GenericSelectRecordBuilder genericSelectBuilder = new GenericSelectRecordBuilder()
+				.table(readingDataMeta.getTableName())
+				.select(selectFields)
+				.innerJoin(fieldsModule.getTableName())
+				.on(fieldsModule.getTableName() +".FIELDID = "+ readingDataMeta.getTableName()+".FIELD_ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), assetId +"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), StringUtils.join(readingFields, ","), StringOperators.IS));
+		return genericSelectBuilder.get();
 	}
 	
 }

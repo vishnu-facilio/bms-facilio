@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,20 +11,30 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MLServiceContext extends ModuleBaseWithCustomFields {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * User given input variables 
+	 */
 	private String modelName;
+	private String scenario;
 	private List<String> readingVariables;
 	private Map<String, Object> assetDetails;
 	private Map<String, Object> mlVariables;
     private Map<String, Object> filteringMethod;
     private Map<String, Object> groupingMethod;
     private Map<String, Object> workflowInfo;
-    private String scenario;
     
+    /**
+     * Internal usage variables 
+     */
+	private JSONArray dataObject;
+	private Map<String, Object> orgDetails;
+	private long useCaseId;
+
+	private String status;
+	private MLResponseContext mlResponse;
+
     public Map<String, Object> getWorkflowInfo() {
 		return workflowInfo;
 	}
@@ -85,19 +94,15 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public JSONObject getReqJson() {
 		JSONObject jsonRes = new JSONObject();
 		jsonRes.put("modelName", this.modelName);
+		jsonRes.put("scenario", this.scenario);
 		jsonRes.put("assetDetails", this.assetDetails);
 		jsonRes.put("readingVariables", this.readingVariables);
 		jsonRes.put("mlVariables", this.mlVariables);
 		jsonRes.put("filteringMethod", this.filteringMethod);
 		jsonRes.put("groupingMethod", this.groupingMethod);
-		jsonRes.put("scenario", this.scenario);
+		jsonRes.put("workflowInfo", this.workflowInfo);
 		return jsonRes;
 	}
-
-	private JSONArray dataObject;
-	private Map<String, Object> orgDetails;
-	private long useCaseId;
-	
 
 	public JSONArray getDataObject() {
 		return dataObject;
@@ -123,25 +128,12 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.useCaseId = useCaseId;
 	}
 	
-	private String status;
-	private JSONObject apiResponse;
-	private MLResponseContext mlResponse;
-	
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public JSONObject getApiResponse() {
-		return apiResponse;
-	}
-
-	public void setApiResponse(JSONObject apiResponse) {
-		this.apiResponse = apiResponse;
-		setMlResponse(FieldUtil.getAsBeanFromMap(apiResponse.toMap(), MLResponseContext.class));
 	}
 
 	public String getScenario() {
@@ -167,7 +159,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 				+ assetDetails + ", mlVariables=" + mlVariables + ", filteringMethod=" + filteringMethod
 				+ ", groupingMethod=" + groupingMethod + ", workflowInfo=" + workflowInfo + ", scenario=" + scenario
 				+ ", dataObject=" + dataObject + ", orgDetails=" + orgDetails + ", useCaseId=" + useCaseId + ", status="
-				+ status + ", apiResponse=" + apiResponse + ", mlResponse=" + mlResponse + "]";
+				+ status + ", mlResponse=" + mlResponse + "]";
 	}
 
 	
