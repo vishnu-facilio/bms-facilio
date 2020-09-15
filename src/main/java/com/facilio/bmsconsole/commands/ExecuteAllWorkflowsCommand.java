@@ -53,7 +53,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 	
 	private Map<String, List> recordMap;
 	private Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap;
-	private Boolean isParallelRuleExecution;
+	private boolean isParallelRuleExecution;
 	private Context context;
 	private Map<String,List<WorkflowRuleContext>> postRules;
 	
