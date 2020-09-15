@@ -12,12 +12,15 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import javax.xml.bind.ValidationException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,6 +107,10 @@ public class SaveSubFormFromLineItemsCommand extends FacilioCommand {
 
             long fieldId = subFormContext.getFieldId();
             FacilioField lookup = fieldMap.get(fieldId);
+
+            if (lookup == null) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid field id in relations");
+            }
 
             for (V3Context record: recordList) {
                 // ignoring patched records
