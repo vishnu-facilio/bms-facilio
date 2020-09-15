@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.announcement.AnnouncementFillDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.announcement.DeleteChildAnnouncementsCommand;
 import com.facilio.bmsconsoleV3.commands.announcement.LoadAnnouncementLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.budget.*;
@@ -543,6 +544,8 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new LoadAnnouncementLookupCommandV3())
                     .afterFetch(new AnnouncementFillDetailsCommandV3())
+                .delete()
+                    .afterDelete(new DeleteChildAnnouncementsCommand())
                 .build();
     }
 

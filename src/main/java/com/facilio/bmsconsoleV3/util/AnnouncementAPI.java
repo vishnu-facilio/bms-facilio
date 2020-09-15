@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -19,10 +20,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
@@ -122,6 +120,16 @@ public class AnnouncementAPI {
                 updateChain.execute();
             }
         }
+    }
+
+    public static void deleteChildAnnouncements(AnnouncementContext parentAnnouncement) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS);
+        DeleteRecordBuilder<PeopleAnnouncementContext> deleteBuilder = new DeleteRecordBuilder<PeopleAnnouncementContext>()
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition("PARENT_ANNOUNCEMENT_ID", "parentId", String.valueOf(parentAnnouncement.getId()), NumberOperators.EQUALS));
+        deleteBuilder.markAsDelete();
+
     }
 
     public static void addAnnouncementPeople(AnnouncementContext announcement) throws Exception{

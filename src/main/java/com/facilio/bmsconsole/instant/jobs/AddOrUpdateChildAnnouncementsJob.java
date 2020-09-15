@@ -15,7 +15,7 @@ public class AddOrUpdateChildAnnouncementsJob extends InstantJob {
     public void execute(FacilioContext context) throws Exception {
       List<AnnouncementContext> parentAnnouncements = (List<AnnouncementContext>) context.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS);
       Integer action = (Integer) context.get(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT_ACTION);
-      //1-publish 2-cancel
+      //1-publish 2-cancel 3-delete
 
         if(action != null && CollectionUtils.isNotEmpty(parentAnnouncements)) {
           if(action == 1){
@@ -26,6 +26,11 @@ public class AddOrUpdateChildAnnouncementsJob extends InstantJob {
           else if(action == 2) {
               for (AnnouncementContext announcement : parentAnnouncements) {
                   AnnouncementAPI.cancelChildAnnouncements(announcement);
+              }
+          }
+          else if(action == 3) {
+              for (AnnouncementContext announcement : parentAnnouncements) {
+                  AnnouncementAPI.deleteChildAnnouncements(announcement);
               }
           }
       }
