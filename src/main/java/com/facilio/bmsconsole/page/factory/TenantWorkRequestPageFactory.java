@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.page.factory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
@@ -21,12 +23,18 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(workorder.getModuleId());
-
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
+		
+		if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+			
+			addRelatedListWidgets(tab1Sec1, module.getModuleId());
+		}
+		else {
+
 		addWorkrequestDetailsWidget(tab1Sec1);
 		
 		
@@ -45,6 +53,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		tab2.addSection(tab2Sec1);
 		
 		addActivityWidget(tab2Sec1);
+		}
 		
 		return page;
 	}
