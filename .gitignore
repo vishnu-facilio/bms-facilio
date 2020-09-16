@@ -24,3 +24,4 @@ bms.iml
 awsprops.properties
 agentIntegration.properties
 /src/main/resources/conf/awsprops.properties
+out/
