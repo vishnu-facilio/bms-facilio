@@ -143,30 +143,23 @@ public class LocalFileStore extends FileStore {
 		long fileId = addDummyFileEntry(namespace, fileName, false);
 		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();
-		
-		InputStream is = null;
-	    OutputStream os = null;
-	    try {
+	    try(InputStream is = IOUtils.toInputStream(content);) {
 	    	File createFile = new File(filePath);
 			createFile.createNewFile();
-			
-	        is = IOUtils.toInputStream(content);
-	        os = new FileOutputStream(createFile);
-	        byte[] buffer = new byte[4096];
-	        int length;
-	        while ((length = is.read(buffer)) > 0) {
-	            os.write(buffer, 0, length);
-	        }
-	        os.flush();
-	        
-	        updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
+			try(OutputStream os = new FileOutputStream(createFile);) {
+				byte[] buffer = new byte[4096];
+				int length;
+				while ((length = is.read(buffer)) > 0) {
+					os.write(buffer, 0, length);
+				}
+				os.flush();
+
+				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
+			}
 	        
 	    } catch (IOException ioe) {
 	    	deleteFileEntry(namespace, fileId);
 	    	throw ioe;
-	    } finally {
-	        is.close();
-	        os.close();
 	    }
 		return fileId;
 	}
