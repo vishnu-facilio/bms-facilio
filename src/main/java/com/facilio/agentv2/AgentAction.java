@@ -538,7 +538,7 @@ public class AgentAction extends AgentActionV2 {
     			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(currentOrg.getOrgId()), StringOperators.IS));
     	Map<String,Object> prop =	builder.fetchFirst();
     	if(MapUtils.isEmpty(prop)) {
-    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? prop.get("topic").toString():null;
+    		return 	MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId()) ? currentOrg.getDomain():null;
     	}
     	return prop.get("topic").toString();
     }
