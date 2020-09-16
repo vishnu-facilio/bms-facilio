@@ -4,6 +4,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.actions.AgentVersionAction;
 import com.facilio.agentv2.actions.VersionLogAction;
@@ -592,19 +593,27 @@ public class AdminAction extends ActionSupport {
 		return AgentVersionApi.listAgentVersions(context);
 	}
 	
-	public static List<Map<String, Object>> getAgentList(long orgId) throws Exception{
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+	public static List<Map<String, Object>> getAgentList(String orgId) throws Exception{
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Long.parseLong(orgId));
 		return bean.getOrgSpecificAgentList();
 	}
 	
 	public String disableAgent() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgId"));
-//		long agentId =  Long.parseLong(request.getParameter("agentId"));
 		String level = request.getParameter("level");
+		String agentName = request.getParameter("agent");
 		boolean action = Boolean.parseBoolean(request.getParameter("action"));
+		if(level.equals("topic")) {
+			FacilioService.runAsService(()->MessageQueueTopic.disableOrEnableMessageTopic(action, orgId));
+		}else if(level.equals("agent")) {
+			AgentControl obj = new AgentControl();
+			obj.setAgentName(agentName);
+			obj.setOrgId(orgId);
+			obj.setAction(action);
+			obj.agentAction();
+		}
 		
-		FacilioService.runAsService(()->MessageQueueTopic.disableOrEnableMessageTopic(action, orgId));
 		return SUCCESS;
 	}
 

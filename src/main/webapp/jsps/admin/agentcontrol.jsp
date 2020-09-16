@@ -13,7 +13,6 @@
  OrgBean bean =  AccountUtil.getOrgBean();
  org = bean.getOrgs();
  List<Map<String , Object>> orgList = AdminAction.getOrgsList();
- 
  %>       
 <!DOCTYPE html>
 <html>
@@ -62,10 +61,26 @@ function changeAction(){
 					
 					<option value="<%="topic"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("topic")) ? "selected" : " "%>><%="Topic"%>
 						</option>
-					<%-- <option value="<%="ChangeProcessor"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("ChangeProcessor")) ? "selected" : " "%>><%="Change Processor"%>
-						</option> --%>
+					 <option value="<%="agent"%>"<%=(request.getParameter("level") != null && request.getParameter("level").equals("agent")) ? "selected" : " "%>><%="Agent"%>
+						</option>
 				</select>	
-				
+				<%if(request.getParameter("orgId") != null){ %>
+		<label for="txtClassroomName">
+			<b><h5>Agent</h5></b>
+				</label>
+      <select class="admin-data-select"
+					name="agent" id="agent">
+					<option value="" disabled selected>Select</option>
+					<%
+					List<Map<String,Object>> agents = AdminAction.getAgentList(request.getParameter("orgId"));
+					
+					
+					for(Map<String,Object> agentVal : agents){ %>	
+					<option value="<%=agentVal.get("name")%>"<%=(request.getParameter("agent") != null && request.getParameter("agent").equals(agentVal.get("agentName"))) ? "selected" : " "%>><%=agentVal.get("name")%>
+						</option>
+					<%} %>
+				</select>				
+		<%} %>		
 		<label for="txtClassroomName">
 			<b><h5>Action</h5></b>
 				</label>
@@ -78,7 +93,7 @@ function changeAction(){
 					<option value="<%="true"%>"<%=(request.getParameter("action") != null && request.getParameter("action").equals("disable")) ? "selected" : " "%>><%="Disable"%>
 						</option> 
 				</select>		
-					
+				
     </div>
  
 <%--   <%if((request.getParameter("level") != null)) { %>
@@ -144,6 +159,7 @@ function changeAction(){
 	<%} %> --%>
 	<%-- <%} %>				
 			</fieldset> --%>
+			<br><br>
 			<input type = "submit"  style="margin-left: 200px" name="disableAgent"  value = "Submit"/> 
 </form>
 </body>

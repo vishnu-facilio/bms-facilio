@@ -155,7 +155,6 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
-                    if(AccountUtil.getCurrentOrg().getOrgId() == 152) {
                     	int value = Integer.parseInt(payLoad.get(AgentConstants.PUBLISH_TYPE).toString());
                     	if((value == PublishType.agentAction.getKey()) && payLoad.containsKey(AgentConstants.MESSAGE))  {
                     		agentDisableAction(recordId, payLoad, agentV2);
@@ -163,7 +162,6 @@ public class DataProcessorUtil {
                     	}else if(agentV2 != null && AgentControl.isAgentEnabled(agentV2.getId())) {
                     		return false;
                     	}
-                    }
                     if(agentV2 != null){
                     	agentMsgId = agentV2.getId();
                     	processorVersion = agentV2.getProcessorVersion();
