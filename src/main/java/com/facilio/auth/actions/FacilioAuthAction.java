@@ -774,6 +774,7 @@ public class FacilioAuthAction extends FacilioAction {
 		if (isMobile) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("token", authtoken);
+			jsonObject.put("homePath", "/app/mobile/home");
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
