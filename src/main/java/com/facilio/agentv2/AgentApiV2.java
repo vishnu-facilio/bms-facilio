@@ -369,9 +369,6 @@ public class AgentApiV2 {
     public static FacilioAgent getAgent(String agentName) throws Exception {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agentName,StringOperators.IS));
-        if(!FacilioProperties.isProduction()) {
-        	criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getNewAgentFields()).get(AgentConstants.IS_DISABLE), String.valueOf(false),BooleanOperators.IS));
-        }
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         List<FacilioAgent> agents = getAgents(context);

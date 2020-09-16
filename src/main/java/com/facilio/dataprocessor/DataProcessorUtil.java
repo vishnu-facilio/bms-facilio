@@ -156,30 +156,13 @@ public class DataProcessorUtil {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
                     com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
                     if(AccountUtil.getCurrentOrg().getOrgId() == 152) {
-                    	if(payLoad.containsKey(PublishType.agentAction) && payLoad.containsKey(AgentConstants.MESSAGE))  {
-                    		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
-                    		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);
-                    		AgentControl object = new AgentControl();
-                    		if(agentV2 != null && disable) {
-                        			 object.setAction(disable);
-                        			 object.setAgentId(agentV2.getId());
-                        			 object.setOrgId(orgId);
-                        			 object.updateAgent(recordId);
-                        			FacilioService.runAsService(()-> object.insertAgentDisable(recordId));
-                    		 }else if(!disable) {
-                    			 object.setAction(disable);
-                    			 if(payLoad.containsKey(AgentConstants.AGENT)) {
-                    				 String agentName = payLoad.get(AgentConstants.AGENT).toString();
-                    				if( StringUtils.isEmpty(agentName)){
-                    					 throw new IllegalArgumentException("agentName is null :"+agentName);
-                    				 }
-                    				 object.setAgentName(agentName);
-                    			 }
-                    			 object.updateAgent(recordId);
-                    			 FacilioService.runAsService(()-> object.updateAgentDisable(recordId));
-                    		 }
-                         	return false;
-                         }
+                    	int value = Integer.parseInt(payLoad.get(AgentConstants.PUBLISH_TYPE).toString());
+                    	if((value == PublishType.agentAction.getKey()) && payLoad.containsKey(AgentConstants.MESSAGE))  {
+                    		agentDisableAction(recordId, payLoad, agentV2);
+                    		return false;
+                    	}else if(agentV2 != null && AgentControl.isAgentEnabled(agentV2.getId())) {
+                    		return false;
+                    	}
                     }
                     if(agentV2 != null){
                     	agentMsgId = agentV2.getId();
@@ -407,6 +390,33 @@ public class DataProcessorUtil {
         // LOGGER.info(" processing successful");
         return true;
     }
+	private void agentDisableAction(long recordId, JSONObject payLoad, com.facilio.agentv2.FacilioAgent agentV2)
+			throws SQLException, Exception {
+		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
+		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);
+		AgentControl object = new AgentControl();
+		if(disable) {
+				 object.setAction(disable);
+				 object.setAgentId(agentV2.getId());
+				 object.setOrgId(orgId);
+				 if(agentV2 != null) {
+					 object.updateAgent(recordId);
+				 }
+				FacilioService.runAsService(()-> object.insertAgentDisable(recordId));
+		 }else{
+			 object.setAction(disable);
+			 object.setAgentId(agentV2.getId());
+			 if(payLoad.containsKey(AgentConstants.AGENT)) {
+				 String agentName = payLoad.get(AgentConstants.AGENT).toString();
+				if( StringUtils.isEmpty(agentName)){
+					 throw new IllegalArgumentException("agentName is null :"+agentName);
+				 }
+				 object.setAgentName(agentName);
+			 }
+			 object.updateAgent(recordId);
+			 FacilioService.runAsService(()-> object.updateAgentDisable(recordId));
+		 }
+	}
 
     private void updateAgentMsg(Map<String, Object> prop, long recordId) throws SQLException {
     	List<FacilioField> fields = FieldFactory.getAgentMessageFields();
