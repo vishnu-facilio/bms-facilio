@@ -3458,6 +3458,19 @@ public class FieldFactory {
 
     }
 
+    public static List<FacilioField> getNamedCriteriaFields() {
+        FacilioModule module = ModuleFactory.getNamedCriteriaModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getViewFields() {
         FacilioModule module = ModuleFactory.getViewsModule();
 

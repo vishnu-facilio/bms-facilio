@@ -9,6 +9,8 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -211,13 +213,13 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
                         case CONDITIONED:
                             List<ConditionScoringContext> conditionedList = (List<ConditionScoringContext>) scoringList;
                             List<Long> criteriaIds = conditionedList.stream()
-                                    .filter(conditioned -> conditioned.getCriteriaId() > 0)
-                                    .map(ConditionScoringContext::getCriteriaId).collect(Collectors.toList());
+                                    .filter(conditioned -> conditioned.getNamedCriteriaId() > 0)
+                                    .map(ConditionScoringContext::getNamedCriteriaId).collect(Collectors.toList());
                             if (CollectionUtils.isNotEmpty(criteriaIds)) {
-                                Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+                                Map<Long, NamedCriteria> criteriaMap = NamedCriteriaAPI.getCriteriaAsMap(criteriaIds);
                                 for (ConditionScoringContext conditioned : conditionedList) {
-                                    if (conditioned.getCriteriaId() > 0) {
-                                        conditioned.setCriteria(criteriaMap.get(conditioned.getCriteriaId()));
+                                    if (conditioned.getNamedCriteriaId() > 0) {
+                                        conditioned.setNamedCriteria(criteriaMap.get(conditioned.getNamedCriteriaId()));
                                     }
                                 }
                             }

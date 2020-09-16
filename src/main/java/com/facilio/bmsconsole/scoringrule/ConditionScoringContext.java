@@ -1,33 +1,33 @@
 package com.facilio.bmsconsole.scoringrule;
 
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.manager.NamedCriteria;
+import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import org.apache.commons.chain.Context;
 
 import java.util.Map;
 
 public class ConditionScoringContext extends BaseScoringContext {
 
-    private long criteriaId = -1;
-    public long getCriteriaId() {
-        return criteriaId;
+    private long namedCriteriaId = -1L;
+    public long getNamedCriteriaId() {
+        return namedCriteriaId;
     }
-    public void setCriteriaId(long criteriaId) {
-        this.criteriaId = criteriaId;
+    public void setNamedCriteriaId(long namedCriteriaId) {
+        this.namedCriteriaId = namedCriteriaId;
     }
 
-    private Criteria criteria;
-    public Criteria getCriteria() {
-        return criteria;
+    private NamedCriteria namedCriteria;
+    public NamedCriteria getNamedCriteria() {
+        return namedCriteria;
     }
-    public void setCriteria(Criteria criteria) {
-        this.criteria = criteria;
+    public void setNamedCriteria(NamedCriteria namedCriteria) {
+        this.namedCriteria = namedCriteria;
     }
 
     @Override
     public float evaluatedScore(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
-        if (criteria != null) {
-            boolean criteriaFlag = criteria.computePredicate(placeHolders).evaluate(record);
+        if (namedCriteria != null) {
+            boolean criteriaFlag = namedCriteria.evaluate(record, context, placeHolders);
             return criteriaFlag ? 1f : 0f;
         }
         return 0;
@@ -35,14 +35,15 @@ public class ConditionScoringContext extends BaseScoringContext {
 
     @Override
     public void validate() {
-        if (criteria == null || criteria.isEmpty()) {
+        if (namedCriteria == null) {
             throw new IllegalArgumentException("Criteria cannot be empty");
         }
+        namedCriteria.validate();
     }
 
     @Override
     public void saveChildren() throws Exception {
-        criteriaId = CriteriaAPI.addCriteria(criteria);
+        namedCriteriaId = NamedCriteriaAPI.addNamedCriteria(namedCriteria);
     }
 
     @Override

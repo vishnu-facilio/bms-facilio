@@ -1053,6 +1053,14 @@ public class ModuleFactory {
 		return viewsModule;
 	}
 
+	public static FacilioModule getNamedCriteriaModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("namedCriteria");
+		module.setDisplayName("Named Criteria");
+		module.setTableName("Named_Criteria");
+		return module;
+	}
+
 	public static FacilioModule getViewsModule() {
 		FacilioModule viewsModule = new FacilioModule();
 		viewsModule.setName("views");
