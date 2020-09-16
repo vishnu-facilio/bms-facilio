@@ -294,7 +294,9 @@ public class V3MailMessageContext extends V3Context {
                             saveContentAsPdf(s, mailContext);
                             return "Content too big. Please check attachment";
                         }
-                        return null;
+                        else {
+                            return s;
+                        }
                     }
                 } else {
                     return getMimeMultipartFromMessage(((MimeMultipart)part.getContent()), mailContext);
