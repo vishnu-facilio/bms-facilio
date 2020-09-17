@@ -1,8 +1,9 @@
 package com.facilio.services.kafka;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,18 +20,31 @@ public class KafkaProcessor extends FacilioProcessor {
 
 
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
+    private static final Map<Long,Long> PROP = getRecordValue();
     private DataProcessorUtil dataProcessorUtil;
 
-    public KafkaProcessor(long orgId, String orgDomainName) {
-        super(orgId, orgDomainName);
-        String clientName = orgDomainName + "-processor-";
+    public KafkaProcessor(long orgId, String topic) {
+        super(orgId, topic);
+        String clientName = topic + "-processor-";
         String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         setEventType("processor");
-        dataProcessorUtil = new DataProcessorUtil(orgId, orgDomainName);
-        LOGGER.info("Initializing processor " + orgDomainName);
+        dataProcessorUtil = new DataProcessorUtil(orgId, topic);
+        LOGGER.info("Initializing processor " + topic);
+        if(!FacilioProperties.isProduction()) {
+        	if(MapUtils.isNotEmpty(PROP)){
+        	final long offset = PROP.get(orgId);
+        		if(offset > 0) {
+        			LOGGER.info("Kafka seek method called ......orgid : "+orgId +"  offset :"+offset);
+        			getConsumer().seek(topic, offset);
+        			LOGGER.info("Kafka seek method completed");
+        		}else {
+        			LOGGER.info("offset is null ......"+offset);
+        		}
+        	}
+        }
     }
 
 
@@ -49,22 +63,14 @@ public class KafkaProcessor extends FacilioProcessor {
         }
     }
     
-    public long send(String orgDomain,JSONObject data) {
-    	FacilioRecord record= new FacilioRecord(orgDomain, data);
-    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
-    	return metaData.offset();
-    }
+//    public long send(String orgDomain,JSONObject data) {
+//    	FacilioRecord record= new FacilioRecord(orgDomain, data);
+//    	RecordMetadata metaData = (RecordMetadata) getProducer().putRecord(record);
+//    	return metaData.offset();
+//    }
     
-    public void seek(String orgDomain,long offset) {
-    	try {
-    		if(StringUtils.isEmpty(orgDomain) && offset < 0) {
-        		throw new IllegalArgumentException("Toipc shouldn't be null and offset must be greater than zero.");
-        	}
-    		getConsumer().seek(orgDomain, offset);
-    	}catch(Exception e) {
-    		LOGGER.info("Exception occurred while seeking method  ",e);
-    		throw e;
-    	}
-    	
+    private static Map<Long,Long> getRecordValue(){
+    	PROP.put(146L, 2637929L);
+    	return PROP;
     }
 }
