@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
@@ -23,11 +24,13 @@ public class MultiVariateAnomalyAlarmPageFactory extends PageFactory{
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 
-		addMlAnomalyCreatedTymWidget(tab1Sec1);
+		addAlarmDetailsWidget(tab1Sec1);
 		addMlAnomalyDetailsWidget(tab1Sec1);
 		addNoOfAnomalies(tab1Sec1);
 		addMeanTimeBetweenAnomalyCard(tab1Sec1);
 		addMeanTimeToClearCard(tab1Sec1);
+        addCommonSubModuleGroup(tab1Sec1);
+
 		
 		Tab tab2 = page.new Tab("occurrenceHistory", "occurrenceHistory");
 		page.addTab(tab2);
@@ -39,12 +42,11 @@ public class MultiVariateAnomalyAlarmPageFactory extends PageFactory{
 		
 		return page;
     }
-	private static void addMlAnomalyCreatedTymWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 2);
-		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
-		section.addWidget(cardWidget);
-	}
+    protected static void addAlarmDetailsWidget (Page.Section section) {
+        PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_DETAILS);
+        pageWidget.addToLayoutParams(section, 24, 4);
+        section.addWidget(pageWidget);
+    }
 	private static void addMlAnomalyDetailsWidget (Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.ANOMALY_DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 4);
@@ -72,5 +74,19 @@ public class MultiVariateAnomalyAlarmPageFactory extends PageFactory{
 		PageWidget occurrenceListWidget = new PageWidget(WidgetType.OCCURRENCE_HISTORY);
 		section.addWidget(occurrenceListWidget);
 	}
+    protected static PageWidget addCommonSubModuleGroup(Page.Section section) {
+
+        PageWidget subModuleGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        subModuleGroup.addToLayoutParams(section, 24, 8);
+        subModuleGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        section.addWidget(subModuleGroup);
+
+        PageWidget notesWidget = new PageWidget();
+        notesWidget.setTitle("Comment");
+        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+        subModuleGroup.addToWidget(notesWidget);
+
+        return subModuleGroup;
+    }
 	
 }
